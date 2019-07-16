@@ -6,7 +6,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "lint": "eslint src/**/*.js",
+    "lint:watch": "esw --clear --watch --color src/**/*.js"
   },
   "dependencies": {
     "react": "^16.8.6",
@@ -14,6 +16,12 @@
     "react-scripts": "3.0.1"
   },
   "devDependencies": {
+    "eslint-config-airbnb": "^17.1.1",
+    "eslint-plugin-css-modules": "^2.11.0",
+    "eslint-plugin-import": "^2.18.0",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-react": "^7.14.2",
+    "eslint-watch": "^5.1.2",
     "husky": "^3.0.0",
     "lint-staged": "^9.2.0",
     "prettier": "^1.18.2"
