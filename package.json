@@ -13,8 +13,13 @@
     "build-storybook": "build-storybook"
   },
   "dependencies": {
+    "antd": "^3.20.3",
+    "nprogress": "^0.2.0",
+    "prop-types": "^15.7.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
+    "react-placeholder": "^3.0.2",
+    "react-router-dom": "^5.0.1",
     "react-scripts": "3.0.1"
   },
   "devDependencies": {
@@ -25,7 +30,7 @@
     "@storybook/addon-viewport": "^5.1.9",
     "@storybook/addons": "^5.1.9",
     "@storybook/react": "^5.1.9",
-    "babel-loader": "^8.0.6",
+    "babel-loader": "^8.0.5",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.14.0",
     "enzyme-to-json": "^3.3.5",
