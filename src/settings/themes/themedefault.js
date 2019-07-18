@@ -74,7 +74,7 @@ theme.palette = {
 };
 
 theme.fonts = {
-  primary: 'Roboto, sans-serif',
+  primary: 'Montserrat, Roboto, sans-serif',
   pre: 'Consolas, Liberation Mono, Menlo, Courier, monospace',
 };
 
