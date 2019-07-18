@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { LocaleProvider } from 'antd';
 import { IntlProvider } from 'react-intl';
 
 import AppLocale from './languageProvider';
@@ -29,25 +30,27 @@ const PublicRoutes = () => {
   const currentAppLocale = AppLocale[language];
 
   return (
-    <IntlProvider
-      locale={currentAppLocale.locale}
-      messages={currentAppLocale.messages}
-    >
-      <Router>
-        <div>
-          {routes.map(singleRoute => {
-            const { exact, ...otherProps } = singleRoute;
-            return (
-              <Route
-                exact={exact !== false}
-                key={singleRoute.path}
-                {...otherProps}
-              />
-            );
-          })}
-        </div>
-      </Router>
-    </IntlProvider>
+    <LocaleProvider locale={currentAppLocale.antd}>
+      <IntlProvider
+        locale={currentAppLocale.locale}
+        messages={currentAppLocale.messages}
+      >
+        <Router>
+          <div>
+            {routes.map(singleRoute => {
+              const { exact, ...otherProps } = singleRoute;
+              return (
+                <Route
+                  exact={exact !== false}
+                  key={singleRoute.path}
+                  {...otherProps}
+                />
+              );
+            })}
+          </div>
+        </Router>
+      </IntlProvider>
+    </LocaleProvider>
   );
 };
 

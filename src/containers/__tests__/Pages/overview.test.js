@@ -2,11 +2,11 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { shallowToJson } from 'enzyme-to-json';
 
-import SignIn from '../../Pages/signin';
+import Overview from '../../Overview';
 
-describe('SignIn Page', () => {
+describe('Overview Page', () => {
   it('renders with default props', () => {
-    const wrapper = shallow(<SignIn />);
+    const wrapper = shallow(<Overview />);
     expect(shallowToJson(wrapper)).toMatchSnapshot();
   });
 });
