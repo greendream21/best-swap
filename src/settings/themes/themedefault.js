@@ -73,6 +73,37 @@ theme.palette = {
   ],
 };
 
+theme.sizes = {
+  headerHeight: '90px',
+  footerHeight: '50px',
+  contentHeight: '550px',
+  contentHeaderHeight: '50px',
+  lineHeight: '50px',
+  icon: '35px',
+  social: '17px',
+  button: {
+    small: {
+      width: '55px',
+      height: '20px',
+    },
+    normal: {
+      width: '100px',
+      height: '30px',
+    },
+    big: {
+      width: '300px',
+      height: '50px',
+    },
+  },
+  font: {
+    small: '10px',
+    normal: '12px',
+    big: '18px',
+    input: '15px',
+    label: '11px',
+  },
+};
+
 theme.fonts = {
   primary: 'Montserrat, Roboto, sans-serif',
   pre: 'Consolas, Liberation Mono, Menlo, Courier, monospace',
