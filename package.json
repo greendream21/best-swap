@@ -7,6 +7,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
+    "deploy": "firebase deploy",
     "lint": "eslint src/**/*.js",
     "lint:watch": "esw --clear --watch --color src/**/*.js",
     "storybook": "start-storybook -p 6006",
