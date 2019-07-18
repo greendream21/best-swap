@@ -2,20 +2,12 @@ const theme = {};
 
 theme.palette = {
   primary: [
-    '#4482FF', // 0: Default
-    '#3A78F5', // 1: Darken 4%
-    '#3775F2', // 2: Darken 5%
-    'rgba(68, 130, 255, 0.2)', // 3: Fade 20%
-    '#4C8AFF', // 4: Lighten 3%
-    'rgba(68, 130, 255, 0.75)', // 5: Fade 75%
-    '#6AA8FF', // 6: Lighten 15%
-    '#63A1FF', // 7: Lighten 12%
-    '#3F7DFA', // 8: Darken 2%
-    '#3369e7', // 9: Algolia color
-    '#5896FF', // 10: Lighten 8%
-    '#2b69e6', // 11:
-    '#236cfe', // 12: darken 10%
-    '#4d88ff', // 13: Lighten 5%
+    '#33CCFF', // 0: Default
+    '#50E3C2', // 1:
+    '#F0B90B', // 2:
+    'rgba(51, 204, 255, 0.1)', // 3: Selected Background
+    'linear-gradient(47.73deg, #50E3C2 0%, #33CCFF 100%)', // 4: Gradient
+    '#ECEEEF', // 5: Drag Background
   ],
   secondary: [
     '#2d3446', // 0: DarkBlue
@@ -47,13 +39,13 @@ theme.palette = {
     '#e0364c', // 13: themeColor--AlizarinCrimson
   ],
   warning: [
-    '#ffbf00', // 0: Warning
+    '#F3BA2F', // 0: Warning
   ],
   success: [
-    '#00b16a', // 0: Success
+    '#30D7A9', // 0: Success
   ],
   error: [
-    '#f64744', // 0: Error
+    '#FF4954', // 0: Error
     '#EC3D3A', // 1: Darken 4%
     '#FF5B58', // 2: Lighten 8%
   ],
@@ -66,33 +58,18 @@ theme.palette = {
     '#fafafa', // 5: DarkWhite
     '#F9F9F9', // 6: DarkerWhite
     '#fcfcfc', // 7: #fff Darken 1%
-    '#eeeeee', // 8:
-    '#fbfbfb', // 9:
-    '#f5f5f5', // 10:
-    '#f7f8f9', // 11: today-highlight-bg
   ],
   text: [
-    '#323332', // 0: Heading
-    '#595959', // 1: HeadingLight
-    '#979797', // 2: Text
-    '#797979', // 3: TextDark
-    '#6a6c6a', // 4: Heading Lighten 22%
+    '#848E9C', // 0: Heading
+    '#323C47', // 1: HeadingDark
+    '#1C2731', // 2: Active
+    '#4A4A4A', // 3: Text Color
+    '#B7BBBD', // 4: Darker Text
+    '#9B9B9B', // 3: Input Text
   ],
   border: [
-    '#e9e9e9', // 0: Border
-    '#d8d8d8', // 1: BorderDark
-    '#ebebeb', // 2: BorderLight
-    '#d3d3d3', // 3:
-    'rgba(228, 228, 228, 0.65)', // 4:
-  ],
-
-  calendar: [
-    '#905', // 0:
-    '#690', // 1:
-    '#a67f59', // 2:
-    '#07a', // 3:
-    '#dd4a68', // 4:
-    '#e90', // 5:
+    '#ECEEEF', // 0: Border
+    '#33CCFF', // 1: BorderBlue
   ],
 };
 
