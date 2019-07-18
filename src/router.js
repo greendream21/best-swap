@@ -10,17 +10,17 @@ const routes = [
   {
     exact: true,
     path: '/',
-    component: asyncComponent(() => import('./containers/pages/signin')),
+    component: asyncComponent(() => import('./containers/DashApp')),
   },
   {
     exact: true,
-    path: '/signin',
-    component: asyncComponent(() => import('./containers/pages/signin')),
+    path: '/404',
+    component: asyncComponent(() => import('./containers/pages/404')),
   },
   {
     exact: true,
-    path: '/signup',
-    component: asyncComponent(() => import('./containers/pages/signup')),
+    path: '/500',
+    component: asyncComponent(() => import('./containers/pages/500')),
   },
 ];
 
