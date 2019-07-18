@@ -9,27 +9,27 @@ import italicFont from './assets/font/Montserrat-LightItalic.otf';
 
 const AppHolder = styled.div`
   @font-face {
-    font-family: Montserrat;
+    font-family: 'Montserrat';
     src: url(${normalFont});
     font-weight: normal;
   }
   @font-face {
-    font-family: Montserrat;
+    font-family: 'Montserrat Light';
     src: url(${lightFont});
     font-weight: lighter;
   }
   @font-face {
-    font-family: Montserrat;
+    font-family: 'Montserrat Bold';
     src: url(${boldFont});
     font-weight: bold;
   }
   @font-face {
-    font-family: Montserrat;
+    font-family: 'Montserrat Medium';
     src: url(${mediumFont});
     font-weight: medium;
   }
   @font-face {
-    font-family: Montserrat;
+    font-family: 'Montserrat Italic';
     src: url(${italicFont});
     font-weight: italic;
   }
