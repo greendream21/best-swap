@@ -65,7 +65,8 @@ theme.palette = {
     '#1C2731', // 2: Active
     '#4A4A4A', // 3: Text Color
     '#B7BBBD', // 4: Darker Text
-    '#9B9B9B', // 3: Input Text
+    '#9B9B9B', // 5: Input Text
+    '#919D9D', // 6: Footer Color
   ],
   border: [
     '#ECEEEF', // 0: Border
@@ -97,7 +98,7 @@ theme.sizes = {
   },
   font: {
     small: '10px',
-    normal: '12px',
+    normal: '14px',
     big: '18px',
     input: '15px',
     label: '11px',
