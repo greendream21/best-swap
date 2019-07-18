@@ -7,7 +7,7 @@ import asyncComponent from '../../helpers/AsyncFunc';
 const routes = [
   {
     path: '',
-    component: asyncComponent(() => import('../OverView')),
+    component: asyncComponent(() => import('../Home')),
   },
 ];
 
