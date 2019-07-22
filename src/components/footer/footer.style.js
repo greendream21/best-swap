@@ -15,7 +15,6 @@ export const StyledFooter = styled.div`
   background-color: #fff;
 
   .footer-logo {
-    padding-left: 40px;
     cursor: pointer;
     img {
       height: 30px;

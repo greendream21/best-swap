@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "bepswap-react"
+    "default": "bepswap-react",
+    "development": "bepswap-react"
   }
 }

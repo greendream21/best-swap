@@ -1,0 +1,28 @@
+image: node:latest
+
+stages:
+  - test
+  - deploy
+
+cache:
+  paths:
+    - node_modules/
+  key: '$CI_BUILD_REPO'
+
+test:
+  stage: test
+  only:
+    - master
+  script:
+    - yarn
+    - yarn test
+
+deploy:
+  stage: deploy
+  only:
+    - master
+  script:
+    - npm i -g firebase-tools
+    - firebase -V
+    - firebase deploy --token ${FIREBASE_TOKEN} --project development
+  
