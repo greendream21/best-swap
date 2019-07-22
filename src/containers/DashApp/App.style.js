@@ -5,7 +5,7 @@ import { Layout } from 'antd';
 const { Content } = Layout;
 
 export const ContentWrapper = styled(Content)`
-  background: ${palette('primary', 5)};
+  background: ${palette('background', 2)};
   height: calc(
     100vh - ${size('headerHeight', '90px')} - ${size('footerHeight', '90px')}
   );

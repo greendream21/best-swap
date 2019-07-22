@@ -11,7 +11,7 @@ export const StyledHeader = styled.div`
   height: ${size('headerHeight', '90px')};
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   padding: 0 30px;
-  background-color: #fff;
+  background-color: ${palette('background', 0)};
 
   .header-logo {
     cursor: pointer;

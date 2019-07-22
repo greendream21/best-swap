@@ -5,5 +5,5 @@ export const HeaderWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: ${size('contentHeaderHeight', '10px')};
+  height: ${size('panelHeaderHeight', '10px')};
 `;

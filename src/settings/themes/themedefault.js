@@ -9,6 +9,16 @@ theme.palette = {
     'linear-gradient(47.73deg, #50E3C2 0%, #33CCFF 100%)', // 4: Gradient
     '#ECEEEF', // 5: Drag Background
   ],
+  background: [
+    '#fff', // 0: header, footer bg
+    '#fff', // 1: main bg
+    '#F8F9FA', // 2: content bg
+    'rgba(51,204,255,0.1)', // 3: selected bg
+    '#50E3C2', // 4: green button bg
+    '#33CCFF', // 5: lock bg
+    '#ECEEEF', // 6: drag bg
+    'linear-gradient(47.73deg, #50E3C2 0%, #33CCFF 100%)', // 7: gradient bg
+  ],
   secondary: [
     '#2d3446', // 0: DarkBlue
     '#f1f3f6', // 1: LightBluish
@@ -22,21 +32,9 @@ theme.palette = {
     '#E9EBEE', // 9: LighterBluish Darken 3%
     '#1a1a1a', // 10: Sidebar submenu select
   ],
-  color: [
-    '#FEAC01', // 0: Orange
-    '#42299a', // 1: Purple
-    '#F75D81', // 2: Pink
-    '#7ED321', // 3: LimeGreen
-    '#39435f', // 4: BlueShade
-    '#FFCA28', // 5: Yellow
-    '#F2BD1B', // 6: Yellow Darken 5%
-    '#3b5998', // 7: Facebook
-    '#344e86', // 8: Facebook Darken 5%
-    '#dd4b39', // 9: Google Plus
-    '#d73925', // 10: Google Plus Darken 5%
-    '#e14615', // 11: Auth0
-    '#ca3f13', // 12: Auth0
-    '#e0364c', // 13: themeColor--AlizarinCrimson
+  border: [
+    '#ECEEEF', // 0: Border
+    '#33CCFF', // 1: BorderBlue
   ],
   warning: [
     '#F3BA2F', // 0: Warning
@@ -68,17 +66,29 @@ theme.palette = {
     '#9B9B9B', // 5: Input Text
     '#919D9D', // 6: Footer Color
   ],
-  border: [
-    '#ECEEEF', // 0: Border
-    '#33CCFF', // 1: BorderBlue
+  color: [
+    '#FEAC01', // 0: Orange
+    '#42299a', // 1: Purple
+    '#F75D81', // 2: Pink
+    '#7ED321', // 3: LimeGreen
+    '#39435f', // 4: BlueShade
+    '#FFCA28', // 5: Yellow
+    '#F2BD1B', // 6: Yellow Darken 5%
+    '#3b5998', // 7: Facebook
+    '#344e86', // 8: Facebook Darken 5%
+    '#dd4b39', // 9: Google Plus
+    '#d73925', // 10: Google Plus Darken 5%
+    '#e14615', // 11: Auth0
+    '#ca3f13', // 12: Auth0
+    '#e0364c', // 13: themeColor--AlizarinCrimson
   ],
 };
 
 theme.sizes = {
   headerHeight: '90px',
   footerHeight: '50px',
-  contentHeight: '550px',
-  contentHeaderHeight: '50px',
+  panelHeight: '550px',
+  panelHeaderHeight: '50px',
   lineHeight: '50px',
   icon: '35px',
   social: '17px',

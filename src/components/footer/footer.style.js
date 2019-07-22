@@ -12,7 +12,7 @@ export const StyledFooter = styled.div`
   height: ${size('footerHeight', '50px')};
   border-top: 1px solid rgba(0, 0, 0, 0.1);
   padding: 0 30px;
-  background-color: #fff;
+  background-color: ${palette('background', 0)};
 
   .footer-logo {
     cursor: pointer;
