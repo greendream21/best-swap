@@ -5,4 +5,5 @@ const themes = {
   themedefault,
   theme2,
 };
+
 export default themes;

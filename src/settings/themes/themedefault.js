@@ -106,7 +106,7 @@ theme.sizes = {
 };
 
 theme.fonts = {
-  primary: 'Montserrat, Roboto, sans-serif',
+  primary: 'Montserrat Medium, Roboto, sans-serif',
   pre: 'Consolas, Liberation Mono, Menlo, Courier, monospace',
 };
 

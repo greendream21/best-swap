@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { size, key } from 'styled-theme';
+import { palette, size, key } from 'styled-theme';
 
 export const StyledHeader = styled.div`
   display: flex;
@@ -20,6 +20,7 @@ export const StyledHeader = styled.div`
     }
   }
   .header-title {
+    color: ${palette('text', 0)};
     font-size: ${key('sizes.font.input', '11px')};
   }
 `;
