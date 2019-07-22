@@ -30,6 +30,7 @@ export const StyledFooter = styled.div`
       font-family: 'Montserrat Bold';
       font-size: ${key('sizes.font.normal', '12px')};
       color: ${palette('text', 6)};
+      letter-spacing: 1px;
       cursor: pointer;
     }
   }

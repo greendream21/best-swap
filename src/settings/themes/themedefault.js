@@ -7,7 +7,7 @@ theme.palette = {
     '#F0B90B', // 2:
     'rgba(51, 204, 255, 0.1)', // 3: Selected Background
     'linear-gradient(47.73deg, #50E3C2 0%, #33CCFF 100%)', // 4: Gradient
-    '#ECEEEF', // 5: Drag Background
+    '#ECEEEF', // 5: border col
   ],
   background: [
     '#fff', // 0: header, footer bg
@@ -16,7 +16,7 @@ theme.palette = {
     'rgba(51,204,255,0.1)', // 3: selected bg
     '#50E3C2', // 4: green button bg
     '#33CCFF', // 5: lock bg
-    '#ECEEEF', // 6: drag bg
+    '#ECEEEF', // 6: drag, border bg
     'linear-gradient(47.73deg, #50E3C2 0%, #33CCFF 100%)', // 7: gradient bg
   ],
   secondary: [
@@ -58,8 +58,8 @@ theme.palette = {
     '#fcfcfc', // 7: #fff Darken 1%
   ],
   text: [
-    '#848E9C', // 0: Heading
-    '#323C47', // 1: HeadingDark
+    '#323C47', // 0: HeadingDark
+    '#848E9C', // 1: Heading
     '#1C2731', // 2: Active
     '#4A4A4A', // 3: Text Color
     '#B7BBBD', // 4: Darker Text
@@ -92,6 +92,10 @@ theme.sizes = {
   lineHeight: '50px',
   icon: '35px',
   social: '17px',
+  gutter: {
+    horizontal: '30px',
+    vertical: '20px',
+  },
   button: {
     small: {
       width: '55px',
@@ -112,11 +116,12 @@ theme.sizes = {
     big: '18px',
     input: '15px',
     label: '11px',
+    header: '12px',
   },
 };
 
 theme.fonts = {
-  primary: 'Montserrat Medium, Roboto, sans-serif',
+  primary: 'Montserrat Medium, Montserrat Bold, Roboto, sans-serif',
   pre: 'Consolas, Liberation Mono, Menlo, Courier, monospace',
 };
 

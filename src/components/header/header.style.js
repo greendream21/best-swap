@@ -22,5 +22,6 @@ export const StyledHeader = styled.div`
   .header-title {
     color: ${palette('text', 0)};
     font-size: ${key('sizes.font.input', '11px')};
+    letter-spacing: 0.9px;
   }
 `;
