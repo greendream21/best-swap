@@ -15,7 +15,7 @@ test:
     - master
   script:
     - yarn
-    - yarn test
+    - yarn test:ci
 
 deploy:
   stage: deploy
