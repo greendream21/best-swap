@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Home Page renders with default props 1`] = `
+<styled.div>
+  <Row
+    gutter={32}
+  >
+    <Col
+      span={6}
+    >
+      <WalletView />
+    </Col>
+    <Col
+      span={18}
+    >
+      <ActionView />
+    </Col>
+  </Row>
+</styled.div>
+`;
