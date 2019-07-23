@@ -6,4 +6,7 @@ export const HeaderWrapper = styled.div`
   justify-content: space-between;
   align-items: center;
   height: ${size('panelHeaderHeight', '10px')};
+  padding: 0 ${key('sizes.gutter.horizontal', '30px')};
+  margin-top: 3px;
+  border-bottom: 3px solid ${palette('primary', 5)};
 `;

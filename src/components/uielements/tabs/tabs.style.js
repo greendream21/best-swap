@@ -3,7 +3,7 @@ import { size, key, palette } from 'styled-theme';
 
 export const StyledTab = component => styled(component)`
   .ant-tabs-bar {
-    width: 100%;
+    width: ${props => (props.action ? 'auto' : '100%')};
     border-bottom-width: 3px;
     border-color: ${palette('primary', 5)};
     .ant-tabs-nav-container,
@@ -45,7 +45,9 @@ export const StyledTab = component => styled(component)`
 
   .ant-tabs-content {
     width: 100%;
+    height: ${props => (props.action ? '0' : 'auto')};
     padding: ${key('sizes.gutter.vertical', '20px')}
       ${key('sizes.gutter.horizontal', '30px')};
+    ${props => props.action && 'padding: 0 0;'}
   }
 `;

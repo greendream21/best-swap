@@ -90,7 +90,8 @@ theme.sizes = {
   panelHeight: '550px',
   panelHeaderHeight: '50px',
   lineHeight: '50px',
-  icon: '35px',
+  crypto: '35px',
+  icon: '16px',
   social: '17px',
   gutter: {
     horizontal: '30px',
