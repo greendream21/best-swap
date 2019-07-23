@@ -1,7 +1,6 @@
 image: node:latest
 
 stages:
-  - test
   - deploy
 
 cache:
@@ -24,5 +23,5 @@ deploy:
   script:
     - npm i -g firebase-tools
     - firebase -V
-    - firebase deploy --token ${FIREBASE_TOKEN} --project development
+    - firebase deploy --token ${FIREBASE_TOKEN}
   
