@@ -4,10 +4,10 @@ import { Menu, Dropdown, Icon } from 'antd';
 const menu = (
   <Menu>
     <Menu.Item key="0">
-      <a href="#">Profile</a>
+      <a href="/profile">Profile</a>
     </Menu.Item>
     <Menu.Item key="1">
-      <a href="#">Setting</a>
+      <a href="/setting">Setting</a>
     </Menu.Item>
     <Menu.Divider />
     <Menu.Item key="3">Cancel</Menu.Item>
@@ -18,7 +18,7 @@ class HeaderSetting extends Component {
   render() {
     return (
       <Dropdown overlay={menu} trigger={['click']}>
-        <a className="ant-dropdown-link" href="#">
+        <a className="ant-dropdown-link" href="/">
           John Doe
           <Icon type="down" />
         </a>
