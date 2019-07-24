@@ -107,24 +107,24 @@ export const ButtonWrapper = styled(Button)`
     justify-content: space-between;
     align-items: center;
 
-    min-width: ${props => sizes[props.sizeType].width};
-    height: ${props => sizes[props.sizeType].height};
-    font-size: ${props => fontSettings[props.sizeType].size};
+    min-width: ${props => sizes[props.sizevalue].width};
+    height: ${props => sizes[props.sizevalue].height};
+    font-size: ${props => fontSettings[props.sizevalue].size};
     font-weight: ${props => props.weight};
-    letter-spacing: ${props => fontSettings[props.sizeType].spacing};
-    color: ${props => colors[props.color][props.viewType].text};
-    border-color: ${props => colors[props.color][props.viewType].border};
+    letter-spacing: ${props => fontSettings[props.sizevalue].spacing};
+    color: ${props => colors[props.color][props.typevalue].text};
+    border-color: ${props => colors[props.color][props.typevalue].border};
     background-color: ${props =>
-      colors[props.color][props.viewType].background};
+      colors[props.color][props.typevalue].background};
     text-transform: uppercase;
 
     &:hover,
     &:focus {
-      color: ${props => colors[props.color][props.viewType].action.text};
+      color: ${props => colors[props.color][props.typevalue].action.text};
       border-color: ${props =>
-        colors[props.color][props.viewType].action.border};
+        colors[props.color][props.typevalue].action.border};
       background-color: ${props =>
-        colors[props.color][props.viewType].action.background};
+        colors[props.color][props.typevalue].action.background};
     }
 
     i {

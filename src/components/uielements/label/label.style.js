@@ -6,8 +6,8 @@ const fontSettings = {
     size: key('sizes.font.tiny', '8px'),
     spacing: '0.36px',
   },
-  smaller: {
-    size: key('sizes.font.smaller', '10px'),
+  small: {
+    size: key('sizes.font.small', '10px'),
     spacing: '0.42px',
   },
   normal: {
@@ -38,6 +38,7 @@ const colors = {
 };
 
 export const LabelWrapper = styled.div`
+  padding: 10px 0;
   font-size: ${props => fontSettings[props.size].size};
   font-weight: ${props => props.weight};
   letter-spacing: ${props => fontSettings[props.size].spacing};

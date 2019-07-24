@@ -16,71 +16,71 @@ storiesOf('Components/Button', module)
       <ThemeProvider theme={defaultTheme}>
         <AppHolder>
           <Row>
-            <Button sizeType="small" color="primary">
+            <Button sizevalue="small" color="primary">
               Primary Filled Small
             </Button>
-            <Button sizeType="small" color="primary" viewType="outline">
+            <Button sizevalue="small" color="primary" typevalue="outline">
               Primary Outlined Small
             </Button>
-            <Button sizeType="small" color="primary" viewType="ghost">
+            <Button sizevalue="small" color="primary" typevalue="ghost">
               Primary Ghost Small
             </Button>
           </Row>
           <Row>
-            <Button sizeType="normal" color="primary">
+            <Button sizevalue="normal" color="primary">
               Primary Filled Normal
             </Button>
-            <Button sizeType="normal" color="primary" viewType="outline">
+            <Button sizevalue="normal" color="primary" typevalue="outline">
               Primary Outlined Normal
             </Button>
-            <Button sizeType="normal" color="primary" viewType="ghost">
+            <Button sizevalue="normal" color="primary" typevalue="ghost">
               Primary Ghost Normal
             </Button>
           </Row>
           <Row>
-            <Button sizeType="big" color="primary">
+            <Button sizevalue="big" color="primary">
               Primary Filled Big
             </Button>
-            <Button sizeType="big" color="primary" viewType="outline">
+            <Button sizevalue="big" color="primary" typevalue="outline">
               Primary Outlined Big
             </Button>
-            <Button sizeType="big" color="primary" viewType="ghost">
+            <Button sizevalue="big" color="primary" typevalue="ghost">
               Primary Ghost Big
               <Icon type="arrow-right" />
             </Button>
           </Row>
           <Row>
-            <Button sizeType="big" color="success">
+            <Button sizevalue="big" color="success">
               success Filled
             </Button>
-            <Button sizeType="big" color="success" viewType="outline">
+            <Button sizevalue="big" color="success" typevalue="outline">
               success Outlined
             </Button>
-            <Button sizeType="big" color="success" viewType="ghost">
+            <Button sizevalue="big" color="success" typevalue="ghost">
               success Ghost
               <Icon type="arrow-right" />
             </Button>
           </Row>
           <Row>
-            <Button sizeType="big" color="warning">
+            <Button sizevalue="big" color="warning">
               warning Filled
             </Button>
-            <Button sizeType="big" color="warning" viewType="outline">
+            <Button sizevalue="big" color="warning" typevalue="outline">
               warning Outlined
             </Button>
-            <Button sizeType="big" color="warning" viewType="ghost">
+            <Button sizevalue="big" color="warning" typevalue="ghost">
               warning Ghost
               <Icon type="arrow-right" />
             </Button>
           </Row>
           <Row>
-            <Button sizeType="big" color="error">
+            <Button sizevalue="big" color="error">
               error Filled
             </Button>
-            <Button sizeType="big" color="error" viewType="outline">
+            <Button sizevalue="big" color="error" typevalue="outline">
               error Outlined
             </Button>
-            <Button sizeType="big" color="error" viewType="ghost">
+            <Button sizevalue="big" color="error" typevalue="ghost">
               Error Ghost
               <Icon type="arrow-right" />
             </Button>
@@ -99,7 +99,7 @@ storiesOf('Components/Button', module)
     const color = radios('color', colorOptions, 'primary');
     const type = radios('type', typeOptions, 'default');
     return (
-      <Button sizeType={size} color={color} viewType={type}>
+      <Button sizevalue={size} color={color} typevalue={type}>
         {buttonText}
       </Button>
     );

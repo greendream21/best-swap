@@ -28,8 +28,13 @@ class Label extends Component {
   };
 
   render() {
-    const { children, ...props } = this.props;
-    return <LabelWrapper {...props}>{children}</LabelWrapper>;
+    const { children, className = '', ...props } = this.props;
+
+    return (
+      <LabelWrapper className={`label-wrapper ${className}`} {...props}>
+        {children}
+      </LabelWrapper>
+    );
   }
 }
 

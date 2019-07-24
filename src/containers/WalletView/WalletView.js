@@ -14,7 +14,6 @@ class WalletView extends Component {
         <Tabs defaultActiveKey="assets" onChange={this.handleChangeTab}>
           <TabPane tab="assets" key="assets">
             <Label>Connect your wallet</Label>
-            <br />
             <Button color="success">connect</Button>
           </TabPane>
           <TabPane tab="stakes" key="stakes"></TabPane>
