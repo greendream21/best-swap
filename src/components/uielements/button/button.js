@@ -5,17 +5,17 @@ import { ButtonWrapper } from './button.style';
 
 class Button extends Component {
   static propTypes = {
-    size: PropTypes.oneOf(['small', 'normal', 'big']),
+    sizeType: PropTypes.oneOf(['small', 'normal', 'big']),
     color: PropTypes.oneOf(['primary', 'success', 'warning', 'error']),
     weight: PropTypes.string,
-    type: PropTypes.oneOf(['default', 'outline', 'ghost']),
+    viewType: PropTypes.oneOf(['default', 'outline', 'ghost']),
   };
 
   static defaultProps = {
-    size: 'normal',
+    sizeType: 'normal',
     color: 'primary',
     weight: 'bold',
-    type: 'default',
+    viewType: 'default',
   };
 
   render() {

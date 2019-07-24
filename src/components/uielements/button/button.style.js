@@ -102,30 +102,34 @@ const getBtnThemeColor = () => {
 const colors = getBtnThemeColor();
 
 export const ButtonWrapper = styled(Button)`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  min-width: ${props => sizes[props.size].width};
-  height: ${props => sizes[props.size].height};
-  font-size: ${props => fontSettings[props.size].size};
-  font-weight: ${props => props.weight};
-  letter-spacing: ${props => fontSettings[props.size].spacing};
-  color: ${props => colors[props.color][props.type].text};
-  border-color: ${props => colors[props.color][props.type].border};
-  background-color: ${props => colors[props.color][props.type].background};
-  text-transform: uppercase;
-
-  &:hover,
-  &:focus {
-    color: ${props => colors[props.color][props.type].action.text};
-    border-color: ${props => colors[props.color][props.type].action.border};
-    background-color: ${props =>
-      colors[props.color][props.type].action.background};
-  }
-
-  i {
+  &.ant-btn {
     display: flex;
-    font-size: 16px;
+    justify-content: space-between;
+    align-items: center;
+
+    min-width: ${props => sizes[props.sizeType].width};
+    height: ${props => sizes[props.sizeType].height};
+    font-size: ${props => fontSettings[props.sizeType].size};
+    font-weight: ${props => props.weight};
+    letter-spacing: ${props => fontSettings[props.sizeType].spacing};
+    color: ${props => colors[props.color][props.viewType].text};
+    border-color: ${props => colors[props.color][props.viewType].border};
+    background-color: ${props =>
+      colors[props.color][props.viewType].background};
+    text-transform: uppercase;
+
+    &:hover,
+    &:focus {
+      color: ${props => colors[props.color][props.viewType].action.text};
+      border-color: ${props =>
+        colors[props.color][props.viewType].action.border};
+      background-color: ${props =>
+        colors[props.color][props.viewType].action.background};
+    }
+
+    i {
+      display: flex;
+      font-size: 16px;
+    }
   }
 `;
