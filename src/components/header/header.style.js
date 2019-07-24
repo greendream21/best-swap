@@ -25,4 +25,13 @@ export const StyledHeader = styled.div`
     font-size: ${key('sizes.font.big', '15px')};
     letter-spacing: 0.9px;
   }
+
+  .ant-dropdown-link {
+    color: ${palette('success', 0)};
+    i {
+      padding: 0 5px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+  }
 `;

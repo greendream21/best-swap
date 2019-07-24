@@ -24,3 +24,7 @@ yarn-error.log*
 
 # Firebase cache
 /.firebase
+
+# storybook static
+
+/storybook-static

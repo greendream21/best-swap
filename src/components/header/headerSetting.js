@@ -19,7 +19,7 @@ class HeaderSetting extends Component {
     return (
       <Dropdown overlay={menu} trigger={['click']}>
         <a className="ant-dropdown-link" href="/">
-          John Doe
+          <Icon type="check-circle" />
           <Icon type="down" />
         </a>
       </Dropdown>
