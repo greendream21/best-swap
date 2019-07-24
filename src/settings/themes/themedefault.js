@@ -1,3 +1,7 @@
+import { lighten, darken } from 'polished';
+
+const COL_DARKEN_RATE = 0.15;
+const COL_LIGHTEN_RATE = 0.35;
 const theme = {};
 
 theme.palette = {
@@ -13,24 +17,15 @@ theme.palette = {
     '#fff', // 0: header, footer bg
     '#fff', // 1: main bg
     '#F8F9FA', // 2: content bg
-    'rgba(51,204,255,0.1)', // 3: selected bg
+    'rgba(51, 204, 255, 0.1)', // 3: selected bg
     '#50E3C2', // 4: green button bg
     '#33CCFF', // 5: lock bg
     '#ECEEEF', // 6: drag, border bg
     'linear-gradient(47.73deg, #50E3C2 0%, #33CCFF 100%)', // 7: gradient bg
   ],
   secondary: [
-    '#2d3446', // 0: DarkBlue
-    '#f1f3f6', // 1: LightBluish
-    '#788195', // 2: LightBlue
-    '#E4E6E9', // 3: LightBluish Darken 5%
-    '#364d79', // 4:
-    '#202739', // 5: DarkBlue Darken 5%
-    '#f5f6f8', // 6: LighterBluish
-    '#e9ebf1', // 7: DarkBluish
-    '#F6F8FB', // 8: LighterBluish Lighten 2%
-    '#E9EBEE', // 9: LighterBluish Darken 3%
-    '#1a1a1a', // 10: Sidebar submenu select
+    darken(COL_DARKEN_RATE, '#33CCFF'), // darken col
+    lighten(COL_LIGHTEN_RATE, '#33CCFF'), // lighten col
   ],
   border: [
     '#ECEEEF', // 0: Border
@@ -38,14 +33,18 @@ theme.palette = {
   ],
   warning: [
     '#F3BA2F', // 0: Warning
+    darken(COL_DARKEN_RATE, '#F3BA2F'), // darken col
+    lighten(COL_LIGHTEN_RATE, '#F3BA2F'), // lighten col
   ],
   success: [
     '#30D7A9', // 0: Success
+    darken(COL_DARKEN_RATE, '#30D7A9'), // darken col
+    lighten(COL_LIGHTEN_RATE, '#30D7A9'), // lighten col
   ],
   error: [
     '#FF4954', // 0: Error
-    '#EC3D3A', // 1: Darken 4%
-    '#FF5B58', // 2: Lighten 8%
+    darken(COL_DARKEN_RATE, '#FF4954'), // darken col
+    lighten(COL_LIGHTEN_RATE, '#FF4954'), // lighten col
   ],
   grayscale: [
     '#bababa', // 0: GreyShade
@@ -107,7 +106,7 @@ theme.sizes = {
       height: '30px',
     },
     big: {
-      width: '300px',
+      width: '100px',
       height: '50px',
     },
   },
