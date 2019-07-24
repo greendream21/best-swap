@@ -7,7 +7,7 @@ export const ContentWrapper = styled(ContentView)`
     display: flex;
   }
 
-  .pool-content-text {
+  .swap-content-pool-text {
     .label-wrapper {
       padding: 4px 0;
     }
@@ -16,21 +16,16 @@ export const ContentWrapper = styled(ContentView)`
   .rune-diagram-wrapper {
     flex-grow: 1;
     height: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
 
-    .user-avatar-image {
+    .rune-diagram-pool,
+    .rune-diagram-market {
       display: flex;
+      flex-direction: column;
+      justify-content: space-around;
       align-items: center;
-      justify-content: center;
-      height: 100%;
-    }
-    .rune-diagram {
-      .rune-bnb-diagram,
-      .rune-eth-diagram {
-        display: flex;
-        justify-content: space-around;
-        align-items: center;
-        padding: 5px 0;
-      }
     }
   }
 

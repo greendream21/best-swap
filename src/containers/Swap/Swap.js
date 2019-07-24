@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Row, Col, Icon } from 'antd';
+import PropTypes from 'prop-types';
 
 import { ContentWrapper } from './Swap.style';
 import Label from '../../components/uielements/label';
@@ -13,7 +14,13 @@ import {
 } from '../../components/icons';
 
 class Swap extends Component {
+  static propTypes = {
+    onNext: PropTypes.func.isRequired,
+  };
+
   render() {
+    const { onNext } = this.props;
+
     return (
       <ContentWrapper>
         <Row className="swap-content-pool-text">
@@ -51,24 +58,23 @@ class Swap extends Component {
           </Col>
           <Col span={7} offset={2}>
             <Label size="small" color="dark">
-              Since anyone can stake alongside you, you own a share of the pool
-              which adjusts if people join or leave.
+              When you swap. you change the balances of the assets in the pool,
+              creating a <strong>SLIP</strong> since it changes the price.
             </Label>
 
             <Label size="small" color="dark">
-              As a trades happen the asset balances will change, but your share
-              won't.
+              The deeper the pool, or the smaller your transaction, the less
+              slip.
             </Label>
 
             <Label size="small" color="dark">
-              Asset values may also change whilst you stake.
-              <br />
-              You can withdraw your assets plus any earnings at any time.
+              A small fee proportional to the slip is paid to whoever put assets
+              in the pool. Fees are always fair and transparent.
             </Label>
           </Col>
         </Row>
         <Row className="bottom-nav-button">
-          <Button color="primary" typevalue="outline">
+          <Button onClick={onNext} color="primary" typevalue="outline">
             pools
             <Icon type="arrow-right" />
           </Button>

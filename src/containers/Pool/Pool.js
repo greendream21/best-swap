@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Row, Col, Icon } from 'antd';
+import PropTypes from 'prop-types';
 
 import { ContentWrapper } from './Pool.style';
 import Label from '../../components/uielements/label';
@@ -13,10 +14,17 @@ import {
 } from '../../components/icons';
 
 class Pool extends Component {
+  static propTypes = {
+    onNext: PropTypes.func.isRequired,
+    onBack: PropTypes.func.isRequired,
+  };
+
   render() {
+    const { onBack, onNext } = this.props;
+
     return (
       <ContentWrapper>
-        <Row className="pool-content-pool-text">
+        <Row className="pool-content-text">
           <Col span="8">
             <Label size="normal" weight="bold" color="normal">
               POOL
@@ -77,10 +85,10 @@ class Pool extends Component {
           </Col>
         </Row>
         <Row className="bottom-nav-button">
-          <Button color="primary" typevalue="ghost">
+          <Button onClick={onBack} color="primary" typevalue="ghost">
             back
           </Button>
-          <Button color="primary" typevalue="outline">
+          <Button onClick={onNext} color="primary" typevalue="outline">
             trade
             <Icon type="arrow-right" />
           </Button>
