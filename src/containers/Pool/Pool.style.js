@@ -15,19 +15,28 @@ export const ContentWrapper = styled(ContentView)`
 
   .rune-diagram-wrapper {
     flex-grow: 1;
+    height: 100%;
 
-    .rune-diagram-images,
-    .rune-diagram-text {
+    .user-avatar-image {
       display: flex;
-      justify-content: space-around;
       align-items: center;
-      padding: 10px 0;
+      justify-content: center;
+      height: 100%;
+    }
+    .rune-diagram {
+      .rune-bnb-diagram,
+      .rune-eth-diagram {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+      }
     }
   }
 
   .bottom-nav-button {
     display: flex;
     flex-direction: row;
-    justify-content: flex-end;
+    justify-content: space-between;
+    align-items: center;
   }
 `;

@@ -1,53 +1,62 @@
 import React, { Component } from 'react';
 import { Row, Col, Icon } from 'antd';
 
-import { ContentWrapper } from './Swap.style';
+import { ContentWrapper } from './Pool.style';
 import Label from '../../components/uielements/label';
 import Button from '../../components/uielements/button';
 
 import {
   userAvatarIcon,
+  orbBlueIcon,
   orbGreenIcon,
-  arrowGreenIcon,
-  arrowYellowIcon,
+  arrowDashIcon,
 } from '../../components/icons';
 
-class Swap extends Component {
+class Pool extends Component {
   render() {
     return (
       <ContentWrapper>
-        <Row className="swap-content-pool-text">
+        <Row className="pool-content-pool-text">
           <Col span="8">
             <Label size="normal" weight="bold" color="normal">
-              SWAP
+              POOL
             </Label>
             <Label size="small" color="dark">
-              You can swap assets by sending them into pools containing BNB and
-              BEP2 tokens.
+              You can stake your assets in any of the pools.
             </Label>
             <Label size="small" color="dark">
-              Swaps are calculated at prices relative to the ratio of assets in
-              the pools
+              Each trade on the pool earns a commission which you can later
+              claim
             </Label>
             <Label size="small" color="dark">
-              You can swap both ways or swap and send to someone else.
+              Choose pools with low liquidity and high volumn for maximum
+              earnings.
             </Label>
           </Col>
         </Row>
         <Row>
-          <Col span={15} className="rune-diagram-wrapper">
-            <div className="rune-diagram-images">
-              <img src={userAvatarIcon} alt="user-avatar" />
-              <img src={arrowGreenIcon} alt="arrow-green" />
-              <img src={orbGreenIcon} alt="orb-green" />
-              <img src={arrowYellowIcon} alt="arrow-yellow" />
-              <img src={userAvatarIcon} alt="user-avatar" />
-            </div>
-            <div className="rune-diagram-text">
-              <Label size="big" weight="bold">
-                RUNE:BNB
-              </Label>
-            </div>
+          <Col span={15}>
+            <Row className="rune-diagram-wrapper">
+              <Col span={6} className="user-avatar-image">
+                <img src={userAvatarIcon} alt="user-avatar" />
+              </Col>
+              <Col span={18} className="rune-diagram">
+                <div className="rune-bnb-diagram">
+                  <img src={arrowDashIcon} alt="arrow-dash" />
+                  <img src={orbGreenIcon} alt="orb-green" />
+                  <Label size="big" weight="bold">
+                    RUNE:BNB
+                  </Label>
+                </div>
+                <div className="rune-eth-diagram">
+                  <img src={arrowDashIcon} alt="arrow-dash" />
+                  <img src={orbBlueIcon} alt="orb-blue" />
+                  <Label size="big" weight="bold">
+                    RUNE:ETH
+                  </Label>
+                </div>
+              </Col>
+            </Row>
           </Col>
           <Col span={7} offset={2}>
             <Label size="small" color="dark">
@@ -68,8 +77,11 @@ class Swap extends Component {
           </Col>
         </Row>
         <Row className="bottom-nav-button">
+          <Button color="primary" typevalue="ghost">
+            back
+          </Button>
           <Button color="primary" typevalue="outline">
-            pools
+            trade
             <Icon type="arrow-right" />
           </Button>
         </Row>
@@ -78,4 +90,4 @@ class Swap extends Component {
   }
 }
 
-export default Swap;
+export default Pool;
