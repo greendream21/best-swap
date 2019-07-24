@@ -19,9 +19,10 @@ export const StyledHeader = styled.div`
       height: 24px;
     }
   }
+
   .header-title {
-    color: ${palette('text', 0)};
-    font-size: ${key('sizes.font.input', '11px')};
+    color: ${palette('text', 1)};
+    font-size: ${key('sizes.font.big', '15px')};
     letter-spacing: 0.9px;
   }
 `;

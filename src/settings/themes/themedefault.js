@@ -58,12 +58,12 @@ theme.palette = {
     '#fcfcfc', // 7: #fff Darken 1%
   ],
   text: [
-    '#323C47', // 0: HeadingDark
+    '#323C47', // 0: Normal Text (normal)
     '#848E9C', // 1: Heading
-    '#1C2731', // 2: Active
-    '#4A4A4A', // 3: Text Color
-    '#B7BBBD', // 4: Darker Text
-    '#9B9B9B', // 5: Input Text
+    '#1C2731', // 2: Active (dark)
+    '#4A4A4A', // 3: Text Color (light)
+    '#B7BBBD', // 4: Darker Text (gray)
+    '#9B9B9B', // 5: Input Text (input)
     '#919D9D', // 6: Footer Color
   ],
   color: [
@@ -112,12 +112,11 @@ theme.sizes = {
     },
   },
   font: {
-    small: '10px',
-    normal: '14px',
-    big: '18px',
-    input: '15px',
-    label: '11px',
-    header: '12px',
+    tiny: '8px',
+    smaller: '10px',
+    normal: '11px',
+    big: '15px',
+    large: '18px',
   },
 };
 
