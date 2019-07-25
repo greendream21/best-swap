@@ -12,7 +12,7 @@
     "lint": "eslint src/**/*.js",
     "lint:watch": "esw --clear --watch --color src/**/*.js",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook -o ./build/storybook"
   },
   "dependencies": {
     "antd": "^3.20.3",

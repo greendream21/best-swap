@@ -14,7 +14,7 @@ storiesOf('Components/Label', module).add('default', () => {
         <Label size="tiny" color="normal">
           This is the LABEL!
         </Label>
-        <Label size="smaller" color="normal">
+        <Label size="small" color="normal">
           This is the LABEL!
         </Label>
         <Label size="normal" color="normal">
