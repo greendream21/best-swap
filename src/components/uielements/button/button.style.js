@@ -104,7 +104,7 @@ const colors = getBtnThemeColor();
 export const ButtonWrapper = styled(Button)`
   &.ant-btn {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
     align-items: center;
 
     min-width: ${props => sizes[props.sizevalue].width};

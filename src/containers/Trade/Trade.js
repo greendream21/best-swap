@@ -24,7 +24,7 @@ class Trade extends Component {
 
     return (
       <ContentWrapper>
-        <Row className="Trade-content-Trade-text">
+        <Row className="trade-content-text">
           <Col span="8">
             <Label size="normal" weight="bold" color="normal">
               TRADE

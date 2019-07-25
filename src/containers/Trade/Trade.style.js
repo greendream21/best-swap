@@ -7,7 +7,7 @@ export const ContentWrapper = styled(ContentView)`
     display: flex;
   }
 
-  .swap-content-pool-text {
+  .trade-content-text {
     .label-wrapper {
       padding: 4px 0;
     }
