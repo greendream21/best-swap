@@ -12,6 +12,7 @@ import { Pool } from '../Pool';
 import { Trade } from '../Trade';
 import ViewHeader from '../../components/uielements/viewHeader';
 import ConnectView from '../ConnectView';
+import StatsView from '../StatsView';
 
 const { TabPane } = Tabs;
 
@@ -124,6 +125,7 @@ class ActionView extends Component {
           />
         )}
         {view === 'connect' && <ConnectView onUnlock={this.handleUnlock} />}
+        {view === 'stats' && <StatsView />}
       </ActionViewWrapper>
     );
   }
