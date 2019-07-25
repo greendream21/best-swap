@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom';
 
 import { WalletViewWrapper } from './WalletView.style';
 import Tabs from '../../components/uielements/tabs';
@@ -8,13 +9,19 @@ import Button from '../../components/uielements/button';
 const { TabPane } = Tabs;
 
 class WalletView extends Component {
+  handleConnect = () => {
+    this.props.history.push('/connect');
+  };
+
   render() {
     return (
       <WalletViewWrapper>
         <Tabs defaultActiveKey="assets" onChange={this.handleChangeTab}>
           <TabPane tab="assets" key="assets">
             <Label>Connect your wallet</Label>
-            <Button color="success">connect</Button>
+            <Button onClick={this.handleConnect} color="success">
+              connect
+            </Button>
           </TabPane>
           <TabPane tab="stakes" key="stakes"></TabPane>
         </Tabs>
@@ -23,4 +30,4 @@ class WalletView extends Component {
   }
 }
 
-export default WalletView;
+export default withRouter(WalletView);

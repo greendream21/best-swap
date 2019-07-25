@@ -9,6 +9,10 @@ const routes = [
     path: '',
     component: asyncComponent(() => import('../Home')),
   },
+  {
+    path: 'connect',
+    component: asyncComponent(() => import('../Connect')),
+  },
 ];
 
 class AppRouter extends Component {
@@ -18,12 +22,12 @@ class AppRouter extends Component {
     return (
       <div>
         {routes.map(singleRoute => {
-          const { path, exact, ...otherProps } = singleRoute;
+          const { path, exact = true, ...otherProps } = singleRoute;
           return (
             <Route
-              exact={exact === true}
+              exact={exact}
               key={singleRoute.path}
-              path={`${url}/${singleRoute.path}`}
+              path={`${url}${singleRoute.path}`}
               {...otherProps}
             />
           );

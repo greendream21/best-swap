@@ -9,8 +9,7 @@ import asyncComponent from './helpers/AsyncFunc';
 
 const routes = [
   {
-    exact: true,
-    path: '/',
+    path: '',
     component: asyncComponent(() => import('./containers/DashApp')),
   },
   {
@@ -38,13 +37,9 @@ const PublicRoutes = () => {
         <Router>
           <div>
             {routes.map(singleRoute => {
-              const { exact, ...otherProps } = singleRoute;
+              const { exact = false, ...otherProps } = singleRoute;
               return (
-                <Route
-                  exact={exact !== false}
-                  key={singleRoute.path}
-                  {...otherProps}
-                />
+                <Route exact={exact} key={singleRoute.path} {...otherProps} />
               );
             })}
           </div>

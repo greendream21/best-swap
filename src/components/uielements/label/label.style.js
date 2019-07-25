@@ -43,4 +43,5 @@ export const LabelWrapper = styled.div`
   font-weight: ${props => props.weight};
   letter-spacing: ${props => fontSettings[props.size].spacing};
   color: ${props => colors[props.color]};
+  cursor: ${props => props.onClick && 'pointer'};
 `;
