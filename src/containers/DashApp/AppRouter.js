@@ -13,6 +13,10 @@ const routes = [
     path: 'connect',
     component: asyncComponent(() => import('../Connect')),
   },
+  {
+    path: 'stats',
+    component: asyncComponent(() => import('../Stats')),
+  },
 ];
 
 class AppRouter extends Component {

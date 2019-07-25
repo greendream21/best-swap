@@ -60,7 +60,7 @@ class ActionView extends Component {
     const { header } = this.props;
 
     if (header) {
-      return headerData[header];
+      return headerData[header] || '';
     }
     return '';
   };
@@ -76,6 +76,7 @@ class ActionView extends Component {
   };
 
   render() {
+    const { header } = this.props;
     const { activeTab } = this.state;
 
     const headerText = this.getHeaderText();
@@ -84,7 +85,7 @@ class ActionView extends Component {
     return (
       <ActionViewWrapper>
         <PanelHeader>
-          {!headerText && (
+          {!header && (
             <>
               <Tabs
                 activeKey={activeTab}
@@ -100,7 +101,7 @@ class ActionView extends Component {
               </HeaderAction>
             </>
           )}
-          {headerText && (
+          {header && (
             <ViewHeader
               title={headerText}
               actionText="refresh"

@@ -26,7 +26,7 @@ export const StyledFooter = styled.div`
     align-items: center;
     width: 280px;
 
-    div {
+    a {
       font-family: 'Montserrat Bold';
       font-size: ${key('sizes.font.normal', '12px')};
       color: ${palette('text', 6)};
