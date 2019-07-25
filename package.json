@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "fblogin": "firebase login",
     "start": "react-scripts start",
     "build": "CI=true react-scripts build",
     "test": "react-scripts test",

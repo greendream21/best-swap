@@ -1,68 +1,98 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# BEPSwap React Front-End
 
-## Available Scripts
+BEPSwap is UniSwap for BinanceChain. It will be the first go-to market product for THORChain and makes some compromises as to infrastructure and trustlessness. It will only swap BNB and BEP2 assets on Binance Chain using a second layer protocol that moves assets around on BNB accounts.
 
-In the project directory, you can run:
+## Project Setup
 
-### `npm start`
+### Project stack:
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- React / Redux / Redux-Saga
+- Ant Design
+- Styled-components
+- React-Intl
+- Storybook
+- Jest / Enzyme for Unit Test
+- ESLint / Prettier for Code Linting
+- GitLab CI
+- Firebase Hosting
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+### Prerequisites
 
-### `npm test`
+```
+yarn
+node v8^
+firebase-tools
+```
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Project Setup
 
-### `npm run build`
+```
+yarn install
+yarn start
+```
 
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### npm scripts
 
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
+- `fblogin`: firebase login
+- `start`: run in development mode
+- `build`: build react project
+- `test`: unit test with jest / enzyme
+- `storybook`: run storybook for project
+- `build-storybook`: build storybook into the dir `build/storybook`
+- `deploy`: deploy the project on firebase
+- `lint`: lint code with eslint rules
+- `lint:watch` : lint watch mode
+- `eject`: eject CRA (not recommended)
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Example: `yarn start`
 
-### `npm run eject`
+## Running the tests
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+- React unit test with jest/enzyme, react-test-renderer
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```
+yarn test
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## Deployment
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+Firebase deploy:
 
-## Learn More
+```
+yarn deploy
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## CI/CD
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+GitLab CI
 
-### Code Splitting
+- Test
+- Deploy
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
+Main Branch:
+- master
 
-### Analyzing the Bundle Size
+## Internationalization
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
+- [React-Intl](https://github.com/formatjs/react-intl) - React Internationalization Library.
 
-### Making a Progressive Web App
+## Code standard
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
+- [React Airbnb code standard](https://github.com/airbnb/javascript/tree/master/react)
+- [Prettier](https://prettier.io/)
 
-### Advanced Configuration
+## Built With
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
+- [React](https://reactjs.org) - React.JS
+- [Redux](https://github.com/reduxjs/redux) - For react global state management
+- [Styled-components](https://www.styled-components.com/) - Style framework
+- [Storybook](https://storybook.js.org/) - Storybook UI for building components
+- [firebase](https://firebase.google.com/) - FaaS
 
-### Deployment
+## Authors
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
+- **Ben Cochane**
 
-### `npm run build` fails to minify
+## License
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+MIT
