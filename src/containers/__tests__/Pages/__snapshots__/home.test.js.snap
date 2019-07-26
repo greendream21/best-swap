@@ -8,12 +8,12 @@ exports[`Home Page renders with default props 1`] = `
     <Col
       span={6}
     >
-      <WalletView />
+      <withRouter(WalletView) />
     </Col>
     <Col
       span={18}
     >
-      <ActionView />
+      <withRouter(ActionView) />
     </Col>
   </Row>
 </styled.div>
