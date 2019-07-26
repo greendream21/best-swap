@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Icon, Collapse as AntdCollapse } from 'antd';
+import { Collapse as AntdCollapse } from 'antd';
 
 import { CollapseWrapper } from './collapse.style';
 import Label from '../label';
