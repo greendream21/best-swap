@@ -21,6 +21,10 @@ const routes = [
     path: 'faqs',
     component: asyncComponent(() => import('../Faqs')),
   },
+  {
+    path: 'network',
+    component: asyncComponent(() => import('../Network')),
+  },
 ];
 
 class AppRouter extends Component {
