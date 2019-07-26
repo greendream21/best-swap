@@ -26,6 +26,7 @@ theme.palette = {
   secondary: [
     darken(COL_DARKEN_RATE, '#33CCFF'), // darken col
     lighten(COL_LIGHTEN_RATE, '#33CCFF'), // lighten col
+    lighten(0.2, '#33CCFF'), // lighten col
   ],
   border: [
     '#ECEEEF', // 0: Border

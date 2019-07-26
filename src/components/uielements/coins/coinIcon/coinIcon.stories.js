@@ -7,7 +7,7 @@ import { defaultTheme } from '../../../../settings';
 
 import CoinIcon from './coinIcon';
 
-storiesOf('Components/Tokens/Icon', module).add('default', () => {
+storiesOf('Components/Coins/Icon', module).add('default', () => {
   return (
     <ThemeProvider theme={defaultTheme}>
       <AppHolder>
