@@ -1,3 +1,5 @@
+import { fill as _fill } from 'lodash';
+
 export const stats = {
   nodes: [
     {
@@ -38,3 +40,29 @@ export const stats = {
     },
   ],
 };
+
+const tableRowData = {
+  height: '2453',
+  transactions: '2',
+  hash: '1Pbw5XYk3CFZ9n5tSyhCdZVv4z4wBEiUV2',
+};
+
+export const tableData = _fill(Array(6), tableRowData);
+
+export const columns = [
+  {
+    title: 'Height',
+    dataIndex: 'height',
+    key: 'height',
+  },
+  {
+    title: 'Transactions',
+    dataIndex: 'transactions',
+    key: 'transactions',
+  },
+  {
+    title: 'Hash',
+    dataIndex: 'hash',
+    key: 'hash',
+  },
+];
