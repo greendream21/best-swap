@@ -9,7 +9,7 @@ import { defaultTheme } from '../../../settings';
 import StatusGroup from './statusGroup';
 import { stats } from './data';
 
-storiesOf('Components/Label', module).add('default', () => {
+storiesOf('Components/StatusGroup', module).add('default', () => {
   return (
     <ThemeProvider theme={defaultTheme}>
       <AppHolder>

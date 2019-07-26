@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 import Logo from '../uielements/logo';
@@ -15,7 +16,9 @@ class Header extends Component {
 
     return (
       <StyledHeader>
-        <Logo className="header-logo" name="bepswap" type="long" />
+        <Link to="/">
+          <Logo className="header-logo" name="bepswap" type="long" />
+        </Link>
         <p className="header-title">{title}</p>
         <div className="header-right">
           <HeaderSetting />

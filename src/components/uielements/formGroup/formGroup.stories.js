@@ -8,7 +8,7 @@ import { defaultTheme } from '../../../settings';
 
 import FormGroup from './formGroup';
 
-storiesOf('Components/Label', module).add('default', () => {
+storiesOf('Components/FormGroup', module).add('default', () => {
   return (
     <ThemeProvider theme={defaultTheme}>
       <AppHolder>

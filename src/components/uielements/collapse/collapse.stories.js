@@ -8,7 +8,7 @@ import { defaultTheme } from '../../../settings';
 import Collapse from './collapse';
 import { faqs } from './data';
 
-storiesOf('Components/Label', module).add('default', () => {
+storiesOf('Components/Collapse', module).add('default', () => {
   return (
     <ThemeProvider theme={defaultTheme}>
       <AppHolder>
