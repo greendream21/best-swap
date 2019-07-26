@@ -8,3 +8,5 @@ export const themeConfig = {
 };
 
 export const defaultTheme = themes[themeConfig.theme];
+
+export const coinGroup = ['bnb', 'bolt', 'rune', 'ankr', 'ftm', 'tomo'];

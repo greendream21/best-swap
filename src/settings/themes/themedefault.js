@@ -117,6 +117,10 @@ theme.sizes = {
     big: '15px',
     large: '18px',
   },
+  coin: {
+    small: '20px',
+    big: '28px',
+  },
 };
 
 theme.fonts = {
