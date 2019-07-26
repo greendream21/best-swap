@@ -90,7 +90,7 @@ storiesOf('Components/Button', module)
     );
   })
   .add('properties', () => {
-    const buttonText = text('Button Text', 'button', 'button');
+    const buttonText = text('Button Text', 'button');
     const sizeOptions = ['small', 'normal', 'big'];
     const colorOptions = ['primary', 'success', 'warning', 'error'];
     const typeOptions = ['default', 'outline', 'ghost'];
