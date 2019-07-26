@@ -27,6 +27,20 @@ storiesOf('Components/Coins/Coin', module).add('default', () => {
           <Coin type="ftm" size="big" />
           <Coin type="tomo" size="big" />
         </div>
+        <div style={{ display: 'flex' }}>
+          <Coin type="bnb" over="bolt" size="small" />
+          <Coin type="bnb" over="rune" size="small" />
+          <Coin type="bnb" over="ankr" size="small" />
+          <Coin type="bnb" over="ftm" size="small" />
+          <Coin type="bnb" over="tomo" size="small" />
+        </div>
+        <div style={{ display: 'flex' }}>
+          <Coin type="bnb" over="bolt" size="big" />
+          <Coin type="bnb" over="rune" size="big" />
+          <Coin type="bnb" over="ankr" size="big" />
+          <Coin type="bnb" over="ftm" size="big" />
+          <Coin type="bnb" over="tomo" size="big" />
+        </div>
       </AppHolder>
     </ThemeProvider>
   );
