@@ -4,6 +4,8 @@ import { palette } from 'styled-theme';
 export const CoinDataWrapper = styled.div`
   display: flex;
   align-items: ${props => (props.assetValue ? 'flex-end' : 'center')};
+  width: 100%;
+  padding: 0 8px;
 
   .label-wrapper {
     padding: 0;
