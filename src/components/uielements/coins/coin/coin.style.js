@@ -22,6 +22,7 @@ export const CoinsWrapper = styled.div`
   }
 
   .coin-over {
-    left: ${props => (props.size === 'small' ? '-12px' : '-15px')};
+    position: relative;
+    left: ${props => (props.size === 'small' ? '-12px' : '-16px')};
   }
 `;
