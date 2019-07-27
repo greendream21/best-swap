@@ -61,6 +61,7 @@ class CoinList extends Component {
                 target={target}
                 targetValue={targetValue}
                 price={price}
+                size={size}
               />
             </div>
           );

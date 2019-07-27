@@ -16,8 +16,23 @@ storiesOf('Components/Coins/CoinList', module).add('default', () => {
           <div style={{ display: 'inline-block', width: '300px' }}>
             <CoinList data={assetsData} />
           </div>
-          <div style={{ display: 'inline-block', width: '300px' }}>
+          <div style={{ display: 'block', width: '300px' }}>
             <CoinList data={stakeData} />
+          </div>
+        </div>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            width: '800px',
+            marginTop: '20px',
+          }}
+        >
+          <div style={{ display: 'inline-block', width: '300px' }}>
+            <CoinList data={assetsData} size="big" />
+          </div>
+          <div style={{ display: 'block', width: '300px' }}>
+            <CoinList data={stakeData} size="big" />
           </div>
         </div>
       </AppHolder>

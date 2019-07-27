@@ -28,6 +28,14 @@ storiesOf('Components/Coins/CoinData', module).add('default', () => {
             targetValue={0.49555}
             price={217.92}
           />
+          <CoinData
+            asset="bnb"
+            target="bolt"
+            assetValue={2.49274}
+            targetValue={0.49555}
+            price={217.92}
+            size="big"
+          />
         </div>
       </AppHolder>
     </ThemeProvider>

@@ -3,7 +3,8 @@ import { palette } from 'styled-theme';
 
 export const CoinDataWrapper = styled.div`
   display: flex;
-  align-items: ${props => (props.assetValue ? 'flex-end' : 'center')};
+  align-items: ${props =>
+    props.assetValue && props.size === 'small' ? 'flex-end' : 'center'};
   width: 100%;
   padding: 0 8px;
 
@@ -31,5 +32,13 @@ export const CoinDataWrapper = styled.div`
     display: flex;
     flex-grow: 1;
     justify-content: flex-end;
+
+    ${props => props.size === 'big' && 'height: 32px;'}
+    .label-wrapper {
+      ${props =>
+        props.size === 'big' &&
+        `display: flex;
+          align-items: flex-end;`}
+    }
   }
 `;
