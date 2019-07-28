@@ -27,7 +27,7 @@ const routes = [
   },
   {
     path: 'swap',
-    component: asyncComponent(() => import('../pages/Network')),
+    component: asyncComponent(() => import('../pages/Swap')),
   },
 ];
 

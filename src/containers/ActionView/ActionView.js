@@ -7,7 +7,7 @@ import Tabs from '../../components/uielements/tabs';
 import PanelHeader from '../../components/uielements/panelHeader';
 import { headerData } from './data';
 
-import { Swap } from '../Swap';
+import { Swap, SwapView } from '../Swap';
 import { Pool } from '../Pool';
 import { Trade } from '../Trade';
 import ViewHeader from '../../components/uielements/viewHeader';
@@ -56,7 +56,7 @@ class ActionView extends Component {
   };
 
   handleUnlock = () => {
-    console.log('unlock action');
+    this.props.history.push('/swap');
   };
 
   getHeaderText = () => {
@@ -130,6 +130,7 @@ class ActionView extends Component {
         {view === 'stats' && <StatsView />}
         {view === 'faqs' && <FaqsView />}
         {view === 'network' && <NetworkView />}
+        {view === 'swap-view' && <SwapView />}
       </ActionViewWrapper>
     );
   }

@@ -11,10 +11,10 @@ class Swap extends Component {
       <SwapWrapper>
         <Row gutter={32}>
           <Col span={6}>
-            <WalletView />
+            <WalletView status="connected" />
           </Col>
           <Col span={18}>
-            <ActionView header="swap" />
+            <ActionView header="swap-view" />
           </Col>
         </Row>
       </SwapWrapper>

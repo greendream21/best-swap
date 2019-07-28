@@ -12,6 +12,7 @@ export const CoinListWrapper = styled.div`
     justify-content: center;
     align-items: center;
     height: ${props => (props.size === 'small' ? '54px' : '74px')};
+    padding: 0 20px;
     background-color: #fff;
     cursor: pointer;
     ${transition()};

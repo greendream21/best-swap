@@ -46,8 +46,7 @@ export const StyledTab = component => styled(component)`
   .ant-tabs-content {
     width: 100%;
     height: ${props => (props.action ? '0' : 'auto')};
-    padding: ${key('sizes.gutter.vertical', '20px')}
-      ${key('sizes.gutter.horizontal', '30px')};
+    padding: ${key('sizes.gutter.vertical', '20px')} 0;
     ${props => props.action && 'padding: 0 0;'}
   }
 `;
