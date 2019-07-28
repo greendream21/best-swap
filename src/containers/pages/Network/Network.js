@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Row, Col } from 'antd';
 
 import { NetworkWrapper } from './Network.style';
-import ActionView from '../ActionView';
+import ActionView from '../../ActionView';
 
 class Network extends Component {
   render() {

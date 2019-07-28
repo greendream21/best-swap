@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Row, Col } from 'antd';
+import { cloneDeep } from 'lodash';
 
 import { ContentWrapper } from './NetworkView.style';
 import StatusGroup from '../../components/uielements/statusGroup';
@@ -19,7 +20,7 @@ class NetworkView extends Component {
         </Label>
       ),
     };
-    const tableColumns = columns;
+    const tableColumns = cloneDeep(columns);
     tableColumns.push(tableActionColumn);
 
     return (

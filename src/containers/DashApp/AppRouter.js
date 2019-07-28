@@ -7,23 +7,27 @@ import asyncComponent from '../../helpers/AsyncFunc';
 const routes = [
   {
     path: '',
-    component: asyncComponent(() => import('../Home')),
+    component: asyncComponent(() => import('../pages/Home')),
   },
   {
     path: 'connect',
-    component: asyncComponent(() => import('../Connect')),
+    component: asyncComponent(() => import('../pages/Connect')),
   },
   {
     path: 'stats',
-    component: asyncComponent(() => import('../Stats')),
+    component: asyncComponent(() => import('../pages/Stats')),
   },
   {
     path: 'faqs',
-    component: asyncComponent(() => import('../Faqs')),
+    component: asyncComponent(() => import('../pages/Faqs')),
   },
   {
     path: 'network',
-    component: asyncComponent(() => import('../Network')),
+    component: asyncComponent(() => import('../pages/Network')),
+  },
+  {
+    path: 'swap',
+    component: asyncComponent(() => import('../pages/Network')),
   },
 ];
 

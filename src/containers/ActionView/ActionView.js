@@ -44,7 +44,7 @@ class ActionView extends Component {
   };
 
   handleStart = () => {
-    console.log('Start!!!');
+    this.props.history.push('/connect');
   };
 
   handleBack = () => {

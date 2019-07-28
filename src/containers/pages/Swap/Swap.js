@@ -1,25 +1,25 @@
 import React, { Component } from 'react';
 import { Row, Col } from 'antd';
 
-import { HomeWrapper } from './Home.style';
-import WalletView from '../WalletView';
-import ActionView from '../ActionView';
+import { SwapWrapper } from './Swap.style';
+import WalletView from '../../WalletView';
+import ActionView from '../../ActionView';
 
-class Home extends Component {
+class Swap extends Component {
   render() {
     return (
-      <HomeWrapper>
+      <SwapWrapper>
         <Row gutter={32}>
           <Col span={6}>
             <WalletView />
           </Col>
           <Col span={18}>
-            <ActionView />
+            <ActionView header="swap" />
           </Col>
         </Row>
-      </HomeWrapper>
+      </SwapWrapper>
     );
   }
 }
 
-export default Home;
+export default Swap;

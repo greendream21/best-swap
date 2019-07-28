@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Row, Col } from 'antd';
 
 import { StatsWrapper } from './Stats.style';
-import ActionView from '../ActionView';
+import ActionView from '../../ActionView';
 
 class Stats extends Component {
   render() {

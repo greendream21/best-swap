@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Row, Col } from 'antd';
 
 import { FaqsWrapper } from './Faqs.style';
-import ActionView from '../ActionView';
+import ActionView from '../../ActionView';
 
 class Faqs extends Component {
   render() {
