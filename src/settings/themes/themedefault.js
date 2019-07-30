@@ -111,6 +111,10 @@ theme.sizes = {
       height: '50px',
     },
   },
+  tooltip: {
+    small: '15px',
+    normal: '30px',
+  },
   font: {
     tiny: '8px',
     small: '10px',
