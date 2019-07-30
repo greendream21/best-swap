@@ -15,6 +15,7 @@ import ConnectView from '../ConnectView';
 import StatsView from '../StatsView';
 import FaqsView from '../FaqsView';
 import NetworkView from '../NetworkView';
+import TutorialView from '../TutorialView';
 
 const { TabPane } = Tabs;
 
@@ -126,6 +127,7 @@ class ActionView extends Component {
             onNext={this.handleStart}
           />
         )}
+        {view === 'tutorial' && <TutorialView />}
         {view === 'connect' && <ConnectView onUnlock={this.handleUnlock} />}
         {view === 'stats' && <StatsView />}
         {view === 'faqs' && <FaqsView />}
