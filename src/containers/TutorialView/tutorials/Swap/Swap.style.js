@@ -1,33 +1,24 @@
 import styled from 'styled-components';
+import { palette } from 'styled-theme';
 
-import ContentView from '../../../../components/utility/contentView';
-
-export const ContentWrapper = styled(ContentView)`
+export const ContentWrapper = styled.div`
+  display: flex;
+  flex: auto;
   & > .ant-row {
     display: flex;
+    flex: auto;
   }
 
-  .swap-content-pool-text {
+  .intro-text {
+    padding: 20px 20px !important;
+    border-right: 1px solid ${palette('border', 0)};
+
     .label-wrapper {
-      padding: 4px 0;
+      padding: 6px 0;
     }
-  }
 
-  .rune-diagram-wrapper {
-    flex-grow: 1;
-
-    .rune-diagram-images,
-    .rune-diagram-text {
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      padding: 10px 0;
+    .try-btn {
+      margin-top: 14px;
     }
-  }
-
-  .bottom-nav-button {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
   }
 `;

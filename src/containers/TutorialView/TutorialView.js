@@ -5,7 +5,7 @@ import { TutorialViewWrapper } from './TutorialView.style';
 import Tabs from '../../components/uielements/tabs';
 import PanelHeader from '../../components/uielements/panelHeader';
 
-import { Swap, SwapIntro } from './tutorials/Swap';
+import Swap from './tutorials/Swap';
 
 const { TabPane } = Tabs;
 
@@ -40,7 +40,7 @@ class TutorialView extends Component {
             </Tabs>
           </>
         </PanelHeader>
-        {activeTab === 'swap' && <SwapIntro />}
+        {activeTab === 'swap' && <Swap />}
       </TutorialViewWrapper>
     );
   }
