@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
-import { Tooltip } from 'antd';
+import { Popover } from 'antd';
 
-export const TooltipWrapper = styled(Tooltip)`
+export const TooltipWrapper = styled(Popover)`
   display: block;
 `;

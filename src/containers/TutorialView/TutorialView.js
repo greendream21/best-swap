@@ -5,9 +5,7 @@ import { TutorialViewWrapper } from './TutorialView.style';
 import Tabs from '../../components/uielements/tabs';
 import PanelHeader from '../../components/uielements/panelHeader';
 
-import { Swap } from '../Swap';
-import { Pool } from '../Pool';
-import { Trade } from '../Trade';
+import { Swap, SwapIntro } from './tutorials/Swap';
 
 const { TabPane } = Tabs;
 
@@ -42,19 +40,7 @@ class TutorialView extends Component {
             </Tabs>
           </>
         </PanelHeader>
-        {activeTab === 'swap' && <Swap onNext={this.handleSetTab('pools')} />}
-        {activeTab === 'pools' && (
-          <Pool
-            onBack={this.handleSetTab('swap')}
-            onNext={this.handleSetTab('trade')}
-          />
-        )}
-        {activeTab === 'trade' && (
-          <Trade
-            onBack={this.handleSetTab('pools')}
-            onNext={this.handleStart}
-          />
-        )}
+        {activeTab === 'swap' && <SwapIntro />}
       </TutorialViewWrapper>
     );
   }

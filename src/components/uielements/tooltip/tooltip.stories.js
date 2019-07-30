@@ -13,7 +13,7 @@ storiesOf('Components/ToolTip', module).add('default', () => {
     <ThemeProvider theme={defaultTheme}>
       <AppHolder>
         <div>
-          <Tooltip placement="bottomLeft" text="this is tooltip text!">
+          <Tooltip placement="bottomLeft" content="This is tooltip text">
             <Button>Hover me</Button>
           </Tooltip>
         </div>
