@@ -43,7 +43,7 @@ class Swap extends Component {
     this.props.history.push(URL);
   };
 
-  renderFlow = () => {
+  renderFlow = (view, data) => {
     return (
       <div className="swap-flow-wrapper">
         <Centered>
@@ -71,8 +71,19 @@ class Swap extends Component {
           <img src={arrowYellowIcon} alt="arrow-yello" />
         </div>
         <Centered>
-          <Label size="large" color="normal" weight="bold">
-            1,000,000
+          <Label
+            className={view === 'play' && 'contains-tooltip'}
+            size="large"
+            color="normal"
+            weight="bold"
+          >
+            {view === 'play' && (
+              <TooltipIcon
+                text="The balances of the pool change."
+                placement="leftTop"
+              />
+            )}
+            {data[0][0]}
           </Label>
           <Label size="large" color="normal" weight="bold">
             :
@@ -83,16 +94,30 @@ class Swap extends Component {
             color="normal"
             weight="bold"
           >
-            1000
-            <TooltipIcon text="Pools contain assets." placement="rightTop" />
+            {data[0][1]}
+            {view === 'intro' && (
+              <TooltipIcon text="Pools contain assets." placement="rightTop" />
+            )}
+            {view === 'play' && (
+              <TooltipIcon
+                text="A small fee is retained in the pool to pay stakers."
+                placement="rightTop"
+              />
+            )}
           </Label>
         </Centered>
         <Centered>
-          <Label className="contains-tooltip" size="large" color="normal">
-            <TooltipIcon
-              text="The value of assets must always be equal."
-              placement="leftTop"
-            />
+          <Label
+            className={view === 'intro' && 'contains-tooltip'}
+            size="large"
+            color="normal"
+          >
+            {view === 'intro' && (
+              <TooltipIcon
+                text="The value of assets must always be equal."
+                placement="leftTop"
+              />
+            )}
             $40,000.00
           </Label>
           <Label size="large" color="normal" />
@@ -106,11 +131,19 @@ class Swap extends Component {
           </Label>
           <Label size="large" color="normal" />
           <Label className="contains-tooltip" size="large" color="normal">
-            $40.00
-            <TooltipIcon
-              text="The price of the asset is based on the value of RUNE."
-              placement="rightTop"
-            />
+            {data[2][1]}
+            {view === 'play' && (
+              <TooltipIcon
+                text="The price of the asset changes slightly due to the pool slip."
+                placement="rightTop"
+              />
+            )}
+            {view === 'intro' && (
+              <TooltipIcon
+                text="The price of the asset is based on the value of RUNE."
+                placement="rightTop"
+              />
+            )}
           </Label>
         </Centered>
         <Centered>
@@ -149,6 +182,12 @@ class Swap extends Component {
   };
 
   renderPlay = () => {
+    const playData = [
+      ['1,001,000', '999.1'],
+      ['$40,000.00', '$40,000.00'],
+      ['$0.04', '$39.44'],
+    ];
+
     return (
       <div className="swap-play-wrapper">
         <div className="token-swap-wrapper">
@@ -159,7 +198,7 @@ class Swap extends Component {
             price={0.04}
           />
         </div>
-        {this.renderFlow()}
+        {this.renderFlow('play', playData)}
         <div className="token-receive-wrapper">
           <CoinInput
             title="Select token to receive:"
@@ -170,6 +209,7 @@ class Swap extends Component {
             reverse
           />
           <TooltipIcon
+            className="token-receiver-tooltip"
             text="The assets you receive are based on depth of the pool and trade slip."
             placement="rightTop"
           />
@@ -180,6 +220,11 @@ class Swap extends Component {
 
   render() {
     const { view } = this.props;
+    const introData = [
+      ['1,000,000', '1000'],
+      ['$40,000.00', '$40,000.00'],
+      ['$0.04', '$40.00'],
+    ];
 
     return (
       <ContentWrapper className="tutorial-swap-wrapper">
@@ -228,7 +273,7 @@ class Swap extends Component {
           </Col>
           <Col span="20" className="tutorial-content">
             <Row className="tutorial-flow">
-              {view === 'intro' && this.renderFlow()}
+              {view === 'intro' && this.renderFlow('intro', introData)}
               {view === 'play' && this.renderPlay()}
             </Row>
             {view === 'play' && this.renderButtons()}

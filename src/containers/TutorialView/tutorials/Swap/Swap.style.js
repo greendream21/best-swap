@@ -67,6 +67,10 @@ export const ContentWrapper = styled.div`
       justify-content: space-between;
       width: 100%;
       padding: 10px 20px;
+
+      .token-receiver-tooltip {
+        margin-left: auto;
+      }
     }
   }
 
