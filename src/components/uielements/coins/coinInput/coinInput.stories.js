@@ -14,7 +14,12 @@ storiesOf('Components/Coins/CoinInput', module).add('default', () => {
         <div
           style={{ display: 'flex', flexDirection: 'column', width: '300px' }}
         >
-          <CoinInput asset="rune" amount={10000} price={0.04} />
+          <CoinInput
+            title="Select token to swap:"
+            asset="rune"
+            amount={10000}
+            price={0.04}
+          />
         </div>
       </AppHolder>
     </ThemeProvider>

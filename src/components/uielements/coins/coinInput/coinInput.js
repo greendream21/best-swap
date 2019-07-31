@@ -32,11 +32,11 @@ class CoinInput extends Component {
 
     return (
       <CoinInputWrapper className={`CoinInput-wrapper ${className}`} {...props}>
-        <Label className="title-label" weight="bold">
+        <Label className="title-label" color="light" weight="bold">
           {title}
         </Label>
         <CoinButton className="coin-button" cointype={asset} />
-        <Label className="amount-label" weight="bold">
+        <Label className="amount-label" color="light" weight="bold">
           Set amount:
         </Label>
         <div className="amount-wrapper">
