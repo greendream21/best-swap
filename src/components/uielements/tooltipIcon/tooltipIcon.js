@@ -21,7 +21,7 @@ class TooltipIcon extends Component {
     const { text, className = '', ...props } = this.props;
 
     const tooltipContent = (
-      <div style={{ width: '200px', fontFamily: 'Montserrat' }}>{text}</div>
+      <div style={{ width: '150px', fontFamily: 'Montserrat' }}>{text}</div>
     );
 
     return (

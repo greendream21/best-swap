@@ -39,7 +39,7 @@ class CoinInput extends Component {
       ...props
     } = this.props;
 
-    const totalPrice = amount * price;
+    const totalPrice = (amount * price).toFixed(2);
     const priceLabel = `$${totalPrice} (USD)`;
 
     return (
