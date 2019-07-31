@@ -30,6 +30,7 @@ storiesOf('Components/Coins/CoinInput', module).add('default', () => {
             asset="rune"
             amount={10000}
             price={0.04}
+            slip={1}
             reverse
           />
         </div>

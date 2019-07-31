@@ -13,6 +13,7 @@ class CoinInput extends Component {
     asset: PropTypes.oneOf(coinGroup),
     amount: PropTypes.number,
     price: PropTypes.number,
+    slip: PropTypes.number,
     reverse: PropTypes.bool,
     className: PropTypes.string,
   };
@@ -22,12 +23,21 @@ class CoinInput extends Component {
     asset: 'bnb',
     amount: 0,
     price: 1,
+    slip: null,
     reverse: false,
     className: '',
   };
 
   render() {
-    const { title, asset, amount, price, className, ...props } = this.props;
+    const {
+      title,
+      asset,
+      amount,
+      price,
+      slip,
+      className,
+      ...props
+    } = this.props;
 
     const totalPrice = amount * price;
     const priceLabel = `$${totalPrice} (USD)`;
@@ -57,6 +67,11 @@ class CoinInput extends Component {
         <Label className="asset-price-label" color="gray">
           {priceLabel}
         </Label>
+        {slip && (
+          <Label className="asset-price-label" color="gray">
+            SLIP: {slip} %
+          </Label>
+        )}
       </CoinInputWrapper>
     );
   }
