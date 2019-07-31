@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { InputNumber } from 'antd';
 
 import { CoinInputWrapper } from './coinInput.style';
 import { coinGroup } from '../../../../settings';
 import CoinButton from '../coinButton';
+import InputNumber from '../../inputNumber';
 import Label from '../../label';
 
 class CoinInput extends Component {
@@ -13,6 +13,7 @@ class CoinInput extends Component {
     asset: PropTypes.oneOf(coinGroup),
     amount: PropTypes.number,
     price: PropTypes.number,
+    reverse: PropTypes.bool,
     className: PropTypes.string,
   };
 
@@ -21,6 +22,7 @@ class CoinInput extends Component {
     asset: 'bnb',
     amount: 0,
     price: 1,
+    reverse: false,
     className: '',
   };
 
@@ -35,7 +37,9 @@ class CoinInput extends Component {
         <Label className="title-label" color="light" weight="bold">
           {title}
         </Label>
-        <CoinButton className="coin-button" cointype={asset} />
+        <div className="coin-button-wrapper">
+          <CoinButton className="coin-button" cointype={asset} />
+        </div>
         <Label className="amount-label" color="light" weight="bold">
           Set amount:
         </Label>
