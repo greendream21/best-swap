@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom';
 import { Row, Col } from 'antd';
 
 import { TutorialWrapper } from './Tutorial.style';
@@ -6,11 +7,13 @@ import TutorialView from '../../TutorialView';
 
 class Tutorial extends Component {
   render() {
+    const { type } = this.props.match.params;
+
     return (
       <TutorialWrapper>
         <Row gutter={32}>
           <Col span={24}>
-            <TutorialView />
+            <TutorialView type={type} />
           </Col>
         </Row>
       </TutorialWrapper>
@@ -18,4 +21,4 @@ class Tutorial extends Component {
   }
 }
 
-export default Tutorial;
+export default withRouter(Tutorial);

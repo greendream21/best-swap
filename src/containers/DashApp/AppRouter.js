@@ -10,7 +10,7 @@ const routes = [
     component: asyncComponent(() => import('../pages/Home')),
   },
   {
-    path: 'tutorial',
+    path: 'tutorial/:type?',
     component: asyncComponent(() => import('../pages/Tutorial')),
   },
   {

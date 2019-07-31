@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 import { TutorialViewWrapper } from './TutorialView.style';
 import Tabs from '../../components/uielements/tabs';
@@ -10,37 +11,44 @@ import Swap from './tutorials/Swap';
 const { TabPane } = Tabs;
 
 class TutorialView extends Component {
-  state = {
-    activeTab: 'swap',
+  static propTypes = {
+    type: PropTypes.string,
+  };
+
+  static defaultProps = {
+    type: 'swap',
   };
 
   handleChangeTab = activeTab => {
-    this.setState({
-      activeTab,
-    });
+    this.goToTutorial(activeTab);
   };
 
   handleSetTab = activeTab => () => {
-    this.setState({
-      activeTab,
-    });
+    this.goToTutorial(activeTab);
+  };
+
+  goToTutorial = type => {
+    const URL = `/tutorial/${type}`;
+
+    this.props.history.push(URL);
   };
 
   render() {
-    const { activeTab } = this.state;
+    const { type } = this.props;
 
+    console.log(type);
     return (
       <TutorialViewWrapper>
         <PanelHeader>
           <>
-            <Tabs activeKey={activeTab} onChange={this.handleChangeTab} action>
+            <Tabs activeKey={type} onChange={this.handleChangeTab} action>
               <TabPane tab="swap" key="swap" />
-              <TabPane tab="pools" key="pools" />
+              <TabPane tab="pool" key="pool" />
               <TabPane tab="trade" key="trade" />
             </Tabs>
           </>
         </PanelHeader>
-        {activeTab === 'swap' && <Swap />}
+        {type === 'swap' && <Swap />}
       </TutorialViewWrapper>
     );
   }
