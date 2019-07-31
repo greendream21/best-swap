@@ -6,13 +6,18 @@ export const CenteredWrapper = styled.div`
   justify-content: center;
   align-items: center;
 
+  & > div {
+    display: flex;
+    align-items: center;
+  }
+
   & > div:nth-child(2) {
-    width: 10px;
-    text-align: center;
+    width: 20px;
+    justify-content: center;
   }
   & > div:first-child {
+    justify-content: flex-end;
     width: 50%;
-    text-align: right;
   }
   & > div:last-child {
     width: 50%;

@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
-import { Row, Col, Icon } from 'antd';
+import { Row, Col } from 'antd';
 import PropTypes from 'prop-types';
 
 import { ContentWrapper } from './Swap.style';
+import Centered from '../../../../components/utility/centered';
 import Label from '../../../../components/uielements/label';
 import Button from '../../../../components/uielements/button';
+import TooltipIcon from '../../../../components/uielements/tooltipIcon';
 
 import {
-  userAvatarIcon,
   orbGreenIcon,
   arrowGreenIcon,
   arrowYellowIcon,
@@ -26,6 +27,93 @@ class Swap extends Component {
     this.setState({
       tried: true,
     });
+  };
+
+  renderFlow = () => {
+    return (
+      <div className="swap-flow-wrapper">
+        <Centered>
+          <Label size="large" color="normal" weight="bold">
+            RUNE
+          </Label>
+          <Label size="large" color="normal" weight="bold">
+            :
+          </Label>
+          <Label size="large" color="normal" weight="bold">
+            BNB
+          </Label>
+        </Centered>
+        <Label
+          className="header-label"
+          size="normal"
+          color="normal"
+          weight="bold"
+        >
+          POOL
+        </Label>
+        <div className="swap-flow-diagram">
+          <img src={arrowGreenIcon} alt="arrow-green" />
+          <img src={orbGreenIcon} alt="arrow-green" />
+          <img src={arrowYellowIcon} alt="arrow-yello" />
+        </div>
+        <Centered>
+          <Label size="large" color="normal" weight="bold">
+            1,000,000
+          </Label>
+          <Label size="large" color="normal" weight="bold">
+            :
+          </Label>
+          <Label
+            className="contains-tooltip"
+            size="large"
+            color="normal"
+            weight="bold"
+          >
+            1000
+            <TooltipIcon content="Pools contain assets." placement="rightTop" />
+          </Label>
+        </Centered>
+        <Centered>
+          <Label className="contains-tooltip" size="large" color="normal">
+            <TooltipIcon
+              content="The value of assets must always be equal."
+              placement="leftTop"
+            />
+            $40,000.00
+          </Label>
+          <Label size="large" color="normal" />
+          <Label size="large" color="normal">
+            $40,000.00
+          </Label>
+        </Centered>
+        <Centered>
+          <Label size="large" color="normal">
+            $0.04
+          </Label>
+          <Label size="large" color="normal" />
+          <Label className="contains-tooltip" size="large" color="normal">
+            $40.00
+            <TooltipIcon
+              content="The price of the asset is based on the value of RUNE."
+              placement="rightTop"
+            />
+          </Label>
+        </Centered>
+        <Centered>
+          <Label size="normal" color="normal">
+            RUNE Price
+            <br />
+            (external)
+          </Label>
+          <Label size="normal" color="normal" />
+          <Label size="normal" color="normal">
+            BNB Price
+            <br />
+            (pool)
+          </Label>
+        </Centered>
+      </div>
+    );
   };
 
   render() {
@@ -76,7 +164,9 @@ class Swap extends Component {
               </>
             )}
           </Col>
-          <Col span="20" className="tutorial-content"></Col>
+          <Col span="20" className="tutorial-content">
+            {this.renderFlow()}
+          </Col>
         </Row>
       </ContentWrapper>
     );

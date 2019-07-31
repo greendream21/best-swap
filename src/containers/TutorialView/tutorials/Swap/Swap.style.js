@@ -21,4 +21,40 @@ export const ContentWrapper = styled.div`
       margin-top: 14px;
     }
   }
+
+  .tutorial-content {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+
+    .swap-flow-wrapper {
+      width: 400px;
+      padding: 30px 0;
+
+      .label-wrapper {
+        &.header-label {
+          padding-top: 0px;
+          letter-spacing: 2px;
+        }
+
+        &.contains-tooltip {
+          justify-content: space-between;
+        }
+      }
+
+      & > div {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .swap-flow-diagram {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        width: 100%;
+        padding: 20px 0;
+      }
+    }
+  }
 `;
