@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 
 import { CoinButtonWrapper } from './coinButton.style';
 import CoinIcon from '../coinIcon';
-import Label from '../../label';
 import { coinGroup } from '../../../../settings';
 
 class CoinButton extends Component {

@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { size, key, palette } from 'styled-theme';
+import { key, palette } from 'styled-theme';
 import { Table } from 'antd';
 
 export const TableWrapper = styled(Table)`

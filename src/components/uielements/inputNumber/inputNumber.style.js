@@ -17,12 +17,6 @@ const fontSettings = {
   },
 };
 
-const sizes = {
-  small: '20px',
-  default: '25px',
-  large: '30px',
-};
-
 const colors = {
   primary: palette('primary', 0),
   success: palette('success', 0),
