@@ -7,13 +7,13 @@ import TutorialView from '../../TutorialView';
 
 class Tutorial extends Component {
   render() {
-    const { type } = this.props.match.params;
+    const { type, view } = this.props.match.params;
 
     return (
       <TutorialWrapper>
         <Row gutter={32}>
           <Col span={24}>
-            <TutorialView type={type} />
+            <TutorialView type={type} view={view} />
           </Col>
         </Row>
       </TutorialWrapper>

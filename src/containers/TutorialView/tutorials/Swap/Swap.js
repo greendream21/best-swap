@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom';
 import { Row, Col, Icon } from 'antd';
 import PropTypes from 'prop-types';
 
@@ -17,22 +18,30 @@ import CoinInput from '../../../../components/uielements/coins/coinInput';
 
 class Swap extends Component {
   static propTypes = {
-    onNext: PropTypes.func.isRequired,
+    view: PropTypes.string,
   };
 
-  state = {
-    play: false,
+  static defaultProps = {
+    view: 'intro',
   };
 
   handleTry = () => {
-    this.setState({
-      play: true,
-    });
+    const URL = '/tutorial/swap/play';
+
+    this.props.history.push(URL);
   };
 
-  handleBack = () => {};
+  handleBack = () => {
+    const URL = '/tutorial/swap/intro';
 
-  handleGotoDouble = () => {};
+    this.props.history.push(URL);
+  };
+
+  handleGotoDouble = () => {
+    const URL = '/tutorial/swap/doubleintro';
+
+    this.props.history.push(URL);
+  };
 
   renderFlow = () => {
     return (
@@ -170,7 +179,7 @@ class Swap extends Component {
   };
 
   render() {
-    const { play } = this.state;
+    const { view } = this.props;
 
     return (
       <ContentWrapper className="tutorial-swap-wrapper">
@@ -190,7 +199,7 @@ class Swap extends Component {
             <Label size="small" color="dark">
               You can swap both ways, or swap and send to someone else.
             </Label>
-            {!play && (
+            {view === 'intro' && (
               <Button
                 className="try-btn"
                 onClick={this.handleTry}
@@ -199,7 +208,7 @@ class Swap extends Component {
                 try
               </Button>
             )}
-            {play && (
+            {view === 'play' && (
               <>
                 <Label size="small" color="dark">
                   When you swap, you change the balances of the assets in the
@@ -219,10 +228,10 @@ class Swap extends Component {
           </Col>
           <Col span="20" className="tutorial-content">
             <Row className="tutorial-flow">
-              {!play && this.renderFlow()}
-              {play && this.renderPlay()}
+              {view === 'intro' && this.renderFlow()}
+              {view === 'play' && this.renderPlay()}
             </Row>
-            {play && this.renderButtons()}
+            {view === 'play' && this.renderButtons()}
           </Col>
         </Row>
       </ContentWrapper>
@@ -230,4 +239,4 @@ class Swap extends Component {
   }
 }
 
-export default Swap;
+export default withRouter(Swap);

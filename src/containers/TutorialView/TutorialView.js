@@ -13,10 +13,12 @@ const { TabPane } = Tabs;
 class TutorialView extends Component {
   static propTypes = {
     type: PropTypes.string,
+    view: PropTypes.string,
   };
 
   static defaultProps = {
     type: 'swap',
+    view: 'intro',
   };
 
   handleChangeTab = activeTab => {
@@ -34,9 +36,8 @@ class TutorialView extends Component {
   };
 
   render() {
-    const { type } = this.props;
+    const { type, view } = this.props;
 
-    console.log(type);
     return (
       <TutorialViewWrapper>
         <PanelHeader>
@@ -48,7 +49,7 @@ class TutorialView extends Component {
             </Tabs>
           </>
         </PanelHeader>
-        {type === 'swap' && <Swap />}
+        {type === 'swap' && <Swap view={view} />}
       </TutorialViewWrapper>
     );
   }
