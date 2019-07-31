@@ -7,19 +7,26 @@ import Button from '../button';
 
 class TooltipIcon extends Component {
   static propTypes = {
+    text: PropTypes.string,
     className: PropTypes.string,
   };
 
   static defaultProps = {
+    text: '',
     size: 'normal',
     className: '',
   };
 
   render() {
-    const { className = '', ...props } = this.props;
+    const { text, className = '', ...props } = this.props;
+
+    const tooltipContent = (
+      <div style={{ width: '200px', fontFamily: 'Montserrat' }}>{text}</div>
+    );
 
     return (
       <TooltipIconWrapper
+        content={tooltipContent}
         className={`tooltipIcon-wrapper ${className}`}
         {...props}
       >

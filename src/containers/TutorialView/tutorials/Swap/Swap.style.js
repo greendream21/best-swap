@@ -24,8 +24,13 @@ export const ContentWrapper = styled.div`
 
   .tutorial-content {
     display: flex;
-    flex-direction: row;
-    justify-content: space-around;
+    flex-direction: column;
+
+    .tutorial-flow {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+    }
 
     .swap-flow-wrapper {
       width: 400px;
@@ -55,6 +60,25 @@ export const ContentWrapper = styled.div`
         width: 100%;
         padding: 20px 0;
       }
+    }
+
+    .swap-play-wrapper {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      padding: 10px 20px;
+    }
+  }
+
+  .bottom-nav-button {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 20px;
+
+    button {
+      width: 130px;
     }
   }
 `;

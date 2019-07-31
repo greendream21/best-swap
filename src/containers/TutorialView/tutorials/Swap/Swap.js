@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Row, Col } from 'antd';
+import { Row, Col, Icon } from 'antd';
 import PropTypes from 'prop-types';
 
 import { ContentWrapper } from './Swap.style';
@@ -13,6 +13,7 @@ import {
   arrowGreenIcon,
   arrowYellowIcon,
 } from '../../../../components/icons';
+import CoinInput from '../../../../components/uielements/coins/coinInput';
 
 class Swap extends Component {
   static propTypes = {
@@ -20,14 +21,18 @@ class Swap extends Component {
   };
 
   state = {
-    tried: false,
+    play: false,
   };
 
   handleTry = () => {
     this.setState({
-      tried: true,
+      play: true,
     });
   };
+
+  handleBack = () => {};
+
+  handleGotoDouble = () => {};
 
   renderFlow = () => {
     return (
@@ -70,13 +75,13 @@ class Swap extends Component {
             weight="bold"
           >
             1000
-            <TooltipIcon content="Pools contain assets." placement="rightTop" />
+            <TooltipIcon text="Pools contain assets." placement="rightTop" />
           </Label>
         </Centered>
         <Centered>
           <Label className="contains-tooltip" size="large" color="normal">
             <TooltipIcon
-              content="The value of assets must always be equal."
+              text="The value of assets must always be equal."
               placement="leftTop"
             />
             $40,000.00
@@ -94,7 +99,7 @@ class Swap extends Component {
           <Label className="contains-tooltip" size="large" color="normal">
             $40.00
             <TooltipIcon
-              content="The price of the asset is based on the value of RUNE."
+              text="The price of the asset is based on the value of RUNE."
               placement="rightTop"
             />
           </Label>
@@ -116,8 +121,56 @@ class Swap extends Component {
     );
   };
 
+  renderButtons = () => {
+    return (
+      <Row className="bottom-nav-button">
+        <Button onClick={this.handleBack} color="primary" typevalue="ghost">
+          back
+        </Button>
+        <Button
+          onClick={this.handleGotoDouble}
+          color="primary"
+          typevalue="outline"
+        >
+          Double
+          <Icon type="arrow-right" />
+        </Button>
+      </Row>
+    );
+  };
+
+  renderPlay = () => {
+    return (
+      <div className="swap-play-wrapper">
+        <div className="token-swap-wrapper">
+          <CoinInput
+            title="Select token to swap:"
+            asset="rune"
+            amount={10000}
+            price={0.04}
+          />
+        </div>
+        {this.renderFlow()}
+        <div className="token-receive-wrapper">
+          <CoinInput
+            title="Select token to receive:"
+            asset="bnb"
+            amount={8.9}
+            price={45}
+            slip={1}
+            reverse
+          />
+          <TooltipIcon
+            text="The assets you receive are based on depth of the pool and trade slip."
+            placement="rightTop"
+          />
+        </div>
+      </div>
+    );
+  };
+
   render() {
-    const { tried } = this.state;
+    const { play } = this.state;
 
     return (
       <ContentWrapper className="tutorial-swap-wrapper">
@@ -137,7 +190,7 @@ class Swap extends Component {
             <Label size="small" color="dark">
               You can swap both ways, or swap and send to someone else.
             </Label>
-            {!tried && (
+            {!play && (
               <Button
                 className="try-btn"
                 onClick={this.handleTry}
@@ -146,7 +199,7 @@ class Swap extends Component {
                 try
               </Button>
             )}
-            {tried && (
+            {play && (
               <>
                 <Label size="small" color="dark">
                   When you swap, you change the balances of the assets in the
@@ -165,7 +218,11 @@ class Swap extends Component {
             )}
           </Col>
           <Col span="20" className="tutorial-content">
-            {this.renderFlow()}
+            <Row className="tutorial-flow">
+              {!play && this.renderFlow()}
+              {play && this.renderPlay()}
+            </Row>
+            {play && this.renderButtons()}
           </Col>
         </Row>
       </ContentWrapper>

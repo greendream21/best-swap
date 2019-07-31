@@ -12,7 +12,7 @@ storiesOf('Components/ToolTipIcon', module).add('default', () => {
     <ThemeProvider theme={defaultTheme}>
       <AppHolder>
         <div>
-          <TooltipIcon content="this is tooltip" placement="bottomRight" />
+          <TooltipIcon text="this is tooltip" placement="bottomRight" />
         </div>
       </AppHolder>
     </ThemeProvider>
