@@ -119,12 +119,14 @@ export const ButtonWrapper = styled(Button)`
     text-transform: uppercase;
 
     &:hover,
+    &:active,
     &:focus {
-      color: ${props => colors[props.color][props.typevalue].action.text};
+      color: ${props =>
+        colors[props.color][props.typevalue].action.text} !important;
       border-color: ${props =>
-        colors[props.color][props.typevalue].action.border};
+        colors[props.color][props.typevalue].action.border} !important;
       background-color: ${props =>
-        colors[props.color][props.typevalue].action.background};
+        colors[props.color][props.typevalue].action.background} !important;
     }
 
     i {

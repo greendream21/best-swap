@@ -48,7 +48,12 @@ class CoinInput extends Component {
           {title}
         </Label>
         <div className="coin-button-wrapper">
-          <CoinButton className="coin-button" cointype={asset} />
+          <CoinButton
+            className="coin-button"
+            cointype={asset}
+            reversed={this.props.reverse}
+            focused
+          />
         </div>
         <Label className="amount-label" color="light" weight="bold">
           Set amount:

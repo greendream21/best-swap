@@ -9,22 +9,25 @@ class CoinButton extends Component {
   static propTypes = {
     cointype: PropTypes.oneOf(coinGroup),
     typevalue: PropTypes.string,
+    reversed: PropTypes.bool,
     className: PropTypes.string,
   };
 
   static defaultProps = {
     cointype: 'bnb',
     typevalue: 'ghost',
+    reversed: false,
     className: '',
   };
 
   render() {
-    const { cointype, className, ...props } = this.props;
+    const { cointype, reversed, className, ...props } = this.props;
 
     return (
       <CoinButtonWrapper
         className={`coinButton-wrapper ${className}`}
         sizevalue="big"
+        reversed={reversed}
         {...props}
       >
         <CoinIcon type={cointype} />

@@ -9,6 +9,9 @@ class Button extends Component {
     color: PropTypes.oneOf(['primary', 'success', 'warning', 'error']),
     weight: PropTypes.string,
     typevalue: PropTypes.oneOf(['default', 'outline', 'ghost']),
+    focused: PropTypes.bool,
+    className: PropTypes.string,
+    children: PropTypes.node,
   };
 
   static defaultProps = {
@@ -16,13 +19,20 @@ class Button extends Component {
     color: 'primary',
     weight: 'bold',
     typevalue: 'default',
+    focused: false,
+    className: '',
   };
 
   render() {
-    const { children, ...props } = this.props;
+    const { focused, children, className, ...props } = this.props;
+    const focusedStyle = focused ? 'focused' : '';
 
     return (
-      <ButtonWrapper type="primary" {...props}>
+      <ButtonWrapper
+        className={`${className} btn-wrapper ${focusedStyle}`}
+        type="primary"
+        {...props}
+      >
         {children}
       </ButtonWrapper>
     );
