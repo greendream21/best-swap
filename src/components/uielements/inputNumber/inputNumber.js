@@ -14,8 +14,18 @@ class InputNumber extends Component {
     color: 'primary',
   };
 
+  handleParser = string => {
+    const num = Number(string);
+    if (isNaN(num)) {
+      return 0;
+    }
+    return num;
+  };
+
   render() {
-    return <InputNumberWrapper {...this.props} />;
+    const { ...props } = this.props;
+
+    return <InputNumberWrapper parser={this.handleParser} {...props} />;
   }
 }
 
