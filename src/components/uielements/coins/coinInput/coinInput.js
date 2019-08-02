@@ -16,6 +16,7 @@ class CoinInput extends Component {
     slip: PropTypes.number,
     reverse: PropTypes.bool,
     className: PropTypes.string,
+    onChange: PropTypes.func,
   };
 
   static defaultProps = {
@@ -23,9 +24,10 @@ class CoinInput extends Component {
     asset: 'bnb',
     amount: 0,
     price: 1,
-    slip: null,
+    slip: undefined,
     reverse: false,
     className: '',
+    onChange: () => {},
   };
 
   render() {
@@ -36,6 +38,7 @@ class CoinInput extends Component {
       price,
       slip,
       className,
+      onChange,
       ...props
     } = this.props;
 
@@ -62,6 +65,7 @@ class CoinInput extends Component {
           <InputNumber
             className="asset-amount-input"
             value={amount}
+            onChange={onChange}
             min={0}
             placeholder="100000"
           />
@@ -72,9 +76,9 @@ class CoinInput extends Component {
         <Label className="asset-price-label" color="gray">
           {priceLabel}
         </Label>
-        {slip && (
+        {slip !== undefined && (
           <Label className="asset-price-label" color="gray">
-            SLIP: {slip} %
+            SLIP: {slip.toFixed(2)} %
           </Label>
         )}
       </CoinInputWrapper>

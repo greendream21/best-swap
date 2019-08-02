@@ -8,13 +8,18 @@ import Centered from '../../../../components/utility/centered';
 import Label from '../../../../components/uielements/label';
 import Button from '../../../../components/uielements/button';
 import TooltipIcon from '../../../../components/uielements/tooltipIcon';
+import CoinInput from '../../../../components/uielements/coins/coinInput';
 
 import {
   orbGreenIcon,
   arrowGreenIcon,
   arrowYellowIcon,
 } from '../../../../components/icons';
-import CoinInput from '../../../../components/uielements/coins/coinInput';
+
+import { formatNumber, formatCurrency } from '../../../../helpers/formatHelper';
+import { data } from './data';
+
+const { X, Y, Px } = data;
 
 class Swap extends Component {
   static propTypes = {
@@ -23,6 +28,16 @@ class Swap extends Component {
 
   static defaultProps = {
     view: 'intro',
+  };
+
+  state = {
+    xValue: 0,
+  };
+
+  handleChangeValue = name => value => {
+    this.setState({
+      [name]: value,
+    });
   };
 
   handleTry = () => {
@@ -43,7 +58,14 @@ class Swap extends Component {
     this.props.history.push(URL);
   };
 
-  renderFlow = (view, data) => {
+  renderFlow = view => {
+    const { xValue } = this.state;
+    const balance = formatCurrency(X * Px);
+    const initPy = formatCurrency(Px * (X / Y));
+    const times = (xValue + X) ** 2;
+    const outputToken = (xValue * X * Y) / times;
+    const outputPy = ((Px * (X + xValue)) / (Y - outputToken)).toFixed(2);
+
     return (
       <div className="swap-flow-wrapper">
         <Centered>
@@ -83,7 +105,8 @@ class Swap extends Component {
                 placement="leftTop"
               />
             )}
-            {data[0][0]}
+            {view === 'intro' && formatNumber(X)}
+            {view === 'play' && formatNumber(X + xValue)}
           </Label>
           <Label size="large" color="normal" weight="bold">
             :
@@ -94,7 +117,8 @@ class Swap extends Component {
             color="normal"
             weight="bold"
           >
-            {data[0][1]}
+            {view === 'intro' && formatNumber(Y)}
+            {view === 'play' && formatNumber(Y - outputToken)}
             {view === 'intro' && (
               <TooltipIcon text="Pools contain assets." placement="rightTop" />
             )}
@@ -118,20 +142,21 @@ class Swap extends Component {
                 placement="leftTop"
               />
             )}
-            $40,000.00
+            {balance}
           </Label>
           <Label size="large" color="normal" />
           <Label size="large" color="normal">
-            $40,000.00
+            {balance}
           </Label>
         </Centered>
         <Centered>
           <Label size="large" color="normal">
-            $0.04
+            {formatCurrency(Px)}
           </Label>
           <Label size="large" color="normal" />
           <Label className="contains-tooltip" size="large" color="normal">
-            {data[2][1]}
+            {view === 'intro' && initPy}
+            {view === 'play' && outputPy}
             {view === 'play' && (
               <TooltipIcon
                 text="The price of the asset changes slightly due to the pool slip."
@@ -182,11 +207,11 @@ class Swap extends Component {
   };
 
   renderPlay = () => {
-    const playData = [
-      ['1,001,000', '999.1'],
-      ['$40,000.00', '$40,000.00'],
-      ['$0.04', '$39.44'],
-    ];
+    const { xValue } = this.state;
+    const times = (xValue + X) ** 2;
+    const outputToken = ((xValue * X * Y) / times).toFixed(2);
+    const outputPy = ((Px * (X + xValue)) / (Y - outputToken)).toFixed(2);
+    const slip = (xValue * (xValue + 2 * X)) / times;
 
     return (
       <div className="swap-play-wrapper">
@@ -194,18 +219,19 @@ class Swap extends Component {
           <CoinInput
             title="Select token to swap:"
             asset="rune"
-            amount={10000}
+            amount={xValue}
+            onChange={this.handleChangeValue('xValue')}
             price={0.04}
           />
         </div>
-        {this.renderFlow('play', playData)}
+        {this.renderFlow('play')}
         <div className="token-receive-wrapper">
           <CoinInput
             title="Select token to receive:"
             asset="bnb"
-            amount={8.9}
-            price={45}
-            slip={1}
+            amount={outputToken}
+            price={outputPy}
+            slip={slip}
             reverse
           />
           <TooltipIcon
@@ -220,11 +246,6 @@ class Swap extends Component {
 
   render() {
     const { view } = this.props;
-    const introData = [
-      ['1,000,000', '1000'],
-      ['$40,000.00', '$40,000.00'],
-      ['$0.04', '$40.00'],
-    ];
 
     return (
       <ContentWrapper className="tutorial-swap-wrapper">
@@ -273,7 +294,7 @@ class Swap extends Component {
           </Col>
           <Col span="20" className="tutorial-content">
             <Row className="tutorial-flow">
-              {view === 'intro' && this.renderFlow('intro', introData)}
+              {view === 'intro' && this.renderFlow('intro')}
               {view === 'play' && this.renderPlay()}
             </Row>
             {view === 'play' && this.renderButtons()}
