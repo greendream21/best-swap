@@ -8,6 +8,7 @@ import PanelHeader from '../../components/uielements/panelHeader';
 
 import Swap from './tutorials/Swap';
 import DoubleSwap from './tutorials/DoubleSwap';
+import Stake from './tutorials/Stake';
 
 const { TabPane } = Tabs;
 
@@ -41,24 +42,25 @@ class TutorialView extends Component {
 
     if (type === 'swap') {
       if (view === 'intro' || view === 'play') {
-        return 'single-swap';
+        return 'swap';
       }
       if (view === 'doubleintro' || view === 'doubleplay') {
         return 'double-swap';
       }
+      this.props.history.push('/tutorial/swap/intro');
     }
     if (type === 'pool') {
       if (view === 'stakingintro' || view === 'stakingplay') {
         return 'pool-staking';
       }
-      if (view === 'earningintro' || view === 'earningintro') {
+      if (view === 'earningintro' || view === 'earningplay') {
         return 'pool-earning';
       }
+      this.props.history.push('/tutorial/pool/stakingintro');
     }
     if (type === 'trade') {
       return 'trade';
     }
-    return 'single-swap';
   };
 
   render() {
@@ -78,6 +80,7 @@ class TutorialView extends Component {
         </PanelHeader>
         {currentView === 'single-swap' && <Swap view={view} />}
         {currentView === 'double-swap' && <DoubleSwap view={view} />}
+        {currentView === 'pool-staking' && <Stake view={view} />}
       </TutorialViewWrapper>
     );
   }

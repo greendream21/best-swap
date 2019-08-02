@@ -81,11 +81,8 @@ class DoubleSwap extends Component {
 
   renderFlow = view => {
     const { xValue } = this.state;
-    const Vx = getVx(xValue);
     const yValue = getYValue(xValue);
     const zValue = getZValue(xValue);
-    const Vz = getVz(xValue);
-    const slip = getSlip(xValue);
 
     return (
       <div className="double-swap-flow-wrapper">
@@ -296,10 +293,10 @@ class DoubleSwap extends Component {
 
   renderPlay = () => {
     const { xValue } = this.state;
-    const Vx = getVx(xValue);
     const zValue = getZValue(xValue);
-    const Vz = getVz(xValue);
     const slip = getSlip(xValue);
+    const Px = getPx(xValue);
+    const Pz = getPz(xValue);
 
     return (
       <div className="swap-play-wrapper">
@@ -309,7 +306,7 @@ class DoubleSwap extends Component {
             asset="bnb"
             amount={xValue}
             onChange={this.handleChangeX}
-            price={Vx.toFixed(2)}
+            price={Px.toFixed(2)}
           />
         </div>
         {this.renderFlow('doubleplay')}
@@ -318,7 +315,7 @@ class DoubleSwap extends Component {
             title="Select token to receive:"
             asset="bolt"
             amount={zValue.toFixed(2)}
-            price={Vz.toFixed(2)}
+            price={Pz.toFixed(2)}
             slip={slip}
             reverse
           />
