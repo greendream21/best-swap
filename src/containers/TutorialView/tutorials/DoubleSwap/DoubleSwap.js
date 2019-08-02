@@ -8,6 +8,7 @@ import Centered from '../../../../components/utility/centered';
 import Label from '../../../../components/uielements/label';
 import Button from '../../../../components/uielements/button';
 import TooltipIcon from '../../../../components/uielements/tooltipIcon';
+import CoinInput from '../../../../components/uielements/coins/coinInput';
 
 import {
   orbGreenIcon,
@@ -15,7 +16,22 @@ import {
   arrowGreenIcon,
   arrowYellowIcon,
 } from '../../../../components/icons';
-import CoinInput from '../../../../components/uielements/coins/coinInput';
+
+import { formatCurrency, formatNumber } from '../../../../helpers/formatHelper';
+import {
+  data,
+  getYValue,
+  getZValue,
+  getPx,
+  getPz,
+  getVx,
+  getVz,
+  getSlip,
+  getBalanceA,
+  getBalanceB,
+} from './data';
+
+const { X, Y, Z, R, Py, Pr } = data;
 
 class DoubleSwap extends Component {
   static propTypes = {
@@ -24,6 +40,16 @@ class DoubleSwap extends Component {
 
   static defaultProps = {
     view: 'doubleintro',
+  };
+
+  state = {
+    xValue: 0,
+  };
+
+  handleChangeX = xValue => {
+    this.setState({
+      xValue,
+    });
   };
 
   handleTry = () => {
@@ -53,7 +79,14 @@ class DoubleSwap extends Component {
     this.props.history.push(URL);
   };
 
-  renderFlow = (view, data) => {
+  renderFlow = view => {
+    const { xValue } = this.state;
+    const Vx = getVx(xValue);
+    const yValue = getYValue(xValue);
+    const zValue = getZValue(xValue);
+    const Vz = getVz(xValue);
+    const slip = getSlip(xValue);
+
     return (
       <div className="double-swap-flow-wrapper">
         <div className="double-swap-flow-row">
@@ -133,31 +166,34 @@ class DoubleSwap extends Component {
                     placement="leftTop"
                   />
                 )}
-                {data[0][0]}
+                {view === 'doubleintro' && formatNumber(X)}
+                {view === 'doubleplay' && formatNumber(X + xValue)}
               </Label>
               <Label size="large" color="normal" weight="bold">
                 :
               </Label>
               <Label size="large" color="normal" weight="bold">
-                {data[0][1]}
+                {view === 'doubleintro' && formatNumber(Y)}
+                {view === 'doubleplay' && formatNumber(Y - yValue)}
               </Label>
             </Centered>
             <Centered>
               <Label size="large" color="normal">
-                {data[1][0]}
+                {formatCurrency(getBalanceA())}
               </Label>
               <Label size="large" color="normal" />
               <Label size="large" color="normal">
-                {data[1][1]}
+                {formatCurrency(getBalanceA())}
               </Label>
             </Centered>
             <Centered>
               <Label size="large" color="normal">
-                {data[2][0]}
+                {view === 'doubleintro' && formatCurrency(getPx())}
+                {view === 'doubleplay' && formatCurrency(getPx(xValue))}
               </Label>
               <Label size="large" color="normal" />
               <Label size="large" color="normal">
-                {data[2][1]}
+                {formatCurrency(Py)}
               </Label>
             </Centered>
             <Centered>
@@ -187,44 +223,47 @@ class DoubleSwap extends Component {
           <div className="swap-flow-wrapper">
             <Centered>
               <Label size="large" color="normal" weight="bold">
-                {data[3][0]}
+                {view === 'doubleintro' && formatNumber(R)}
+                {view === 'doubleplay' && formatNumber(R + yValue)}
               </Label>
               <Label size="large" color="normal" weight="bold">
                 :
               </Label>
               <Label size="large" color="normal" weight="bold">
-                {data[3][1]}
+                {view === 'doubleintro' && formatNumber(Z)}
+                {view === 'doubleplay' && formatNumber(Z - zValue)}
               </Label>
             </Centered>
             <Centered>
               <Label size="large" color="normal">
-                {data[4][0]}
+                {formatCurrency(getBalanceB())}
               </Label>
               <Label size="large" color="normal" />
               <Label size="large" color="normal">
-                {data[4][1]}
+                {formatCurrency(getBalanceB())}
               </Label>
             </Centered>
             <Centered>
               <Label size="large" color="normal">
-                {data[5][0]}
+                {formatCurrency(Pr)}
               </Label>
               <Label size="large" color="normal" />
               <Label size="large" color="normal">
-                {data[5][1]}
+                {view === 'doubleintro' && formatCurrency(getPz())}
+                {view === 'doubleplay' && formatCurrency(getPz(xValue))}
               </Label>
             </Centered>
             <Centered>
-              <Label size="normal" color="normal">
-                BNB Price
-                <br />
-                (pool)
-              </Label>
-              <Label size="normal" color="normal" />
               <Label size="normal" color="normal">
                 RUNE Price
                 <br />
                 (external)
+              </Label>
+              <Label size="normal" color="normal" />
+              <Label size="normal" color="normal">
+                BOLT Price
+                <br />
+                (pool)
               </Label>
             </Centered>
           </div>
@@ -256,14 +295,11 @@ class DoubleSwap extends Component {
   };
 
   renderPlay = () => {
-    const playData = [
-      ['1010', '990,000'],
-      ['$39,600.00', '$39,600.00'],
-      ['$39.27', '$0.04'],
-      ['2,510,000', '4,980,079'],
-      ['$100,400.00', '$100,400.00'],
-      ['$0.04', '$0.02'],
-    ];
+    const { xValue } = this.state;
+    const Vx = getVx(xValue);
+    const zValue = getZValue(xValue);
+    const Vz = getVz(xValue);
+    const slip = getSlip(xValue);
 
     return (
       <div className="swap-play-wrapper">
@@ -271,18 +307,19 @@ class DoubleSwap extends Component {
           <CoinInput
             title="Select token to swap:"
             asset="bnb"
-            amount={10}
-            price={40}
+            amount={xValue}
+            onChange={this.handleChangeX}
+            price={Vx.toFixed(2)}
           />
         </div>
-        {this.renderFlow('doubleplay', playData)}
+        {this.renderFlow('doubleplay')}
         <div className="token-receive-wrapper">
           <CoinInput
             title="Select token to receive:"
             asset="bolt"
-            amount={19984.01}
-            price={0.02}
-            slip={1}
+            amount={zValue.toFixed(2)}
+            price={Vz.toFixed(2)}
+            slip={slip}
             reverse
           />
           <TooltipIcon
@@ -297,14 +334,6 @@ class DoubleSwap extends Component {
 
   render() {
     const { view } = this.props;
-    const introData = [
-      ['1000', '1,000,000'],
-      ['$40,000.00', '$40,000.00'],
-      ['$40.00', '$0.04'],
-      ['2,500,000', '5,000,000'],
-      ['$100,000.00', '$100,000.00'],
-      ['$0.04', '$0.02'],
-    ];
 
     return (
       <ContentWrapper className="tutorial-swap-wrapper">
@@ -353,8 +382,7 @@ class DoubleSwap extends Component {
           </Col>
           <Col span="20" className="tutorial-content">
             <Row className="tutorial-flow">
-              {view === 'doubleintro' &&
-                this.renderFlow('doubleintro', introData)}
+              {view === 'doubleintro' && this.renderFlow('doubleintro')}
               {view === 'doubleplay' && this.renderPlay()}
             </Row>
             {this.renderButtons()}
