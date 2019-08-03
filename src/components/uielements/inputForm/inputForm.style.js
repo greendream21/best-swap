@@ -1,0 +1,27 @@
+import styled from 'styled-components';
+
+export const InputFormWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+
+  .title-label {
+    display: flex;
+    flex-direction: ${props => (props.reverse ? 'row-reverse' : 'row')};
+    padding-bottom: 0px;
+  }
+
+  .value-wrapper {
+    display: flex;
+    align-items: center;
+
+    .value-input {
+      min-width: 150px;
+      width: 150px;
+    }
+
+    .name-label {
+      margin: 0 4px;
+      text-transform: uppercase;
+    }
+  }
+`;

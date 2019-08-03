@@ -46,7 +46,7 @@ class CoinInput extends Component {
     const priceLabel = `$${totalPrice} (USD)`;
 
     return (
-      <CoinInputWrapper className={`CoinInput-wrapper ${className}`} {...props}>
+      <CoinInputWrapper className={`coinInput-wrapper ${className}`} {...props}>
         <Label className="title-label" color="light" weight="bold">
           {title}
         </Label>
