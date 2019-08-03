@@ -8,7 +8,6 @@ import Centered from '../../../../components/utility/centered';
 import Label from '../../../../components/uielements/label';
 import Button from '../../../../components/uielements/button';
 import TooltipIcon from '../../../../components/uielements/tooltipIcon';
-import CoinInput from '../../../../components/uielements/coins/coinInput';
 import InputForm from '../../../../components/uielements/inputForm';
 
 import {

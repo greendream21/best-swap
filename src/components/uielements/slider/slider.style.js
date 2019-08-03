@@ -4,6 +4,7 @@ import { Slider } from 'antd';
 
 export const SliderWrapper = styled(Slider)`
   &.ant-slider {
+    margin-bottom: 25px;
     .ant-slider-rail {
       height: 5px;
       background: linear-gradient(
@@ -24,6 +25,12 @@ export const SliderWrapper = styled(Slider)`
       margin-top: -12px;
       border: none;
       box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+    }
+
+    &:hover {
+      .ant-slider-track {
+        background: ${palette('primary', 1)};
+      }
     }
   }
 `;
