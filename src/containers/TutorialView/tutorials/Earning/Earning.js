@@ -3,21 +3,36 @@ import { withRouter } from 'react-router-dom';
 import { Row, Col, Icon } from 'antd';
 import PropTypes from 'prop-types';
 
-import { ContentWrapper } from './Stake.style';
+import { ContentWrapper } from './Earning.style';
 import Centered from '../../../../components/utility/centered';
 import Label from '../../../../components/uielements/label';
 import Button from '../../../../components/uielements/button';
 import TooltipIcon from '../../../../components/uielements/tooltipIcon';
 import CoinInput from '../../../../components/uielements/coins/coinInput';
+import InputForm from '../../../../components/uielements/inputForm';
 
-import { orbGreenIcon, arrowGreenIcon } from '../../../../components/icons';
+import {
+  orbBlueIcon,
+  arrowTwoIcon,
+  arrowGreenIcon,
+} from '../../../../components/icons';
 
 import { formatNumber, formatCurrency } from '../../../../helpers/formatHelper';
-import { data, getVr, getSS, getVss, getTSlip } from './data';
+import {
+  data,
+  getVr,
+  getSSValue,
+  getSS,
+  getVss,
+  getVssValue,
+  getWr,
+  getWt,
+} from './data';
+import Slider from '../../../../components/uielements/slider';
 
-const { R, T, Pr, Pt } = data;
+const { R, T, WR, WT, VWR } = data;
 
-class Stake extends Component {
+class Earning extends Component {
   static propTypes = {
     view: PropTypes.string,
   };
@@ -27,8 +42,9 @@ class Stake extends Component {
   };
 
   state = {
-    rValue: 0,
-    tValue: 0,
+    rValue: 200000,
+    tValue: 400000,
+    wss: 0,
   };
 
   handleChangeValue = name => value => {
@@ -38,7 +54,7 @@ class Stake extends Component {
   };
 
   handleTry = () => {
-    const URL = '/tutorial/pool/stakingplay';
+    const URL = '/tutorial/pool/earningplay';
 
     this.props.history.push(URL);
   };
@@ -46,33 +62,35 @@ class Stake extends Component {
   handleBack = () => {
     const { view } = this.props;
 
-    if (view === 'stakingintro') {
-      const URL = '/tutorial/swap/doubleplay';
+    if (view === 'earningintro') {
+      const URL = '/tutorial/pool/stakingplay';
 
       this.props.history.push(URL);
     }
-    if (view === 'stakingplay') {
-      const URL = '/tutorial/pool/stakingintro';
+    if (view === 'earningplay') {
+      const URL = '/tutorial/pool/earningintro';
 
       this.props.history.push(URL);
     }
   };
 
-  handleGotoEarning = () => {
-    const URL = '/tutorial/pool/earningintro';
+  handleGotoTrading = () => {
+    const URL = '/tutorial/trade/intro';
 
     this.props.history.push(URL);
   };
 
   renderFlow = view => {
-    const { rValue, tValue } = this.state;
+    const { rValue, tValue, wss } = this.state;
     const Vr = formatCurrency(getVr(rValue));
     const Vt = Vr;
-    const ss = `${Math.round(getSS(rValue, tValue))}%`;
-    const Vss = formatCurrency(getVss(rValue, tValue));
+    const ss = `${Math.round(getSS(wss))}%`;
+    const Vss = formatCurrency(getVss(wss));
+    const ssValue = `${Math.round(getSSValue(rValue, tValue))}%`;
+    const VssValue = formatCurrency(getVssValue(rValue, tValue));
 
     return (
-      <div className="stake-flow-wrapper">
+      <div className="earning-flow-wrapper">
         <Centered>
           <Label size="large" color="normal" weight="bold">
             RUNE
@@ -92,50 +110,53 @@ class Stake extends Component {
         >
           POOL
         </Label>
-        <div className="stake-flow-diagram">
-          <div className="arrow-image">
+        <div className="earning-flow-diagram">
+          {view === 'earningintro' && (
+            <img src={arrowTwoIcon} alt="arrow-green" />
+          )}
+          {view === 'earningplay' && (
             <img src={arrowGreenIcon} alt="arrow-green" />
-          </div>
-          <img src={orbGreenIcon} alt="arrow-green" />
-          <div className="arrow-image contains-tooltip">
+          )}
+          <img src={orbBlueIcon} alt="arrow-green" />
+          {view === 'earningintro' && (
+            <img src={arrowTwoIcon} alt="arrow-green" />
+          )}
+          {view === 'earningplay' && (
             <img
               className="reverse-image"
               src={arrowGreenIcon}
               alt="arrow-yello"
             />
-            {view === 'stakingintro' && (
-              <TooltipIcon
-                text="You stake on both sides of the pool."
-                placement="rightTop"
-              />
-            )}
-          </div>
+          )}
         </div>
         <Centered>
           <Label size="large" color="normal" weight="bold">
-            {view === 'stakingintro' && formatNumber(R)}
-            {view === 'stakingplay' && formatNumber(R + rValue)}
+            {view === 'earningintro' && formatNumber(R + rValue)}
+            {view === 'earningplay' && formatNumber(WR)}
           </Label>
           <Label size="large" color="normal" weight="bold">
             :
           </Label>
           <Label size="large" color="normal" weight="bold">
-            {view === 'stakingintro' && formatNumber(T)}
-            {view === 'stakingplay' && formatNumber(T + tValue)}
+            {view === 'earningintro' && formatNumber(T + tValue)}
+            {view === 'earningplay' && formatNumber(WT)}
           </Label>
         </Centered>
         <Centered>
           <Label size="large" color="normal">
-            {Vr}
+            {view === 'earningintro' && Vr}
+            {view === 'earningplay' && formatCurrency(VWR)}
           </Label>
           <Label size="large" color="normal" />
           <Label size="large" color="normal">
-            {Vt}
+            {view === 'earningintro' && Vt}
+            {view === 'earningplay' && formatCurrency(VWR)}
           </Label>
         </Centered>
         <div className="center-text">
           <Label size="large" color="normal" weight="bold">
-            {ss}
+            {view === 'earningintro' && ssValue}
+            {view === 'earningplay' && ss}
           </Label>
         </div>
         <div className="center-text">
@@ -146,17 +167,10 @@ class Stake extends Component {
         <Centered>
           <Label></Label>
           <Label size="large" color="normal" weight="bold">
-            {Vss}
+            {view === 'earningintro' && VssValue}
+            {view === 'earningplay' && Vss}
           </Label>
-          <Label className="contains-tooltip">
-            <span />
-            {view === 'stakingintro' && (
-              <TooltipIcon
-                text="You own a share of the pool."
-                placement="rightTop"
-              />
-            )}
-          </Label>
+          <Label className="contains-tooltip"></Label>
         </Centered>
         <div className="center-text">
           <Label size="big" color="normal">
@@ -175,13 +189,13 @@ class Stake extends Component {
         <Button onClick={this.handleBack} color="primary" typevalue="ghost">
           back
         </Button>
-        {view === 'stakingplay' && (
+        {view === 'earningplay' && (
           <Button
-            onClick={this.handleGotoEarning}
+            onClick={this.handleGotoTrading}
             color="primary"
             typevalue="outline"
           >
-            Earning
+            Trading
             <Icon type="arrow-right" />
           </Button>
         )}
@@ -189,32 +203,62 @@ class Stake extends Component {
     );
   };
 
-  renderPlay = () => {
+  renderIntro = () => {
     const { rValue, tValue } = this.state;
-    const tSlip = getTSlip(tValue);
 
     return (
-      <div className="stake-play-wrapper">
-        <div className="token-stake-wrapper">
-          <CoinInput
-            title="Token to stake:"
-            asset="rune"
-            amount={rValue}
+      <div className="earning-play-wrapper">
+        <div className="token-wrapper">
+          <InputForm
+            title="Add earnings:"
+            type="rune"
+            value={rValue}
             onChange={this.handleChangeValue('rValue')}
-            price={Pr}
+          />
+          <TooltipIcon
+            text="This simulates daily trading - which you can't control."
+            placement="rightTop"
           />
         </div>
-        {this.renderFlow('stakingplay')}
-        <div className="token-stake-wrapper">
-          <CoinInput
-            title="Token to stake:"
-            asset="bolt"
-            amount={tValue}
+        {this.renderFlow('earningintro')}
+        <div className="token-wrapper">
+          <InputForm
+            title="Add earnings:"
+            type="bolt"
+            value={tValue}
             onChange={this.handleChangeValue('tValue')}
-            price={Pt}
-            slip={tSlip}
             reverse
           />
+          <TooltipIcon
+            className="token-receiver-tooltip"
+            text="Earnings accrue on both sides of the pool."
+            placement="rightTop"
+          />
+        </div>
+      </div>
+    );
+  };
+
+  renderPlay = () => {
+    const { wss } = this.state;
+    const Wr = getWr(wss);
+    const Wt = getWt(wss);
+
+    return (
+      <div className="earning-play-wrapper">
+        <div className="token-wrapper">
+          <InputForm title="PAYOUT:" type="rune" value={Wr} />
+          <InputForm
+            title="Withdraw share:"
+            type="%"
+            value={wss}
+            onChange={this.handleChangeValue('wss')}
+          />
+          <Slider value={wss} onChange={this.handleChangeValue('wss')} />
+        </div>
+        {this.renderFlow('earningplay')}
+        <div className="token-wrapper">
+          <InputForm title="PAYOUT:" type="bolt" value={Wt} reverse />
         </div>
       </div>
     );
@@ -228,20 +272,19 @@ class Stake extends Component {
         <Row>
           <Col span="4" className="intro-text">
             <Label size="normal" weight="bold" color="normal">
-              STAKE
+              EARNINGS
             </Label>
             <Label size="small" color="dark">
-              You can stake your assets in any of the pools.
+              When people trade across a pool you own a share of, earnings are
+              captured.
             </Label>
             <Label size="small" color="dark">
-              Each trade on the pool earns a commission which you can later
-              claim.
+              Earnings are proportional to depth of the pool, and daily volume.
             </Label>
             <Label size="small" color="dark">
-              Choose pools with low liquidity and high volume for maximum
-              earnings.
+              You can withdraw your earnings at any time.
             </Label>
-            {view === 'stakingintro' && (
+            {view === 'earningintro' && (
               <Button
                 className="try-btn"
                 onClick={this.handleTry}
@@ -250,7 +293,7 @@ class Stake extends Component {
                 try
               </Button>
             )}
-            {view === 'stakingplay' && (
+            {view === 'earningplay' && (
               <>
                 <Label size="small" color="dark">
                   Since anyone can <strong>stake</strong> alongside you, you own
@@ -269,8 +312,8 @@ class Stake extends Component {
           </Col>
           <Col span="20" className="tutorial-content">
             <Row className="tutorial-flow">
-              {view === 'stakingintro' && this.renderFlow('stakingintro')}
-              {view === 'stakingplay' && this.renderPlay()}
+              {view === 'earningintro' && this.renderIntro()}
+              {view === 'earningplay' && this.renderPlay()}
             </Row>
             {this.renderButtons()}
           </Col>
@@ -280,4 +323,4 @@ class Stake extends Component {
   }
 }
 
-export default withRouter(Stake);
+export default withRouter(Earning);

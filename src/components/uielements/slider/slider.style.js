@@ -8,9 +8,9 @@ export const SliderWrapper = styled(Slider)`
       height: 5px;
       background: linear-gradient(
         to right,
-        #eceeef 0%,
-        #50e3c2 50%,
-        #eceeef 100%
+        ${palette('primary', 5)} 0%,
+        ${palette('primary', 1)} 50%,
+        ${palette('primary', 5)} 100%
       );
     }
 

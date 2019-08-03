@@ -9,6 +9,7 @@ import PanelHeader from '../../components/uielements/panelHeader';
 import Swap from './tutorials/Swap';
 import DoubleSwap from './tutorials/DoubleSwap';
 import Stake from './tutorials/Stake';
+import Earning from './tutorials/Earning';
 
 const { TabPane } = Tabs;
 
@@ -42,7 +43,7 @@ class TutorialView extends Component {
 
     if (type === 'swap') {
       if (view === 'intro' || view === 'play') {
-        return 'swap';
+        return 'single-swap';
       }
       if (view === 'doubleintro' || view === 'doubleplay') {
         return 'double-swap';
@@ -59,7 +60,7 @@ class TutorialView extends Component {
       this.props.history.push('/tutorial/pool/stakingintro');
     }
     if (type === 'trade') {
-      return 'trade';
+      return type;
     }
   };
 
@@ -81,6 +82,7 @@ class TutorialView extends Component {
         {currentView === 'single-swap' && <Swap view={view} />}
         {currentView === 'double-swap' && <DoubleSwap view={view} />}
         {currentView === 'pool-staking' && <Stake view={view} />}
+        {currentView === 'pool-earning' && <Earning view={view} />}
       </TutorialViewWrapper>
     );
   }
