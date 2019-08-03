@@ -4,6 +4,7 @@ export const InputFormWrapper = styled.div`
   display: flex;
   flex-direction: column;
 
+  .value-wrapper,
   .title-label {
     display: flex;
     flex-direction: ${props => (props.reverse ? 'row-reverse' : 'row')};

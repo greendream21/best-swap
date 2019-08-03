@@ -5,9 +5,9 @@ import { ThemeProvider } from 'styled-components';
 import AppHolder from '../../../AppStyle';
 import { defaultTheme } from '../../../settings';
 
-import InputForm from './inputForm';
+import Slider from './slider';
 
-storiesOf('Components/InputForm', module).add('default', () => {
+storiesOf('Components/Slider', module).add('default', () => {
   return (
     <ThemeProvider theme={defaultTheme}>
       <AppHolder>
@@ -16,11 +16,9 @@ storiesOf('Components/InputForm', module).add('default', () => {
             display: 'flex',
             flexDirection: 'column',
             width: '300px',
-            background: 'gray',
           }}
         >
-          <InputForm title="Add earnings:" type="rune" />
-          <InputForm title="Add earnings:" type="rune" reverse />
+          <Slider defaultValue={30} />
         </div>
       </AppHolder>
     </ThemeProvider>
