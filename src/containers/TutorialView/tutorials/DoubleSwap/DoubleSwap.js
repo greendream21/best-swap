@@ -24,8 +24,6 @@ import {
   getZValue,
   getPx,
   getPz,
-  getVx,
-  getVz,
   getSlip,
   getBalanceA,
   getBalanceB,
