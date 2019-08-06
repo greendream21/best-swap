@@ -14,6 +14,7 @@ class CoinInput extends Component {
     amount: PropTypes.number,
     price: PropTypes.number,
     slip: PropTypes.number,
+    step: PropTypes.number,
     reverse: PropTypes.bool,
     className: PropTypes.string,
     onChange: PropTypes.func,
@@ -24,6 +25,7 @@ class CoinInput extends Component {
     asset: 'bnb',
     amount: 0,
     price: 1,
+    step: 1,
     slip: undefined,
     reverse: false,
     className: '',
@@ -37,6 +39,7 @@ class CoinInput extends Component {
       amount,
       price,
       slip,
+      step,
       className,
       onChange,
       ...props
@@ -67,6 +70,7 @@ class CoinInput extends Component {
             value={amount}
             onChange={onChange}
             min={0}
+            step={step}
             placeholder="100000"
           />
           <Label className="asset-name-label" color="gray" weight="bold">

@@ -206,6 +206,10 @@ class Swap extends Component {
     );
   };
 
+  renderIntro = () => {
+    return this.renderFlow('intro');
+  };
+
   renderPlay = () => {
     const { xValue } = this.state;
     const times = (xValue + X) ** 2;
@@ -222,6 +226,7 @@ class Swap extends Component {
             amount={xValue}
             onChange={this.handleChangeValue('xValue')}
             price={0.04}
+            step={1000}
           />
         </div>
         {this.renderFlow('play')}
@@ -232,6 +237,7 @@ class Swap extends Component {
             amount={outputToken}
             price={outputPy}
             slip={slip}
+            step={1000}
             reverse
           />
           <TooltipIcon
@@ -294,7 +300,7 @@ class Swap extends Component {
           </Col>
           <Col span="20" className="tutorial-content">
             <Row className="tutorial-flow">
-              {view === 'intro' && this.renderFlow('intro')}
+              {view === 'intro' && this.renderIntro()}
               {view === 'play' && this.renderPlay()}
             </Row>
             {view === 'play' && this.renderButtons()}

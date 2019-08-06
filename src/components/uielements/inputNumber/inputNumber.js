@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-
 import { InputNumberWrapper } from './inputNumber.style';
 
 class InputNumber extends Component {
@@ -10,7 +9,7 @@ class InputNumber extends Component {
   };
 
   static defaultProps = {
-    size: 'default',
+    size: 'small',
     color: 'primary',
   };
 

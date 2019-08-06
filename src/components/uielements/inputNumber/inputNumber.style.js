@@ -34,31 +34,4 @@ export const InputNumberWrapper = styled(InputNumber)`
       --antd-wave-shadow-color: ${props => colors[props.color]};
     }
   }
-
-  &.ant-input-number {
-    height: 25px;
-    .ant-input-number-input {
-      position: relative;
-      top: -4px;
-      height: 25px;
-    }
-  }
-
-  &.ant-input-number-sm {
-    height: 20px;
-    .ant-input-number-input {
-      position: relative;
-      top: -2px;
-      height: 20px;
-    }
-  }
-
-  &.ant-input-number-lg {
-    height: 30px;
-    .ant-input-number-input {
-      position: relative;
-      top: -6px;
-      height: 30px;
-    }
-  }
 `;
