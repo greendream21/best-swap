@@ -13,7 +13,7 @@ import CoinInput from '../../../../components/uielements/coins/coinInput';
 import { orbGreenIcon, arrowGreenIcon } from '../../../../components/icons';
 
 import { formatNumber, formatCurrency } from '../../../../helpers/formatHelper';
-import { data, getVr, getSS, getVss, getTSlip } from './data';
+import { data, getVr, getSS, getVss } from './data';
 
 const { R, T, Pr, Pt } = data;
 

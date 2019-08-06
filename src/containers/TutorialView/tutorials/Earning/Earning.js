@@ -9,6 +9,7 @@ import Label from '../../../../components/uielements/label';
 import Button from '../../../../components/uielements/button';
 import TooltipIcon from '../../../../components/uielements/tooltipIcon';
 import InputForm from '../../../../components/uielements/inputForm';
+import Selection from '../../../../components/uielements/selection';
 
 import {
   orbBlueIcon,
@@ -27,8 +28,6 @@ import {
   getWr,
   getWt,
 } from './data';
-import Slider from '../../../../components/uielements/slider';
-import Selection from '../../../../components/uielements/selection';
 
 const { R, T, WR, WT, VWR } = data;
 
