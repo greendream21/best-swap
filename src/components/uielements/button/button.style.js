@@ -118,6 +118,7 @@ export const ButtonWrapper = styled(Button)`
       colors[props.color][props.typevalue].background};
     text-transform: uppercase;
 
+    &.focused,
     &:hover,
     &:active,
     &:focus {

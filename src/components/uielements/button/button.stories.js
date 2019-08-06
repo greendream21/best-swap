@@ -1,6 +1,6 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { text, radios } from '@storybook/addon-knobs';
+import { text, radios, boolean } from '@storybook/addon-knobs';
 import { ThemeProvider } from 'styled-components';
 import { Row, Icon } from 'antd';
 
@@ -98,8 +98,10 @@ storiesOf('Components/Button', module)
     const size = radios('size', sizeOptions, 'normal');
     const color = radios('color', colorOptions, 'primary');
     const type = radios('type', typeOptions, 'default');
+    const focused = boolean('focused', false);
+
     return (
-      <Button sizevalue={size} color={color} typevalue={type}>
+      <Button sizevalue={size} color={color} typevalue={type} focused={focused}>
         {buttonText}
       </Button>
     );
