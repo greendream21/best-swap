@@ -61,7 +61,7 @@ export const ContentWrapper = styled.div`
 
     .swap-flow-wrapper {
       width: 350px;
-      padding: 30px 0;
+      padding: 0;
 
       .label-wrapper {
         &.header-label {
@@ -81,11 +81,14 @@ export const ContentWrapper = styled.div`
       }
     }
 
+    .swap-intro-wrapper {
+      padding: 15px 20px;
+    }
     .swap-play-wrapper {
       display: flex;
       justify-content: space-between;
       width: 100%;
-      padding: 0px 20px;
+      padding: 15px 20px;
 
       .token-swap-wrapper,
       .token-receive-wrapper {
@@ -99,6 +102,10 @@ export const ContentWrapper = styled.div`
   }
 
   .bottom-nav-button {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+
     display: flex;
     flex-direction: row;
     justify-content: space-between;

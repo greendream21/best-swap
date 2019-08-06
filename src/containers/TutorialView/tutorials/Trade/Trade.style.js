@@ -49,7 +49,7 @@ export const ContentWrapper = styled.div`
 
     .trade-flow-wrapper {
       width: 400px;
-      padding: 30px 0;
+      padding: 0;
 
       .contains-tooltip {
         display: flex;
@@ -98,7 +98,11 @@ export const ContentWrapper = styled.div`
       display: flex;
       justify-content: space-between;
       width: 100%;
-      padding: 10px 20px;
+      padding: 15px 20px;
+
+      .token-wrapper {
+        width: 200px;
+      }
 
       .trade-diagram {
         display: flex;
@@ -107,7 +111,7 @@ export const ContentWrapper = styled.div`
         width: 500px;
 
         .market-diagram-wrapper {
-          padding: 30px 0;
+          padding: 0;
 
           .trade-flow-diagram {
             display: flex;
@@ -136,6 +140,10 @@ export const ContentWrapper = styled.div`
   }
 
   .bottom-nav-button {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+
     display: flex;
     flex-direction: row;
     justify-content: space-between;

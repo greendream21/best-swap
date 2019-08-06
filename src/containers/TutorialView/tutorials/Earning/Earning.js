@@ -158,7 +158,7 @@ class Earning extends Component {
             {view === 'earningplay' && ss}
           </Label>
         </div>
-        <div className="center-text">
+        <div className="center-text description-label">
           <Label size="big" color="normal">
             YOUR POOL SHARE
           </Label>
@@ -171,7 +171,7 @@ class Earning extends Component {
           </Label>
           <Label className="contains-tooltip"></Label>
         </Centered>
-        <div className="center-text">
+        <div className="center-text description-label">
           <Label size="big" color="normal">
             YOUR ASSET SHARE
           </Label>

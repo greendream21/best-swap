@@ -292,7 +292,9 @@ class DoubleSwap extends Component {
   };
 
   renderIntro = () => {
-    return this.renderFlow('doubleintro');
+    return (
+      <div className="swap-intro-wrapper">{this.renderFlow('doubleintro')}</div>
+    );
   };
 
   renderPlay = () => {

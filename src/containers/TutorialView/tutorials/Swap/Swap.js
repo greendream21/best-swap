@@ -207,7 +207,7 @@ class Swap extends Component {
   };
 
   renderIntro = () => {
-    return this.renderFlow('intro');
+    return <div className="swap-intro-wrapper">{this.renderFlow('intro')}</div>;
   };
 
   renderPlay = () => {

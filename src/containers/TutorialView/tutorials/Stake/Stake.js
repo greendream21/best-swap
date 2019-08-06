@@ -138,7 +138,7 @@ class Stake extends Component {
             {ss}
           </Label>
         </div>
-        <div className="center-text">
+        <div className="center-text description-label">
           <Label size="big" color="normal">
             YOUR POOL SHARE
           </Label>
@@ -158,7 +158,7 @@ class Stake extends Component {
             )}
           </Label>
         </Centered>
-        <div className="center-text">
+        <div className="center-text description-label">
           <Label size="big" color="normal">
             YOUR ASSET SHARE
           </Label>
@@ -189,6 +189,14 @@ class Stake extends Component {
     );
   };
 
+  renderIntro = () => {
+    return (
+      <div className="stake-intro-wrapper">
+        {this.renderFlow('stakingintro')}
+      </div>
+    );
+  };
+
   renderPlay = () => {
     const { rValue, tValue } = this.state;
 
@@ -201,6 +209,7 @@ class Stake extends Component {
             amount={rValue}
             onChange={this.handleChangeValue('rValue')}
             price={Pr}
+            step={1000}
           />
         </div>
         {this.renderFlow('stakingplay')}
@@ -267,7 +276,7 @@ class Stake extends Component {
           </Col>
           <Col span="20" className="tutorial-content">
             <Row className="tutorial-flow">
-              {view === 'stakingintro' && this.renderFlow('stakingintro')}
+              {view === 'stakingintro' && this.renderIntro()}
               {view === 'stakingplay' && this.renderPlay()}
             </Row>
             {this.renderButtons()}

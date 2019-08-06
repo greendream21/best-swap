@@ -34,12 +34,22 @@ export const ContentWrapper = styled.div`
 
     .earning-flow-wrapper {
       width: 400px;
-      padding: 30px 0;
+      padding: 0;
 
       .center-text {
         display: flex;
         justify-content: center;
         align-items: center;
+
+        &.description-label {
+          .label-wrapper {
+            padding: 0;
+          }
+        }
+      }
+
+      .centered-wrapper {
+        height: 50px;
       }
 
       .contains-tooltip {
@@ -67,6 +77,10 @@ export const ContentWrapper = styled.div`
         width: 100%;
         padding: 20px 0;
 
+        .centered-wrapper {
+          height: 50px;
+        }
+
         .reverse-image {
           transform: rotate(180deg);
         }
@@ -90,7 +104,7 @@ export const ContentWrapper = styled.div`
       display: flex;
       justify-content: space-between;
       width: 100%;
-      padding: 10px 20px;
+      padding: 15px 20px;
 
       .token-receiver-tooltip {
         margin-left: auto;
@@ -99,10 +113,18 @@ export const ContentWrapper = styled.div`
       .slider-wrapper {
         width: 145px;
       }
+
+      .token-wrapper {
+        width: 200px;
+      }
     }
   }
 
   .bottom-nav-button {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+
     display: flex;
     flex-direction: row;
     justify-content: space-between;

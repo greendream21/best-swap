@@ -34,12 +34,22 @@ export const ContentWrapper = styled.div`
 
     .stake-flow-wrapper {
       width: 400px;
-      padding: 30px 0;
+      padding: 0;
 
       .center-text {
         display: flex;
         justify-content: center;
         align-items: center;
+
+        &.description-label {
+          .label-wrapper {
+            padding: 0;
+          }
+        }
+      }
+
+      .centered-wrapper {
+        height: 50px;
       }
 
       .contains-tooltip {
@@ -86,19 +96,30 @@ export const ContentWrapper = styled.div`
       }
     }
 
+    .stake-intro-wrapper {
+      padding: 15px 20px;
+    }
     .stake-play-wrapper {
       display: flex;
       justify-content: space-between;
       width: 100%;
-      padding: 10px 20px;
+      padding: 15px 20px;
 
       .token-receiver-tooltip {
         margin-left: auto;
+      }
+
+      .token-stake-wrapper {
+        width: 200px;
       }
     }
   }
 
   .bottom-nav-button {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+
     display: flex;
     flex-direction: row;
     justify-content: space-between;
