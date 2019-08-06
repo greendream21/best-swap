@@ -223,6 +223,7 @@ class Trade extends Component {
             amount={xValue}
             onChange={this.handleChangeValue('xValue')}
             price={Px}
+            step={1000}
           />
           <Slider
             min={0}

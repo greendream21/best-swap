@@ -246,7 +246,7 @@ class Earning extends Component {
     return (
       <div className="earning-play-wrapper">
         <div className="token-wrapper">
-          <InputForm title="PAYOUT:" type="rune" value={Wr} />
+          <InputForm title="PAYOUT:" type="rune" value={Wr} step={1000} />
           <InputForm
             title="Withdraw share:"
             type="%"
@@ -257,7 +257,13 @@ class Earning extends Component {
         </div>
         {this.renderFlow('earningplay')}
         <div className="token-wrapper">
-          <InputForm title="PAYOUT:" type="bolt" value={Wt} reverse />
+          <InputForm
+            title="PAYOUT:"
+            type="bolt"
+            value={Wt}
+            step={1000}
+            reverse
+          />
         </div>
       </div>
     );

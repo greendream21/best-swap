@@ -220,6 +220,7 @@ class Stake extends Component {
             amount={tValue}
             onChange={this.handleChangeValue('tValue')}
             price={Pt}
+            step={10}
             reverse
           />
         </div>

@@ -10,6 +10,7 @@ class InputForm extends Component {
     title: PropTypes.string,
     type: PropTypes.string,
     value: PropTypes.number,
+    step: PropTypes.number,
     reverse: PropTypes.bool,
     className: PropTypes.string,
     onChange: PropTypes.func,
@@ -19,13 +20,22 @@ class InputForm extends Component {
     title: '',
     type: '',
     value: 0,
+    step: 1,
     reverse: false,
     className: '',
     onChange: () => {},
   };
 
   render() {
-    const { title, type, value, className, onChange, ...props } = this.props;
+    const {
+      title,
+      type,
+      value,
+      step,
+      className,
+      onChange,
+      ...props
+    } = this.props;
 
     return (
       <InputFormWrapper className={`inputForm-wrapper ${className}`} {...props}>
@@ -38,6 +48,7 @@ class InputForm extends Component {
             value={value}
             onChange={onChange}
             min={0}
+            step={step}
             placeholder="100000"
           />
           <Label className="name-label" color="gray" weight="bold">
