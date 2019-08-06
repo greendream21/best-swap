@@ -291,6 +291,10 @@ class DoubleSwap extends Component {
     );
   };
 
+  renderIntro = () => {
+    return this.renderFlow('doubleintro');
+  };
+
   renderPlay = () => {
     const { xValue } = this.state;
     const zValue = getZValue(xValue);
@@ -307,6 +311,7 @@ class DoubleSwap extends Component {
             amount={xValue}
             onChange={this.handleChangeX}
             price={Px.toFixed(2)}
+            step={10}
           />
         </div>
         {this.renderFlow('doubleplay')}
@@ -379,7 +384,7 @@ class DoubleSwap extends Component {
           </Col>
           <Col span="20" className="tutorial-content">
             <Row className="tutorial-flow">
-              {view === 'doubleintro' && this.renderFlow('doubleintro')}
+              {view === 'doubleintro' && this.renderIntro()}
               {view === 'doubleplay' && this.renderPlay()}
             </Row>
             {this.renderButtons()}

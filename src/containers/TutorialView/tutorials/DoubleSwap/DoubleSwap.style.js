@@ -37,6 +37,10 @@ export const ContentWrapper = styled.div`
       flex-direction: column;
       width: 720px;
 
+      .centered-wrapper {
+        height: 50px;
+      }
+
       .double-swap-flow-row {
         display: flex;
         justify-content: space-between;
@@ -81,7 +85,12 @@ export const ContentWrapper = styled.div`
       display: flex;
       justify-content: space-between;
       width: 100%;
-      padding: 10px 20px;
+      padding: 0px 20px;
+
+      .token-swap-wrapper,
+      .token-receive-wrapper {
+        width: 200px;
+      }
 
       .token-receiver-tooltip {
         margin-left: auto;
