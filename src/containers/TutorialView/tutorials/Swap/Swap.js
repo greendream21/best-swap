@@ -60,7 +60,7 @@ class Swap extends Component {
 
   renderFlow = view => {
     const { xValue } = this.state;
-    const balance = formatCurrency(X * Px);
+    const balance = formatCurrency((X + xValue) * Px);
     const initPy = formatCurrency(Px * (X / Y));
     const times = (xValue + X) ** 2;
     const outputToken = (xValue * X * Y) / times;
@@ -211,7 +211,7 @@ class Swap extends Component {
     const times = (xValue + X) ** 2;
     const outputToken = ((xValue * X * Y) / times).toFixed(2);
     const outputPy = ((Px * (X + xValue)) / (Y - outputToken)).toFixed(2);
-    const slip = (xValue * (xValue + 2 * X)) / times;
+    const slip = ((xValue * (xValue + 2 * X)) / times) * 100;
 
     return (
       <div className="swap-play-wrapper">

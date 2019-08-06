@@ -19,7 +19,7 @@ import {
 } from '../../../../components/icons';
 
 import { formatNumber, formatCurrency } from '../../../../helpers/formatHelper';
-import { data, getVx, getPy, getGain, getYValue } from './data';
+import { data, getVx, getPy, getGain, getYValue, getY } from './data';
 import Slider from '../../../../components/uielements/slider';
 
 const { X, Y, Px, xm } = data;
@@ -35,7 +35,6 @@ class Trade extends Component {
 
   state = {
     xValue: 0,
-    yValue: 0,
   };
 
   handleChangeValue = name => value => {
@@ -72,10 +71,11 @@ class Trade extends Component {
   };
 
   renderFlow = view => {
-    const { xValue, yValue } = this.state;
+    const { xValue } = this.state;
+    const yValue = getY(xValue);
     const Vx = formatCurrency(getVx(xValue));
     const Vy = Vx;
-    const Py = formatCurrency(getPy(xValue, yValue));
+    const Py = formatCurrency(getPy(xValue));
 
     return (
       <div className="trade-flow-wrapper">
@@ -180,26 +180,28 @@ class Trade extends Component {
         <div className="trade-diagram">
           {this.renderFlow('tradingintro')}
           <div className="market-diagram-wrapper">
-            <div className="center-text">
-              <Label size="large" color="normal" weight="bold">
-                MARKET
-              </Label>
-            </div>
             <div className="trade-flow-diagram">
               <img src={marketIcon} alt="market" />
             </div>
-            <Centered>
+            <div className="center-text with-tooltip">
               <Label size="large" color="normal" weight="bold">
+                MARKET
+              </Label>
+              <TooltipIcon
+                text="The market is any other exchange, like Binance DEX."
+                placement="rightTop"
+              />
+            </div>
+            <div className="center-text">
+              <Label size="large" color="normal">
+                Delta: 20%
+              </Label>
+            </div>
+            <div className="center-text">
+              <Label size="large" color="normal">
                 {formatCurrency(xm)}
               </Label>
-              <Label size="large" color="normal" weight="bold" />
-              <Label size="large" color="normal" weight="bold">
-                <TooltipIcon
-                  text="The market is any other exchange, like Binance DEX."
-                  placement="rightTop"
-                />
-              </Label>
-            </Centered>
+            </div>
           </div>
         </div>
       </div>
@@ -207,15 +209,16 @@ class Trade extends Component {
   };
 
   renderPlay = () => {
-    const { xValue, yValue } = this.state;
-    const yTotal = formatCurrency(getYValue(xValue, yValue));
-    const gain = formatCurrency(getGain(xValue, yValue));
+    const { xValue } = this.state;
+    const yValue = getY(xValue).toFixed(2);
+    const yTotal = formatCurrency(getYValue(xValue));
+    const gain = formatCurrency(getGain(xValue));
 
     return (
       <div className="trade-play-wrapper">
         <div className="token-wrapper">
           <CoinInput
-            title="Select token to swap:"
+            title="Select token to trade:"
             asset="rune"
             amount={xValue}
             onChange={this.handleChangeValue('xValue')}
@@ -224,6 +227,7 @@ class Trade extends Component {
           <Slider
             min={0}
             max={100000}
+            step={10}
             value={xValue}
             onChange={this.handleChangeValue('xValue')}
           />
@@ -235,26 +239,28 @@ class Trade extends Component {
         <div className="trade-diagram">
           {this.renderFlow('tradingplay')}
           <div className="market-diagram-wrapper">
-            <div className="center-text">
-              <Label size="large" color="normal" weight="bold">
-                MARKET
-              </Label>
-            </div>
             <div className="trade-flow-diagram">
               <img src={marketIcon} alt="market" />
             </div>
-            <Centered>
+            <div className="center-text with-tooltip">
               <Label size="large" color="normal" weight="bold">
-                {xm}
+                MARKET
               </Label>
-              <Label size="large" color="normal" weight="bold" />
-              <Label size="large" color="normal" weight="bold">
-                <TooltipIcon
-                  text="The market is any other exchange, like Binance DEX."
-                  placement="rightTop"
-                />
+              <TooltipIcon
+                text="The market is any other exchange, like Binance DEX."
+                placement="rightTop"
+              />
+            </div>
+            <div className="center-text">
+              <Label size="large" color="normal">
+                Delta: 10%
               </Label>
-            </Centered>
+            </div>
+            <div className="center-text">
+              <Label size="large" color="normal">
+                {formatCurrency(xm)}
+              </Label>
+            </div>
           </div>
         </div>
         <div className="token-wrapper">

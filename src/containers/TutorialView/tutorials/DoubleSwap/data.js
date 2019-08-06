@@ -60,17 +60,17 @@ export const getSlip = xValue => {
   const yValue = getYValue(xValue);
   const times = (yValue + R) ** 2;
 
-  return (yValue * (2 * R + yValue)) / times;
+  return ((yValue * (2 * R + yValue)) / times) * 100;
 };
 
-export const getBalanceA = () => {
+export const getBalanceA = yValue => {
   const { Y, Py } = data;
 
-  return Y * Py;
+  return (Y - yValue) * Py;
 };
 
-export const getBalanceB = () => {
+export const getBalanceB = yValue => {
   const { R, Pr } = data;
 
-  return R * Pr;
+  return (R + yValue) * Pr;
 };

@@ -114,18 +114,18 @@ class Earning extends Component {
             <img src={arrowTwoIcon} alt="arrow-green" />
           )}
           {view === 'earningplay' && (
-            <img src={arrowGreenIcon} alt="arrow-green" />
+            <img
+              className="reverse-image"
+              src={arrowGreenIcon}
+              alt="arrow-green"
+            />
           )}
           <img src={orbBlueIcon} alt="arrow-green" />
           {view === 'earningintro' && (
             <img src={arrowTwoIcon} alt="arrow-green" />
           )}
           {view === 'earningplay' && (
-            <img
-              className="reverse-image"
-              src={arrowGreenIcon}
-              alt="arrow-yello"
-            />
+            <img src={arrowGreenIcon} alt="arrow-yello" />
           )}
         </div>
         <Centered>

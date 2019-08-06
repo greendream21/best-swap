@@ -191,7 +191,6 @@ class Stake extends Component {
 
   renderPlay = () => {
     const { rValue, tValue } = this.state;
-    const tSlip = getTSlip(tValue);
 
     return (
       <div className="stake-play-wrapper">
@@ -212,7 +211,6 @@ class Stake extends Component {
             amount={tValue}
             onChange={this.handleChangeValue('tValue')}
             price={Pt}
-            slip={tSlip}
             reverse
           />
         </div>

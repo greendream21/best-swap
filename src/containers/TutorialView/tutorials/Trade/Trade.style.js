@@ -32,15 +32,24 @@ export const ContentWrapper = styled.div`
       justify-content: space-around;
     }
 
+    .center-text {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      &.with-tooltip {
+        justify-content: space-around;
+        padding-left: 20px;
+
+        .tooltip-wrapper {
+          margin-left: 10px;
+        }
+      }
+    }
+
     .trade-flow-wrapper {
       width: 400px;
       padding: 30px 0;
-
-      .center-text {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
 
       .contains-tooltip {
         display: flex;
@@ -65,7 +74,6 @@ export const ContentWrapper = styled.div`
         justify-content: space-around;
         align-items: center;
         width: 100%;
-        padding: 20px 0;
 
         .reverse-image {
           transform: rotate(180deg);
@@ -102,8 +110,11 @@ export const ContentWrapper = styled.div`
           padding: 30px 0;
 
           .trade-flow-diagram {
-            padding-top: 50px;
-            padding-bottom: 23px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding-top: 77px;
+            padding-bottom: 3px;
           }
         }
       }

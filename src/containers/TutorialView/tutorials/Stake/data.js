@@ -19,20 +19,10 @@ export const getVt = rValue => {
   return getVr(rValue);
 };
 
-// export const getSS = (rValue, tValue) => {
-//   const { R, T } = data;
-
-//   return (
-//     ((2 * rValue * T + rValue * T + R * tValue) * (rValue + R + tValue + T)) /
-//     (4 * (rValue + R) * (tValue + T))
-//   );
-// };
-
 export const getSS = (rValue, tValue) => {
-  if (rValue === 0 || tValue === 0) {
-    return 0;
-  }
-  return (rValue / tValue) * 100;
+  const { R, T } = data;
+
+  return ((rValue / (rValue + R) + tValue / (tValue + T)) / 2) * 100;
 };
 
 export const getVss = (rValue, tValue) => {
@@ -46,7 +36,7 @@ export const getRSlip = rValue => {
   const { R } = data;
   const times = (rValue + R) ** 2;
 
-  return (rValue * (2 * R + rValue)) / times;
+  return ((rValue * (2 * R + rValue)) / times) * 100;
 };
 
 export const getTSlip = tValue => {

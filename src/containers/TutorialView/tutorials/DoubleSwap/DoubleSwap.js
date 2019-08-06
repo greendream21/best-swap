@@ -81,6 +81,8 @@ class DoubleSwap extends Component {
     const { xValue } = this.state;
     const yValue = getYValue(xValue);
     const zValue = getZValue(xValue);
+    const balanceA = getBalanceA(yValue);
+    const balanceB = getBalanceB(yValue);
 
     return (
       <div className="double-swap-flow-wrapper">
@@ -174,11 +176,11 @@ class DoubleSwap extends Component {
             </Centered>
             <Centered>
               <Label size="large" color="normal">
-                {formatCurrency(getBalanceA())}
+                {formatCurrency(balanceA)}
               </Label>
               <Label size="large" color="normal" />
               <Label size="large" color="normal">
-                {formatCurrency(getBalanceA())}
+                {formatCurrency(balanceA)}
               </Label>
             </Centered>
             <Centered>
@@ -231,11 +233,11 @@ class DoubleSwap extends Component {
             </Centered>
             <Centered>
               <Label size="large" color="normal">
-                {formatCurrency(getBalanceB())}
+                {formatCurrency(balanceB)}
               </Label>
               <Label size="large" color="normal" />
               <Label size="large" color="normal">
-                {formatCurrency(getBalanceB())}
+                {formatCurrency(balanceB)}
               </Label>
             </Centered>
             <Centered>
