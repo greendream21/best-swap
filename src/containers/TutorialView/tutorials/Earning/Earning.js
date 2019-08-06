@@ -28,6 +28,7 @@ import {
   getWt,
 } from './data';
 import Slider from '../../../../components/uielements/slider';
+import Selection from '../../../../components/uielements/selection';
 
 const { R, T, WR, WT, VWR } = data;
 
@@ -247,13 +248,8 @@ class Earning extends Component {
       <div className="earning-play-wrapper">
         <div className="token-wrapper">
           <InputForm title="PAYOUT:" type="rune" value={Wr} step={1000} />
-          <InputForm
-            title="Withdraw share:"
-            type="%"
-            value={wss}
-            onChange={this.handleChangeValue('wss')}
-          />
-          <Slider value={wss} onChange={this.handleChangeValue('wss')} />
+          <InputForm title="Withdraw share:" type="%" value={wss} />
+          <Selection onSelect={this.handleChangeValue('wss')} />
         </div>
         {this.renderFlow('earningplay')}
         <div className="token-wrapper">
