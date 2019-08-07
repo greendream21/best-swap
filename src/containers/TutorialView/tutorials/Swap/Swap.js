@@ -215,7 +215,9 @@ class Swap extends Component {
     const times = (xValue + X) ** 2;
     const outputToken = ((xValue * X * Y) / times).toFixed(2);
     const outputPy = ((Px * (X + xValue)) / (Y - outputToken)).toFixed(2);
-    const slip = ((xValue * (xValue + 2 * X)) / times) * 100;
+    const input = xValue * Px;
+    const output = outputToken * outputPy;
+    const slip = Math.round(((input - output) / input) * 100);
 
     return (
       <div className="swap-play-wrapper">
@@ -225,7 +227,7 @@ class Swap extends Component {
             asset="rune"
             amount={xValue}
             onChange={this.handleChangeValue('xValue')}
-            price={0.04}
+            price={Px}
             step={1000}
           />
         </div>
