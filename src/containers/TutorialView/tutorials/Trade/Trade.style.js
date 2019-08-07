@@ -118,7 +118,7 @@ export const ContentWrapper = styled.div`
             justify-content: center;
             align-items: center;
             padding-top: 77px;
-            padding-bottom: 3px;
+            padding-bottom: 5px;
           }
         }
       }

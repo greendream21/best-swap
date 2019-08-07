@@ -209,7 +209,7 @@ class Stake extends Component {
             amount={rValue}
             onChange={this.handleChangeValue('rValue')}
             price={Pr}
-            step={1000}
+            step={100000}
           />
         </div>
         {this.renderFlow('stakingplay')}
@@ -220,7 +220,7 @@ class Stake extends Component {
             amount={tValue}
             onChange={this.handleChangeValue('tValue')}
             price={Pt}
-            step={10}
+            step={200000}
             reverse
           />
         </div>

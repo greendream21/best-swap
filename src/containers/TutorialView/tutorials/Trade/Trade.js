@@ -19,7 +19,7 @@ import {
 } from '../../../../components/icons';
 
 import { formatNumber, formatCurrency } from '../../../../helpers/formatHelper';
-import { data, getVx, getPy, getGain, getYValue, getY } from './data';
+import { data, getVx, getPy, getGain, getYValue, getY, getDelta } from './data';
 import Slider from '../../../../components/uielements/slider';
 
 const { X, Y, Px, xm } = data;
@@ -213,6 +213,7 @@ class Trade extends Component {
     const yValue = getY(xValue).toFixed(2);
     const yTotal = formatCurrency(getYValue(xValue));
     const gain = formatCurrency(getGain(xValue));
+    const delta = `${getDelta(xValue)}%`;
 
     return (
       <div className="trade-play-wrapper">
@@ -254,7 +255,7 @@ class Trade extends Component {
             </div>
             <div className="center-text">
               <Label size="large" color="normal">
-                Delta: 10%
+                Delta: {delta}
               </Label>
             </div>
             <div className="center-text">

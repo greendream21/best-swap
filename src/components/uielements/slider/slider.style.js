@@ -23,6 +23,7 @@ export const SliderWrapper = styled(Slider)`
       width: 30px;
       height: 30px;
       margin-top: -12px;
+      margin-left: -15px;
       border: none;
       box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
     }

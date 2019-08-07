@@ -114,8 +114,22 @@ export const ContentWrapper = styled.div`
         width: 145px;
       }
 
+      .token-wrapper-right,
       .token-wrapper {
         width: 200px;
+      }
+
+      .token-wrapper-right {
+        padding-top: 80px;
+      }
+
+      .payout-price-label {
+        padding-top: 0px;
+
+        &.align-right {
+          display: flex;
+          justify-content: flex-end;
+        }
       }
     }
   }

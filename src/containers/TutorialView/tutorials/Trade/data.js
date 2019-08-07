@@ -45,11 +45,19 @@ export const getXValue = xValue => {
 };
 
 export const getYValue = xValue => {
+  const { xm } = data;
   const yValue = getY(xValue);
 
-  return yValue * getPy(xValue);
+  return yValue * xm;
 };
 
 export const getGain = xValue => {
   return getYValue(xValue) - getXValue(xValue);
+};
+
+export const getDelta = xValue => {
+  const { xm } = data;
+  const Py = getPy(xValue);
+
+  return Math.round((xm - Py) * 100);
 };

@@ -29,7 +29,7 @@ import {
   getWt,
 } from './data';
 
-const { R, T, WR, WT, VWR } = data;
+const { R, T, WR, WT, VWR, Pr, Pt } = data;
 
 class Earning extends Component {
   static propTypes = {
@@ -88,6 +88,11 @@ class Earning extends Component {
     const ssValue = `${Math.round(getSSValue(rValue, tValue))}%`;
     const VssValue = formatCurrency(getVssValue(rValue, tValue));
 
+    const Wr = getWr(wss);
+    const Wt = getWt(wss);
+    const rValuePrice = Wr * Pr;
+    const tValuePrice = Wt * Pt;
+
     return (
       <div className="earning-flow-wrapper">
         <Centered>
@@ -131,25 +136,25 @@ class Earning extends Component {
         <Centered>
           <Label size="large" color="normal" weight="bold">
             {view === 'earningintro' && formatNumber(R + rValue)}
-            {view === 'earningplay' && formatNumber(WR)}
+            {view === 'earningplay' && formatNumber(WR - Wr)}
           </Label>
           <Label size="large" color="normal" weight="bold">
             :
           </Label>
           <Label size="large" color="normal" weight="bold">
             {view === 'earningintro' && formatNumber(T + tValue)}
-            {view === 'earningplay' && formatNumber(WT)}
+            {view === 'earningplay' && formatNumber(WT - Wt)}
           </Label>
         </Centered>
         <Centered>
           <Label size="large" color="normal">
             {view === 'earningintro' && Vr}
-            {view === 'earningplay' && formatCurrency(VWR)}
+            {view === 'earningplay' && formatCurrency(VWR - rValuePrice)}
           </Label>
           <Label size="large" color="normal" />
           <Label size="large" color="normal">
             {view === 'earningintro' && Vt}
-            {view === 'earningplay' && formatCurrency(VWR)}
+            {view === 'earningplay' && formatCurrency(VWR - tValuePrice)}
           </Label>
         </Centered>
         <div className="center-text">
@@ -213,6 +218,7 @@ class Earning extends Component {
             type="rune"
             value={rValue}
             onChange={this.handleChangeValue('rValue')}
+            step={10000}
           />
           <TooltipIcon
             text="This simulates daily trading - which you can't control."
@@ -226,6 +232,7 @@ class Earning extends Component {
             type="bolt"
             value={tValue}
             onChange={this.handleChangeValue('tValue')}
+            step={20000}
             reverse
           />
           <TooltipIcon
@@ -242,16 +249,21 @@ class Earning extends Component {
     const { wss } = this.state;
     const Wr = getWr(wss);
     const Wt = getWt(wss);
+    const rValuePrice = formatCurrency(Wr * Pr);
+    const tValuePrice = formatCurrency(Wt * Pt);
 
     return (
       <div className="earning-play-wrapper">
         <div className="token-wrapper">
-          <InputForm title="PAYOUT:" type="rune" value={Wr} step={1000} />
           <InputForm title="Withdraw share:" type="%" value={wss} />
           <Selection onSelect={this.handleChangeValue('wss')} />
+          <InputForm title="PAYOUT:" type="rune" value={Wr} step={1000} />
+          <Label className="payout-price-label" color="gray">
+            {rValuePrice} (USD)
+          </Label>
         </div>
         {this.renderFlow('earningplay')}
-        <div className="token-wrapper">
+        <div className="token-wrapper-right">
           <InputForm
             title="PAYOUT:"
             type="bolt"
@@ -259,6 +271,9 @@ class Earning extends Component {
             step={1000}
             reverse
           />
+          <Label className="payout-price-label align-right" color="gray">
+            {tValuePrice} (USD)
+          </Label>
         </div>
       </div>
     );
