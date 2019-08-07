@@ -18,18 +18,9 @@ import {
 } from '../../../../components/icons';
 
 import { formatNumber, formatCurrency } from '../../../../helpers/formatHelper';
-import {
-  data,
-  getVr,
-  getSSValue,
-  getSS,
-  getVss,
-  getVssValue,
-  getWr,
-  getWt,
-} from './data';
+import { data, getVr, getSS, getVss, getWr, getWt } from './data';
 
-const { R, T, WR, WT, VWR, Pr, Pt } = data;
+const { R, T, WR, WT, VWR, Pr, Pt, SS } = data;
 
 class Earning extends Component {
   static propTypes = {
@@ -84,9 +75,9 @@ class Earning extends Component {
     const Vr = formatCurrency(getVr(rValue));
     const Vt = Vr;
     const ss = `${Math.round(getSS(wss))}%`;
+    const ssValue = `${SS}%`;
     const Vss = formatCurrency(getVss(wss));
-    const ssValue = `${Math.round(getSSValue(rValue, tValue))}%`;
-    const VssValue = formatCurrency(getVssValue(rValue, tValue));
+    const VssValue = formatCurrency((getVr(rValue) * 2 * SS) / 100);
 
     const Wr = getWr(wss);
     const Wt = getWt(wss);

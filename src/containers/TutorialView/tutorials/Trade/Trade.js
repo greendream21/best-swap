@@ -65,7 +65,7 @@ class Trade extends Component {
   };
 
   handleFinish = () => {
-    const URL = '/';
+    const URL = '/tutorial';
 
     this.props.history.push(URL);
   };
