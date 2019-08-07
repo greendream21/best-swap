@@ -40,7 +40,7 @@ export const StyledFooter = styled.div`
     align-items: center;
     width: 200px;
 
-    div {
+    a {
       font-size: 18px;
       color: ${palette('text', 6)};
       cursor: pointer;
