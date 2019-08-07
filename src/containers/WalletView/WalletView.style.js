@@ -4,6 +4,6 @@ import ViewPanel from '../../components/viewPanel';
 export const WalletViewWrapper = styled(ViewPanel)`
   .asset-title-label,
   button {
-    padding-left: 20px;
+    margin-left: 20px;
   }
 `;
