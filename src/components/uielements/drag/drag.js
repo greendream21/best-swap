@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Draggable from 'react-draggable';
 
-import { coinGroup } from '../../../settings';
-import { DragWrapper } from './drag.style';
 import CoinIcon from '../coins/coinIcon';
+import { coinGroup } from '../../../settings';
+import { DragWrapper, TitleLabel } from './drag.style';
 
 class Drag extends Component {
   static propTypes = {
@@ -26,6 +26,7 @@ class Drag extends Component {
     focused: true,
     overlap: false,
     success: false,
+    disabled: false,
   };
 
   handleFocus = e => {
@@ -45,9 +46,9 @@ class Drag extends Component {
   handleDragStart = e => {
     e.preventDefault();
     e.stopPropagation();
-    const { focused } = this.state;
+    const { focused, disabled } = this.state;
 
-    if (!focused) {
+    if (!focused || disabled) {
       return false;
     }
   };
@@ -57,9 +58,9 @@ class Drag extends Component {
     e.stopPropagation();
 
     const { onConfirm } = this.props;
-    const { focused } = this.state;
+    const { focused, disabled } = this.state;
 
-    if (!focused) {
+    if (!focused || disabled) {
       return false;
     }
 
@@ -73,6 +74,7 @@ class Drag extends Component {
         {
           success: true,
           overlap: false,
+          disabled: true,
         },
         () => {
           onConfirm();
@@ -86,7 +88,7 @@ class Drag extends Component {
   };
 
   render() {
-    const { source, target, className, ...props } = this.props;
+    const { source, target, title, className, ...props } = this.props;
     const { overlap, success } = this.state;
     const dragHandlers = {
       onStart: this.handleDragStart,
@@ -100,22 +102,25 @@ class Drag extends Component {
     };
 
     return (
-      <DragWrapper
-        overlap={overlap}
-        success={success}
-        className={`drag-wrapper ${className}`}
-        {...props}
-      >
-        <Draggable axis="x" bounds={dragBounds} {...dragHandlers}>
-          <CoinIcon
-            onMouseEnter={this.handleFocus}
-            onMouseLeave={this.handleBlur}
-            className="source-asset"
-            type={source}
-          />
-        </Draggable>
-        <CoinIcon className="target-asset" type={target} />
-      </DragWrapper>
+      <>
+        <DragWrapper
+          overlap={overlap}
+          success={success}
+          className={`drag-wrapper ${className}`}
+          {...props}
+        >
+          <Draggable axis="x" bounds={dragBounds} {...dragHandlers}>
+            <CoinIcon
+              onMouseEnter={this.handleFocus}
+              onMouseLeave={this.handleBlur}
+              className="source-asset"
+              type={source}
+            />
+          </Draggable>
+          <CoinIcon className="target-asset" type={target} />
+        </DragWrapper>
+        {title && <TitleLabel color="input">{title}</TitleLabel>}
+      </>
     );
   }
 }

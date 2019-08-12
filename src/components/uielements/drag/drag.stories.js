@@ -15,6 +15,7 @@ storiesOf('Components/Drag', module).add('default', () => {
           <Drag
             source="bnb"
             target="bolt"
+            title="Drag to swap"
             onConfirm={() => alert('confirmed!')}
           />
         </div>
