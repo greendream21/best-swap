@@ -16,6 +16,7 @@ class CoinCard extends Component {
     amount: PropTypes.number,
     price: PropTypes.number,
     slip: PropTypes.number,
+    title: PropTypes.string,
     withSelection: PropTypes.bool,
     onSelect: PropTypes.func,
     className: PropTypes.string,
@@ -26,6 +27,7 @@ class CoinCard extends Component {
     amount: 0,
     price: 0,
     slip: undefined,
+    title: '',
     withSelection: false,
     onSelect: () => {},
     className: '',
@@ -37,6 +39,7 @@ class CoinCard extends Component {
       amount,
       price,
       slip,
+      title,
       withSelection,
       onSelect,
       className,
@@ -45,6 +48,7 @@ class CoinCard extends Component {
 
     return (
       <CoinCardWrapper className={`coinCard-wrapper ${className}`} {...props}>
+        {title && <Label className="title-label">{title}</Label>}
         <div className="card-wrapper">
           <Coin type={asset} size="small" />
           <div className="asset-data">

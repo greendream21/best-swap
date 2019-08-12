@@ -2,6 +2,9 @@ import styled from 'styled-components';
 import { palette } from 'styled-theme';
 
 export const CoinCardWrapper = styled.div`
+  .title-label {
+    font-style: italic;
+  }
   .card-wrapper {
     display: flex;
     flex-direction: row;

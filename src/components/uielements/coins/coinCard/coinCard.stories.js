@@ -12,8 +12,20 @@ storiesOf('Components/Coins/CoinCard', module).add('default', () => {
     <ThemeProvider theme={defaultTheme}>
       <AppHolder>
         <div style={{ display: 'flex', padding: '20px' }}>
-          <CoinCard asset="bnb" amount={1.354} price={600} withSelection />
-          <CoinCard asset="bolt" amount={13549} price={596} slip={2} />
+          <CoinCard
+            title="You are swapping"
+            asset="bnb"
+            amount={1.354}
+            price={600}
+            withSelection
+          />
+          <CoinCard
+            title="You will receive"
+            asset="bolt"
+            amount={13549}
+            price={596}
+            slip={2}
+          />
         </div>
       </AppHolder>
     </ThemeProvider>
