@@ -4,6 +4,8 @@ import { ContentWrapper } from './Swap.style';
 
 export default class SwapView extends Component {
   render() {
-    return <ContentWrapper>Content</ContentWrapper>;
+    return (
+      <ContentWrapper classNaem="swap-view-wrapper">Content</ContentWrapper>
+    );
   }
 }

@@ -14,7 +14,7 @@ class Connect extends Component {
             <WalletView />
           </Col>
           <Col span={18}>
-            <ActionView header="connect" />
+            <ActionView type="connect" />
           </Col>
         </Row>
       </ConnectWrapper>

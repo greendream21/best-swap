@@ -10,7 +10,7 @@ class Network extends Component {
       <NetworkWrapper>
         <Row gutter={32}>
           <Col span={24}>
-            <ActionView header="network" />
+            <ActionView type="network" />
           </Col>
         </Row>
       </NetworkWrapper>
