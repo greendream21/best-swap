@@ -7,6 +7,8 @@ import CoinData from '../coinData';
 class CoinList extends Component {
   static propTypes = {
     data: PropTypes.array,
+    value: PropTypes.string.isRequired,
+    onSelect: PropTypes.func.isRequired,
     size: PropTypes.oneOf(['small', 'big']),
     className: PropTypes.string,
   };
@@ -17,27 +19,14 @@ class CoinList extends Component {
     className: '',
   };
 
-  state = {
-    selected: {},
-  };
-
   toggleSelect = key => () => {
-    const { selected } = this.state;
-    const update = selected;
-    if (selected[key]) {
-      update[key] = false;
-    } else {
-      update[key] = true;
-    }
+    const { onSelect } = this.props;
 
-    this.setState({
-      selected: update,
-    });
+    onSelect(key);
   };
 
   render() {
-    const { data, size, className, ...props } = this.props;
-    const { selected } = this.state;
+    const { data, size, value, onSelect, className, ...props } = this.props;
 
     return (
       <CoinListWrapper
@@ -47,7 +36,7 @@ class CoinList extends Component {
       >
         {data.map((coinData, index) => {
           const { asset, assetValue, target, targetValue, price } = coinData;
-          const activeClass = selected[index] ? 'active' : '';
+          const activeClass = value === index ? 'active' : '';
 
           return (
             <div

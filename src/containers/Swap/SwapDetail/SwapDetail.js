@@ -46,6 +46,15 @@ class SwapDetail extends Component {
     this.props.history.push(URL);
   };
 
+  handleSelectTraget = targetIndex => {
+    const { view } = this.props;
+    const { source } = this.getSwapData();
+    const target = assetsData[targetIndex].asset;
+    const URL = `/swap/${view}/${source}-${target}`;
+
+    this.props.history.push(URL);
+  };
+
   getSwapData = () => {
     const { info } = this.props;
 
@@ -70,6 +79,10 @@ class SwapDetail extends Component {
     }
 
     const { source, target } = swapData;
+    const targetIndex = assetsData.findIndex(value => value.asset === target);
+
+    const dragTitle =
+      view === 'detail' ? 'Drag to swap' : 'Drag to swap and send';
 
     return (
       <ContentWrapper className="swap-detail-wrapper">
@@ -118,7 +131,7 @@ class SwapDetail extends Component {
             </div>
             <div className="drag-confirm-wrapper">
               <Drag
-                title="Drag to swap"
+                title={dragTitle}
                 source={source}
                 target={target}
                 onConfirm={this.handleConfirm}
@@ -134,7 +147,11 @@ class SwapDetail extends Component {
               placeholder="Search Token ..."
               suffix={<Icon type="search" />}
             />
-            <CoinList data={assetsData} />
+            <CoinList
+              data={assetsData}
+              value={targetIndex}
+              onSelect={this.handleSelectTraget}
+            />
           </Col>
         </Row>
       </ContentWrapper>

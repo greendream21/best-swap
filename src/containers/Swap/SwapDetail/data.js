@@ -7,17 +7,7 @@ export const assetsData = [
     price: '217.34',
   },
   {
-    asset: 'ftm',
-    assetValue: 1.354,
-    price: '217.34',
-  },
-  {
-    asset: 'rune',
-    assetValue: 1.354,
-    price: '217.34',
-  },
-  {
-    asset: 'ankr',
+    asset: 'elrond',
     assetValue: 1.354,
     price: '217.34',
   },
@@ -27,7 +17,17 @@ export const assetsData = [
     price: '217.34',
   },
   {
-    asset: 'tomo',
+    asset: 'raven',
+    assetValue: 1.354,
+    price: '217.34',
+  },
+  {
+    asset: 'mith',
+    assetValue: 1.354,
+    price: '217.34',
+  },
+  {
+    asset: 'cos',
     assetValue: 1.354,
     price: '217.34',
   },

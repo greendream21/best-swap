@@ -21,8 +21,25 @@ class WalletView extends Component {
     status: '',
   };
 
+  state = {
+    curAsset: 0,
+    curStake: 0,
+  };
+
   handleConnect = () => {
     this.props.history.push('/connect');
+  };
+
+  handleSelectAsset = key => {
+    this.setState({
+      curAsset: key,
+    });
+  };
+
+  handleSelectStake = key => {
+    this.setState({
+      curStake: key,
+    });
   };
 
   renderAssetTitle = () => {
@@ -45,6 +62,7 @@ class WalletView extends Component {
 
   render() {
     const { status } = this.props;
+    const { curAsset, curStake } = this.state;
 
     return (
       <WalletViewWrapper>
@@ -58,13 +76,25 @@ class WalletView extends Component {
                 connect
               </Button>
             )}
-            {status && <CoinList data={assetsData} />}
+            {status && (
+              <CoinList
+                data={assetsData}
+                value={curAsset}
+                onSelect={this.handleSelectAsset}
+              />
+            )}
           </TabPane>
           <TabPane tab="stakes" key="stakes">
             <Label className="asset-title-label">
               {this.renderStakeTitle()}
             </Label>
-            {status && <CoinList data={stakeData} />}
+            {status && (
+              <CoinList
+                data={stakeData}
+                value={curStake}
+                onSelect={this.handleSelectStake}
+              />
+            )}
           </TabPane>
         </Tabs>
       </WalletViewWrapper>

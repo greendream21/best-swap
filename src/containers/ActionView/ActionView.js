@@ -61,7 +61,10 @@ class ActionView extends Component {
   };
 
   handleBack = () => {
-    this.props.history.push('/');
+    const view = this.getView();
+    if (view === 'swap-detail' || view === 'swap-send') {
+      this.props.history.push('/swap');
+    }
   };
 
   handleHeaderAction = () => {

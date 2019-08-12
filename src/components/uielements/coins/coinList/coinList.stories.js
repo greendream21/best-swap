@@ -14,7 +14,7 @@ storiesOf('Components/Coins/CoinList', module).add('default', () => {
       <AppHolder>
         <div style={{ display: 'flex', flexDirection: 'row', width: '800px' }}>
           <div style={{ display: 'inline-block', width: '300px' }}>
-            <CoinList data={assetsData} />
+            <CoinList data={assetsData} value={2} />
           </div>
           <div style={{ display: 'block', width: '300px' }}>
             <CoinList data={stakeData} />
