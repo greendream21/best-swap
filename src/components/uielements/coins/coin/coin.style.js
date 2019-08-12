@@ -6,6 +6,11 @@ export const CoinWrapper = styled.div`
   box-shadow: 0px 0px 4px 0.5px ${palette('secondary', 2)};
   padding: ${props => (props.size === 'small' ? '6px' : '8px')}
     ${props => (props.size === 'small' ? '6px' : '8px')};
+
+  .coinIcon-wrapper {
+    position: relative;
+    top: -1px;
+  }
 `;
 
 export const CoinsWrapper = styled.div`
@@ -15,6 +20,7 @@ export const CoinsWrapper = styled.div`
   .coin-bottom,
   .coin-over {
     position: relative;
+    top: -1px;
     display: inline-block;
     border-radius: 50%;
     box-shadow: 0px 0px 4px 0.5px ${palette('secondary', 2)};
