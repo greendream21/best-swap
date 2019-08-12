@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom';
 
 import Label from '../../../components/uielements/label';
 import CoinButton from '../../../components/uielements/coins/coinButton';
@@ -7,7 +8,7 @@ import SwapCard from '../../../components/swap/swapCard';
 import { ContentWrapper } from './SwapView.style';
 import { assets } from './data';
 
-export default class SwapView extends Component {
+class SwapView extends Component {
   state = {
     activeAsset: 'bnb',
   };
@@ -16,6 +17,12 @@ export default class SwapView extends Component {
     this.setState({
       activeAsset: asset,
     });
+  };
+
+  handleSwap = (source, target) => () => {
+    const URL = `/swap/detail/${source}-${target}`;
+
+    this.props.history.push(URL);
   };
 
   renderAssets = () => {
@@ -48,6 +55,7 @@ export default class SwapView extends Component {
             transaction={1234}
             slip={0.2}
             trade={2345}
+            onSwap={this.handleSwap(activeAsset, asset)}
             key={index}
           />
         );
@@ -69,3 +77,5 @@ export default class SwapView extends Component {
     );
   }
 }
+
+export default withRouter(SwapView);

@@ -8,7 +8,7 @@ import ActionView from '../../ActionView';
 
 class Swap extends Component {
   render() {
-    const { view } = this.props.match.params;
+    const { view, info } = this.props.match.params;
 
     return (
       <SwapWrapper>
@@ -17,7 +17,7 @@ class Swap extends Component {
             <WalletView status="connected" />
           </Col>
           <Col span={18}>
-            <ActionView type="swap" view={view} />
+            <ActionView type="swap" view={view} info={info} />
           </Col>
         </Row>
       </SwapWrapper>

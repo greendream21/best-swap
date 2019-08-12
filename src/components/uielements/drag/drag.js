@@ -10,6 +10,7 @@ class Drag extends Component {
   static propTypes = {
     source: PropTypes.oneOf(coinGroup).isRequired,
     target: PropTypes.oneOf(coinGroup).isRequired,
+    title: PropTypes.string,
     onConfirm: PropTypes.func,
     className: PropTypes.string,
     onSelect: PropTypes.func.isRequired,
@@ -17,6 +18,7 @@ class Drag extends Component {
 
   static defaultProps = {
     onConfirm: () => {},
+    title: '',
     className: '',
   };
 

@@ -7,7 +7,7 @@ import Tabs from '../../components/uielements/tabs';
 import PanelHeader from '../../components/uielements/panelHeader';
 import { headerData } from './data';
 
-import { SwapIntro, SwapView } from '../Swap';
+import { SwapIntro, SwapView, SwapDetail } from '../Swap';
 import { Pool } from '../Pool';
 import { Trade } from '../Trade';
 import ViewHeader from '../../components/uielements/viewHeader';
@@ -23,11 +23,13 @@ class ActionView extends Component {
   static propTypes = {
     type: PropTypes.string,
     view: PropTypes.string,
+    info: PropTypes.string,
   };
 
   static defaultProps = {
     type: '',
     view: 'view',
+    info: '',
   };
 
   state = {
@@ -71,12 +73,9 @@ class ActionView extends Component {
   };
 
   getHeaderText = () => {
-    const { type } = this.props;
+    const view = this.getView();
 
-    if (type) {
-      return headerData[type] || '';
-    }
-    return '';
+    return headerData[view] || '';
   };
 
   getView = () => {
@@ -123,9 +122,9 @@ class ActionView extends Component {
   };
 
   render() {
+    const { info } = this.props;
     const view = this.getView();
 
-    console.log(view);
     return (
       <ActionViewWrapper>
         <PanelHeader>{this.renderHeader()}</PanelHeader>
@@ -148,8 +147,9 @@ class ActionView extends Component {
         )}
         {view === 'stats-view' && <StatsView />}
         {view === 'faqs-view' && <FaqsView />}
-        {view === 'network' && <NetworkView />}
+        {view === 'network-view' && <NetworkView />}
         {view === 'swap-view' && <SwapView />}
+        {view === 'swap-detail' && <SwapDetail info={info} />}
       </ActionViewWrapper>
     );
   }

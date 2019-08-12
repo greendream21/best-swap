@@ -1,4 +1,8 @@
 export const headerData = {
-  connect: 'Connect your wallet',
-  stats: '',
+  'connect-view': 'Connect your wallet',
+  'stats-view': '',
+  'faqs-view': '',
+  'network-view': '',
+  'swap-detail': 'swap',
+  'swap-send': 'swap',
 };
