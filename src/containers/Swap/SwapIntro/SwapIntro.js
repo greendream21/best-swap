@@ -2,16 +2,16 @@ import React, { Component } from 'react';
 import { Row, Col, Icon } from 'antd';
 import PropTypes from 'prop-types';
 
-import { ContentWrapper } from './Swap.style';
-import Label from '../../components/uielements/label';
-import Button from '../../components/uielements/button';
+import { ContentWrapper } from './SwapIntro.style';
+import Label from '../../../components/uielements/label';
+import Button from '../../../components/uielements/button';
 
 import {
   userAvatarIcon,
   orbGreenIcon,
   arrowGreenIcon,
   arrowYellowIcon,
-} from '../../components/icons';
+} from '../../../components/icons';
 
 class Swap extends Component {
   static propTypes = {

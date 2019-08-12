@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { ContentWrapper } from './Swap.style';
+import { ContentWrapper } from './SwapView.style';
 
 export default class SwapView extends Component {
   render() {

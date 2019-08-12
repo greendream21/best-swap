@@ -1,4 +1,4 @@
-import Swap from './Swap';
+import SwapIntro from './SwapIntro';
 import SwapView from './SwapView';
 
-export { Swap, SwapView };
+export { SwapIntro, SwapView };
