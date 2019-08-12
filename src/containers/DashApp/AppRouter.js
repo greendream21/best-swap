@@ -33,6 +33,10 @@ const routes = [
     path: 'swap/:view?/:info?',
     component: asyncComponent(() => import('../pages/Swap')),
   },
+  {
+    path: 'pool/:view?/:info?',
+    component: asyncComponent(() => import('../pages/Pool')),
+  },
 ];
 
 class AppRouter extends Component {

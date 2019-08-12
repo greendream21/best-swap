@@ -1,0 +1,56 @@
+import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom';
+
+import Label from '../../../components/uielements/label';
+import AddIcon from '../../../components/uielements/addIcon';
+import PoolCard from '../../../components/pool/poolCard';
+
+import { ContentWrapper } from './PoolView.style';
+import { assets } from './data';
+
+class PoolView extends Component {
+  state = {
+    activeAsset: 'rune',
+  };
+
+  handleStake = (source, target) => () => {};
+
+  renderPoolList = () => {
+    const { activeAsset } = this.state;
+
+    return assets.map((asset, index) => {
+      if (asset !== activeAsset) {
+        return (
+          <PoolCard
+            className="pool-card"
+            asset={activeAsset}
+            target={asset}
+            depth={234000}
+            volumn={1000}
+            transaction={100}
+            liq={1}
+            roi={10}
+            onStake={this.handleStake(activeAsset, asset)}
+            key={index}
+          />
+        );
+      }
+    });
+  };
+
+  render() {
+    return (
+      <ContentWrapper className="pool-view-wrapper">
+        <div className="pool-list-view">{this.renderPoolList()}</div>
+        <div className="add-new-pool">
+          <AddIcon />
+          <Label size="normal" weight="bold" color="normal">
+            ADD NEW POOL
+          </Label>
+        </div>
+      </ContentWrapper>
+    );
+  }
+}
+
+export default withRouter(PoolView);

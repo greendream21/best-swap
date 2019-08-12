@@ -1,4 +1,4 @@
-import Pool from './Pool';
+import PoolIntro from './PoolIntro';
 import PoolView from './PoolView';
 
-export { Pool, PoolView };
+export { PoolIntro, PoolView };
