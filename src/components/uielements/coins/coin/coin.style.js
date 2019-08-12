@@ -10,6 +10,8 @@ export const CoinWrapper = styled.div`
 
 export const CoinsWrapper = styled.div`
   position: relative;
+  min-width: ${props => (props.size === 'small' ? '64px' : '88px')};
+
   .coin-bottom,
   .coin-over {
     position: relative;

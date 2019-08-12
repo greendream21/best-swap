@@ -19,11 +19,14 @@ export default class SwapView extends Component {
   };
 
   renderAssets = () => {
+    const { activeAsset } = this.state;
+
     return assets.map((asset, index) => {
       return (
         <CoinButton
           cointype={asset}
           onClick={this.handleChooseBasePair(asset)}
+          focused={asset === activeAsset}
           key={index}
         />
       );
