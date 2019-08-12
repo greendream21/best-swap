@@ -58,7 +58,7 @@ class Drag extends Component {
     e.stopPropagation();
 
     const { onConfirm } = this.props;
-    const { focused, disabled } = this.state;
+    const { focused, disabled, overlap, success } = this.state;
 
     if (!focused || disabled) {
       return false;
@@ -69,7 +69,8 @@ class Drag extends Component {
     const overlapLimit = 110;
     const successLimit = 150;
 
-    if (x >= successLimit) {
+    console.log(x);
+    if (x >= successLimit && !success) {
       this.setState(
         {
           success: true,
@@ -80,11 +81,16 @@ class Drag extends Component {
           onConfirm();
         },
       );
-    } else if (x >= overlapLimit) {
+    } else if (x >= overlapLimit && !overlap) {
       this.setState({
         overlap: true,
       });
+    } else if (x <= overlapLimit && overlap) {
+      this.setState({
+        overlap: false,
+      });
     }
+    return true;
   };
 
   render() {
@@ -102,13 +108,8 @@ class Drag extends Component {
     };
 
     return (
-      <>
-        <DragWrapper
-          overlap={overlap}
-          success={success}
-          className={`drag-wrapper ${className}`}
-          {...props}
-        >
+      <div className={`drag-wrapper ${className}`}>
+        <DragWrapper overlap={overlap} success={success} {...props}>
           <Draggable axis="x" bounds={dragBounds} {...dragHandlers}>
             <CoinIcon
               onMouseEnter={this.handleFocus}
@@ -120,7 +121,7 @@ class Drag extends Component {
           <CoinIcon className="target-asset" type={target} />
         </DragWrapper>
         {title && <TitleLabel color="input">{title}</TitleLabel>}
-      </>
+      </div>
     );
   }
 }

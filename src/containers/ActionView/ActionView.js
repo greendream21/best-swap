@@ -149,7 +149,8 @@ class ActionView extends Component {
         {view === 'faqs-view' && <FaqsView />}
         {view === 'network-view' && <NetworkView />}
         {view === 'swap-view' && <SwapView />}
-        {view === 'swap-detail' && <SwapDetail info={info} />}
+        {view === 'swap-detail' && <SwapDetail view="detail" info={info} />}
+        {view === 'swap-send' && <SwapDetail view="send" info={info} />}
       </ActionViewWrapper>
     );
   }

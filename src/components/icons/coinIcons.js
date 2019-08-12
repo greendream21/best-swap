@@ -7,6 +7,7 @@ export const tomoIcon = require('../../assets/SVG/coin-tomob.svg');
 export const mithIcon = require('../../assets/SVG/coin-mith.svg');
 export const elrondIcon = require('../../assets/SVG/coin-elrond.svg');
 export const oneIcon = require('../../assets/SVG/coin-one.svg');
+export const ravenIcon = require('../../assets/PNG/raven.png');
 
 export const coinIconGroup = {
   bnb: bnbIcon,
@@ -18,4 +19,5 @@ export const coinIconGroup = {
   mith: mithIcon,
   elrond: elrondIcon,
   one: oneIcon,
+  raven: ravenIcon,
 };
