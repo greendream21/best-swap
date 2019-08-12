@@ -15,4 +15,8 @@ export const SwapCardWrapper = styled.div`
   .trade-status {
     flex-grow: 1;
   }
+
+  .pool-status {
+    width: 100px;
+  }
 `;

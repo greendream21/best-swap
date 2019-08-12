@@ -56,7 +56,7 @@ class SwapCard extends Component {
           over={target}
           size="big"
         />
-        <Status title="Pool" value={poolValue} />
+        <Status className="pool-status" title="Pool" value={poolValue} />
         <Status title="Depth" value={depthValue} />
         <Status title="24hr Volumn" value={volumnValue} />
         <Status title="Avg. Transaction" value={transactionValue} />
