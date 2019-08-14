@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { Icon } from 'antd';
 
 import Label from '../label';
 import { HeaderWrapper } from './viewHeader.style';
@@ -34,7 +35,8 @@ class ViewHeader extends Component {
       <HeaderWrapper {...otherProps}>
         {back && (
           <Label color="primary" weight="bold" onClick={onBack}>
-            {'<'} Back
+            <Icon type="left" />
+            <span>Back</span>
           </Label>
         )}
         {title && (
@@ -44,7 +46,8 @@ class ViewHeader extends Component {
         )}
         {actionText && (
           <Label color="primary" weight="bold" onClick={onAction}>
-            {actionText}
+            <span>{actionText}</span>
+            <Icon type="sync" />
           </Label>
         )}
       </HeaderWrapper>

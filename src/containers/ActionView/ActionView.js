@@ -107,9 +107,6 @@ class ActionView extends Component {
               <TabPane tab="pool" key="pool" />
               <TabPane tab="trade" key="trade" />
             </Tabs>
-            <HeaderAction>
-              <div className="header-action-text">refresh</div>
-            </HeaderAction>
           </>
         )}
         {headerText && (

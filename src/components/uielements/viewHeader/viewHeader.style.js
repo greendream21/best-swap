@@ -12,7 +12,14 @@ export const HeaderWrapper = styled.div`
   border-bottom: 3px solid ${palette('primary', 5)};
 
   .label-wrapper {
+    display: flex;
+    align-items: center;
     text-transform: uppercase;
     letter-spacing: 2.5px;
+
+    i {
+      padding: 0 8px;
+      font-size: 16px;
+    }
   }
 `;
