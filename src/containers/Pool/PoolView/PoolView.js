@@ -13,7 +13,17 @@ class PoolView extends Component {
     activeAsset: 'rune',
   };
 
-  handleStake = (source, target) => () => {};
+  handleStake = (source, target) => () => {
+    const URL = `/pool/stake-new/${source}-${target}`;
+
+    this.props.history.push(URL);
+  };
+
+  handleNewPool = () => {
+    const URL = '/pool/new';
+
+    this.props.history.push(URL);
+  };
 
   renderPoolList = () => {
     const { activeAsset } = this.state;
@@ -42,7 +52,7 @@ class PoolView extends Component {
     return (
       <ContentWrapper className="pool-view-wrapper">
         <div className="pool-list-view">{this.renderPoolList()}</div>
-        <div className="add-new-pool">
+        <div className="add-new-pool" onClick={this.handleNewPool}>
           <AddIcon />
           <Label size="normal" weight="bold" color="normal">
             ADD NEW POOL
