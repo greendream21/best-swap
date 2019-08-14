@@ -25,7 +25,7 @@ class Status extends Component {
         <Label className="status-title" size="tiny" weight="bold">
           {title}
         </Label>
-        <Label className="status-value" size="big" weight="bold">
+        <Label className="status-value" size="big">
           {value}
         </Label>
       </StatusWrapper>
