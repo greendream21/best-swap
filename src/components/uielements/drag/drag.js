@@ -27,6 +27,12 @@ class Drag extends Component {
     overlap: false,
     success: false,
     disabled: false,
+    missed: false,
+    dragging: false,
+    pos: {
+      x: 0,
+      y: 0,
+    },
   };
 
   handleFocus = e => {
@@ -38,15 +44,33 @@ class Drag extends Component {
 
   handleBlur = e => {
     e.preventDefault();
-    this.setState({
-      focused: false,
-    });
+    const { success } = this.state;
+
+    if (!success) {
+      this.setState({
+        focused: false,
+        success: false,
+        overlap: false,
+        disabled: false,
+        missed: true,
+        dragging: false,
+        pos: {
+          x: 0,
+          y: 0,
+        },
+      });
+    }
   };
 
   handleDragStart = e => {
     e.preventDefault();
     e.stopPropagation();
     const { focused, disabled } = this.state;
+
+    this.setState({
+      missed: false,
+      dragging: true,
+    });
 
     if (!focused || disabled) {
       return false;
@@ -57,7 +81,6 @@ class Drag extends Component {
     e.preventDefault();
     e.stopPropagation();
 
-    const { onConfirm } = this.props;
     const { focused, disabled, overlap, success } = this.state;
 
     if (!focused || disabled) {
@@ -67,21 +90,8 @@ class Drag extends Component {
     const { x } = pos;
 
     const overlapLimit = 110;
-    const successLimit = 150;
 
-    console.log(x);
-    if (x >= successLimit && !success) {
-      this.setState(
-        {
-          success: true,
-          overlap: false,
-          disabled: true,
-        },
-        () => {
-          onConfirm();
-        },
-      );
-    } else if (x >= overlapLimit && !overlap) {
+    if (x >= overlapLimit && !overlap) {
       this.setState({
         overlap: true,
       });
@@ -90,15 +100,55 @@ class Drag extends Component {
         overlap: false,
       });
     }
+
+    this.setState({
+      pos,
+    });
+
+    return true;
+  };
+
+  handleDragStop = (e, pos) => {
+    const { onConfirm } = this.props;
+    const { focused, disabled, overlap, success } = this.state;
+
+    if (!focused || disabled) {
+      return false;
+    }
+
+    const { x } = pos;
+
+    const successLimit = 145;
+
+    if (x >= successLimit && !success) {
+      this.setState({
+        success: true,
+        overlap: false,
+        disabled: true,
+      });
+    } else {
+      this.setState({
+        success: false,
+        overlap: false,
+        disabled: false,
+        missed: true,
+        dragging: false,
+        pos: {
+          x: 0,
+          y: 0,
+        },
+      });
+    }
     return true;
   };
 
   render() {
     const { source, target, title, className, ...props } = this.props;
-    const { overlap, success } = this.state;
+    const { pos, overlap, success, missed, dragging } = this.state;
     const dragHandlers = {
       onStart: this.handleDragStart,
       onDrag: this.handleDragging,
+      onStop: this.handleDragStop,
     };
     const dragBounds = {
       left: 0,
@@ -109,8 +159,19 @@ class Drag extends Component {
 
     return (
       <div className={`drag-wrapper ${className}`}>
-        <DragWrapper overlap={overlap} success={success} {...props}>
-          <Draggable axis="x" bounds={dragBounds} {...dragHandlers}>
+        <DragWrapper
+          overlap={overlap}
+          success={success}
+          missed={missed}
+          dragging={dragging}
+          {...props}
+        >
+          <Draggable
+            position={pos}
+            axis="x"
+            bounds={dragBounds}
+            {...dragHandlers}
+          >
             <CoinIcon
               onMouseEnter={this.handleFocus}
               onMouseLeave={this.handleBlur}

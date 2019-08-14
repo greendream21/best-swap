@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { palette } from 'styled-theme';
-import { boxShadow } from '../../../settings/style-util';
+import { boxShadow, transition } from '../../../settings/style-util';
 import Label from '../label';
 
 export const DragWrapper = styled.div`
@@ -15,6 +15,7 @@ export const DragWrapper = styled.div`
 
   border-radius: 20px;
   background-color: ${palette('background', 6)};
+  ${props => props.dragging && boxShadow('0px 0px 4px 1px #33CCFF')};
   ${props => props.success && boxShadow('0px 0px 4px 1px #30D7A9')};
   ${props => props.overlap && boxShadow('0px 0px 4px 1px #FF4954')};
 
@@ -36,6 +37,7 @@ export const DragWrapper = styled.div`
     position: absolute;
     left: 2px;
     z-index: 500;
+    ${props => props.missed && 'transition: all .8s'};
 
     &:hover {
       ${boxShadow('0px 0px 4px 1px #33CCFF')};
