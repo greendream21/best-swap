@@ -10,7 +10,7 @@ export const CoinCardWrapper = styled.div`
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    width: 250px;
+    min-width: 250px;
     height: 75px;
     padding: 10px 10px;
     border: 1px solid ${palette('border', 0)};
@@ -20,7 +20,8 @@ export const CoinCardWrapper = styled.div`
     .asset-data {
       display: flex;
       flex-direction: column;
-      width: 140px;
+      flex-grow: 1;
+      padding: 10px 20px;
 
       .ant-divider {
         margin: 2px 0;
@@ -44,11 +45,12 @@ export const CoinCardWrapper = styled.div`
   }
 
   .selection-wrapper {
-    width: 250px;
+    min-width: 250px;
+    width: auto;
     margin-top: 10px;
 
     .btn-wrapper {
-      width: 55px;
+      width: 20%;
     }
   }
 `;

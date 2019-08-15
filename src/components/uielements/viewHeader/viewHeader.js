@@ -40,7 +40,7 @@ class ViewHeader extends Component {
           </Label>
         )}
         {title && (
-          <Label color="normal" size="normal" weight="bold">
+          <Label color="normal" size="big" weight="bold">
             {title}
           </Label>
         )}

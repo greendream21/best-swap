@@ -5,4 +5,9 @@ export const headerData = {
   'network-view': '',
   'swap-detail': 'swap',
   'swap-send': 'swap',
+  'pool-stake-new': 'stake',
+  'pool-stake-detail': 'stake',
+  'pool-stake-view': 'stake',
+  'pool-new': 'stake',
+  'pool-new-detail': 'stake',
 };
