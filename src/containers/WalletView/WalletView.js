@@ -45,7 +45,7 @@ class WalletView extends Component {
   handleSelectAsset = key => {
     const { page, view, info } = this.props;
 
-    if (page === 'pool') {
+    if (page === 'pool' && info) {
       const pair = getPair(info);
       const { source } = pair;
       const newAssetName = this.getAssetNameByIndex(key);
