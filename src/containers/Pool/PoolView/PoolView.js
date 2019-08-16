@@ -20,7 +20,7 @@ class PoolView extends Component {
   };
 
   handleNewPool = () => {
-    const URL = '/pool/new';
+    const URL = '/pool/new/rune';
 
     this.props.history.push(URL);
   };
