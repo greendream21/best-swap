@@ -68,6 +68,9 @@ class ActionView extends Component {
     if (view.includes('pool-')) {
       this.props.history.push('/pool');
     }
+    if (view.includes('trade-')) {
+      this.props.history.push('/trade');
+    }
   };
 
   handleHeaderAction = () => {
