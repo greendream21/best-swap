@@ -22,6 +22,24 @@ class ViewHeader extends Component {
     onBack: () => {},
   };
 
+  state = {
+    loading: false,
+  };
+
+  handleRefresh = () => {
+    const { onAction } = this.props;
+
+    onAction();
+    this.setState({
+      loading: true,
+    });
+    setTimeout(() => {
+      this.setState({
+        loading: false,
+      });
+    }, 1000);
+  };
+
   render() {
     const {
       title,
@@ -31,6 +49,8 @@ class ViewHeader extends Component {
       onBack,
       ...otherProps
     } = this.props;
+    const { loading } = this.state;
+
     return (
       <HeaderWrapper {...otherProps}>
         {back && (
@@ -45,9 +65,9 @@ class ViewHeader extends Component {
           </Label>
         )}
         {actionText && (
-          <Label color="primary" weight="bold" onClick={onAction}>
+          <Label onClick={this.handleRefresh} color="primary" weight="bold">
             <span>{actionText}</span>
-            <Icon type="sync" />
+            <Icon type="sync" spin={loading} />
           </Label>
         )}
       </HeaderWrapper>

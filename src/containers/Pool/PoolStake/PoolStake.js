@@ -44,6 +44,8 @@ class PoolStake extends Component {
 
   handleAddMore = () => {};
 
+  handleWithdraw = () => {};
+
   renderStakeInfo = pair => {
     const { view } = this.props;
     const { source, target } = pair;
@@ -145,6 +147,91 @@ class PoolStake extends Component {
     );
   };
 
+  renderYourShare = pair => {
+    const { view } = this.props;
+    const { source, target } = pair;
+
+    return (
+      <div className="your-share-wrapper">
+        <Label className="label-title" size="normal" weight="bold">
+          YOUR SHARE
+        </Label>
+        {view === 'stake-new' && (
+          <>
+            <Label size="normal">You don't have any shares in this pool.</Label>
+            <Button onClick={this.handleGotoDetail} color="success">
+              add share
+            </Button>
+          </>
+        )}
+        {view === 'stake-detail' && (
+          <>
+            <Label size="normal">Complete the process to add a share.</Label>
+            <div className="right-arrow-wrapper">
+              <img src={greyArrowIcon} alt="grey-arrow" />
+            </div>
+          </>
+        )}
+        {view === 'stake-view' && (
+          <>
+            <Label size="normal">Your total share of the pool.</Label>
+            <div className="your-share-info-wrapper">
+              <div className="your-share-info">
+                <Status title={String(source).toUpperCase()} value={0.65} />
+                <Label
+                  className="your-share-price-label"
+                  size="normal"
+                  color="grey"
+                >
+                  $USD 120.10
+                </Label>
+              </div>
+              <div className="your-share-info">
+                <Status title={String(target).toUpperCase()} value={1234} />
+                <Label
+                  className="your-share-price-label"
+                  size="normal"
+                  color="grey"
+                >
+                  $USD 120.10
+                </Label>
+              </div>
+              <div className="your-share-info">
+                <Status title="Pool Share" value="3%" />
+              </div>
+            </div>
+            <Label className="label-title" size="normal" weight="bold">
+              EARNINGS
+            </Label>
+            <Label size="normal">Total of all earnings from this pool.</Label>
+            <div className="your-share-info-wrapper">
+              <div className="your-share-info">
+                <Status title={String(source).toUpperCase()} value={0.06} />
+                <Label
+                  className="your-share-price-label"
+                  size="normal"
+                  color="grey"
+                >
+                  $USD 12.10
+                </Label>
+              </div>
+              <div className="your-share-info">
+                <Status title={String(target).toUpperCase()} value={123} />
+                <Label
+                  className="your-share-price-label"
+                  size="normal"
+                  color="grey"
+                >
+                  $USD 12.10
+                </Label>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    );
+  };
+
   render() {
     const { view, info } = this.props;
 
@@ -154,35 +241,28 @@ class PoolStake extends Component {
       return '';
     }
 
-    const { source, target } = pair;
-
     return (
       <ContentWrapper className="pool-stake-wrapper">
         {this.renderStakeInfo(pair)}
         <Row className="share-view">
           <Col className="your-share-view" span={8}>
-            <Label className="label-title" size="normal" weight="bold">
-              YOUR SHARE
-            </Label>
-            {view === 'stake-new' && (
-              <>
-                <Label size="normal">
-                  You don't have any shares in this pool.
+            {this.renderYourShare(pair)}
+            {view === 'stake-view' && (
+              <div className="withdraw-view-wrapper">
+                <Label className="label-title" size="normal" weight="bold">
+                  WITHDRAW
                 </Label>
-                <Button onClick={this.handleGotoDetail} color="success">
-                  add share
+                <Label size="normal">
+                  Withdraw everything including earnings.
+                </Label>
+                <Button
+                  onClick={this.handleWithdraw}
+                  color="warning"
+                  typevalue="outline"
+                >
+                  withdraw
                 </Button>
-              </>
-            )}
-            {view === 'stake-detail' && (
-              <>
-                <Label size="normal">
-                  Complete the process to add a share.
-                </Label>
-                <div className="right-arrow-wrapper">
-                  <img src={greyArrowIcon} alt="grey-arrow" />
-                </div>
-              </>
+              </div>
             )}
           </Col>
           <Col className="share-detail-view" span={16}>

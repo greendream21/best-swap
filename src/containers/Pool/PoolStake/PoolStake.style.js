@@ -43,7 +43,6 @@ export const ContentWrapper = styled(ContentView)`
 
     .your-share-view,
     .share-detail-view {
-      padding: 10px 20px;
       .label-title {
         padding-bottom: 0;
         letter-spacing: 2.5px;
@@ -66,9 +65,46 @@ export const ContentWrapper = styled(ContentView)`
         align-items: center;
         flex-grow: 1;
       }
+
+      .your-share-wrapper {
+        display: flex;
+        flex-direction: column;
+        padding: 10px 20px;
+
+        .your-share-info-wrapper {
+          display: flex;
+          align-items: baseline;
+          padding-bottom: 5px;
+
+          .your-share-info {
+            display: flex;
+            flex-direction: column;
+            margin-right: 20px;
+            min-width: 90px;
+
+            .status-title,
+            .status-value {
+              padding: 3px 0;
+            }
+            .your-share-price-label {
+              padding: 0;
+            }
+          }
+        }
+      }
+
+      .withdraw-view-wrapper {
+        display: flex;
+        flex-direction: column;
+        border-top: 1px solid ${palette('border', 0)};
+        padding-right: 20px;
+        padding-bottom: 10px;
+        padding-left: 20px;
+      }
     }
 
     .share-detail-view {
+      padding: 10px 20px;
       .label-no-padding {
         padding: 0;
       }
