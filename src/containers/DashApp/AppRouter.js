@@ -37,6 +37,10 @@ const routes = [
     path: 'pool/:view?/:info?',
     component: asyncComponent(() => import('../pages/Pool')),
   },
+  {
+    path: 'trade/:view?/:info?',
+    component: asyncComponent(() => import('../pages/Trade')),
+  },
 ];
 
 class AppRouter extends Component {

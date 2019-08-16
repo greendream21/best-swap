@@ -9,5 +9,5 @@ export const headerData = {
   'pool-stake-detail': 'stake',
   'pool-stake-view': 'stake',
   'pool-new': 'stake',
-  'pool-new-detail': 'stake',
+  'trade-detail': 'trade',
 };
