@@ -9,21 +9,33 @@ import Button from '../../components/uielements/button';
 import CoinList from '../../components/uielements/coins/coinList';
 
 import { assetsData, stakeData } from './data';
+import { getPair } from '../../helpers/stringHelper';
 
 const { TabPane } = Tabs;
 
 class WalletView extends Component {
   static propTypes = {
+    page: PropTypes.string,
+    view: PropTypes.string,
+    info: PropTypes.string,
     status: PropTypes.bool,
   };
 
   static defaultProps = {
+    page: '',
+    view: '',
+    info: '',
     status: '',
   };
 
-  state = {
-    curAsset: 0,
-    curStake: 0,
+  state = {};
+
+  getAssetNameByIndex = index => {
+    return assetsData[index].asset || '';
+  };
+
+  getAssetIndexByName = asset => {
+    return assetsData.findIndex(data => data.asset === asset);
   };
 
   handleConnect = () => {
@@ -31,16 +43,19 @@ class WalletView extends Component {
   };
 
   handleSelectAsset = key => {
-    this.setState({
-      curAsset: key,
-    });
+    const { page, view, info } = this.props;
+
+    if (page === 'pool') {
+      const pair = getPair(info);
+      const { source } = pair;
+      const newAssetName = this.getAssetNameByIndex(key);
+      const URL = `/pool/${view}/${source}-${newAssetName}`;
+
+      this.props.history.push(URL);
+    }
   };
 
-  handleSelectStake = key => {
-    this.setState({
-      curStake: key,
-    });
-  };
+  handleSelectStake = key => {};
 
   renderAssetTitle = () => {
     const { status } = this.props;
@@ -60,9 +75,24 @@ class WalletView extends Component {
     return '';
   };
 
+  getSelectedAsset = pair => {
+    const { page } = this.props;
+
+    if (page === 'pool') {
+      const { target } = pair;
+      const targetIndex = this.getAssetIndexByName(target);
+
+      return [targetIndex];
+    }
+    return [];
+  };
+
   render() {
-    const { status } = this.props;
-    const { curAsset, curStake } = this.state;
+    const { info, status } = this.props;
+    const pair = getPair(info);
+    const { source } = pair;
+    const selectedAsset = this.getSelectedAsset(pair);
+    const sourceIndex = this.getAssetIndexByName(source);
 
     return (
       <WalletViewWrapper>
@@ -79,7 +109,8 @@ class WalletView extends Component {
             {status && (
               <CoinList
                 data={assetsData}
-                value={curAsset}
+                value={sourceIndex}
+                selected={selectedAsset}
                 onSelect={this.handleSelectAsset}
               />
             )}
@@ -91,7 +122,7 @@ class WalletView extends Component {
             {status && (
               <CoinList
                 data={stakeData}
-                value={curStake}
+                value={sourceIndex}
                 onSelect={this.handleSelectStake}
               />
             )}

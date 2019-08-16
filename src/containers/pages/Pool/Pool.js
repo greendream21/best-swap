@@ -14,7 +14,12 @@ class Pool extends Component {
       <PoolWrapper>
         <Row gutter={32}>
           <Col span={6}>
-            <WalletView status="connected" />
+            <WalletView
+              page="pool"
+              view={view}
+              info={info}
+              status="connected"
+            />
           </Col>
           <Col span={18}>
             <ActionView type="pool" view={view} info={info} />
