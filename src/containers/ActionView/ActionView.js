@@ -9,7 +9,7 @@ import { headerData } from './data';
 
 import { SwapIntro, SwapView, SwapDetail } from '../Swap';
 import { PoolIntro, PoolView, PoolStake, PoolCreate } from '../Pool';
-import { Trade } from '../Trade';
+import { TradeIntro, TradeView, TradeDetail } from '../Trade';
 import ViewHeader from '../../components/uielements/viewHeader';
 import ConnectView from '../ConnectView';
 import StatsView from '../StatsView';
@@ -139,7 +139,10 @@ class ActionView extends Component {
           />
         )}
         {view === 'trade' && (
-          <Trade onBack={this.handleSetTab('pool')} onNext={this.handleStart} />
+          <TradeIntro
+            onBack={this.handleSetTab('pool')}
+            onNext={this.handleStart}
+          />
         )}
         {view === 'tutorial' && <TutorialView />}
         {view === 'connect-view' && (
@@ -162,6 +165,10 @@ class ActionView extends Component {
           <PoolStake view="stake-view" info={info} />
         )}
         {view === 'pool-new' && <PoolCreate view="new" info={info} />}
+        {view === 'trade-view' && <TradeView />}
+        {(view === 'trade-buy' || view === 'trade-sell') && (
+          <TradeDetail view={view} info={info} />
+        )}
       </ActionViewWrapper>
     );
   }

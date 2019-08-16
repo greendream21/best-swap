@@ -45,14 +45,15 @@ class WalletView extends Component {
   handleSelectAsset = key => {
     const { page, view, info } = this.props;
 
-    if (page === 'pool' && info) {
-      const pair = getPair(info);
-      const { source } = pair;
-      const newAssetName = this.getAssetNameByIndex(key);
-      const URL = `/pool/${view}/${source}-${newAssetName}`;
+    if (!info) return;
 
-      this.props.history.push(URL);
-    }
+    const pair = getPair(info);
+    const { source } = pair;
+    const newAssetName = this.getAssetNameByIndex(key);
+
+    const URL = `/${page}/${view}/${source}-${newAssetName}`;
+
+    this.props.history.push(URL);
   };
 
   handleSelectStake = key => {};
@@ -78,7 +79,7 @@ class WalletView extends Component {
   getSelectedAsset = pair => {
     const { page } = this.props;
 
-    if (page === 'pool') {
+    if (page === 'pool' || page === 'trade') {
       const { target } = pair;
       const targetIndex = this.getAssetIndexByName(target);
 

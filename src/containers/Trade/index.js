@@ -1,4 +1,5 @@
-import Trade from './Trade';
+import TradeIntro from './TradeIntro';
 import TradeView from './TradeView';
+import TradeDetail from './TradeDetail';
 
-export { Trade, TradeView };
+export { TradeIntro, TradeView, TradeDetail };
