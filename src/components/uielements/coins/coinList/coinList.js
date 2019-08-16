@@ -8,6 +8,7 @@ class CoinList extends Component {
   static propTypes = {
     data: PropTypes.array,
     value: PropTypes.string.isRequired,
+    selected: PropTypes.array,
     onSelect: PropTypes.func.isRequired,
     size: PropTypes.oneOf(['small', 'big']),
     className: PropTypes.string,
@@ -15,6 +16,7 @@ class CoinList extends Component {
 
   static defaultProps = {
     data: [],
+    selected: [],
     size: 'small',
     className: '',
   };
@@ -26,7 +28,15 @@ class CoinList extends Component {
   };
 
   render() {
-    const { data, size, value, onSelect, className, ...props } = this.props;
+    const {
+      data,
+      size,
+      value,
+      selected,
+      onSelect,
+      className,
+      ...props
+    } = this.props;
 
     return (
       <CoinListWrapper
@@ -36,7 +46,8 @@ class CoinList extends Component {
       >
         {data.map((coinData, index) => {
           const { asset, assetValue, target, targetValue, price } = coinData;
-          const activeClass = value === index ? 'active' : '';
+          const isSelected = selected.includes(index);
+          const activeClass = isSelected || value === index ? 'active' : '';
 
           return (
             <div

@@ -17,7 +17,7 @@ storiesOf('Components/Coins/CoinList', module).add('default', () => {
             <CoinList data={assetsData} value={2} />
           </div>
           <div style={{ display: 'block', width: '300px' }}>
-            <CoinList data={stakeData} />
+            <CoinList data={stakeData} selected={[1]} />
           </div>
         </div>
         <div
