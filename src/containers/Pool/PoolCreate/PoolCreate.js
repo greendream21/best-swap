@@ -77,7 +77,7 @@ class PoolCreate extends Component {
                 return <Status className="share-info-status" {...info} />;
               })}
             </div>
-            <Button onClick={this.handleStake} color="success">
+            <Button onClick={this.handleCreatePool} color="success">
               create pool
             </Button>
           </div>
