@@ -11,13 +11,11 @@ export const DragWrapper = styled.div`
   height: 40px;
   border: 1px solid ${palette('primary', 0)};
   ${props => props.success && `border: 1px solid ${palette('success', 0)}`};
-  ${props => props.overlap && `border: 1px solid ${palette('error', 0)}`};
 
   border-radius: 20px;
   background-color: ${palette('background', 6)};
   ${props => props.dragging && boxShadow('0px 0px 4px 1px #33CCFF')};
   ${props => props.success && boxShadow('0px 0px 4px 1px #30D7A9')};
-  ${props => props.overlap && boxShadow('0px 0px 4px 1px #FF4954')};
 
   overflow: hidden;
 
@@ -42,11 +40,9 @@ export const DragWrapper = styled.div`
     &:hover {
       ${boxShadow('0px 0px 4px 1px #33CCFF')};
       ${props => props.success && boxShadow('0px 0px 4px 1px #30D7A9')};
-      ${props => props.overlap && boxShadow('0px 0px 4px 1px #FF4954')};
     }
 
     ${props => props.success && boxShadow('0px 0px 4px 1px #30D7A9')};
-    ${props => props.overlap && boxShadow('0px 0px 4px 1px #FF4954')};
   }
 
   .target-asset {
@@ -56,7 +52,6 @@ export const DragWrapper = styled.div`
     z-index: 300;
 
     ${props => props.success && boxShadow('0px 0px 4px 1px #30D7A9')};
-    ${props => props.overlap && boxShadow('0px 0px 4px 1px #FF4954')};
   }
 `;
 
