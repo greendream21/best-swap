@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom';
 import { Row, Col } from 'antd';
 
 import { SwapWrapper } from './Swap.style';
@@ -7,6 +8,8 @@ import ActionView from '../../ActionView';
 
 class Swap extends Component {
   render() {
+    const { view, info } = this.props.match.params;
+
     return (
       <SwapWrapper>
         <Row gutter={32}>
@@ -14,7 +17,7 @@ class Swap extends Component {
             <WalletView status="connected" />
           </Col>
           <Col span={18}>
-            <ActionView header="swap-view" />
+            <ActionView type="swap" view={view} info={info} />
           </Col>
         </Row>
       </SwapWrapper>
@@ -22,4 +25,4 @@ class Swap extends Component {
   }
 }
 
-export default Swap;
+export default withRouter(Swap);

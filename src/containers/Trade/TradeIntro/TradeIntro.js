@@ -2,18 +2,18 @@ import React, { Component } from 'react';
 import { Row, Col, Icon } from 'antd';
 import PropTypes from 'prop-types';
 
-import { ContentWrapper } from './Trade.style';
-import Label from '../../components/uielements/label';
-import Button from '../../components/uielements/button';
+import { ContentWrapper } from './TradeIntro.style';
+import Label from '../../../components/uielements/label';
+import Button from '../../../components/uielements/button';
 
 import {
   userAvatarIcon,
   orbGreenIcon,
   arrowTwoIcon,
   marketIcon,
-} from '../../components/icons';
+} from '../../../components/icons';
 
-class Trade extends Component {
+class TradeIntro extends Component {
   static propTypes = {
     onNext: PropTypes.func.isRequired,
     onBack: PropTypes.func.isRequired,
@@ -96,4 +96,4 @@ class Trade extends Component {
   }
 }
 
-export default Trade;
+export default TradeIntro;

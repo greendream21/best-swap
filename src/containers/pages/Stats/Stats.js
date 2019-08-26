@@ -10,7 +10,7 @@ class Stats extends Component {
       <StatsWrapper>
         <Row gutter={32}>
           <Col span={24}>
-            <ActionView header="stats" />
+            <ActionView type="stats" />
           </Col>
         </Row>
       </StatsWrapper>

@@ -7,3 +7,6 @@ export const arrowYellowIcon = require('../../assets/SVG/asset-arrow-yello.svg')
 export const arrowTwoIcon = require('../../assets/SVG/asset-arrow-twoway.svg');
 export const marketIcon = require('../../assets/SVG/asset-market.svg');
 export const refreshIcon = require('../../assets/SVG/asset-refresh.svg');
+export const dropdownIcon = require('../../assets/SVG/asset-dropdown.svg');
+export const blackArrowIcon = require('../../assets/SVG/asset-arrow-blacksmall.svg');
+export const greyArrowIcon = require('../../assets/SVG/asset-arrow-grey.svg');

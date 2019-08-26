@@ -10,7 +10,7 @@ class Faqs extends Component {
       <FaqsWrapper>
         <Row gutter={32}>
           <Col span={24}>
-            <ActionView header="faqs" />
+            <ActionView type="faqs" />
           </Col>
         </Row>
       </FaqsWrapper>

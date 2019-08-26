@@ -11,7 +11,7 @@ cache:
 test_and_deploy:
   stage: test_and_deploy
   only:
-    - master
+    - development
   script:
     - yarn
     - yarn test:ci

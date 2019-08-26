@@ -12,5 +12,6 @@ export const CoinIconWrapper = styled.div`
   img {
     width: ${props => sizes[props.size]};
     height: ${props => sizes[props.size]};
+    border-radius: 50%;
   }
 `;

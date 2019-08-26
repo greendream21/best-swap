@@ -30,8 +30,16 @@ const routes = [
     component: asyncComponent(() => import('../pages/Network')),
   },
   {
-    path: 'swap',
+    path: 'swap/:view?/:info?',
     component: asyncComponent(() => import('../pages/Swap')),
+  },
+  {
+    path: 'pool/:view?/:info?',
+    component: asyncComponent(() => import('../pages/Pool')),
+  },
+  {
+    path: 'trade/:view?/:info?',
+    component: asyncComponent(() => import('../pages/Trade')),
   },
 ];
 

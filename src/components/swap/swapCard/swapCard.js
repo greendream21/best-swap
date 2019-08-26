@@ -16,6 +16,7 @@ class SwapCard extends Component {
     transaction: PropTypes.number,
     slip: PropTypes.number,
     trade: PropTypes.number,
+    onSwap: PropTypes.func.isRequired,
     className: PropTypes.string,
   };
 
@@ -37,6 +38,7 @@ class SwapCard extends Component {
       transaction,
       slip,
       trade,
+      onSwap,
       className,
       ...props
     } = this.props;
@@ -56,7 +58,7 @@ class SwapCard extends Component {
           over={target}
           size="big"
         />
-        <Status title="Pool" value={poolValue} />
+        <Status className="pool-status" title="Pool" value={poolValue} />
         <Status title="Depth" value={depthValue} />
         <Status title="24hr Volumn" value={volumnValue} />
         <Status title="Avg. Transaction" value={transactionValue} />
@@ -66,7 +68,9 @@ class SwapCard extends Component {
           value={tradeValue}
           className="trade-status"
         />
-        <Button color="success">swap</Button>
+        <Button onClick={onSwap} color="success">
+          swap
+        </Button>
       </SwapCardWrapper>
     );
   }

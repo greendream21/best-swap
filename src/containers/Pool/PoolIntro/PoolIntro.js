@@ -2,16 +2,16 @@ import React, { Component } from 'react';
 import { Row, Col, Icon } from 'antd';
 import PropTypes from 'prop-types';
 
-import { ContentWrapper } from './Pool.style';
-import Label from '../../components/uielements/label';
-import Button from '../../components/uielements/button';
+import { ContentWrapper } from './PoolIntro.style';
+import Label from '../../../components/uielements/label';
+import Button from '../../../components/uielements/button';
 
 import {
   userAvatarIcon,
   orbBlueIcon,
   orbGreenIcon,
   arrowDashIcon,
-} from '../../components/icons';
+} from '../../../components/icons';
 
 class Pool extends Component {
   static propTypes = {

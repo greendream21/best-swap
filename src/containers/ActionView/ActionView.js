@@ -7,9 +7,9 @@ import Tabs from '../../components/uielements/tabs';
 import PanelHeader from '../../components/uielements/panelHeader';
 import { headerData } from './data';
 
-import { Swap, SwapView } from '../Swap';
-import { Pool } from '../Pool';
-import { Trade } from '../Trade';
+import { SwapIntro, SwapView, SwapDetail } from '../Swap';
+import { PoolIntro, PoolView, PoolStake, PoolCreate } from '../Pool';
+import { TradeIntro, TradeView, TradeDetail } from '../Trade';
 import ViewHeader from '../../components/uielements/viewHeader';
 import ConnectView from '../ConnectView';
 import StatsView from '../StatsView';
@@ -21,11 +21,15 @@ const { TabPane } = Tabs;
 
 class ActionView extends Component {
   static propTypes = {
-    header: PropTypes.string,
+    type: PropTypes.string,
+    view: PropTypes.string,
+    info: PropTypes.string,
   };
 
   static defaultProps = {
-    header: '',
+    type: '',
+    view: 'view',
+    info: '',
   };
 
   state = {
@@ -33,9 +37,17 @@ class ActionView extends Component {
   };
 
   handleChangeTab = activeTab => {
-    this.setState({
-      activeTab,
-    });
+    const { type } = this.props;
+
+    if (type) {
+      const URL = `/${activeTab}`;
+
+      this.props.history.push(URL);
+    } else {
+      this.setState({
+        activeTab,
+      });
+    }
   };
 
   handleSetTab = activeTab => () => {
@@ -49,7 +61,16 @@ class ActionView extends Component {
   };
 
   handleBack = () => {
-    this.props.history.push('/');
+    const view = this.getView();
+    if (view === 'swap-detail' || view === 'swap-send') {
+      this.props.history.push('/swap');
+    }
+    if (view.includes('pool-')) {
+      this.props.history.push('/pool');
+    }
+    if (view.includes('trade-')) {
+      this.props.history.push('/trade');
+    }
   };
 
   handleHeaderAction = () => {
@@ -61,78 +82,96 @@ class ActionView extends Component {
   };
 
   getHeaderText = () => {
-    const { header } = this.props;
+    const view = this.getView();
 
-    if (header) {
-      return headerData[header] || '';
-    }
-    return '';
+    return headerData[view] || '';
   };
 
   getView = () => {
-    const { header } = this.props;
+    const { type, view } = this.props;
     const { activeTab } = this.state;
 
-    if (header) {
-      return header;
+    if (type) {
+      return `${type}-${view}`;
     }
+
     return activeTab;
   };
 
-  render() {
-    const { header } = this.props;
+  renderHeader = () => {
+    const { type } = this.props;
     const { activeTab } = this.state;
-
+    const active = type || activeTab;
     const headerText = this.getHeaderText();
+
+    return (
+      <>
+        {!headerText && (
+          <>
+            <Tabs activeKey={active} onChange={this.handleChangeTab} action>
+              <TabPane tab="swap" key="swap" />
+              <TabPane tab="pool" key="pool" />
+              <TabPane tab="trade" key="trade" />
+            </Tabs>
+          </>
+        )}
+        {headerText && (
+          <ViewHeader
+            title={headerText}
+            actionText="refresh"
+            onBack={this.handleBack}
+            onAction={this.handleHeaderAction}
+          />
+        )}
+      </>
+    );
+  };
+
+  render() {
+    const { info } = this.props;
     const view = this.getView();
-    console.log(view);
+
     return (
       <ActionViewWrapper>
-        <PanelHeader>
-          {!header && (
-            <>
-              <Tabs
-                activeKey={activeTab}
-                onChange={this.handleChangeTab}
-                action
-              >
-                <TabPane tab="swap" key="swap" />
-                <TabPane tab="pools" key="pools" />
-                <TabPane tab="trade" key="trade" />
-              </Tabs>
-              <HeaderAction>
-                <div className="header-action-text">refresh</div>
-              </HeaderAction>
-            </>
-          )}
-          {header && (
-            <ViewHeader
-              title={headerText}
-              actionText="refresh"
-              onBack={this.handleBack}
-              onAction={this.handleHeaderAction}
-            />
-          )}
-        </PanelHeader>
-        {view === 'swap' && <Swap onNext={this.handleSetTab('pools')} />}
-        {view === 'pools' && (
-          <Pool
+        <PanelHeader>{this.renderHeader()}</PanelHeader>
+        {view === 'swap' && <SwapIntro onNext={this.handleSetTab('pool')} />}
+        {view === 'pool' && (
+          <PoolIntro
             onBack={this.handleSetTab('swap')}
             onNext={this.handleSetTab('trade')}
           />
         )}
         {view === 'trade' && (
-          <Trade
-            onBack={this.handleSetTab('pools')}
+          <TradeIntro
+            onBack={this.handleSetTab('pool')}
             onNext={this.handleStart}
           />
         )}
         {view === 'tutorial' && <TutorialView />}
-        {view === 'connect' && <ConnectView onUnlock={this.handleUnlock} />}
-        {view === 'stats' && <StatsView />}
-        {view === 'faqs' && <FaqsView />}
-        {view === 'network' && <NetworkView />}
+        {view === 'connect-view' && (
+          <ConnectView onUnlock={this.handleUnlock} />
+        )}
+        {view === 'stats-view' && <StatsView />}
+        {view === 'faqs-view' && <FaqsView />}
+        {view === 'network-view' && <NetworkView />}
         {view === 'swap-view' && <SwapView />}
+        {view === 'swap-detail' && <SwapDetail view="detail" info={info} />}
+        {view === 'swap-send' && <SwapDetail view="send" info={info} />}
+        {view === 'pool-view' && <PoolView />}
+        {view === 'pool-stake-new' && (
+          <PoolStake view="stake-new" info={info} />
+        )}
+        {view === 'pool-stake-detail' && (
+          <PoolStake view="stake-detail" info={info} />
+        )}
+        {view === 'pool-stake-view' && (
+          <PoolStake view="stake-view" info={info} />
+        )}
+        {view === 'pool-new' && <PoolCreate view="new" info={info} />}
+        {view === 'trade-view' && <TradeView />}
+        {(view === 'trade-buy' || view === 'trade-sell') && (
+          <TradeDetail view={view} info={info} />
+        )}
       </ActionViewWrapper>
     );
   }

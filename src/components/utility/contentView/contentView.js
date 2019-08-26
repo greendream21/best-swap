@@ -4,7 +4,14 @@ import { ContentViewWrapper } from './contentView.style';
 
 export default class ContentView extends Component {
   render() {
-    const { children, ...props } = this.props;
-    return <ContentViewWrapper {...props}>{children}</ContentViewWrapper>;
+    const { className, children, ...props } = this.props;
+    return (
+      <ContentViewWrapper
+        className={`content-view-wrapper ${className}`}
+        {...props}
+      >
+        {children}
+      </ContentViewWrapper>
+    );
   }
 }
