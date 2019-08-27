@@ -40,9 +40,10 @@ export const ContentWrapper = styled(ContentView)`
 
       .left-arrow-wrapper {
         display: flex;
-        justify-content: center;
+        justify-content: left;
         align-items: center;
         flex-grow: 1;
+        padding-left: 20px;
 
         img {
           transform: rotate(180deg);

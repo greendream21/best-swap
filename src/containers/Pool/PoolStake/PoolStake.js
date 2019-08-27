@@ -42,7 +42,12 @@ class PoolStake extends Component {
     this.props.history.push(URL);
   };
 
-  handleAddMore = () => {};
+  handleAddMore = () => {
+    const { info } = this.props;
+    const URL = `/pool/stake-new/${info}`;
+
+    this.props.history.push(URL);
+  };
 
   handleWithdraw = () => {};
 
