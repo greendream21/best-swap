@@ -16,6 +16,7 @@
     "build-storybook": "build-storybook -o ./build/storybook"
   },
   "dependencies": {
+    "@binance-chain/javascript-sdk": "^2.14.7",
     "antd": "^3.20.3",
     "lodash": "^4.17.14",
     "node-sass": "^4.12.0",
