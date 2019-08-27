@@ -6,15 +6,16 @@ import { Row, Col, Icon } from 'antd';
 import Button from '../../../components/uielements/button';
 import Drag from '../../../components/uielements/drag';
 import CoinCard from '../../../components/uielements/coins/coinCard';
+import CoinList from '../../../components/uielements/coins/coinList';
+import Label from '../../../components/uielements/label';
+import Input from '../../../components/uielements/input/input';
+import Modal from '../../../components/uielements/modal';
 
 import { ContentWrapper } from './SwapDetail.style';
 
 import { blackArrowIcon } from '../../../components/icons';
-import Label from '../../../components/uielements/label';
-import Input from '../../../components/uielements/input/input';
 
 import { assetsData } from './data';
-import CoinList from '../../../components/uielements/coins/coinList';
 
 class SwapDetail extends Component {
   static propTypes = {
@@ -24,12 +25,33 @@ class SwapDetail extends Component {
 
   static defaultProps = {
     info: '',
+    dragReset: true,
+    openSwapModal: false,
   };
 
   state = {};
 
-  handleConfirm = () => {
-    console.log('confirmed');
+  handleDrag = () => {
+    this.setState({
+      dragReset: false,
+    });
+  };
+
+  handleEndDrag = () => {
+    this.setState({
+      openSwapModal: true,
+    });
+  };
+
+  handleConfirmSwap = () => {
+    this.handleCloseModal();
+  };
+
+  handleCloseModal = () => {
+    this.setState({
+      dragReset: true,
+      openSwapModal: false,
+    });
   };
 
   handleGotoDetail = () => {
@@ -72,6 +94,8 @@ class SwapDetail extends Component {
 
   render() {
     const { view } = this.props;
+    const { openSwapModal, dragReset } = this.state;
+
     const swapData = this.getSwapData();
 
     if (!swapData) {
@@ -134,7 +158,9 @@ class SwapDetail extends Component {
                 title={dragTitle}
                 source={source}
                 target={target}
-                onConfirm={this.handleConfirm}
+                reset={dragReset}
+                onConfirm={this.handleEndDrag}
+                onDrag={this.handleDrag}
               />
             </div>
           </Col>
@@ -154,6 +180,15 @@ class SwapDetail extends Component {
             />
           </Col>
         </Row>
+        <Modal
+          title="Swap"
+          visible={openSwapModal}
+          onOk={this.handleConfirmSwap}
+          onCancel={this.handleCloseModal}
+          okText="Swap"
+        >
+          <span>Do you want to Swap?</span>
+        </Modal>
       </ContentWrapper>
     );
   }

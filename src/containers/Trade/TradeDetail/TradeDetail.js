@@ -120,7 +120,7 @@ class TradeDetail extends Component {
           </Col>
         </Row>
         <Modal
-          title="Confirm"
+          title="Trade"
           visible={openConfirmModal}
           onOk={this.handleConfirm}
           onCancel={this.handleCloseModal}
