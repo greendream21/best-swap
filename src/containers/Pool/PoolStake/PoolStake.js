@@ -9,6 +9,7 @@ import Status from '../../../components/uielements/status';
 import Coin from '../../../components/uielements/coins/coin';
 import CoinCard from '../../../components/uielements/coins/coinCard';
 import Slider from '../../../components/uielements/slider';
+import Modal from '../../../components/uielements/modal';
 import { greyArrowIcon } from '../../../components/icons';
 
 import { ContentWrapper } from './PoolStake.style';
@@ -26,7 +27,10 @@ class PoolStake extends Component {
     info: '',
   };
 
-  state = {};
+  state = {
+    openWithdrawModal: false,
+    openStakeModal: false,
+  };
 
   handleGotoDetail = () => {
     const { info } = this.props;
@@ -36,6 +40,18 @@ class PoolStake extends Component {
   };
 
   handleStake = () => {
+    this.setState({
+      openStakeModal: true,
+    });
+  };
+
+  handleCloseModal = modal => () => {
+    this.setState({
+      [modal]: false,
+    });
+  };
+
+  handleConfirmStake = () => {
     const { info } = this.props;
     const URL = `/pool/stake-view/${info}`;
 
@@ -49,7 +65,17 @@ class PoolStake extends Component {
     this.props.history.push(URL);
   };
 
-  handleWithdraw = () => {};
+  handleWithdraw = () => {
+    this.setState({
+      openWithdrawModal: true,
+    });
+  };
+
+  handleConfirmWithdraw = () => {
+    this.setState({
+      openWithdrawModal: false,
+    });
+  };
 
   renderStakeInfo = pair => {
     const { view } = this.props;
@@ -239,6 +265,7 @@ class PoolStake extends Component {
 
   render() {
     const { view, info } = this.props;
+    const { openWithdrawModal, openStakeModal } = this.state;
 
     const pair = getPair(info);
 
@@ -274,6 +301,24 @@ class PoolStake extends Component {
             {this.renderShareDetail(pair)}
           </Col>
         </Row>
+        <Modal
+          title="Withdraw"
+          visible={openWithdrawModal}
+          onOk={this.handleConfirmWithdraw}
+          onCancel={this.handleCloseModal('openWithdrawModal')}
+          okText="Withdraw"
+        >
+          <span>Do you want to withdraw?</span>
+        </Modal>
+        <Modal
+          title="Stake"
+          visible={openStakeModal}
+          onOk={this.handleConfirmStake}
+          onCancel={this.handleCloseModal('openStakeModal')}
+          okText="Stake"
+        >
+          <span>Do you want to stake?</span>
+        </Modal>
       </ContentWrapper>
     );
   }
