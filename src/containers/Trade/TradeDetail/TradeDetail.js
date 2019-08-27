@@ -15,6 +15,7 @@ import { tradeData } from './data';
 import Coin from '../../../components/uielements/coins/coin';
 import Status from '../../../components/uielements/status';
 import Slider from '../../../components/uielements/slider';
+import Modal from '../../../components/uielements/modal';
 
 class TradeDetail extends Component {
   static propTypes = {
@@ -24,16 +25,38 @@ class TradeDetail extends Component {
 
   static defaultProps = {
     info: '',
+    dragReset: true,
+    openConfirmModal: false,
   };
 
   state = {};
 
+  handleDrag = () => {
+    this.setState({
+      dragReset: false,
+    });
+  };
+
+  handleEndDrag = () => {
+    this.setState({
+      openConfirmModal: true,
+    });
+  };
+
   handleConfirm = () => {
-    console.log('confirmed');
+    this.handleCloseModal();
+  };
+
+  handleCloseModal = () => {
+    this.setState({
+      dragReset: true,
+      openConfirmModal: false,
+    });
   };
 
   render() {
     const { info } = this.props;
+    const { dragReset, openConfirmModal } = this.state;
     const pair = getPair(info);
 
     if (!pair) {
@@ -83,7 +106,9 @@ class TradeDetail extends Component {
                 title={dragTitle}
                 source={source}
                 target={target}
-                onConfirm={this.handleConfirm}
+                reset={dragReset}
+                onConfirm={this.handleEndDrag}
+                onDrag={this.handleDrag}
               />
             </div>
           </Col>
@@ -95,6 +120,13 @@ class TradeDetail extends Component {
             </div>
           </Col>
         </Row>
+        <Modal
+          title="Confirm"
+          visible={openConfirmModal}
+          onOk={this.handleConfirm}
+          onCancel={this.handleCloseModal}
+          okText="Confirm"
+        />
       </ContentWrapper>
     );
   }

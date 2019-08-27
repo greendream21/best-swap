@@ -11,13 +11,16 @@ class Drag extends Component {
     source: PropTypes.oneOf(coinGroup).isRequired,
     target: PropTypes.oneOf(coinGroup).isRequired,
     title: PropTypes.string,
+    reset: PropTypes.bool,
     onConfirm: PropTypes.func,
+    onDrag: PropTypes.func,
     className: PropTypes.string,
-    onSelect: PropTypes.func.isRequired,
   };
 
   static defaultProps = {
     onConfirm: () => {},
+    onDrag: () => {},
+    reset: true,
     title: '',
     className: '',
   };
@@ -35,10 +38,31 @@ class Drag extends Component {
     },
   };
 
+  componentDidUpdate = prevProps => {
+    if (prevProps.reset === false && this.props.reset === true) {
+      this.handleReset();
+    }
+  };
+
   handleFocus = e => {
     e.preventDefault();
     this.setState({
       focused: true,
+    });
+  };
+
+  handleReset = () => {
+    this.setState({
+      focused: false,
+      success: false,
+      overlap: false,
+      disabled: false,
+      missed: true,
+      dragging: false,
+      pos: {
+        x: 0,
+        y: 0,
+      },
     });
   };
 
@@ -47,34 +71,26 @@ class Drag extends Component {
     const { success } = this.state;
 
     if (!success) {
-      this.setState({
-        focused: false,
-        success: false,
-        overlap: false,
-        disabled: false,
-        missed: true,
-        dragging: false,
-        pos: {
-          x: 0,
-          y: 0,
-        },
-      });
+      this.handleReset();
     }
   };
 
   handleDragStart = e => {
     e.preventDefault();
     e.stopPropagation();
+    const { onDrag } = this.props;
     const { focused, disabled } = this.state;
+
+    if (!focused || disabled) {
+      return false;
+    }
+
+    onDrag();
 
     this.setState({
       missed: false,
       dragging: true,
     });
-
-    if (!focused || disabled) {
-      return false;
-    }
   };
 
   handleDragging = (e, pos) => {
@@ -118,26 +134,21 @@ class Drag extends Component {
 
     const { x } = pos;
 
-    const successLimit = 145;
+    const successLimit = 140;
 
     if (x >= successLimit && !success) {
-      this.setState({
-        success: true,
-        overlap: false,
-        disabled: true,
-      });
-    } else {
-      this.setState({
-        success: false,
-        overlap: false,
-        disabled: false,
-        missed: true,
-        dragging: false,
-        pos: {
-          x: 0,
-          y: 0,
+      this.setState(
+        () => ({
+          success: true,
+          overlap: false,
+          disabled: true,
+        }),
+        () => {
+          onConfirm();
         },
-      });
+      );
+    } else {
+      this.handleReset();
     }
     return true;
   };
