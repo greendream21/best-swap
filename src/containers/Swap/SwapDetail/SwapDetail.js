@@ -103,7 +103,8 @@ class SwapDetail extends Component {
     }
 
     const { source, target } = swapData;
-    const targetIndex = assetsData.findIndex(value => value.asset === target);
+    const targetData = assetsData.filter(data => data.asset !== source);
+    const targetIndex = targetData.findIndex(value => value.asset === target);
 
     const dragTitle =
       view === 'detail' ? 'Drag to swap' : 'Drag to swap and send';
@@ -174,7 +175,7 @@ class SwapDetail extends Component {
               suffix={<Icon type="search" />}
             />
             <CoinList
-              data={assetsData}
+              data={targetData}
               value={targetIndex}
               onSelect={this.handleSelectTraget}
             />
