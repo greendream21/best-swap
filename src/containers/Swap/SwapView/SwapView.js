@@ -51,7 +51,7 @@ class SwapView extends Component {
             asset={activeAsset}
             target={asset}
             depth={234.0}
-            volumn={340.0}
+            volume={340.0}
             transaction={1234}
             slip={0.2}
             trade={2345}

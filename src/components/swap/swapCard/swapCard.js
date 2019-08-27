@@ -12,7 +12,7 @@ class SwapCard extends Component {
     asset: PropTypes.oneOf(coinGroup).isRequired,
     target: PropTypes.oneOf(coinGroup).isRequired,
     depth: PropTypes.number,
-    volumn: PropTypes.number,
+    volume: PropTypes.number,
     transaction: PropTypes.number,
     slip: PropTypes.number,
     trade: PropTypes.number,
@@ -22,7 +22,7 @@ class SwapCard extends Component {
 
   static defaultProps = {
     depth: 0,
-    volumn: 0,
+    volume: 0,
     transaction: 0,
     slip: 0,
     trade: 0,
@@ -34,7 +34,7 @@ class SwapCard extends Component {
       asset,
       target,
       depth,
-      volumn,
+      volume,
       transaction,
       slip,
       trade,
@@ -45,7 +45,7 @@ class SwapCard extends Component {
 
     const poolValue = `${asset}:${target}`;
     const depthValue = `$${depth}`;
-    const volumnValue = `$${volumn}`;
+    const volumeValue = `$${volume}`;
     const transactionValue = `$${transaction}`;
     const slipValue = `${slip}%`;
     const tradeValue = `${trade}`;
@@ -60,7 +60,7 @@ class SwapCard extends Component {
         />
         <Status className="pool-status" title="Pool" value={poolValue} />
         <Status title="Depth" value={depthValue} />
-        <Status title="24hr Volumn" value={volumnValue} />
+        <Status title="24hr volume" value={volumeValue} />
         <Status title="Avg. Transaction" value={transactionValue} />
         <Status title="Avg. Slip" value={slipValue} />
         <Status

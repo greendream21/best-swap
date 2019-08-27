@@ -36,7 +36,7 @@ class PoolView extends Component {
             asset={activeAsset}
             target={asset}
             depth={234000}
-            volumn={1000}
+            volume={1000}
             transaction={100}
             liq={1}
             roi={10}
