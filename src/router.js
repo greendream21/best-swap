@@ -1,5 +1,6 @@
 import React from 'react';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { ConnectedRouter } from 'connected-react-router';
+import { Route } from 'react-router-dom';
 import { LocaleProvider } from 'antd';
 import { IntlProvider } from 'react-intl';
 
@@ -24,7 +25,8 @@ const routes = [
   },
 ];
 
-const PublicRoutes = () => {
+const PublicRoutes = props => {
+  const { history } = props;
   const language = 'en';
   const currentAppLocale = AppLocale[language];
 
@@ -34,7 +36,7 @@ const PublicRoutes = () => {
         locale={currentAppLocale.locale}
         messages={currentAppLocale.messages}
       >
-        <Router>
+        <ConnectedRouter history={history}>
           <div>
             {routes.map(singleRoute => {
               const { exact = false, ...otherProps } = singleRoute;
@@ -43,7 +45,7 @@ const PublicRoutes = () => {
               );
             })}
           </div>
-        </Router>
+        </ConnectedRouter>
       </IntlProvider>
     </LocaleProvider>
   );
