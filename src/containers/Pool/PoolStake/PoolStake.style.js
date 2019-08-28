@@ -65,6 +65,7 @@ export const ContentWrapper = styled(ContentView)`
         justify-content: center;
         align-items: center;
         flex-grow: 1;
+        padding-top: 30px;
       }
 
       .your-share-wrapper {

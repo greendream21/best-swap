@@ -5,16 +5,16 @@ import { Row, Col } from 'antd';
 
 import Drag from '../../../components/uielements/drag';
 import CoinCard from '../../../components/uielements/coins/coinCard';
-
-import { ContentWrapper } from './TradeDetail.style';
-
-import { blackArrowIcon } from '../../../components/icons';
-
-import { getPair } from '../../../helpers/stringHelper';
-import { tradeData } from './data';
 import Coin from '../../../components/uielements/coins/coin';
 import Status from '../../../components/uielements/status';
 import Slider from '../../../components/uielements/slider';
+import Modal from '../../../components/uielements/modal';
+import { blackArrowIcon } from '../../../components/icons';
+
+import { ContentWrapper } from './TradeDetail.style';
+
+import { getPair } from '../../../helpers/stringHelper';
+import { tradeData } from './data';
 
 class TradeDetail extends Component {
   static propTypes = {
@@ -26,14 +26,37 @@ class TradeDetail extends Component {
     info: '',
   };
 
-  state = {};
+  state = {
+    dragReset: true,
+    openConfirmModal: false,
+  };
+
+  handleDrag = () => {
+    this.setState({
+      dragReset: false,
+    });
+  };
+
+  handleEndDrag = () => {
+    this.setState({
+      openConfirmModal: true,
+    });
+  };
 
   handleConfirm = () => {
-    console.log('confirmed');
+    this.handleCloseModal();
+  };
+
+  handleCloseModal = () => {
+    this.setState({
+      dragReset: true,
+      openConfirmModal: false,
+    });
   };
 
   render() {
     const { info } = this.props;
+    const { dragReset, openConfirmModal } = this.state;
     const pair = getPair(info);
 
     if (!pair) {
@@ -83,7 +106,9 @@ class TradeDetail extends Component {
                 title={dragTitle}
                 source={source}
                 target={target}
-                onConfirm={this.handleConfirm}
+                reset={dragReset}
+                onConfirm={this.handleEndDrag}
+                onDrag={this.handleDrag}
               />
             </div>
           </Col>
@@ -95,6 +120,15 @@ class TradeDetail extends Component {
             </div>
           </Col>
         </Row>
+        <Modal
+          title="Trade"
+          visible={openConfirmModal}
+          onOk={this.handleConfirm}
+          onCancel={this.handleCloseModal}
+          okText="Confirm"
+        >
+          <span>Do you want to Trade?</span>
+        </Modal>
       </ContentWrapper>
     );
   }

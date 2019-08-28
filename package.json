@@ -16,7 +16,9 @@
     "build-storybook": "build-storybook -o ./build/storybook"
   },
   "dependencies": {
+    "@binance-chain/javascript-sdk": "^2.14.7",
     "antd": "^3.20.3",
+    "connected-react-router": "^6.5.2",
     "lodash": "^4.17.14",
     "node-sass": "^4.12.0",
     "nprogress": "^0.2.0",
@@ -27,8 +29,14 @@
     "react-draggable": "^3.3.0",
     "react-intl": "^2.9.0",
     "react-placeholder": "^3.0.2",
+    "react-redux": "^7.1.1",
     "react-router-dom": "^5.0.1",
     "react-scripts": "3.0.1",
+    "redux": "^4.0.4",
+    "redux-devtools-extension": "^2.13.8",
+    "redux-logger": "^3.0.6",
+    "redux-saga": "^1.0.5",
+    "redux-thunk": "^2.3.0",
     "styled-components": "^4.3.2",
     "styled-theme": "^0.3.3",
     "styled-tools": "^1.7.1"

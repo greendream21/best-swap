@@ -37,7 +37,7 @@ class Pool extends Component {
               claim
             </Label>
             <Label size="small" color="dark">
-              Choose pools with low liquidity and high volumn for maximum
+              Choose pools with low liquidity and high volume for maximum
               earnings.
             </Label>
           </Col>
