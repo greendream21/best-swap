@@ -8,6 +8,10 @@ class BinanceService {
     this.bnbClient = new BnbClient(this.baseURL);
   }
 
+  isValidAddress = address => {
+    return this.getCrypto().checkAddress(address);
+  };
+
   getCrypto = () => {
     return BnbClient.crypto;
   };

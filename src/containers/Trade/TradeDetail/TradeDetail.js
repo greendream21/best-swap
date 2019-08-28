@@ -24,11 +24,12 @@ class TradeDetail extends Component {
 
   static defaultProps = {
     info: '',
+  };
+
+  state = {
     dragReset: true,
     openConfirmModal: false,
   };
-
-  state = {};
 
   handleDrag = () => {
     this.setState({

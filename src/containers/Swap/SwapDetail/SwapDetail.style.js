@@ -27,15 +27,19 @@ export const ContentWrapper = styled(ContentView)`
 
     .recipient-form {
       display: flex;
-      align-items: center;
       padding-top: 20px;
 
       .label-wrapper {
-        width: 170px;
+        width: 130px;
+        padding-top: 14px;
       }
 
-      .input-wrapper {
+      .ant-form-item {
         flex-grow: 1;
+        height: 60px;
+        .ant-form-explain {
+          font-size: 12px;
+        }
       }
     }
     .swap-asset-card {

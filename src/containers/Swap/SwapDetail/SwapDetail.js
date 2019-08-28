@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Row, Col, Icon } from 'antd';
+import { Row, Col, Icon, Form } from 'antd';
+
+import BnbClient from '../../../services/binance';
 
 import Button from '../../../components/uielements/button';
 import Drag from '../../../components/uielements/drag';
@@ -25,11 +27,29 @@ class SwapDetail extends Component {
 
   static defaultProps = {
     info: '',
+  };
+
+  state = {
+    address: '',
+    invalidAddress: false,
     dragReset: true,
     openSwapModal: false,
   };
 
-  state = {};
+  addressRef = React.createRef();
+
+  isValidRecipient = () => {
+    const { address } = this.state;
+
+    return BnbClient.isValidAddress(address);
+  };
+
+  handleChange = key => e => {
+    this.setState({
+      [key]: e.target.value,
+      invalidAddress: false,
+    });
+  };
 
   handleDrag = () => {
     this.setState({
@@ -38,6 +58,14 @@ class SwapDetail extends Component {
   };
 
   handleEndDrag = () => {
+    if (!this.isValidRecipient()) {
+      this.setState({
+        invalidAddress: true,
+        dragReset: true,
+      });
+      return;
+    }
+
     this.setState({
       openSwapModal: true,
     });
@@ -94,7 +122,7 @@ class SwapDetail extends Component {
 
   render() {
     const { view } = this.props;
-    const { openSwapModal, dragReset } = this.state;
+    const { openSwapModal, dragReset, address, invalidAddress } = this.state;
 
     const swapData = this.getSwapData();
 
@@ -132,10 +160,23 @@ class SwapDetail extends Component {
               </Button>
             </div>
             {view === 'send' && (
-              <div className="recipient-form">
+              <Form className="recipient-form">
                 <Label weight="bold">Recipient Address:</Label>
-                <Input placeholder="bnbeh456..." sizevalue="normal" />
-              </div>
+                <Form.Item className={invalidAddress ? 'has-error' : ''}>
+                  <Input
+                    placeholder="bnbeh456..."
+                    sizevalue="normal"
+                    value={address}
+                    onChange={this.handleChange('address')}
+                    ref={this.addressRef}
+                  />
+                  {invalidAddress && (
+                    <div className="ant-form-explain">
+                      Recipient address is invalid!
+                    </div>
+                  )}
+                </Form.Item>
+              </Form>
             )}
             <div className="swap-asset-card">
               <CoinCard
