@@ -167,6 +167,7 @@ class ActionView extends Component {
         {view === 'pool-stake-view' && (
           <PoolStake view="stake-view" info={info} />
         )}
+        {view === 'pool-withdraw' && <PoolStake view="withdraw" info={info} />}
         {view === 'pool-new' && <PoolCreate view="new" info={info} />}
         {view === 'trade-view' && <TradeView />}
         {(view === 'trade-buy' || view === 'trade-sell') && (

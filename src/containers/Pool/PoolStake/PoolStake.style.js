@@ -48,6 +48,51 @@ export const ContentWrapper = styled(ContentView)`
         padding-bottom: 0;
         letter-spacing: 2.5px;
       }
+      .go-back {
+        display: flex;
+        align-items: center;
+        text-transform: uppercase;
+        letter-spacing: 2.5px;
+
+        i {
+          padding-right: 8px;
+          font-size: 16px;
+        }
+      }
+
+      .withdraw-percent-view {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-left: 5px;
+        .label-wrapper {
+          width: 40px;
+        }
+      }
+
+      .stake-withdraw-info-wrapper {
+        display: flex;
+        flex-direction: column;
+
+        .withdraw-status-wrapper {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+
+          .withdraw-asset-wrapper {
+            display: flex;
+            flex-direction: column;
+
+            .coinData-wrapper {
+              padding: 10px 0;
+            }
+          }
+
+          .drag-wrapper {
+            padding-right: 20px;
+          }
+        }
+      }
     }
 
     .your-share-view {

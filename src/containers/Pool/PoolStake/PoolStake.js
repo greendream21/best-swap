@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Row, Col } from 'antd';
+import { Row, Col, Icon } from 'antd';
 
 import Button from '../../../components/uielements/button';
 import Label from '../../../components/uielements/label';
 import Status from '../../../components/uielements/status';
 import Coin from '../../../components/uielements/coins/coin';
 import CoinCard from '../../../components/uielements/coins/coinCard';
+import CoinData from '../../../components/uielements/coins/coinData';
 import Slider from '../../../components/uielements/slider';
 import Modal from '../../../components/uielements/modal';
 import Drag from '../../../components/uielements/drag';
@@ -60,6 +61,10 @@ class PoolStake extends Component {
   };
 
   handleConfirmStake = () => {
+    this.handleGotoStakeView();
+  };
+
+  handleGotoStakeView = () => {
     const { info } = this.props;
     const URL = `/pool/stake-view/${info}`;
 
@@ -69,6 +74,13 @@ class PoolStake extends Component {
   handleAddMore = () => {
     const { info } = this.props;
     const URL = `/pool/stake-new/${info}`;
+
+    this.props.history.push(URL);
+  };
+
+  handleGotoWithdraw = () => {
+    const { info } = this.props;
+    const URL = `/pool/withdraw/${info}`;
 
     this.props.history.push(URL);
   };
@@ -106,7 +118,9 @@ class PoolStake extends Component {
             stakeNewInfo.map(info => {
               return <Status className="stake-info-status" {...info} />;
             })}
-          {(view === 'stake-detail' || view === 'stake-view') &&
+          {(view === 'stake-detail' ||
+            view === 'stake-view' ||
+            view === 'withdraw') &&
             stakeInfo.map(info => {
               return <Status className="stake-info-status" {...info} />;
             })}
@@ -126,9 +140,23 @@ class PoolStake extends Component {
 
     return (
       <>
-        <Label className="label-title" size="normal" weight="bold">
-          ADD SHARE
-        </Label>
+        {view !== 'withdraw' && (
+          <Label className="label-title" size="normal" weight="bold">
+            ADD SHARE
+          </Label>
+        )}
+        {view === 'withdraw' && (
+          <Label
+            className="label-title go-back"
+            onClick={this.handleGotoStakeView}
+            color="primary"
+            size="normal"
+            weight="bold"
+          >
+            <Icon type="left" />
+            <span>Back</span>
+          </Label>
+        )}
         {view === 'stake-detail' && (
           <>
             <Label className="label-description" size="normal">
@@ -195,6 +223,55 @@ class PoolStake extends Component {
             </Button>
           </>
         )}
+        {view === 'withdraw' && (
+          <>
+            <Label className="label-title" size="normal" weight="bold">
+              ADJUST WITHDRAWAL
+            </Label>
+            <Label size="normal">
+              Choose from 0 to 100% of how much to withdraw.
+            </Label>
+            <div className="withdraw-percent-view">
+              <Label size="large" color="gray" weight="bold">
+                0%
+              </Label>
+              <Label size="large" color="gray" weight="bold">
+                50%
+              </Label>
+              <Label size="large" color="gray" weight="bold">
+                100%
+              </Label>
+            </div>
+            <Slider defaultValue={50} max={100} />
+            <div className="stake-withdraw-info-wrapper">
+              <Label className="label-title" size="normal" weight="bold">
+                YOU SHOULD RECEIVE
+              </Label>
+              <div className="withdraw-status-wrapper">
+                <div className="withdraw-asset-wrapper">
+                  <CoinData
+                    asset={source}
+                    assetValue="2.492740"
+                    price={217.92}
+                  />
+                  <CoinData
+                    asset={target}
+                    assetValue="2.492740"
+                    price={217.92}
+                  />
+                </div>
+                <Drag
+                  title="Drag to withdraw"
+                  source="blue"
+                  target="confirm"
+                  reset={dragReset}
+                  onConfirm={this.handleWithdraw}
+                  onDrag={this.handleDrag}
+                />
+              </div>
+            </div>
+          </>
+        )}
       </>
     );
   };
@@ -224,7 +301,7 @@ class PoolStake extends Component {
             </div>
           </>
         )}
-        {view === 'stake-view' && (
+        {(view === 'stake-view' || view === 'withdraw') && (
           <>
             <Label size="normal">Your total share of the pool.</Label>
             <div className="your-share-info-wrapper">
@@ -309,7 +386,7 @@ class PoolStake extends Component {
                   Withdraw everything including earnings.
                 </Label>
                 <Button
-                  onClick={this.handleWithdraw}
+                  onClick={this.handleGotoWithdraw}
                   color="warning"
                   typevalue="outline"
                 >
