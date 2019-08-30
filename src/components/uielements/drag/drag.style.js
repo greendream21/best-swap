@@ -25,9 +25,15 @@ export const DragWrapper = styled.div`
     border-radius: 50%;
     cursor: pointer;
 
-    img {
+    img,
+    div {
       width: 100%;
       height: 100%;
+    }
+    div {
+      i {
+        font-size: 18px;
+      }
     }
   }
 

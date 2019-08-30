@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { Icon } from 'antd';
 
 import { CoinIconWrapper } from './coinIcon.style';
 import { coinGroup } from '../../../../settings';
@@ -18,9 +19,27 @@ class CoinIcon extends Component {
     className: '',
   };
 
+  renderCoinIcon = () => {
+    const { type } = this.props;
+    const coinIcon = coinIconGroup[type] || '';
+
+    if (coinIcon) {
+      return <img src={coinIcon} alt={type} />;
+    }
+    if (type === 'blue') {
+      return <div className="blue-circle" />;
+    }
+    if (type === 'confirm') {
+      return (
+        <div className="confirm-circle">
+          <Icon type="check" />
+        </div>
+      );
+    }
+  };
+
   render() {
     const { type, className, ...props } = this.props;
-    const coinIcon = coinIconGroup[type] || '';
 
     return (
       <CoinIconWrapper
@@ -28,7 +47,7 @@ class CoinIcon extends Component {
         className={`coinIcon-wrapper ${className}`}
         {...props}
       >
-        <img src={coinIcon} alt={type} />
+        {this.renderCoinIcon()}
       </CoinIconWrapper>
     );
   }

@@ -70,9 +70,9 @@ class Drag extends Component {
     e.preventDefault();
     const { success } = this.state;
 
-    if (!success) {
-      this.handleReset();
-    }
+    // if (!success) {
+    //   this.handleReset();
+    // }
   };
 
   handleDragStart = e => {
