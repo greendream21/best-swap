@@ -79,30 +79,34 @@ export const stakeNewInfo = [
   },
 ];
 
-export const shareInfo = [
-  {
-    key: 'poolPrice',
-    title: 'Pool Price',
-    value: '$0.10',
-  },
-  {
-    key: 'depth',
-    title: 'Pool Depth',
-    value: '$12000',
-  },
-  {
-    key: 'newPrice',
-    title: 'New Price',
-    value: '$0.11',
-  },
-  {
-    key: 'newDepth',
-    title: 'New Depth',
-    value: '$12000',
-  },
-  {
-    key: 'yourShare',
-    title: 'Your Share',
-    value: '3%',
-  },
-];
+export const shareInfo = {
+  pool: [
+    {
+      key: 'poolPrice',
+      title: 'Pool Price',
+      value: '$0.10',
+    },
+    {
+      key: 'depth',
+      title: 'Pool Depth',
+      value: '$12000',
+    },
+  ],
+  share: [
+    {
+      key: 'newPrice',
+      title: 'New Price',
+      value: '$0.11',
+    },
+    {
+      key: 'newDepth',
+      title: 'New Depth',
+      value: '$12000',
+    },
+    {
+      key: 'yourShare',
+      title: 'Your Share',
+      value: '3%',
+    },
+  ],
+};

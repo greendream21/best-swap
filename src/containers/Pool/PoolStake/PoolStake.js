@@ -10,6 +10,7 @@ import Coin from '../../../components/uielements/coins/coin';
 import CoinCard from '../../../components/uielements/coins/coinCard';
 import Slider from '../../../components/uielements/slider';
 import Modal from '../../../components/uielements/modal';
+import Drag from '../../../components/uielements/drag';
 import { greyArrowIcon } from '../../../components/icons';
 
 import { ContentWrapper } from './PoolStake.style';
@@ -30,6 +31,7 @@ class PoolStake extends Component {
   state = {
     openWithdrawModal: false,
     openStakeModal: false,
+    dragReset: true,
   };
 
   handleGotoDetail = () => {
@@ -37,6 +39,12 @@ class PoolStake extends Component {
     const URL = `/pool/stake-detail/${info}`;
 
     this.props.history.push(URL);
+  };
+
+  handleDrag = () => {
+    this.setState({
+      dragReset: false,
+    });
   };
 
   handleStake = () => {
@@ -109,6 +117,7 @@ class PoolStake extends Component {
 
   renderShareDetail = pair => {
     const { view } = this.props;
+    const { dragReset } = this.state;
     const { source, target } = pair;
 
     if (view === 'stake-new') {
@@ -151,14 +160,26 @@ class PoolStake extends Component {
             </Label>
             <Slider defaultValue={500} max={1000} />
             <div className="stake-share-info-wrapper">
-              <div className="info-status-wrapper">
-                {shareInfo.map(info => {
+              <div className="pool-status-wrapper">
+                {shareInfo.pool.map(info => {
                   return <Status className="share-info-status" {...info} />;
                 })}
               </div>
-              <Button onClick={this.handleStake} color="success">
-                stake
-              </Button>
+              <div className="share-status-wrapper">
+                <div className="info-status-wrapper">
+                  {shareInfo.share.map(info => {
+                    return <Status className="share-info-status" {...info} />;
+                  })}
+                </div>
+                <Drag
+                  title="Drag to stake"
+                  source="blue"
+                  target="confirm"
+                  reset={dragReset}
+                  onConfirm={this.handleStake}
+                  onDrag={this.handleDrag}
+                />
+              </div>
             </div>
           </>
         )}

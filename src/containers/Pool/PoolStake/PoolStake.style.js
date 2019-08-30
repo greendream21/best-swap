@@ -131,17 +131,33 @@ export const ContentWrapper = styled(ContentView)`
 
       .stake-share-info-wrapper {
         display: flex;
-        justify-content: space-between;
-        align-items: center;
+        flex-direction: column;
         width: 100%;
 
-        .info-status-wrapper {
+        .status-wrapper {
+          margin-right: 30px;
+        }
+
+        .pool-status-wrapper {
           display: flex;
           align-items: center;
-          flex-grow: 1;
+        }
 
-          .status-wrapper {
-            margin-right: 30px;
+        .share-status-wrapper {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+
+          .info-status-wrapper {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+          }
+
+          .drag-wrapper {
+            padding-top: 24px;
+            padding-right: 24px;
           }
         }
       }

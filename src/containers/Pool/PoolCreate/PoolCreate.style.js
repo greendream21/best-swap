@@ -100,6 +100,11 @@ export const ContentWrapper = styled(ContentView)`
               margin-right: 30px;
             }
           }
+
+          .drag-wrapper {
+            padding-top: 24px;
+            padding-right: 24px;
+          }
         }
       }
     }
