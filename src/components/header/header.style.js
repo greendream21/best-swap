@@ -27,11 +27,13 @@ export const StyledHeader = styled.div`
   }
 
   .ant-dropdown-link {
-    color: ${palette('success', 0)};
+    display: flex;
+    align-items: center;
+    color: ${palette('text', 1)};
+    font-weight: bold;
     i {
       padding: 0 5px;
       font-size: 14px;
-      font-weight: bold;
     }
   }
 `;
