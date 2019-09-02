@@ -18,18 +18,25 @@ class ChangingProgressProvider extends React.Component {
   interval = null;
 
   componentDidMount() {
-    this.interval = setInterval(() => {
-      this.setState({
-        valuesIndex: (this.state.valuesIndex + 1) % this.props.values.length,
-      });
-    }, this.props.interval);
+    this.startTimer();
   }
 
   componentDidUpdate(prevProps) {
     if (prevProps.reset === false && this.props.reset === true) {
       clearInterval(this.interval);
     }
+    if (prevProps.reset === true && this.props.reset === false) {
+      this.startTimer();
+    }
   }
+
+  startTimer = () => {
+    this.interval = setInterval(() => {
+      this.setState({
+        valuesIndex: (this.state.valuesIndex + 1) % this.props.values.length,
+      });
+    }, this.props.interval);
+  };
 
   render() {
     return this.props.children(this.props.values[this.state.valuesIndex]);

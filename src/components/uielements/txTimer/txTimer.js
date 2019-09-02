@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Icon } from 'antd';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
-import ChangingProgressProvider from './ChangingProgressProvider';
+import ChangingProgressProvider from '../changingProgressProvider';
 import {
   TimerChartIcon1,
   TimerChartIcon2,
@@ -71,11 +71,11 @@ class TxTimer extends Component {
               1,
             );
 
-            console.log(totalDuration);
             const hide = percentage === 100;
             const CircularProgressbarStyle = `${
               resetTimer ? 'hide' : ''
             } timerchart-circular-progressbar`;
+
             if (hide && !resetTimer) {
               setTimeout(this.handleEndTimer, 1000);
             }
@@ -84,7 +84,11 @@ class TxTimer extends Component {
               <>
                 <div className="timerchart-icon">
                   {!resetTimer && this.renderTimerIcon(percentageIndex)}
-                  {resetTimer && <ConfirmIcon className="confirm-icon" />}
+                  {resetTimer && (
+                    <div className="confirm-icon">
+                      <Icon type="check" />
+                    </div>
+                  )}
                 </div>
                 <CircularProgressbar
                   className={CircularProgressbarStyle}

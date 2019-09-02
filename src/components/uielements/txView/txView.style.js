@@ -1,11 +1,11 @@
 import styled from 'styled-components';
 import { palette } from 'styled-theme';
-import { transition } from '../../../settings/style-util';
 
-export const TxTimerWrapper = styled.div`
+export const TxViewWrapper = styled.div`
   position: relative;
-  width: 200px;
-  height: 200px;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
 
   .timerchart-icon {
     position: absolute;
@@ -20,16 +20,16 @@ export const TxTimerWrapper = styled.div`
     height: 100%;
 
     .confirm-icon {
-      width: 100px;
-      height: 100px;
+      width: 40px;
+      height: 40px;
       border: none;
       border-radius: 50%;
       background-color: ${palette('primary', 0)};
 
       i {
         color: #fff;
-        font-size: 50px;
-        padding: 25px;
+        font-size: 20px;
+        padding: 10px;
       }
     }
   }
