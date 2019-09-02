@@ -58,7 +58,8 @@ class SwapDetail extends Component {
   };
 
   handleEndDrag = () => {
-    if (!this.isValidRecipient()) {
+    const { view } = this.props;
+    if (view === 'send' && !this.isValidRecipient()) {
       this.setState({
         invalidAddress: true,
         dragReset: true,
@@ -223,11 +224,14 @@ class SwapDetail extends Component {
           </Col>
         </Row>
         <Modal
-          title="Swap"
+          title="SWAP CONFIRMATION"
+          closeIcon={
+            <Icon type="fullscreen-exit" style={{ color: '#33CCFF' }} />
+          }
           visible={openSwapModal}
+          footer={null}
           onOk={this.handleConfirmSwap}
           onCancel={this.handleCloseModal}
-          okText="Swap"
         >
           <span>Do you want to Swap?</span>
         </Modal>
