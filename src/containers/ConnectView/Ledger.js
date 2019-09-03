@@ -4,6 +4,7 @@ import { ledger, crypto } from '@binance-chain/javascript-sdk';
 import u2f_transport from '@ledgerhq/hw-transport-u2f';
 
 import { InputNumber } from 'antd';
+import Binance from '../../clients/binance';
 import Label from '../../components/uielements/label';
 import Button from '../../components/uielements/button';
 
@@ -39,7 +40,7 @@ const Connector = props => {
 
     // select which address to use
     // TODO: use "bnb" when on mainnet
-    const results = await app.showAddress('tbnb', hdPath);
+    const results = await app.showAddress(Binance.getPrefix(), hdPath);
     console.log('Results:', results);
 
     // get public key
@@ -49,7 +50,7 @@ const Connector = props => {
 
       // get address from pubkey
       // TODO: use "bnb" when on mainnet
-      const address = crypto.getAddressFromPublicKey(pk, 'tbnb');
+      const address = crypto.getAddressFromPublicKey(pk, Binance.getPrefix());
       setConnecting(false);
 
       // TODO: set address, app, and hdPath into redux

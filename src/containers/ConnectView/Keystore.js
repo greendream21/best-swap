@@ -4,6 +4,7 @@ import { FilePicker } from 'react-file-picker';
 
 import { ContentWrapper } from './ConnectView.style';
 import { Icon, Input } from 'antd';
+import Binance from '../../clients/binance';
 
 import Label from '../../components/uielements/label';
 import Button from '../../components/uielements/button';
@@ -40,8 +41,10 @@ const Keystore = props => {
 
   const unlock = () => {
     const privateKey = crypto.getPrivateKeyFromKeyStore(keystore, password);
-    // TODO: prefix should be dependent if testnet vs mainnet
-    const address = crypto.getAddressFromPrivateKey(privateKey, 'tbnb');
+    const address = crypto.getAddressFromPrivateKey(
+      privateKey,
+      Binance.getPrefix(),
+    );
     console.log('Address:', address);
 
     // TODO: set wallet details to redux, { keystore, address }
