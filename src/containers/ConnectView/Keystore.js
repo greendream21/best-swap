@@ -42,11 +42,19 @@ const Keystore = props => {
     const privateKey = crypto.getPrivateKeyFromKeyStore(keystore, password);
     // TODO: prefix should be dependent if testnet vs mainnet
     const address = crypto.getAddressFromPrivateKey(privateKey, 'tbnb');
+    console.log('Address:', address);
+
     // TODO: set redux wallet details, { keystore, address }. Once updated redux...
-    //setPassword(null)
-    //setKeystore(null)
-    //props.history.push("/")
+
+    // clean up
+    setPassword(null);
+    setKeystore(null);
+
+    // TODO: navigate to next page
+    // props.history.push("/")
   };
+
+  const ready = (password || '').length > 0 && keystoreError === null;
 
   return (
     <ContentWrapper>
@@ -57,19 +65,16 @@ const Keystore = props => {
         onChange={f => uploadKeystore(f)}
         onError={err => console.error(err)}
       >
-        <Button
-          onClick={unlock}
-          style={{ width: 100 }}
-          color="primary"
-          typevalue="outline"
-        >
-          <Icon type="upload" />
-          Choose File to Upload
-        </Button>
-        &nbsp;
-        {keystore && !keystoreError && (
-          <Icon type="check-circle" theme="twoTone" twoToneColor="#52c41a" />
-        )}
+        <div>
+          <Button color="primary" typevalue="outline">
+            <Icon type="upload" />
+            Choose File to Upload
+          </Button>
+          &nbsp;
+          {keystore && !keystoreError && (
+            <Icon type="check-circle" theme="twoTone" twoToneColor="#52c41a" />
+          )}
+        </div>
       </FilePicker>
       {keystoreError && (
         <span style={{ color: '#FF4136' }}>{keystoreError}</span>
@@ -84,6 +89,9 @@ const Keystore = props => {
           placeholder="password"
         />
       </FormGroup>
+      <Button type="submit" onClick={unlock} disabled={!ready}>
+        Unlock
+      </Button>
     </ContentWrapper>
   );
 };
