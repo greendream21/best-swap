@@ -17,9 +17,13 @@ export const rainbowStop = h => {
 export const getIntFromName = str => {
   const inputStr = String(str).toUpperCase();
 
-  const firstInt = (inputStr.charCodeAt(0) - 'A'.charCodeAt(0)) / 26;
+  const div = 22;
+
+  const firstInt = (inputStr.charCodeAt(0) - 'A'.charCodeAt(0)) / div;
   const secondInt =
-    inputStr.length > 1 ? (inputStr.charCodeAt(1) - 'A'.charCodeAt(0)) / 26 : 0;
+    inputStr.length > 1
+      ? (inputStr.charCodeAt(1) - 'A'.charCodeAt(0)) / div
+      : 0;
 
   return [firstInt.toFixed(2), secondInt.toFixed(2)];
 };
