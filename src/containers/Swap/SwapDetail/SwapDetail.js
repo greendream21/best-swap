@@ -17,8 +17,6 @@ import CoinData from '../../../components/uielements/coins/coinData';
 import Status from '../../../components/uielements/status';
 import TxTimer from '../../../components/uielements/txTimer';
 
-import appActions from '../../../redux/app/actions';
-
 import {
   ContentWrapper,
   SwapModalContent,
@@ -27,6 +25,8 @@ import {
 import { blackArrowIcon } from '../../../components/icons';
 
 import { assetsData } from './data';
+
+import appActions from '../../../redux/app/actions';
 
 const {
   setTxTimerType,
