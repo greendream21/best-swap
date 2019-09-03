@@ -11,11 +11,12 @@ cache:
 test_and_deploy:
   stage: test_and_deploy
   only:
-    - development
+    - master
   script:
     - yarn
     - yarn test:ci
     - npm i -g firebase-tools
     - firebase -V
-    - firebase deploy --token ${FIREBASE_TOKEN} --project development
+    - firebase use --token ${FIREBASE_TOKEN} development
+    - firebase deploy --token ${FIREBASE_TOKEN}
   

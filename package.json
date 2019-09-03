@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@binance-chain/javascript-sdk": "^2.14.7",
-    "antd": "^3.20.3",
+    "antd": "^3.23.0",
     "connected-react-router": "^6.5.2",
     "lodash": "^4.17.14",
     "node-sass": "^4.12.0",
@@ -25,6 +25,7 @@
     "polished": "^3.4.1",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
+    "react-circular-progressbar": "^2.0.2",
     "react-dom": "^16.8.6",
     "react-draggable": "^3.3.0",
     "react-intl": "^2.9.0",

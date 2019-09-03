@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { compose } from 'redux';
+import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Row, Col, Icon, Form } from 'antd';
@@ -11,18 +13,39 @@ import CoinCard from '../../../components/uielements/coins/coinCard';
 import CoinList from '../../../components/uielements/coins/coinList';
 import Label from '../../../components/uielements/label';
 import Input from '../../../components/uielements/input/input';
-import Modal from '../../../components/uielements/modal';
+import CoinData from '../../../components/uielements/coins/coinData';
+import Status from '../../../components/uielements/status';
+import TxTimer from '../../../components/uielements/txTimer';
 
-import { ContentWrapper } from './SwapDetail.style';
-
+import {
+  ContentWrapper,
+  SwapModalContent,
+  SwapModal,
+} from './SwapDetail.style';
 import { blackArrowIcon } from '../../../components/icons';
 
 import { assetsData } from './data';
+
+import appActions from '../../../redux/app/actions';
+
+const {
+  setTxTimerType,
+  setTxTimerModal,
+  setTxTimerStatus,
+  setTxTimerValue,
+  resetTxStatus,
+} = appActions;
 
 class SwapDetail extends Component {
   static propTypes = {
     info: PropTypes.string,
     view: PropTypes.string.isRequired,
+    txStatus: PropTypes.object.isRequired,
+    setTxTimerType: PropTypes.func.isRequired,
+    setTxTimerModal: PropTypes.func.isRequired,
+    setTxTimerStatus: PropTypes.func.isRequired,
+    setTxTimerValue: PropTypes.func.isRequired,
+    resetTxStatus: PropTypes.func.isRequired,
   };
 
   static defaultProps = {
@@ -33,7 +56,6 @@ class SwapDetail extends Component {
     address: '',
     invalidAddress: false,
     dragReset: true,
-    openSwapModal: false,
   };
 
   addressRef = React.createRef();
@@ -58,7 +80,13 @@ class SwapDetail extends Component {
   };
 
   handleEndDrag = () => {
-    if (!this.isValidRecipient()) {
+    const {
+      view,
+      setTxTimerModal,
+      setTxTimerType,
+      setTxTimerStatus,
+    } = this.props;
+    if (view === 'send' && !this.isValidRecipient()) {
       this.setState({
         invalidAddress: true,
         dragReset: true,
@@ -66,9 +94,9 @@ class SwapDetail extends Component {
       return;
     }
 
-    this.setState({
-      openSwapModal: true,
-    });
+    setTxTimerType('swap');
+    setTxTimerModal(true);
+    setTxTimerStatus(true);
   };
 
   handleConfirmSwap = () => {
@@ -76,10 +104,14 @@ class SwapDetail extends Component {
   };
 
   handleCloseModal = () => {
-    this.setState({
-      dragReset: true,
-      openSwapModal: false,
-    });
+    const {
+      txStatus: { status },
+      setTxTimerModal,
+      resetTxStatus,
+    } = this.props;
+
+    if (!status) resetTxStatus();
+    else setTxTimerModal(false);
   };
 
   handleGotoDetail = () => {
@@ -120,9 +152,83 @@ class SwapDetail extends Component {
     return {};
   };
 
+  handleChangeTxValue = value => {
+    const { setTxTimerValue } = this.props;
+
+    setTxTimerValue(value);
+  };
+
+  handleEndTxTimer = () => {
+    const { setTxTimerStatus } = this.props;
+
+    setTxTimerStatus(false);
+    this.setState({
+      dragReset: true,
+    });
+  };
+
+  renderSwapModalContent = swapData => {
+    const {
+      txStatus: { status, value },
+    } = this.props;
+    const { source, target } = swapData;
+
+    const transactionLabels = [
+      'sending transaction',
+      'processing transaction',
+      'signing transaction',
+      'finishing transaction',
+      'complete',
+    ];
+
+    const completed = value !== null && !status;
+    const swapText = !completed ? 'YOU ARE SWAPPING' : 'YOU SWAPPED';
+    const receiveText = !completed ? 'YOU SHOULD RECEIVE' : 'YOU RECEIVED';
+    const expectation = !completed
+      ? 'EXPECTED FEES & SLIP'
+      : 'FINAL FEES & SLIP';
+
+    return (
+      <SwapModalContent>
+        <div className="left-container">
+          <Label weight="bold">{swapText}</Label>
+          <CoinData asset={source} assetValue={2.49274} price={217.92} />
+        </div>
+        <div className="center-container">
+          <TxTimer
+            reset={status}
+            value={value}
+            onChange={this.handleChangeTxValue}
+            onEnd={this.handleEndTxTimer}
+          />
+          {value !== 0 && (
+            <Label weight="bold">{transactionLabels[value - 1]}</Label>
+          )}
+          {completed && <Label weight="bold">complete</Label>}
+        </div>
+        <div className="right-container">
+          <Label weight="bold">{receiveText}</Label>
+          <CoinData asset={target} assetValue={2.49274} price={217.92} />
+          <Label weight="bold">{expectation}</Label>
+          <div className="expected-status">
+            <div className="status-item">
+              <Status title="FEES" value="1.234 RUNE" />
+              <Label className="price-label" size="normal" color="gray">
+                $USD 110
+              </Label>
+            </div>
+            <div className="status-item">
+              <Status title="SLIP" value="0.3%" />
+            </div>
+          </div>
+        </div>
+      </SwapModalContent>
+    );
+  };
+
   render() {
-    const { view } = this.props;
-    const { openSwapModal, dragReset, address, invalidAddress } = this.state;
+    const { view, txStatus } = this.props;
+    const { dragReset, address, invalidAddress } = this.state;
 
     const swapData = this.getSwapData();
 
@@ -136,6 +242,9 @@ class SwapDetail extends Component {
 
     const dragTitle =
       view === 'detail' ? 'Drag to swap' : 'Drag to swap and send';
+
+    const openSwapModal = txStatus.type === 'swap' ? txStatus.modal : false;
+    const coinCloseIconType = txStatus.status ? 'fullscreen-exit' : 'close';
 
     return (
       <ContentWrapper className="swap-detail-wrapper">
@@ -222,18 +331,34 @@ class SwapDetail extends Component {
             />
           </Col>
         </Row>
-        <Modal
-          title="Swap"
+        <SwapModal
+          title="SWAP CONFIRMATION"
+          closeIcon={
+            <Icon type={coinCloseIconType} style={{ color: '#33CCFF' }} />
+          }
           visible={openSwapModal}
-          onOk={this.handleConfirmSwap}
+          footer={null}
           onCancel={this.handleCloseModal}
-          okText="Swap"
         >
-          <span>Do you want to Swap?</span>
-        </Modal>
+          {this.renderSwapModalContent(swapData)}
+        </SwapModal>
       </ContentWrapper>
     );
   }
 }
 
-export default withRouter(SwapDetail);
+export default compose(
+  connect(
+    state => ({
+      txStatus: state.App.txStatus,
+    }),
+    {
+      setTxTimerType,
+      setTxTimerModal,
+      setTxTimerStatus,
+      setTxTimerValue,
+      resetTxStatus,
+    },
+  ),
+  withRouter,
+)(SwapDetail);

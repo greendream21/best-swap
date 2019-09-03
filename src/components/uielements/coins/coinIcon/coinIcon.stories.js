@@ -26,6 +26,8 @@ storiesOf('Components/Coins/Icon', module).add('default', () => {
           <CoinIcon type="ankr" size="big" />
           <CoinIcon type="ftm" size="big" />
           <CoinIcon type="tomo" size="big" />
+          <CoinIcon type="blue" size="big" />
+          <CoinIcon type="confirm" size="big" />
         </div>
       </AppHolder>
     </ThemeProvider>

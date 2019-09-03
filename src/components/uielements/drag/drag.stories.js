@@ -18,6 +18,13 @@ storiesOf('Components/Drag', module).add('default', () => {
             title="Drag to swap"
             onConfirm={() => alert('confirmed!')}
           />
+
+          <Drag
+            source="blue"
+            target="confirm"
+            title="Drag to confirm"
+            onConfirm={() => alert('confirmed!')}
+          />
         </div>
       </AppHolder>
     </ThemeProvider>

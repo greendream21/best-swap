@@ -1,26 +1,51 @@
 import React, { Component } from 'react';
+import { compose } from 'redux';
+import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Row, Col } from 'antd';
+import { Row, Col, Icon } from 'antd';
 
 import Button from '../../../components/uielements/button';
 import Label from '../../../components/uielements/label';
 import Status from '../../../components/uielements/status';
 import Coin from '../../../components/uielements/coins/coin';
 import CoinCard from '../../../components/uielements/coins/coinCard';
+import CoinData from '../../../components/uielements/coins/coinData';
 import Slider from '../../../components/uielements/slider';
-import Modal from '../../../components/uielements/modal';
+import TxTimer from '../../../components/uielements/txTimer';
+import Drag from '../../../components/uielements/drag';
+
 import { greyArrowIcon } from '../../../components/icons';
 
-import { ContentWrapper } from './PoolStake.style';
+import appActions from '../../../redux/app/actions';
+
+import {
+  ContentWrapper,
+  ConfirmModal,
+  ConfirmModalContent,
+} from './PoolStake.style';
 
 import { getPair } from '../../../helpers/stringHelper';
 import { stakeInfo, stakeNewInfo, shareInfo } from './data';
+
+const {
+  setTxTimerType,
+  setTxTimerModal,
+  setTxTimerStatus,
+  setTxTimerValue,
+  resetTxStatus,
+} = appActions;
 
 class PoolStake extends Component {
   static propTypes = {
     info: PropTypes.string,
     view: PropTypes.string.isRequired,
+    txStatus: PropTypes.object.isRequired,
+    setTxTimerType: PropTypes.func.isRequired,
+    setTxTimerModal: PropTypes.func.isRequired,
+    setTxTimerStatus: PropTypes.func.isRequired,
+    setTxTimerValue: PropTypes.func.isRequired,
+    resetTxStatus: PropTypes.func.isRequired,
   };
 
   static defaultProps = {
@@ -28,8 +53,7 @@ class PoolStake extends Component {
   };
 
   state = {
-    openWithdrawModal: false,
-    openStakeModal: false,
+    dragReset: true,
   };
 
   handleGotoDetail = () => {
@@ -39,19 +63,36 @@ class PoolStake extends Component {
     this.props.history.push(URL);
   };
 
-  handleStake = () => {
+  handleDrag = () => {
     this.setState({
-      openStakeModal: true,
+      dragReset: false,
     });
   };
 
-  handleCloseModal = modal => () => {
-    this.setState({
-      [modal]: false,
-    });
+  handleStake = () => {
+    const { setTxTimerModal, setTxTimerType, setTxTimerStatus } = this.props;
+
+    setTxTimerType('stake');
+    setTxTimerModal(true);
+    setTxTimerStatus(true);
+  };
+
+  handleCloseModal = () => {
+    const {
+      txStatus: { status },
+      setTxTimerModal,
+      resetTxStatus,
+    } = this.props;
+
+    if (!status) resetTxStatus();
+    else setTxTimerModal(false);
   };
 
   handleConfirmStake = () => {
+    this.handleGotoStakeView();
+  };
+
+  handleGotoStakeView = () => {
     const { info } = this.props;
     const URL = `/pool/stake-view/${info}`;
 
@@ -65,16 +106,126 @@ class PoolStake extends Component {
     this.props.history.push(URL);
   };
 
-  handleWithdraw = () => {
-    this.setState({
-      openWithdrawModal: true,
-    });
+  handleGotoWithdraw = () => {
+    const { info } = this.props;
+    const URL = `/pool/withdraw/${info}`;
+
+    this.props.history.push(URL);
   };
 
-  handleConfirmWithdraw = () => {
+  handleWithdraw = () => {
+    const { setTxTimerModal, setTxTimerType, setTxTimerStatus } = this.props;
+
+    setTxTimerType('withdraw');
+    setTxTimerModal(true);
+    setTxTimerStatus(true);
+  };
+
+  handleChangeTxValue = value => {
+    const { setTxTimerValue } = this.props;
+
+    setTxTimerValue(value);
+  };
+
+  handleEndTxTimer = () => {
+    const {
+      txStatus: { type },
+      setTxTimerStatus,
+      resetTxStatus,
+    } = this.props;
+
     this.setState({
-      openWithdrawModal: false,
+      dragReset: true,
     });
+    setTxTimerStatus(false);
+
+    // staked?
+    if (type === 'stake') {
+      resetTxStatus();
+      this.handleConfirmStake();
+    }
+  };
+
+  renderStakeModalContent = swapData => {
+    const {
+      txStatus: { status, value },
+    } = this.props;
+    const { source, target } = swapData;
+
+    const transactionLabels = [
+      'sending transaction',
+      'processing transaction',
+      'signing transaction',
+      'finishing transaction',
+      'complete',
+    ];
+
+    const completed = value !== null && !status;
+    const stakeText = !completed ? 'YOU ARE STAKING' : 'YOU STAKED';
+
+    return (
+      <ConfirmModalContent>
+        <div className="left-container">
+          <Label weight="bold">{stakeText}</Label>
+          <CoinData asset={source} assetValue={2.49274} price={217.92} />
+          <CoinData asset={target} assetValue={2.49274} price={217.92} />
+        </div>
+        <div className="center-container">
+          <TxTimer
+            reset={status}
+            value={value}
+            onChange={this.handleChangeTxValue}
+            onEnd={this.handleEndTxTimer}
+          />
+          {value !== 0 && (
+            <Label weight="bold">{transactionLabels[value - 1]}</Label>
+          )}
+          {completed && <Label weight="bold">complete</Label>}
+        </div>
+        <div className="right-container" />
+      </ConfirmModalContent>
+    );
+  };
+
+  renderWithdrawModalContent = swapData => {
+    const {
+      txStatus: { status, value },
+    } = this.props;
+    const { source, target } = swapData;
+
+    const transactionLabels = [
+      'sending transaction',
+      'processing transaction',
+      'signing transaction',
+      'finishing transaction',
+      'complete',
+    ];
+
+    const completed = value !== null && !status;
+    const withdrawText = !completed ? 'YOU ARE WITHDRAWING' : 'YOU WITHDRAWN';
+
+    return (
+      <ConfirmModalContent>
+        <div className="left-container" />
+        <div className="center-container">
+          <TxTimer
+            reset={status}
+            value={value}
+            onChange={this.handleChangeTxValue}
+            onEnd={this.handleEndTxTimer}
+          />
+          {value !== 0 && (
+            <Label weight="bold">{transactionLabels[value - 1]}</Label>
+          )}
+          {completed && <Label weight="bold">complete</Label>}
+        </div>
+        <div className="right-container">
+          <Label weight="bold">{withdrawText}</Label>
+          <CoinData asset={source} assetValue={2.49274} price={217.92} />
+          <CoinData asset={target} assetValue={2.49274} price={217.92} />
+        </div>
+      </ConfirmModalContent>
+    );
   };
 
   renderStakeInfo = pair => {
@@ -98,7 +249,9 @@ class PoolStake extends Component {
             stakeNewInfo.map(info => {
               return <Status className="stake-info-status" {...info} />;
             })}
-          {(view === 'stake-detail' || view === 'stake-view') &&
+          {(view === 'stake-detail' ||
+            view === 'stake-view' ||
+            view === 'withdraw') &&
             stakeInfo.map(info => {
               return <Status className="stake-info-status" {...info} />;
             })}
@@ -109,6 +262,7 @@ class PoolStake extends Component {
 
   renderShareDetail = pair => {
     const { view } = this.props;
+    const { dragReset } = this.state;
     const { source, target } = pair;
 
     if (view === 'stake-new') {
@@ -117,9 +271,23 @@ class PoolStake extends Component {
 
     return (
       <>
-        <Label className="label-title" size="normal" weight="bold">
-          ADD SHARE
-        </Label>
+        {view !== 'withdraw' && (
+          <Label className="label-title" size="normal" weight="bold">
+            ADD SHARE
+          </Label>
+        )}
+        {view === 'withdraw' && (
+          <Label
+            className="label-title go-back"
+            onClick={this.handleGotoStakeView}
+            color="primary"
+            size="normal"
+            weight="bold"
+          >
+            <Icon type="left" />
+            <span>Back</span>
+          </Label>
+        )}
         {view === 'stake-detail' && (
           <>
             <Label className="label-description" size="normal">
@@ -151,14 +319,26 @@ class PoolStake extends Component {
             </Label>
             <Slider defaultValue={500} max={1000} />
             <div className="stake-share-info-wrapper">
-              <div className="info-status-wrapper">
-                {shareInfo.map(info => {
+              <div className="pool-status-wrapper">
+                {shareInfo.pool.map(info => {
                   return <Status className="share-info-status" {...info} />;
                 })}
               </div>
-              <Button onClick={this.handleStake} color="success">
-                stake
-              </Button>
+              <div className="share-status-wrapper">
+                <div className="info-status-wrapper">
+                  {shareInfo.share.map(info => {
+                    return <Status className="share-info-status" {...info} />;
+                  })}
+                </div>
+                <Drag
+                  title="Drag to stake"
+                  source="blue"
+                  target="confirm"
+                  reset={dragReset}
+                  onConfirm={this.handleStake}
+                  onDrag={this.handleDrag}
+                />
+              </div>
             </div>
           </>
         )}
@@ -172,6 +352,55 @@ class PoolStake extends Component {
             >
               Add more
             </Button>
+          </>
+        )}
+        {view === 'withdraw' && (
+          <>
+            <Label className="label-title" size="normal" weight="bold">
+              ADJUST WITHDRAWAL
+            </Label>
+            <Label size="normal">
+              Choose from 0 to 100% of how much to withdraw.
+            </Label>
+            <div className="withdraw-percent-view">
+              <Label size="large" color="gray" weight="bold">
+                0%
+              </Label>
+              <Label size="large" color="gray" weight="bold">
+                50%
+              </Label>
+              <Label size="large" color="gray" weight="bold">
+                100%
+              </Label>
+            </div>
+            <Slider defaultValue={50} max={100} />
+            <div className="stake-withdraw-info-wrapper">
+              <Label className="label-title" size="normal" weight="bold">
+                YOU SHOULD RECEIVE
+              </Label>
+              <div className="withdraw-status-wrapper">
+                <div className="withdraw-asset-wrapper">
+                  <CoinData
+                    asset={source}
+                    assetValue="2.492740"
+                    price={217.92}
+                  />
+                  <CoinData
+                    asset={target}
+                    assetValue="2.492740"
+                    price={217.92}
+                  />
+                </div>
+                <Drag
+                  title="Drag to withdraw"
+                  source="blue"
+                  target="confirm"
+                  reset={dragReset}
+                  onConfirm={this.handleWithdraw}
+                  onDrag={this.handleDrag}
+                />
+              </div>
+            </div>
           </>
         )}
       </>
@@ -203,7 +432,7 @@ class PoolStake extends Component {
             </div>
           </>
         )}
-        {view === 'stake-view' && (
+        {(view === 'stake-view' || view === 'withdraw') && (
           <>
             <Label size="normal">Your total share of the pool.</Label>
             <div className="your-share-info-wrapper">
@@ -264,14 +493,17 @@ class PoolStake extends Component {
   };
 
   render() {
-    const { view, info } = this.props;
-    const { openWithdrawModal, openStakeModal } = this.state;
-
+    const { view, info, txStatus } = this.props;
     const pair = getPair(info);
 
     if (!pair) {
       return '';
     }
+
+    const openStakeModal = txStatus.type === 'stake' ? txStatus.modal : false;
+    const openWithdrawModal =
+      txStatus.type === 'withdraw' ? txStatus.modal : false;
+    const coinCloseIconType = txStatus.status ? 'fullscreen-exit' : 'close';
 
     return (
       <ContentWrapper className="pool-stake-wrapper">
@@ -288,7 +520,7 @@ class PoolStake extends Component {
                   Withdraw everything including earnings.
                 </Label>
                 <Button
-                  onClick={this.handleWithdraw}
+                  onClick={this.handleGotoWithdraw}
                   color="warning"
                   typevalue="outline"
                 >
@@ -301,27 +533,45 @@ class PoolStake extends Component {
             {this.renderShareDetail(pair)}
           </Col>
         </Row>
-        <Modal
-          title="Withdraw"
+        <ConfirmModal
+          title="WITHDRAW CONFIRMATION"
+          closeIcon={
+            <Icon type={coinCloseIconType} style={{ color: '#33CCFF' }} />
+          }
           visible={openWithdrawModal}
-          onOk={this.handleConfirmWithdraw}
-          onCancel={this.handleCloseModal('openWithdrawModal')}
-          okText="Withdraw"
+          footer={null}
+          onCancel={this.handleCloseModal}
         >
-          <span>Do you want to withdraw?</span>
-        </Modal>
-        <Modal
-          title="Stake"
+          {this.renderWithdrawModalContent(pair)}
+        </ConfirmModal>
+        <ConfirmModal
+          title="STAKE CONFIRMATION"
+          closeIcon={
+            <Icon type={coinCloseIconType} style={{ color: '#33CCFF' }} />
+          }
           visible={openStakeModal}
-          onOk={this.handleConfirmStake}
-          onCancel={this.handleCloseModal('openStakeModal')}
-          okText="Stake"
+          footer={null}
+          onCancel={this.handleCloseModal}
         >
-          <span>Do you want to stake?</span>
-        </Modal>
+          {this.renderStakeModalContent(pair)}
+        </ConfirmModal>
       </ContentWrapper>
     );
   }
 }
 
-export default withRouter(PoolStake);
+export default compose(
+  connect(
+    state => ({
+      txStatus: state.App.txStatus,
+    }),
+    {
+      setTxTimerType,
+      setTxTimerModal,
+      setTxTimerStatus,
+      setTxTimerValue,
+      resetTxStatus,
+    },
+  ),
+  withRouter,
+)(PoolStake);

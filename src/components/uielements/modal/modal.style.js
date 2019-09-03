@@ -3,6 +3,20 @@ import { palette } from 'styled-theme';
 import { Modal } from 'antd';
 
 export const ModalWrapper = styled(Modal)`
+  .ant-modal-header {
+    padding: 10px 14px;
+    text-align: center;
+    background: ${palette('background', 6)};
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+  }
+  .ant-modal-close {
+    .ant-modal-close-x {
+      width: 44px;
+      height: 48px;
+      line-height: 48px;
+    }
+  }
   .ant-btn {
     &:hover,
     &:active,

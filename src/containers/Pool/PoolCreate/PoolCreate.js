@@ -3,12 +3,12 @@ import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Row, Col } from 'antd';
 
-import Button from '../../../components/uielements/button';
 import Label from '../../../components/uielements/label';
 import Status from '../../../components/uielements/status';
 import CoinIcon from '../../../components/uielements/coins/coinIcon';
 import CoinCard from '../../../components/uielements/coins/coinCard';
 import Slider from '../../../components/uielements/slider';
+import Drag from '../../../components/uielements/drag';
 import { greyArrowIcon } from '../../../components/icons';
 
 import { ContentWrapper } from './PoolCreate.style';
@@ -26,7 +26,9 @@ class PoolCreate extends Component {
     info: '',
   };
 
-  state = {};
+  state = {
+    dragReset: true,
+  };
 
   handleCreatePool = () => {
     const { info } = this.props;
@@ -35,7 +37,14 @@ class PoolCreate extends Component {
     this.props.history.push(URL);
   };
 
+  handleDrag = () => {
+    this.setState({
+      dragReset: false,
+    });
+  };
+
   renderAssetView = pair => {
+    const { dragReset } = this.state;
     const { source, target } = pair;
 
     if (!target) {
@@ -77,9 +86,14 @@ class PoolCreate extends Component {
                 return <Status className="share-info-status" {...info} />;
               })}
             </div>
-            <Button onClick={this.handleCreatePool} color="success">
-              create pool
-            </Button>
+            <Drag
+              title="Drag to create pool"
+              source="blue"
+              target="confirm"
+              reset={dragReset}
+              onConfirm={this.handleCreatePool}
+              onDrag={this.handleDrag}
+            />
           </div>
         </div>
       </>
