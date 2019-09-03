@@ -11,7 +11,7 @@ storiesOf('Components/TxView', module).add('default', () => {
   return (
     <ThemeProvider theme={defaultTheme}>
       <AppHolder>
-        <TxView />
+        <TxView start />
       </AppHolder>
     </ThemeProvider>
   );

@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { compose } from 'redux';
+import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Row, Col, Icon } from 'antd';
@@ -10,19 +12,40 @@ import Coin from '../../../components/uielements/coins/coin';
 import CoinCard from '../../../components/uielements/coins/coinCard';
 import CoinData from '../../../components/uielements/coins/coinData';
 import Slider from '../../../components/uielements/slider';
-import Modal from '../../../components/uielements/modal';
+import TxTimer from '../../../components/uielements/txTimer';
 import Drag from '../../../components/uielements/drag';
+
 import { greyArrowIcon } from '../../../components/icons';
 
-import { ContentWrapper } from './PoolStake.style';
+import appActions from '../../../redux/app/actions';
+
+import {
+  ContentWrapper,
+  ConfirmModal,
+  ConfirmModalContent,
+} from './PoolStake.style';
 
 import { getPair } from '../../../helpers/stringHelper';
 import { stakeInfo, stakeNewInfo, shareInfo } from './data';
+
+const {
+  setTxTimerType,
+  setTxTimerModal,
+  setTxTimerStatus,
+  setTxTimerValue,
+  resetTxStatus,
+} = appActions;
 
 class PoolStake extends Component {
   static propTypes = {
     info: PropTypes.string,
     view: PropTypes.string.isRequired,
+    txStatus: PropTypes.object.isRequired,
+    setTxTimerType: PropTypes.func.isRequired,
+    setTxTimerModal: PropTypes.func.isRequired,
+    setTxTimerStatus: PropTypes.func.isRequired,
+    setTxTimerValue: PropTypes.func.isRequired,
+    resetTxStatus: PropTypes.func.isRequired,
   };
 
   static defaultProps = {
@@ -30,8 +53,6 @@ class PoolStake extends Component {
   };
 
   state = {
-    openWithdrawModal: false,
-    openStakeModal: false,
     dragReset: true,
   };
 
@@ -49,15 +70,22 @@ class PoolStake extends Component {
   };
 
   handleStake = () => {
-    this.setState({
-      openStakeModal: true,
-    });
+    const { setTxTimerModal, setTxTimerType, setTxTimerStatus } = this.props;
+
+    setTxTimerType('stake');
+    setTxTimerModal(true);
+    setTxTimerStatus(true);
   };
 
-  handleCloseModal = modal => () => {
-    this.setState({
-      [modal]: false,
-    });
+  handleCloseModal = () => {
+    const {
+      txStatus: { status },
+      setTxTimerModal,
+      resetTxStatus,
+    } = this.props;
+
+    if (!status) resetTxStatus();
+    else setTxTimerModal(false);
   };
 
   handleConfirmStake = () => {
@@ -86,15 +114,118 @@ class PoolStake extends Component {
   };
 
   handleWithdraw = () => {
-    this.setState({
-      openWithdrawModal: true,
-    });
+    const { setTxTimerModal, setTxTimerType, setTxTimerStatus } = this.props;
+
+    setTxTimerType('withdraw');
+    setTxTimerModal(true);
+    setTxTimerStatus(true);
   };
 
-  handleConfirmWithdraw = () => {
+  handleChangeTxValue = value => {
+    const { setTxTimerValue } = this.props;
+
+    setTxTimerValue(value);
+  };
+
+  handleEndTxTimer = () => {
+    const {
+      txStatus: { type },
+      setTxTimerStatus,
+      resetTxStatus,
+    } = this.props;
+
     this.setState({
-      openWithdrawModal: false,
+      dragReset: true,
     });
+    setTxTimerStatus(false);
+
+    // staked?
+    if (type === 'stake') {
+      resetTxStatus();
+      this.handleConfirmStake();
+    }
+  };
+
+  renderStakeModalContent = swapData => {
+    const {
+      txStatus: { status, value },
+    } = this.props;
+    const { source, target } = swapData;
+
+    const transactionLabels = [
+      'sending transaction',
+      'processing transaction',
+      'signing transaction',
+      'finishing transaction',
+      'complete',
+    ];
+
+    const completed = value !== null && !status;
+    const stakeText = !completed ? 'YOU ARE STAKING' : 'YOU STAKED';
+
+    return (
+      <ConfirmModalContent>
+        <div className="left-container">
+          <Label weight="bold">{stakeText}</Label>
+          <CoinData asset={source} assetValue={2.49274} price={217.92} />
+          <CoinData asset={target} assetValue={2.49274} price={217.92} />
+        </div>
+        <div className="center-container">
+          <TxTimer
+            reset={status}
+            value={value}
+            onChange={this.handleChangeTxValue}
+            onEnd={this.handleEndTxTimer}
+          />
+          {value !== 0 && (
+            <Label weight="bold">{transactionLabels[value - 1]}</Label>
+          )}
+          {completed && <Label weight="bold">complete</Label>}
+        </div>
+        <div className="right-container" />
+      </ConfirmModalContent>
+    );
+  };
+
+  renderWithdrawModalContent = swapData => {
+    const {
+      txStatus: { status, value },
+    } = this.props;
+    const { source, target } = swapData;
+
+    const transactionLabels = [
+      'sending transaction',
+      'processing transaction',
+      'signing transaction',
+      'finishing transaction',
+      'complete',
+    ];
+
+    const completed = value !== null && !status;
+    const withdrawText = !completed ? 'YOU ARE WITHDRAWING' : 'YOU WITHDRAWN';
+
+    return (
+      <ConfirmModalContent>
+        <div className="left-container" />
+        <div className="center-container">
+          <TxTimer
+            reset={status}
+            value={value}
+            onChange={this.handleChangeTxValue}
+            onEnd={this.handleEndTxTimer}
+          />
+          {value !== 0 && (
+            <Label weight="bold">{transactionLabels[value - 1]}</Label>
+          )}
+          {completed && <Label weight="bold">complete</Label>}
+        </div>
+        <div className="right-container">
+          <Label weight="bold">{withdrawText}</Label>
+          <CoinData asset={source} assetValue={2.49274} price={217.92} />
+          <CoinData asset={target} assetValue={2.49274} price={217.92} />
+        </div>
+      </ConfirmModalContent>
+    );
   };
 
   renderStakeInfo = pair => {
@@ -362,14 +493,17 @@ class PoolStake extends Component {
   };
 
   render() {
-    const { view, info } = this.props;
-    const { openWithdrawModal, openStakeModal } = this.state;
-
+    const { view, info, txStatus } = this.props;
     const pair = getPair(info);
 
     if (!pair) {
       return '';
     }
+
+    const openStakeModal = txStatus.type === 'stake' ? txStatus.modal : false;
+    const openWithdrawModal =
+      txStatus.type === 'withdraw' ? txStatus.modal : false;
+    const coinCloseIconType = txStatus.status ? 'fullscreen-exit' : 'close';
 
     return (
       <ContentWrapper className="pool-stake-wrapper">
@@ -399,27 +533,45 @@ class PoolStake extends Component {
             {this.renderShareDetail(pair)}
           </Col>
         </Row>
-        <Modal
-          title="Withdraw"
+        <ConfirmModal
+          title="WITHDRAW CONFIRMATION"
+          closeIcon={
+            <Icon type={coinCloseIconType} style={{ color: '#33CCFF' }} />
+          }
           visible={openWithdrawModal}
-          onOk={this.handleConfirmWithdraw}
-          onCancel={this.handleCloseModal('openWithdrawModal')}
-          okText="Withdraw"
+          footer={null}
+          onCancel={this.handleCloseModal}
         >
-          <span>Do you want to withdraw?</span>
-        </Modal>
-        <Modal
-          title="Stake"
+          {this.renderWithdrawModalContent(pair)}
+        </ConfirmModal>
+        <ConfirmModal
+          title="STAKE CONFIRMATION"
+          closeIcon={
+            <Icon type={coinCloseIconType} style={{ color: '#33CCFF' }} />
+          }
           visible={openStakeModal}
-          onOk={this.handleConfirmStake}
-          onCancel={this.handleCloseModal('openStakeModal')}
-          okText="Stake"
+          footer={null}
+          onCancel={this.handleCloseModal}
         >
-          <span>Do you want to stake?</span>
-        </Modal>
+          {this.renderStakeModalContent(pair)}
+        </ConfirmModal>
       </ContentWrapper>
     );
   }
 }
 
-export default withRouter(PoolStake);
+export default compose(
+  connect(
+    state => ({
+      txStatus: state.App.txStatus,
+    }),
+    {
+      setTxTimerType,
+      setTxTimerModal,
+      setTxTimerStatus,
+      setTxTimerValue,
+      resetTxStatus,
+    },
+  ),
+  withRouter,
+)(PoolStake);

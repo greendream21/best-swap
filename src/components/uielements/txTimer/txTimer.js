@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Icon } from 'antd';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import ChangingProgressProvider from '../changingProgressProvider';
 import {
@@ -8,6 +7,7 @@ import {
   TimerChartIcon2,
   TimerChartIcon3,
   TimerChartIcon4,
+  ConfirmIcon,
 } from '../../icons/timerIcons';
 
 import 'react-circular-progressbar/dist/styles.css';
@@ -110,7 +110,7 @@ class TxTimer extends Component {
                   {!resetTimer && this.renderTimerIcon(percentageIndex)}
                   {resetTimer && (
                     <div className="confirm-icon">
-                      <Icon type="check" />
+                      <ConfirmIcon />
                     </div>
                   )}
                 </div>

@@ -19,18 +19,9 @@ export const TxViewWrapper = styled.div`
     width: 40px;
     height: 40px;
 
-    .confirm-icon {
+    svg {
       width: 40px;
       height: 40px;
-      border: none;
-      border-radius: 50%;
-      background-color: ${palette('primary', 0)};
-
-      i {
-        color: #fff;
-        font-size: 20px;
-        padding: 10px;
-      }
     }
   }
 

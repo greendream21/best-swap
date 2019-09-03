@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { palette, key } from 'styled-theme';
 import ContentView from '../../../components/utility/contentView';
+import Modal from '../../../components/uielements/modal';
 
 export const ContentWrapper = styled(ContentView)`
   padding: 0;
@@ -204,6 +205,82 @@ export const ContentWrapper = styled(ContentView)`
             padding-top: 24px;
             padding-right: 24px;
           }
+        }
+      }
+    }
+  }
+`;
+
+export const ConfirmModal = styled(Modal)`
+  &.ant-modal {
+    width: 700px !important;
+
+    .ant-modal-body {
+      height: 320px !important;
+    }
+  }
+`;
+
+export const ConfirmModalContent = styled.div`
+  display: flex;
+  justify-content: space-between;
+
+  .left-container,
+  .right-container {
+    width: 250px;
+  }
+
+  .coinData-wrapper {
+    width: 200px;
+    padding-left: 0;
+    padding-bottom: 8px;
+  }
+
+  .status-wrapper {
+    .status-title {
+      padding-top: 0;
+    }
+    .status-value {
+      padding-bottom: 0;
+    }
+  }
+
+  .left-container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .center-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 200px;
+
+    .label-wrapper {
+      margin-top: 35px;
+      text-transform: uppercase;
+    }
+
+    .before-start-label {
+      opacity: 0;
+    }
+  }
+
+  .right-container {
+    display: flex;
+    flex-direction: column;
+    padding-left: 20px;
+    .expected-status {
+      display: flex;
+
+      .status-item {
+        display: flex;
+        flex-direction: column;
+        padding-right: 8px;
+
+        .price-label {
+          padding-top: 4px;
+          padding-bottom: 0;
         }
       }
     }
