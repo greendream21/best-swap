@@ -53,7 +53,7 @@ const WalletConnectPane = props => {
           // TODO: set walletConnector, account.address, and account into redux
 
           // TODO: navigate to next page
-          props.history.push('/');
+          // props.history.push("/")
         })
         .catch(error => {
           // Error returned when rejected

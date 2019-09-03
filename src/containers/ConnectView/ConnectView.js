@@ -8,6 +8,7 @@ import Button from '../../components/uielements/button';
 
 import Keystore from './Keystore';
 import WalletConnect from './WalletConnect';
+import Ledger from './Ledger';
 
 class ConnectView extends Component {
   static propTypes = {
@@ -40,7 +41,7 @@ class ConnectView extends Component {
       {
         label: 'ledger',
         value: 'ledger',
-        comp: <Keystore {...this.props} />,
+        comp: <Ledger {...this.props} />,
       },
       {
         label: 'keystore file',
@@ -50,7 +51,6 @@ class ConnectView extends Component {
     ];
 
     const selected = btns.find(btn => btn.value === this.state.walletType);
-    console.log('Selected:', selected);
 
     return (
       <ContentWrapper>
@@ -66,6 +66,7 @@ class ConnectView extends Component {
             {btns.map(btn => {
               return (
                 <Button
+                  key={btn.value}
                   onClick={() => {
                     this.setWalletType(btn.value);
                   }}
