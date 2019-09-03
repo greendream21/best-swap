@@ -7,6 +7,7 @@ import Label from '../../components/uielements/label';
 import Button from '../../components/uielements/button';
 
 import Keystore from './Keystore';
+import WalletConnect from './WalletConnect';
 
 class ConnectView extends Component {
   static propTypes = {
@@ -17,7 +18,7 @@ class ConnectView extends Component {
     super(props);
 
     this.state = {
-      walletType: 'keystore',
+      walletType: 'walletconnect',
     };
   }
 
@@ -34,9 +35,13 @@ class ConnectView extends Component {
       {
         label: 'wallet connect',
         value: 'walletconnect',
+        comp: <WalletConnect {...this.props} />,
+      },
+      {
+        label: 'ledger',
+        value: 'ledger',
         comp: <Keystore {...this.props} />,
       },
-      { label: 'ledger', value: 'ledger', comp: <Keystore {...this.props} /> },
       {
         label: 'keystore file',
         value: 'keystore',
@@ -45,6 +50,7 @@ class ConnectView extends Component {
     ];
 
     const selected = btns.find(btn => btn.value === this.state.walletType);
+    console.log('Selected:', selected);
 
     return (
       <ContentWrapper>
@@ -58,7 +64,6 @@ class ConnectView extends Component {
         <Row className="connect-view-content">
           <div className="connect-view-content-buttons">
             {btns.map(btn => {
-              console.log('BNT', btn);
               return (
                 <Button
                   onClick={() => {
