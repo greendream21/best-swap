@@ -86,7 +86,7 @@ class TxTimer extends Component {
           onChange={this.handleChange}
         >
           {percentage => {
-            const durations = [0, 300, 5000, 1000, 300];
+            const durations = [0, 300, 1200, 1000, 300];
             const percentageIndex = values.findIndex(
               value => value === percentage,
             );

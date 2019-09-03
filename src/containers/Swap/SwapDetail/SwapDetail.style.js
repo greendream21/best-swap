@@ -74,7 +74,10 @@ export const ContentWrapper = styled(ContentView)`
 export const SwapModal = styled(Modal)`
   &.ant-modal {
     width: 700px !important;
-    height: 350px !important;
+
+    .ant-modal-body {
+      height: 320px !important;
+    }
   }
 `;
 
@@ -105,6 +108,15 @@ export const SwapModalContent = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
+
+    .label-wrapper {
+      margin-top: 35px;
+      text-transform: uppercase;
+    }
+
+    .before-start-label {
+      opacity: 0;
+    }
   }
 
   .right-container {

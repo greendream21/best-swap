@@ -33,6 +33,7 @@ const {
   setTxTimerModal,
   setTxTimerStatus,
   setTxTimerValue,
+  resetTxStatus,
 } = appActions;
 
 class SwapDetail extends Component {
@@ -44,6 +45,7 @@ class SwapDetail extends Component {
     setTxTimerModal: PropTypes.func.isRequired,
     setTxTimerStatus: PropTypes.func.isRequired,
     setTxTimerValue: PropTypes.func.isRequired,
+    resetTxStatus: PropTypes.func.isRequired,
   };
 
   static defaultProps = {
@@ -102,9 +104,14 @@ class SwapDetail extends Component {
   };
 
   handleCloseModal = () => {
-    const { setTxTimerModal } = this.props;
+    const {
+      txStatus: { status },
+      setTxTimerModal,
+      resetTxStatus,
+    } = this.props;
 
-    setTxTimerModal(false);
+    if (!status) resetTxStatus();
+    else setTxTimerModal(false);
   };
 
   handleGotoDetail = () => {
@@ -166,10 +173,25 @@ class SwapDetail extends Component {
     } = this.props;
     const { source, target } = swapData;
 
+    const transactionLabels = [
+      'sending transaction',
+      'processing transaction',
+      'signing transaction',
+      'finishing transaction',
+      'complete',
+    ];
+
+    const completed = value !== null && !status;
+    const swapText = !completed ? 'YOU ARE SWAPPING' : 'YOU SWAPPED';
+    const receiveText = !completed ? 'YOU SHOULD RECEIVE' : 'YOU RECEIVED';
+    const expectation = !completed
+      ? 'EXPECTED FEES & SLIP'
+      : 'FINAL FEES & SLIP';
+
     return (
       <SwapModalContent>
         <div className="left-container">
-          <Label weight="bold">YOU ARE SWAPPING</Label>
+          <Label weight="bold">{swapText}</Label>
           <CoinData asset={source} assetValue={2.49274} price={217.92} />
         </div>
         <div className="center-container">
@@ -179,11 +201,15 @@ class SwapDetail extends Component {
             onChange={this.handleChangeTxValue}
             onEnd={this.handleEndTxTimer}
           />
+          {value !== 0 && (
+            <Label weight="bold">{transactionLabels[value - 1]}</Label>
+          )}
+          {completed && <Label weight="bold">complete</Label>}
         </div>
         <div className="right-container">
-          <Label weight="bold">YOU SHOULD RECEIVE</Label>
+          <Label weight="bold">{receiveText}</Label>
           <CoinData asset={target} assetValue={2.49274} price={217.92} />
-          <Label weight="bold">EXPECTED FEES & SLIP</Label>
+          <Label weight="bold">{expectation}</Label>
           <div className="expected-status">
             <div className="status-item">
               <Status title="FEES" value="1.234 RUNE" />
@@ -331,6 +357,7 @@ export default compose(
       setTxTimerModal,
       setTxTimerStatus,
       setTxTimerValue,
+      resetTxStatus,
     },
   ),
   withRouter,
