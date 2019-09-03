@@ -1,6 +1,6 @@
 {
   "projects": {
     "default": "bepswap-app",
-    "development": "bepswap-app",
+    "development": "bepswap-app"
   }
 }
