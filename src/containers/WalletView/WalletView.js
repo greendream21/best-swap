@@ -8,7 +8,8 @@ import Label from '../../components/uielements/label';
 import Button from '../../components/uielements/button';
 import CoinList from '../../components/uielements/coins/coinList';
 
-import { assetsData, stakeData } from './data';
+import Binance from '../../clients/binance';
+import { stakeData } from './data';
 import { getPair } from '../../helpers/stringHelper';
 
 const { TabPane } = Tabs;
@@ -28,14 +29,46 @@ class WalletView extends Component {
     status: '',
   };
 
-  state = {};
+  state = {
+    loading: true,
+  };
+
+  constructor(props) {
+    super(props);
+    // TODO: get address from redux
+    Binance.getBalances('tbnb1lejrrtta9cgr49fuh7ktu3sddhe0ff7whxk9nt')
+      .then(response => {
+        Binance.getMarkets()
+          .then(markets => {
+            const coins = response.map(coin => {
+              const market = markets.result.find(
+                market => market.base_asset_symbol === coin.symbol,
+              );
+              return {
+                asset: coin.symbol,
+                assetValue: parseFloat(coin.free),
+                price: market ? parseFloat(market.list_price) : 0,
+              };
+            });
+            this.setState({ loading: false, assetData: coins });
+          })
+          .catch(error => {
+            this.setState({ loading: false });
+            console.error(error);
+          });
+      })
+      .catch(error => {
+        this.setState({ loading: false });
+        console.error(error);
+      });
+  }
 
   getAssetNameByIndex = index => {
-    return assetsData[index].asset || '';
+    return this.state.assetsData[index].asset || '';
   };
 
   getAssetIndexByName = asset => {
-    return assetsData.findIndex(data => data.asset === asset);
+    return (this.state.assetData || []).find(data => data.asset === asset);
   };
 
   handleConnect = () => {
@@ -60,6 +93,10 @@ class WalletView extends Component {
 
   renderAssetTitle = () => {
     const { status } = this.props;
+
+    if (this.state.loading) {
+      return 'Loading...';
+    }
 
     if (status === 'connected') {
       return 'Tokens in your wallet:';
@@ -102,14 +139,14 @@ class WalletView extends Component {
             <Label className="asset-title-label">
               {this.renderAssetTitle()}
             </Label>
-            {!status && (
+            {!this.state.loading && !this.state.assetData && (
               <Button onClick={this.handleConnect} color="success">
                 connect
               </Button>
             )}
-            {status && (
+            {!this.state.loading && this.state.assetData && (
               <CoinList
-                data={assetsData}
+                data={this.state.assetData}
                 value={sourceIndex}
                 selected={selectedAsset}
                 onSelect={this.handleSelectAsset}

@@ -1,8 +1,9 @@
-import React, { Component } from 'react';
+import React, { Fragment, Component } from 'react';
 import PropTypes from 'prop-types';
 
 import { CoinListWrapper } from './coinList.style';
 import CoinData from '../coinData';
+import { coinGroup } from '../../../../settings';
 
 class CoinList extends Component {
   static propTypes = {
@@ -49,6 +50,11 @@ class CoinList extends Component {
           const isSelected = selected.includes(index);
           const activeClass = isSelected || value === index ? 'active' : '';
 
+          if (!coinGroup.includes(asset.toLowerCase())) {
+            console.log(asset, 'is not a recognized token');
+            return <Fragment key={asset} />;
+          }
+
           return (
             <div
               className={`coinList-row ${activeClass}`}
@@ -56,7 +62,7 @@ class CoinList extends Component {
               key={index}
             >
               <CoinData
-                asset={asset}
+                asset={asset.toLowerCase()}
                 assetValue={assetValue}
                 target={target}
                 targetValue={targetValue}
