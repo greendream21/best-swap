@@ -18,7 +18,7 @@ class TxView extends Component {
   };
 
   static defaultProps = {
-    start: true,
+    start: false,
     className: '',
     onEnd: () => {},
     onClick: () => {},
@@ -31,7 +31,7 @@ class TxView extends Component {
   componentDidUpdate(prevProps) {
     if (prevProps.start === false && this.props.start === true) {
       this.setState({
-        resetTimer: false,
+        resetTimer: true,
       });
     }
   }
@@ -42,7 +42,7 @@ class TxView extends Component {
     onEnd();
 
     this.setState({
-      resetTimer: true,
+      resetTimer: false,
     });
   };
 
@@ -54,7 +54,6 @@ class TxView extends Component {
     const { start, onEnd, className, onClick, ...props } = this.props;
     const { resetTimer } = this.state;
     const values = [0, 25, 50, 75, 100];
-    let totalDuration = 0;
     let duration;
 
     return (
@@ -63,9 +62,17 @@ class TxView extends Component {
         onClick={onClick}
         {...props}
       >
-        {!start && <TimerFullIcon />}
-        {start && (
-          <ChangingProgressProvider values={values} reset={resetTimer}>
+        {!resetTimer && (
+          <div className="timerchart-icon">
+            <TimerFullIcon />
+          </div>
+        )}
+        {resetTimer && (
+          <ChangingProgressProvider
+            values={values}
+            reset={!start}
+            key="tx-view"
+          >
             {percentage => {
               const durations = [0, 300, 1200, 1000, 300];
               const percentageIndex = values.findIndex(
@@ -73,24 +80,21 @@ class TxView extends Component {
               );
 
               duration = durations[percentageIndex] / 1000;
-              totalDuration = (
-                Number(totalDuration) + Number(duration)
-              ).toFixed(1);
 
               const hide = percentage === 100;
               const CircularProgressbarStyle = `${
-                resetTimer ? 'hide' : ''
+                !start ? 'hide' : ''
               } timerchart-circular-progressbar`;
 
-              if (hide && !resetTimer) {
-                setTimeout(this.handleEndTimer, 1000);
+              if (hide && start) {
+                setTimeout(this.handleEndTimer, 2000);
               }
 
               return (
                 <>
                   <div className="timerchart-icon">
-                    {!resetTimer && this.renderTimerIcon(percentageIndex)}
-                    {resetTimer && (
+                    {start && this.renderTimerIcon(percentageIndex)}
+                    {!start && (
                       <div className="confirm-icon">
                         <Icon type="check" />
                       </div>

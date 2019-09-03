@@ -36,4 +36,12 @@ export const StyledHeader = styled.div`
       font-size: 14px;
     }
   }
+
+  .header-right {
+    display: flex;
+
+    .txView-wrapper {
+      margin-left: 10px;
+    }
+  }
 `;

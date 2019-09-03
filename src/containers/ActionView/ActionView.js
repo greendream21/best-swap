@@ -73,9 +73,7 @@ class ActionView extends Component {
     }
   };
 
-  handleHeaderAction = () => {
-    console.log('header action');
-  };
+  handleHeaderAction = () => {};
 
   handleUnlock = () => {
     this.props.history.push('/swap');

@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { palette } from 'styled-theme';
 import ContentView from '../../../components/utility/contentView';
+import Modal from '../../../components/uielements/modal';
 
 export const ContentWrapper = styled(ContentView)`
   padding: 0;
@@ -65,6 +66,63 @@ export const ContentWrapper = styled(ContentView)`
     .coinList-wrapper {
       .coinList-row {
         padding: 0;
+      }
+    }
+  }
+`;
+
+export const SwapModal = styled(Modal)`
+  &.ant-modal {
+    width: 700px !important;
+    height: 350px !important;
+  }
+`;
+
+export const SwapModalContent = styled.div`
+  display: flex;
+  justify-content: space-between;
+
+  .coinData-wrapper {
+    padding-left: 0;
+    padding-bottom: 4px;
+  }
+
+  .status-wrapper {
+    .status-title {
+      padding-top: 0;
+    }
+    .status-value {
+      padding-bottom: 0;
+    }
+  }
+
+  .left-container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .center-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .right-container {
+    display: flex;
+    flex-direction: column;
+
+    .expected-status {
+      display: flex;
+
+      .status-item {
+        display: flex;
+        flex-direction: column;
+        padding-right: 8px;
+
+        .price-label {
+          padding-top: 4px;
+          padding-bottom: 0;
+        }
       }
     }
   }

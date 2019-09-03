@@ -13,17 +13,20 @@ import {
 import 'react-circular-progressbar/dist/styles.css';
 
 import { TxTimerWrapper } from './txTimer.style';
-import ConfirmIcon from '../confirmIcon';
 
 class TxTimer extends Component {
   static propTypes = {
     reset: PropTypes.bool,
+    value: PropTypes.number,
+    onChange: PropTypes.func,
     onEnd: PropTypes.func,
     className: PropTypes.string,
   };
 
   static defaultProps = {
     reset: true,
+    value: 0,
+    onChange: () => {},
     onEnd: () => {},
     className: '',
   };
@@ -32,10 +35,28 @@ class TxTimer extends Component {
     resetTimer: false,
   };
 
+  componentDidUpdate(prevProps) {
+    if (prevProps.reset === false && this.props.reset === true) {
+      this.setState({
+        resetTimer: false,
+      });
+    }
+  }
+
   handleEndTimer = () => {
+    const { onEnd } = this.props;
+
+    onEnd();
+
     this.setState({
       resetTimer: true,
     });
+  };
+
+  handleChange = value => {
+    const { onChange } = this.props;
+
+    onChange(value);
   };
 
   renderTimerIcon = index => {
@@ -51,7 +72,7 @@ class TxTimer extends Component {
   };
 
   render() {
-    const { reset, onEnd, className, ...props } = this.props;
+    const { value: indexValue, reset, onEnd, className, ...props } = this.props;
     const { resetTimer } = this.state;
     const values = [0, 25, 50, 75, 100];
     let totalDuration = 0;
@@ -59,17 +80,20 @@ class TxTimer extends Component {
 
     return (
       <TxTimerWrapper className={`txTimer-wrapper ${className}`} {...props}>
-        <ChangingProgressProvider values={values} reset={resetTimer}>
+        <ChangingProgressProvider
+          values={values}
+          reset={resetTimer}
+          onChange={this.handleChange}
+        >
           {percentage => {
-            const durations = [0, 300, 1200, 1000, 300];
+            const durations = [0, 300, 5000, 1000, 300];
             const percentageIndex = values.findIndex(
               value => value === percentage,
             );
 
-            duration = durations[percentageIndex] / 1000;
-            totalDuration = (Number(totalDuration) + Number(duration)).toFixed(
-              1,
-            );
+            durations.slice(0, indexValue + 1).forEach(duration => {
+              totalDuration += duration / 1000;
+            });
 
             const hide = percentage === 100;
             const CircularProgressbarStyle = `${
@@ -102,7 +126,7 @@ class TxTimer extends Component {
                     textSize: '14px',
                     pathColor: 'rgba(251,252,254,0.57)',
                     trailColor: 'rgba(0,0,0,0)',
-                    pathTransitionDuration: duration,
+                    pathTransition: `stroke-dashoffset ${duration}s linear 0s`,
                   })}
                 />
               </>
