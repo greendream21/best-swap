@@ -18,7 +18,7 @@ class WalletView extends Component {
     page: PropTypes.string,
     view: PropTypes.string,
     info: PropTypes.string,
-    status: PropTypes.bool,
+    status: PropTypes.string,
   };
 
   static defaultProps = {

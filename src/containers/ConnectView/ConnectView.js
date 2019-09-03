@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
-import { Row, Col, Icon, Input } from 'antd';
+import { Row, Col } from 'antd';
 import PropTypes from 'prop-types';
 
 import { ContentWrapper } from './ConnectView.style';
 import Label from '../../components/uielements/label';
 import Button from '../../components/uielements/button';
-import FormGroup from '../../components/uielements/formGroup';
 
-const { TextArea } = Input;
+import Keystore from './Keystore';
 
 class ConnectView extends Component {
   static propTypes = {
@@ -20,7 +19,7 @@ class ConnectView extends Component {
     return (
       <ContentWrapper>
         <Row className="connect-view-title">
-          <Col span="24">
+          <Col span={24}>
             <Label size="normal" weight="bold" color="normal">
               SELECT WALLET
             </Label>
@@ -35,29 +34,11 @@ class ConnectView extends Component {
               ledger
             </Button>
             <Button color="primary" typevalue="ghost" sizevalue="big">
-              keywtone file
+              keystore file
             </Button>
           </div>
           <div className="connect-view-content-form">
-            <Label size="large" weight="bold" color="normal">
-              Select Keystore File
-            </Label>
-            <Button color="primary" typevalue="outline">
-              <Icon type="upload" />
-              Choose File to Upload
-            </Button>
-            <FormGroup
-              title="Or paste here:"
-              description="The browser does not store your keys"
-            >
-              <TextArea rows={4} placeholder="24 word phrase" />
-            </FormGroup>
-            <FormGroup
-              title="Encrypt with password:"
-              description="This will securely encrypt your keys in the browser"
-            >
-              <Input type="password" placeholder="password" />
-            </FormGroup>
+            <Keystore {...this.props} />
           </div>
         </Row>
         <Row className="bottom-nav-button">
