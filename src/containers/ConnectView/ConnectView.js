@@ -13,8 +13,38 @@ class ConnectView extends Component {
     onUnlock: PropTypes.func.isRequired,
   };
 
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      walletType: 'keystore',
+    };
+  }
+
+  setWalletType(t) {
+    this.setState({
+      walletType: t,
+    });
+  }
+
   render() {
     const { onUnlock } = this.props;
+
+    const btns = [
+      {
+        label: 'wallet connect',
+        value: 'walletconnect',
+        comp: <Keystore {...this.props} />,
+      },
+      { label: 'ledger', value: 'ledger', comp: <Keystore {...this.props} /> },
+      {
+        label: 'keystore file',
+        value: 'keystore',
+        comp: <Keystore {...this.props} />,
+      },
+    ];
+
+    const selected = btns.find(btn => btn.value === this.state.walletType);
 
     return (
       <ContentWrapper>
@@ -27,19 +57,24 @@ class ConnectView extends Component {
         </Row>
         <Row className="connect-view-content">
           <div className="connect-view-content-buttons">
-            <Button color="primary" typevalue="ghost" sizevalue="big">
-              wallet connect
-            </Button>
-            <Button color="primary" typevalue="ghost" sizevalue="big">
-              ledger
-            </Button>
-            <Button color="primary" typevalue="ghost" sizevalue="big">
-              keystore file
-            </Button>
+            {btns.map(btn => {
+              console.log('BNT', btn);
+              return (
+                <Button
+                  onClick={() => {
+                    this.setWalletType(btn.value);
+                  }}
+                  focused={this.state.walletType === btn.value}
+                  color="primary"
+                  typevalue="ghost"
+                  sizevalue="big"
+                >
+                  {btn.label}
+                </Button>
+              );
+            })}
           </div>
-          <div className="connect-view-content-form">
-            <Keystore {...this.props} />
-          </div>
+          <div className="connect-view-content-form">{selected.comp}</div>
         </Row>
         <Row className="bottom-nav-button">
           <Button onClick={onUnlock} color="primary">

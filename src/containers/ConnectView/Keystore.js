@@ -44,7 +44,7 @@ const Keystore = props => {
     const address = crypto.getAddressFromPrivateKey(privateKey, 'tbnb');
     console.log('Address:', address);
 
-    // TODO: set redux wallet details, { keystore, address }. Once updated redux...
+    // TODO: set wallet details to redux, { keystore, address }
 
     // clean up
     setPassword(null);
