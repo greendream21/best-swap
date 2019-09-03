@@ -17,5 +17,6 @@ test_and_deploy:
     - yarn test:ci
     - npm i -g firebase-tools
     - firebase -V
+    - firebase use --token ${FIREBASE_TOKEN} development
     - firebase deploy --token ${FIREBASE_TOKEN}
   
