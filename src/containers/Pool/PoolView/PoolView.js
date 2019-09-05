@@ -77,7 +77,7 @@ class PoolView extends Component {
             transaction={asset.transaction}
             liq={asset.liq}
             roi={asset.roi}
-            onStake={this.handleStake(activeAsset, asset)}
+            onStake={this.handleStake(asset.target, asset.asset)}
             key={index}
           />
         );
