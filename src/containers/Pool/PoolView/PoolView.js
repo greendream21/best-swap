@@ -28,10 +28,9 @@ class PoolView extends Component {
             return await ChainService.getPool(pool.ticker)
               .then(response => {
                 const data = response.data;
-                console.log('pool data', data);
                 return {
                   target: pool.ticker.toLowerCase(),
-                  depth: data.depth,
+                  depth: data.depth, // TODO: should multiply this by USD price of rune
                   volume: data.vol24hr,
                   transaction: data.numStakeTx + data.numSwaps,
                   roi: data.roiAT,
@@ -65,7 +64,6 @@ class PoolView extends Component {
 
   renderPoolList = () => {
     const { activeAsset } = this.state;
-    console.log('Pools:', this.state.pools);
 
     return (this.state.pools || []).map((asset, index) => {
       if (asset !== activeAsset) {
