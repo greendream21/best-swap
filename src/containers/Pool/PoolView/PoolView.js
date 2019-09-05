@@ -5,12 +5,49 @@ import Label from '../../../components/uielements/label';
 import AddIcon from '../../../components/uielements/addIcon';
 import PoolCard from '../../../components/pool/poolCard';
 
+import ChainService from '../../../clients/chainservice';
+import StateChain from '../../../clients/statechain';
 import { ContentWrapper } from './PoolView.style';
-import { assets } from './data';
 
 class PoolView extends Component {
   state = {
     activeAsset: 'rune',
+  };
+
+  constructor(props) {
+    super(props);
+
+    this.refreshPools();
+  }
+
+  refreshPools = () => {
+    StateChain.listPools()
+      .then(async response => {
+        const pools = await Promise.all(
+          response.data.map(async pool => {
+            return await ChainService.getPool(pool.ticker)
+              .then(response => {
+                const data = response.data;
+                return {
+                  target: pool.ticker.toLowerCase(),
+                  depth: data.depth, // TODO: should multiply this by USD price of rune
+                  volume: data.vol24hr,
+                  transaction: data.numStakeTx + data.numSwaps,
+                  roi: data.roiAT,
+                  liq: 1, // TODO: what is number suppose to be??
+                  asset: 'rune',
+                };
+              })
+              .catch(error => {
+                console.error(error);
+              });
+          }),
+        );
+        this.setState({ pools: pools });
+      })
+      .catch(error => {
+        console.error(error);
+      });
   };
 
   handleStake = (source, target) => () => {
@@ -28,19 +65,19 @@ class PoolView extends Component {
   renderPoolList = () => {
     const { activeAsset } = this.state;
 
-    return assets.map((asset, index) => {
+    return (this.state.pools || []).map((asset, index) => {
       if (asset !== activeAsset) {
         return (
           <PoolCard
             className="pool-card"
-            asset={activeAsset}
-            target={asset}
-            depth={234000}
-            volume={1000}
-            transaction={100}
-            liq={1}
-            roi={10}
-            onStake={this.handleStake(activeAsset, asset)}
+            asset={asset.asset}
+            target={asset.target}
+            depth={asset.depth}
+            volume={asset.volume}
+            transaction={asset.transaction}
+            liq={asset.liq}
+            roi={asset.roi}
+            onStake={this.handleStake(asset.target, asset.asset)}
             key={index}
           />
         );

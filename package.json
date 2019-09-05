@@ -16,8 +16,13 @@
     "build-storybook": "build-storybook -o ./build/storybook"
   },
   "dependencies": {
-    "@binance-chain/javascript-sdk": "^2.14.7",
-    "antd": "^3.23.0",
+    "@binance-chain/javascript-sdk": "^2.14.8",
+    "@ledgerhq/hw-transport-u2f": "^4.68.4",
+    "@trustwallet/walletconnect": "^0.1.5",
+    "@walletconnect/qrcode-modal": "^1.0.0-beta.35",
+    "antd": "^3.20.3",
+    "axios": "^0.19.0",
+    "axios-mock-adapter": "^1.17.0",
     "connected-react-router": "^6.5.2",
     "lodash": "^4.17.14",
     "node-sass": "^4.12.0",
@@ -28,6 +33,7 @@
     "react-circular-progressbar": "^2.0.2",
     "react-dom": "^16.8.6",
     "react-draggable": "^3.3.0",
+    "react-file-picker": "^0.0.6",
     "react-intl": "^2.9.0",
     "react-placeholder": "^3.0.2",
     "react-redux": "^7.1.1",

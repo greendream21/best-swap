@@ -8,7 +8,8 @@ import Label from '../../components/uielements/label';
 import Button from '../../components/uielements/button';
 import CoinList from '../../components/uielements/coins/coinList';
 
-import { assetsData, stakeData } from './data';
+import Binance from '../../clients/binance';
+import ChainService from '../../clients/chainservice';
 import { getPair } from '../../helpers/stringHelper';
 
 const { TabPane } = Tabs;
@@ -18,7 +19,7 @@ class WalletView extends Component {
     page: PropTypes.string,
     view: PropTypes.string,
     info: PropTypes.string,
-    status: PropTypes.bool,
+    status: PropTypes.string,
   };
 
   static defaultProps = {
@@ -28,14 +29,101 @@ class WalletView extends Component {
     status: '',
   };
 
-  state = {};
+  state = {
+    loadingAssets: true,
+    loadingStakes: false,
+  };
+
+  constructor(props) {
+    super(props);
+    // TODO: get address from redux
+    this.refreshBalance('tbnb1lejrrtta9cgr49fuh7ktu3sddhe0ff7whxk9nt');
+  }
+
+  refreshBalance = addr => {
+    Binance.getBalances(addr)
+      .then(response => {
+        Binance.getMarkets()
+          .then(markets => {
+            const coins = response.map(coin => {
+              const market = markets.result.find(
+                market => market.base_asset_symbol === coin.symbol,
+              );
+              return {
+                asset: coin.symbol,
+                assetValue: parseFloat(coin.free),
+                price: market ? parseFloat(market.list_price) : 0,
+              };
+            });
+            this.setState({ loadingAssets: false, assetData: coins });
+          })
+          .catch(error => {
+            this.setState({ loadingAssets: false });
+            console.error(error);
+          });
+      })
+      .catch(error => {
+        this.setState({ loadingAssets: false });
+        console.error(error);
+      });
+  };
+
+  refreshStakes = addr => {
+    Binance.getMarkets()
+      .then(markets => {
+        ChainService.stakerData(addr)
+          .then(async response => {
+            const stakeData = await Promise.all(
+              response.data.map(async ticker => {
+                let info = await ChainService.stakerData(addr, ticker)
+                  .then(response => {
+                    const market = markets.result.find(
+                      market => market.base_asset_symbol === ticker,
+                    );
+
+                    return {
+                      target: ticker.toLowerCase(),
+                      targetValue: response.data.tokensStaked,
+                      assetValue: response.data.runeStaked,
+                      asset: 'rune',
+                      price: market ? parseFloat(market.list_price) : 0,
+                    };
+                  })
+                  .catch(error => {
+                    console.error(error);
+                    return { target: ticker, asset: 'rune' };
+                  });
+                return info;
+              }),
+            );
+            this.setState({ loadingStakes: false, stakeData: stakeData });
+          })
+          .catch(error => {
+            this.setState({ loadingStakes: false });
+            console.error(error);
+          });
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  };
 
   getAssetNameByIndex = index => {
-    return assetsData[index].asset || '';
+    return this.state.assetsData[index].asset || '';
   };
 
   getAssetIndexByName = asset => {
-    return assetsData.findIndex(data => data.asset === asset);
+    return (this.state.assetData || []).find(data => data.asset === asset);
+  };
+
+  handleChangeTab = tag => {
+    if (tag === 'assets') {
+      // TODO: get address from redux
+      this.refreshBalance('tbnb1lejrrtta9cgr49fuh7ktu3sddhe0ff7whxk9nt');
+    } else if (tag === 'stakes') {
+      // TODO: get address from redux
+      this.refreshStakes('tbnb1lejrrtta9cgr49fuh7ktu3sddhe0ff7whxk9nt');
+    }
   };
 
   handleConnect = () => {
@@ -61,6 +149,10 @@ class WalletView extends Component {
   renderAssetTitle = () => {
     const { status } = this.props;
 
+    if (this.state.loadingAssets) {
+      return 'Loading...';
+    }
+
     if (status === 'connected') {
       return 'Tokens in your wallet:';
     }
@@ -70,8 +162,14 @@ class WalletView extends Component {
   renderStakeTitle = () => {
     const { status } = this.props;
 
-    if (status === 'connected') {
+    if (this.state.loadingStakes) {
+      return 'Loading...';
+    }
+
+    if ((this.state.stakeData || []).length > 0) {
       return 'Your current stakes are:';
+    } else {
+      return 'You are currently not staked in any pool';
     }
     return '';
   };
@@ -102,14 +200,14 @@ class WalletView extends Component {
             <Label className="asset-title-label">
               {this.renderAssetTitle()}
             </Label>
-            {!status && (
+            {!this.state.loadingAssets && !this.state.assetData && (
               <Button onClick={this.handleConnect} color="success">
                 connect
               </Button>
             )}
-            {status && (
+            {!this.state.loadingAssets && this.state.assetData && (
               <CoinList
-                data={assetsData}
+                data={this.state.assetData}
                 value={sourceIndex}
                 selected={selectedAsset}
                 onSelect={this.handleSelectAsset}
@@ -120,9 +218,9 @@ class WalletView extends Component {
             <Label className="asset-title-label">
               {this.renderStakeTitle()}
             </Label>
-            {status && (
+            {!this.state.loadingStakes && this.state.stakeData && (
               <CoinList
-                data={stakeData}
+                data={this.state.stakeData}
                 value={sourceIndex}
                 onSelect={this.handleSelectStake}
               />

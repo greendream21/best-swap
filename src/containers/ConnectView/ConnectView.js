@@ -1,26 +1,61 @@
 import React, { Component } from 'react';
-import { Row, Col, Icon, Input } from 'antd';
+import { Row, Col } from 'antd';
 import PropTypes from 'prop-types';
 
 import { ContentWrapper } from './ConnectView.style';
 import Label from '../../components/uielements/label';
 import Button from '../../components/uielements/button';
-import FormGroup from '../../components/uielements/formGroup';
 
-const { TextArea } = Input;
+import Keystore from './Keystore';
+import WalletConnect from './WalletConnect';
+import Ledger from './Ledger';
 
 class ConnectView extends Component {
   static propTypes = {
     onUnlock: PropTypes.func.isRequired,
   };
 
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      walletType: 'walletconnect',
+    };
+  }
+
+  setWalletType(t) {
+    this.setState({
+      walletType: t,
+    });
+  }
+
   render() {
     const { onUnlock } = this.props;
+
+    const btns = [
+      {
+        label: 'wallet connect',
+        value: 'walletconnect',
+        comp: <WalletConnect {...this.props} />,
+      },
+      {
+        label: 'ledger',
+        value: 'ledger',
+        comp: <Ledger {...this.props} />,
+      },
+      {
+        label: 'keystore file',
+        value: 'keystore',
+        comp: <Keystore {...this.props} />,
+      },
+    ];
+
+    const selected = btns.find(btn => btn.value === this.state.walletType);
 
     return (
       <ContentWrapper>
         <Row className="connect-view-title">
-          <Col span="24">
+          <Col span={24}>
             <Label size="normal" weight="bold" color="normal">
               SELECT WALLET
             </Label>
@@ -28,37 +63,24 @@ class ConnectView extends Component {
         </Row>
         <Row className="connect-view-content">
           <div className="connect-view-content-buttons">
-            <Button color="primary" typevalue="ghost" sizevalue="big">
-              wallet connect
-            </Button>
-            <Button color="primary" typevalue="ghost" sizevalue="big">
-              ledger
-            </Button>
-            <Button color="primary" typevalue="ghost" sizevalue="big">
-              keywtone file
-            </Button>
+            {btns.map(btn => {
+              return (
+                <Button
+                  key={btn.value}
+                  onClick={() => {
+                    this.setWalletType(btn.value);
+                  }}
+                  focused={this.state.walletType === btn.value}
+                  color="primary"
+                  typevalue="ghost"
+                  sizevalue="big"
+                >
+                  {btn.label}
+                </Button>
+              );
+            })}
           </div>
-          <div className="connect-view-content-form">
-            <Label size="large" weight="bold" color="normal">
-              Select Keystore File
-            </Label>
-            <Button color="primary" typevalue="outline">
-              <Icon type="upload" />
-              Choose File to Upload
-            </Button>
-            <FormGroup
-              title="Or paste here:"
-              description="The browser does not store your keys"
-            >
-              <TextArea rows={4} placeholder="24 word phrase" />
-            </FormGroup>
-            <FormGroup
-              title="Encrypt with password:"
-              description="This will securely encrypt your keys in the browser"
-            >
-              <Input type="password" placeholder="password" />
-            </FormGroup>
-          </div>
+          <div className="connect-view-content-form">{selected.comp}</div>
         </Row>
         <Row className="bottom-nav-button">
           <Button onClick={onUnlock} color="primary">
