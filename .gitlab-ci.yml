@@ -16,7 +16,7 @@ test_and_deploy:
     - testnet-dev
   script:
     - yarn
-    - yarn test:ci
+    # - yarn test:ci
     - npm i -g firebase-tools
     - firebase -V
     - firebase use --token ${FIREBASE_TOKEN} ${CI_COMMIT_REF_NAME}
