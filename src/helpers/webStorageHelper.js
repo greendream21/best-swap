@@ -19,12 +19,12 @@ export const isUserExist = () => {
 };
 
 export const saveKeystore = keystore => {
-  sessionStorage.setItem(KEY_STORE, keystore);
+  sessionStorage.setItem(KEY_STORE, JSON.stringify(keystore));
 };
 
 export const getKeystore = () => {
-  const keystore = sessionStorage.getItem(KEY_STORE);
-  return keystore;
+  const keystoreStr = sessionStorage.getItem(KEY_STORE);
+  return JSON.parse(keystoreStr);
 };
 
 export const clearKeystore = () => {

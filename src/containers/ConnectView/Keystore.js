@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import { crypto } from '@binance-chain/javascript-sdk';
 import { FilePicker } from 'react-file-picker';
 import { Icon, Input } from 'antd';
@@ -9,6 +11,10 @@ import Binance from '../../clients/binance';
 import Label from '../../components/uielements/label';
 import Button from '../../components/uielements/button';
 import FormGroup from '../../components/uielements/formGroup';
+
+import walletActions from '../../redux/wallet/actions';
+
+const { saveWallet } = walletActions;
 
 const Keystore = props => {
   const [keystore, setKeystore] = useState(null);
@@ -49,14 +55,14 @@ const Keystore = props => {
     console.log('Address:', address);
     console.log('Keystore:', keystore);
 
-    // TODO: set wallet details to redux, { keystore, address }
+    props.saveWallet({
+      wallet: address,
+      keystore,
+    });
 
     // clean up
     setPassword(null);
     setKeystore(null);
-
-    // TODO: navigate to next page
-    // props.history.push("/")
   };
 
   const ready = (password || '').length > 0 && keystoreError === null;
@@ -101,4 +107,13 @@ const Keystore = props => {
   );
 };
 
-export default Keystore;
+Keystore.propTypes = {
+  saveWallet: PropTypes.func.isRequired,
+};
+
+export default connect(
+  null,
+  {
+    saveWallet,
+  },
+)(Keystore);

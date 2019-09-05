@@ -1,7 +1,13 @@
 import actions from './actions';
+import { getWalletAddress, getKeystore } from '../../helpers/webStorageHelper';
+
+const wallet = getWalletAddress();
+const keystore = getKeystore();
+
+const user = wallet ? { wallet, keystore } : null;
 
 const initState = {
-  user: null,
+  user,
 };
 
 export default function apiReducer(state = initState, action) {
@@ -12,10 +18,6 @@ export default function apiReducer(state = initState, action) {
       return {
         ...state,
         user: payload,
-      };
-    case actions.CHECK_USER:
-      return {
-        ...state,
       };
     default:
       return state;
