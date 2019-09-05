@@ -52,8 +52,6 @@ const Keystore = props => {
       privateKey,
       Binance.getPrefix(),
     );
-    console.log('Address:', address);
-    console.log('Keystore:', keystore);
 
     props.saveWallet({
       wallet: address,

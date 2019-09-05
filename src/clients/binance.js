@@ -1,6 +1,6 @@
+import axios from 'axios';
 import bnbClient from '@binance-chain/javascript-sdk';
 import TokenManagement from '@binance-chain/javascript-sdk';
-import axios from 'axios';
 
 import { NET, isTestnet } from '../env';
 
