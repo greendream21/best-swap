@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { crypto } from '@binance-chain/javascript-sdk';
 import { FilePicker } from 'react-file-picker';
+import { Icon, Input } from 'antd';
 
 import { ContentWrapper } from './ConnectView.style';
-import { Icon, Input } from 'antd';
 import Binance from '../../clients/binance';
 
 import Label from '../../components/uielements/label';
@@ -16,7 +16,8 @@ const Keystore = props => {
 
   const [keystoreError, setKeystoreError] = useState(null);
 
-  var reader = new FileReader();
+  const reader = new FileReader();
+
   reader.onload = () => {
     try {
       const key = JSON.parse(reader.result);
@@ -46,6 +47,7 @@ const Keystore = props => {
       Binance.getPrefix(),
     );
     console.log('Address:', address);
+    console.log('Keystore:', keystore);
 
     // TODO: set wallet details to redux, { keystore, address }
 

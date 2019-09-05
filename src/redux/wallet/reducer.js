@@ -1,29 +1,21 @@
 import actions from './actions';
 
 const initState = {
-  data: [],
-  error: null,
+  user: null,
 };
 
 export default function apiReducer(state = initState, action) {
   const { type, payload } = action;
 
   switch (type) {
-    case actions.GET_DATA_REQUEST:
+    case actions.SAVE_WALLET:
       return {
         ...state,
-        error: null,
+        user: payload,
       };
-    case actions.GET_DATA_SUCCESS:
+    case actions.CHECK_USER:
       return {
         ...state,
-        data: payload,
-        error: null,
-      };
-    case actions.GET_DATA_FAILED:
-      return {
-        ...state,
-        error: payload,
       };
     default:
       return state;
