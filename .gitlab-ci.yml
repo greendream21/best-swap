@@ -12,11 +12,13 @@ test_and_deploy:
   stage: test_and_deploy
   only:
     - master
+    - testnet
+    - testnet-dev
   script:
     - yarn
-    - yarn test:ci
+    # - yarn test:ci
     - npm i -g firebase-tools
     - firebase -V
-    - firebase use --token ${FIREBASE_TOKEN} development
+    - firebase use --token ${FIREBASE_TOKEN} ${CI_COMMIT_REF_NAME}
     - firebase deploy --token ${FIREBASE_TOKEN}
   

@@ -1,8 +1,10 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { ConnectedRouter } from 'connected-react-router';
 import { Route } from 'react-router-dom';
 import { LocaleProvider } from 'antd';
 import { IntlProvider } from 'react-intl';
+import PropTypes from 'prop-types';
 
 import AppLocale from './languageProvider';
 
@@ -26,7 +28,7 @@ const routes = [
 ];
 
 const PublicRoutes = props => {
-  const { history } = props;
+  const { history, user } = props;
   const language = 'en';
   const currentAppLocale = AppLocale[language];
 
@@ -51,4 +53,11 @@ const PublicRoutes = props => {
   );
 };
 
-export default PublicRoutes;
+PublicRoutes.propTypes = {
+  user: PropTypes.object,
+  history: PropTypes.object,
+};
+
+export default connect(state => ({
+  user: state.Wallet.user,
+}))(PublicRoutes);
