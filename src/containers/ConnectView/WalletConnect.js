@@ -1,11 +1,16 @@
 import React from 'react';
-
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import { crypto } from '@binance-chain/javascript-sdk';
 import { Row, Col } from 'antd';
-import { ContentWrapper } from './ConnectView.style';
-
 import WalletConnect from '@trustwallet/walletconnect';
 import WalletConnectQRCodeModal from '@walletconnect/qrcode-modal';
+
+import { ContentWrapper } from './ConnectView.style';
+
+import walletActions from '../../redux/wallet/actions';
+
+const { saveWallet } = walletActions;
 
 const WalletConnectPane = props => {
   const walletConnect = async () => {
@@ -46,14 +51,11 @@ const WalletConnectPane = props => {
         .then(result => {
           // Returns the accounts
           const account = result.find(account => account.network === 714);
+          const address = crypto.decodeAddress(account.address);
           console.log('ACCOUNT:', account);
           console.log('WALLET CONNECT ACCOUNTS RESULTS ' + account.address);
-          console.log('ADDR:', crypto.decodeAddress(account.address));
 
-          // TODO: set walletConnector, account.address, and account into redux
-
-          // TODO: navigate to next page
-          // props.history.push("/")
+          props.saveWallet({ wallet: address });
         })
         .catch(error => {
           // Error returned when rejected
@@ -114,4 +116,13 @@ const WalletConnectPane = props => {
   );
 };
 
-export default WalletConnectPane;
+WalletConnectPane.propTypes = {
+  saveWallet: PropTypes.func.isRequired,
+};
+
+export default connect(
+  null,
+  {
+    saveWallet,
+  },
+)(WalletConnectPane);

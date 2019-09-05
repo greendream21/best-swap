@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { compose } from 'redux';
+import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
@@ -16,6 +18,7 @@ const { TabPane } = Tabs;
 
 class WalletView extends Component {
   static propTypes = {
+    user: PropTypes.object,
     page: PropTypes.string,
     view: PropTypes.string,
     info: PropTypes.string,
@@ -34,10 +37,13 @@ class WalletView extends Component {
     loadingStakes: false,
   };
 
-  constructor(props) {
-    super(props);
-    // TODO: get address from redux
-    this.refreshBalance('tbnb1lejrrtta9cgr49fuh7ktu3sddhe0ff7whxk9nt');
+  componentDidMount() {
+    const { user } = this.props;
+
+    if (user) {
+      const { wallet } = user;
+      this.refreshBalance(wallet);
+    }
   }
 
   refreshBalance = addr => {
@@ -117,12 +123,16 @@ class WalletView extends Component {
   };
 
   handleChangeTab = tag => {
-    if (tag === 'assets') {
-      // TODO: get address from redux
-      this.refreshBalance('tbnb1lejrrtta9cgr49fuh7ktu3sddhe0ff7whxk9nt');
-    } else if (tag === 'stakes') {
-      // TODO: get address from redux
-      this.refreshStakes('tbnb1lejrrtta9cgr49fuh7ktu3sddhe0ff7whxk9nt');
+    const { user } = this.props;
+
+    if (user) {
+      const { wallet } = user;
+
+      if (tag === 'assets') {
+        this.refreshBalance(wallet);
+      } else if (tag === 'stakes') {
+        this.refreshBalance(wallet);
+      }
     }
   };
 
@@ -171,7 +181,6 @@ class WalletView extends Component {
     } else {
       return 'You are currently not staked in any pool';
     }
-    return '';
   };
 
   getSelectedAsset = pair => {
@@ -232,4 +241,9 @@ class WalletView extends Component {
   }
 }
 
-export default withRouter(WalletView);
+export default compose(
+  connect(state => ({
+    user: state.Wallet.user,
+  })),
+  withRouter,
+)(WalletView);
