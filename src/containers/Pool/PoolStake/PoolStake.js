@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Row, Col, Icon } from 'antd';
+import ChainService from '../../../clients/chainservice';
 
 import Button from '../../../components/uielements/button';
 import Label from '../../../components/uielements/label';
@@ -54,6 +55,24 @@ class PoolStake extends Component {
 
   state = {
     dragReset: true,
+  };
+
+  constructor(props) {
+    super(props);
+
+    this.getPoolData();
+  }
+
+  getPoolData = () => {
+    const ticker = this.props.info.split('-').find(tick => tick !== 'rune');
+    ChainService.getPool(ticker.toUpperCase())
+      .then(response => {
+        // TODO: use this data to display pool information instead of data pulled from data.js
+        this.setState({ data: response.data });
+      })
+      .catch(error => {
+        console.error(error);
+      });
   };
 
   handleGotoDetail = () => {
