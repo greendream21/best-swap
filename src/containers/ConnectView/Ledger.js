@@ -58,7 +58,12 @@ const Connector = props => {
       const address = crypto.getAddressFromPublicKey(pk, Binance.getPrefix());
       setConnecting(false);
 
-      props.saveWallet({ wallet: address });
+      props.saveWallet({
+        type: 'ledger',
+        wallet: address,
+        ledger: app,
+        hdPath: hdPath,
+      });
     } catch (err) {
       console.error('pk error', err.message, err.statusCode);
       message.error('public key error' + err.message);
