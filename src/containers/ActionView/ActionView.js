@@ -109,7 +109,6 @@ class ActionView extends Component {
             <Tabs activeKey={active} onChange={this.handleChangeTab} action>
               <TabPane tab="swap" key="swap" />
               <TabPane tab="pool" key="pool" />
-              <TabPane tab="trade" key="trade" />
             </Tabs>
           </>
         )}
