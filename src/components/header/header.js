@@ -9,6 +9,7 @@ import Logo from '../uielements/logo';
 
 import { StyledHeader } from './header.style';
 import HeaderSetting from './headerSetting';
+import WalletDrawer from '../../containers/WalletView/WalletDrawer';
 
 import Button from '../uielements/button';
 
@@ -53,6 +54,7 @@ class Header extends Component {
               Unlock
             </Button>
           </Link>
+          <WalletDrawer style={{ margin: '8px 4px' }} />
           <TxView start={status} onClick={this.handleClickTxView} />
         </div>
       </StyledHeader>
