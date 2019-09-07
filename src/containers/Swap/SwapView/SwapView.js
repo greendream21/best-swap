@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Fragment, Component } from 'react';
 import { withRouter } from 'react-router-dom';
 
 import Label from '../../../components/uielements/label';
@@ -60,6 +60,7 @@ class SwapView extends Component {
           />
         );
       }
+      return <Fragment />;
     });
   };
 
