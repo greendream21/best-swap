@@ -7,6 +7,10 @@ import asyncComponent from '../../helpers/AsyncFunc';
 const routes = [
   {
     path: '',
+    component: asyncComponent(() => import('../pages/Swap')),
+  },
+  {
+    path: 'introduction',
     component: asyncComponent(() => import('../pages/Home')),
   },
   {
