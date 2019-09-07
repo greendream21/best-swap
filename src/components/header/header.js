@@ -9,6 +9,7 @@ import Logo from '../uielements/logo';
 
 import { StyledHeader } from './header.style';
 import HeaderSetting from './headerSetting';
+import WalletDrawer from '../../containers/WalletView/WalletDrawer';
 
 import appActions from '../../redux/app/actions';
 
@@ -41,6 +42,7 @@ class Header extends Component {
         <p className="header-title">{title}</p>
         <div className="header-right">
           <HeaderSetting />
+          <WalletDrawer style={{ margin: '8px 4px' }} />
           <TxView start={status} onClick={this.handleClickTxView} />
         </div>
       </StyledHeader>
