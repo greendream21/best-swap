@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Fragment, Component } from 'react';
 import { withRouter } from 'react-router-dom';
 
 import TradeCard from '../../../components/trade/tradeCard';
@@ -34,6 +34,7 @@ class TradeView extends Component {
           />
         );
       }
+      return <Fragment />;
     });
   };
 

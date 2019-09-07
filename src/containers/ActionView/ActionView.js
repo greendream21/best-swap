@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-import { ActionViewWrapper, HeaderAction } from './ActionView.style';
+import { ActionViewWrapper } from './ActionView.style';
 import Tabs from '../../components/uielements/tabs';
 import PanelHeader from '../../components/uielements/panelHeader';
 import { headerData } from './data';

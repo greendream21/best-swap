@@ -68,7 +68,7 @@ class Drag extends Component {
 
   handleBlur = e => {
     e.preventDefault();
-    const { success } = this.state;
+    // const { success } = this.state;
 
     // if (!success) {
     //   this.handleReset();
@@ -132,7 +132,7 @@ class Drag extends Component {
 
   handleDragStop = (e, pos) => {
     const { onConfirm } = this.props;
-    const { focused, disabled, overlap, success } = this.state;
+    const { focused, disabled } = this.state;
 
     if (!focused || disabled) {
       return false;
