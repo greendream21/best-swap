@@ -41,8 +41,16 @@ export const StyledHeader = styled.div`
     display: flex;
     align-items: center;
 
+    .wallet-btn-wrapper {
+      margin-right: 14px;
+    }
+
     .txView-wrapper {
       margin-left: 10px;
+    }
+
+    .ant-dropdown-link {
+      margin: 0 8px;
     }
   }
 `;
