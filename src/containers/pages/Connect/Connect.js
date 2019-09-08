@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Row, Col } from 'antd';
 
 import { ConnectWrapper } from './Connect.style';
-import WalletView from '../../WalletView';
 import ActionView from '../../ActionView';
 
 class Connect extends Component {
@@ -10,10 +9,7 @@ class Connect extends Component {
     return (
       <ConnectWrapper>
         <Row gutter={32}>
-          <Col span={6}>
-            <WalletView />
-          </Col>
-          <Col span={18}>
+          <Col span={24}>
             <ActionView type="connect" />
           </Col>
         </Row>

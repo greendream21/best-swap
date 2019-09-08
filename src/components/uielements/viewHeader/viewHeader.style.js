@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { palette, size, key } from 'styled-theme';
+import { palette, size } from 'styled-theme';
 
 export const HeaderWrapper = styled.div`
   display: flex;

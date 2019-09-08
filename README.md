@@ -24,6 +24,16 @@ node v8^
 firebase-tools
 ```
 
+### Env variables
+
+Create `.env` file and set the following variables.
+
+```
+REACT_APP_CHAINSERVICE_API_URL = http://xxx
+REACT_APP_STATECHAIN_API_URL = http://xxx
+```
+
+
 ### Project Setup
 
 ```
@@ -88,11 +98,3 @@ Main Branch:
 - [Styled-components](https://www.styled-components.com/) - Style framework
 - [Storybook](https://storybook.js.org/) - Storybook UI for building components
 - [firebase](https://firebase.google.com/) - FaaS
-
-## Authors
-
-- **Ben Cochane**
-
-## License
-
-MIT

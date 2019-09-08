@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
-import { Icon, Row, Col, message } from 'antd';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+import { Icon, Row, Col, message, InputNumber } from 'antd';
 import { ledger, crypto } from '@binance-chain/javascript-sdk';
 import u2f_transport from '@ledgerhq/hw-transport-u2f';
 
-import { InputNumber } from 'antd';
 import Binance from '../../clients/binance';
 import Label from '../../components/uielements/label';
 import Button from '../../components/uielements/button';
+
+import walletActions from '../../redux/wallet/actions';
+
+const { saveWallet } = walletActions;
 
 ledger.transports.u2f = u2f_transport;
 window.ledger = ledger;
@@ -53,16 +58,16 @@ const Connector = props => {
       const address = crypto.getAddressFromPublicKey(pk, Binance.getPrefix());
       setConnecting(false);
 
-      // TODO: set address, app, and hdPath into redux
-      console.log('address', address);
-
-      // TODO: navigate to next page
-      // props.history.push("/")
+      props.saveWallet({
+        type: 'ledger',
+        wallet: address,
+        ledger: app,
+        hdPath: hdPath,
+      });
     } catch (err) {
       console.error('pk error', err.message, err.statusCode);
       message.error('public key error' + err.message);
       setConnecting(false);
-      return;
     }
   };
 
@@ -158,4 +163,13 @@ const Connector = props => {
   );
 };
 
-export default Connector;
+Connector.propTypes = {
+  saveWallet: PropTypes.func.isRequired,
+};
+
+export default connect(
+  null,
+  {
+    saveWallet,
+  },
+)(Connector);

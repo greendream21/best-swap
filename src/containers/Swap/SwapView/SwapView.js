@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Fragment, Component } from 'react';
 import { withRouter } from 'react-router-dom';
 
 import Label from '../../../components/uielements/label';
@@ -10,7 +10,7 @@ import { assets } from './data';
 
 class SwapView extends Component {
   state = {
-    activeAsset: 'bnb',
+    activeAsset: 'rune',
   };
 
   handleChooseBasePair = asset => () => {
@@ -34,6 +34,7 @@ class SwapView extends Component {
           cointype={asset}
           onClick={this.handleChooseBasePair(asset)}
           focused={asset === activeAsset}
+          disabled={asset !== 'rune'} // enable only rune for base pair
           key={index}
         />
       );
@@ -60,6 +61,7 @@ class SwapView extends Component {
           />
         );
       }
+      return <Fragment />;
     });
   };
 
