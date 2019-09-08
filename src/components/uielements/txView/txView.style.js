@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import { palette } from 'styled-theme';
 
 export const TxViewWrapper = styled.div`
   position: relative;

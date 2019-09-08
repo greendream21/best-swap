@@ -1,6 +1,4 @@
 import styled from 'styled-components';
-import { palette } from 'styled-theme';
-import { transition } from '../../../settings/style-util';
 
 export const TxTimerWrapper = styled.div`
   position: relative;

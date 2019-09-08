@@ -55,7 +55,12 @@ const WalletConnectPane = props => {
           console.log('ACCOUNT:', account);
           console.log('WALLET CONNECT ACCOUNTS RESULTS ' + account.address);
 
-          props.saveWallet({ wallet: address });
+          props.saveWallet({
+            type: 'walletconnect',
+            wallet: address,
+            walletconnect: walletConnector,
+            account: account,
+          });
         })
         .catch(error => {
           // Error returned when rejected
@@ -78,7 +83,7 @@ const WalletConnectPane = props => {
       }
 
       // Delete walletConnector
-      // TODO: remove wallet info from Redux
+      props.saveWallet({});
     });
   };
 

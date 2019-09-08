@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { withRouter } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { Button, Tooltip } from 'antd';
 
-import { ActionViewWrapper, HeaderAction } from './ActionView.style';
+import { ActionViewWrapper } from './ActionView.style';
 import Tabs from '../../components/uielements/tabs';
 import PanelHeader from '../../components/uielements/panelHeader';
 import { headerData } from './data';
@@ -101,16 +102,28 @@ class ActionView extends Component {
     const { activeTab } = this.state;
     const active = type || activeTab;
     const headerText = this.getHeaderText();
+    const intro = (
+      <Link to="introduction">
+        <Tooltip title="Introduction?">
+          <Button shape="circle" size="small" icon="question" />
+        </Tooltip>
+      </Link>
+    );
 
     return (
       <>
         {!headerText && (
           <>
-            <Tabs activeKey={active} onChange={this.handleChangeTab} action>
+            <Tabs
+              activeKey={active}
+              onChange={this.handleChangeTab}
+              style={{ width: '100%' }}
+              action
+            >
               <TabPane tab="swap" key="swap" />
               <TabPane tab="pool" key="pool" />
-              <TabPane tab="trade" key="trade" />
             </Tabs>
+            {intro}
           </>
         )}
         {headerText && (
