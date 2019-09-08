@@ -59,7 +59,7 @@ const WalletConnectPane = props => {
             type: 'walletconnect',
             wallet: address,
             walletconnect: walletConnector,
-            account: account,
+            account,
           });
         })
         .catch(error => {
