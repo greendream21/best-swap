@@ -1,1 +1,1 @@
-export const assets = ['bnb', 'rune', 'bolt', 'ankr', 'ftm', 'tomo'];
+export const assets = ['rune', 'bnb', 'bolt', 'ankr', 'ftm', 'tomo'];
