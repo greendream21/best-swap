@@ -5,6 +5,8 @@ import actions from './actions';
 import {
   saveWalletAddress,
   saveKeystore,
+  clearWalletAddress,
+  clearKeystore,
 } from '../../helpers/webStorageHelper';
 
 export function* saveWalletSaga() {
@@ -18,6 +20,15 @@ export function* saveWalletSaga() {
   });
 }
 
+export function* forgetWalletSaga() {
+  yield takeEvery(actions.FORGET_WALLET, function*({ payload }) {
+    clearWalletAddress();
+    clearKeystore();
+
+    yield put(push('/connect'));
+  });
+}
+
 export default function* rootSaga() {
-  yield all([fork(saveWalletSaga)]);
+  yield all([fork(saveWalletSaga), fork(forgetWalletSaga)]);
 }
