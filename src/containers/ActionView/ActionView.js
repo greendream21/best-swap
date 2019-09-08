@@ -63,6 +63,9 @@ class ActionView extends Component {
 
   handleBack = () => {
     const view = this.getView();
+    if (view === 'connect-view') {
+      this.props.history.push('/introduction');
+    }
     if (view === 'swap-detail' || view === 'swap-send') {
       this.props.history.push('/swap');
     }

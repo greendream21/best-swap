@@ -1,7 +1,16 @@
 import React, { useState } from 'react';
-import { Drawer, Icon, Button } from 'antd';
+import PropTypes from 'prop-types';
+import { Icon, Button as AntdButton } from 'antd';
+import { connect } from 'react-redux';
 
 import WalletView from './WalletView';
+import Button from '../../components/uielements/button';
+
+import { WalletDrawerWrapper, Drawer } from './WalletDrawer.style';
+
+import walletActions from '../../redux/wallet/actions';
+
+const { forgetWallet } = walletActions;
 
 const WalletDrawer = props => {
   const [visible, setVisible] = useState(false);
@@ -15,10 +24,10 @@ const WalletDrawer = props => {
   };
 
   return (
-    <div style={props.style}>
-      <Button shape="circle" onClick={toggleDrawer}>
+    <WalletDrawerWrapper>
+      <AntdButton shape="circle" onClick={toggleDrawer}>
         <Icon type="wallet" />
-      </Button>
+      </AntdButton>
       <Drawer
         placement="right"
         closable={false}
@@ -27,9 +36,26 @@ const WalletDrawer = props => {
         visible={visible}
       >
         <WalletView />
+        <Button
+          className="forget-btn"
+          typevalue="outline"
+          color="warning"
+          onClick={props.forgetWallet}
+        >
+          Forget
+        </Button>
       </Drawer>
-    </div>
+    </WalletDrawerWrapper>
   );
 };
 
-export default WalletDrawer;
+WalletDrawer.propTypes = {
+  forgetWallet: PropTypes.func.isRequired,
+};
+
+export default connect(
+  state => ({
+    user: state.Wallet.user,
+  }),
+  { forgetWallet },
+)(WalletDrawer);

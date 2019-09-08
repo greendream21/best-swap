@@ -39,7 +39,6 @@ class Header extends Component {
     const { status } = txStatus;
     const { wallet } = user;
     const connected = wallet ? true : false;
-    const value = connected ? wallet : undefined;
 
     return (
       <StyledHeader>
@@ -49,10 +48,10 @@ class Header extends Component {
         <p className="header-title">{title}</p>
         <div className="header-right">
           <Link to="connect">
-            <WalletButton connected={connected} value={value} />
+            <WalletButton connected={connected} value={wallet} />
           </Link>
           <HeaderSetting />
-          <WalletDrawer style={{ margin: '8px 4px' }} />
+          <WalletDrawer />
           <TxView start={status} onClick={this.handleClickTxView} />
         </div>
       </StyledHeader>
