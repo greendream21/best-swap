@@ -1,23 +1,26 @@
-import { all, takeEvery, put, fork } from 'redux-saga/effects';
-import { push } from 'connected-react-router';
-
+import { all, takeEvery, put, fork, call } from 'redux-saga/effects';
+import axios from 'axios';
 import actions from './actions';
-import {
-  saveWalletAddress,
-  saveKeystore,
-} from '../../helpers/webStorageHelper';
+import { getChainserviceURL, getHeaders } from '../../helpers/apiHelper';
 
-export function* saveWalletSaga() {
-  yield takeEvery(actions.SAVE_WALLET, function*({ payload }) {
-    const { wallet, keystore } = payload;
+export function* getUserData() {
+  yield takeEvery(actions.GET_USER_DATA_REQUEST, function*({ payload }) {
+    const params = {
+      method: 'get',
+      url: getChainserviceURL('userData'),
+      headers: getHeaders(),
+    };
 
-    saveWalletAddress(wallet);
-    saveKeystore(keystore);
+    try {
+      const { data } = yield call(axios.request, params);
 
-    yield put(push('/swap'));
+      yield put(actions.getUserDataSuccess(data));
+    } catch (error) {
+      yield put(actions.getUserDataFailed(error));
+    }
   });
 }
 
 export default function* rootSaga() {
-  yield all([fork(saveWalletSaga)]);
+  yield all([fork(getUserData)]);
 }
