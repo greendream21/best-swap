@@ -19,7 +19,9 @@ export const isUserExist = () => {
 };
 
 export const saveKeystore = keystore => {
-  sessionStorage.setItem(KEY_STORE, JSON.stringify(keystore));
+  if (keystore) {
+    sessionStorage.setItem(KEY_STORE, JSON.stringify(keystore));
+  }
 };
 
 export const getKeystore = () => {

@@ -170,8 +170,6 @@ class WalletView extends Component {
   };
 
   renderStakeTitle = () => {
-    const { status } = this.props;
-
     if (this.state.loadingStakes) {
       return 'Loading...';
     }
@@ -196,7 +194,7 @@ class WalletView extends Component {
   };
 
   render() {
-    const { info, status } = this.props;
+    const { info } = this.props;
     const pair = getPair(info);
     const { source } = pair;
     const selectedAsset = this.getSelectedAsset(pair);

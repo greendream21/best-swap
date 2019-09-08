@@ -23,3 +23,18 @@ export const coinGroup = [
   'mith',
   'cos',
 ];
+
+export const coinNames = [
+  {
+    id: 'BNB',
+    name: 'BNB',
+  },
+  {
+    id: 'RUNE-A1F',
+    name: 'RUNE',
+  },
+  {
+    id: 'LOK-3C0',
+    name: 'LOKI',
+  },
+];

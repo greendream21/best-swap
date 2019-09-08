@@ -21,7 +21,7 @@ class CoinIcon extends Component {
 
   renderCoinIcon = () => {
     const { type } = this.props;
-    const coinIcon = coinIconGroup[type] || '';
+    const coinIcon = coinIconGroup[type.toLowerCase()] || '';
 
     if (coinIcon) {
       return <img src={coinIcon} alt={type} />;

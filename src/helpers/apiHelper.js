@@ -1,16 +1,14 @@
-export const getToken = () => 'auth_token';
+const CHAINSERVICE_BASE_URL = process.env.REACT_APP_CHAINSERVICE_API_URL;
+const STATECHAIN_BASE_URL = process.env.REACT_APP_STATECHAIN_API_URL;
 
-export const getEndpoint = url => `/${url}`;
+export const getChainserviceURL = url => `${CHAINSERVICE_BASE_URL}/${url}`;
+export const getStatechainURL = url => `${STATECHAIN_BASE_URL}/${url}`;
 
 export const getHeaders = () => {
-  const auth = getToken();
   const headers = {
     Accept: 'application/json',
     'Content-Type': 'application/json',
   };
 
-  if (auth) {
-    headers['Authorization'] = auth;
-  }
   return headers;
 };
