@@ -11,8 +11,6 @@ import { StyledHeader } from './header.style';
 import HeaderSetting from './headerSetting';
 import WalletDrawer from '../../containers/WalletView/WalletDrawer';
 
-import Button from '../uielements/button';
-
 import appActions from '../../redux/app/actions';
 import WalletButton from '../uielements/walletButton';
 
