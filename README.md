@@ -24,6 +24,16 @@ node v8^
 firebase-tools
 ```
 
+### Env variables
+
+Create `.env` file and set the following variables.
+
+```
+REACT_APP_CHAINSERVICE_API_URL = http://xxx
+REACT_APP_STATECHAIN_API_URL = http://xxx
+```
+
+
 ### Project Setup
 
 ```
