@@ -45,7 +45,7 @@ class Header extends Component {
         </Link>
         <p className="header-title">{title}</p>
         <div className="header-right">
-          <Link to="connect">
+          <Link to="/connect">
             <WalletButton connected={connected} value={wallet} />
           </Link>
           <HeaderSetting />

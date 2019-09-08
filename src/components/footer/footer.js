@@ -18,10 +18,10 @@ class Footer extends Component {
             <Logo className="footer-logo" name="thorchain" type="long" />
           </a>
           <div className="footer-links-bar">
-            <Link to="stats">STATS</Link>
-            <Link to="network">NETWORK</Link>
-            <Link to="tutorial">TUTORIAL</Link>
-            <Link to="faqs">FAQS</Link>
+            <Link to="/stats">STATS</Link>
+            <Link to="/network">NETWORK</Link>
+            <Link to="/tutorial">TUTORIAL</Link>
+            <Link to="/faqs">FAQS</Link>
           </div>
           <div className="footer-social-bar">
             <a

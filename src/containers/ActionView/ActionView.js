@@ -110,7 +110,7 @@ class ActionView extends Component {
     const active = type || activeTab;
     const headerText = this.getHeaderText();
     const intro = (
-      <Link to="introduction">
+      <Link to="/introduction">
         <Tooltip title="Introduction?">
           <Button shape="circle" size="small" icon="question" />
         </Tooltip>
