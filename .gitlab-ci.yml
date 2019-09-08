@@ -12,7 +12,7 @@ test_and_deploy:
   stage: test_and_deploy
   only:
     - master
-    - testnet
+    - testnet-prod
     - testnet-dev
   script:
     - yarn
