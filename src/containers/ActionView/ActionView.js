@@ -63,7 +63,11 @@ class ActionView extends Component {
 
   handleBack = () => {
     const view = this.getView();
-    if (view === 'connect-view') {
+    if (
+      view === 'connect-view' ||
+      view === 'stats-view' ||
+      view === 'faqs-view'
+    ) {
       this.props.history.push('/introduction');
     }
     if (view === 'swap-detail' || view === 'swap-send') {
@@ -115,7 +119,7 @@ class ActionView extends Component {
 
     return (
       <>
-        {!headerText && (
+        {headerText === undefined && (
           <>
             <Tabs
               activeKey={active}
@@ -129,7 +133,7 @@ class ActionView extends Component {
             {intro}
           </>
         )}
-        {headerText && (
+        {headerText !== undefined && (
           <ViewHeader
             title={headerText}
             actionText="refresh"
