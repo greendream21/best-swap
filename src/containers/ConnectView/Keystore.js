@@ -56,7 +56,7 @@ const Keystore = props => {
     props.saveWallet({
       type: 'keystore',
       wallet: address,
-      keystore: keystore,
+      keystore,
     });
 
     // clean up

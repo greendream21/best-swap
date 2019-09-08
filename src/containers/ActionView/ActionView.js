@@ -63,7 +63,11 @@ class ActionView extends Component {
 
   handleBack = () => {
     const view = this.getView();
-    if (view === 'connect-view') {
+    if (
+      view === 'connect-view' ||
+      view === 'stats-view' ||
+      view === 'faqs-view'
+    ) {
       this.props.history.push('/introduction');
     }
     if (view === 'swap-detail' || view === 'swap-send') {
@@ -106,7 +110,7 @@ class ActionView extends Component {
     const active = type || activeTab;
     const headerText = this.getHeaderText();
     const intro = (
-      <Link to="introduction">
+      <Link to="/introduction">
         <Tooltip title="Introduction?">
           <Button shape="circle" size="small" icon="question" />
         </Tooltip>
@@ -115,7 +119,7 @@ class ActionView extends Component {
 
     return (
       <>
-        {!headerText && (
+        {headerText === undefined && (
           <>
             <Tabs
               activeKey={active}
@@ -129,7 +133,7 @@ class ActionView extends Component {
             {intro}
           </>
         )}
-        {headerText && (
+        {headerText !== undefined && (
           <ViewHeader
             title={headerText}
             actionText="refresh"

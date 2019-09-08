@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { palette, key } from 'styled-theme';
+import { palette } from 'styled-theme';
 import { Button } from 'antd';
 
 export const ButtonWrapper = styled(Button)`
