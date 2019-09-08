@@ -39,6 +39,7 @@ export const StyledHeader = styled.div`
 
   .header-right {
     display: flex;
+    align-items: center;
 
     .txView-wrapper {
       margin-left: 10px;

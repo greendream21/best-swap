@@ -47,6 +47,7 @@ class Header extends Component {
           <HeaderSetting />
           <Link to="connect">
             <Button
+              className="unlock-btn"
               style={{ margin: '10px 4px' }}
               color="warning"
               sizevalue="small"
