@@ -8,7 +8,7 @@ import { DynamicCoinWrapper } from './dynamicCoin.style';
 class DynamicCoin extends Component {
   static propTypes = {
     type: PropTypes.string,
-    size: PropTypes.oneOf(['small', 'big']),
+    size: PropTypes.oneOf(['small', 'normal', 'big']),
     className: PropTypes.string,
   };
 

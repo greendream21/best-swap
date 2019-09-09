@@ -23,6 +23,12 @@ export const CoinCardWrapper = styled.div`
       flex-grow: 1;
       padding: 10px 20px;
 
+      .asset-amount-label {
+        &.ant-input {
+          padding: 0;
+          border: none;
+        }
+      }
       .ant-divider {
         margin: 2px 0;
       }

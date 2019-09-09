@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Divider } from 'antd';
+import { Divider, Input } from 'antd';
 
 import { coinGroup } from '../../../../settings';
 import Coin from '../coin';
@@ -55,9 +55,7 @@ class CoinCard extends Component {
             <Label className="asset-name-label" size="small" weight="bold">
               {asset}
             </Label>
-            <Label className="asset-amount-label" size="big">
-              {amount}
-            </Label>
+            <Input className="asset-amount-label" value={amount} />
             <Divider />
             <div className="asset-card-footer">
               <Label size="small" color="gray" weight="bold">
