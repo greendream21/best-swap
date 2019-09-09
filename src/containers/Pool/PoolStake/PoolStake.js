@@ -387,7 +387,7 @@ class PoolStake extends Component {
     }
 
     const poolAttrs = [
-      { key: 'price', title: 'Pool Price', value: '$0.10' },
+      { key: 'price', title: 'Pool Price', value: '$0.10' }, // TODO
       {
         key: 'depth',
         title: 'Depth',
@@ -396,7 +396,7 @@ class PoolStake extends Component {
     ];
 
     const newPoolAttrs = [
-      { key: 'price', title: 'Pool Price', value: '$0.11' },
+      { key: 'price', title: 'Pool Price', value: '$0.11' }, // TODO
       {
         key: 'depth',
         title: 'Depth',
