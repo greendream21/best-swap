@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Row, Col, Icon } from 'antd';
 import ChainService from '../../../clients/chainservice';
@@ -15,8 +15,8 @@ import CoinData from '../../../components/uielements/coins/coinData';
 import Slider from '../../../components/uielements/slider';
 import TxTimer from '../../../components/uielements/txTimer';
 import Drag from '../../../components/uielements/drag';
-
-import { greyArrowIcon } from '../../../components/icons';
+import Tabs from '../../../components/uielements/tabs';
+import WalletButton from '../../../components/uielements/walletButton';
 
 import appActions from '../../../redux/app/actions';
 
@@ -26,8 +26,9 @@ import {
   ConfirmModalContent,
 } from './PoolStake.style';
 
-import { getPair } from '../../../helpers/stringHelper';
-import { stakeInfo, stakeNewInfo, shareInfo } from './data';
+import { shareInfo } from './data';
+
+const { TabPane } = Tabs;
 
 const {
   setTxTimerType,
@@ -39,8 +40,7 @@ const {
 
 class PoolStake extends Component {
   static propTypes = {
-    info: PropTypes.string,
-    view: PropTypes.string.isRequired,
+    ticker: PropTypes.string.isRequired,
     txStatus: PropTypes.object.isRequired,
     setTxTimerType: PropTypes.func.isRequired,
     setTxTimerModal: PropTypes.func.isRequired,
@@ -49,9 +49,7 @@ class PoolStake extends Component {
     resetTxStatus: PropTypes.func.isRequired,
   };
 
-  static defaultProps = {
-    info: '',
-  };
+  static defaultProps = {};
 
   state = {
     dragReset: true,
@@ -61,14 +59,33 @@ class PoolStake extends Component {
     super(props);
 
     this.getPoolData();
+    this.getStakePool();
   }
 
+  getStakePool = () => {
+    const { ticker, user } = this.props;
+    // const { address } = user
+    const address = 'deleteme';
+    if (address) {
+      ChainService.stakerData(address, ticker.toUpperCase())
+        .then(response => {
+          // TODO: use this data to display pool information instead of data pulled from data.js
+          this.setState({ stakeData: response.data });
+          console.log('Stake Data', response.data);
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    }
+  };
+
   getPoolData = () => {
-    const ticker = this.props.info.split('-').find(tick => tick !== 'rune');
+    const { ticker } = this.props;
     ChainService.getPool(ticker.toUpperCase())
       .then(response => {
         // TODO: use this data to display pool information instead of data pulled from data.js
         this.setState({ data: response.data });
+        console.log('Pool data', response.data);
       })
       .catch(error => {
         console.error(error);
@@ -76,8 +93,8 @@ class PoolStake extends Component {
   };
 
   handleGotoDetail = () => {
-    const { info } = this.props;
-    const URL = `/pool/stake-detail/${info}`;
+    const { ticker } = this.props;
+    const URL = `/pool/${ticker}`;
 
     this.props.history.push(URL);
   };
@@ -248,15 +265,25 @@ class PoolStake extends Component {
   };
 
   renderStakeInfo = pair => {
-    const { view } = this.props;
-    const { source, target } = pair;
+    const { ticker } = this.props;
+    const source = 'rune';
 
-    const stakePool = `${source}:${target}`;
+    const stakePool = `${source}:${ticker}`;
+    const data = this.state.data || {};
+    console.log('Data', data);
+    const attrs = [
+      { key: 'depth', title: 'Depth', value: data.depth + ' Rune' },
+      { key: 'vol24', title: '24hr Volume', value: data.vol24hr },
+      { key: 'volAT', title: 'All Time Volume', value: data.volAT },
+      { key: 'swap', title: 'Total Swaps', value: data.numSwaps },
+      { key: 'stakers', title: 'Total Stakers', value: data.numStakers },
+      { key: 'roi', title: 'All Time RoI', value: data.roiAT },
+    ];
 
     return (
       <Row className="stake-status-view">
         <Col className="stake-pool-col" span={8}>
-          <Coin type={source} over={target} />
+          <Coin type={'rune'} over={ticker} />
           <Status
             className="stake-pool-status"
             title="Pool"
@@ -264,51 +291,38 @@ class PoolStake extends Component {
           />
         </Col>
         <Col className="stake-info-col" span={16}>
-          {view === 'stake-new' &&
-            stakeNewInfo.map(info => {
-              return <Status className="stake-info-status" {...info} />;
-            })}
-          {(view === 'stake-detail' ||
-            view === 'stake-view' ||
-            view === 'withdraw') &&
-            stakeInfo.map(info => {
-              return <Status className="stake-info-status" {...info} />;
-            })}
+          {attrs.map(info => (
+            <Status className="stake-info-status" {...info} />
+          ))}
         </Col>
       </Row>
     );
   };
 
   renderShareDetail = pair => {
-    const { view } = this.props;
+    // const { address } = this.props.user
+    const address = 'deleteme';
+    const { ticker } = this.props;
     const { dragReset } = this.state;
-    const { source, target } = pair;
+    const stakeData = this.state.stakeData || { units: 0 };
+    const source = 'rune';
+    const target = ticker;
 
-    if (view === 'stake-new') {
-      return '';
+    if (!address) {
+      return (
+        <Link to="/connect">
+          <WalletButton connected={false} />
+        </Link>
+      );
     }
 
     return (
       <>
-        {view !== 'withdraw' && (
-          <Label className="label-title" size="normal" weight="bold">
-            ADD SHARE
-          </Label>
-        )}
-        {view === 'withdraw' && (
-          <Label
-            className="label-title go-back"
-            onClick={this.handleGotoStakeView}
-            color="primary"
-            size="normal"
-            weight="bold"
-          >
-            <Icon type="left" />
-            <span>Back</span>
-          </Label>
-        )}
-        {view === 'stake-detail' && (
-          <>
+        <Label className="label-title" size="normal" weight="bold">
+          MANAGE SHARE
+        </Label>
+        <Tabs style={{ width: '100%' }}>
+          <TabPane tab="add" key="add">
             <Label className="label-description" size="normal">
               Select the maximum deposit to stake.
             </Label>
@@ -359,22 +373,8 @@ class PoolStake extends Component {
                 />
               </div>
             </div>
-          </>
-        )}
-        {view === 'stake-view' && (
-          <>
-            <Label size="normal">Add more from your wallet.</Label>
-            <Button
-              onClick={this.handleAddMore}
-              color="primary"
-              typevalue="outline"
-            >
-              Add more
-            </Button>
-          </>
-        )}
-        {view === 'withdraw' && (
-          <>
+          </TabPane>
+          <TabPane tab="Withdraw" key="withdraw">
             <Label className="label-title" size="normal" weight="bold">
               ADJUST WITHDRAWAL
             </Label>
@@ -420,14 +420,17 @@ class PoolStake extends Component {
                 />
               </div>
             </div>
-          </>
-        )}
+          </TabPane>
+        </Tabs>
       </>
     );
   };
 
   renderYourShare = pair => {
-    const { view } = this.props;
+    // const { address } = this.props.user
+    const address = 'deleteme';
+
+    const stakeData = this.state.stakeData || { units: 0 };
     const { source, target } = pair;
 
     return (
@@ -435,7 +438,15 @@ class PoolStake extends Component {
         <Label className="label-title" size="normal" weight="bold">
           YOUR SHARE
         </Label>
-        {view === 'stake-new' && (
+        {!address && (
+          <>
+            <Label size="normal">You have not connected your wallet.</Label>
+            <Link to="/connect">
+              <WalletButton connected={false} />
+            </Link>
+          </>
+        )}
+        {address && stakeData.units === 0 && (
           <>
             <Label size="normal">You don't have any shares in this pool.</Label>
             <Button onClick={this.handleGotoDetail} color="success">
@@ -443,40 +454,38 @@ class PoolStake extends Component {
             </Button>
           </>
         )}
-        {view === 'stake-detail' && (
-          <>
-            <Label size="normal">Complete the process to add a share.</Label>
-            <div className="right-arrow-wrapper">
-              <img src={greyArrowIcon} alt="grey-arrow" />
-            </div>
-          </>
-        )}
-        {(view === 'stake-view' || view === 'withdraw') && (
+        {address && stakeData.units > 0 && (
           <>
             <Label size="normal">Your total share of the pool.</Label>
             <div className="your-share-info-wrapper">
               <div className="your-share-info">
-                <Status title={String(source).toUpperCase()} value={0.65} />
+                <Status
+                  title={String(source).toUpperCase()}
+                  value={stakeData.runeStaked}
+                />
                 <Label
                   className="your-share-price-label"
                   size="normal"
                   color="grey"
                 >
-                  $USD 120.10
+                  $USD TODO
                 </Label>
               </div>
               <div className="your-share-info">
-                <Status title={String(target).toUpperCase()} value={1234} />
+                <Status
+                  title={String(target).toUpperCase()}
+                  value={stakeData.tokensStaked}
+                />
                 <Label
                   className="your-share-price-label"
                   size="normal"
                   color="grey"
                 >
-                  $USD 120.10
+                  $USD TODO
                 </Label>
               </div>
               <div className="your-share-info">
-                <Status title="Pool Share" value="3%" />
+                <Status title="Pool Share" value={stakeData.units + ' units'} />
               </div>
             </div>
             <Label className="label-title" size="normal" weight="bold">
@@ -485,23 +494,29 @@ class PoolStake extends Component {
             <Label size="normal">Total of all earnings from this pool.</Label>
             <div className="your-share-info-wrapper">
               <div className="your-share-info">
-                <Status title={String(source).toUpperCase()} value={0.06} />
+                <Status
+                  title={String(source).toUpperCase()}
+                  value={stakeData.runeEarned}
+                />
                 <Label
                   className="your-share-price-label"
                   size="normal"
                   color="grey"
                 >
-                  $USD 12.10
+                  $USD TODO
                 </Label>
               </div>
               <div className="your-share-info">
-                <Status title={String(target).toUpperCase()} value={123} />
+                <Status
+                  title={String(target).toUpperCase()}
+                  value={stakeData.tokensEarned}
+                />
                 <Label
                   className="your-share-price-label"
                   size="normal"
                   color="grey"
                 >
-                  $USD 12.10
+                  $USD TODO
                 </Label>
               </div>
             </div>
@@ -512,12 +527,8 @@ class PoolStake extends Component {
   };
 
   render() {
-    const { view, info, txStatus } = this.props;
-    const pair = getPair(info);
-
-    if (!pair) {
-      return '';
-    }
+    const { ticker, txStatus } = this.props;
+    const pair = { source: 'rune', target: ticker };
 
     const openStakeModal = txStatus.type === 'stake' ? txStatus.modal : false;
     const openWithdrawModal =
@@ -530,23 +541,6 @@ class PoolStake extends Component {
         <Row className="share-view">
           <Col className="your-share-view" span={8}>
             {this.renderYourShare(pair)}
-            {view === 'stake-view' && (
-              <div className="withdraw-view-wrapper">
-                <Label className="label-title" size="normal" weight="bold">
-                  WITHDRAW
-                </Label>
-                <Label size="normal">
-                  Withdraw everything including earnings.
-                </Label>
-                <Button
-                  onClick={this.handleGotoWithdraw}
-                  color="warning"
-                  typevalue="outline"
-                >
-                  withdraw
-                </Button>
-              </div>
-            )}
           </Col>
           <Col className="share-detail-view" span={16}>
             {this.renderShareDetail(pair)}
@@ -583,6 +577,7 @@ export default compose(
   connect(
     state => ({
       txStatus: state.App.txStatus,
+      user: state.Wallet.user,
     }),
     {
       setTxTimerType,

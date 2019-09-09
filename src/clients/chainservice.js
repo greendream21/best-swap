@@ -83,15 +83,30 @@ class ChainService {
           if (q.asset === '') {
             return [200, ['BNB', 'BOLT']];
           } else if (q.asset === 'BNB') {
-            return [
-              200,
-              {
-                asset: 'BNB',
-                tokensStaked: 13.4,
-                runeStaked: 45.789,
-                target: 'rune',
-              },
-            ];
+            if (q.staker.length > 0) {
+              return [
+                200,
+                {
+                  asset: 'BNB',
+                  tokensStaked: 13.4,
+                  runeStaked: 45.789,
+                  units: 24.99,
+                  runeEarned: 12.33,
+                  tokensEarned: 3.45,
+                  target: 'rune',
+                },
+              ];
+            } else {
+              return [
+                200,
+                {
+                  asset: 'BNB',
+                  tokensStaked: 13.4,
+                  runeStaked: 45.789,
+                  target: 'rune',
+                },
+              ];
+            }
           } else if (q.asset === 'BOLT') {
             return [
               200,
