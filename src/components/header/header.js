@@ -11,9 +11,8 @@ import { StyledHeader } from './header.style';
 import HeaderSetting from './headerSetting';
 import WalletDrawer from '../../containers/WalletView/WalletDrawer';
 
-import Button from '../uielements/button';
-
 import appActions from '../../redux/app/actions';
+import WalletButton from '../uielements/walletButton';
 
 const { setTxTimerModal } = appActions;
 
@@ -22,6 +21,7 @@ class Header extends Component {
     title: PropTypes.string.isRequired,
     txStatus: PropTypes.object.isRequired,
     setTxTimerModal: PropTypes.func.isRequired,
+    user: PropTypes.object.isRequired,
   };
 
   handleClickTxView = () => {
@@ -33,10 +33,11 @@ class Header extends Component {
   };
 
   render() {
-    const { title, txStatus, wallet } = this.props;
+    const { title, txStatus, user } = this.props;
     const { status } = txStatus;
+    const { wallet } = user;
+    const connected = wallet ? true : false;
 
-    // TODO: hide unlock button if already signed in
     return (
       <StyledHeader>
         <Link to="/">
@@ -44,17 +45,11 @@ class Header extends Component {
         </Link>
         <p className="header-title">{title}</p>
         <div className="header-right">
-          <HeaderSetting />
-          <Link to="connect">
-            <Button
-              style={{ margin: '10px 4px' }}
-              color="warning"
-              sizevalue="small"
-            >
-              Unlock
-            </Button>
+          <Link to="/connect">
+            <WalletButton connected={connected} value={wallet} />
           </Link>
-          <WalletDrawer style={{ margin: '8px 4px' }} />
+          <HeaderSetting />
+          <WalletDrawer />
           <TxView start={status} onClick={this.handleClickTxView} />
         </div>
       </StyledHeader>
@@ -66,7 +61,7 @@ export default compose(
   connect(
     state => ({
       txStatus: state.App.txStatus,
-      wallet: state.Wallet.user,
+      user: state.Wallet.user,
     }),
     {
       setTxTimerModal,

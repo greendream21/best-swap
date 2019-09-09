@@ -62,7 +62,7 @@ const Connector = props => {
         type: 'ledger',
         wallet: address,
         ledger: app,
-        hdPath: hdPath,
+        hdPath,
       });
     } catch (err) {
       console.error('pk error', err.message, err.statusCode);

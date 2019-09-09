@@ -48,8 +48,12 @@ class CoinList extends Component {
         {data.map((coinData, index) => {
           const { asset, assetValue, target, targetValue, price } = coinData;
 
-          const { name: tokenName } = coinNames.find(coin => coin.id === asset);
-          if (tokenName && !coinGroup.includes(tokenName.toLowerCase())) {
+          const coinName = coinNames.find(
+            coin => coin.id.toLowerCase() === asset.toLowerCase(),
+          );
+          const tokenName = coinName ? coinName.name : null;
+
+          if (!tokenName || !coinGroup.includes(tokenName.toLowerCase())) {
             console.log(asset, 'is not a recognized token');
             return <Fragment key={asset} />;
           }

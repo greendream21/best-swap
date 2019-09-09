@@ -6,7 +6,8 @@ const { Content } = Layout;
 
 export const ContentWrapper = styled(Content)`
   background: ${palette('background', 2)};
-  height: 100vh;
+  height: calc(100vh - 140px);
   margin-top: ${size('headerHeight', '90px')};
   padding: 50px 50px;
+  overflow-y: auto;
 `;
