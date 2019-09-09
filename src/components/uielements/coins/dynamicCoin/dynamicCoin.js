@@ -28,7 +28,7 @@ class DynamicCoin extends Component {
     return (
       <DynamicCoinWrapper
         type={type}
-        className={`dynamicCoin-wrapper ${className}`}
+        className={`dynamicCoin-wrapper coinData-coin-avatar ${className}`}
         startCol={startCol}
         stopCol={stopCol}
         {...props}

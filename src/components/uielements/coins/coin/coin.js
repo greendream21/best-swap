@@ -4,11 +4,12 @@ import PropTypes from 'prop-types';
 import { CoinWrapper, CoinsWrapper } from './coin.style';
 import { coinGroup } from '../../../../settings';
 import CoinIcon from '../coinIcon';
+import DynamicCoin from '../dynamicCoin';
 
 class Coin extends Component {
   static propTypes = {
-    type: PropTypes.oneOf(coinGroup),
-    over: PropTypes.oneOf(coinGroup),
+    type: PropTypes.string,
+    over: PropTypes.string,
     size: PropTypes.oneOf(['small', 'big']),
     className: PropTypes.string,
   };
@@ -22,8 +23,11 @@ class Coin extends Component {
 
   render() {
     const { type, size, over, className, ...props } = this.props;
+    const isDynamicIcon = !coinGroup.includes(type);
 
     if (over) {
+      const isDynamicIconOver = !coinGroup.includes(over);
+
       return (
         <CoinsWrapper
           type={type}
@@ -31,14 +35,27 @@ class Coin extends Component {
           className={`coin-wrapper ${className}`}
           {...props}
         >
-          <div className="coin-bottom">
-            <CoinIcon type={type} size={size} />
-          </div>
-          <div className="coin-over">
-            <CoinIcon type={over} size={size} />
-          </div>
+          {isDynamicIcon && (
+            <DynamicCoin className="dynamic-bottom" type={type} size={size} />
+          )}
+          {!isDynamicIcon && (
+            <div className="coin-bottom">
+              <CoinIcon type={type} size={size} />
+            </div>
+          )}
+          {isDynamicIconOver && (
+            <DynamicCoin className="dynamic-over" type={over} size={size} />
+          )}
+          {!isDynamicIconOver && (
+            <div className="coin-over">
+              <CoinIcon type={over} size={size} />
+            </div>
+          )}
         </CoinsWrapper>
       );
+    }
+    if (isDynamicIcon) {
+      return <DynamicCoin type={type} size={size} />;
     }
     return (
       <CoinWrapper
