@@ -270,7 +270,6 @@ class PoolStake extends Component {
 
     const stakePool = `${source}:${ticker}`;
     const data = this.state.data || {};
-    console.log('Data', data);
     const attrs = [
       { key: 'depth', title: 'Depth', value: data.depth + ' Rune' },
       { key: 'vol24', title: '24hr Volume', value: data.vol24hr },
@@ -392,7 +391,13 @@ class PoolStake extends Component {
                 100%
               </Label>
             </div>
-            <Slider defaultValue={50} max={100} />
+            <Slider
+              onChange={e => {
+                this.setState({ widthdrawPercentage: e });
+              }}
+              defaultValue={50}
+              max={100}
+            />
             <div className="stake-withdraw-info-wrapper">
               <Label className="label-title" size="normal" weight="bold">
                 YOU SHOULD RECEIVE
@@ -401,13 +406,23 @@ class PoolStake extends Component {
                 <div className="withdraw-asset-wrapper">
                   <CoinData
                     asset={source}
-                    assetValue="2.492740"
-                    price={217.92}
+                    assetValue={Number(
+                      (
+                        stakeData.runeStaked *
+                        ((this.state.widthdrawPercentage || 50) / 100)
+                      ).toFixed(8),
+                    )}
+                    price={0}
                   />
                   <CoinData
                     asset={target}
-                    assetValue="2.492740"
-                    price={217.92}
+                    assetValue={Number(
+                      (
+                        stakeData.tokensStaked *
+                        ((this.state.widthdrawPercentage || 50) / 100)
+                      ).toFixed(8),
+                    )}
+                    price={0}
                   />
                 </div>
                 <Drag
