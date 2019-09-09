@@ -28,8 +28,6 @@ import {
   ConfirmModalContent,
 } from './PoolStake.style';
 
-import { shareInfo } from './data';
-
 const { TabPane } = Tabs;
 
 const {
@@ -59,9 +57,7 @@ class PoolStake extends Component {
     tokenPrice: 0,
   };
 
-  constructor(props) {
-    super(props);
-
+  componentDidMount() {
     this.getPoolData();
     this.getStakePool();
     this.getBalance();
@@ -71,15 +67,12 @@ class PoolStake extends Component {
   getPrices = () => {
     CoinGecko.listCoins()
       .then(response => {
-        console.log('response', response);
         const token = response.data.find(
           coin => coin.symbol === this.props.ticker,
         );
         const rune = response.data.find(coin => coin.symbol === 'rune');
         CoinGecko.price(token.id + ',' + rune.id)
           .then(response => {
-            console.log('BNB  Prices', response.data[token.id].usd);
-            console.log('RUNE Prices', response.data[rune.id].usd);
             this.setState({
               tokenPrice: response.data[token.id].usd,
               runePrice: response.data[rune.id].usd,
@@ -97,7 +90,7 @@ class PoolStake extends Component {
   getBalance = addr => {
     const { user } = this.props;
     // const { address } = user
-    const address = 'bnbblejrrtta9cgr49fuh7ktu3sddhe0ff7wenlpn6'; // deleteme
+    const address = 'tbnb1lejrrtta9cgr49fuh7ktu3sddhe0ff7whxk9nt'; // deleteme
     Binance.getBalances(address)
       .then(response => {
         Binance.getMarkets()
@@ -112,7 +105,11 @@ class PoolStake extends Component {
                 price: market ? parseFloat(market.list_price) : 0,
               };
             });
-            this.setState({ balances: coins });
+            this.setState({
+              balances: coins,
+              runeAmt: 0,
+              tokenAmt: 0,
+            });
           })
           .catch(error => {
             console.error(error);
@@ -367,10 +364,19 @@ class PoolStake extends Component {
     // const { address } = this.props.user
     const address = 'deleteme';
     const { ticker } = this.props;
-    const { dragReset } = this.state;
+    const {
+      widthdrawPercentage,
+      balances,
+      runePrice,
+      tokenPrice,
+      runeAmt,
+      tokenAmt,
+      dragReset,
+    } = this.state;
     const stakeData = this.state.stakeData || { units: 0 };
     const source = 'rune';
     const target = ticker;
+    const data = this.state.data || {};
 
     if (!address) {
       return (
@@ -380,12 +386,35 @@ class PoolStake extends Component {
       );
     }
 
-    const tokeBalance = (this.state.balances || []).find(
-      coin => coin.symbl === ticker,
-    );
-    const runeBalance = (this.state.balances || []).find(
-      coin => coin.symbl === 'rune',
-    );
+    const poolAttrs = [
+      { key: 'price', title: 'Pool Price', value: '$0.10' },
+      {
+        key: 'depth',
+        title: 'Depth',
+        value: '$' + (data.depth * runePrice).toFixed(2),
+      },
+    ];
+
+    const newPoolAttrs = [
+      { key: 'price', title: 'Pool Price', value: '$0.11' },
+      {
+        key: 'depth',
+        title: 'Depth',
+        value:
+          '$' +
+          (
+            (data.depth + runeAmt + (tokenAmt * tokenPrice) / runePrice) *
+            runePrice
+          ).toFixed(2),
+      },
+    ];
+
+    const tokenBalance = (balances || []).find(
+      coin => coin.asset === ticker.toUpperCase(),
+    ) || { assetValue: 0 };
+    const runeBalance = (balances || []).find(
+      coin => coin.asset === 'RUNE-B1A',
+    ) || { assetValue: 0 };
     return (
       <>
         <Label className="label-title" size="normal" weight="bold">
@@ -402,14 +431,37 @@ class PoolStake extends Component {
             <div className="stake-card-wrapper">
               <CoinCard
                 asset={source}
-                amount={0.75}
-                price={217.29}
+                amount={runeAmt}
+                max={runeBalance ? runeBalance.assetValue : 100000}
+                price={runePrice}
+                onChange={amt => {
+                  this.setState({ runeAmt: amt });
+                }}
+                onSelect={select => {
+                  this.setState({
+                    runeAmt: Number(
+                      ((runeBalance.assetValue / 100) * select).toFixed(8),
+                    ),
+                  });
+                }}
                 withSelection
               />
               <CoinCard
                 asset={target}
-                amount={0.0}
-                price={217.29}
+                amount={tokenAmt}
+                max={tokenBalance ? tokenBalance.assetValue : 100000}
+                price={tokenPrice}
+                onChange={amt => {
+                  console.log('foo');
+                  this.setState({ tokenAmt: amt });
+                }}
+                onSelect={select => {
+                  this.setState({
+                    tokenAmt: Number(
+                      ((tokenBalance.assetValue / 100) * select).toFixed(8),
+                    ),
+                  });
+                }}
                 withSelection
               />
             </div>
@@ -424,18 +476,20 @@ class PoolStake extends Component {
               onChange={e => {
                 this.setState({ addAdjust: e });
               }}
-              defaultValue={1}
-              max={2}
+              defaultValue={50}
+              min={0}
+              max={100}
+              tooltipVisible={false}
             />
             <div className="stake-share-info-wrapper">
               <div className="pool-status-wrapper">
-                {shareInfo.pool.map(info => {
+                {poolAttrs.map(info => {
                   return <Status className="share-info-status" {...info} />;
                 })}
               </div>
               <div className="share-status-wrapper">
                 <div className="info-status-wrapper">
-                  {shareInfo.share.map(info => {
+                  {newPoolAttrs.map(info => {
                     return <Status className="share-info-status" {...info} />;
                   })}
                 </div>
@@ -486,13 +540,13 @@ class PoolStake extends Component {
                     assetValue={Number(
                       (
                         stakeData.runeStaked *
-                        ((this.state.widthdrawPercentage || 50) / 100)
+                        ((widthdrawPercentage || 50) / 100)
                       ).toFixed(8),
                     )}
                     price={(
                       stakeData.runeStaked *
-                      ((this.state.widthdrawPercentage || 50) / 100) *
-                      this.state.runePrice
+                      ((widthdrawPercentage || 50) / 100) *
+                      runePrice
                     ).toFixed(2)}
                   />
                   <CoinData
@@ -500,13 +554,13 @@ class PoolStake extends Component {
                     assetValue={Number(
                       (
                         stakeData.tokensStaked *
-                        ((this.state.widthdrawPercentage || 50) / 100)
+                        ((widthdrawPercentage || 50) / 100)
                       ).toFixed(8),
                     )}
                     price={(
                       stakeData.tokensStaked *
-                      ((this.state.widthdrawPercentage || 50) / 100) *
-                      this.state.tokenPrice
+                      ((widthdrawPercentage || 50) / 100) *
+                      tokenPrice
                     ).toFixed(2)}
                   />
                 </div>
