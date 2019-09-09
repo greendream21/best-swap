@@ -127,9 +127,7 @@ class PoolStake extends Component {
     if (address) {
       ChainService.stakerData(address, ticker.toUpperCase())
         .then(response => {
-          // TODO: use this data to display pool information instead of data pulled from data.js
           this.setState({ stakeData: response.data });
-          console.log('Stake Data', response.data);
         })
         .catch(error => {
           console.error(error);
@@ -141,9 +139,7 @@ class PoolStake extends Component {
     const { ticker } = this.props;
     ChainService.getPool(ticker.toUpperCase())
       .then(response => {
-        // TODO: use this data to display pool information instead of data pulled from data.js
         this.setState({ data: response.data });
-        console.log('Pool data', response.data);
       })
       .catch(error => {
         console.error(error);
@@ -452,7 +448,6 @@ class PoolStake extends Component {
                 max={tokenBalance ? tokenBalance.assetValue : 100000}
                 price={tokenPrice}
                 onChange={amt => {
-                  console.log('foo');
                   this.setState({ tokenAmt: amt });
                 }}
                 onSelect={select => {
