@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import { Row, Col, Icon } from 'antd';
 import ChainService from '../../../clients/chainservice';
 import Binance from '../../../clients/binance';
+import CoinGecko from '../../../clients/coingecko';
 
 import Button from '../../../components/uielements/button';
 import Label from '../../../components/uielements/label';
@@ -31,10 +32,6 @@ import { shareInfo } from './data';
 
 const { TabPane } = Tabs;
 
-// TODO: get this from Coingecko, and store it in redux so its available on all components
-const TOKENPrice = 22.07;
-const RUNEPrice = 0.02;
-
 const {
   setTxTimerType,
   setTxTimerModal,
@@ -58,6 +55,8 @@ class PoolStake extends Component {
 
   state = {
     dragReset: true,
+    runePrice: 0,
+    tokenPrice: 0,
   };
 
   constructor(props) {
@@ -66,7 +65,34 @@ class PoolStake extends Component {
     this.getPoolData();
     this.getStakePool();
     this.getBalance();
+    this.getPrices();
   }
+
+  getPrices = () => {
+    CoinGecko.listCoins()
+      .then(response => {
+        console.log('response', response);
+        const token = response.data.find(
+          coin => coin.symbol === this.props.ticker,
+        );
+        const rune = response.data.find(coin => coin.symbol === 'rune');
+        CoinGecko.price(token.id + ',' + rune.id)
+          .then(response => {
+            console.log('BNB  Prices', response.data[token.id].usd);
+            console.log('RUNE Prices', response.data[rune.id].usd);
+            this.setState({
+              tokenPrice: response.data[token.id].usd,
+              runePrice: response.data[rune.id].usd,
+            });
+          })
+          .catch(error => {
+            console.error(error);
+          });
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  };
 
   getBalance = addr => {
     const { user } = this.props;
@@ -309,7 +335,7 @@ class PoolStake extends Component {
       {
         key: 'depth',
         title: 'Depth',
-        value: '$' + (data.depth * RUNEPrice).toFixed(2),
+        value: '$' + (data.depth * this.state.runePrice).toFixed(2),
       },
       { key: 'vol24', title: '24hr Volume', value: data.vol24hr },
       { key: 'volAT', title: 'All Time Volume', value: data.volAT },
@@ -466,7 +492,7 @@ class PoolStake extends Component {
                     price={(
                       stakeData.runeStaked *
                       ((this.state.widthdrawPercentage || 50) / 100) *
-                      RUNEPrice
+                      this.state.runePrice
                     ).toFixed(2)}
                   />
                   <CoinData
@@ -480,7 +506,7 @@ class PoolStake extends Component {
                     price={(
                       stakeData.tokensStaked *
                       ((this.state.widthdrawPercentage || 50) / 100) *
-                      TOKENPrice
+                      this.state.tokenPrice
                     ).toFixed(2)}
                   />
                 </div>
@@ -542,7 +568,8 @@ class PoolStake extends Component {
                   size="normal"
                   color="grey"
                 >
-                  $USD {(stakeData.runeStaked * RUNEPrice).toFixed(2)}
+                  $USD{' '}
+                  {(stakeData.runeStaked * this.state.runePrice).toFixed(2)}
                 </Label>
               </div>
               <div className="your-share-info">
@@ -555,7 +582,8 @@ class PoolStake extends Component {
                   size="normal"
                   color="grey"
                 >
-                  $USD {(stakeData.tokensStaked * TOKENPrice).toFixed(2)}
+                  $USD{' '}
+                  {(stakeData.tokensStaked * this.state.tokenPrice).toFixed(2)}
                 </Label>
               </div>
               <div className="your-share-info">
@@ -577,7 +605,8 @@ class PoolStake extends Component {
                   size="normal"
                   color="grey"
                 >
-                  $USD {(stakeData.runeEarned * RUNEPrice).toFixed(2)}
+                  $USD{' '}
+                  {(stakeData.runeEarned * this.state.runePrice).toFixed(2)}
                 </Label>
               </div>
               <div className="your-share-info">
@@ -590,7 +619,8 @@ class PoolStake extends Component {
                   size="normal"
                   color="grey"
                 >
-                  $USD {(stakeData.tokensEarned * TOKENPrice).toFixed(2)}
+                  $USD{' '}
+                  {(stakeData.tokensEarned * this.state.tokenPrice).toFixed(2)}
                 </Label>
               </div>
             </div>

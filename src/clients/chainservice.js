@@ -14,9 +14,14 @@ class ChainService {
     this.net = NET;
     console.log('Net:', this.net);
 
+    this.httpClient = axios.create({
+      baseURL: this.baseURL,
+      contentType: 'application/json',
+    });
+
     if (isDevnet) {
       console.log('Using mock chain service');
-      var mock = new MockAdapter(axios);
+      var mock = new MockAdapter(this.httpClient);
 
       mock.onAny().reply(config => {
         const url = new URL(config.url);
@@ -123,11 +128,6 @@ class ChainService {
         }
       });
     }
-
-    this.httpClient = axios.create({
-      baseURL: this.baseURL,
-      contentType: 'application/json',
-    });
   }
 
   healthcheck() {
