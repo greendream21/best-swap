@@ -30,6 +30,10 @@ import { shareInfo } from './data';
 
 const { TabPane } = Tabs;
 
+// TODO: get this from Coingecko, and store it in redux so its available on all components
+const TOKENPrice = 22.07;
+const RUNEPrice = 0.02;
+
 const {
   setTxTimerType,
   setTxTimerModal,
@@ -412,7 +416,11 @@ class PoolStake extends Component {
                         ((this.state.widthdrawPercentage || 50) / 100)
                       ).toFixed(8),
                     )}
-                    price={0}
+                    price={(
+                      stakeData.runeStaked *
+                      ((this.state.widthdrawPercentage || 50) / 100) *
+                      RUNEPrice
+                    ).toFixed(2)}
                   />
                   <CoinData
                     asset={target}
@@ -422,7 +430,11 @@ class PoolStake extends Component {
                         ((this.state.widthdrawPercentage || 50) / 100)
                       ).toFixed(8),
                     )}
-                    price={0}
+                    price={(
+                      stakeData.tokensStaked *
+                      ((this.state.widthdrawPercentage || 50) / 100) *
+                      TOKENPrice
+                    ).toFixed(2)}
                   />
                 </div>
                 <Drag
@@ -483,7 +495,7 @@ class PoolStake extends Component {
                   size="normal"
                   color="grey"
                 >
-                  $USD TODO
+                  $USD {stakeData.runeStaked * RUNEPrice}
                 </Label>
               </div>
               <div className="your-share-info">
@@ -496,7 +508,7 @@ class PoolStake extends Component {
                   size="normal"
                   color="grey"
                 >
-                  $USD TODO
+                  $USD {stakeData.tokensStaked * TOKENPrice}
                 </Label>
               </div>
               <div className="your-share-info">
@@ -518,7 +530,7 @@ class PoolStake extends Component {
                   size="normal"
                   color="grey"
                 >
-                  $USD TODO
+                  $USD {stakeData.runeEarned * RUNEPrice}
                 </Label>
               </div>
               <div className="your-share-info">
@@ -531,7 +543,7 @@ class PoolStake extends Component {
                   size="normal"
                   color="grey"
                 >
-                  $USD TODO
+                  $USD {stakeData.tokensEarned * TOKENPrice}
                 </Label>
               </div>
             </div>
