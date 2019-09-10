@@ -23,9 +23,11 @@ import {
   SwapModal,
 } from './SwapDetail.style';
 import { blackArrowIcon } from '../../../components/icons';
+import { formatNumber, formatCurrency } from '../../../helpers/formatHelper';
 
 import appActions from '../../../redux/app/actions';
 import chainActions from '../../../redux/chainservice/actions';
+import statechainActions from '../../../redux/statechain/actions';
 
 const {
   setTxTimerType,
@@ -36,6 +38,7 @@ const {
 } = appActions;
 
 const { getTokens } = chainActions;
+const { getPools } = statechainActions;
 
 class SwapDetail extends Component {
   static propTypes = {
@@ -43,12 +46,14 @@ class SwapDetail extends Component {
     view: PropTypes.string.isRequired,
     txStatus: PropTypes.object.isRequired,
     chainData: PropTypes.object.isRequired,
+    pools: PropTypes.array.isRequired,
     setTxTimerType: PropTypes.func.isRequired,
     setTxTimerModal: PropTypes.func.isRequired,
     setTxTimerStatus: PropTypes.func.isRequired,
     setTxTimerValue: PropTypes.func.isRequired,
     resetTxStatus: PropTypes.func.isRequired,
     getTokens: PropTypes.func.isRequired,
+    getPools: PropTypes.func.isRequired,
   };
 
   static defaultProps = {
@@ -59,14 +64,16 @@ class SwapDetail extends Component {
     address: '',
     invalidAddress: false,
     dragReset: true,
+    xValue: 0,
   };
 
   addressRef = React.createRef();
 
   componentDidMount() {
-    const { getTokens } = this.props;
+    const { getTokens, getPools } = this.props;
 
     getTokens();
+    getPools();
   }
 
   isValidRecipient = () => {
@@ -79,6 +86,13 @@ class SwapDetail extends Component {
     this.setState({
       [key]: e.target.value,
       invalidAddress: false,
+    });
+  };
+
+  handleChangeValue = value => {
+    console.log('change val: ', value);
+    this.setState({
+      xValue: value,
     });
   };
 
@@ -176,6 +190,12 @@ class SwapDetail extends Component {
     });
   };
 
+  handleSelectAmount = amount => {
+    this.setState(prevState => ({
+      xValue: ((prevState.xValue * amount) / 100).toFixed(2),
+    }));
+  };
+
   renderSwapModalContent = swapData => {
     const {
       txStatus: { status, value },
@@ -240,8 +260,9 @@ class SwapDetail extends Component {
       view,
       txStatus,
       chainData: { tokenInfo },
+      pools,
     } = this.props;
-    const { dragReset, address, invalidAddress } = this.state;
+    const { dragReset, address, invalidAddress, xValue } = this.state;
 
     const swapData = this.getSwapData();
 
@@ -249,10 +270,15 @@ class SwapDetail extends Component {
       return '';
     }
 
+    let Px = 0.04; // mock price = 0.04
     const { source, target } = swapData;
-
     const assetsData = Object.keys(tokenInfo).map(tokenName => {
       const { ticker, price } = tokenInfo[tokenName];
+
+      if (ticker.toLowerCase() === source.toLowerCase()) {
+        Px = price;
+      }
+
       return {
         asset: ticker,
         price,
@@ -268,6 +294,28 @@ class SwapDetail extends Component {
     const openSwapModal = txStatus.type === 'swap' ? txStatus.modal : false;
     const coinCloseIconType = txStatus.status ? 'fullscreen-exit' : 'close';
 
+    // coin data
+    let X = 10000;
+    let Y = 10;
+
+    pools.forEach(poolData => {
+      const { balance_rune, balance_token, ticker } = poolData;
+
+      if (ticker.toLowerCase() === target.toLowerCase()) {
+        X = balance_rune;
+        Y = balance_token;
+      }
+    });
+
+    console.log(X, Y, Px, xValue);
+    const times = (xValue + X) ** 2;
+    const outputToken = ((xValue * X * Y) / times).toFixed(2);
+    const outputPy = ((Px * (X + xValue)) / (Y - outputToken)).toFixed(2);
+    const input = xValue * Px;
+    const output = outputToken * outputPy;
+    const slip = Math.round(((input - output) / input) * 100);
+
+    console.log(outputToken, outputPy, slip);
     return (
       <ContentWrapper className="swap-detail-wrapper">
         <Row>
@@ -286,6 +334,7 @@ class SwapDetail extends Component {
                 sizevalue="big"
                 typevalue="ghost"
                 focused={view === 'send'}
+                disabled
               >
                 swap & send
               </Button>
@@ -313,17 +362,19 @@ class SwapDetail extends Component {
               <CoinCard
                 title="You are swapping"
                 asset={source}
-                amount={1.354}
-                price={600}
+                amount={xValue}
+                price={Px}
+                onChange={this.handleChangeValue}
+                onSelect={this.handleSelectAmount}
                 withSelection
               />
               <img src={blackArrowIcon} alt="blackarrow-icon" />
               <CoinCard
                 title="You will receive"
                 asset={target}
-                amount={13549}
-                price={596}
-                slip={2}
+                amount={outputToken}
+                price={outputPy}
+                slip={slip}
               />
             </div>
             <div className="drag-confirm-wrapper">
@@ -374,9 +425,11 @@ export default compose(
     state => ({
       txStatus: state.App.txStatus,
       chainData: state.ChainService,
+      pools: state.Statechain.pools,
     }),
     {
       getTokens,
+      getPools,
       setTxTimerType,
       setTxTimerModal,
       setTxTimerStatus,

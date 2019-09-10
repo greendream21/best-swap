@@ -19,6 +19,7 @@ class CoinCard extends Component {
     title: PropTypes.string,
     withSelection: PropTypes.bool,
     onSelect: PropTypes.func,
+    onChange: PropTypes.func,
     className: PropTypes.string,
     max: PropTypes.number,
   };
@@ -31,14 +32,13 @@ class CoinCard extends Component {
     title: '',
     withSelection: false,
     onSelect: () => {},
+    onChange: () => {},
     className: '',
     max: 1000000,
   };
 
   onChange = e => {
-    if (this.props.onChange) {
-      this.props.onChange(e);
-    }
+    this.props.onChange(e);
   };
 
   render() {
@@ -51,6 +51,7 @@ class CoinCard extends Component {
       max,
       withSelection,
       onSelect,
+      onChange,
       className,
       ...props
     } = this.props;
