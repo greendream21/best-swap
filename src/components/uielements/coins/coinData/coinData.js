@@ -8,9 +8,9 @@ import Label from '../../label';
 
 class CoinData extends Component {
   static propTypes = {
-    asset: PropTypes.oneOf(coinGroup),
+    asset: PropTypes.string,
     assetValue: PropTypes.number,
-    target: PropTypes.oneOf(coinGroup),
+    target: PropTypes.string,
     targetValue: PropTypes.number,
     price: PropTypes.number,
     size: PropTypes.oneOf(['small', 'big']),

@@ -27,13 +27,19 @@ class Binance {
     this.bnbTokens = new TokenManagement(this.bnbClient).tokens;
   }
 
-  setPrivateKey(privateKey) {
+  setPrivateKey = privateKey => {
     this.bnbClient.setPrivateKey(privateKey);
     this.bnbClient.chooseNetwork(this.net);
     this.bnbClient.initChain();
-  }
+  };
 
-  useLedgerSigningDelegate(ledgerApp, preSignCb, postSignCb, errCb, hdPath) {
+  useLedgerSigningDelegate = (
+    ledgerApp,
+    preSignCb,
+    postSignCb,
+    errCb,
+    hdPath,
+  ) => {
     return this.bnbClient.useLedgerSigningDelegate(
       ledgerApp,
       preSignCb,
@@ -41,25 +47,25 @@ class Binance {
       errCb,
       hdPath,
     );
-  }
+  };
 
-  clearPrivateKey() {
+  clearPrivateKey = () => {
     this.bnbClient.privateKey = null;
-  }
+  };
 
-  getPrefix() {
+  getPrefix = () => {
     return isTestnet ? 'tbnb' : 'bnb';
-  }
+  };
 
-  txURL(tx) {
+  txURL = tx => {
     return this.explorerBaseURL + '/tx/' + tx;
-  }
+  };
 
-  fees() {
+  fees = () => {
     return this.httpClient.get('/fees');
-  }
+  };
 
-  async price(symbol) {
+  price = async symbol => {
     const bnb = await axios.get(
       'https://api.cryptonator.com/api/ticker/bnb-usd',
     );
@@ -70,26 +76,26 @@ class Binance {
     return (
       parseFloat(bnb.data.ticker.price) * parseFloat(symbol_data.list_price)
     );
-  }
+  };
 
   // convert fee number into BNB tokens
-  calculateFee(x) {
+  calculateFee = x => {
     return x / 100000000;
-  }
+  };
 
-  getBalances(address) {
+  getBalances = address => {
     return this.bnbClient.getBalance(address);
-  }
+  };
 
-  getAccount(address) {
+  getAccount = address => {
     return this.bnbClient.getAccount(address);
-  }
+  };
 
-  getMarkets(limit = 1000, offset = 0) {
+  getMarkets = (limit = 1000, offset = 0) => {
     return this.bnbClient.getMarkets(limit, offset);
-  }
+  };
 
-  async multiSend(address, transactions, memo = '') {
+  multiSend = async (address, transactions, memo = '') => {
     // send coins!
     const result = await this.bnbClient.multiSend(address, transactions, memo);
 
@@ -97,8 +103,9 @@ class Binance {
     this.clearPrivateKey();
 
     return result;
-  }
+  };
 }
 
 var binance = (window.binance = new Binance());
+
 export default binance;

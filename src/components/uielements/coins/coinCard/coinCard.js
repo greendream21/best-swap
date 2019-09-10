@@ -12,7 +12,7 @@ import { CoinCardWrapper } from './coinCard.style';
 
 class CoinCard extends Component {
   static propTypes = {
-    asset: PropTypes.oneOf(coinGroup),
+    asset: PropTypes.string,
     amount: PropTypes.number,
     price: PropTypes.number,
     slip: PropTypes.number,

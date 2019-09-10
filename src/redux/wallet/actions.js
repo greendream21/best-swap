@@ -4,31 +4,44 @@ const actions = {
   SAVE_WALLET: 'SAVE_WALLET',
   FORGET_WALLET: 'FORGET_WALLET',
 
-  checkUser: () => ({ type: actions.CHECK_USER }),
+  REFRESH_BALANCE: 'REFRESH_BALANCE',
+  REFRESH_BALANCE_SUCCESS: 'REFRESH_BALANCE_SUCCESS',
+  REFRESH_BALANCE_FAILED: 'REFRESH_BALANCE_FAILED',
 
-  saveWallet: payload => ({
-    type: actions.SAVE_WALLET,
-    payload,
-  }),
-
-  forgetWallet: payload => ({
-    type: actions.FORGET_WALLET,
-    payload,
-  }),
+  REFRESH_STAKES: 'REFRESH_STAKES',
+  REFRESH_STAKES_SUCCESS: 'REFRESH_STAKES_SUCCESS',
+  REFRESH_STAKES_FAILED: 'REFRESH_STAKES_FAILED',
 
   SET_ASSET_DATA: 'SET_ASSET_DATA',
-
-  setAssetData: payload => ({
-    type: actions.SET_ASSET_DATA,
-    payload,
-  }),
-
   SET_STAKE_DATA: 'SET_STAKE_DATA',
 
-  setStakeData: payload => ({
-    type: actions.SET_STAKE_DATA,
+  checkUser: () => ({ type: actions.CHECK_USER }),
+
+  saveWallet: payload => ({ type: actions.SAVE_WALLET, payload }),
+  forgetWallet: payload => ({ type: actions.FORGET_WALLET, payload }),
+
+  refreshBalance: payload => ({ type: actions.REFRESH_BALANCE, payload }),
+  refreshBalanceSuccess: payload => ({
+    type: actions.REFRESH_BALANCE_SUCCESS,
     payload,
   }),
+  refreshBalanceFailed: payload => ({
+    type: actions.REFRESH_BALANCE_FAILED,
+    payload,
+  }),
+
+  refreshStake: payload => ({ type: actions.REFRESH_STAKES, payload }),
+  refreshStakeSuccess: payload => ({
+    type: actions.REFRESH_STAKES_SUCCESS,
+    payload,
+  }),
+  refreshStakeFailed: payload => ({
+    type: actions.REFRESH_STAKES_FAILED,
+    payload,
+  }),
+
+  setAssetData: payload => ({ type: actions.SET_ASSET_DATA, payload }),
+  setStakeData: payload => ({ type: actions.SET_STAKE_DATA, payload }),
 };
 
 export default actions;

@@ -10,13 +10,7 @@ import Label from '../../components/uielements/label';
 import Button from '../../components/uielements/button';
 import CoinList from '../../components/uielements/coins/coinList';
 
-import Binance from '../../clients/binance';
-import ChainService from '../../clients/chainservice';
 import { getPair } from '../../helpers/stringHelper';
-
-import walletActions from '../../redux/wallet/actions';
-
-const { setAssetData, setStakeData } = walletActions;
 
 const { TabPane } = Tabs;
 
@@ -29,6 +23,8 @@ class WalletView extends Component {
     status: PropTypes.string,
     assetData: PropTypes.array.isRequired,
     stakeData: PropTypes.array.isRequired,
+    loadingAssets: PropTypes.bool.isRequired,
+    loadingStakes: PropTypes.bool.isRequired,
     setAssetData: PropTypes.func.isRequired,
     setStakeData: PropTypes.func.isRequired,
   };
@@ -38,94 +34,6 @@ class WalletView extends Component {
     view: '',
     info: '',
     status: '',
-  };
-
-  state = {
-    loadingAssets: true,
-    loadingStakes: false,
-  };
-
-  componentDidMount() {
-    const { user } = this.props;
-
-    if (user) {
-      const { wallet } = user;
-      this.refreshBalance(wallet);
-    }
-  }
-
-  refreshBalance = addr => {
-    const { setAssetData } = this.props;
-
-    Binance.getBalances(addr)
-      .then(response => {
-        Binance.getMarkets()
-          .then(markets => {
-            const coins = response.map(coin => {
-              const market = markets.result.find(
-                market => market.base_asset_symbol === coin.symbol,
-              );
-              return {
-                asset: coin.symbol,
-                assetValue: parseFloat(coin.free),
-                price: market ? parseFloat(market.list_price) : 0,
-              };
-            });
-            setAssetData(coins);
-            this.setState({ loadingAssets: false });
-          })
-          .catch(error => {
-            this.setState({ loadingAssets: false });
-            console.error(error);
-          });
-      })
-      .catch(error => {
-        this.setState({ loadingAssets: false });
-        console.error(error);
-      });
-  };
-
-  refreshStakes = addr => {
-    const { setStakeData } = this.props;
-
-    Binance.getMarkets()
-      .then(markets => {
-        ChainService.stakerData(addr)
-          .then(async response => {
-            const stakeData = await Promise.all(
-              response.data.map(async ticker => {
-                let info = await ChainService.stakerData(addr, ticker)
-                  .then(response => {
-                    const market = markets.result.find(
-                      market => market.base_asset_symbol === ticker,
-                    );
-
-                    return {
-                      target: ticker.toLowerCase(),
-                      targetValue: response.data.tokensStaked,
-                      assetValue: response.data.runeStaked,
-                      asset: 'rune',
-                      price: market ? parseFloat(market.list_price) : 0,
-                    };
-                  })
-                  .catch(error => {
-                    console.error(error);
-                    return { target: ticker, asset: 'rune' };
-                  });
-                return info;
-              }),
-            );
-            setStakeData(stakeData);
-            this.setState({ loadingStakes: false });
-          })
-          .catch(error => {
-            this.setState({ loadingStakes: false });
-            console.error(error);
-          });
-      })
-      .catch(error => {
-        console.error(error);
-      });
   };
 
   getAssetNameByIndex = index => {
@@ -140,19 +48,7 @@ class WalletView extends Component {
     return assetData.find(data => data.asset === asset);
   };
 
-  handleChangeTab = tag => {
-    const { user } = this.props;
-
-    if (user) {
-      const { wallet } = user;
-
-      if (tag === 'assets') {
-        this.refreshBalance(wallet);
-      } else if (tag === 'stakes') {
-        this.refreshBalance(wallet);
-      }
-    }
-  };
+  handleChangeTab = tag => {};
 
   handleConnect = () => {
     this.props.history.push('/connect');
@@ -175,9 +71,9 @@ class WalletView extends Component {
   handleSelectStake = key => {};
 
   renderAssetTitle = () => {
-    const { status } = this.props;
+    const { status, loadingAssets } = this.props;
 
-    if (this.state.loadingAssets) {
+    if (loadingAssets) {
       return 'Loading...';
     }
 
@@ -188,9 +84,9 @@ class WalletView extends Component {
   };
 
   renderStakeTitle = () => {
-    const { stakeData } = this.props;
+    const { stakeData, loadingStakes } = this.props;
 
-    if (this.state.loadingStakes) {
+    if (loadingStakes) {
       return 'Loading...';
     }
 
@@ -218,6 +114,8 @@ class WalletView extends Component {
       user: { wallet },
       assetData,
       stakeData,
+      loadingAssets,
+      loadingStakes,
     } = this.props;
     const pair = getPair(info);
     const { source } = pair;
@@ -236,7 +134,7 @@ class WalletView extends Component {
                 connect
               </Button>
             )}
-            {!this.state.loadingAssets && (
+            {!loadingAssets && (
               <CoinList
                 data={assetData}
                 value={sourceIndex}
@@ -249,7 +147,7 @@ class WalletView extends Component {
             <Label className="asset-title-label">
               {this.renderStakeTitle()}
             </Label>
-            {!this.state.loadingStakes && (
+            {!loadingStakes && (
               <CoinList
                 data={stakeData}
                 value={sourceIndex}
@@ -264,16 +162,12 @@ class WalletView extends Component {
 }
 
 export default compose(
-  connect(
-    state => ({
-      user: state.Wallet.user,
-      assetData: state.Wallet.assetData,
-      stakeData: state.Wallet.stakeData,
-    }),
-    {
-      setAssetData,
-      setStakeData,
-    },
-  ),
+  connect(state => ({
+    user: state.Wallet.user,
+    assetData: state.Wallet.assetData,
+    stakeData: state.Wallet.stakeData,
+    loadingAssets: state.Wallet.loadingAssets,
+    loadingStakes: state.Wallet.loadingStakes,
+  })),
   withRouter,
 )(WalletView);
