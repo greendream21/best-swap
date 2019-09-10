@@ -56,6 +56,20 @@ class StateChain {
                 pool_units: 34.68,
                 pool_status: 'Enabled',
               },
+              {
+                balance_rune: 658.61,
+                balance_token: 137.876,
+                ticker: 'FTM',
+                pool_units: 34.68,
+                pool_status: 'Enabled',
+              },
+              {
+                balance_rune: 658.61,
+                balance_token: 137.876,
+                ticker: 'ANKR',
+                pool_units: 34.68,
+                pool_status: 'Enabled',
+              },
             ],
           ];
         } else {
