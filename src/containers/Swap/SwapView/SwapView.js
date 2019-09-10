@@ -8,7 +8,6 @@ import SwapCard from '../../../components/swap/swapCard';
 import ChainService from '../../../clients/chainservice';
 import StateChain from '../../../clients/statechain';
 import { ContentWrapper } from './SwapView.style';
-import { assets } from './data';
 
 class SwapView extends Component {
   state = {

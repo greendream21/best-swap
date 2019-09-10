@@ -89,8 +89,7 @@ class PoolStake extends Component {
 
   getBalance = addr => {
     const { user } = this.props;
-    // const { address } = user
-    const address = 'tbnb1lejrrtta9cgr49fuh7ktu3sddhe0ff7whxk9nt'; // deleteme
+    const { address } = user;
     Binance.getBalances(address)
       .then(response => {
         Binance.getMarkets()
@@ -122,8 +121,7 @@ class PoolStake extends Component {
 
   getStakePool = () => {
     const { ticker, user } = this.props;
-    // const { address } = user
-    const address = 'deleteme';
+    const { address } = user;
     if (address) {
       ChainService.stakerData(address, ticker.toUpperCase())
         .then(response => {
