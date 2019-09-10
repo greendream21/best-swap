@@ -7,7 +7,7 @@ class Pool extends Component {
   render() {
     return (
       <PoolWrapper>
-        <ActionView type="pool" view="view" />
+        <ActionView type="pools" view="view" />
       </PoolWrapper>
     );
   }

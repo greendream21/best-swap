@@ -128,7 +128,7 @@ class ActionView extends Component {
               action
             >
               <TabPane tab="swap" key="swap" />
-              <TabPane tab="pools" key="pool" />
+              <TabPane tab="pools" key="pools" />
             </Tabs>
             {intro}
           </>
@@ -176,8 +176,8 @@ class ActionView extends Component {
         {view === 'swap-view' && <SwapView />}
         {view === 'swap-detail' && <SwapDetail view="detail" info={info} />}
         {view === 'swap-send' && <SwapDetail view="send" info={info} />}
-        {view === 'pool-view' && <PoolView />}
-        {view === 'pool-pool' && <PoolStake ticker={ticker} />}
+        {view === 'pools-view' && <PoolView />}
+        {view === 'pools-pool' && <PoolStake ticker={ticker} />}
         {view === 'pool-new' && <PoolCreate view="new" info={info} />}
         {view === 'trade-view' && <TradeView />}
         {(view === 'trade-buy' || view === 'trade-sell') && (

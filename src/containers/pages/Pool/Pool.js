@@ -10,7 +10,7 @@ class Pool extends Component {
 
     return (
       <PoolWrapper>
-        <ActionView type="pool" ticker={ticker} view="pool" />
+        <ActionView type="pools" ticker={ticker} view="pool" />
       </PoolWrapper>
     );
   }
