@@ -117,7 +117,6 @@ class ActionView extends Component {
       </Link>
     );
 
-    console.log('active ---> ', active);
     return (
       <>
         {headerText === undefined && (
