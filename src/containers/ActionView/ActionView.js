@@ -90,7 +90,7 @@ class ActionView extends Component {
   getHeaderText = () => {
     const view = this.getView();
 
-    return headerData[view] || '';
+    return headerData[view];
   };
 
   getView = () => {
@@ -117,6 +117,7 @@ class ActionView extends Component {
       </Link>
     );
 
+    console.log('active ---> ', active);
     return (
       <>
         {headerText === undefined && (
@@ -128,7 +129,7 @@ class ActionView extends Component {
               action
             >
               <TabPane tab="swap" key="swap" />
-              <TabPane tab="pools" key="pools" />
+              <TabPane tab="pools" key="pool" />
             </Tabs>
             {intro}
           </>
