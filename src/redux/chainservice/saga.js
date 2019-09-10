@@ -15,7 +15,6 @@ export function* getUserData() {
       withCredentials: true,
     };
 
-    console.log(params);
     try {
       const { data } = yield call(axiosRequest, params);
 
@@ -37,6 +36,12 @@ export function* getTokens() {
     try {
       const { data } = yield call(axiosRequest, params);
 
+      yield all(
+        data.map(token => {
+          return put(actions.getTokenInfo({ token }));
+        }),
+      );
+
       yield put(actions.getTokensSuccess(data));
     } catch (error) {
       yield put(actions.getTokensFailed(error));
@@ -45,7 +50,7 @@ export function* getTokens() {
 }
 
 export function* getTokenInfo() {
-  yield takeEvery(actions.GET_TOKENS_REQUEST, function*({ payload }) {
+  yield takeEvery(actions.GET_TOKEN_INFO_REQUEST, function*({ payload }) {
     const { token } = payload;
 
     const params = {
@@ -57,7 +62,11 @@ export function* getTokenInfo() {
     try {
       const { data } = yield call(axiosRequest, params);
 
-      yield put(actions.getTokenInfoSuccess(data));
+      yield put(
+        actions.getTokenInfoSuccess({
+          [token]: data,
+        }),
+      );
     } catch (error) {
       yield put(actions.getTokenInfoFailed(error));
     }
@@ -168,6 +177,7 @@ export default function* rootSaga() {
   yield all([
     fork(getUserData),
     fork(getTokens),
+    fork(getTokenInfo),
     fork(getTokenData),
     fork(getSwapData),
     fork(getSwapTx),

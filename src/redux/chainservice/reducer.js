@@ -31,7 +31,10 @@ export default function apiReducer(state = initState, action) {
     case actions.GET_TOKEN_INFO_SUCCESS:
       return {
         ...state,
-        tokenInfo: payload,
+        tokenInfo: {
+          ...state.tokenInfo,
+          ...payload,
+        },
         error: null,
       };
     case actions.GET_TOKENDATA_SUCCESS:

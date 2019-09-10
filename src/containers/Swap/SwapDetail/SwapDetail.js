@@ -24,9 +24,8 @@ import {
 } from './SwapDetail.style';
 import { blackArrowIcon } from '../../../components/icons';
 
-import { assetsData } from './data';
-
 import appActions from '../../../redux/app/actions';
+import chainActions from '../../../redux/chainservice/actions';
 
 const {
   setTxTimerType,
@@ -36,16 +35,20 @@ const {
   resetTxStatus,
 } = appActions;
 
+const { getTokens } = chainActions;
+
 class SwapDetail extends Component {
   static propTypes = {
     info: PropTypes.string,
     view: PropTypes.string.isRequired,
     txStatus: PropTypes.object.isRequired,
+    chainData: PropTypes.object.isRequired,
     setTxTimerType: PropTypes.func.isRequired,
     setTxTimerModal: PropTypes.func.isRequired,
     setTxTimerStatus: PropTypes.func.isRequired,
     setTxTimerValue: PropTypes.func.isRequired,
     resetTxStatus: PropTypes.func.isRequired,
+    getTokens: PropTypes.func.isRequired,
   };
 
   static defaultProps = {
@@ -59,6 +62,12 @@ class SwapDetail extends Component {
   };
 
   addressRef = React.createRef();
+
+  componentDidMount() {
+    const { getTokens } = this.props;
+
+    getTokens();
+  }
 
   isValidRecipient = () => {
     const { address } = this.state;
@@ -128,7 +137,7 @@ class SwapDetail extends Component {
     this.props.history.push(URL);
   };
 
-  handleSelectTraget = targetIndex => {
+  handleSelectTraget = assetsData => targetIndex => {
     const { view } = this.props;
     const { source } = this.getSwapData();
     const target = assetsData[targetIndex].asset;
@@ -227,7 +236,11 @@ class SwapDetail extends Component {
   };
 
   render() {
-    const { view, txStatus } = this.props;
+    const {
+      view,
+      txStatus,
+      chainData: { tokenInfo },
+    } = this.props;
     const { dragReset, address, invalidAddress } = this.state;
 
     const swapData = this.getSwapData();
@@ -237,6 +250,15 @@ class SwapDetail extends Component {
     }
 
     const { source, target } = swapData;
+
+    const assetsData = Object.keys(tokenInfo).map(tokenName => {
+      const { ticker, price } = tokenInfo[tokenName];
+      return {
+        asset: ticker,
+        price,
+      };
+    });
+
     const targetData = assetsData.filter(data => data.asset !== source);
     const targetIndex = targetData.findIndex(value => value.asset === target);
 
@@ -327,7 +349,7 @@ class SwapDetail extends Component {
             <CoinList
               data={targetData}
               value={targetIndex}
-              onSelect={this.handleSelectTraget}
+              onSelect={this.handleSelectTraget(assetsData)}
             />
           </Col>
         </Row>
@@ -351,8 +373,10 @@ export default compose(
   connect(
     state => ({
       txStatus: state.App.txStatus,
+      chainData: state.ChainService,
     }),
     {
+      getTokens,
       setTxTimerType,
       setTxTimerModal,
       setTxTimerStatus,
