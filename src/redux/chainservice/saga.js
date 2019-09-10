@@ -44,6 +44,26 @@ export function* getTokens() {
   });
 }
 
+export function* getTokenInfo() {
+  yield takeEvery(actions.GET_TOKENS_REQUEST, function*({ payload }) {
+    const { token } = payload;
+
+    const params = {
+      method: 'get',
+      url: getChainserviceURL(`tokens?token=${token}`),
+      headers: getHeaders(),
+    };
+
+    try {
+      const { data } = yield call(axiosRequest, params);
+
+      yield put(actions.getTokenInfoSuccess(data));
+    } catch (error) {
+      yield put(actions.getTokenInfoFailed(error));
+    }
+  });
+}
+
 export function* getTokenData() {
   yield takeEvery(actions.GET_TOKENDATA_REQUEST, function*({ payload }) {
     const { token } = payload;

@@ -24,7 +24,7 @@ export const CoinCardWrapper = styled.div`
       padding: 10px 20px;
 
       .asset-amount-label {
-        &.ant-input {
+        &.ant-input-number {
           padding: 0;
           border: none;
         }
