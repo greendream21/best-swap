@@ -5,12 +5,61 @@ import Label from '../../../components/uielements/label';
 import CoinButton from '../../../components/uielements/coins/coinButton';
 import SwapCard from '../../../components/swap/swapCard';
 
+import ChainService from '../../../clients/chainservice';
+import StateChain from '../../../clients/statechain';
 import { ContentWrapper } from './SwapView.style';
-import { assets } from './data';
 
 class SwapView extends Component {
   state = {
     activeAsset: 'rune',
+    loadingPools: true,
+  };
+
+  constructor(props) {
+    super(props);
+    console.info('Swap Pool List');
+
+    this.refreshPools();
+  }
+
+  refreshPools = () => {
+    StateChain.listPools()
+      .then(async response => {
+        const pools = await Promise.all(
+          response.data.map(async pool => {
+            return await ChainService.getPool(pool.ticker)
+              .then(async response => {
+                const poolData = response.data;
+                return await ChainService.swapData(pool.ticker)
+                  .then(response => {
+                    const swapData = response.data;
+                    return {
+                      target: pool.ticker.toLowerCase(),
+                      depth: poolData.depth, // TODO: should multiply this by USD price of rune
+                      volume: poolData.vol24hr,
+                      transaction: swapData.aveTxTkn, //TODO: clarify what is meant by average tx. consider both sides.
+                      swaps: poolData.numSwaps,
+                      slip: swapData.aveSlipTkn,
+                      asset: 'rune',
+                    };
+                  })
+                  .catch(error => {
+                    console.error(error);
+                    this.setState({ loadingPools: false });
+                  });
+              })
+              .catch(error => {
+                console.error(error);
+                this.setState({ loadingPools: false });
+              });
+          }),
+        );
+        this.setState({ pools: pools, loadingPools: false });
+      })
+      .catch(error => {
+        console.error(error);
+        this.setState({ loadingPools: false });
+      });
   };
 
   handleChooseBasePair = asset => () => {
@@ -27,42 +76,43 @@ class SwapView extends Component {
 
   renderAssets = () => {
     const { activeAsset } = this.state;
-
-    return assets.map((asset, index) => {
-      return (
-        <CoinButton
-          cointype={asset}
-          onClick={this.handleChooseBasePair(asset)}
-          focused={asset === activeAsset}
-          disabled={asset !== 'rune'} // enable only rune for base pair
-          key={index}
-        />
-      );
-    });
+    const asset = 'rune';
+    return (
+      <CoinButton
+        cointype={asset}
+        onClick={this.handleChooseBasePair(asset)}
+        focused={asset === activeAsset}
+        disabled={asset !== 'rune'} // enable only rune for base pair
+        key={0}
+      />
+    );
   };
 
   renderSwapList = () => {
     const { activeAsset } = this.state;
-
-    return assets.map((asset, index) => {
-      if (asset !== activeAsset) {
-        return (
-          <SwapCard
-            className="swap-card"
-            asset={activeAsset}
-            target={asset}
-            depth={234.0}
-            volume={340.0}
-            transaction={1234}
-            slip={0.2}
-            trade={2345}
-            onSwap={this.handleSwap(activeAsset, asset)}
-            key={index}
-          />
-        );
-      }
-      return <Fragment />;
-    });
+    if (this.state.loadingPools) {
+      return 'loading pools...';
+    } else {
+      return this.state.pools.map((asset, index) => {
+        if (asset !== activeAsset) {
+          return (
+            <SwapCard
+              className="swap-card"
+              asset={'rune'}
+              target={asset.target}
+              depth={asset.depth}
+              volume={asset.volume}
+              transaction={asset.transaction}
+              slip={asset.slip}
+              trade={asset.swaps}
+              onSwap={this.handleSwap(activeAsset, asset.target)}
+              key={index}
+            />
+          );
+        }
+        return <Fragment />;
+      });
+    }
   };
 
   render() {
