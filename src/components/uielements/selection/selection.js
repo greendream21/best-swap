@@ -14,7 +14,7 @@ class Selection extends Component {
   };
 
   state = {
-    focused: 100,
+    focused: 0,
   };
 
   handleClick = value => {

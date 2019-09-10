@@ -46,6 +46,7 @@ class SwapDetail extends Component {
     view: PropTypes.string.isRequired,
     txStatus: PropTypes.object.isRequired,
     chainData: PropTypes.object.isRequired,
+    assetData: PropTypes.array.isRequired,
     pools: PropTypes.array.isRequired,
     setTxTimerType: PropTypes.func.isRequired,
     setTxTimerModal: PropTypes.func.isRequired,
@@ -190,10 +191,23 @@ class SwapDetail extends Component {
     });
   };
 
-  handleSelectAmount = amount => {
-    this.setState(prevState => ({
-      xValue: ((prevState.xValue * amount) / 100).toFixed(2),
-    }));
+  handleSelectAmount = source => amount => {
+    const { assetData } = this.props;
+
+    const sourceAsset = assetData.find(data => {
+      const { asset, assetValue } = data;
+      const tokenName = asset.split('-')[0];
+      if (tokenName.toLowerCase() === source) {
+        return true;
+      }
+      return false;
+    });
+
+    const totalAmount = sourceAsset.assetValue || 0;
+    const xValue = (totalAmount * amount) / 100;
+    this.setState({
+      xValue,
+    });
   };
 
   renderSwapModalContent = swapData => {
@@ -316,6 +330,7 @@ class SwapDetail extends Component {
     const slip = Math.round(((input - output) / input) * 100);
 
     console.log(outputToken, outputPy, slip);
+
     return (
       <ContentWrapper className="swap-detail-wrapper">
         <Row>
@@ -365,7 +380,7 @@ class SwapDetail extends Component {
                 amount={xValue}
                 price={Px}
                 onChange={this.handleChangeValue}
-                onSelect={this.handleSelectAmount}
+                onSelect={this.handleSelectAmount(source)}
                 withSelection
               />
               <img src={blackArrowIcon} alt="blackarrow-icon" />
@@ -426,6 +441,7 @@ export default compose(
       txStatus: state.App.txStatus,
       chainData: state.ChainService,
       pools: state.Statechain.pools,
+      assetData: state.Wallet.assetData,
     }),
     {
       getTokens,
