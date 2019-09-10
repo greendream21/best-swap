@@ -104,6 +104,26 @@ class Binance {
 
     return result;
   };
+
+  transfer = async (
+    fromAddress,
+    toAddress,
+    amount,
+    asset,
+    memo = '',
+    sequence,
+  ) => {
+    const result = await this.bnbClient.transfer(
+      fromAddress,
+      toAddress,
+      amount,
+      asset,
+      memo,
+      sequence,
+    );
+
+    return result;
+  };
 }
 
 var binance = (window.binance = new Binance());
