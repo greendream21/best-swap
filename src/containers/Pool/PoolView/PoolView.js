@@ -16,6 +16,7 @@ class PoolView extends Component {
 
   constructor(props) {
     super(props);
+    console.log('Pool view');
 
     this.refreshPools();
   }
@@ -50,8 +51,8 @@ class PoolView extends Component {
       });
   };
 
-  handleStake = (source, target) => () => {
-    const URL = `/pool/stake-new/${source}-${target}`;
+  handleStake = ticker => () => {
+    const URL = `/pool/${ticker}`;
 
     this.props.history.push(URL);
   };
@@ -77,7 +78,7 @@ class PoolView extends Component {
             transaction={asset.transaction}
             liq={asset.liq}
             roi={asset.roi}
-            onStake={this.handleStake(asset.target, asset.asset)}
+            onStake={this.handleStake(asset.target)}
             key={index}
           />
         );

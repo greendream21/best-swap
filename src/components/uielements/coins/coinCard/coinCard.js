@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Divider, Input } from 'antd';
+import { Divider, InputNumber } from 'antd';
 
 import { coinGroup } from '../../../../settings';
 import Coin from '../coin';
@@ -20,6 +20,7 @@ class CoinCard extends Component {
     withSelection: PropTypes.bool,
     onSelect: PropTypes.func,
     className: PropTypes.string,
+    max: PropTypes.number,
   };
 
   static defaultProps = {
@@ -31,6 +32,13 @@ class CoinCard extends Component {
     withSelection: false,
     onSelect: () => {},
     className: '',
+    max: 1000000,
+  };
+
+  onChange = e => {
+    if (this.props.onChange) {
+      this.props.onChange(e);
+    }
   };
 
   render() {
@@ -40,6 +48,7 @@ class CoinCard extends Component {
       price,
       slip,
       title,
+      max,
       withSelection,
       onSelect,
       className,
@@ -55,11 +64,20 @@ class CoinCard extends Component {
             <Label className="asset-name-label" size="small" weight="bold">
               {asset}
             </Label>
-            <Input className="asset-amount-label" value={amount} />
+            <InputNumber
+              className="asset-amount-label"
+              min={0}
+              max={max}
+              defaultValue={3}
+              size="big"
+              value={amount}
+              style={{ width: '100%' }}
+              onChange={this.onChange}
+            />
             <Divider />
             <div className="asset-card-footer">
               <Label size="small" color="gray" weight="bold">
-                {`$USD ${price}`}
+                {`$USD ${(amount * price).toFixed(2)}`}
               </Label>
               {slip !== undefined && (
                 <Label
