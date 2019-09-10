@@ -15,6 +15,20 @@ const actions = {
     type: actions.FORGET_WALLET,
     payload,
   }),
+
+  SET_ASSET_DATA: 'SET_ASSET_DATA',
+
+  setAssetData: payload => ({
+    type: actions.SET_ASSET_DATA,
+    payload,
+  }),
+
+  SET_STAKE_DATA: 'SET_STAKE_DATA',
+
+  setStakeData: payload => ({
+    type: actions.SET_STAKE_DATA,
+    payload,
+  }),
 };
 
 export default actions;

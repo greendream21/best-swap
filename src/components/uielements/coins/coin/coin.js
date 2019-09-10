@@ -23,10 +23,10 @@ class Coin extends Component {
 
   render() {
     const { type, size, over, className, ...props } = this.props;
-    const isDynamicIcon = !coinGroup.includes(type);
+    const isDynamicIcon = !coinGroup.includes(type.toLowerCase());
 
     if (over) {
-      const isDynamicIconOver = !coinGroup.includes(over);
+      const isDynamicIconOver = !coinGroup.includes(over.toLowerCase());
 
       return (
         <CoinsWrapper

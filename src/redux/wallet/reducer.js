@@ -8,6 +8,8 @@ const user = wallet ? { wallet, keystore } : {};
 
 const initState = {
   user,
+  assetData: [],
+  stakeData: [],
 };
 
 export default function apiReducer(state = initState, action) {
@@ -23,6 +25,16 @@ export default function apiReducer(state = initState, action) {
       return {
         ...state,
         user: {},
+      };
+    case actions.SET_ASSET_DATA:
+      return {
+        ...state,
+        assetData: payload,
+      };
+    case actions.SET_STAKE_DATA:
+      return {
+        ...state,
+        stakeData: payload,
       };
     default:
       return state;
