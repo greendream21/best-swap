@@ -240,24 +240,24 @@ class ChainService {
     }
   }
 
-  healthcheck() {
+  healthcheck = () => {
     return this.httpClient.get('/health');
-  }
+  };
 
-  stakerData(bnb, ticker = '') {
+  stakerData = (bnb, ticker = '') => {
     const qs = querystring.stringify({ staker: bnb, asset: ticker });
     return this.httpClient.get('/stakerData?' + qs);
-  }
+  };
 
-  getPool(ticker) {
+  getPool = ticker => {
     const qs = querystring.stringify({ asset: ticker });
     return this.httpClient.get('/poolData?' + qs);
-  }
+  };
 
-  swapData(ticker) {
+  swapData = ticker => {
     const qs = querystring.stringify({ asset: ticker });
     return this.httpClient.get('/swapData?' + qs);
-  }
+  };
 }
 
 var chain = (window.chain = new ChainService());
