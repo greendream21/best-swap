@@ -215,7 +215,7 @@ class SwapDetail extends Component {
   handleSelectTraget = assetsData => targetIndex => {
     const { view } = this.props;
     const { source } = this.getSwapData();
-    const target = assetsData[targetIndex].asset;
+    const target = assetsData[targetIndex].asset.toLowerCase();
     const URL = `/swap/${view}/${source}-${target}`;
 
     this.props.history.push(URL);
@@ -392,7 +392,9 @@ class SwapDetail extends Component {
     });
 
     const targetData = assetsData.filter(data => data.asset !== source);
-    const targetIndex = targetData.findIndex(value => value.asset === target);
+    const targetIndex = targetData.findIndex(
+      value => value.asset.toLowerCase() === target,
+    );
 
     const dragTitle =
       view === 'detail' ? 'Drag to swap' : 'Drag to swap and send';
