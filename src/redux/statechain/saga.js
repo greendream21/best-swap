@@ -2,6 +2,7 @@ import { all, takeEvery, put, fork, call } from 'redux-saga/effects';
 import actions from './actions';
 import {
   getStatechainURL,
+  getChainserviceURL,
   getHeaders,
   axiosRequest,
 } from '../../helpers/apiHelper';
@@ -18,7 +19,43 @@ export function* getPools() {
     try {
       const { data } = yield call(axiosRequest, params);
 
-      yield put(actions.getPoolsSuccess(data));
+      const poolResponse = yield all(
+        data.map(poolData => {
+          const { ticker } = poolData;
+
+          const poolParams = {
+            method: 'get',
+            url: getChainserviceURL(`poolData?asset=${ticker}`),
+            headers: getHeaders(),
+          };
+
+          return call(axiosRequest, poolParams);
+        }),
+      );
+
+      const swapResponse = yield all(
+        data.map(poolData => {
+          const { ticker } = poolData;
+
+          const poolParams = {
+            method: 'get',
+            url: getChainserviceURL(`swapData?asset=${ticker}`),
+            headers: getHeaders(),
+          };
+
+          return call(axiosRequest, poolParams);
+        }),
+      );
+
+      const poolData = data.map((poolInfo, index) => {
+        return {
+          ...poolInfo,
+          poolData: poolResponse[index].data,
+          swapData: swapResponse[index].data,
+        };
+      });
+
+      yield put(actions.getPoolsSuccess(poolData));
     } catch (error) {
       yield put(actions.getPoolsFailed(error));
     }
@@ -36,12 +73,6 @@ export function* getPoolData() {
 
     try {
       const { data } = yield call(axiosRequest, params);
-
-      yield all(
-        data.map(token => {
-          return put(actions.getTokenInfo({ token }));
-        }),
-      );
 
       yield put(actions.getPoolDataSuccess(data));
     } catch (error) {

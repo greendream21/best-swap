@@ -173,6 +173,26 @@ export function* getStakeTx() {
   });
 }
 
+export function* getPoolData() {
+  yield takeEvery(actions.GET_POOL_DATA_REQUEST, function*({ payload }) {
+    const { asset } = payload;
+
+    const params = {
+      method: 'get',
+      url: getChainserviceURL(`poolData?asset=${asset}`),
+      headers: getHeaders(),
+    };
+
+    try {
+      const { data } = yield call(axiosRequest, params);
+
+      yield put(actions.getPoolDataSuccess(data));
+    } catch (error) {
+      yield put(actions.getPoolDataFailed(error));
+    }
+  });
+}
+
 export default function* rootSaga() {
   yield all([
     fork(getUserData),
@@ -183,5 +203,6 @@ export default function* rootSaga() {
     fork(getSwapTx),
     fork(getStakeData),
     fork(getStakeTx),
+    fork(getPoolData),
   ]);
 }

@@ -1,4 +1,3 @@
-export const getSwapMemo = symbol => {
-  // return `>:${symbol}::`;
-  return `${symbol}`;
+export const getSwapMemo = (symbol, addr, sliplimit = '', memo = '') => {
+  return `SWAP:${symbol}:${addr}:${sliplimit}:${memo}`;
 };
