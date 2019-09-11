@@ -485,6 +485,7 @@ class SwapDetail extends Component {
                 amount={outputToken}
                 price={outputPy}
                 slip={slip}
+                disabled
               />
             </div>
             <div className="drag-confirm-wrapper">

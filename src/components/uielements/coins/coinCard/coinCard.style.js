@@ -30,6 +30,10 @@ export const CoinCardWrapper = styled.div`
             padding: 0;
           }
         }
+
+        &.ant-input-number-disabled {
+          background-color: #fff;
+        }
       }
       .ant-divider {
         margin: 2px 0;

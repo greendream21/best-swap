@@ -74,6 +74,7 @@ class CoinCard extends Component {
               value={amount}
               style={{ width: '100%' }}
               onChange={this.onChange}
+              {...props}
             />
             <Divider />
             <div className="asset-card-footer">
