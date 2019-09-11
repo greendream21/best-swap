@@ -8,7 +8,7 @@ class StateChain {
   constructor() {
     this.baseURL = 'http://chain.bepswap.com:1317';
     if (isTestnet) {
-      this.baseURL = 'http://testnet-chain.bepswap.com:1317';
+      this.baseURL = process.env.REACT_APP_STATECHAIN_API_URL;
     }
 
     this.net = NET;

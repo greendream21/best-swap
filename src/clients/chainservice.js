@@ -8,7 +8,7 @@ class ChainService {
   constructor() {
     this.baseURL = 'http://api.bepswap.com';
     if (isTestnet) {
-      this.baseURL = 'http://testnet-api.bepswap.com';
+      this.baseURL = process.env.REACT_APP_CHAINSERVICE_API_URL;
     }
 
     this.net = NET;
