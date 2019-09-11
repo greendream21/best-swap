@@ -139,3 +139,5 @@ export const SwapModalContent = styled.div`
     }
   }
 `;
+
+export const PrivateModal = styled(Modal)``;

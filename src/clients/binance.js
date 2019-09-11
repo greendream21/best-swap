@@ -105,22 +105,17 @@ class Binance {
     return result;
   };
 
-  transfer = async (
-    fromAddress,
-    toAddress,
-    amount,
-    asset,
-    memo = '',
-    sequence,
-  ) => {
+  transfer = async (fromAddress, toAddress, amount, asset, memo = '') => {
     const result = await this.bnbClient.transfer(
       fromAddress,
       toAddress,
       amount,
       asset,
       memo,
-      sequence,
     );
+
+    // clear private key from memory after each transaction
+    this.clearPrivateKey();
 
     return result;
   };

@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Row, Col, Icon, Form } from 'antd';
+import { crypto } from '@binance-chain/javascript-sdk';
 
 import BnbClient from '../../../services/binance';
 import Binance from '../../../clients/binance';
@@ -22,9 +23,9 @@ import {
   ContentWrapper,
   SwapModalContent,
   SwapModal,
+  PrivateModal,
 } from './SwapDetail.style';
 import { blackArrowIcon } from '../../../components/icons';
-import { formatNumber, formatCurrency } from '../../../helpers/formatHelper';
 import { getSwapMemo } from '../../../helpers/memoHelper';
 
 import appActions from '../../../redux/app/actions';
@@ -69,6 +70,9 @@ class SwapDetail extends Component {
     invalidAddress: false,
     dragReset: true,
     xValue: 0,
+    openPrivateModal: false,
+    password: '',
+    invalidPassword: false,
   };
 
   addressRef = React.createRef();
@@ -90,6 +94,7 @@ class SwapDetail extends Component {
     this.setState({
       [key]: e.target.value,
       invalidAddress: false,
+      invalidPassword: false,
     });
   };
 
@@ -97,6 +102,49 @@ class SwapDetail extends Component {
     console.log('change val: ', value);
     this.setState({
       xValue: value,
+    });
+  };
+
+  handleConfirmPassword = () => {
+    const {
+      user: { keystore, wallet },
+    } = this.props;
+    const { password } = this.state;
+
+    try {
+      const privateKey = crypto.getPrivateKeyFromKeyStore(keystore, password);
+      const address = crypto.getAddressFromPrivateKey(
+        privateKey,
+        Binance.getPrefix(),
+      );
+      if (wallet === address) {
+        console.log(privateKey);
+        Binance.setPrivateKey(privateKey);
+        this.handleStartTimer();
+      }
+
+      this.setState({
+        openPrivateModal: false,
+      });
+    } catch (error) {
+      this.setState({
+        password: '',
+        invalidPassword: true,
+      });
+      console.log(error);
+    }
+  };
+
+  handleOpenPrivateModal = () => {
+    this.setState({
+      openPrivateModal: true,
+    });
+  };
+
+  handleClosePrivateModal = () => {
+    this.setState({
+      openPrivateModal: false,
+      dragReset: true,
     });
   };
 
@@ -109,9 +157,7 @@ class SwapDetail extends Component {
   handleEndDrag = () => {
     const {
       view,
-      setTxTimerModal,
-      setTxTimerType,
-      setTxTimerStatus,
+      user: { keystore },
     } = this.props;
     if (view === 'send' && !this.isValidRecipient()) {
       this.setState({
@@ -120,6 +166,16 @@ class SwapDetail extends Component {
       });
       return;
     }
+
+    if (keystore) {
+      this.handleOpenPrivateModal();
+    } else {
+      this.handleStartTimer();
+    }
+  };
+
+  handleStartTimer = () => {
+    const { setTxTimerModal, setTxTimerType, setTxTimerStatus } = this.props;
 
     setTxTimerType('swap');
     setTxTimerModal(true);
@@ -197,16 +253,17 @@ class SwapDetail extends Component {
       user: { wallet },
     } = this.props;
     const { xValue } = this.state;
-    if (!wallet || !this.poolAddress || !this.ticker) {
-      console.log('close', wallet, this.poolAddress, xValue);
+    // if (!wallet || !this.poolAddress || !this.ticker || !xValue) {
+    //   console.log('close', wallet, this.poolAddress, xValue);
 
-      this.handleCloseModal();
-      return;
-    }
+    //   this.handleCloseModal();
+    //   return;
+    // }
 
     const memo = getSwapMemo(this.ticker);
     const asset = 'RUNE-A1F';
 
+    this.poolAddress = wallet;
     console.log(wallet, this.poolAddress, xValue, asset, memo);
     Binance.transfer(wallet, this.poolAddress, xValue, asset, memo);
   };
@@ -296,7 +353,15 @@ class SwapDetail extends Component {
       chainData: { tokenInfo },
       pools,
     } = this.props;
-    const { dragReset, address, invalidAddress, xValue } = this.state;
+    const {
+      dragReset,
+      address,
+      invalidAddress,
+      invalidPassword,
+      xValue,
+      openPrivateModal,
+      password,
+    } = this.state;
 
     const swapData = this.getSwapData();
 
@@ -342,7 +407,6 @@ class SwapDetail extends Component {
         this.ticker = ticker;
       }
     });
-
     console.log(X, Y, Px, xValue);
     const times = (xValue + X) ** 2;
     const outputToken = ((xValue * X * Y) / times).toFixed(2);
@@ -452,6 +516,24 @@ class SwapDetail extends Component {
         >
           {this.renderSwapModalContent(swapData)}
         </SwapModal>
+        <PrivateModal
+          title="PASSWORD CONFIRMATION"
+          visible={openPrivateModal}
+          onOk={this.handleConfirmPassword}
+          onCancel={this.handleClosePrivateModal}
+        >
+          <Form.Item className={invalidPassword ? 'has-error' : ''}>
+            <Input
+              type="password"
+              value={password}
+              onChange={this.handleChange('password')}
+              placeholder="Input password"
+            />
+            {invalidPassword && (
+              <div className="ant-form-explain">Password is wrong!</div>
+            )}
+          </Form.Item>
+        </PrivateModal>
       </ContentWrapper>
     );
   }
