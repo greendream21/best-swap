@@ -95,6 +95,20 @@ const actions = {
     payload,
   }),
   getStakeTxFailed: payload => ({ type: actions.GET_STAKE_TX_FAILED, payload }),
+
+  GET_POOL_DATA_REQUEST: 'GET_POOL_DATA_REQUEST',
+  GET_POOL_DATA_SUCCESS: 'GET_POOL_DATA_SUCCESS',
+  GET_POOL_DATA_FAILED: 'GET_POOL_DATA_FAILED',
+
+  getPoolData: payload => ({ type: actions.GET_POOL_DATA_REQUEST, payload }),
+  getPoolDataSuccess: payload => ({
+    type: actions.GET_POOL_DATA_SUCCESS,
+    payload,
+  }),
+  getPoolDataFailed: payload => ({
+    type: actions.GET_POOL_DATA_FAILED,
+    payload,
+  }),
 };
 
 export default actions;

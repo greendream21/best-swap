@@ -157,7 +157,7 @@ class SwapDetail extends Component {
   handleEndDrag = () => {
     const {
       view,
-      user: { keystore },
+      user: { keystore, wallet },
     } = this.props;
     if (view === 'send' && !this.isValidRecipient()) {
       this.setState({
@@ -169,8 +169,13 @@ class SwapDetail extends Component {
 
     if (keystore) {
       this.handleOpenPrivateModal();
-    } else {
+    } else if (wallet) {
       this.handleStartTimer();
+    } else {
+      this.setState({
+        invalidAddress: true,
+        dragReset: true,
+      });
     }
   };
 
