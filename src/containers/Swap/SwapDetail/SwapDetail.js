@@ -265,7 +265,7 @@ class SwapDetail extends Component {
     //   return;
     // }
 
-    const memo = getSwapMemo(this.ticker);
+    const memo = getSwapMemo(this.ticker, wallet);
     const asset = 'RUNE-A1F';
 
     this.poolAddress = wallet;
