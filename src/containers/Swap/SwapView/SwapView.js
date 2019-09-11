@@ -1,17 +1,34 @@
 import React, { Fragment, Component } from 'react';
+import { compose } from 'redux';
+import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 import Label from '../../../components/uielements/label';
 import CoinButton from '../../../components/uielements/coins/coinButton';
 import SwapCard from '../../../components/swap/swapCard';
 
 import { ContentWrapper } from './SwapView.style';
-import { assets } from './data';
+
+import statechainActions from '../../../redux/statechain/actions';
+
+const { getPools } = statechainActions;
 
 class SwapView extends Component {
+  static propTypes = {
+    getPools: PropTypes.func.isRequired,
+    pools: PropTypes.array.isRequired,
+  };
+
   state = {
     activeAsset: 'rune',
   };
+
+  componentDidMount() {
+    const { getPools } = this.props;
+
+    getPools();
+  }
 
   handleChooseBasePair = asset => () => {
     this.setState({
@@ -27,36 +44,48 @@ class SwapView extends Component {
 
   renderAssets = () => {
     const { activeAsset } = this.state;
-
-    return assets.map((asset, index) => {
-      return (
-        <CoinButton
-          cointype={asset}
-          onClick={this.handleChooseBasePair(asset)}
-          focused={asset === activeAsset}
-          disabled={asset !== 'rune'} // enable only rune for base pair
-          key={index}
-        />
-      );
-    });
+    const asset = 'rune';
+    return (
+      <CoinButton
+        cointype={asset}
+        onClick={this.handleChooseBasePair(asset)}
+        focused={asset === activeAsset}
+        disabled={asset !== 'rune'} // enable only rune for base pair
+        key={0}
+      />
+    );
   };
 
   renderSwapList = () => {
+    const { pools } = this.props;
     const { activeAsset } = this.state;
 
-    return assets.map((asset, index) => {
-      if (asset !== activeAsset) {
+    return pools.map((pool, index) => {
+      const assetData = {
+        asset: 'rune',
+        target: pool.ticker,
+        depth: pool.poolData.depth,
+        volume: pool.poolData.vol24hr,
+        transaction: pool.swapData.aveTxTkn,
+        swaps: pool.poolData.numSwaps,
+        slip: pool.swapData.aveSlipTkn,
+      };
+      const { volume, transaction, slip, swaps } = assetData;
+      const target = assetData.target.split('-')[0];
+      const depth = assetData.depth.toFixed(2);
+
+      if (target !== activeAsset) {
         return (
           <SwapCard
             className="swap-card"
-            asset={activeAsset}
-            target={asset}
-            depth={234.0}
-            volume={340.0}
-            transaction={1234}
-            slip={0.2}
-            trade={2345}
-            onSwap={this.handleSwap(activeAsset, asset)}
+            asset="rune"
+            target={target}
+            depth={depth}
+            volume={volume}
+            transaction={transaction}
+            slip={slip}
+            trade={swaps}
+            onSwap={this.handleSwap(activeAsset, target)}
             key={index}
           />
         );
@@ -80,4 +109,14 @@ class SwapView extends Component {
   }
 }
 
-export default withRouter(SwapView);
+export default compose(
+  connect(
+    state => ({
+      pools: state.Statechain.pools,
+    }),
+    {
+      getPools,
+    },
+  ),
+  withRouter,
+)(SwapView);

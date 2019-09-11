@@ -8,9 +8,9 @@ import Label from '../../label';
 
 class CoinData extends Component {
   static propTypes = {
-    asset: PropTypes.oneOf(coinGroup),
+    asset: PropTypes.string,
     assetValue: PropTypes.number,
-    target: PropTypes.oneOf(coinGroup),
+    target: PropTypes.string,
     targetValue: PropTypes.number,
     price: PropTypes.number,
     size: PropTypes.oneOf(['small', 'big']),
@@ -81,7 +81,7 @@ class CoinData extends Component {
         )}
         <div className="asset-price-info">
           <Label size="small" color="gray" weight="bold">
-            {`$USD ${price}`}
+            {`$USD ${price.toFixed(2)}`}
           </Label>
         </div>
       </CoinDataWrapper>

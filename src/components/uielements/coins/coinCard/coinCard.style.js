@@ -11,7 +11,7 @@ export const CoinCardWrapper = styled.div`
     justify-content: space-between;
     align-items: center;
     min-width: 250px;
-    height: 75px;
+    height: 85px;
     padding: 10px 10px;
     border: 1px solid ${palette('border', 0)};
     border-radius: 5px;
@@ -23,6 +23,14 @@ export const CoinCardWrapper = styled.div`
       flex-grow: 1;
       padding: 10px 20px;
 
+      .asset-amount-label {
+        &.ant-input-number {
+          border: none;
+          input {
+            padding: 0;
+          }
+        }
+      }
       .ant-divider {
         margin: 2px 0;
       }

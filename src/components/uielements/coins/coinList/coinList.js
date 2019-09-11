@@ -53,7 +53,7 @@ class CoinList extends Component {
           );
           const tokenName = coinName ? coinName.name : null;
 
-          if (!tokenName || !coinGroup.includes(tokenName.toLowerCase())) {
+          if (!tokenName) {
             console.log(asset, 'is not a recognized token');
             return <Fragment key={asset} />;
           }
