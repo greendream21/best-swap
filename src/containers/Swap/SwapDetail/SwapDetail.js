@@ -258,6 +258,8 @@ class SwapDetail extends Component {
       user: { wallet },
     } = this.props;
     const { xValue } = this.state;
+
+    // TODO: add validation
     // if (!wallet || !this.poolAddress || !this.ticker || !xValue) {
     //   console.log('close', wallet, this.poolAddress, xValue);
 
