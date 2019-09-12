@@ -8,7 +8,7 @@ import Tabs from '../../components/uielements/tabs';
 import PanelHeader from '../../components/uielements/panelHeader';
 import { headerData } from './data';
 
-import { SwapIntro, SwapView, SwapDetail } from '../Swap';
+import { SwapIntro, SwapView, SwapDetail, SwapSend } from '../Swap';
 import { PoolIntro, PoolView, PoolStake, PoolCreate } from '../Pool';
 import { TradeIntro, TradeView, TradeDetail } from '../Trade';
 import ViewHeader from '../../components/uielements/viewHeader';
@@ -74,7 +74,7 @@ class ActionView extends Component {
       this.props.history.push('/swap');
     }
     if (view.includes('pool-')) {
-      this.props.history.push('/pool');
+      this.props.history.push('/pools');
     }
     if (view.includes('trade-')) {
       this.props.history.push('/trade');
@@ -90,7 +90,7 @@ class ActionView extends Component {
   getHeaderText = () => {
     const view = this.getView();
 
-    return headerData[view] || '';
+    return headerData[view];
   };
 
   getView = () => {
@@ -128,7 +128,7 @@ class ActionView extends Component {
               action
             >
               <TabPane tab="swap" key="swap" />
-              <TabPane tab="pool" key="pool" />
+              <TabPane tab="pools" key="pools" />
             </Tabs>
             {intro}
           </>
@@ -146,14 +146,15 @@ class ActionView extends Component {
   };
 
   render() {
-    const { info } = this.props;
+    const { ticker, info } = this.props;
     const view = this.getView();
+    console.log('View', view);
 
     return (
       <ActionViewWrapper>
         <PanelHeader>{this.renderHeader()}</PanelHeader>
-        {view === 'swap' && <SwapIntro onNext={this.handleSetTab('pool')} />}
-        {view === 'pool' && (
+        {view === 'swap' && <SwapIntro onNext={this.handleSetTab('pools')} />}
+        {view === 'pools' && (
           <PoolIntro
             onBack={this.handleSetTab('swap')}
             onNext={this.handleSetTab('trade')}
@@ -161,7 +162,7 @@ class ActionView extends Component {
         )}
         {view === 'trade' && (
           <TradeIntro
-            onBack={this.handleSetTab('pool')}
+            onBack={this.handleSetTab('pools')}
             onNext={this.handleStart}
           />
         )}
@@ -174,18 +175,9 @@ class ActionView extends Component {
         {view === 'network-view' && <NetworkView />}
         {view === 'swap-view' && <SwapView />}
         {view === 'swap-detail' && <SwapDetail view="detail" info={info} />}
-        {view === 'swap-send' && <SwapDetail view="send" info={info} />}
-        {view === 'pool-view' && <PoolView />}
-        {view === 'pool-stake-new' && (
-          <PoolStake view="stake-new" info={info} />
-        )}
-        {view === 'pool-stake-detail' && (
-          <PoolStake view="stake-detail" info={info} />
-        )}
-        {view === 'pool-stake-view' && (
-          <PoolStake view="stake-view" info={info} />
-        )}
-        {view === 'pool-withdraw' && <PoolStake view="withdraw" info={info} />}
+        {view === 'swap-send' && <SwapSend view="send" info={info} />}
+        {view === 'pools-view' && <PoolView />}
+        {view === 'pools-pool' && <PoolStake ticker={ticker} />}
         {view === 'pool-new' && <PoolCreate view="new" info={info} />}
         {view === 'trade-view' && <TradeView />}
         {(view === 'trade-buy' || view === 'trade-sell') && (

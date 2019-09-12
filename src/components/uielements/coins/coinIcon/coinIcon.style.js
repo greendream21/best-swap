@@ -3,7 +3,7 @@ import { palette, key } from 'styled-theme';
 
 const sizes = {
   small: key('sizes.coin.small', '20px'),
-  big: key('sizes.coin.big', '30px'),
+  big: key('sizes.coin.big', '28px'),
 };
 
 export const CoinIconWrapper = styled.div`

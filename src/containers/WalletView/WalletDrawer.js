@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Icon, Button as AntdButton } from 'antd';
+import { Icon, Button as AntdButton, notification } from 'antd';
 import { connect } from 'react-redux';
+import copy from 'copy-to-clipboard';
 
 import WalletView from './WalletView';
 import Button from '../../components/uielements/button';
+import Label from '../../components/uielements/label';
 
 import { WalletDrawerWrapper, Drawer } from './WalletDrawer.style';
 
@@ -14,6 +16,9 @@ const { forgetWallet } = walletActions;
 
 const WalletDrawer = props => {
   const [visible, setVisible] = useState(false);
+  const {
+    user: { wallet },
+  } = props;
 
   const toggleDrawer = () => {
     setVisible(!visible);
@@ -21,6 +26,13 @@ const WalletDrawer = props => {
 
   const onClose = () => {
     setVisible(false);
+  };
+
+  const onCopyWallet = () => {
+    copy(wallet);
+    notification.open({
+      message: 'Copy successful!',
+    });
   };
 
   return (
@@ -31,11 +43,17 @@ const WalletDrawer = props => {
       <Drawer
         placement="right"
         closable={false}
-        width={300}
+        width={350}
         onClose={onClose}
         visible={visible}
       >
         <WalletView />
+        {wallet && (
+          <div className="wallet-address">
+            <Icon type="copy" onClick={onCopyWallet} />
+            <Label>{wallet}</Label>
+          </div>
+        )}
         <Button
           className="forget-btn"
           typevalue="outline"
@@ -50,6 +68,7 @@ const WalletDrawer = props => {
 };
 
 WalletDrawer.propTypes = {
+  user: PropTypes.object.isRequired,
   forgetWallet: PropTypes.func.isRequired,
 };
 

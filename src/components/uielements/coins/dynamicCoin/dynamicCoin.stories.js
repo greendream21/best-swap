@@ -18,6 +18,9 @@ storiesOf('Components/Coins/DynamicCoin', module).add('default', () => {
           <DynamicCoin type="ankr" size="big" />
           <DynamicCoin type="ftm" size="big" />
           <DynamicCoin type="tomo" size="big" />
+          <DynamicCoin type="loki" size="big" />
+          <DynamicCoin type="loki" size="normal" />
+          <DynamicCoin type="loki" size="small" />
         </div>
       </AppHolder>
     </ThemeProvider>

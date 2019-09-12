@@ -15,7 +15,6 @@ export function* getUserData() {
       withCredentials: true,
     };
 
-    console.log(params);
     try {
       const { data } = yield call(axiosRequest, params);
 
@@ -37,9 +36,39 @@ export function* getTokens() {
     try {
       const { data } = yield call(axiosRequest, params);
 
+      yield all(
+        data.map(token => {
+          return put(actions.getTokenInfo({ token }));
+        }),
+      );
+
       yield put(actions.getTokensSuccess(data));
     } catch (error) {
       yield put(actions.getTokensFailed(error));
+    }
+  });
+}
+
+export function* getTokenInfo() {
+  yield takeEvery(actions.GET_TOKEN_INFO_REQUEST, function*({ payload }) {
+    const { token } = payload;
+
+    const params = {
+      method: 'get',
+      url: getChainserviceURL(`tokens?token=${token}`),
+      headers: getHeaders(),
+    };
+
+    try {
+      const { data } = yield call(axiosRequest, params);
+
+      yield put(
+        actions.getTokenInfoSuccess({
+          [token]: data,
+        }),
+      );
+    } catch (error) {
+      yield put(actions.getTokenInfoFailed(error));
     }
   });
 }
@@ -144,14 +173,36 @@ export function* getStakeTx() {
   });
 }
 
+export function* getPoolData() {
+  yield takeEvery(actions.GET_POOL_DATA_REQUEST, function*({ payload }) {
+    const { asset } = payload;
+
+    const params = {
+      method: 'get',
+      url: getChainserviceURL(`poolData?asset=${asset}`),
+      headers: getHeaders(),
+    };
+
+    try {
+      const { data } = yield call(axiosRequest, params);
+
+      yield put(actions.getPoolDataSuccess(data));
+    } catch (error) {
+      yield put(actions.getPoolDataFailed(error));
+    }
+  });
+}
+
 export default function* rootSaga() {
   yield all([
     fork(getUserData),
     fork(getTokens),
+    fork(getTokenInfo),
     fork(getTokenData),
     fork(getSwapData),
     fork(getSwapTx),
     fork(getStakeData),
     fork(getStakeTx),
+    fork(getPoolData),
   ]);
 }

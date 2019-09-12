@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import { CoinListWrapper } from './coinList.style';
 import CoinData from '../coinData';
-import { coinGroup, coinNames } from '../../../../settings';
+import { coinNames } from '../../../../settings';
 
 class CoinList extends Component {
   static propTypes = {
@@ -49,11 +49,11 @@ class CoinList extends Component {
           const { asset, assetValue, target, targetValue, price } = coinData;
 
           const coinName = coinNames.find(
-            coin => coin.id.toLowerCase() === asset.toLowerCase(),
+            coin => coin.name.toLowerCase() === asset.toLowerCase(),
           );
           const tokenName = coinName ? coinName.name : null;
 
-          if (!tokenName || !coinGroup.includes(tokenName.toLowerCase())) {
+          if (!tokenName) {
             console.log(asset, 'is not a recognized token');
             return <Fragment key={asset} />;
           }
