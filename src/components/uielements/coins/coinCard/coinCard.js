@@ -42,6 +42,8 @@ class CoinCard extends Component {
 
   state = {
     openDropdown: false,
+    focusedDropdown: true,
+    blurCard: false,
   };
 
   onChange = e => {
@@ -54,10 +56,30 @@ class CoinCard extends Component {
     });
   };
 
-  handleBlur = () => {
-    this.setState({
-      openDropdown: false,
-    });
+  handleBlurDropdown = e => {
+    const { blurCard } = this.state;
+    if (blurCard) {
+      this.setState({
+        openDropdown: false,
+      });
+    } else {
+      this.setState({
+        focusedDropdown: false,
+      });
+    }
+  };
+
+  handleBlurCard = e => {
+    const { focusedDropdown } = this.state;
+    if (!focusedDropdown) {
+      this.setState({
+        openDropdown: false,
+      });
+    } else {
+      this.setState({
+        blurCard: true,
+      });
+    }
   };
 
   handleChangeAsset = asset => {
@@ -69,6 +91,8 @@ class CoinCard extends Component {
   toggleDropdown = () => {
     this.setState(prevState => ({
       openDropdown: !prevState.openDropdown,
+      focusedDropdown: true,
+      blurCard: false,
     }));
   };
 
@@ -76,7 +100,7 @@ class CoinCard extends Component {
     const { assetData, asset } = this.props;
 
     return (
-      <Menu onClick={this.handleChangeAsset}>
+      <Menu onClick={this.handleChangeAsset} onBlur={this.handleBlurDropdown}>
         {assetData.map(data => {
           const { asset: assetName, price } = data;
           const tokenName = assetName.split('-')[0];
@@ -137,7 +161,7 @@ class CoinCard extends Component {
       >
         <CoinCardWrapper
           className={`coinCard-wrapper ${className}`}
-          onBlur={this.handleBlur}
+          onBlur={this.handleBlurCard}
           {...props}
         >
           {title && <Label className="title-label">{title}</Label>}

@@ -25,7 +25,7 @@ import {
   PrivateModal,
 } from './SwapDetail.style';
 import { blackArrowIcon } from '../../../components/icons';
-import { getSwapMemo } from '../../../helpers/memoHelper';
+import { getCalcResult, confirmSwap } from '../utils';
 
 import appActions from '../../../redux/app/actions';
 import chainActions from '../../../redux/chainservice/actions';
@@ -245,21 +245,9 @@ class SwapDetail extends Component {
       user: { wallet },
     } = this.props;
     const { xValue } = this.state;
+    const { source, target } = this.getSwapData();
 
-    // TODO: add validation
-    // if (!wallet || !this.poolAddress || !this.ticker || !xValue) {
-    //   console.log('close', wallet, this.poolAddress, xValue);
-
-    //   this.handleCloseModal();
-    //   return;
-    // }
-
-    const memo = getSwapMemo(this.ticker, wallet);
-    const asset = 'RUNE-A1F';
-
-    this.poolAddress = wallet;
-    console.log(wallet, this.poolAddress, xValue, asset, memo);
-    Binance.transfer(wallet, this.poolAddress, xValue, asset, memo);
+    confirmSwap(Binance, wallet, source, target, this.data, xValue);
   };
 
   handleSelectAmount = source => amount => {
@@ -362,13 +350,9 @@ class SwapDetail extends Component {
       return '';
     }
 
-    let Px = 0.04; // mock price = 0.04
     const { source, target } = swapData;
     const assetsData = Object.keys(tokenInfo).map(tokenName => {
       const { symbol, price } = tokenInfo[tokenName];
-      if (symbol.toLowerCase() === source.toLowerCase()) {
-        Px = price;
-      }
 
       return {
         asset: symbol,
@@ -390,29 +374,12 @@ class SwapDetail extends Component {
     const openSwapModal = txStatus.type === 'swap' ? txStatus.modal : false;
     const coinCloseIconType = txStatus.status ? 'fullscreen-exit' : 'close';
 
-    // coin data
-    let X = 10000;
-    let Y = 10;
+    // calculation
+    const runePrice = 0.04; // TODO: mock price = 0.04
+    this.data = getCalcResult(source, target, pools, xValue, runePrice);
+    const { Px, slip, outputAmount, outputPrice } = this.data;
 
-    pools.forEach(poolData => {
-      const { balance_rune, balance_token, pool_address, ticker } = poolData;
-
-      if (ticker.toLowerCase() === target.toLowerCase()) {
-        X = balance_rune;
-        Y = balance_token;
-        this.poolAddress = pool_address;
-        this.ticker = ticker;
-      }
-    });
-    console.log(X, Y, Px, xValue);
-    const times = (xValue + X) ** 2;
-    const outputToken = ((xValue * X * Y) / times).toFixed(2);
-    const outputPy = ((Px * (X + xValue)) / (Y - outputToken)).toFixed(2);
-    const input = xValue * Px;
-    const output = outputToken * outputPy;
-    const slip = input !== 0 ? Math.round(((input - output) / input) * 100) : 0;
-
-    console.log(outputToken, outputPy, slip);
+    console.log(this.data);
     return (
       <ContentWrapper className="swap-detail-wrapper">
         <Row>
@@ -451,8 +418,8 @@ class SwapDetail extends Component {
               <CoinCard
                 title="You will receive"
                 asset={target}
-                amount={outputToken}
-                price={outputPy}
+                amount={outputAmount}
+                price={outputPrice}
                 slip={slip}
                 disabled
               />
