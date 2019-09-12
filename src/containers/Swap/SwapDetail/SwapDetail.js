@@ -371,14 +371,13 @@ class SwapDetail extends Component {
     let Px = 0.04; // mock price = 0.04
     const { source, target } = swapData;
     const assetsData = Object.keys(tokenInfo).map(tokenName => {
-      const { ticker, price } = tokenInfo[tokenName];
-
-      if (ticker.toLowerCase() === source.toLowerCase()) {
+      const { symbol, price } = tokenInfo[tokenName];
+      if (symbol.toLowerCase() === source.toLowerCase()) {
         Px = price;
       }
 
       return {
-        asset: ticker,
+        asset: symbol,
         price,
       };
     });
