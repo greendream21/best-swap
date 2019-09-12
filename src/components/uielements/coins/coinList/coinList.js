@@ -48,9 +48,7 @@ class CoinList extends Component {
         {data.map((coinData, index) => {
           const { asset, assetValue, target, targetValue, price } = coinData;
 
-          const coinName = coinNames.find(
-            coin => coin.name.toLowerCase() === asset.toLowerCase(),
-          );
+          const coinName = coinNames.find(coin => coin.id === asset);
           const tokenName = coinName ? coinName.name : null;
 
           if (!tokenName) {
