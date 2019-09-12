@@ -37,4 +37,8 @@ export const coinNames = [
     id: 'LOK-3C0',
     name: 'LOKI',
   },
+  {
+    id: 'LOK-3C0',
+    name: 'LOK',
+  },
 ];

@@ -6,7 +6,6 @@ import PropTypes from 'prop-types';
 import { Row, Col, Icon, Form } from 'antd';
 import { crypto } from '@binance-chain/javascript-sdk';
 
-import BnbClient from '../../../services/binance';
 import Binance from '../../../clients/binance';
 
 import Button from '../../../components/uielements/button';
@@ -24,9 +23,18 @@ import {
   SwapModalContent,
   SwapModal,
   PrivateModal,
-} from './SwapDetail.style';
+} from './SwapSend.style';
 import { blackArrowIcon } from '../../../components/icons';
-import { getSwapMemo } from '../../../helpers/memoHelper';
+import { getDoubleSwapMemo } from '../../../helpers/memoHelper';
+import {
+  getYValue,
+  getZValue,
+  getPx,
+  getPz,
+  getSlip,
+  getBalanceA,
+  getBalanceB,
+} from './data';
 
 import appActions from '../../../redux/app/actions';
 import chainActions from '../../../redux/chainservice/actions';
@@ -43,7 +51,7 @@ const {
 const { getTokens } = chainActions;
 const { getPools } = statechainActions;
 
-class SwapDetail extends Component {
+class SwapSend extends Component {
   static propTypes = {
     info: PropTypes.string,
     view: PropTypes.string.isRequired,
@@ -87,7 +95,7 @@ class SwapDetail extends Component {
   isValidRecipient = () => {
     const { address } = this.state;
 
-    return BnbClient.isValidAddress(address);
+    return Binance.isValidAddress(address);
   };
 
   handleChange = key => e => {
@@ -155,9 +163,15 @@ class SwapDetail extends Component {
 
   handleEndDrag = () => {
     const {
-      view,
       user: { keystore, wallet },
     } = this.props;
+    if (!this.isValidRecipient()) {
+      this.setState({
+        invalidAddress: true,
+        dragReset: true,
+      });
+      return;
+    }
 
     if (keystore) {
       this.handleOpenPrivateModal();
@@ -249,7 +263,7 @@ class SwapDetail extends Component {
     const {
       user: { wallet },
     } = this.props;
-    const { xValue } = this.state;
+    const { xValue, address } = this.state;
 
     // TODO: add validation
     // if (!wallet || !this.poolAddress || !this.ticker || !xValue) {
@@ -259,12 +273,40 @@ class SwapDetail extends Component {
     //   return;
     // }
 
-    const memo = getSwapMemo(this.ticker, wallet);
     const asset = 'RUNE-A1F';
 
-    this.poolAddress = wallet;
-    console.log(wallet, this.poolAddress, xValue, asset, memo);
-    Binance.transfer(wallet, this.poolAddress, xValue, asset, memo);
+    this.poolAddressFrom = wallet;
+    this.poolAddressTo = wallet; // TODO: now, just set the same addr
+
+    this.tickerFrom = asset; // TODO: get ticker from pool but rune does not exist
+
+    const poolAddressFrom = this.poolAddressFrom;
+    const poolAddressTo = this.poolAddressTo;
+    const tickerFrom = this.tickerFrom;
+    const tickerTo = this.tickerTo;
+    const fromAmount = Number(xValue.toFixed(2));
+    const toAmount = Number(this.zValue.toFixed(2));
+
+    const outputsData = [
+      {
+        to: poolAddressFrom,
+        coins: [
+          {
+            denom: tickerFrom,
+            amount: fromAmount,
+          },
+          {
+            denom: tickerTo,
+            amount: toAmount,
+          },
+        ],
+      },
+    ];
+
+    console.log(outputsData);
+    const memo = getDoubleSwapMemo(this.tickerFrom, this.tickerTo, address);
+
+    Binance.multiSend(wallet, outputsData, memo);
   };
 
   handleSelectAmount = source => amount => {
@@ -368,13 +410,13 @@ class SwapDetail extends Component {
       return '';
     }
 
-    let Px = 0.04; // mock price = 0.04
+    let Py = 0.04; // mock price = 0.04
     const { source, target } = swapData;
     const assetsData = Object.keys(tokenInfo).map(tokenName => {
       const { ticker, price } = tokenInfo[tokenName];
 
       if (ticker.toLowerCase() === source.toLowerCase()) {
-        Px = price;
+        Py = price;
       }
 
       return {
@@ -397,26 +439,39 @@ class SwapDetail extends Component {
     // coin data
     let X = 10000;
     let Y = 10;
+    let R = 10000;
+    let Z = 10;
 
     pools.forEach(poolData => {
       const { balance_rune, balance_token, pool_address, ticker } = poolData;
 
-      if (ticker.toLowerCase() === target.toLowerCase()) {
-        X = balance_rune;
-        Y = balance_token;
-        this.poolAddress = pool_address;
-        this.ticker = ticker;
+      const token = ticker.split('-')[0];
+      if (token.toLowerCase() === source.toLowerCase()) {
+        X = Number(balance_token);
+        Y = Number(balance_rune);
+        this.poolAddressFrom = pool_address;
+        this.tickerFrom = ticker;
+      }
+
+      if (token.toLowerCase() === target.toLowerCase()) {
+        R = Number(balance_rune);
+        Z = Number(balance_token);
+        this.poolAddressTo = pool_address;
+        this.tickerTo = ticker;
       }
     });
-    console.log(X, Y, Px, xValue);
-    const times = (xValue + X) ** 2;
-    const outputToken = ((xValue * X * Y) / times).toFixed(2);
-    const outputPy = ((Px * (X + xValue)) / (Y - outputToken)).toFixed(2);
-    const input = xValue * Px;
-    const output = outputToken * outputPy;
-    const slip = input !== 0 ? Math.round(((input - output) / input) * 100) : 0;
 
-    console.log(outputToken, outputPy, slip);
+    const calcData = { X, Y, R, Z, Py, Pr: Py };
+
+    console.log(X, Y, R, Z, Py, xValue);
+
+    const zValue = getZValue(xValue, calcData);
+    const slip = getSlip(xValue, calcData);
+    const Px = getPx(xValue, calcData);
+    const Pz = getPz(xValue, calcData);
+
+    this.zValue = zValue;
+    console.log(zValue, Px, Pz, slip);
 
     return (
       <ContentWrapper className="swap-detail-wrapper">
@@ -440,6 +495,23 @@ class SwapDetail extends Component {
                 swap & send
               </Button>
             </div>
+            <Form className="recipient-form">
+              <Label weight="bold">Recipient Address:</Label>
+              <Form.Item className={invalidAddress ? 'has-error' : ''}>
+                <Input
+                  placeholder="bnbeh456..."
+                  sizevalue="normal"
+                  value={address}
+                  onChange={this.handleChange('address')}
+                  ref={this.addressRef}
+                />
+                {invalidAddress && (
+                  <div className="ant-form-explain">
+                    Recipient address is invalid!
+                  </div>
+                )}
+              </Form.Item>
+            </Form>
             <div className="swap-asset-card">
               <CoinCard
                 title="You are swapping"
@@ -454,8 +526,8 @@ class SwapDetail extends Component {
               <CoinCard
                 title="You will receive"
                 asset={target}
-                amount={outputToken}
-                price={outputPy}
+                amount={zValue.toFixed(2)}
+                price={Pz.toFixed(2)}
                 slip={slip}
                 disabled
               />
@@ -541,4 +613,4 @@ export default compose(
     },
   ),
   withRouter,
-)(SwapDetail);
+)(SwapSend);

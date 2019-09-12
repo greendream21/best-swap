@@ -19,7 +19,7 @@ export const menuItems = [
   {
     key: 'statechain',
     label: 'statechain',
-    status: 'red',
+    status: 'green',
   },
 ];
 

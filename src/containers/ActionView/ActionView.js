@@ -8,7 +8,7 @@ import Tabs from '../../components/uielements/tabs';
 import PanelHeader from '../../components/uielements/panelHeader';
 import { headerData } from './data';
 
-import { SwapIntro, SwapView, SwapDetail } from '../Swap';
+import { SwapIntro, SwapView, SwapDetail, SwapSend } from '../Swap';
 import { PoolIntro, PoolView, PoolStake, PoolCreate } from '../Pool';
 import { TradeIntro, TradeView, TradeDetail } from '../Trade';
 import ViewHeader from '../../components/uielements/viewHeader';
@@ -175,7 +175,7 @@ class ActionView extends Component {
         {view === 'network-view' && <NetworkView />}
         {view === 'swap-view' && <SwapView />}
         {view === 'swap-detail' && <SwapDetail view="detail" info={info} />}
-        {view === 'swap-send' && <SwapDetail view="send" info={info} />}
+        {view === 'swap-send' && <SwapSend view="send" info={info} />}
         {view === 'pools-view' && <PoolView />}
         {view === 'pools-pool' && <PoolStake ticker={ticker} />}
         {view === 'pool-new' && <PoolCreate view="new" info={info} />}
