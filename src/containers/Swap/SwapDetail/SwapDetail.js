@@ -6,7 +6,6 @@ import PropTypes from 'prop-types';
 import { Row, Col, Icon, Form } from 'antd';
 import { crypto } from '@binance-chain/javascript-sdk';
 
-import BnbClient from '../../../services/binance';
 import Binance from '../../../clients/binance';
 
 import Button from '../../../components/uielements/button';
@@ -66,16 +65,12 @@ class SwapDetail extends Component {
   };
 
   state = {
-    address: '',
-    invalidAddress: false,
     dragReset: true,
     xValue: 0,
     openPrivateModal: false,
     password: '',
     invalidPassword: false,
   };
-
-  addressRef = React.createRef();
 
   componentDidMount() {
     const { getTokens, getPools } = this.props;
@@ -84,16 +79,9 @@ class SwapDetail extends Component {
     getPools();
   }
 
-  isValidRecipient = () => {
-    const { address } = this.state;
-
-    return BnbClient.isValidAddress(address);
-  };
-
   handleChange = key => e => {
     this.setState({
       [key]: e.target.value,
-      invalidAddress: false,
       invalidPassword: false,
     });
   };
@@ -102,6 +90,15 @@ class SwapDetail extends Component {
     this.setState({
       xValue: value,
     });
+  };
+
+  handleChangeSource = asset => {
+    const { target } = this.getSwapData();
+    const source = asset.split('-')[0].toLowerCase();
+
+    const URL = `/swap/detail/${source}-${target}`;
+
+    this.props.history.push(URL);
   };
 
   handleConfirmPassword = () => {
@@ -155,7 +152,6 @@ class SwapDetail extends Component {
 
   handleEndDrag = () => {
     const {
-      view,
       user: { keystore, wallet },
     } = this.props;
 
@@ -165,7 +161,6 @@ class SwapDetail extends Component {
       this.handleStartTimer();
     } else {
       this.setState({
-        invalidAddress: true,
         dragReset: true,
       });
     }
@@ -351,11 +346,10 @@ class SwapDetail extends Component {
       txStatus,
       chainData: { tokenInfo },
       pools,
+      assetData,
     } = this.props;
     const {
       dragReset,
-      address,
-      invalidAddress,
       invalidPassword,
       xValue,
       openPrivateModal,
@@ -385,6 +379,9 @@ class SwapDetail extends Component {
     const targetData = assetsData.filter(data => data.asset !== source);
     const targetIndex = targetData.findIndex(
       value => value.asset.toLowerCase() === target,
+    );
+    const sourceData = assetData.filter(
+      data => data.asset.split('-')[0].toLowerCase() !== target,
     );
 
     const dragTitle =
@@ -416,7 +413,6 @@ class SwapDetail extends Component {
     const slip = input !== 0 ? Math.round(((input - output) / input) * 100) : 0;
 
     console.log(outputToken, outputPy, slip);
-
     return (
       <ContentWrapper className="swap-detail-wrapper">
         <Row>
@@ -443,9 +439,11 @@ class SwapDetail extends Component {
               <CoinCard
                 title="You are swapping"
                 asset={source}
+                assetData={sourceData}
                 amount={xValue}
                 price={Px}
                 onChange={this.handleChangeValue}
+                onChangeAsset={this.handleChangeSource}
                 onSelect={this.handleSelectAmount(source)}
                 withSelection
               />

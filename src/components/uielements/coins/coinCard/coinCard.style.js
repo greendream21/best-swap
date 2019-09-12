@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { palette } from 'styled-theme';
+import { Menu as AntdMenu } from 'antd';
 
 export const CoinCardWrapper = styled.div`
   .title-label {
@@ -65,4 +66,15 @@ export const CoinCardWrapper = styled.div`
       width: 20%;
     }
   }
+
+  .dropdown-icon {
+    font-size: 18px;
+  }
+`;
+
+export const Menu = styled(AntdMenu)`
+  /* position: absolute;
+  width: 276px;
+  top: 32px;
+  left: -250px; */
 `;

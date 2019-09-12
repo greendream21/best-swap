@@ -413,14 +413,13 @@ class SwapSend extends Component {
     let Py = 0.04; // mock price = 0.04
     const { source, target } = swapData;
     const assetsData = Object.keys(tokenInfo).map(tokenName => {
-      const { ticker, price } = tokenInfo[tokenName];
-
-      if (ticker.toLowerCase() === source.toLowerCase()) {
+      const { symbol, price } = tokenInfo[tokenName];
+      if (symbol.toLowerCase() === source.toLowerCase()) {
         Py = price;
       }
 
       return {
-        asset: ticker,
+        asset: symbol,
         price,
       };
     });

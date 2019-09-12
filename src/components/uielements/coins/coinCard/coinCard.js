@@ -1,18 +1,18 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { Divider, InputNumber } from 'antd';
+import { Divider, InputNumber, Icon, Dropdown } from 'antd';
 
-import { coinGroup } from '../../../../settings';
 import Coin from '../coin';
 import Label from '../../label';
 import Selection from '../../selection';
-import { dropdownIcon } from '../../../icons';
 
-import { CoinCardWrapper } from './coinCard.style';
+import { CoinCardWrapper, Menu } from './coinCard.style';
+import CoinData from '../coinData';
 
 class CoinCard extends Component {
   static propTypes = {
     asset: PropTypes.string,
+    assetData: PropTypes.array,
     amount: PropTypes.number,
     price: PropTypes.number,
     slip: PropTypes.number,
@@ -20,12 +20,14 @@ class CoinCard extends Component {
     withSelection: PropTypes.bool,
     onSelect: PropTypes.func,
     onChange: PropTypes.func,
+    onChangeAsset: PropTypes.func,
     className: PropTypes.string,
     max: PropTypes.number,
   };
 
   static defaultProps = {
     asset: 'bnb',
+    assetData: [],
     amount: 0,
     price: 0,
     slip: undefined,
@@ -33,17 +35,86 @@ class CoinCard extends Component {
     withSelection: false,
     onSelect: () => {},
     onChange: () => {},
+    onChangeAsset: () => {},
     className: '',
     max: 1000000,
+  };
+
+  state = {
+    openDropdown: false,
   };
 
   onChange = e => {
     this.props.onChange(e);
   };
 
+  handleVisibleChange = openDropdown => {
+    this.setState({
+      openDropdown,
+    });
+  };
+
+  handleBlur = () => {
+    this.setState({
+      openDropdown: false,
+    });
+  };
+
+  handleChangeAsset = asset => {
+    const { onChangeAsset } = this.props;
+
+    onChangeAsset(asset.key);
+  };
+
+  toggleDropdown = () => {
+    this.setState(prevState => ({
+      openDropdown: !prevState.openDropdown,
+    }));
+  };
+
+  renderMenu = () => {
+    const { assetData, asset } = this.props;
+
+    return (
+      <Menu onClick={this.handleChangeAsset}>
+        {assetData.map(data => {
+          const { asset: assetName, price } = data;
+          const tokenName = assetName.split('-')[0];
+          if (tokenName.toLowerCase() === asset.toLowerCase()) {
+            return <Fragment />;
+          }
+
+          return (
+            <Menu.Item key={assetName}>
+              <CoinData asset={tokenName} price={price} />
+            </Menu.Item>
+          );
+        })}
+      </Menu>
+    );
+  };
+
+  renderDropDown = () => {
+    const { assetData } = this.props;
+    const { openDropdown } = this.state;
+
+    const iconType = openDropdown ? 'caret-up' : 'caret-down';
+
+    if (assetData.length) {
+      return (
+        <Icon
+          className="dropdown-icon"
+          type={iconType}
+          onClick={this.toggleDropdown}
+        />
+      );
+    }
+  };
+
   render() {
     const {
       asset,
+      assetData,
       amount,
       price,
       slip,
@@ -55,48 +126,60 @@ class CoinCard extends Component {
       className,
       ...props
     } = this.props;
+    const { openDropdown } = this.state;
 
     return (
-      <CoinCardWrapper className={`coinCard-wrapper ${className}`} {...props}>
-        {title && <Label className="title-label">{title}</Label>}
-        <div className="card-wrapper">
-          <Coin type={asset} size="small" />
-          <div className="asset-data">
-            <Label className="asset-name-label" size="small" weight="bold">
-              {asset}
-            </Label>
-            <InputNumber
-              className="asset-amount-label"
-              min={0}
-              max={max}
-              defaultValue={3}
-              size="big"
-              value={amount}
-              style={{ width: '100%' }}
-              onChange={this.onChange}
-              {...props}
-            />
-            <Divider />
-            <div className="asset-card-footer">
-              <Label size="small" color="gray" weight="bold">
-                {`$USD ${(amount * price).toFixed(2)}`}
+      <Dropdown
+        overlay={this.renderMenu()}
+        trigger={['']}
+        visible={openDropdown}
+        onVisibleChange={this.handleVisibleChange}
+      >
+        <CoinCardWrapper
+          className={`coinCard-wrapper ${className}`}
+          onBlur={this.handleBlur}
+          {...props}
+        >
+          {title && <Label className="title-label">{title}</Label>}
+          <div className="card-wrapper">
+            <Coin type={asset} size="small" />
+            <div className="asset-data">
+              <Label className="asset-name-label" size="small" weight="bold">
+                {asset}
               </Label>
-              {slip !== undefined && (
-                <Label
-                  className="asset-slip-label"
-                  size="small"
-                  color="gray"
-                  weight="bold"
-                >
-                  SLIP: {slip.toFixed(0)} %
+              <InputNumber
+                className="asset-amount-label"
+                min={0}
+                max={max}
+                defaultValue={3}
+                size="big"
+                value={amount}
+                style={{ width: '100%' }}
+                onChange={this.onChange}
+                {...props}
+              />
+              <Divider />
+              <div className="asset-card-footer">
+                <Label size="small" color="gray" weight="bold">
+                  {`$USD ${(amount * price).toFixed(2)}`}
                 </Label>
-              )}
+                {slip !== undefined && (
+                  <Label
+                    className="asset-slip-label"
+                    size="small"
+                    color="gray"
+                    weight="bold"
+                  >
+                    SLIP: {slip.toFixed(0)} %
+                  </Label>
+                )}
+              </div>
             </div>
+            {this.renderDropDown()}
           </div>
-          <img src={dropdownIcon} alt="dropdown-icon" />
-        </div>
-        {withSelection && <Selection onSelect={onSelect} />}
-      </CoinCardWrapper>
+          {withSelection && <Selection onSelect={onSelect} />}
+        </CoinCardWrapper>
+      </Dropdown>
     );
   }
 }
