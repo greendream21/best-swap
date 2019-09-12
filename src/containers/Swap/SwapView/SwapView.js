@@ -37,7 +37,7 @@ class SwapView extends Component {
   };
 
   handleSwap = (source, target) => () => {
-    const URL = `/swap/detail/${source}-${target}`;
+    const URL = `/swap/detail/${source.toLowerCase()}-${target.toLowerCase()}`;
 
     this.props.history.push(URL);
   };
