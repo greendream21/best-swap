@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 
 import { CoinListWrapper } from './coinList.style';
 import CoinData from '../coinData';
-import { coinGroup, coinNames } from '../../../../settings';
 
 class CoinList extends Component {
   static propTypes = {
@@ -48,10 +47,7 @@ class CoinList extends Component {
         {data.map((coinData, index) => {
           const { asset, assetValue, target, targetValue, price } = coinData;
 
-          const coinName = coinNames.find(
-            coin => coin.id.toLowerCase() === asset.toLowerCase(),
-          );
-          const tokenName = coinName ? coinName.name : null;
+          const tokenName = asset.split('-')[0];
 
           if (!tokenName) {
             console.log(asset, 'is not a recognized token');

@@ -23,8 +23,18 @@ import {
   SwapModalContent,
   SwapModal,
   PrivateModal,
-} from './SwapDetail.style';
+} from './SwapSend.style';
 import { blackArrowIcon } from '../../../components/icons';
+import { getDoubleSwapMemo } from '../../../helpers/memoHelper';
+import {
+  getYValue,
+  getZValue,
+  getPx,
+  getPz,
+  getSlip,
+  getBalanceA,
+  getBalanceB,
+} from './data';
 import { getCalcResult, confirmSwap } from '../utils';
 
 import appActions from '../../../redux/app/actions';
@@ -42,7 +52,7 @@ const {
 const { getTokens } = chainActions;
 const { getPools } = statechainActions;
 
-class SwapDetail extends Component {
+class SwapSend extends Component {
   static propTypes = {
     info: PropTypes.string,
     view: PropTypes.string.isRequired,
@@ -65,12 +75,16 @@ class SwapDetail extends Component {
   };
 
   state = {
+    address: '',
+    invalidAddress: false,
     dragReset: true,
     xValue: 0,
     openPrivateModal: false,
     password: '',
     invalidPassword: false,
   };
+
+  addressRef = React.createRef();
 
   componentDidMount() {
     const { getTokens, getPools } = this.props;
@@ -79,9 +93,16 @@ class SwapDetail extends Component {
     getPools();
   }
 
+  isValidRecipient = () => {
+    const { address } = this.state;
+
+    return Binance.isValidAddress(address);
+  };
+
   handleChange = key => e => {
     this.setState({
       [key]: e.target.value,
+      invalidAddress: false,
       invalidPassword: false,
     });
   };
@@ -96,7 +117,7 @@ class SwapDetail extends Component {
     const { target } = this.getSwapData();
     const source = asset.split('-')[0].toLowerCase();
 
-    const URL = `/swap/detail/${source}-${target}`;
+    const URL = `/swap/send/${source}-${target}`;
 
     this.props.history.push(URL);
   };
@@ -155,12 +176,21 @@ class SwapDetail extends Component {
       user: { keystore, wallet },
     } = this.props;
 
+    if (!this.isValidRecipient()) {
+      this.setState({
+        invalidAddress: true,
+        dragReset: true,
+      });
+      return;
+    }
+
     if (keystore) {
       this.handleOpenPrivateModal();
     } else if (wallet) {
       this.handleStartTimer();
     } else {
       this.setState({
+        invalidAddress: true,
         dragReset: true,
       });
     }
@@ -244,10 +274,10 @@ class SwapDetail extends Component {
     const {
       user: { wallet },
     } = this.props;
-    const { xValue } = this.state;
+    const { xValue, address } = this.state;
     const { source, target } = this.getSwapData();
 
-    confirmSwap(Binance, wallet, source, target, this.data, xValue);
+    confirmSwap(Binance, wallet, source, target, this.data, xValue, address);
   };
 
   handleSelectAmount = source => amount => {
@@ -338,6 +368,8 @@ class SwapDetail extends Component {
     } = this.props;
     const {
       dragReset,
+      address,
+      invalidAddress,
       invalidPassword,
       xValue,
       openPrivateModal,
@@ -379,7 +411,6 @@ class SwapDetail extends Component {
     this.data = getCalcResult(source, target, pools, xValue, runePrice);
     const { Px, slip, outputAmount, outputPrice } = this.data;
 
-    console.log(this.data);
     return (
       <ContentWrapper className="swap-detail-wrapper">
         <Row>
@@ -402,6 +433,23 @@ class SwapDetail extends Component {
                 swap & send
               </Button>
             </div>
+            <Form className="recipient-form">
+              <Label weight="bold">Recipient Address:</Label>
+              <Form.Item className={invalidAddress ? 'has-error' : ''}>
+                <Input
+                  placeholder="bnbeh456..."
+                  sizevalue="normal"
+                  value={address}
+                  onChange={this.handleChange('address')}
+                  ref={this.addressRef}
+                />
+                {invalidAddress && (
+                  <div className="ant-form-explain">
+                    Recipient address is invalid!
+                  </div>
+                )}
+              </Form.Item>
+            </Form>
             <div className="swap-asset-card">
               <CoinCard
                 title="You are swapping"
@@ -505,4 +553,4 @@ export default compose(
     },
   ),
   withRouter,
-)(SwapDetail);
+)(SwapSend);

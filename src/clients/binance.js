@@ -57,6 +57,10 @@ class Binance {
     return isTestnet ? 'tbnb' : 'bnb';
   };
 
+  isValidAddress = address => {
+    return bnbClient.crypto.checkAddress(address, this.getPrefix());
+  };
+
   txURL = tx => {
     return this.explorerBaseURL + '/tx/' + tx;
   };
