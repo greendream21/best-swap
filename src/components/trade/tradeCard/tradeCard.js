@@ -2,15 +2,14 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import { TradeCardWrapper } from './tradeCard.style';
-import { coinGroup } from '../../../settings';
 import Coin from '../../uielements/coins/coin';
 import Status from '../../uielements/status';
 import Button from '../../uielements/button';
 
 class TradeCard extends Component {
   static propTypes = {
-    asset: PropTypes.oneOf(coinGroup).isRequired,
-    target: PropTypes.oneOf(coinGroup).isRequired,
+    asset: PropTypes.string.isRequired,
+    target: PropTypes.string.isRequired,
     depth: PropTypes.number,
     poolPrice: PropTypes.number,
     marketPrice: PropTypes.number,

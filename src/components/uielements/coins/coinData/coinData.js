@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import { CoinDataWrapper } from './coinData.style';
-import { coinGroup } from '../../../../settings';
 import Coin from '../coin';
 import Label from '../../label';
 

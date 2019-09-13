@@ -25,16 +25,6 @@ import {
   PrivateModal,
 } from './SwapSend.style';
 import { blackArrowIcon } from '../../../components/icons';
-import { getDoubleSwapMemo } from '../../../helpers/memoHelper';
-import {
-  getYValue,
-  getZValue,
-  getPx,
-  getPz,
-  getSlip,
-  getBalanceA,
-  getBalanceB,
-} from './data';
 import { getCalcResult, confirmSwap } from '../utils';
 
 import appActions from '../../../redux/app/actions';
@@ -284,7 +274,7 @@ class SwapSend extends Component {
     const { assetData } = this.props;
 
     const sourceAsset = assetData.find(data => {
-      const { asset, assetValue } = data;
+      const { asset } = data;
       const tokenName = asset.split('-')[0];
       if (tokenName.toLowerCase() === source) {
         return true;
