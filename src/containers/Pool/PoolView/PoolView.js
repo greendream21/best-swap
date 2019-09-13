@@ -17,6 +17,8 @@ class PoolView extends Component {
   static propTypes = {
     getPools: PropTypes.func.isRequired,
     pools: PropTypes.array.isRequired,
+    poolData: PropTypes.object.isRequired,
+    swapData: PropTypes.object.isRequired,
   };
 
   state = {
@@ -41,22 +43,27 @@ class PoolView extends Component {
   };
 
   renderPoolList = () => {
-    const { pools } = this.props;
+    const { pools, poolData, swapData } = this.props;
     const { activeAsset } = this.state;
 
-    return (pools || []).map((pool, index) => {
+    return pools.map((pool, index) => {
+      const { ticker } = pool;
+      const poolInfo = poolData[ticker] || {};
+      const swapInfo = swapData[ticker] || {};
+
       const assetData = {
         asset: 'rune',
-        target: pool.ticker,
-        depth: pool.poolData.depth,
-        volume: pool.poolData.vol24hr,
-        transaction: pool.swapData.aveTxTkn,
-        roi: pool.poolData.roiAT,
+        target: ticker,
+        depth: poolInfo.depth || 0,
+        volume: poolInfo.vol24hr || 0,
+        transaction: swapInfo.aveTxTkn || 0,
+        roi: poolInfo.roiAT || 0,
       };
       const { asset, volume, transaction, liq, roi } = assetData;
       const target = assetData.target.split('-')[0];
-      const depth = assetData.depth.toFixed(2);
-      // TODO: add liquidity fee in `liq`
+      const depth = Number(assetData.depth.toFixed(2));
+      const hisRoi = Number(roi.toFixed(2));
+
       if (target !== activeAsset) {
         return (
           <PoolCard
@@ -66,8 +73,8 @@ class PoolView extends Component {
             depth={depth}
             volume={volume}
             transaction={transaction}
-            liq={''}
-            roi={roi}
+            liq={liq}
+            roi={hisRoi}
             onStake={this.handleStake(target)}
             key={index}
           />
@@ -96,6 +103,8 @@ export default compose(
   connect(
     state => ({
       pools: state.Statechain.pools,
+      poolData: state.Statechain.poolData,
+      swapData: state.Statechain.swapData,
     }),
     {
       getPools,

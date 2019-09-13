@@ -7,7 +7,7 @@ import CoinData from '../coinData';
 class CoinList extends Component {
   static propTypes = {
     data: PropTypes.array,
-    value: PropTypes.string.isRequired,
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     selected: PropTypes.array,
     onSelect: PropTypes.func.isRequired,
     size: PropTypes.oneOf(['small', 'big']),

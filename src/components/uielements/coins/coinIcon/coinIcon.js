@@ -4,7 +4,6 @@ import { Icon } from 'antd';
 import DynamicCoin from '../dynamicCoin';
 
 import { CoinIconWrapper } from './coinIcon.style';
-import { coinGroup } from '../../../../settings';
 import { coinIconGroup } from '../../../icons/coinIcons';
 
 class CoinIcon extends Component {
@@ -21,7 +20,7 @@ class CoinIcon extends Component {
   };
 
   renderCoinIcon = () => {
-    const { type, size } = this.props;
+    const { type } = this.props;
     const coinIcon = coinIconGroup[type.toLowerCase()] || '';
 
     if (coinIcon) {

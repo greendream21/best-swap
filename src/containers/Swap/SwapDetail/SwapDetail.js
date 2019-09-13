@@ -254,7 +254,7 @@ class SwapDetail extends Component {
     const { assetData } = this.props;
 
     const sourceAsset = assetData.find(data => {
-      const { asset, assetValue } = data;
+      const { asset } = data;
       const tokenName = asset.split('-')[0];
       if (tokenName.toLowerCase() === source) {
         return true;
