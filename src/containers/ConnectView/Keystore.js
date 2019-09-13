@@ -76,7 +76,7 @@ const Keystore = props => {
           onChange={f => uploadKeystore(f)}
           onError={err => console.error(err)}
         >
-          <div>
+          <div className="file-upload-wrapper">
             <Button color="primary" typevalue="outline">
               <Icon type="upload" />
               Choose File to Upload

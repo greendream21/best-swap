@@ -16,6 +16,10 @@ export const ContentWrapper = styled(ContentView)`
 
     .keystore-connect-wrapper {
       width: 400px;
+      .file-upload-wrapper {
+        display: flex;
+        align-items: center;
+      }
     }
     .ledger-connect-wrapper {
       .ledger-connect-btn {
