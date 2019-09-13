@@ -114,7 +114,6 @@ class SwapDetail extends Component {
         Binance.getPrefix(),
       );
       if (wallet === address) {
-        console.log(privateKey);
         Binance.setPrivateKey(privateKey);
         this.handleStartTimer();
       }
@@ -199,13 +198,21 @@ class SwapDetail extends Component {
     this.props.history.push(URL);
   };
 
-  handleSelectTraget = assetsData => targetIndex => {
+  handleSelectTraget = tokensData => targetIndex => {
     const { view } = this.props;
     const { source } = this.getSwapData();
-    const target = assetsData[targetIndex].asset.toLowerCase();
+    const targetAsset = tokensData[targetIndex].asset;
+
+    const target = targetAsset.split('-')[0].toLowerCase();
     const URL = `/swap/${view}/${source}-${target}`;
 
     this.props.history.push(URL);
+  };
+
+  validatePair = (sourceData, targetData) => {
+    if (!sourceData.length || !targetData.length) {
+      this.props.history.push('/swap');
+    }
   };
 
   getSwapData = () => {
@@ -346,12 +353,12 @@ class SwapDetail extends Component {
 
     const swapData = this.getSwapData();
 
-    if (!swapData) {
+    if (!swapData || !assetData.length || !Object.keys(tokenInfo).length) {
       return '';
     }
 
     const { source, target } = swapData;
-    const assetsData = Object.keys(tokenInfo).map(tokenName => {
+    const tokensData = Object.keys(tokenInfo).map(tokenName => {
       const { symbol, price } = tokenInfo[tokenName];
 
       return {
@@ -360,7 +367,9 @@ class SwapDetail extends Component {
       };
     });
 
-    const targetData = assetsData.filter(data => data.asset !== source);
+    const targetData = tokensData.filter(
+      data => data.asset.split('-')[0].toLowerCase() !== source,
+    );
     const targetIndex = targetData.findIndex(
       value => value.asset.toLowerCase() === target,
     );
@@ -379,7 +388,7 @@ class SwapDetail extends Component {
     this.data = getCalcResult(source, target, pools, xValue, runePrice);
     const { Px, slip, outputAmount, outputPrice } = this.data;
 
-    console.log(this.data);
+    // console.log(this.data);
     return (
       <ContentWrapper className="swap-detail-wrapper">
         <Row>
@@ -447,7 +456,7 @@ class SwapDetail extends Component {
             <CoinList
               data={targetData}
               value={targetIndex}
-              onSelect={this.handleSelectTraget(assetsData)}
+              onSelect={this.handleSelectTraget(targetData)}
             />
           </Col>
         </Row>

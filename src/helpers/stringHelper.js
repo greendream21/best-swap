@@ -10,3 +10,13 @@ export const getPair = info => {
   }
   return {};
 };
+
+export const getActualValue = value => {
+  const BASE_NUMBER = 10 ** 8;
+
+  if (value) {
+    return Number((value / BASE_NUMBER).toFixed(2));
+  }
+
+  return 0;
+};

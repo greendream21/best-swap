@@ -19,6 +19,9 @@ export function* saveWalletSaga() {
     saveWalletAddress(wallet);
     saveKeystore(keystore);
 
+    yield put(actions.refreshBalance(wallet));
+    yield put(actions.refreshStake(wallet));
+
     yield put(push('/swap'));
   });
 }

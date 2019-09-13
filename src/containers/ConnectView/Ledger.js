@@ -72,7 +72,7 @@ const Connector = props => {
   };
 
   return (
-    <div>
+    <div className="ledger-connect-wrapper">
       <Row style={{ marginBottom: 20 }}>
         <Label size="large" weight="bold" color="normal">
           Connect your Ledger
@@ -154,7 +154,11 @@ const Connector = props => {
               }}
             />
           </div>
-          <Button onClick={ledgerConnect} loading={connecting}>
+          <Button
+            className="ledger-connect-btn"
+            onClick={ledgerConnect}
+            loading={connecting}
+          >
             Connect to Ledger <Icon type="arrow-right" />
           </Button>
         </Col>

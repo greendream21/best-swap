@@ -125,7 +125,6 @@ class SwapSend extends Component {
         Binance.getPrefix(),
       );
       if (wallet === address) {
-        console.log(privateKey);
         Binance.setPrivateKey(privateKey);
         this.handleStartTimer();
       }
@@ -226,6 +225,12 @@ class SwapSend extends Component {
     const URL = `/swap/${view}/${source}-${target}`;
 
     this.props.history.push(URL);
+  };
+
+  validatePair = (sourceData, targetData) => {
+    if (!sourceData.length || !targetData.length) {
+      this.props.history.push('/swap');
+    }
   };
 
   getSwapData = () => {
@@ -390,6 +395,8 @@ class SwapSend extends Component {
       data => data.asset.split('-')[0].toLowerCase() !== target,
     );
 
+    this.validatePair(sourceData, targetData);
+
     const dragTitle =
       view === 'detail' ? 'Drag to swap' : 'Drag to swap and send';
 
@@ -485,7 +492,7 @@ class SwapSend extends Component {
             <CoinList
               data={targetData}
               value={targetIndex}
-              onSelect={this.handleSelectTraget(assetsData)}
+              onSelect={this.handleSelectTraget(targetData)}
             />
           </Col>
         </Row>

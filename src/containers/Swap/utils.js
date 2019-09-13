@@ -132,7 +132,7 @@ export const confirmSwap = (
   destAddr = '',
 ) => {
   const type = getSwapType(from, to);
-  console.log('confirm swap', type, wallet, from, to, data, amount, destAddr);
+  // console.log('confirm swap', type, wallet, from, to, data, amount, destAddr);
 
   if (!validateSwap(wallet, type, data, amount)) {
     return false;
@@ -143,7 +143,7 @@ export const confirmSwap = (
 
     const memo = getSwapMemo(from, tickerTo, destAddr);
     const rune = 'RUNE-A1F';
-    console.log('memo: ', memo);
+    // console.log('memo: ', memo);
     Binance.transfer(wallet, poolAddressTo, amount, rune, memo);
     return true;
   }
@@ -157,31 +157,50 @@ export const confirmSwap = (
     } = data;
 
     const memo = getSwapMemo(tickerFrom, tickerTo, destAddr);
-    console.log('memo: ', memo);
+    // console.log('memo: ', memo);
 
     const fromAmount = Number(amount).toFixed(2);
     const toAmount = Number(outputAmount).toFixed(2);
 
-    const outputs = [
-      {
-        to: poolAddressFrom,
-        coins: [
-          {
-            denom: tickerFrom,
-            amount: fromAmount,
-          },
-        ],
-      },
-      {
-        to: poolAddressTo,
-        coins: [
-          {
-            denom: tickerTo,
-            amount: toAmount,
-          },
-        ],
-      },
-    ];
+    let outputs;
+    if (poolAddressFrom !== poolAddressTo) {
+      outputs = [
+        {
+          to: poolAddressFrom,
+          coins: [
+            {
+              denom: tickerFrom,
+              amount: fromAmount,
+            },
+          ],
+        },
+        {
+          to: poolAddressTo,
+          coins: [
+            {
+              denom: tickerTo,
+              amount: toAmount,
+            },
+          ],
+        },
+      ];
+    } else {
+      outputs = [
+        {
+          to: poolAddressFrom,
+          coins: [
+            {
+              denom: tickerFrom,
+              amount: fromAmount,
+            },
+            {
+              denom: tickerTo,
+              amount: toAmount,
+            },
+          ],
+        },
+      ];
+    }
 
     Binance.multiSend(wallet, outputs, memo);
     return true;
