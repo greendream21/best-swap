@@ -76,7 +76,7 @@ class SwapView extends Component {
       };
       const { volume, transaction, slip, swaps } = assetData;
       const target = assetData.target.split('-')[0];
-      const depth = assetData.depth.toFixed(2);
+      const depth = Number(assetData.depth.toFixed(2));
 
       if (target !== activeAsset) {
         return (

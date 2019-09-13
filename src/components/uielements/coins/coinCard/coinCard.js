@@ -14,7 +14,7 @@ class CoinCard extends Component {
     asset: PropTypes.string,
     assetData: PropTypes.array,
     amount: PropTypes.number,
-    price: PropTypes.number,
+    price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     slip: PropTypes.number,
     title: PropTypes.string,
     withSelection: PropTypes.bool,
@@ -105,7 +105,7 @@ class CoinCard extends Component {
           const { asset: assetName, price } = data;
           const tokenName = assetName.split('-')[0];
           if (tokenName.toLowerCase() === asset.toLowerCase()) {
-            return <Fragment />;
+            return <Fragment key={asset} />;
           }
 
           return (
@@ -147,6 +147,7 @@ class CoinCard extends Component {
       withSelection,
       onSelect,
       onChange,
+      onChangeAsset,
       className,
       ...props
     } = this.props;

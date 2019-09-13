@@ -83,7 +83,7 @@ export const getCalcResult = (from, to, pools, xValue, runePrice) => {
     });
 
     const times = (xValue + X) ** 2;
-    const outputToken = ((xValue * X * Y) / times).toFixed(2);
+    const outputToken = Number(((xValue * X * Y) / times).toFixed(2));
     const outputPy = ((Px * (X + xValue)) / (Y - outputToken)).toFixed(2);
     const input = xValue * Px;
     const output = outputToken * outputPy;

@@ -2,15 +2,14 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import { SwapCardWrapper } from './swapCard.style';
-import { coinGroup } from '../../../settings';
 import Coin from '../../uielements/coins/coin';
 import Status from '../../uielements/status';
 import Button from '../../uielements/button';
 
 class SwapCard extends Component {
   static propTypes = {
-    asset: PropTypes.oneOf(coinGroup).isRequired,
-    target: PropTypes.oneOf(coinGroup).isRequired,
+    asset: PropTypes.string.isRequired,
+    target: PropTypes.string.isRequired,
     depth: PropTypes.number,
     volume: PropTypes.number,
     transaction: PropTypes.number,
