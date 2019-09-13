@@ -6,7 +6,6 @@ import PropTypes from 'prop-types';
 import { Row, Col, Icon, Form } from 'antd';
 import { crypto } from '@binance-chain/javascript-sdk';
 
-import BnbClient from '../../../services/binance';
 import Binance from '../../../clients/binance';
 
 import Button from '../../../components/uielements/button';
@@ -26,7 +25,7 @@ import {
   PrivateModal,
 } from './SwapDetail.style';
 import { blackArrowIcon } from '../../../components/icons';
-import { getSwapMemo } from '../../../helpers/memoHelper';
+import { getCalcResult, confirmSwap } from '../utils';
 
 import appActions from '../../../redux/app/actions';
 import chainActions from '../../../redux/chainservice/actions';
@@ -66,16 +65,12 @@ class SwapDetail extends Component {
   };
 
   state = {
-    address: '',
-    invalidAddress: false,
     dragReset: true,
     xValue: 0,
     openPrivateModal: false,
     password: '',
     invalidPassword: false,
   };
-
-  addressRef = React.createRef();
 
   componentDidMount() {
     const { getTokens, getPools } = this.props;
@@ -84,16 +79,9 @@ class SwapDetail extends Component {
     getPools();
   }
 
-  isValidRecipient = () => {
-    const { address } = this.state;
-
-    return BnbClient.isValidAddress(address);
-  };
-
   handleChange = key => e => {
     this.setState({
       [key]: e.target.value,
-      invalidAddress: false,
       invalidPassword: false,
     });
   };
@@ -102,6 +90,15 @@ class SwapDetail extends Component {
     this.setState({
       xValue: value,
     });
+  };
+
+  handleChangeSource = asset => {
+    const { target } = this.getSwapData();
+    const source = asset.split('-')[0].toLowerCase();
+
+    const URL = `/swap/detail/${source}-${target}`;
+
+    this.props.history.push(URL);
   };
 
   handleConfirmPassword = () => {
@@ -155,7 +152,6 @@ class SwapDetail extends Component {
 
   handleEndDrag = () => {
     const {
-      view,
       user: { keystore, wallet },
     } = this.props;
 
@@ -165,7 +161,6 @@ class SwapDetail extends Component {
       this.handleStartTimer();
     } else {
       this.setState({
-        invalidAddress: true,
         dragReset: true,
       });
     }
@@ -250,28 +245,16 @@ class SwapDetail extends Component {
       user: { wallet },
     } = this.props;
     const { xValue } = this.state;
+    const { source, target } = this.getSwapData();
 
-    // TODO: add validation
-    // if (!wallet || !this.poolAddress || !this.ticker || !xValue) {
-    //   console.log('close', wallet, this.poolAddress, xValue);
-
-    //   this.handleCloseModal();
-    //   return;
-    // }
-
-    const memo = getSwapMemo(this.ticker, wallet);
-    const asset = 'RUNE-A1F';
-
-    this.poolAddress = wallet;
-    console.log(wallet, this.poolAddress, xValue, asset, memo);
-    Binance.transfer(wallet, this.poolAddress, xValue, asset, memo);
+    confirmSwap(Binance, wallet, source, target, this.data, xValue);
   };
 
   handleSelectAmount = source => amount => {
     const { assetData } = this.props;
 
     const sourceAsset = assetData.find(data => {
-      const { asset, assetValue } = data;
+      const { asset } = data;
       const tokenName = asset.split('-')[0];
       if (tokenName.toLowerCase() === source) {
         return true;
@@ -351,11 +334,10 @@ class SwapDetail extends Component {
       txStatus,
       chainData: { tokenInfo },
       pools,
+      assetData,
     } = this.props;
     const {
       dragReset,
-      address,
-      invalidAddress,
       invalidPassword,
       xValue,
       openPrivateModal,
@@ -368,17 +350,12 @@ class SwapDetail extends Component {
       return '';
     }
 
-    let Px = 0.04; // mock price = 0.04
     const { source, target } = swapData;
     const assetsData = Object.keys(tokenInfo).map(tokenName => {
-      const { ticker, price } = tokenInfo[tokenName];
-
-      if (ticker.toLowerCase() === source.toLowerCase()) {
-        Px = price;
-      }
+      const { symbol, price } = tokenInfo[tokenName];
 
       return {
-        asset: ticker,
+        asset: symbol,
         price,
       };
     });
@@ -387,6 +364,9 @@ class SwapDetail extends Component {
     const targetIndex = targetData.findIndex(
       value => value.asset.toLowerCase() === target,
     );
+    const sourceData = assetData.filter(
+      data => data.asset.split('-')[0].toLowerCase() !== target,
+    );
 
     const dragTitle =
       view === 'detail' ? 'Drag to swap' : 'Drag to swap and send';
@@ -394,30 +374,12 @@ class SwapDetail extends Component {
     const openSwapModal = txStatus.type === 'swap' ? txStatus.modal : false;
     const coinCloseIconType = txStatus.status ? 'fullscreen-exit' : 'close';
 
-    // coin data
-    let X = 10000;
-    let Y = 10;
+    // calculation
+    const runePrice = 0.04; // TODO: mock price = 0.04
+    this.data = getCalcResult(source, target, pools, xValue, runePrice);
+    const { Px, slip, outputAmount, outputPrice } = this.data;
 
-    pools.forEach(poolData => {
-      const { balance_rune, balance_token, pool_address, ticker } = poolData;
-
-      if (ticker.toLowerCase() === target.toLowerCase()) {
-        X = balance_rune;
-        Y = balance_token;
-        this.poolAddress = pool_address;
-        this.ticker = ticker;
-      }
-    });
-    console.log(X, Y, Px, xValue);
-    const times = (xValue + X) ** 2;
-    const outputToken = ((xValue * X * Y) / times).toFixed(2);
-    const outputPy = ((Px * (X + xValue)) / (Y - outputToken)).toFixed(2);
-    const input = xValue * Px;
-    const output = outputToken * outputPy;
-    const slip = input !== 0 ? Math.round(((input - output) / input) * 100) : 0;
-
-    console.log(outputToken, outputPy, slip);
-
+    console.log(this.data);
     return (
       <ContentWrapper className="swap-detail-wrapper">
         <Row>
@@ -444,9 +406,11 @@ class SwapDetail extends Component {
               <CoinCard
                 title="You are swapping"
                 asset={source}
+                assetData={sourceData}
                 amount={xValue}
                 price={Px}
                 onChange={this.handleChangeValue}
+                onChangeAsset={this.handleChangeSource}
                 onSelect={this.handleSelectAmount(source)}
                 withSelection
               />
@@ -454,8 +418,8 @@ class SwapDetail extends Component {
               <CoinCard
                 title="You will receive"
                 asset={target}
-                amount={outputToken}
-                price={outputPy}
+                amount={outputAmount}
+                price={outputPrice}
                 slip={slip}
                 disabled
               />

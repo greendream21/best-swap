@@ -13,6 +13,20 @@ const actions = {
     payload,
   }),
 
+  GET_POOL_INFO_REQUEST: 'GET_POOL_INFO_REQUEST',
+  GET_POOL_INFO_SUCCESS: 'GET_POOL_INFO_SUCCESS',
+  GET_POOL_INFO_FAILED: 'GET_POOL_INFO_FAILED',
+
+  getPoolInfo: payload => ({ type: actions.GET_POOL_INFO_REQUEST, payload }),
+  getPoolInfoSuccess: payload => ({
+    type: actions.GET_POOL_INFO_SUCCESS,
+    payload,
+  }),
+  getPoolInfoFailed: payload => ({
+    type: actions.GET_POOL_INFO_FAILED,
+    payload,
+  }),
+
   GET_POOL_DATA_REQUEST: 'GET_POOL_DATA_REQUEST',
   GET_POOL_DATA_SUCCESS: 'GET_POOL_DATA_SUCCESS',
   GET_POOL_DATA_FAILED: 'GET_POOL_DATA_FAILED',
@@ -24,6 +38,20 @@ const actions = {
   }),
   getPoolDataFailed: payload => ({
     type: actions.GET_POOL_DATA_FAILED,
+    payload,
+  }),
+
+  GET_SWAP_DATA_REQUEST: 'GET_SWAP_DATA_REQUEST',
+  GET_SWAP_DATA_SUCCESS: 'GET_SWAP_DATA_SUCCESS',
+  GET_SWAP_DATA_FAILED: 'GET_SWAP_DATA_FAILED',
+
+  getSwapData: payload => ({ type: actions.GET_SWAP_DATA_REQUEST, payload }),
+  getSwapDataSuccess: payload => ({
+    type: actions.GET_SWAP_DATA_SUCCESS,
+    payload,
+  }),
+  getSwapDataFailed: payload => ({
+    type: actions.GET_SWAP_DATA_FAILED,
     payload,
   }),
 };

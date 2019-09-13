@@ -159,7 +159,14 @@ class Drag extends Component {
   };
 
   render() {
-    const { source, target, title, className, ...props } = this.props;
+    const {
+      source,
+      target,
+      title,
+      className,
+      onConfirm,
+      ...props
+    } = this.props;
     const { pos, overlap, success, missed, dragging } = this.state;
     const dragHandlers = {
       onStart: this.handleDragStart,

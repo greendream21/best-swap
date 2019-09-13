@@ -3,12 +3,11 @@ import PropTypes from 'prop-types';
 
 import { CoinListWrapper } from './coinList.style';
 import CoinData from '../coinData';
-import { coinNames } from '../../../../settings';
 
 class CoinList extends Component {
   static propTypes = {
     data: PropTypes.array,
-    value: PropTypes.string.isRequired,
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     selected: PropTypes.array,
     onSelect: PropTypes.func.isRequired,
     size: PropTypes.oneOf(['small', 'big']),
@@ -48,10 +47,7 @@ class CoinList extends Component {
         {data.map((coinData, index) => {
           const { asset, assetValue, target, targetValue, price } = coinData;
 
-          const coinName = coinNames.find(
-            coin => coin.name.toLowerCase() === asset.toLowerCase(),
-          );
-          const tokenName = coinName ? coinName.name : null;
+          const tokenName = asset.split('-')[0];
 
           if (!tokenName) {
             console.log(asset, 'is not a recognized token');

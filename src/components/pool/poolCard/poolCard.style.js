@@ -10,6 +10,7 @@ export const PoolCardWrapper = styled.div`
 
   .status-wrapper {
     margin-right: 40px;
+    width: 80px;
   }
 
   .roi-status {

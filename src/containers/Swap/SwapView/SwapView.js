@@ -18,6 +18,8 @@ class SwapView extends Component {
   static propTypes = {
     getPools: PropTypes.func.isRequired,
     pools: PropTypes.array.isRequired,
+    poolData: PropTypes.array.isRequired,
+    swapData: PropTypes.array.isRequired,
   };
 
   state = {
@@ -57,22 +59,26 @@ class SwapView extends Component {
   };
 
   renderSwapList = () => {
-    const { pools } = this.props;
+    const { pools, poolData, swapData } = this.props;
     const { activeAsset } = this.state;
 
     return pools.map((pool, index) => {
+      const { ticker } = pool;
+      const poolInfo = poolData[ticker] || {};
+      const swapInfo = swapData[ticker] || {};
+
       const assetData = {
         asset: 'rune',
-        target: pool.ticker,
-        depth: pool.poolData.depth,
-        volume: pool.poolData.vol24hr,
-        transaction: pool.swapData.aveTxTkn,
-        swaps: pool.poolData.numSwaps,
-        slip: pool.swapData.aveSlipTkn,
+        target: ticker,
+        depth: poolInfo.depth || 0,
+        volume: poolInfo.vol24hr || 0,
+        transaction: swapInfo.aveTxTkn || 0,
+        swaps: poolInfo.numSwaps || 0,
+        slip: swapInfo.aveSlipTkn || 0,
       };
       const { volume, transaction, slip, swaps } = assetData;
       const target = assetData.target.split('-')[0];
-      const depth = assetData.depth.toFixed(2);
+      const depth = Number(assetData.depth.toFixed(2));
 
       if (target !== activeAsset) {
         return (
@@ -113,6 +119,8 @@ export default compose(
   connect(
     state => ({
       pools: state.Statechain.pools,
+      poolData: state.Statechain.poolData,
+      swapData: state.Statechain.swapData,
     }),
     {
       getPools,
