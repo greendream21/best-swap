@@ -80,7 +80,7 @@ class WalletView extends Component {
     if (status === 'connected') {
       return 'Tokens in your wallet:';
     }
-    return 'Connect your wallet';
+    return `Looks like you don't have anything in your wallet`;
   };
 
   renderStakeTitle = () => {
