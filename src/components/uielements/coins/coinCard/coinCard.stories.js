@@ -15,6 +15,16 @@ storiesOf('Components/Coins/CoinCard', module).add('default', () => {
           <CoinCard
             title="You are swapping"
             asset="bnb"
+            assetData={[
+              {
+                asset: 'rune',
+                price: 100,
+              },
+              {
+                asset: 'tomo',
+                price: 100,
+              },
+            ]}
             amount={1.354}
             price={600}
             withSelection

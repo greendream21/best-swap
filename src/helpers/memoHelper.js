@@ -1,5 +1,5 @@
-export const getSwapMemo = (symbol, addr, sliplimit = '', memo = '') => {
-  return `=:${symbol}:${addr}:${sliplimit}:${memo}`;
+export const getSingleSwapMemo = (symbol, addr, sliplimit = '', memo = '') => {
+  return `swap:${symbol}:${addr}:${sliplimit}`;
 };
 
 export const getDoubleSwapMemo = (
@@ -9,5 +9,5 @@ export const getDoubleSwapMemo = (
   sliplimit = '',
   memo = '',
 ) => {
-  return `=:${from}-${to}:${addr}:${sliplimit}:${memo}`;
+  return `swap:${from}-${to}:${addr}:${sliplimit}`;
 };

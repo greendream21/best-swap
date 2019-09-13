@@ -19,51 +19,31 @@ export function* getPools() {
     try {
       const { data } = yield call(axiosRequest, params);
 
-      const poolResponse = yield all(
+      yield all(
         data.map(poolData => {
           const { ticker } = poolData;
 
-          const poolParams = {
-            method: 'get',
-            url: getChainserviceURL(`poolData?asset=${ticker}`),
-            headers: getHeaders(),
-          };
-
-          return call(axiosRequest, poolParams);
+          return put(actions.getPoolData({ asset: ticker }));
         }),
       );
 
-      const swapResponse = yield all(
+      yield all(
         data.map(poolData => {
           const { ticker } = poolData;
 
-          const poolParams = {
-            method: 'get',
-            url: getChainserviceURL(`swapData?asset=${ticker}`),
-            headers: getHeaders(),
-          };
-
-          return call(axiosRequest, poolParams);
+          return put(actions.getSwapData({ asset: ticker }));
         }),
       );
 
-      const poolData = data.map((poolInfo, index) => {
-        return {
-          ...poolInfo,
-          poolData: poolResponse[index].data,
-          swapData: swapResponse[index].data,
-        };
-      });
-
-      yield put(actions.getPoolsSuccess(poolData));
+      yield put(actions.getPoolsSuccess(data));
     } catch (error) {
       yield put(actions.getPoolsFailed(error));
     }
   });
 }
 
-export function* getPoolData() {
-  yield takeEvery(actions.GET_POOL_DATA_REQUEST, function*({ payload }) {
+export function* getPoolInfo() {
+  yield takeEvery(actions.GET_POOL_INFO_REQUEST, function*({ payload }) {
     const ticker = payload;
     const params = {
       method: 'get',
@@ -74,13 +54,58 @@ export function* getPoolData() {
     try {
       const { data } = yield call(axiosRequest, params);
 
-      yield put(actions.getPoolDataSuccess(data));
+      yield put(actions.getPoolInfoSuccess(data));
+    } catch (error) {
+      yield put(actions.getPoolInfoFailed(error));
+    }
+  });
+}
+
+export function* getPoolData() {
+  yield takeEvery(actions.GET_POOL_DATA_REQUEST, function*({ payload }) {
+    const { asset } = payload;
+
+    const params = {
+      method: 'get',
+      url: getChainserviceURL(`poolData?asset=${asset}`),
+      headers: getHeaders(),
+    };
+
+    try {
+      const { data } = yield call(axiosRequest, params);
+
+      yield put(actions.getPoolDataSuccess({ asset, data }));
     } catch (error) {
       yield put(actions.getPoolDataFailed(error));
     }
   });
 }
 
+export function* getSwapData() {
+  yield takeEvery(actions.GET_SWAP_DATA_REQUEST, function*({ payload }) {
+    const { asset } = payload;
+
+    const params = {
+      method: 'get',
+      url: getChainserviceURL(`swapData?asset=${asset}`),
+      headers: getHeaders(),
+    };
+
+    try {
+      const { data } = yield call(axiosRequest, params);
+
+      yield put(actions.getSwapDataSuccess({ asset, data }));
+    } catch (error) {
+      yield put(actions.getSwapDataFailed(error));
+    }
+  });
+}
+
 export default function* rootSaga() {
-  yield all([fork(getPools), fork(getPoolData)]);
+  yield all([
+    fork(getPools),
+    fork(getPoolInfo),
+    fork(getPoolData),
+    fork(getSwapData),
+  ]);
 }
