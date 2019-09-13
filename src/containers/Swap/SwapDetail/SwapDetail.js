@@ -114,7 +114,6 @@ class SwapDetail extends Component {
         Binance.getPrefix(),
       );
       if (wallet === address) {
-        console.log(privateKey);
         Binance.setPrivateKey(privateKey);
         this.handleStartTimer();
       }
@@ -389,7 +388,7 @@ class SwapDetail extends Component {
     this.data = getCalcResult(source, target, pools, xValue, runePrice);
     const { Px, slip, outputAmount, outputPrice } = this.data;
 
-    console.log(this.data);
+    // console.log(this.data);
     return (
       <ContentWrapper className="swap-detail-wrapper">
         <Row>

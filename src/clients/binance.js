@@ -103,9 +103,6 @@ class Binance {
     // send coins!
     const result = await this.bnbClient.multiSend(address, transactions, memo);
 
-    // clear private key from memory after each transaction
-    this.clearPrivateKey();
-
     return result;
   };
 
@@ -117,9 +114,6 @@ class Binance {
       asset,
       memo,
     );
-
-    // clear private key from memory after each transaction
-    this.clearPrivateKey();
 
     return result;
   };

@@ -125,7 +125,6 @@ class SwapSend extends Component {
         Binance.getPrefix(),
       );
       if (wallet === address) {
-        console.log(privateKey);
         Binance.setPrivateKey(privateKey);
         this.handleStartTimer();
       }
@@ -493,7 +492,7 @@ class SwapSend extends Component {
             <CoinList
               data={targetData}
               value={targetIndex}
-              onSelect={this.handleSelectTraget(assetsData)}
+              onSelect={this.handleSelectTraget(targetData)}
             />
           </Col>
         </Row>
