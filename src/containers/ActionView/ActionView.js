@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { compose } from 'redux';
 import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Button, Tooltip } from 'antd';
@@ -18,7 +19,10 @@ import StatsView from '../StatsView';
 import FaqsView from '../FaqsView';
 import NetworkView from '../NetworkView';
 import TutorialView from '../TutorialView';
-import { compose } from 'redux';
+
+import walletActions from '../../redux/wallet/actions';
+
+const { refreshBalance, refreshStake } = walletActions;
 
 const { TabPane } = Tabs;
 
@@ -27,6 +31,9 @@ class ActionView extends Component {
     type: PropTypes.string,
     view: PropTypes.string,
     info: PropTypes.string,
+    user: PropTypes.object.isRequired,
+    refreshBalance: PropTypes.func.isRequired,
+    refreshStake: PropTypes.func.isRequired,
   };
 
   static defaultProps = {
@@ -38,6 +45,17 @@ class ActionView extends Component {
   state = {
     activeTab: 'swap',
   };
+
+  componentDidMount() {
+    const { user, refreshBalance, refreshStake } = this.props;
+
+    if (user && user.wallet) {
+      const address = user.wallet;
+
+      refreshBalance(address);
+      refreshStake(address);
+    }
+  }
 
   handleChangeTab = activeTab => {
     const { type } = this.props;
@@ -187,8 +205,14 @@ class ActionView extends Component {
 }
 
 export default compose(
-  connect(state => ({
-    user: state.Wallet.user,
-  })),
+  connect(
+    state => ({
+      user: state.Wallet.user,
+    }),
+    {
+      refreshBalance,
+      refreshStake,
+    },
+  ),
   withRouter,
 )(ActionView);

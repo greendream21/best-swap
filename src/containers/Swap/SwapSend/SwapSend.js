@@ -228,6 +228,12 @@ class SwapSend extends Component {
     this.props.history.push(URL);
   };
 
+  validatePair = (sourceData, targetData) => {
+    if (!sourceData.length || !targetData.length) {
+      this.props.history.push('/swap');
+    }
+  };
+
   getSwapData = () => {
     const { info } = this.props;
 
@@ -389,6 +395,8 @@ class SwapSend extends Component {
     const sourceData = assetData.filter(
       data => data.asset.split('-')[0].toLowerCase() !== target,
     );
+
+    this.validatePair(sourceData, targetData);
 
     const dragTitle =
       view === 'detail' ? 'Drag to swap' : 'Drag to swap and send';
