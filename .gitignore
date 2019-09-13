@@ -198,3 +198,4 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.gitignore.io/api/macOS,windows,vim,node
+.idea/
