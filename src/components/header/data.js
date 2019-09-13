@@ -2,11 +2,6 @@ import { keyBy } from 'lodash';
 
 export const menuItems = [
   {
-    key: 'wallet',
-    label: 'wallet',
-    status: 'yellow',
-  },
-  {
     key: 'binance_chain',
     label: 'binance chain',
     status: 'green',
