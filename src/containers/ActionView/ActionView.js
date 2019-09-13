@@ -85,10 +85,6 @@ class ActionView extends Component {
 
   handleHeaderAction = () => {};
 
-  handleUnlock = () => {
-    this.props.history.push('/swap');
-  };
-
   getHeaderText = () => {
     const view = this.getView();
 
@@ -171,9 +167,7 @@ class ActionView extends Component {
           />
         )}
         {view === 'tutorial' && <TutorialView />}
-        {view === 'connect-view' && (
-          <ConnectView onUnlock={this.handleUnlock} />
-        )}
+        {view === 'connect-view' && <ConnectView />}
         {view === 'stats-view' && <StatsView />}
         {view === 'faqs-view' && <FaqsView />}
         {view === 'network-view' && <NetworkView />}

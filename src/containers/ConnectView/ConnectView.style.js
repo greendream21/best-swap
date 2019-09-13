@@ -14,6 +14,15 @@ export const ContentWrapper = styled(ContentView)`
     display: flex;
     flex: auto;
 
+    .keystore-connect-wrapper {
+      width: 400px;
+    }
+    .ledger-connect-wrapper {
+      .ledger-connect-btn {
+        margin-top: 20px;
+      }
+    }
+
     .connect-view-content-buttons {
       padding: 10px 0;
 
