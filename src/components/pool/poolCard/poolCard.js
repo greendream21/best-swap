@@ -5,6 +5,7 @@ import { PoolCardWrapper } from './poolCard.style';
 import Coin from '../../uielements/coins/coin';
 import Status from '../../uielements/status';
 import Button from '../../uielements/button';
+import { getActualValue } from '../../../helpers/stringHelper';
 
 class PoolCard extends Component {
   static propTypes = {
@@ -43,11 +44,11 @@ class PoolCard extends Component {
     } = this.props;
 
     const poolValue = `${asset}:${target}`;
-    const depthValue = `$${depth}`;
-    const volumeValue = `$${volume}`;
-    const transactionValue = `$${transaction}`;
-    const liqValue = `${liq}%`;
-    const roiValue = `${roi}% pa`;
+    const depthValue = `$${getActualValue(depth)}`;
+    const volumeValue = `$${getActualValue(volume)}`;
+    const transactionValue = `$${getActualValue(transaction)}`;
+    const liqValue = `${getActualValue(liq)}%`;
+    const roiValue = `${getActualValue(roi)}% pa`;
 
     return (
       <PoolCardWrapper className={`poolCard-wrapper ${className}`} {...props}>

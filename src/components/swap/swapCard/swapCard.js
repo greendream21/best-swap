@@ -5,6 +5,7 @@ import { SwapCardWrapper } from './swapCard.style';
 import Coin from '../../uielements/coins/coin';
 import Status from '../../uielements/status';
 import Button from '../../uielements/button';
+import { getActualValue } from '../../../helpers/stringHelper';
 
 class SwapCard extends Component {
   static propTypes = {
@@ -43,11 +44,11 @@ class SwapCard extends Component {
     } = this.props;
 
     const poolValue = `${asset}:${target}`;
-    const depthValue = `$${depth}`;
-    const volumeValue = `$${volume}`;
-    const transactionValue = `$${transaction}`;
-    const slipValue = `${slip}%`;
-    const tradeValue = `${trade}`;
+    const depthValue = `$${getActualValue(depth)}`;
+    const volumeValue = `$${getActualValue(volume)}`;
+    const transactionValue = `$${getActualValue(transaction)}`;
+    const slipValue = `${getActualValue(slip)}%`;
+    const tradeValue = `${getActualValue(trade)}`;
 
     return (
       <SwapCardWrapper className={`SwapCard-wrapper ${className}`} {...props}>
