@@ -49,8 +49,8 @@ class Header extends Component {
             <WalletButton connected={connected} value={wallet} />
           </Link>
           <HeaderSetting />
-          <WalletDrawer />
-          <TxView start={status} onClick={this.handleClickTxView} />
+          {connected && <WalletDrawer />}
+          {status && <TxView start={status} onClick={this.handleClickTxView} />}
         </div>
       </StyledHeader>
     );

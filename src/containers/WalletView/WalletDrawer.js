@@ -35,6 +35,8 @@ const WalletDrawer = props => {
     });
   };
 
+  const status = wallet ? 'connected' : 'disconnected';
+
   return (
     <WalletDrawerWrapper>
       <AntdButton shape="circle" onClick={toggleDrawer}>
@@ -47,7 +49,7 @@ const WalletDrawer = props => {
         onClose={onClose}
         visible={visible}
       >
-        <WalletView />
+        <WalletView status={status} />
         {wallet && (
           <div className="wallet-address">
             <Icon type="copy" onClick={onCopyWallet} />

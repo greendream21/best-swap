@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { compose } from 'redux';
 import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Button, Tooltip } from 'antd';
@@ -18,6 +20,10 @@ import FaqsView from '../FaqsView';
 import NetworkView from '../NetworkView';
 import TutorialView from '../TutorialView';
 
+import walletActions from '../../redux/wallet/actions';
+
+const { refreshBalance, refreshStake } = walletActions;
+
 const { TabPane } = Tabs;
 
 class ActionView extends Component {
@@ -25,6 +31,9 @@ class ActionView extends Component {
     type: PropTypes.string,
     view: PropTypes.string,
     info: PropTypes.string,
+    user: PropTypes.object.isRequired,
+    refreshBalance: PropTypes.func.isRequired,
+    refreshStake: PropTypes.func.isRequired,
   };
 
   static defaultProps = {
@@ -36,6 +45,17 @@ class ActionView extends Component {
   state = {
     activeTab: 'swap',
   };
+
+  componentDidMount() {
+    const { user, refreshBalance, refreshStake } = this.props;
+
+    if (user && user.wallet) {
+      const address = user.wallet;
+
+      refreshBalance(address);
+      refreshStake(address);
+    }
+  }
 
   handleChangeTab = activeTab => {
     const { type } = this.props;
@@ -83,10 +103,6 @@ class ActionView extends Component {
 
   handleHeaderAction = () => {};
 
-  handleUnlock = () => {
-    this.props.history.push('/swap');
-  };
-
   getHeaderText = () => {
     const view = this.getView();
 
@@ -105,7 +121,9 @@ class ActionView extends Component {
   };
 
   renderHeader = () => {
-    const { type } = this.props;
+    const { type, user } = this.props;
+    const { wallet } = user;
+    const connected = wallet ? true : false;
     const { activeTab } = this.state;
     const active = type || activeTab;
     const headerText = this.getHeaderText();
@@ -127,8 +145,8 @@ class ActionView extends Component {
               style={{ width: '100%' }}
               action
             >
-              <TabPane tab="swap" key="swap" />
-              <TabPane tab="pools" key="pools" />
+              <TabPane tab="swap" disabled={!connected} key="swap" />
+              <TabPane tab="pools" disabled={!connected} key="pools" />
             </Tabs>
             {intro}
           </>
@@ -167,9 +185,7 @@ class ActionView extends Component {
           />
         )}
         {view === 'tutorial' && <TutorialView />}
-        {view === 'connect-view' && (
-          <ConnectView onUnlock={this.handleUnlock} />
-        )}
+        {view === 'connect-view' && <ConnectView />}
         {view === 'stats-view' && <StatsView />}
         {view === 'faqs-view' && <FaqsView />}
         {view === 'network-view' && <NetworkView />}
@@ -188,4 +204,15 @@ class ActionView extends Component {
   }
 }
 
-export default withRouter(ActionView);
+export default compose(
+  connect(
+    state => ({
+      user: state.Wallet.user,
+    }),
+    {
+      refreshBalance,
+      refreshStake,
+    },
+  ),
+  withRouter,
+)(ActionView);

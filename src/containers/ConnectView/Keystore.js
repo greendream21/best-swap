@@ -68,40 +68,46 @@ const Keystore = props => {
 
   return (
     <ContentWrapper>
-      <Label size="large" weight="bold" color="normal">
-        Select Keystore File
-      </Label>
-      <FilePicker
-        onChange={f => uploadKeystore(f)}
-        onError={err => console.error(err)}
-      >
-        <div>
-          <Button color="primary" typevalue="outline">
-            <Icon type="upload" />
-            Choose File to Upload
-          </Button>
-          &nbsp;
-          {keystore && !keystoreError && (
-            <Icon type="check-circle" theme="twoTone" twoToneColor="#52c41a" />
-          )}
-        </div>
-      </FilePicker>
-      {keystoreError && (
-        <span style={{ color: '#FF4136' }}>{keystoreError}</span>
-      )}
-      <FormGroup
-        title="Decryption password:"
-        description="This is the password used to decrypt your encrypted keystore file"
-      >
-        <Input.Password
-          allowClear
-          onChange={onPasswordChange}
-          placeholder="password"
-        />
-      </FormGroup>
-      <Button type="submit" onClick={unlock} disabled={!ready}>
-        Unlock
-      </Button>
+      <div className="keystore-connect-wrapper">
+        <Label size="large" weight="bold" color="normal">
+          Select Keystore File
+        </Label>
+        <FilePicker
+          onChange={f => uploadKeystore(f)}
+          onError={err => console.error(err)}
+        >
+          <div className="file-upload-wrapper">
+            <Button color="primary" typevalue="outline">
+              <Icon type="upload" />
+              Choose File to Upload
+            </Button>
+            &nbsp;
+            {keystore && !keystoreError && (
+              <Icon
+                type="check-circle"
+                theme="twoTone"
+                twoToneColor="#52c41a"
+              />
+            )}
+          </div>
+        </FilePicker>
+        {keystoreError && (
+          <span style={{ color: '#FF4136' }}>{keystoreError}</span>
+        )}
+        <FormGroup
+          title="Decryption password:"
+          description="This is the password used to decrypt your encrypted keystore file"
+        >
+          <Input.Password
+            allowClear
+            onChange={onPasswordChange}
+            placeholder="password"
+          />
+        </FormGroup>
+        <Button type="submit" onClick={unlock} disabled={!ready}>
+          Unlock
+        </Button>
+      </div>
     </ContentWrapper>
   );
 };

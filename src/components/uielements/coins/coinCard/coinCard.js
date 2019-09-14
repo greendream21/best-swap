@@ -13,7 +13,7 @@ class CoinCard extends Component {
   static propTypes = {
     asset: PropTypes.string,
     assetData: PropTypes.array,
-    amount: PropTypes.number,
+    amount: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     slip: PropTypes.number,
     title: PropTypes.string,
