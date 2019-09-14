@@ -209,10 +209,41 @@ class SwapDetail extends Component {
     this.props.history.push(URL);
   };
 
-  validatePair = (sourceData, targetData) => {
-    if (!sourceData.length || !targetData.length) {
+  validatePair = (sourceInfo, targetInfo) => {
+    if (!sourceInfo.length || !targetInfo.length) {
       this.props.history.push('/swap');
     }
+
+    const { source, target } = this.getSwapData();
+
+    let sourceValid = false;
+    let targetValid = false;
+    const targetData = targetInfo.filter(data => {
+      const compare = data.asset.split('-')[0].toLowerCase() !== target;
+      if (!compare) {
+        targetValid = true;
+      }
+
+      return compare;
+    });
+
+    const sourceData = sourceInfo.filter(data => {
+      const compare = data.asset.split('-')[0].toLowerCase() !== source;
+      if (!compare) {
+        sourceValid = true;
+      }
+
+      return compare;
+    });
+
+    if (!sourceValid || !targetValid) {
+      this.props.history.push('/swap');
+    }
+
+    return {
+      sourceData,
+      targetData,
+    };
   };
 
   getSwapData = () => {
@@ -367,14 +398,10 @@ class SwapDetail extends Component {
       };
     });
 
-    const targetData = tokensData.filter(
-      data => data.asset.split('-')[0].toLowerCase() !== source,
-    );
+    const { sourceData, targetData } = this.validatePair(assetData, tokensData);
+
     const targetIndex = targetData.findIndex(
       value => value.asset.toLowerCase() === target,
-    );
-    const sourceData = assetData.filter(
-      data => data.asset.split('-')[0].toLowerCase() !== target,
     );
 
     const dragTitle =

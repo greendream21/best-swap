@@ -227,10 +227,41 @@ class SwapSend extends Component {
     this.props.history.push(URL);
   };
 
-  validatePair = (sourceData, targetData) => {
-    if (!sourceData.length || !targetData.length) {
+  validatePair = (sourceInfo, targetInfo) => {
+    if (!sourceInfo.length || !targetInfo.length) {
       this.props.history.push('/swap');
     }
+
+    const { source, target } = this.getSwapData();
+
+    let sourceValid = false;
+    let targetValid = false;
+    const targetData = targetInfo.filter(data => {
+      const compare = data.asset.split('-')[0].toLowerCase() !== target;
+      if (!compare) {
+        targetValid = true;
+      }
+
+      return compare;
+    });
+
+    const sourceData = sourceInfo.filter(data => {
+      const compare = data.asset.split('-')[0].toLowerCase() !== source;
+      if (!compare) {
+        sourceValid = true;
+      }
+
+      return compare;
+    });
+
+    if (!sourceValid || !targetValid) {
+      this.props.history.push('/swap');
+    }
+
+    return {
+      sourceData,
+      targetData,
+    };
   };
 
   getSwapData = () => {
@@ -373,12 +404,13 @@ class SwapSend extends Component {
 
     const swapData = this.getSwapData();
 
-    if (!swapData) {
+    if (!swapData || !assetData.length || !Object.keys(tokenInfo).length) {
       return '';
     }
 
     const { source, target } = swapData;
-    const assetsData = Object.keys(tokenInfo).map(tokenName => {
+
+    const tokensData = Object.keys(tokenInfo).map(tokenName => {
       const { symbol, price } = tokenInfo[tokenName];
 
       return {
@@ -387,15 +419,11 @@ class SwapSend extends Component {
       };
     });
 
-    const targetData = assetsData.filter(data => data.asset !== source);
+    const { sourceData, targetData } = this.validatePair(assetData, tokensData);
+
     const targetIndex = targetData.findIndex(
       value => value.asset.toLowerCase() === target,
     );
-    const sourceData = assetData.filter(
-      data => data.asset.split('-')[0].toLowerCase() !== target,
-    );
-
-    this.validatePair(sourceData, targetData);
 
     const dragTitle =
       view === 'detail' ? 'Drag to swap' : 'Drag to swap and send';
