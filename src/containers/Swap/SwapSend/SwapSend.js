@@ -104,6 +104,7 @@ class SwapSend extends Component {
   };
 
   handleChangeSource = asset => {
+    const { view } = this.props;
     const { target } = this.getSwapData();
     const source = asset.split('-')[0].toLowerCase();
 
@@ -111,7 +112,7 @@ class SwapSend extends Component {
       return;
     }
 
-    const URL = `/swap/send/${source}-${target}`;
+    const URL = `/swap/${view}/${source}-${target}`;
 
     this.props.history.push(URL);
   };
@@ -296,14 +297,19 @@ class SwapSend extends Component {
   };
 
   handleEndTxTimer = () => {
-    const { setTxTimerStatus } = this.props;
+    const {
+      setTxTimerStatus,
+      txStatus: { status },
+    } = this.props;
 
-    setTxTimerStatus(false);
-    this.setState({
-      dragReset: true,
-    });
+    if (!status) {
+      setTxTimerStatus(false);
+      this.setState({
+        dragReset: true,
+      });
 
-    this.handleConfirmSwap();
+      this.handleConfirmSwap();
+    }
   };
 
   handleConfirmSwap = () => {
@@ -335,11 +341,16 @@ class SwapSend extends Component {
     });
   };
 
-  renderSwapModalContent = swapData => {
+  renderSwapModalContent = (swapData, info) => {
     const {
       txStatus: { status, value },
     } = this.props;
+    const { xValue } = this.state;
     const { source, target } = swapData;
+    const { Px, slip, outputAmount, outputPrice } = info;
+    const priceFrom = Number(Px * xValue);
+    const priceTo = Number(outputAmount * outputPrice);
+    const slipAmount = slip.toFixed(2);
 
     const transactionLabels = [
       'sending transaction',
@@ -360,7 +371,7 @@ class SwapSend extends Component {
       <SwapModalContent>
         <div className="left-container">
           <Label weight="bold">{swapText}</Label>
-          <CoinData asset={source} assetValue={2.49274} price={217.92} />
+          <CoinData asset={source} assetValue={xValue} price={priceFrom} />
         </div>
         <div className="center-container">
           <TxTimer
@@ -376,17 +387,17 @@ class SwapSend extends Component {
         </div>
         <div className="right-container">
           <Label weight="bold">{receiveText}</Label>
-          <CoinData asset={target} assetValue={2.49274} price={217.92} />
+          <CoinData asset={target} assetValue={outputAmount} price={priceTo} />
           <Label weight="bold">{expectation}</Label>
           <div className="expected-status">
             <div className="status-item">
-              <Status title="FEES" value="1.234 RUNE" />
+              <Status title="FEES" value="1 RUNE" />
               <Label className="price-label" size="normal" color="gray">
-                $USD 110
+                $USD 0.04
               </Label>
             </div>
             <div className="status-item">
-              <Status title="SLIP" value="0.3%" />
+              <Status title="SLIP" value={`${slipAmount}%`} />
             </div>
           </div>
         </div>
@@ -545,7 +556,7 @@ class SwapSend extends Component {
           footer={null}
           onCancel={this.handleCloseModal}
         >
-          {this.renderSwapModalContent(swapData)}
+          {this.renderSwapModalContent(swapData, this.data)}
         </SwapModal>
         <PrivateModal
           title="PASSWORD CONFIRMATION"
