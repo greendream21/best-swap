@@ -104,10 +104,15 @@ class SwapSend extends Component {
   };
 
   handleChangeSource = asset => {
+    const { view } = this.props;
     const { target } = this.getSwapData();
     const source = asset.split('-')[0].toLowerCase();
 
-    const URL = `/swap/send/${source}-${target}`;
+    if (source === target) {
+      return;
+    }
+
+    const URL = `/swap/${view}/${source}-${target}`;
 
     this.props.history.push(URL);
   };
@@ -162,10 +167,11 @@ class SwapSend extends Component {
 
   handleEndDrag = () => {
     const {
+      view,
       user: { keystore, wallet },
     } = this.props;
 
-    if (!this.isValidRecipient()) {
+    if (view === 'send' && !this.isValidRecipient()) {
       this.setState({
         invalidAddress: true,
         dragReset: true,
@@ -221,16 +227,52 @@ class SwapSend extends Component {
   handleSelectTraget = assetsData => targetIndex => {
     const { view } = this.props;
     const { source } = this.getSwapData();
-    const target = assetsData[targetIndex].asset.toLowerCase();
+    const target = assetsData[targetIndex].asset.split('-')[0].toLowerCase();
+
+    if (source === target) {
+      return;
+    }
+
     const URL = `/swap/${view}/${source}-${target}`;
 
     this.props.history.push(URL);
   };
 
-  validatePair = (sourceData, targetData) => {
-    if (!sourceData.length || !targetData.length) {
+  validatePair = (sourceInfo, targetInfo) => {
+    if (!sourceInfo.length || !targetInfo.length) {
       this.props.history.push('/swap');
     }
+
+    const { source, target } = this.getSwapData();
+
+    let sourceValid = false;
+    let targetValid = false;
+    const targetData = targetInfo.filter(data => {
+      const compare = data.asset.split('-')[0].toLowerCase() !== target;
+      if (!compare) {
+        targetValid = true;
+      }
+
+      return compare;
+    });
+
+    const sourceData = sourceInfo.filter(data => {
+      const compare = data.asset.split('-')[0].toLowerCase() !== source;
+      if (!compare) {
+        sourceValid = true;
+      }
+
+      return compare;
+    });
+
+    if (!sourceValid || !targetValid) {
+      this.props.history.push('/swap');
+    }
+
+    return {
+      sourceData,
+      targetData,
+    };
   };
 
   getSwapData = () => {
@@ -255,14 +297,19 @@ class SwapSend extends Component {
   };
 
   handleEndTxTimer = () => {
-    const { setTxTimerStatus } = this.props;
+    const {
+      setTxTimerStatus,
+      txStatus: { status },
+    } = this.props;
 
-    setTxTimerStatus(false);
-    this.setState({
-      dragReset: true,
-    });
+    if (!status) {
+      setTxTimerStatus(false);
+      this.setState({
+        dragReset: true,
+      });
 
-    this.handleConfirmSwap();
+      this.handleConfirmSwap();
+    }
   };
 
   handleConfirmSwap = () => {
@@ -294,11 +341,16 @@ class SwapSend extends Component {
     });
   };
 
-  renderSwapModalContent = swapData => {
+  renderSwapModalContent = (swapData, info) => {
     const {
       txStatus: { status, value },
     } = this.props;
+    const { xValue } = this.state;
     const { source, target } = swapData;
+    const { Px, slip, outputAmount, outputPrice } = info;
+    const priceFrom = Number(Px * xValue);
+    const priceTo = Number(outputAmount * outputPrice);
+    const slipAmount = slip.toFixed(2);
 
     const transactionLabels = [
       'sending transaction',
@@ -319,7 +371,7 @@ class SwapSend extends Component {
       <SwapModalContent>
         <div className="left-container">
           <Label weight="bold">{swapText}</Label>
-          <CoinData asset={source} assetValue={2.49274} price={217.92} />
+          <CoinData asset={source} assetValue={xValue} price={priceFrom} />
         </div>
         <div className="center-container">
           <TxTimer
@@ -335,17 +387,17 @@ class SwapSend extends Component {
         </div>
         <div className="right-container">
           <Label weight="bold">{receiveText}</Label>
-          <CoinData asset={target} assetValue={2.49274} price={217.92} />
+          <CoinData asset={target} assetValue={outputAmount} price={priceTo} />
           <Label weight="bold">{expectation}</Label>
           <div className="expected-status">
             <div className="status-item">
-              <Status title="FEES" value="1.234 RUNE" />
+              <Status title="FEES" value="1 RUNE" />
               <Label className="price-label" size="normal" color="gray">
-                $USD 110
+                $USD 0.04
               </Label>
             </div>
             <div className="status-item">
-              <Status title="SLIP" value="0.3%" />
+              <Status title="SLIP" value={`${slipAmount}%`} />
             </div>
           </div>
         </div>
@@ -373,12 +425,13 @@ class SwapSend extends Component {
 
     const swapData = this.getSwapData();
 
-    if (!swapData) {
+    if (!swapData || !assetData.length || !Object.keys(tokenInfo).length) {
       return '';
     }
 
     const { source, target } = swapData;
-    const assetsData = Object.keys(tokenInfo).map(tokenName => {
+
+    const tokensData = Object.keys(tokenInfo).map(tokenName => {
       const { symbol, price } = tokenInfo[tokenName];
 
       return {
@@ -387,15 +440,11 @@ class SwapSend extends Component {
       };
     });
 
-    const targetData = assetsData.filter(data => data.asset !== source);
+    const { sourceData, targetData } = this.validatePair(assetData, tokensData);
+
     const targetIndex = targetData.findIndex(
       value => value.asset.toLowerCase() === target,
     );
-    const sourceData = assetData.filter(
-      data => data.asset.split('-')[0].toLowerCase() !== target,
-    );
-
-    this.validatePair(sourceData, targetData);
 
     const dragTitle =
       view === 'detail' ? 'Drag to swap' : 'Drag to swap and send';
@@ -430,23 +479,25 @@ class SwapSend extends Component {
                 swap & send
               </Button>
             </div>
-            <Form className="recipient-form">
-              <Label weight="bold">Recipient Address:</Label>
-              <Form.Item className={invalidAddress ? 'has-error' : ''}>
-                <Input
-                  placeholder="bnbeh456..."
-                  sizevalue="normal"
-                  value={address}
-                  onChange={this.handleChange('address')}
-                  ref={this.addressRef}
-                />
-                {invalidAddress && (
-                  <div className="ant-form-explain">
-                    Recipient address is invalid!
-                  </div>
-                )}
-              </Form.Item>
-            </Form>
+            {view === 'send' && (
+              <Form className="recipient-form">
+                <Label weight="bold">Recipient Address:</Label>
+                <Form.Item className={invalidAddress ? 'has-error' : ''}>
+                  <Input
+                    placeholder="bnbeh456..."
+                    sizevalue="normal"
+                    value={address}
+                    onChange={this.handleChange('address')}
+                    ref={this.addressRef}
+                  />
+                  {invalidAddress && (
+                    <div className="ant-form-explain">
+                      Recipient address is invalid!
+                    </div>
+                  )}
+                </Form.Item>
+              </Form>
+            )}
             <div className="swap-asset-card">
               <CoinCard
                 title="You are swapping"
@@ -505,7 +556,7 @@ class SwapSend extends Component {
           footer={null}
           onCancel={this.handleCloseModal}
         >
-          {this.renderSwapModalContent(swapData)}
+          {this.renderSwapModalContent(swapData, this.data)}
         </SwapModal>
         <PrivateModal
           title="PASSWORD CONFIRMATION"

@@ -126,7 +126,7 @@ class WalletView extends Component {
       <WalletViewWrapper>
         <Tabs defaultActiveKey="assets" onChange={this.handleChangeTab}>
           <TabPane tab="assets" key="assets">
-            <Label className="asset-title-label">
+            <Label className="asset-title-label" weight="bold">
               {this.renderAssetTitle()}
             </Label>
             {!wallet && (
