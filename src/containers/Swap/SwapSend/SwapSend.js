@@ -107,6 +107,10 @@ class SwapSend extends Component {
     const { target } = this.getSwapData();
     const source = asset.split('-')[0].toLowerCase();
 
+    if (source === target) {
+      return;
+    }
+
     const URL = `/swap/send/${source}-${target}`;
 
     this.props.history.push(URL);
@@ -222,7 +226,12 @@ class SwapSend extends Component {
   handleSelectTraget = assetsData => targetIndex => {
     const { view } = this.props;
     const { source } = this.getSwapData();
-    const target = assetsData[targetIndex].asset.toLowerCase();
+    const target = assetsData[targetIndex].asset.split('-')[0].toLowerCase();
+
+    if (source === target) {
+      return;
+    }
+
     const URL = `/swap/${view}/${source}-${target}`;
 
     this.props.history.push(URL);
