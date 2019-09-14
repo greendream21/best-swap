@@ -162,10 +162,11 @@ class SwapSend extends Component {
 
   handleEndDrag = () => {
     const {
+      view,
       user: { keystore, wallet },
     } = this.props;
 
-    if (!this.isValidRecipient()) {
+    if (view === 'send' && !this.isValidRecipient()) {
       this.setState({
         invalidAddress: true,
         dragReset: true,
@@ -458,23 +459,25 @@ class SwapSend extends Component {
                 swap & send
               </Button>
             </div>
-            <Form className="recipient-form">
-              <Label weight="bold">Recipient Address:</Label>
-              <Form.Item className={invalidAddress ? 'has-error' : ''}>
-                <Input
-                  placeholder="bnbeh456..."
-                  sizevalue="normal"
-                  value={address}
-                  onChange={this.handleChange('address')}
-                  ref={this.addressRef}
-                />
-                {invalidAddress && (
-                  <div className="ant-form-explain">
-                    Recipient address is invalid!
-                  </div>
-                )}
-              </Form.Item>
-            </Form>
+            {view === 'send' && (
+              <Form className="recipient-form">
+                <Label weight="bold">Recipient Address:</Label>
+                <Form.Item className={invalidAddress ? 'has-error' : ''}>
+                  <Input
+                    placeholder="bnbeh456..."
+                    sizevalue="normal"
+                    value={address}
+                    onChange={this.handleChange('address')}
+                    ref={this.addressRef}
+                  />
+                  {invalidAddress && (
+                    <div className="ant-form-explain">
+                      Recipient address is invalid!
+                    </div>
+                  )}
+                </Form.Item>
+              </Form>
+            )}
             <div className="swap-asset-card">
               <CoinCard
                 title="You are swapping"
