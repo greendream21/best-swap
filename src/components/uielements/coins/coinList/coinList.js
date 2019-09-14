@@ -1,5 +1,6 @@
 import React, { Fragment, Component } from 'react';
 import PropTypes from 'prop-types';
+import { Scrollbars } from 'react-custom-scrollbars';
 
 import { CoinListWrapper } from './coinList.style';
 import CoinData from '../coinData';
@@ -44,36 +45,38 @@ class CoinList extends Component {
         className={`coinList-wrapper ${className}`}
         {...props}
       >
-        {data.map((coinData, index) => {
-          const { asset, assetValue, target, targetValue, price } = coinData;
+        <Scrollbars className="coinList-scroll">
+          {data.map((coinData, index) => {
+            const { asset, assetValue, target, targetValue, price } = coinData;
 
-          const tokenName = asset.split('-')[0];
+            const tokenName = asset.split('-')[0];
 
-          if (!tokenName) {
-            console.log(asset, 'is not a recognized token');
-            return <Fragment key={asset} />;
-          }
+            if (!tokenName) {
+              console.log(asset, 'is not a recognized token');
+              return <Fragment key={asset} />;
+            }
 
-          const isSelected = selected.includes(index);
-          const activeClass = isSelected || value === index ? 'active' : '';
+            const isSelected = selected.includes(index);
+            const activeClass = isSelected || value === index ? 'active' : '';
 
-          return (
-            <div
-              className={`coinList-row ${activeClass}`}
-              onClick={this.toggleSelect(index)}
-              key={index}
-            >
-              <CoinData
-                asset={tokenName.toLowerCase()}
-                assetValue={assetValue}
-                target={target}
-                targetValue={targetValue}
-                price={price}
-                size={size}
-              />
-            </div>
-          );
-        })}
+            return (
+              <div
+                className={`coinList-row ${activeClass}`}
+                onClick={this.toggleSelect(index)}
+                key={index}
+              >
+                <CoinData
+                  asset={tokenName.toLowerCase()}
+                  assetValue={assetValue}
+                  target={target}
+                  targetValue={targetValue}
+                  price={price}
+                  size={size}
+                />
+              </div>
+            );
+          })}
+        </Scrollbars>
       </CoinListWrapper>
     );
   }
