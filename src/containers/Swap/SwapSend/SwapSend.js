@@ -516,6 +516,7 @@ class SwapSend extends Component {
 
     const { sourceData, targetData } = this.validatePair(assetData, tokensData);
 
+    console.log(targetData);
     const targetIndex = targetData.findIndex(
       value => value.asset.toLowerCase() === target,
     );

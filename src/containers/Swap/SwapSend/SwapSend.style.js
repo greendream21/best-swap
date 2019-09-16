@@ -33,6 +33,17 @@ export const ArrowContainer = styled(BaseArrowContainer)`
 export const ContentWrapper = styled(ContentView)`
   padding: 0;
 
+  .ant-row {
+    display: flex;
+    flex-grow: 1;
+    ${media.xs`
+      flex-direction: column;
+    `}
+    ${media.sm`
+      flex-direction: row;
+    `}
+  }
+
   .swap-detail-panel {
     display: flex;
     flex-direction: column;
@@ -77,6 +88,8 @@ export const ContentWrapper = styled(ContentView)`
   }
 
   .swap-token-panel {
+    display: flex;
+    flex-direction: column;
     padding: 20px 20px !important;
 
     .token-search-input {
@@ -84,6 +97,13 @@ export const ContentWrapper = styled(ContentView)`
     }
 
     .coinList-wrapper {
+      flex-grow: 1;
+      ${media.xs`
+        height: 300px;
+      `}
+      ${media.sm`
+        height: 0;
+      `}
       .coinList-row {
         padding: 0;
       }
