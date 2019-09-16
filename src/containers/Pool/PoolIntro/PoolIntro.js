@@ -42,9 +42,9 @@ class Pool extends Component {
             </Label>
           </Col>
         </Row>
-        <Row>
+        <Row className="rune-diagram-wrapper">
           <Col span={15}>
-            <Row className="rune-diagram-wrapper">
+            <Row>
               <Col span={6} className="user-avatar-image">
                 <img src={userAvatarIcon} alt="user-avatar" />
               </Col>

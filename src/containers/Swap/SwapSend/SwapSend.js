@@ -18,6 +18,7 @@ import Input from '../../../components/uielements/input/input';
 import CoinData from '../../../components/uielements/coins/coinData';
 import Status from '../../../components/uielements/status';
 import TxTimer from '../../../components/uielements/txTimer';
+import Modal from '../../../components/uielements/modal';
 
 import {
   ContentWrapper,
@@ -77,6 +78,7 @@ class SwapSend extends Component {
     openPrivateModal: false,
     password: '',
     invalidPassword: false,
+    openWalletAlert: false,
   };
 
   addressRef = React.createRef();
@@ -174,11 +176,33 @@ class SwapSend extends Component {
     });
   };
 
+  handleConnectWallet = () => {
+    this.setState({
+      openWalletAlert: false,
+    });
+
+    this.props.history.push('/connect');
+  };
+
+  hideWalletAlert = () => {
+    this.setState({
+      openWalletAlert: false,
+      dragReset: true,
+    });
+  };
+
   handleEndDrag = () => {
     const {
       view,
       user: { keystore, wallet },
     } = this.props;
+
+    if (!wallet) {
+      this.setState({
+        openWalletAlert: true,
+      });
+      return;
+    }
 
     if (view === 'send' && !this.isValidRecipient()) {
       this.setState({
@@ -248,7 +272,7 @@ class SwapSend extends Component {
   };
 
   validatePair = (sourceInfo, targetInfo) => {
-    if (!sourceInfo.length || !targetInfo.length) {
+    if (!targetInfo.length) {
       this.props.history.push('/swap');
     }
 
@@ -469,12 +493,13 @@ class SwapSend extends Component {
       invalidPassword,
       xValue,
       openPrivateModal,
+      openWalletAlert,
       password,
     } = this.state;
 
     const swapData = this.getSwapData();
 
-    if (!swapData || !assetData.length || !Object.keys(tokenInfo).length) {
+    if (!swapData || !Object.keys(tokenInfo).length) {
       return '';
     }
 
@@ -629,6 +654,15 @@ class SwapSend extends Component {
             )}
           </Form.Item>
         </PrivateModal>
+        <Modal
+          title="PLEASE ADD WALLET"
+          visible={openWalletAlert}
+          onOk={this.handleConnectWallet}
+          onCancel={this.hideWalletAlert}
+          okText="Add Wallet"
+        >
+          You should add wallet to swap token!
+        </Modal>
       </ContentWrapper>
     );
   }
