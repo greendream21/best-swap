@@ -1,4 +1,4 @@
-import { getSingleSwapMemo, getDoubleSwapMemo } from '../../helpers/memoHelper';
+import { getSwapMemo } from '../../helpers/memoHelper';
 import { getZValue, getPx, getPz, getSlip } from './calc';
 
 export const getSwapType = (from, to) => {
@@ -6,16 +6,6 @@ export const getSwapType = (from, to) => {
     return 'single_swap';
   }
   return 'double_swap';
-};
-
-export const getSwapMemo = (from, to, addr = '') => {
-  const type = getSwapType(from, to);
-
-  if (type === 'single_swap') {
-    return getSingleSwapMemo(to, addr);
-  }
-
-  return getDoubleSwapMemo(from, to, addr);
 };
 
 export const getCalcResult = (from, to, pools, xValue, runePrice) => {
@@ -82,6 +72,10 @@ export const getCalcResult = (from, to, pools, xValue, runePrice) => {
       }
     });
 
+    // Set RUNE for fromToken as we don't have rune in the pool from statechain
+    const rune = 'RUNE-A1F';
+    result.tickerFrom = rune;
+
     const times = (xValue + X) ** 2;
     const outputToken = Number(((xValue * X * Y) / times).toFixed(2));
     const outputPy = ((Px * (X + xValue)) / (Y - outputToken)).toFixed(2);
@@ -132,77 +126,64 @@ export const confirmSwap = (
   destAddr = '',
 ) => {
   const type = getSwapType(from, to);
-  // console.log('confirm swap', type, wallet, from, to, data, amount, destAddr);
+  console.log('confirm swap', type, wallet, from, to, data, amount, destAddr);
 
   if (!validateSwap(wallet, type, data, amount)) {
     return false;
   }
 
-  if (type === 'single_swap') {
-    const { poolAddressTo, tickerTo } = data;
+  const { poolAddressTo, tickerTo, tickerFrom } = data;
 
-    const memo = getSwapMemo(from, tickerTo, destAddr);
-    const rune = 'RUNE-A1F';
-    // console.log('memo: ', memo);
-    Binance.transfer(wallet, poolAddressTo, amount, rune, memo);
-    return true;
-  }
-  if (type === 'double_swap') {
-    const {
-      poolAddressFrom,
-      tickerFrom,
-      poolAddressTo,
-      tickerTo,
-      outputAmount,
-    } = data;
+  const memo = getSwapMemo(tickerTo, destAddr);
+  console.log('memo: ', memo);
+  Binance.transfer(wallet, poolAddressTo, amount, tickerFrom, memo);
+  return true;
 
-    const memo = getSwapMemo(tickerFrom, tickerTo, destAddr);
-    // console.log('memo: ', memo);
+  // console.log('memo: ', memo);
 
-    const fromAmount = Number(amount).toFixed(2);
-    const toAmount = Number(outputAmount).toFixed(2);
+  // Stake action
+  // const fromAmount = Number(amount).toFixed(2);
+  // const toAmount = Number(outputAmount).toFixed(2);
 
-    let outputs;
-    if (poolAddressFrom !== poolAddressTo) {
-      outputs = [
-        {
-          to: poolAddressFrom,
-          coins: [
-            {
-              denom: tickerFrom,
-              amount: fromAmount,
-            },
-          ],
-        },
-        {
-          to: poolAddressTo,
-          coins: [
-            {
-              denom: tickerTo,
-              amount: toAmount,
-            },
-          ],
-        },
-      ];
-    } else {
-      outputs = [
-        {
-          to: poolAddressFrom,
-          coins: [
-            {
-              denom: tickerFrom,
-              amount: fromAmount,
-            },
-            {
-              denom: tickerTo,
-              amount: toAmount,
-            },
-          ],
-        },
-      ];
-    }
+  // let outputs;
+  // if (poolAddressFrom !== poolAddressTo) {
+  //   outputs = [
+  //     {
+  //       to: poolAddressFrom,
+  //       coins: [
+  //         {
+  //           denom: tickerFrom,
+  //           amount: fromAmount,
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       to: poolAddressTo,
+  //       coins: [
+  //         {
+  //           denom: tickerTo,
+  //           amount: toAmount,
+  //         },
+  //       ],
+  //     },
+  //   ];
+  // } else {
+  //   outputs = [
+  //     {
+  //       to: poolAddressFrom,
+  //       coins: [
+  //         {
+  //           denom: tickerFrom,
+  //           amount: fromAmount,
+  //         },
+  //         {
+  //           denom: tickerTo,
+  //           amount: toAmount,
+  //         },
+  //       ],
+  //     },
+  //   ];
+  // }
 
-    Binance.multiSend(wallet, outputs, memo);
-    return true;
-  }
+  // Binance.multiSend(wallet, outputs, memo);
 };

@@ -49,13 +49,15 @@ const WalletDrawer = props => {
         onClose={onClose}
         visible={visible}
       >
-        <WalletView status={status} />
         {wallet && (
           <div className="wallet-address">
-            <Icon type="copy" onClick={onCopyWallet} />
+            <div className="copy-btn-wrapper">
+              <Icon type="copy" onClick={onCopyWallet} />
+            </div>
             <Label>{wallet}</Label>
           </div>
         )}
+        <WalletView status={status} />
         <Button
           className="forget-btn"
           typevalue="outline"

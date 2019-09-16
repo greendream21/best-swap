@@ -71,16 +71,20 @@ class WalletView extends Component {
   handleSelectStake = key => {};
 
   renderAssetTitle = () => {
-    const { status, loadingAssets } = this.props;
+    const { status, loadingAssets, assetData } = this.props;
 
     if (loadingAssets) {
       return 'Loading...';
     }
 
+    if (status === 'connected' && assetData.length === 0) {
+      return `Looks like you don't have anything in your wallet`;
+    }
+
     if (status === 'connected') {
       return 'Tokens in your wallet:';
     }
-    return `Looks like you don't have anything in your wallet`;
+    return 'Connect your wallet';
   };
 
   renderStakeTitle = () => {
@@ -126,7 +130,7 @@ class WalletView extends Component {
       <WalletViewWrapper>
         <Tabs defaultActiveKey="assets" onChange={this.handleChangeTab}>
           <TabPane tab="assets" key="assets">
-            <Label className="asset-title-label">
+            <Label className="asset-title-label" weight="bold">
               {this.renderAssetTitle()}
             </Label>
             {!wallet && (
