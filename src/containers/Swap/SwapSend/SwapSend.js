@@ -382,6 +382,15 @@ class SwapSend extends Component {
       ? 'EXPECTED FEES & SLIP'
       : 'FINAL FEES & SLIP';
 
+    const testnetTxExlorer = 'https://testnet-explorer.binance.org/tx/';
+    const hashString = this.hash
+      ? this.hash.substr(0, 5) +
+        '...' +
+        this.hash.substr(this.hash.length - 6, 5)
+      : '';
+    const txURL = testnetTxExlorer + this.hash;
+    const txString = testnetTxExlorer + hashString;
+
     return (
       <SwapModalContent>
         <Row className="swapmodal-content">
@@ -422,9 +431,9 @@ class SwapSend extends Component {
           {this.hash && (
             <div className="hash-address">
               <div className="copy-btn-wrapper">
-                <Icon type="copy" onClick={() => copy(this.hash)} />
+                <Icon type="copy" onClick={() => copy(txURL)} />
               </div>
-              <Label>{this.hash}</Label>
+              <Label>{txString}</Label>
             </div>
           )}
           {value !== 0 && (
