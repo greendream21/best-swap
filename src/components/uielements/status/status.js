@@ -1,8 +1,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import styled from 'styled-components';
 
 import { StatusWrapper } from './status.style';
 import Label from '../label';
+
+const TitleLabel = styled(Label)`
+  white-space: nowrap;
+`;
 
 class Status extends Component {
   static propTypes = {
@@ -22,9 +27,9 @@ class Status extends Component {
 
     return (
       <StatusWrapper className={`status-wrapper ${className}`} {...props}>
-        <Label className="status-title" size="tiny" weight="bold">
+        <TitleLabel className="status-title" size="tiny" weight="bold">
           {title}
-        </Label>
+        </TitleLabel>
         <Label className="status-value" size="big">
           {value}
         </Label>
