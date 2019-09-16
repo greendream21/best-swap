@@ -78,6 +78,10 @@ export const ContentWrapper = styled(ContentView)`
           font-size: 12px;
         }
       }
+
+      .ant-form-item-control-wrapper {
+        width: 100%;
+      }
     }
 
     .drag-confirm-wrapper {
