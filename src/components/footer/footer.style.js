@@ -12,6 +12,7 @@ export const FooterContainer = styled(Layout.Footer).attrs({
 
   ${media.sm`
     padding: 24px 0px;
+    margin-top: 40px;
   `}
 `;
 

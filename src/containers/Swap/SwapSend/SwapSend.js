@@ -22,6 +22,9 @@ import {
   ContentWrapper,
   SwapModalContent,
   SwapModal,
+  SwapAssetCard,
+  ArrowContainer,
+  ArrowImage,
   PrivateModal,
 } from './SwapSend.style';
 import { blackArrowIcon } from '../../../components/icons';
@@ -46,6 +49,7 @@ class SwapSend extends Component {
   static propTypes = {
     info: PropTypes.string,
     view: PropTypes.string.isRequired,
+    history: PropTypes.object,
     txStatus: PropTypes.object.isRequired,
     chainData: PropTypes.object.isRequired,
     assetData: PropTypes.array.isRequired,
@@ -142,7 +146,7 @@ class SwapSend extends Component {
         password: '',
         invalidPassword: true,
       });
-      console.log(error);
+      console.log(error); // eslint-disable-line no-console
     }
   };
 
@@ -460,7 +464,7 @@ class SwapSend extends Component {
     return (
       <ContentWrapper className="swap-detail-wrapper">
         <Row>
-          <Col className="swap-detail-panel" span={16}>
+          <Col className="swap-detail-panel" lg={16} span={24}>
             <div className="swap-type-selector">
               <Button
                 onClick={this.handleGotoDetail}
@@ -498,7 +502,7 @@ class SwapSend extends Component {
                 </Form.Item>
               </Form>
             )}
-            <div className="swap-asset-card">
+            <SwapAssetCard>
               <CoinCard
                 title="You are swapping"
                 asset={source}
@@ -510,7 +514,11 @@ class SwapSend extends Component {
                 onSelect={this.handleSelectAmount(source)}
                 withSelection
               />
-              <img src={blackArrowIcon} alt="blackarrow-icon" />
+
+              <ArrowContainer>
+                <ArrowImage src={blackArrowIcon} alt="blackarrow-icon" />
+              </ArrowContainer>
+
               <CoinCard
                 title="You will receive"
                 asset={target}
@@ -519,7 +527,7 @@ class SwapSend extends Component {
                 slip={slip}
                 disabled
               />
-            </div>
+            </SwapAssetCard>
             <div className="drag-confirm-wrapper">
               <Drag
                 title={dragTitle}
@@ -531,7 +539,7 @@ class SwapSend extends Component {
               />
             </div>
           </Col>
-          <Col className="swap-token-panel" span={8}>
+          <Col className="swap-token-panel" lg={8} span={24}>
             <Label className="select-token-label">
               Select token to receive
             </Label>

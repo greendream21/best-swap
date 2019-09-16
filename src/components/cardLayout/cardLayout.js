@@ -1,7 +1,11 @@
 // TODO: conflicts with prettier
 /* eslint-disable operator-linebreak */
 import styled, { css } from 'styled-components';
-import { media, cleanTag } from '../../helpers/styleHelper';
+import {
+  provideResponsiveShow,
+  media,
+  cleanTag,
+} from '../../helpers/styleHelper';
 
 const Row = styled.div`
   display: flex;
@@ -48,16 +52,6 @@ function provideNoShrink({ noShrink }) {
         flex-shrink: 0;
       `
     : '';
-}
-
-function provideResponsiveShow({ showFrom }) {
-  return (
-    showFrom &&
-    css`
-      display: none;
-      ${media[showFrom]`display:block;`}
-    `
-  );
 }
 
 function provideMargin() {
