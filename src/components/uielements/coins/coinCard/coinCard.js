@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { Divider, InputNumber, Icon, Dropdown } from 'antd';
+import { Divider, Input, Icon, Dropdown } from 'antd';
 
 import Coin from '../coin';
 import Label from '../../label';
@@ -47,7 +47,7 @@ class CoinCard extends Component {
   };
 
   onChange = e => {
-    this.props.onChange(e);
+    this.props.onChange(e.target.value);
   };
 
   handleVisibleChange = openDropdown => {
@@ -172,11 +172,8 @@ class CoinCard extends Component {
               <Label className="asset-name-label" size="small" weight="bold">
                 {asset}
               </Label>
-              <InputNumber
+              <Input
                 className="asset-amount-label"
-                min={0}
-                max={max}
-                defaultValue={3}
                 size="big"
                 value={amount}
                 style={{ width: '100%' }}

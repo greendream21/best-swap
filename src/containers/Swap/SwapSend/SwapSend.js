@@ -103,8 +103,11 @@ class SwapSend extends Component {
   };
 
   handleChangeValue = value => {
+    const { xValue } = this.state;
+    const newValue = isNaN(value) ? xValue : Number(value);
+
     this.setState({
-      xValue: value,
+      xValue: newValue,
     });
   };
 
