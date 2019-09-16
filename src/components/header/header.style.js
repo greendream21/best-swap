@@ -65,6 +65,7 @@ export const HeaderActionButtons = styled.div`
 
   ${media.sm`
     display: flex;
+    align-items: center;
   `}
 
   /* HACK: This should be refactored in 
