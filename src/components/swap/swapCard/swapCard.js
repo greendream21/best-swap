@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import { SwapCardWrapper } from './swapCard.style';
+import { SwapCardRow, SwapCardGroup, SwapCardItem } from './swapCard.style';
 import { coinGroup } from '../../../settings';
 import Coin from '../../uielements/coins/coin';
 import Status from '../../uielements/status';
@@ -51,27 +51,43 @@ class SwapCard extends Component {
     const tradeValue = `${trade}`;
 
     return (
-      <SwapCardWrapper className={`SwapCard-wrapper ${className}`} {...props}>
-        <Coin
-          className="coinData-coin-avatar"
-          type={asset}
-          over={target}
-          size="big"
-        />
-        <Status className="pool-status" title="Pool" value={poolValue} />
-        <Status title="Depth" value={depthValue} />
-        <Status title="24hr volume" value={volumeValue} />
-        <Status title="Avg. Transaction" value={transactionValue} />
-        <Status title="Avg. Slip" value={slipValue} />
-        <Status
-          title="No. Of Trades"
-          value={tradeValue}
-          className="trade-status"
-        />
-        <Button onClick={onSwap} color="success">
-          swap
-        </Button>
-      </SwapCardWrapper>
+      <SwapCardRow className={className} {...props}>
+        <SwapCardGroup>
+          <SwapCardItem clamp={60}>
+            <Coin
+              className="coinData-coin-avatar"
+              type={asset}
+              over={target}
+              size="big"
+            />
+          </SwapCardItem>
+
+          <SwapCardItem min={130}>
+            <Status className="pool-status" title="Pool" value={poolValue} />
+          </SwapCardItem>
+          <SwapCardItem showFrom="sm">
+            <Status title="Depth" value={depthValue} />
+          </SwapCardItem>
+          <SwapCardItem showFrom="md">
+            <Status title="24hr volume" value={volumeValue} />
+          </SwapCardItem>
+          <SwapCardItem showFrom="md">
+            <Status title="Avg. Transaction" value={transactionValue} />
+          </SwapCardItem>
+          <SwapCardItem showFrom="lg">
+            <Status title="Avg. Slip" value={slipValue} />
+          </SwapCardItem>
+          <SwapCardItem showFrom="lg">
+            <Status title="No. Of Trades" value={tradeValue} />
+          </SwapCardItem>
+        </SwapCardGroup>
+
+        <SwapCardItem showFrom="xs">
+          <Button onClick={onSwap} color="success">
+            swap
+          </Button>
+        </SwapCardItem>
+      </SwapCardRow>
     );
   }
 }
