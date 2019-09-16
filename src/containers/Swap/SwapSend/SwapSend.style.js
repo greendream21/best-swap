@@ -2,20 +2,45 @@ import styled from 'styled-components';
 import { palette } from 'styled-theme';
 import ContentView from '../../../components/utility/contentView';
 import Modal from '../../../components/uielements/modal';
+import { media, cleanTag } from '../../../helpers/styleHelper';
+
+export const SwapAssetCard = styled.div`
+  display: flex;
+  flex-direction: column;
+
+  ${media.md`
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 20px 0;
+  `}
+`;
+
+export const ArrowImage = styled.img`
+  transform: rotate(90deg);
+  ${media.md`
+    transform: rotate(0);
+  `}
+`;
+
+const BaseArrowContainer = cleanTag('div', ['rotate', 'showFrom', 'hideFrom']);
+export const ArrowContainer = styled(BaseArrowContainer)`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+`;
 
 export const ContentWrapper = styled(ContentView)`
   padding: 0;
-
-  & > .ant-row {
-    display: flex;
-    flex: auto;
-  }
 
   .swap-detail-panel {
     display: flex;
     flex-direction: column;
     padding: 20px 20px !important;
-    border-right: 1px solid ${palette('border', 0)};
+
+    ${media.lg`
+      border-right: 1px solid ${palette('border', 0)};
+    `}
 
     .swap-type-selector {
       display: flex;
@@ -42,11 +67,6 @@ export const ContentWrapper = styled(ContentView)`
           font-size: 12px;
         }
       }
-    }
-    .swap-asset-card {
-      display: flex;
-      justify-content: space-between;
-      padding: 20px 0;
     }
 
     .drag-confirm-wrapper {
