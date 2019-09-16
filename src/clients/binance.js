@@ -27,10 +27,14 @@ class Binance {
     this.bnbTokens = new TokenManagement(this.bnbClient).tokens;
   }
 
-  setPrivateKey = privateKey => {
-    this.bnbClient.setPrivateKey(privateKey);
-    this.bnbClient.chooseNetwork(this.net);
-    this.bnbClient.initChain();
+  setPrivateKey = async privateKey => {
+    try {
+      await this.bnbClient.setPrivateKey(privateKey);
+      this.bnbClient.chooseNetwork(this.net);
+      await this.bnbClient.initChain();
+    } catch (error) {
+      return error;
+    }
   };
 
   useLedgerSigningDelegate = (

@@ -103,7 +103,8 @@ export const SwapModal = styled(Modal)`
 
 export const SwapModalContent = styled.div`
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: center;
 
   .coinData-wrapper {
     padding-left: 0;
@@ -119,42 +120,74 @@ export const SwapModalContent = styled.div`
     }
   }
 
-  .left-container {
+  .swapmodal-content {
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+
+    .left-container {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .center-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .right-container {
+      display: flex;
+      flex-direction: column;
+
+      .expected-status {
+        display: flex;
+
+        .status-item {
+          display: flex;
+          flex-direction: column;
+          padding-right: 8px;
+
+          .price-label {
+            padding-top: 4px;
+            padding-bottom: 0;
+          }
+        }
+      }
+    }
   }
 
-  .center-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  .swap-info-wrapper {
+    margin-top: 10px;
 
-    .label-wrapper {
-      margin-top: 35px;
+    .tx-label {
       text-transform: uppercase;
+      text-align: center;
     }
 
     .before-start-label {
       opacity: 0;
     }
-  }
 
-  .right-container {
-    display: flex;
-    flex-direction: column;
-
-    .expected-status {
+    .hash-address {
       display: flex;
+      align-items: center;
 
-      .status-item {
+      .copy-btn-wrapper {
         display: flex;
-        flex-direction: column;
-        padding-right: 8px;
+        justify-content: center;
+        align-items: center;
 
-        .price-label {
-          padding-top: 4px;
-          padding-bottom: 0;
-        }
+        border: 1px solid ${palette('primary', 0)};
+        border-radius: 4px;
+        padding: 4px;
+        margin-right: 6px;
+        color: ${palette('primary', 0)};
+        cursor: pointer;
+      }
+
+      .label-wrapper {
+        width: 100%;
       }
     }
   }

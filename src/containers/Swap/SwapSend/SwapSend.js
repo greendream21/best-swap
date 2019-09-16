@@ -5,6 +5,7 @@ import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Row, Col, Icon, Form } from 'antd';
 import { crypto } from '@binance-chain/javascript-sdk';
+import copy from 'copy-to-clipboard';
 
 import Binance from '../../../clients/binance';
 
@@ -121,7 +122,7 @@ class SwapSend extends Component {
     this.props.history.push(URL);
   };
 
-  handleConfirmPassword = () => {
+  handleConfirmPassword = async () => {
     const {
       user: { keystore, wallet },
     } = this.props;
@@ -134,7 +135,8 @@ class SwapSend extends Component {
         Binance.getPrefix(),
       );
       if (wallet === address) {
-        Binance.setPrivateKey(privateKey);
+        await Binance.setPrivateKey(privateKey);
+        await this.handleConfirmSwap();
         this.handleStartTimer();
       }
 
@@ -306,24 +308,33 @@ class SwapSend extends Component {
       txStatus: { status },
     } = this.props;
 
-    if (!status) {
-      setTxTimerStatus(false);
-      this.setState({
-        dragReset: true,
-      });
-
-      this.handleConfirmSwap();
-    }
+    setTxTimerStatus(false);
+    this.setState({
+      dragReset: true,
+    });
   };
 
-  handleConfirmSwap = () => {
+  handleConfirmSwap = async () => {
     const {
       user: { wallet },
     } = this.props;
     const { xValue, address } = this.state;
     const { source, target } = this.getSwapData();
 
-    confirmSwap(Binance, wallet, source, target, this.data, xValue, address);
+    try {
+      const { result } = await confirmSwap(
+        Binance,
+        wallet,
+        source,
+        target,
+        this.data,
+        xValue,
+        address,
+      );
+      this.hash = result[0].hash;
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   handleSelectAmount = source => amount => {
@@ -373,38 +384,60 @@ class SwapSend extends Component {
 
     return (
       <SwapModalContent>
-        <div className="left-container">
-          <Label weight="bold">{swapText}</Label>
-          <CoinData asset={source} assetValue={xValue} price={priceFrom} />
-        </div>
-        <div className="center-container">
-          <TxTimer
-            reset={status}
-            value={value}
-            onChange={this.handleChangeTxValue}
-            onEnd={this.handleEndTxTimer}
-          />
-          {value !== 0 && (
-            <Label weight="bold">{transactionLabels[value - 1]}</Label>
-          )}
-          {completed && <Label weight="bold">complete</Label>}
-        </div>
-        <div className="right-container">
-          <Label weight="bold">{receiveText}</Label>
-          <CoinData asset={target} assetValue={outputAmount} price={priceTo} />
-          <Label weight="bold">{expectation}</Label>
-          <div className="expected-status">
-            <div className="status-item">
-              <Status title="FEES" value="1 RUNE" />
-              <Label className="price-label" size="normal" color="gray">
-                $USD 0.04
-              </Label>
-            </div>
-            <div className="status-item">
-              <Status title="SLIP" value={`${slipAmount}%`} />
+        <Row className="swapmodal-content">
+          <div className="left-container">
+            <Label weight="bold">{swapText}</Label>
+            <CoinData asset={source} assetValue={xValue} price={priceFrom} />
+          </div>
+          <div className="center-container">
+            <TxTimer
+              reset={status}
+              value={value}
+              onChange={this.handleChangeTxValue}
+              onEnd={this.handleEndTxTimer}
+            />
+          </div>
+          <div className="right-container">
+            <Label weight="bold">{receiveText}</Label>
+            <CoinData
+              asset={target}
+              assetValue={outputAmount}
+              price={priceTo}
+            />
+            <Label weight="bold">{expectation}</Label>
+            <div className="expected-status">
+              <div className="status-item">
+                <Status title="FEES" value="1 RUNE" />
+                <Label className="price-label" size="normal" color="gray">
+                  $USD 0.04
+                </Label>
+              </div>
+              <div className="status-item">
+                <Status title="SLIP" value={`${slipAmount}%`} />
+              </div>
             </div>
           </div>
-        </div>
+        </Row>
+        <Row className="swap-info-wrapper">
+          {this.hash && (
+            <div className="hash-address">
+              <div className="copy-btn-wrapper">
+                <Icon type="copy" onClick={() => copy(this.hash)} />
+              </div>
+              <Label>{this.hash}</Label>
+            </div>
+          )}
+          {value !== 0 && (
+            <Label className="tx-label" weight="bold">
+              {transactionLabels[value - 1]}
+            </Label>
+          )}
+          {completed && (
+            <Label className="tx-label" weight="bold">
+              complete
+            </Label>
+          )}
+        </Row>
       </SwapModalContent>
     );
   };
