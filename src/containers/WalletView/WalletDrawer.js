@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Icon, Button as AntdButton, notification } from 'antd';
+import { Icon, notification } from 'antd';
 import { connect } from 'react-redux';
 import copy from 'copy-to-clipboard';
 
 import WalletView from './WalletView';
 import Button from '../../components/uielements/button';
 import Label from '../../components/uielements/label';
+import WalletButton from '../../components/uielements/walletButton';
 
 import { WalletDrawerWrapper, Drawer } from './WalletDrawer.style';
 
@@ -39,9 +40,7 @@ const WalletDrawer = props => {
 
   return (
     <WalletDrawerWrapper>
-      <AntdButton shape="circle" onClick={toggleDrawer}>
-        <Icon type="wallet" />
-      </AntdButton>
+      <WalletButton connected value={wallet} onClick={toggleDrawer} />
       <Drawer
         placement="right"
         closable={false}
