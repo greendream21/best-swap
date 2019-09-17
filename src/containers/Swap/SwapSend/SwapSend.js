@@ -540,7 +540,7 @@ class SwapSend extends Component {
     const coinCloseIconType = txStatus.status ? 'fullscreen-exit' : 'close';
 
     // calculation
-    const runePrice = 0.04; // TODO: mock price = 0.04
+    const runePrice = 0.01534111; // TODO: mock price = 0.04
     this.data = getCalcResult(source, target, pools, xValue, runePrice);
     const { Px, slip, outputAmount, outputPrice } = this.data;
 
