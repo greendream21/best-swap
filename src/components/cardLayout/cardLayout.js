@@ -15,6 +15,14 @@ const Row = styled.div`
   border-radius: 4px;
   background-color: #fff;
   padding: 0 20px;
+
+  .status-wrapper {
+    &.pool-status {
+      width: 120px;
+    }
+
+    width: 100px;
+  }
 `;
 
 function provideClampWidth({ clamp }) {

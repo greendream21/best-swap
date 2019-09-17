@@ -18,8 +18,8 @@ class SwapView extends Component {
   static propTypes = {
     getPools: PropTypes.func.isRequired,
     pools: PropTypes.array.isRequired,
-    poolData: PropTypes.array.isRequired,
-    swapData: PropTypes.array.isRequired,
+    poolData: PropTypes.object.isRequired,
+    swapData: PropTypes.object.isRequired,
   };
 
   state = {
