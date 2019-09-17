@@ -71,7 +71,11 @@ const getBtnThemeColor = () => {
         border: darken,
         background: darken,
       },
+      focus: {
+        border: darken,
+      },
     };
+
     value.outline = {
       text: main,
       border: main,
@@ -80,6 +84,9 @@ const getBtnThemeColor = () => {
         text: '#fff',
         border: main,
         background: main,
+      },
+      focus: {
+        border: main,
       },
     };
     value.ghost = {
@@ -90,6 +97,9 @@ const getBtnThemeColor = () => {
         text: main,
         border: main,
         background: lighten,
+      },
+      focus: {
+        border: main,
       },
     };
 
@@ -112,22 +122,39 @@ export const ButtonWrapper = styled(Button)`
     font-size: ${props => fontSettings[props.sizevalue].size};
     font-weight: ${props => props.weight};
     letter-spacing: ${props => fontSettings[props.sizevalue].spacing};
-    color: ${props => colors[props.color][props.typevalue].text};
-    border-color: ${props => colors[props.color][props.typevalue].border};
-    background-color: ${props =>
-      colors[props.color][props.typevalue].background};
+
     text-transform: uppercase;
 
-    &.focused,
-    &:hover,
+    /* set theme colors away from antd defaults */
+    &,
     &:active,
     &:focus {
-      color: ${props =>
-        colors[props.color][props.typevalue].action.text} !important;
-      border-color: ${props =>
-        colors[props.color][props.typevalue].action.border} !important;
+      color: ${props => colors[props.color][props.typevalue].text};
+      border-color: ${props => colors[props.color][props.typevalue].border};
       background-color: ${props =>
-        colors[props.color][props.typevalue].action.background} !important;
+        colors[props.color][props.typevalue].background};
+    }
+
+    /* provide focus styles over the underlying styles */
+    &:focus,
+    &:active {
+      border-color: ${props =>
+        colors[props.color][props.typevalue].focus
+          .border} !important; /* HACK: Border is overridden in selection.style.js buttons we need to create a new style for these buttons remove this when ready */
+    }
+
+    /* apply special override styles for .focused class */
+    &.focused,
+    &:hover {
+      &,
+      &:focus,
+      &:active {
+        color: ${props => colors[props.color][props.typevalue].action.text};
+        border-color: ${props =>
+          colors[props.color][props.typevalue].action.border};
+        background-color: ${props =>
+          colors[props.color][props.typevalue].action.background};
+      }
     }
 
     i {
