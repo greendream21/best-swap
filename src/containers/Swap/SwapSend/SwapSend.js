@@ -3,7 +3,7 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Row, Col, Icon, Form } from 'antd';
+import { Row, Col, Icon, Form, notification } from 'antd';
 import { crypto } from '@binance-chain/javascript-sdk';
 
 import Binance from '../../../clients/binance';
@@ -107,9 +107,29 @@ class SwapSend extends Component {
     const { xValue } = this.state;
     const newValue = isNaN(value) ? xValue : Number(value);
 
-    this.setState({
-      xValue: newValue,
+    const { assetData } = this.props;
+    const { source } = this.getSwapData();
+
+    const sourceAsset = assetData.find(data => {
+      const { asset } = data;
+      const tokenName = asset.split('-')[0];
+      if (tokenName.toLowerCase() === source) {
+        return true;
+      }
+      return false;
     });
+
+    const totalAmount = sourceAsset.assetValue || 0;
+
+    if (totalAmount < newValue) {
+      this.setState({
+        xValue: totalAmount,
+      });
+    } else {
+      this.setState({
+        xValue: newValue,
+      });
+    }
   };
 
   handleChangeSource = asset => {
@@ -195,10 +215,22 @@ class SwapSend extends Component {
       view,
       user: { keystore, wallet },
     } = this.props;
+    const { xValue } = this.state;
 
     if (!wallet) {
       this.setState({
         openWalletAlert: true,
+      });
+      return;
+    }
+
+    if (Number(xValue) <= 0) {
+      notification['error']({
+        message: 'Swap Invalid',
+        description: 'You need to enter an amount to swap.',
+      });
+      this.setState({
+        dragReset: true,
       });
       return;
     }
@@ -409,13 +441,7 @@ class SwapSend extends Component {
       : 'FINAL FEES & SLIP';
 
     const testnetTxExlorer = 'https://testnet-explorer.binance.org/tx/';
-    const hashString = this.hash
-      ? this.hash.substr(0, 5) +
-        '...' +
-        this.hash.substr(this.hash.length - 6, 5)
-      : '';
     const txURL = testnetTxExlorer + this.hash;
-    const txString = testnetTxExlorer + hashString;
 
     return (
       <SwapModalContent>
@@ -461,7 +487,7 @@ class SwapSend extends Component {
                   <Icon type="global" />
                 </a>
               </div>
-              <Label>{txString}</Label>
+              <Label>{this.hash}</Label>
             </div>
           )}
           {value !== 0 && (
@@ -517,7 +543,6 @@ class SwapSend extends Component {
 
     const { sourceData, targetData } = this.validatePair(assetData, tokensData);
 
-    console.log(targetData);
     const targetIndex = targetData.findIndex(
       value => value.asset.toLowerCase() === target,
     );
