@@ -309,29 +309,15 @@ class SwapSend extends Component {
 
     const { source, target } = this.getSwapData();
 
-    let sourceValid = false;
-    let targetValid = false;
     const targetData = targetInfo.filter(data => {
       const compare = data.asset.split('-')[0].toLowerCase() !== target;
-      if (!compare) {
-        targetValid = true;
-      }
-
       return compare;
     });
 
     const sourceData = sourceInfo.filter(data => {
       const compare = data.asset.split('-')[0].toLowerCase() !== source;
-      if (!compare) {
-        sourceValid = true;
-      }
-
       return compare;
     });
-
-    if (!sourceValid || !targetValid) {
-      this.props.history.push('/swap');
-    }
 
     return {
       sourceData,
