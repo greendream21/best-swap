@@ -377,7 +377,7 @@ class SwapSend extends Component {
       );
       this.hash = result[0].hash;
     } catch (error) {
-      console.log(error);
+      console.log(error); // eslint-disable-line no-console
     }
   };
 
