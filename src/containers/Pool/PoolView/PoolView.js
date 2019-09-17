@@ -31,15 +31,13 @@ class PoolView extends Component {
   }
 
   handleStake = ticker => () => {
-    const URL = `/pool/${ticker}`;
-
-    this.props.history.push(URL);
+    // const URL = `/pool/${ticker}`;
+    // this.props.history.push(URL);
   };
 
   handleNewPool = () => {
-    const URL = '/pool/new/rune';
-
-    this.props.history.push(URL);
+    // const URL = '/pool/new/rune';
+    // this.props.history.push(URL);
   };
 
   renderPoolList = () => {

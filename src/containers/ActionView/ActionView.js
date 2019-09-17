@@ -193,8 +193,8 @@ class ActionView extends Component {
         {view === 'swap-detail' && <SwapSend view="detail" info={info} />}
         {view === 'swap-send' && <SwapSend view="send" info={info} />}
         {view === 'pools-view' && <PoolView />}
-        {view === 'pools-pool' && <PoolStake ticker={ticker} />}
-        {view === 'pool-new' && <PoolCreate view="new" info={info} />}
+        {/* {view === 'pools-pool' && <PoolStake ticker={ticker} />} */}
+        {/* {view === 'pool-new' && <PoolCreate view="new" info={info} />} */}
         {view === 'trade-view' && <TradeView />}
         {(view === 'trade-buy' || view === 'trade-sell') && (
           <TradeDetail view={view} info={info} />
