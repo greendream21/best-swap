@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import { PoolCardWrapper } from './poolCard.style';
+import CardLayout from '../../cardLayout';
 import Coin from '../../uielements/coins/coin';
 import Status from '../../uielements/status';
 import Button from '../../uielements/button';
+import { getActualValue } from '../../../helpers/stringHelper';
 
 class PoolCard extends Component {
   static propTypes = {
@@ -43,34 +44,52 @@ class PoolCard extends Component {
     } = this.props;
 
     const poolValue = `${asset}:${target}`;
-    const depthValue = `$${depth}`;
-    const volumeValue = `$${volume}`;
-    const transactionValue = `$${transaction}`;
-    const liqValue = `${liq}%`;
-    const roiValue = `${roi}% pa`;
+    const depthValue = `$${getActualValue(depth)}`;
+    const volumeValue = `$${getActualValue(volume)}`;
+    const transactionValue = `$${getActualValue(transaction)}`;
+    const liqValue = `${getActualValue(liq)}%`;
+    const roiValue = `${getActualValue(roi)}% pa`;
 
     return (
-      <PoolCardWrapper className={`poolCard-wrapper ${className}`} {...props}>
-        <Coin
-          className="coinData-coin-avatar"
-          type={asset}
-          over={target}
-          size="big"
-        />
-        <Status className="pool-status" title="Pool" value={poolValue} />
-        <Status title="Depth" value={depthValue} />
-        <Status title="24hr volume" value={volumeValue} />
-        <Status title="Avg. Transaction" value={transactionValue} />
-        <Status title="Avg. Liq Fee" value={liqValue} />
-        <Status
-          className="roi-status"
-          title="Historical ROI"
-          value={roiValue}
-        />
-        <Button onClick={onStake} color="success">
-          stake
-        </Button>
-      </PoolCardWrapper>
+      <CardLayout.Row className={className} {...props}>
+        <CardLayout.Group>
+          <CardLayout.Item clamp={80}>
+            <Coin
+              className="coinData-coin-avatar"
+              type={asset}
+              over={target}
+              size="big"
+            />
+          </CardLayout.Item>
+          <CardLayout.Item>
+            <Status className="pool-status" title="Pool" value={poolValue} />
+          </CardLayout.Item>
+          <CardLayout.Item showFrom="md">
+            <Status title="Depth" value={depthValue} />
+          </CardLayout.Item>
+          <CardLayout.Item showFrom="md">
+            <Status title="24hr volume" value={volumeValue} />
+          </CardLayout.Item>
+          <CardLayout.Item showFrom="lg">
+            <Status title="Avg. Transaction" value={transactionValue} />
+          </CardLayout.Item>
+          <CardLayout.Item showFrom="lg">
+            <Status title="Avg. Liq Fee" value={liqValue} />
+          </CardLayout.Item>
+          <CardLayout.Item showFrom="xl">
+            <Status
+              className="roi-status"
+              title="Historical ROI"
+              value={roiValue}
+            />
+          </CardLayout.Item>
+        </CardLayout.Group>
+        <CardLayout.Item noShrink showFrom="xs">
+          <Button onClick={onStake} color="success">
+            stake
+          </Button>
+        </CardLayout.Item>
+      </CardLayout.Row>
     );
   }
 }

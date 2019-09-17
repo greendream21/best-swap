@@ -3,6 +3,7 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { sortBy as _sortBy } from 'lodash';
 
 import { WalletViewWrapper } from './WalletView.style';
 import Tabs from '../../components/uielements/tabs';
@@ -71,10 +72,14 @@ class WalletView extends Component {
   handleSelectStake = key => {};
 
   renderAssetTitle = () => {
-    const { status, loadingAssets } = this.props;
+    const { status, loadingAssets, assetData } = this.props;
 
     if (loadingAssets) {
       return 'Loading...';
+    }
+
+    if (status === 'connected' && assetData.length === 0) {
+      return `Looks like you don't have anything in your wallet`;
     }
 
     if (status === 'connected') {
@@ -121,12 +126,13 @@ class WalletView extends Component {
     const { source } = pair;
     const selectedAsset = this.getSelectedAsset(pair);
     const sourceIndex = this.getAssetIndexByName(source);
+    const sortedAssets = _sortBy(assetData, ['asset']);
 
     return (
       <WalletViewWrapper>
         <Tabs defaultActiveKey="assets" onChange={this.handleChangeTab}>
           <TabPane tab="assets" key="assets">
-            <Label className="asset-title-label">
+            <Label className="asset-title-label" weight="bold">
               {this.renderAssetTitle()}
             </Label>
             {!wallet && (
@@ -136,14 +142,14 @@ class WalletView extends Component {
             )}
             {!loadingAssets && (
               <CoinList
-                data={assetData}
+                data={sortedAssets}
                 value={sourceIndex}
                 selected={selectedAsset}
                 onSelect={this.handleSelectAsset}
               />
             )}
           </TabPane>
-          <TabPane tab="stakes" key="stakes">
+          {/* <TabPane tab="stakes" key="stakes">
             <Label className="asset-title-label">
               {this.renderStakeTitle()}
             </Label>
@@ -154,7 +160,7 @@ class WalletView extends Component {
                 onSelect={this.handleSelectStake}
               />
             )}
-          </TabPane>
+          </TabPane> */}
         </Tabs>
       </WalletViewWrapper>
     );

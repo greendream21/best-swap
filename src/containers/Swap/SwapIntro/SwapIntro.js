@@ -41,8 +41,8 @@ class Swap extends Component {
             </Label>
           </Col>
         </Row>
-        <Row>
-          <Col span={15} className="rune-diagram-wrapper">
+        <Row className="rune-diagram-wrapper">
+          <Col span={15}>
             <div className="rune-diagram-images">
               <img src={userAvatarIcon} alt="user-avatar" />
               <img src={arrowGreenIcon} alt="arrow-green" />

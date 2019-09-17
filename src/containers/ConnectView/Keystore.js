@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { crypto } from '@binance-chain/javascript-sdk';
 import { FilePicker } from 'react-file-picker';
-import { Icon, Input } from 'antd';
+import { Icon, Input, Form } from 'antd';
 
 import { ContentWrapper } from './ConnectView.style';
 import Binance from '../../clients/binance';
@@ -19,6 +19,7 @@ const { saveWallet } = walletActions;
 const Keystore = props => {
   const [keystore, setKeystore] = useState(null);
   const [password, setPassword] = useState(null);
+  const [invalideStatus, setInvalideStatus] = useState(false);
 
   const [keystoreError, setKeystoreError] = useState(null);
 
@@ -44,64 +45,80 @@ const Keystore = props => {
 
   const onPasswordChange = e => {
     setPassword(e.target.value);
+    setInvalideStatus(false);
   };
 
   const unlock = () => {
-    const privateKey = crypto.getPrivateKeyFromKeyStore(keystore, password);
-    const address = crypto.getAddressFromPrivateKey(
-      privateKey,
-      Binance.getPrefix(),
-    );
+    try {
+      const privateKey = crypto.getPrivateKeyFromKeyStore(keystore, password);
+      const address = crypto.getAddressFromPrivateKey(
+        privateKey,
+        Binance.getPrefix(),
+      );
 
-    props.saveWallet({
-      type: 'keystore',
-      wallet: address,
-      keystore,
-    });
+      props.saveWallet({
+        type: 'keystore',
+        wallet: address,
+        keystore,
+      });
 
-    // clean up
-    setPassword(null);
-    setKeystore(null);
+      // clean up
+      setPassword(null);
+      setKeystore(null);
+    } catch (error) {
+      setInvalideStatus(true);
+      console.log(error);
+    }
   };
 
   const ready = (password || '').length > 0 && keystoreError === null;
 
   return (
     <ContentWrapper>
-      <Label size="large" weight="bold" color="normal">
-        Select Keystore File
-      </Label>
-      <FilePicker
-        onChange={f => uploadKeystore(f)}
-        onError={err => console.error(err)}
-      >
-        <div>
-          <Button color="primary" typevalue="outline">
-            <Icon type="upload" />
-            Choose File to Upload
-          </Button>
-          &nbsp;
-          {keystore && !keystoreError && (
-            <Icon type="check-circle" theme="twoTone" twoToneColor="#52c41a" />
+      <div className="keystore-connect-wrapper">
+        <Label size="large" weight="bold" color="normal">
+          Select Keystore File
+        </Label>
+        <FilePicker
+          onChange={f => uploadKeystore(f)}
+          onError={err => console.error(err)}
+        >
+          <div className="file-upload-wrapper">
+            <Button color="primary" typevalue="outline">
+              <Icon type="upload" />
+              Choose File to Upload
+            </Button>
+            &nbsp;
+            {keystore && !keystoreError && (
+              <Icon
+                type="check-circle"
+                theme="twoTone"
+                twoToneColor="#52c41a"
+              />
+            )}
+          </div>
+        </FilePicker>
+        {keystoreError && (
+          <span style={{ color: '#FF4136' }}>{keystoreError}</span>
+        )}
+        <FormGroup
+          className={invalideStatus ? 'has-error' : ''}
+          title="Decryption password:"
+          description="This is the password used to decrypt your encrypted keystore file"
+        >
+          <Input.Password
+            allowClear
+            onChange={onPasswordChange}
+            placeholder="password"
+          />
+          {invalideStatus && (
+            <div className="ant-form-explain">Password is wrong!</div>
           )}
-        </div>
-      </FilePicker>
-      {keystoreError && (
-        <span style={{ color: '#FF4136' }}>{keystoreError}</span>
-      )}
-      <FormGroup
-        title="Decryption password:"
-        description="This is the password used to decrypt your encrypted keystore file"
-      >
-        <Input.Password
-          allowClear
-          onChange={onPasswordChange}
-          placeholder="password"
-        />
-      </FormGroup>
-      <Button type="submit" onClick={unlock} disabled={!ready}>
-        Unlock
-      </Button>
+        </FormGroup>
+        <Button type="submit" onClick={unlock} disabled={!ready}>
+          Unlock
+        </Button>
+      </div>
     </ContentWrapper>
   );
 };

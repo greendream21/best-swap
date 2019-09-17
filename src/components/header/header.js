@@ -7,7 +7,12 @@ import PropTypes from 'prop-types';
 import TxView from '../uielements/txView';
 import Logo from '../uielements/logo';
 
-import { StyledHeader } from './header.style';
+import {
+  StyledHeader,
+  LogoWrapper,
+  HeaderTitle,
+  HeaderActionButtons,
+} from './header.style';
 import HeaderSetting from './headerSetting';
 import WalletDrawer from '../../containers/WalletView/WalletDrawer';
 
@@ -36,22 +41,28 @@ class Header extends Component {
     const { title, txStatus, user } = this.props;
     const { status } = txStatus;
     const { wallet } = user;
-    const connected = wallet ? true : false;
+    const connected = !!wallet;
 
     return (
       <StyledHeader>
-        <Link to="/">
-          <Logo className="header-logo" name="bepswap" type="long" />
-        </Link>
-        <p className="header-title">{title}</p>
-        <div className="header-right">
-          <Link to="/connect">
-            <WalletButton connected={connected} value={wallet} />
+        <LogoWrapper>
+          <Link to="/">
+            <Logo name="bepswap" type="long" />
           </Link>
+        </LogoWrapper>
+        <HeaderTitle>{title}</HeaderTitle>
+        <HeaderActionButtons>
+          {!connected && (
+            <Link to="/connect">
+              <WalletButton connected={connected} value={wallet} />
+            </Link>
+          )}
+          {connected && <WalletDrawer />}
           <HeaderSetting />
-          <WalletDrawer />
-          <TxView start={status} onClick={this.handleClickTxView} />
-        </div>
+          {connected && (
+            <TxView start={status} onClick={this.handleClickTxView} />
+          )}
+        </HeaderActionButtons>
       </StyledHeader>
     );
   }

@@ -13,6 +13,7 @@ export const CoinIconWrapper = styled.div`
     width: ${props => sizes[props.size]};
     height: ${props => sizes[props.size]};
     border-radius: 50%;
+    vertical-align: top; /* bug in coin alignment */
   }
 
   .blue-circle {

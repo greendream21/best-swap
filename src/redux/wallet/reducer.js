@@ -8,7 +8,14 @@ const user = wallet ? { wallet, keystore } : {};
 
 const initState = {
   user,
-  assetData: [],
+  runePrice: null,
+  assetData: [
+    {
+      asset: 'RUNE-A1F',
+      assetValue: 43255,
+      price: 0,
+    },
+  ],
   stakeData: [],
   loadingAssets: false,
   loadingStakes: false,
@@ -73,6 +80,11 @@ export default function apiReducer(state = initState, action) {
       return {
         ...state,
         stakeData: payload,
+      };
+    case actions.GET_RUNE_PRICE_SUCCESS:
+      return {
+        ...state,
+        runePrice: payload,
       };
     default:
       return state;

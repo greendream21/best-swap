@@ -20,6 +20,10 @@ export const ContentWrapper = styled(ContentView)`
     justify-content: space-around;
     align-items: center;
 
+    .rune-diagrams {
+      display: flex;
+      justify-content: space-around;
+    }
     .rune-diagram-pool,
     .rune-diagram-market {
       display: flex;
@@ -33,6 +37,6 @@ export const ContentWrapper = styled(ContentView)`
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-end;
   }
 `;

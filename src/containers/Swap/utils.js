@@ -1,21 +1,12 @@
-import { getSingleSwapMemo, getDoubleSwapMemo } from '../../helpers/memoHelper';
+import { getSwapMemo } from '../../helpers/memoHelper';
 import { getZValue, getPx, getPz, getSlip } from './calc';
+import { getBaseValue } from '../../helpers/stringHelper';
 
 export const getSwapType = (from, to) => {
   if (from.toLowerCase() === 'rune' || to.toLowerCase() === 'rune') {
     return 'single_swap';
   }
   return 'double_swap';
-};
-
-export const getSwapMemo = (from, to, addr = '') => {
-  const type = getSwapType(from, to);
-
-  if (type === 'single_swap') {
-    return getSingleSwapMemo(to, addr);
-  }
-
-  return getDoubleSwapMemo(from, to, addr);
 };
 
 export const getCalcResult = (from, to, pools, xValue, runePrice) => {
@@ -26,7 +17,7 @@ export const getCalcResult = (from, to, pools, xValue, runePrice) => {
     let Y = 10;
     let R = 10000;
     let Z = 10;
-    const Py = runePrice;
+    const Py = runePrice || 0.01481204;
     let result = {};
 
     pools.forEach(poolData => {
@@ -67,7 +58,8 @@ export const getCalcResult = (from, to, pools, xValue, runePrice) => {
   if (type === 'single_swap') {
     let X = 10000;
     let Y = 10;
-    const Px = runePrice;
+    const Px = runePrice || 0.01481204;
+
     let result = {};
 
     pools.forEach(poolData => {
@@ -81,6 +73,10 @@ export const getCalcResult = (from, to, pools, xValue, runePrice) => {
         result.tickerTo = ticker;
       }
     });
+
+    // Set RUNE for fromToken as we don't have rune in the pool from statechain
+    const rune = 'RUNE-A1F';
+    result.tickerFrom = rune;
 
     const times = (xValue + X) ** 2;
     const outputToken = Number(((xValue * X * Y) / times).toFixed(2));
@@ -131,59 +127,67 @@ export const confirmSwap = (
   amount,
   destAddr = '',
 ) => {
-  const type = getSwapType(from, to);
-  console.log('confirm swap', type, wallet, from, to, data, amount, destAddr);
+  return new Promise((resolve, reject) => {
+    const type = getSwapType(from, to);
+    console.log('confirm swap', type, wallet, from, to, data, amount, destAddr);
 
-  if (!validateSwap(wallet, type, data, amount)) {
-    return false;
-  }
+    if (!validateSwap(wallet, type, data, amount)) {
+      return reject();
+    }
 
-  if (type === 'single_swap') {
-    const { poolAddressTo, tickerTo } = data;
+    const { poolAddressTo, tickerTo, tickerFrom } = data;
 
-    const memo = getSwapMemo(from, tickerTo, destAddr);
-    const rune = 'RUNE-A1F';
+    const memo = getSwapMemo(tickerTo, destAddr);
     console.log('memo: ', memo);
-    Binance.transfer(wallet, poolAddressTo, amount, rune, memo);
-    return true;
-  }
-  if (type === 'double_swap') {
-    const {
-      poolAddressFrom,
-      tickerFrom,
-      poolAddressTo,
-      tickerTo,
-      outputAmount,
-    } = data;
+    Binance.transfer(wallet, poolAddressTo, amount, tickerFrom, memo)
+      .then(response => resolve(response))
+      .catch(error => reject(error));
+  });
+  // console.log('memo: ', memo);
 
-    const memo = getSwapMemo(tickerFrom, tickerTo, destAddr);
-    console.log('memo: ', memo);
+  // Stake action
+  // const fromAmount = Number(amount).toFixed(2);
+  // const toAmount = Number(outputAmount).toFixed(2);
 
-    const fromAmount = Number(amount).toFixed(2);
-    const toAmount = Number(outputAmount).toFixed(2);
+  // let outputs;
+  // if (poolAddressFrom !== poolAddressTo) {
+  //   outputs = [
+  //     {
+  //       to: poolAddressFrom,
+  //       coins: [
+  //         {
+  //           denom: tickerFrom,
+  //           amount: fromAmount,
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       to: poolAddressTo,
+  //       coins: [
+  //         {
+  //           denom: tickerTo,
+  //           amount: toAmount,
+  //         },
+  //       ],
+  //     },
+  //   ];
+  // } else {
+  //   outputs = [
+  //     {
+  //       to: poolAddressFrom,
+  //       coins: [
+  //         {
+  //           denom: tickerFrom,
+  //           amount: fromAmount,
+  //         },
+  //         {
+  //           denom: tickerTo,
+  //           amount: toAmount,
+  //         },
+  //       ],
+  //     },
+  //   ];
+  // }
 
-    const outputs = [
-      {
-        to: poolAddressFrom,
-        coins: [
-          {
-            denom: tickerFrom,
-            amount: fromAmount,
-          },
-        ],
-      },
-      {
-        to: poolAddressTo,
-        coins: [
-          {
-            denom: tickerTo,
-            amount: toAmount,
-          },
-        ],
-      },
-    ];
-
-    Binance.multiSend(wallet, outputs, memo);
-    return true;
-  }
+  // Binance.multiSend(wallet, outputs, memo);
 };

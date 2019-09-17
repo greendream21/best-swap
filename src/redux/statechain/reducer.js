@@ -15,7 +15,9 @@ export default function apiReducer(state = initState, action) {
     case actions.GET_POOLS_SUCCESS:
       return {
         ...state,
-        pools: payload,
+        pools: payload.pools,
+        poolData: payload.poolData,
+        swapData: payload.swapData,
         error: null,
       };
     case actions.GET_POOL_INFO_SUCCESS:

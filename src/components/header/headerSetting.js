@@ -54,7 +54,7 @@ class HeaderSetting extends Component {
 
   render() {
     const { curItem } = this.state;
-    const { status = 'red' } = items[curItem] || {};
+    const { status = 'green' } = items[curItem] || {};
     return (
       <Dropdown overlay={this.renderMenu()} trigger={['click']}>
         <a className="ant-dropdown-link" href="/">

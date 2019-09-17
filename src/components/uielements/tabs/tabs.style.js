@@ -49,4 +49,10 @@ export const StyledTab = component => styled(component)`
     padding: ${key('sizes.gutter.vertical', '20px')} 0;
     ${props => props.action && 'padding: 0 0;'}
   }
+
+  .ant-tabs-nav .ant-tabs-tab-disabled,
+  .ant-tabs-nav .ant-tabs-tab-disabled:hover {
+    color: rgba(0, 0, 0, 0.25);
+    cursor: not-allowed;
+  }
 `;
