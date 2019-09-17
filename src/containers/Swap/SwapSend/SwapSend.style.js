@@ -203,8 +203,8 @@ export const SwapModalContent = styled.div`
         align-items: center;
 
         border: 1px solid ${palette('primary', 0)};
-        border-radius: 4px;
-        padding: 4px;
+        border-radius: 6px;
+        padding: 1px 4px;
         margin-right: 6px;
         color: ${palette('primary', 0)};
         cursor: pointer;

@@ -5,7 +5,6 @@ import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Row, Col, Icon, Form } from 'antd';
 import { crypto } from '@binance-chain/javascript-sdk';
-import copy from 'copy-to-clipboard';
 
 import Binance from '../../../clients/binance';
 
@@ -458,7 +457,9 @@ class SwapSend extends Component {
           {this.hash && (
             <div className="hash-address">
               <div className="copy-btn-wrapper">
-                <Icon type="copy" onClick={() => copy(txURL)} />
+                <a href={txURL} target="_blank" rel="noopener noreferrer">
+                  <Icon type="global" />
+                </a>
               </div>
               <Label>{txString}</Label>
             </div>
@@ -662,7 +663,7 @@ class SwapSend extends Component {
           onCancel={this.hideWalletAlert}
           okText="Add Wallet"
         >
-          You should add wallet to swap token!
+          Please add a wallet to swap tokens.
         </Modal>
       </ContentWrapper>
     );
