@@ -49,10 +49,6 @@ export const ContentWrapper = styled(ContentView)`
     flex-direction: column;
     padding: 20px 20px !important;
 
-    ${media.lg`
-      border-right: 1px solid ${palette('border', 0)};
-    `}
-
     .swap-type-selector {
       display: flex;
       justify-content: space-between;
