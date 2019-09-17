@@ -52,11 +52,13 @@ class Header extends Component {
         </LogoWrapper>
         <HeaderTitle>{title}</HeaderTitle>
         <HeaderActionButtons>
-          <Link to="/connect">
-            <WalletButton connected={connected} value={wallet} />
-          </Link>
-          <HeaderSetting />
+          {!connected && (
+            <Link to="/connect">
+              <WalletButton connected={connected} value={wallet} />
+            </Link>
+          )}
           {connected && <WalletDrawer />}
+          <HeaderSetting />
           {status && <TxView start={status} onClick={this.handleClickTxView} />}
         </HeaderActionButtons>
       </StyledHeader>

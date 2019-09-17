@@ -8,7 +8,13 @@ const user = wallet ? { wallet, keystore } : {};
 
 const initState = {
   user,
-  assetData: [],
+  assetData: [
+    {
+      asset: 'RUNE-A1F',
+      assetValue: 43255,
+      price: 0,
+    },
+  ],
   stakeData: [],
   loadingAssets: false,
   loadingStakes: false,

@@ -14,7 +14,7 @@ class ConnectView extends Component {
     super(props);
 
     this.state = {
-      walletType: 'walletconnect',
+      walletType: 'keystore',
     };
   }
 
@@ -67,6 +67,7 @@ class ConnectView extends Component {
                   color="primary"
                   typevalue="ghost"
                   sizevalue="big"
+                  disabled={btn.value === 'walletconnect'}
                 >
                   {btn.label}
                 </Button>

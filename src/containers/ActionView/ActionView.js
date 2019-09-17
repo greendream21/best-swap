@@ -88,7 +88,7 @@ class ActionView extends Component {
       view === 'stats-view' ||
       view === 'faqs-view'
     ) {
-      this.props.history.push('/introduction');
+      this.props.history.push('/swap');
     }
     if (view === 'swap-detail' || view === 'swap-send') {
       this.props.history.push('/swap');
@@ -145,8 +145,8 @@ class ActionView extends Component {
               style={{ width: '100%' }}
               action
             >
-              <TabPane tab="swap" disabled={!connected} key="swap" />
-              <TabPane tab="pools" disabled={!connected} key="pools" />
+              <TabPane tab="swap" key="swap" />
+              <TabPane tab="pools" key="pools" />
             </Tabs>
             {intro}
           </>

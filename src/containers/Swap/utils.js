@@ -125,20 +125,22 @@ export const confirmSwap = (
   amount,
   destAddr = '',
 ) => {
-  const type = getSwapType(from, to);
-  console.log('confirm swap', type, wallet, from, to, data, amount, destAddr);
+  return new Promise((resolve, reject) => {
+    const type = getSwapType(from, to);
+    console.log('confirm swap', type, wallet, from, to, data, amount, destAddr);
 
-  if (!validateSwap(wallet, type, data, amount)) {
-    return false;
-  }
+    if (!validateSwap(wallet, type, data, amount)) {
+      return reject();
+    }
 
-  const { poolAddressTo, tickerTo, tickerFrom } = data;
+    const { poolAddressTo, tickerTo, tickerFrom } = data;
 
-  const memo = getSwapMemo(tickerTo, destAddr);
-  console.log('memo: ', memo);
-  Binance.transfer(wallet, poolAddressTo, amount, tickerFrom, memo);
-  return true;
-
+    const memo = getSwapMemo(tickerTo, destAddr);
+    console.log('memo: ', memo);
+    Binance.transfer(wallet, poolAddressTo, amount, tickerFrom, memo)
+      .then(response => resolve(response))
+      .catch(error => reject(error));
+  });
   // console.log('memo: ', memo);
 
   // Stake action
