@@ -16,7 +16,7 @@ storiesOf('Components/SwapCard', module).add('default', () => {
           <SwapCard
             asset="bnb"
             target="bolt"
-            depth={234.0}
+            depth={16841653799.66}
             volume={340.0}
             transaction={1234}
             slip={0.2}

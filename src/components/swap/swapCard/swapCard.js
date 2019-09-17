@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import { SwapCardWrapper } from './swapCard.style';
+import CardLayout from '../../cardLayout';
 import Coin from '../../uielements/coins/coin';
 import Status from '../../uielements/status';
 import Button from '../../uielements/button';
@@ -51,27 +51,41 @@ class SwapCard extends Component {
     const tradeValue = `${getActualValue(trade)}`;
 
     return (
-      <SwapCardWrapper className={`SwapCard-wrapper ${className}`} {...props}>
-        <Coin
-          className="coinData-coin-avatar"
-          type={asset}
-          over={target}
-          size="big"
-        />
-        <Status className="pool-status" title="Pool" value={poolValue} />
-        <Status title="Depth" value={depthValue} />
-        <Status title="24hr volume" value={volumeValue} />
-        <Status title="Avg. Transaction" value={transactionValue} />
-        <Status title="Avg. Slip" value={slipValue} />
-        <Status
-          title="No. Of Trades"
-          value={tradeValue}
-          className="trade-status"
-        />
-        <Button onClick={onSwap} color="success">
-          swap
-        </Button>
-      </SwapCardWrapper>
+      <CardLayout.Row className={className} {...props}>
+        <CardLayout.Group>
+          <CardLayout.Item clamp={80}>
+            <Coin
+              className="coinData-coin-avatar"
+              type={asset}
+              over={target}
+              size="big"
+            />
+          </CardLayout.Item>
+          <CardLayout.Item>
+            <Status className="pool-status" title="Pool" value={poolValue} />
+          </CardLayout.Item>
+          <CardLayout.Item showFrom="sm">
+            <Status title="Depth" value={depthValue} />
+          </CardLayout.Item>
+          <CardLayout.Item showFrom="md">
+            <Status title="24hr volume" value={volumeValue} />
+          </CardLayout.Item>
+          <CardLayout.Item showFrom="md">
+            <Status title="Avg. Transaction" value={transactionValue} />
+          </CardLayout.Item>
+          <CardLayout.Item showFrom="lg">
+            <Status title="Avg. Slip" value={slipValue} />
+          </CardLayout.Item>
+          <CardLayout.Item showFrom="lg">
+            <Status title="No. Of Trades" value={tradeValue} />
+          </CardLayout.Item>
+        </CardLayout.Group>
+        <CardLayout.Item noShrink showFrom="xs">
+          <Button onClick={onSwap} color="success">
+            swap
+          </Button>
+        </CardLayout.Item>
+      </CardLayout.Row>
     );
   }
 }

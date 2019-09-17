@@ -2,20 +2,56 @@ import styled from 'styled-components';
 import { palette } from 'styled-theme';
 import ContentView from '../../../components/utility/contentView';
 import Modal from '../../../components/uielements/modal';
+import { media, cleanTag } from '../../../helpers/styleHelper';
+
+export const SwapAssetCard = styled.div`
+  display: flex;
+  flex-direction: column;
+
+  ${media.md`
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 20px 0;
+  `}
+`;
+
+export const ArrowImage = styled.img`
+  transform: rotate(90deg);
+  ${media.md`
+    transform: rotate(0);
+  `}
+`;
+
+const BaseArrowContainer = cleanTag('div', ['rotate', 'showFrom', 'hideFrom']);
+export const ArrowContainer = styled(BaseArrowContainer)`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+`;
 
 export const ContentWrapper = styled(ContentView)`
   padding: 0;
 
-  & > .ant-row {
+  .ant-row {
     display: flex;
-    flex: auto;
+    flex-grow: 1;
+    ${media.xs`
+      flex-direction: column;
+    `}
+    ${media.sm`
+      flex-direction: row;
+    `}
   }
 
   .swap-detail-panel {
     display: flex;
     flex-direction: column;
     padding: 20px 20px !important;
-    border-right: 1px solid ${palette('border', 0)};
+
+    ${media.lg`
+      border-right: 1px solid ${palette('border', 0)};
+    `}
 
     .swap-type-selector {
       display: flex;
@@ -42,11 +78,10 @@ export const ContentWrapper = styled(ContentView)`
           font-size: 12px;
         }
       }
-    }
-    .swap-asset-card {
-      display: flex;
-      justify-content: space-between;
-      padding: 20px 0;
+
+      .ant-form-item-control-wrapper {
+        width: 100%;
+      }
     }
 
     .drag-confirm-wrapper {
@@ -57,6 +92,8 @@ export const ContentWrapper = styled(ContentView)`
   }
 
   .swap-token-panel {
+    display: flex;
+    flex-direction: column;
     padding: 20px 20px !important;
 
     .token-search-input {
@@ -64,6 +101,13 @@ export const ContentWrapper = styled(ContentView)`
     }
 
     .coinList-wrapper {
+      flex-grow: 1;
+      ${media.xs`
+        height: 300px;
+      `}
+      ${media.sm`
+        height: 0;
+      `}
       .coinList-row {
         padding: 0;
       }
@@ -83,7 +127,8 @@ export const SwapModal = styled(Modal)`
 
 export const SwapModalContent = styled.div`
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: center;
 
   .coinData-wrapper {
     padding-left: 0;
@@ -99,42 +144,74 @@ export const SwapModalContent = styled.div`
     }
   }
 
-  .left-container {
+  .swapmodal-content {
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+
+    .left-container {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .center-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .right-container {
+      display: flex;
+      flex-direction: column;
+
+      .expected-status {
+        display: flex;
+
+        .status-item {
+          display: flex;
+          flex-direction: column;
+          padding-right: 8px;
+
+          .price-label {
+            padding-top: 4px;
+            padding-bottom: 0;
+          }
+        }
+      }
+    }
   }
 
-  .center-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  .swap-info-wrapper {
+    margin-top: 10px;
 
-    .label-wrapper {
-      margin-top: 35px;
+    .tx-label {
       text-transform: uppercase;
+      text-align: center;
     }
 
     .before-start-label {
       opacity: 0;
     }
-  }
 
-  .right-container {
-    display: flex;
-    flex-direction: column;
-
-    .expected-status {
+    .hash-address {
       display: flex;
+      align-items: center;
 
-      .status-item {
+      .copy-btn-wrapper {
         display: flex;
-        flex-direction: column;
-        padding-right: 8px;
+        justify-content: center;
+        align-items: center;
 
-        .price-label {
-          padding-top: 4px;
-          padding-bottom: 0;
-        }
+        border: 1px solid ${palette('primary', 0)};
+        border-radius: 6px;
+        padding: 1px 4px;
+        margin-right: 6px;
+        color: ${palette('primary', 0)};
+        cursor: pointer;
+      }
+
+      .label-wrapper {
+        width: 100%;
       }
     }
   }

@@ -25,14 +25,12 @@ export const CoinCardWrapper = styled.div`
       padding: 10px 20px;
 
       .asset-amount-label {
-        &.ant-input-number {
+        &.ant-input {
           border: none;
-          input {
-            padding: 0;
-          }
+          padding: 0;
         }
 
-        &.ant-input-number-disabled {
+        &.ant-input-disabled {
           background-color: #fff;
         }
       }

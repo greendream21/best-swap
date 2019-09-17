@@ -3,7 +3,7 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Row, Col, Icon, Form } from 'antd';
+import { Row, Col, Icon, Form, notification } from 'antd';
 import { crypto } from '@binance-chain/javascript-sdk';
 
 import Binance from '../../../clients/binance';
@@ -17,11 +17,15 @@ import Input from '../../../components/uielements/input/input';
 import CoinData from '../../../components/uielements/coins/coinData';
 import Status from '../../../components/uielements/status';
 import TxTimer from '../../../components/uielements/txTimer';
+import Modal from '../../../components/uielements/modal';
 
 import {
   ContentWrapper,
   SwapModalContent,
   SwapModal,
+  SwapAssetCard,
+  ArrowContainer,
+  ArrowImage,
   PrivateModal,
 } from './SwapSend.style';
 import { blackArrowIcon } from '../../../components/icons';
@@ -46,6 +50,7 @@ class SwapSend extends Component {
   static propTypes = {
     info: PropTypes.string,
     view: PropTypes.string.isRequired,
+    history: PropTypes.object,
     txStatus: PropTypes.object.isRequired,
     chainData: PropTypes.object.isRequired,
     assetData: PropTypes.array.isRequired,
@@ -72,6 +77,7 @@ class SwapSend extends Component {
     openPrivateModal: false,
     password: '',
     invalidPassword: false,
+    openWalletAlert: false,
   };
 
   addressRef = React.createRef();
@@ -98,9 +104,32 @@ class SwapSend extends Component {
   };
 
   handleChangeValue = value => {
-    this.setState({
-      xValue: value,
+    const { xValue } = this.state;
+    const newValue = isNaN(value) ? xValue : Number(value);
+
+    const { assetData } = this.props;
+    const { source } = this.getSwapData();
+
+    const sourceAsset = assetData.find(data => {
+      const { asset } = data;
+      const tokenName = asset.split('-')[0];
+      if (tokenName.toLowerCase() === source) {
+        return true;
+      }
+      return false;
     });
+
+    const totalAmount = sourceAsset.assetValue || 0;
+
+    if (totalAmount < newValue) {
+      this.setState({
+        xValue: totalAmount,
+      });
+    } else {
+      this.setState({
+        xValue: newValue,
+      });
+    }
   };
 
   handleChangeSource = asset => {
@@ -117,7 +146,7 @@ class SwapSend extends Component {
     this.props.history.push(URL);
   };
 
-  handleConfirmPassword = () => {
+  handleConfirmPassword = async () => {
     const {
       user: { keystore, wallet },
     } = this.props;
@@ -130,7 +159,8 @@ class SwapSend extends Component {
         Binance.getPrefix(),
       );
       if (wallet === address) {
-        Binance.setPrivateKey(privateKey);
+        await Binance.setPrivateKey(privateKey);
+        await this.handleConfirmSwap();
         this.handleStartTimer();
       }
 
@@ -142,7 +172,7 @@ class SwapSend extends Component {
         password: '',
         invalidPassword: true,
       });
-      console.log(error);
+      console.log(error); // eslint-disable-line no-console
     }
   };
 
@@ -165,11 +195,45 @@ class SwapSend extends Component {
     });
   };
 
+  handleConnectWallet = () => {
+    this.setState({
+      openWalletAlert: false,
+    });
+
+    this.props.history.push('/connect');
+  };
+
+  hideWalletAlert = () => {
+    this.setState({
+      openWalletAlert: false,
+      dragReset: true,
+    });
+  };
+
   handleEndDrag = () => {
     const {
       view,
       user: { keystore, wallet },
     } = this.props;
+    const { xValue } = this.state;
+
+    if (!wallet) {
+      this.setState({
+        openWalletAlert: true,
+      });
+      return;
+    }
+
+    if (Number(xValue) <= 0) {
+      notification['error']({
+        message: 'Swap Invalid',
+        description: 'You need to enter an amount to swap.',
+      });
+      this.setState({
+        dragReset: true,
+      });
+      return;
+    }
 
     if (view === 'send' && !this.isValidRecipient()) {
       this.setState({
@@ -239,35 +303,21 @@ class SwapSend extends Component {
   };
 
   validatePair = (sourceInfo, targetInfo) => {
-    if (!sourceInfo.length || !targetInfo.length) {
+    if (!targetInfo.length) {
       this.props.history.push('/swap');
     }
 
     const { source, target } = this.getSwapData();
 
-    let sourceValid = false;
-    let targetValid = false;
     const targetData = targetInfo.filter(data => {
       const compare = data.asset.split('-')[0].toLowerCase() !== target;
-      if (!compare) {
-        targetValid = true;
-      }
-
       return compare;
     });
 
     const sourceData = sourceInfo.filter(data => {
       const compare = data.asset.split('-')[0].toLowerCase() !== source;
-      if (!compare) {
-        sourceValid = true;
-      }
-
       return compare;
     });
-
-    if (!sourceValid || !targetValid) {
-      this.props.history.push('/swap');
-    }
 
     return {
       sourceData,
@@ -302,24 +352,33 @@ class SwapSend extends Component {
       txStatus: { status },
     } = this.props;
 
-    if (!status) {
-      setTxTimerStatus(false);
-      this.setState({
-        dragReset: true,
-      });
-
-      this.handleConfirmSwap();
-    }
+    setTxTimerStatus(false);
+    this.setState({
+      dragReset: true,
+    });
   };
 
-  handleConfirmSwap = () => {
+  handleConfirmSwap = async () => {
     const {
       user: { wallet },
     } = this.props;
     const { xValue, address } = this.state;
     const { source, target } = this.getSwapData();
 
-    confirmSwap(Binance, wallet, source, target, this.data, xValue, address);
+    try {
+      const { result } = await confirmSwap(
+        Binance,
+        wallet,
+        source,
+        target,
+        this.data,
+        xValue,
+        address,
+      );
+      this.hash = result[0].hash;
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   handleSelectAmount = source => amount => {
@@ -367,40 +426,67 @@ class SwapSend extends Component {
       ? 'EXPECTED FEES & SLIP'
       : 'FINAL FEES & SLIP';
 
+    const testnetTxExlorer = 'https://testnet-explorer.binance.org/tx/';
+    const txURL = testnetTxExlorer + this.hash;
+
     return (
       <SwapModalContent>
-        <div className="left-container">
-          <Label weight="bold">{swapText}</Label>
-          <CoinData asset={source} assetValue={xValue} price={priceFrom} />
-        </div>
-        <div className="center-container">
-          <TxTimer
-            reset={status}
-            value={value}
-            onChange={this.handleChangeTxValue}
-            onEnd={this.handleEndTxTimer}
-          />
-          {value !== 0 && (
-            <Label weight="bold">{transactionLabels[value - 1]}</Label>
-          )}
-          {completed && <Label weight="bold">complete</Label>}
-        </div>
-        <div className="right-container">
-          <Label weight="bold">{receiveText}</Label>
-          <CoinData asset={target} assetValue={outputAmount} price={priceTo} />
-          <Label weight="bold">{expectation}</Label>
-          <div className="expected-status">
-            <div className="status-item">
-              <Status title="FEES" value="1 RUNE" />
-              <Label className="price-label" size="normal" color="gray">
-                $USD 0.04
-              </Label>
-            </div>
-            <div className="status-item">
-              <Status title="SLIP" value={`${slipAmount}%`} />
+        <Row className="swapmodal-content">
+          <div className="left-container">
+            <Label weight="bold">{swapText}</Label>
+            <CoinData asset={source} assetValue={xValue} price={priceFrom} />
+          </div>
+          <div className="center-container">
+            <TxTimer
+              reset={status}
+              value={value}
+              onChange={this.handleChangeTxValue}
+              onEnd={this.handleEndTxTimer}
+            />
+          </div>
+          <div className="right-container">
+            <Label weight="bold">{receiveText}</Label>
+            <CoinData
+              asset={target}
+              assetValue={outputAmount}
+              price={priceTo}
+            />
+            <Label weight="bold">{expectation}</Label>
+            <div className="expected-status">
+              <div className="status-item">
+                <Status title="FEES" value="1 RUNE" />
+                <Label className="price-label" size="normal" color="gray">
+                  $USD 0.04
+                </Label>
+              </div>
+              <div className="status-item">
+                <Status title="SLIP" value={`${slipAmount}%`} />
+              </div>
             </div>
           </div>
-        </div>
+        </Row>
+        <Row className="swap-info-wrapper">
+          {this.hash && (
+            <div className="hash-address">
+              <div className="copy-btn-wrapper">
+                <a href={txURL} target="_blank" rel="noopener noreferrer">
+                  <Icon type="global" />
+                </a>
+              </div>
+              <Label>{this.hash}</Label>
+            </div>
+          )}
+          {value !== 0 && (
+            <Label className="tx-label" weight="bold">
+              {transactionLabels[value - 1]}
+            </Label>
+          )}
+          {completed && (
+            <Label className="tx-label" weight="bold">
+              complete
+            </Label>
+          )}
+        </Row>
       </SwapModalContent>
     );
   };
@@ -420,12 +506,13 @@ class SwapSend extends Component {
       invalidPassword,
       xValue,
       openPrivateModal,
+      openWalletAlert,
       password,
     } = this.state;
 
     const swapData = this.getSwapData();
 
-    if (!swapData || !assetData.length || !Object.keys(tokenInfo).length) {
+    if (!swapData || !Object.keys(tokenInfo).length) {
       return '';
     }
 
@@ -460,7 +547,7 @@ class SwapSend extends Component {
     return (
       <ContentWrapper className="swap-detail-wrapper">
         <Row>
-          <Col className="swap-detail-panel" span={16}>
+          <Col className="swap-detail-panel" lg={16} span={24}>
             <div className="swap-type-selector">
               <Button
                 onClick={this.handleGotoDetail}
@@ -498,7 +585,7 @@ class SwapSend extends Component {
                 </Form.Item>
               </Form>
             )}
-            <div className="swap-asset-card">
+            <SwapAssetCard>
               <CoinCard
                 title="You are swapping"
                 asset={source}
@@ -510,7 +597,11 @@ class SwapSend extends Component {
                 onSelect={this.handleSelectAmount(source)}
                 withSelection
               />
-              <img src={blackArrowIcon} alt="blackarrow-icon" />
+
+              <ArrowContainer>
+                <ArrowImage src={blackArrowIcon} alt="blackarrow-icon" />
+              </ArrowContainer>
+
               <CoinCard
                 title="You will receive"
                 asset={target}
@@ -519,7 +610,7 @@ class SwapSend extends Component {
                 slip={slip}
                 disabled
               />
-            </div>
+            </SwapAssetCard>
             <div className="drag-confirm-wrapper">
               <Drag
                 title={dragTitle}
@@ -531,7 +622,7 @@ class SwapSend extends Component {
               />
             </div>
           </Col>
-          <Col className="swap-token-panel" span={8}>
+          <Col className="swap-token-panel" lg={8} span={24}>
             <Label className="select-token-label">
               Select token to receive
             </Label>
@@ -576,6 +667,15 @@ class SwapSend extends Component {
             )}
           </Form.Item>
         </PrivateModal>
+        <Modal
+          title="PLEASE ADD WALLET"
+          visible={openWalletAlert}
+          onOk={this.handleConnectWallet}
+          onCancel={this.hideWalletAlert}
+          okText="Add Wallet"
+        >
+          Please add a wallet to swap tokens.
+        </Modal>
       </ContentWrapper>
     );
   }

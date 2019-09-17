@@ -25,6 +25,8 @@ class DynamicCoin extends Component {
     const startCol = rainbowStop(numbers[0]);
     const stopCol = rainbowStop(numbers[1]);
 
+    const coinName = type.length > 4 ? type.substr(0, 4) : type;
+
     return (
       <DynamicCoinWrapper
         type={type}
@@ -33,7 +35,7 @@ class DynamicCoin extends Component {
         stopCol={stopCol}
         {...props}
       >
-        <span>{type}</span>
+        <span>{coinName}</span>
       </DynamicCoinWrapper>
     );
   }

@@ -14,7 +14,9 @@ export const ContentWrapper = styled(ContentView)`
   }
 
   .rune-diagram-wrapper {
+    display: flex;
     flex-grow: 1;
+    align-items: center;
 
     .rune-diagram-images,
     .rune-diagram-text {
@@ -29,5 +31,6 @@ export const ContentWrapper = styled(ContentView)`
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
+    align-items: flex-end;
   }
 `;
