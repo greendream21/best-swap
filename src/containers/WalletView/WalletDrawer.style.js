@@ -15,6 +15,15 @@ export const Drawer = styled(AntdDrawer)`
     padding: 24px 12px;
   }
 
+  .refresh-balance-icon {
+    position: absolute;
+    top: 15px;
+    right: 24px;
+    color: ${palette('primary', 0)};
+    z-index: 999;
+    cursor: pointer;
+  }
+
   .wallet-address {
     position: absolute;
     top: 85px;

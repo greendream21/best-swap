@@ -3,6 +3,7 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { sortBy as _sortBy } from 'lodash';
 
 import { WalletViewWrapper } from './WalletView.style';
 import Tabs from '../../components/uielements/tabs';
@@ -125,6 +126,7 @@ class WalletView extends Component {
     const { source } = pair;
     const selectedAsset = this.getSelectedAsset(pair);
     const sourceIndex = this.getAssetIndexByName(source);
+    const sortedAssets = _sortBy(assetData, ['asset']);
 
     return (
       <WalletViewWrapper>
@@ -140,7 +142,7 @@ class WalletView extends Component {
             )}
             {!loadingAssets && (
               <CoinList
-                data={assetData}
+                data={sortedAssets}
                 value={sourceIndex}
                 selected={selectedAsset}
                 onSelect={this.handleSelectAsset}
