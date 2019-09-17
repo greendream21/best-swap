@@ -11,7 +11,7 @@ import Binance from '../../../clients/binance';
 import Button from '../../../components/uielements/button';
 import Drag from '../../../components/uielements/drag';
 import CoinCard from '../../../components/uielements/coins/coinCard';
-import CoinList from '../../../components/uielements/coins/coinList';
+
 import Label from '../../../components/uielements/label';
 import Input from '../../../components/uielements/input/input';
 import CoinData from '../../../components/uielements/coins/coinData';
@@ -289,10 +289,10 @@ class SwapSend extends Component {
     this.props.history.push(URL);
   };
 
-  handleSelectTraget = assetsData => targetIndex => {
+  handleSelectTraget = asset => {
     const { view } = this.props;
     const { source } = this.getSwapData();
-    const target = assetsData[targetIndex].asset.split('-')[0].toLowerCase();
+    const target = asset.split('-')[0].toLowerCase();
 
     if (source === target) {
       return;
@@ -449,7 +449,7 @@ class SwapSend extends Component {
             <Label weight="bold">{receiveText}</Label>
             <CoinData
               asset={target}
-              assetValue={outputAmount}
+              assetValue={Number(outputAmount)}
               price={priceTo}
             />
             <Label weight="bold">{expectation}</Label>
@@ -531,10 +531,6 @@ class SwapSend extends Component {
 
     const { sourceData, targetData } = this.validatePair(assetData, tokensData);
 
-    const targetIndex = targetData.findIndex(
-      value => value.asset.toLowerCase() === target,
-    );
-
     const dragTitle =
       view === 'detail' ? 'Drag to swap' : 'Drag to swap and send';
 
@@ -548,7 +544,11 @@ class SwapSend extends Component {
     return (
       <ContentWrapper className="swap-detail-wrapper">
         <Row>
-          <Col className="swap-detail-panel" lg={16} span={24}>
+          <Col
+            className="swap-detail-panel"
+            xs={{ span: 24, offset: 0 }}
+            xl={{ span: 16, offset: 4 }}
+          >
             <div className="swap-type-selector">
               <Button
                 onClick={this.handleGotoDetail}
@@ -597,6 +597,8 @@ class SwapSend extends Component {
                 onChangeAsset={this.handleChangeSource}
                 onSelect={this.handleSelectAmount(source)}
                 withSelection
+                withSearch
+                searchDisable={[target]}
               />
 
               <ArrowContainer>
@@ -606,10 +608,14 @@ class SwapSend extends Component {
               <CoinCard
                 title="You will receive"
                 asset={target}
+                assetData={targetData}
                 amount={outputAmount}
                 price={outputPrice}
                 slip={slip}
+                onChangeAsset={this.handleSelectTraget}
                 disabled
+                withSearch
+                searchDisable={[source]}
               />
             </SwapAssetCard>
             <div className="drag-confirm-wrapper">
@@ -622,21 +628,6 @@ class SwapSend extends Component {
                 onDrag={this.handleDrag}
               />
             </div>
-          </Col>
-          <Col className="swap-token-panel" lg={8} span={24}>
-            <Label className="select-token-label">
-              Select token to receive
-            </Label>
-            <Input
-              className="token-search-input"
-              placeholder="Search Token ..."
-              suffix={<Icon type="search" />}
-            />
-            <CoinList
-              data={targetData}
-              value={targetIndex}
-              onSelect={this.handleSelectTraget(targetData)}
-            />
           </Col>
         </Row>
         <SwapModal
