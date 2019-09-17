@@ -1,4 +1,5 @@
 import { all, takeEvery, put, fork, call } from 'redux-saga/effects';
+import { keyBy as _keyBy } from 'lodash';
 import actions from './actions';
 import {
   getStatechainURL,
@@ -6,6 +7,36 @@ import {
   getHeaders,
   axiosRequest,
 } from '../../helpers/apiHelper';
+
+const getPoolDataRequest = async asset => {
+  const params = {
+    method: 'get',
+    url: getChainserviceURL(`poolData?asset=${asset}`),
+    headers: getHeaders(),
+  };
+
+  try {
+    const { data } = await axiosRequest(params);
+    return data;
+  } catch (error) {
+    return null;
+  }
+};
+
+const getSwapDataRequest = async asset => {
+  const params = {
+    method: 'get',
+    url: getChainserviceURL(`swapData?asset=${asset}`),
+    headers: getHeaders(),
+  };
+
+  try {
+    const { data } = await axiosRequest(params);
+    return data;
+  } catch (error) {
+    return null;
+  }
+};
 
 export function* getPools() {
   yield takeEvery(actions.GET_POOLS_REQUEST, function*({ payload }) {
@@ -19,23 +50,38 @@ export function* getPools() {
     try {
       const { data } = yield call(axiosRequest, params);
 
-      yield all(
+      const poolResponse = yield all(
         data.map(poolData => {
           const { ticker } = poolData;
 
-          return put(actions.getPoolData({ asset: ticker }));
+          return call(getPoolDataRequest, ticker);
         }),
       );
 
-      yield all(
+      const swapResponse = yield all(
         data.map(poolData => {
           const { ticker } = poolData;
 
-          return put(actions.getSwapData({ asset: ticker }));
+          return call(getSwapDataRequest, ticker);
         }),
       );
 
-      yield put(actions.getPoolsSuccess(data));
+      const poolData = _keyBy(
+        poolResponse.filter(data => data !== null),
+        'asset',
+      );
+      const swapData = _keyBy(
+        swapResponse.filter(data => data !== null),
+        'asset',
+      );
+
+      yield put(
+        actions.getPoolsSuccess({
+          pools: data,
+          poolData,
+          swapData,
+        }),
+      );
     } catch (error) {
       yield put(actions.getPoolsFailed(error));
     }
