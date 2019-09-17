@@ -19,7 +19,7 @@ const actions = {
   GET_RUNE_PRICE_SUCCESS: 'GET_RUNE_PRICE_SUCCESS',
   GET_RUNE_PRICE_FAILED: 'GET_RUNE_PRICE_FAILED',
 
-  getRunePrice: payload => ({ type: actions.GET_ÎRUNE_PRICE, payload }),
+  getRunePrice: payload => ({ type: actions.GET_RUNE_PRICE, payload }),
   getRunePriceSuccess: payload => ({
     type: actions.GET_RUNE_PRICE_SUCCESS,
     payload,

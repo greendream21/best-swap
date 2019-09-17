@@ -40,6 +40,21 @@ export function* forgetWalletSaga() {
   });
 }
 
+const getRunePriceRequest = async () => {
+  const params = {
+    method: 'get',
+    url: getCoinGeckoURL('simple/price?ids=thorchain&vs_currencies=usd'),
+    headers: getHeaders(),
+  };
+
+  try {
+    const { data } = await axiosRequest(params);
+    return data.thorchain.usd || 0;
+  } catch (error) {
+    return null;
+  }
+};
+
 export function* refreshBalance() {
   yield takeEvery(actions.REFRESH_BALANCE, function*({ payload }) {
     const address = payload;
@@ -60,6 +75,15 @@ export function* refreshBalance() {
           };
         });
 
+        // get rune price
+
+        let price = 0;
+        try {
+          price = yield call(getRunePriceRequest);
+          yield put(actions.getRunePriceSuccess(price));
+        } catch (error) {
+          console.log(error);
+        }
         yield put(actions.refreshBalanceSuccess(coins));
       } catch (error) {
         yield put(actions.refreshBalanceFailed(error));
@@ -138,5 +162,6 @@ export default function* rootSaga() {
     fork(forgetWalletSaga),
     fork(refreshBalance),
     fork(refreshStakes),
+    fork(getRunePrice),
   ]);
 }

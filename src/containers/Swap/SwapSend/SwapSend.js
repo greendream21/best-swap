@@ -56,6 +56,7 @@ class SwapSend extends Component {
     assetData: PropTypes.array.isRequired,
     pools: PropTypes.array.isRequired,
     user: PropTypes.object.isRequired,
+    runePrice: PropTypes.number.isRequired,
     setTxTimerType: PropTypes.func.isRequired,
     setTxTimerModal: PropTypes.func.isRequired,
     setTxTimerStatus: PropTypes.func.isRequired,
@@ -498,6 +499,7 @@ class SwapSend extends Component {
       chainData: { tokenInfo },
       pools,
       assetData,
+      runePrice,
     } = this.props;
     const {
       dragReset,
@@ -540,7 +542,6 @@ class SwapSend extends Component {
     const coinCloseIconType = txStatus.status ? 'fullscreen-exit' : 'close';
 
     // calculation
-    const runePrice = 0.01534111; // TODO: mock price = 0.04
     this.data = getCalcResult(source, target, pools, xValue, runePrice);
     const { Px, slip, outputAmount, outputPrice } = this.data;
 
@@ -685,6 +686,7 @@ export default compose(
   connect(
     state => ({
       user: state.Wallet.user,
+      runePrice: state.Wallet.runePrice,
       txStatus: state.App.txStatus,
       chainData: state.ChainService,
       pools: state.Statechain.pools,
