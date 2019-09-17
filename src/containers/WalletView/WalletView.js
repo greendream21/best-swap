@@ -149,7 +149,7 @@ class WalletView extends Component {
               />
             )}
           </TabPane>
-          <TabPane tab="stakes" key="stakes">
+          {/* <TabPane tab="stakes" key="stakes">
             <Label className="asset-title-label">
               {this.renderStakeTitle()}
             </Label>
@@ -160,7 +160,7 @@ class WalletView extends Component {
                 onSelect={this.handleSelectStake}
               />
             )}
-          </TabPane>
+          </TabPane> */}
         </Tabs>
       </WalletViewWrapper>
     );
