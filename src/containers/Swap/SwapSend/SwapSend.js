@@ -473,7 +473,7 @@ class SwapSend extends Component {
                   <Icon type="global" />
                 </a>
               </div>
-              <Label>{this.hash}</Label>
+              <Label>VIEW ON BINANCE CHAIN</Label>
             </div>
           )}
           {value !== 0 && (
