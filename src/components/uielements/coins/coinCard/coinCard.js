@@ -44,9 +44,12 @@ class CoinCard extends Component {
     openDropdown: false,
     focusedDropdown: true,
     blurCard: false,
+    percentButtonSelected: 0,
   };
 
   onChange = e => {
+    this.setState({ percentButtonSelected: 0 });
+
     this.props.onChange(e.target.value);
   };
 
@@ -56,7 +59,7 @@ class CoinCard extends Component {
     });
   };
 
-  handleBlurDropdown = e => {
+  handleBlurDropdown = () => {
     const { blurCard } = this.state;
     if (blurCard) {
       this.setState({
@@ -69,7 +72,7 @@ class CoinCard extends Component {
     }
   };
 
-  handleBlurCard = e => {
+  handleBlurCard = () => {
     const { focusedDropdown } = this.state;
     if (!focusedDropdown) {
       this.setState({
@@ -86,6 +89,12 @@ class CoinCard extends Component {
     const { onChangeAsset } = this.props;
 
     onChangeAsset(asset.key);
+  };
+
+  handleSelected = percentButtonSelected => {
+    const { onSelect } = this.props;
+    this.setState({ percentButtonSelected });
+    onSelect(percentButtonSelected);
   };
 
   toggleDropdown = () => {
@@ -133,6 +142,7 @@ class CoinCard extends Component {
         />
       );
     }
+    return null;
   };
 
   render() {
@@ -151,7 +161,7 @@ class CoinCard extends Component {
       className,
       ...props
     } = this.props;
-    const { openDropdown } = this.state;
+    const { openDropdown, percentButtonSelected } = this.state;
 
     return (
       <Dropdown
@@ -199,7 +209,12 @@ class CoinCard extends Component {
             </div>
             {this.renderDropDown()}
           </div>
-          {withSelection && <Selection onSelect={onSelect} />}
+          {withSelection && (
+            <Selection
+              selected={percentButtonSelected}
+              onSelect={this.handleSelected}
+            />
+          )}
         </CoinCardWrapper>
       </Dropdown>
     );
