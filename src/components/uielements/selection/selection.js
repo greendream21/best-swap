@@ -16,13 +16,12 @@ class Selection extends Component {
 
   handleClick = value => {
     const { onSelect } = this.props;
-    console.log({ value });
     onSelect(value);
   };
 
   render() {
     const { className, selected, ...props } = this.props;
-    console.log({ selected });
+
     return (
       <SelectionWrapper className={`selection-wrapper ${className}`} {...props}>
         <Button
