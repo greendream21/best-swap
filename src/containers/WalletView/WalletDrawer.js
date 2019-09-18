@@ -67,7 +67,7 @@ const WalletDrawer = props => {
             <div className="copy-btn-wrapper">
               <Icon type="copy" onClick={onCopyWallet} />
             </div>
-            <Label>{wallet}</Label>
+            <Label className="wallet-label-wrapper">{wallet}</Label>
           </div>
         )}
         <WalletView status={status} />

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Menu, Dropdown, Icon } from 'antd';
+import { Menu, Dropdown, Icon, Row } from 'antd';
 
 import ConnectionStatus from '../uielements/connectionStatus';
 
@@ -36,13 +36,28 @@ class HeaderSetting extends Component {
         className="connection-menu-items"
       >
         {menuItems.map(item => {
-          const { label, key, status } = item;
+          const { label, key, status, url } = item;
           return (
             <Menu.Item style={itemStyle} key={key}>
               <ConnectionStatus color={status} />
-              <span style={{ paddingLeft: '10px', fontWeight: 'bold' }}>
-                {label}
-              </span>
+              <div>
+                <Row>
+                  <span style={{ paddingLeft: '10px', fontWeight: 'bold' }}>
+                    {label}
+                  </span>
+                </Row>
+                <Row>
+                  <span
+                    style={{
+                      paddingLeft: '10px',
+                      color: '#808080',
+                      textTransform: 'lowercase',
+                    }}
+                  >
+                    {url}
+                  </span>
+                </Row>
+              </div>
             </Menu.Item>
           );
         })}
