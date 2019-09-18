@@ -1,7 +1,7 @@
 image: node:10.15
 
 stages:
-  - test
+#  - test
   - deploy-develop
   - develop-production
 
