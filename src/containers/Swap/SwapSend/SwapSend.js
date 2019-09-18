@@ -271,8 +271,9 @@ class SwapSend extends Component {
       resetTxStatus,
     } = this.props;
 
-    if (!status) resetTxStatus();
-    else setTxTimerModal(false);
+    // if (!status) resetTxStatus();
+    // else setTxTimerModal(false);
+    setTxTimerModal(false);
   };
 
   handleGotoDetail = () => {
@@ -348,10 +349,7 @@ class SwapSend extends Component {
   };
 
   handleEndTxTimer = () => {
-    const {
-      setTxTimerStatus,
-      txStatus: { status },
-    } = this.props;
+    const { setTxTimerStatus } = this.props;
 
     setTxTimerStatus(false);
     this.setState({
