@@ -28,6 +28,8 @@ deploy-develop:
     - firebase deploy --token ${FIREBASE_TOKEN}
   environment:
     name: develop
+  only:
+    - master
 
 deploy-production:
   stage: develop-production
