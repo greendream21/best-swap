@@ -86,12 +86,13 @@ class PoolView extends Component {
     return (
       <ContentWrapper className="pool-view-wrapper">
         <div className="pool-list-view">{this.renderPoolList()}</div>
-        <div className="add-new-pool" onClick={this.handleNewPool}>
+        {/* { TODO: hide addpool button in the testnet } */}
+        {/* <div className="add-new-pool" onClick={this.handleNewPool}>
           <AddIcon />
           <Label size="normal" weight="bold" color="normal">
             ADD NEW POOL
           </Label>
-        </div>
+        </div> */}
       </ContentWrapper>
     );
   }

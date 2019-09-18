@@ -14,7 +14,6 @@ class Binance {
     }
 
     this.net = NET;
-    console.log('Net:', this.net);
 
     this.httpClient = axios.create({
       baseURL: this.baseURL + '/api/v1',

@@ -17,7 +17,7 @@ export const getCalcResult = (from, to, pools, xValue, runePrice) => {
     let Y = 10;
     let R = 10000;
     let Z = 10;
-    const Py = runePrice || 0.01481204;
+    const Py = runePrice;
     let result = {};
 
     pools.forEach(poolData => {
@@ -58,7 +58,7 @@ export const getCalcResult = (from, to, pools, xValue, runePrice) => {
   if (type === 'single_swap') {
     let X = 10000;
     let Y = 10;
-    const Px = runePrice || 0.01481204;
+    const Px = runePrice;
 
     let result = {};
 
