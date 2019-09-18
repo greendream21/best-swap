@@ -85,7 +85,8 @@ class PoolCard extends Component {
           </CardLayout.Item>
         </CardLayout.Group>
         <CardLayout.Item noShrink showFrom="xs">
-          <Button onClick={onStake} color="success">
+          {/* { TODO: disable stake button in the testnet } */}
+          <Button onClick={onStake} color="success" disabled>
             stake
           </Button>
         </CardLayout.Item>

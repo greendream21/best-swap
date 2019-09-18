@@ -30,11 +30,8 @@ class Header extends Component {
   };
 
   handleClickTxView = () => {
-    const { setTxTimerModal, txStatus } = this.props;
-
-    if (txStatus.status) {
-      setTxTimerModal(true);
-    }
+    const { setTxTimerModal } = this.props;
+    setTxTimerModal(true);
   };
 
   render() {
