@@ -24,7 +24,7 @@ before_script:
 deploy-develop:
   stage: deploy-develop
   script:
-    - firebase use --token ${FIREBASE_TOKEN} ${CI_COMMIT_REF_NAME}
+    - firebase use --token ${FIREBASE_TOKEN} bepswap-testnet-dev
     - firebase deploy --token ${FIREBASE_TOKEN}
   environment:
     name: develop
@@ -32,7 +32,7 @@ deploy-develop:
 deploy-production:
   stage: develop-production
   script:
-    - firebase use --token ${FIREBASE_TOKEN} ${CI_COMMIT_REF_NAME}
+    - firebase use --token ${FIREBASE_TOKEN} bepswap-testnet
     - firebase deploy --token ${FIREBASE_TOKEN}
   environment:
     name: production
