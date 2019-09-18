@@ -1,24 +1,54 @@
-image: node:latest
+image: node:10.15
 
 stages:
-  - test_and_deploy
+  - test
+  - deploy-develop
+  - develop-production
 
 cache:
   paths:
     - node_modules/
   key: '$CI_BUILD_REPO'
 
-test_and_deploy:
-  stage: test_and_deploy
-  only:
-    - master
-    - testnet-prod
-    - testnet-dev
+before_script:
+  - yarn
+  - npm i -g firebase-tools
+  - firebase -V
+
+test:
+  stage: test
   script:
-    - yarn
-    # - yarn test:ci
-    - npm i -g firebase-tools
-    - firebase -V
+  # - yarn test:ci
+
+deploy-develop:
+  stage: deploy-develop
+  script:
     - firebase use --token ${FIREBASE_TOKEN} ${CI_COMMIT_REF_NAME}
     - firebase deploy --token ${FIREBASE_TOKEN}
-  
+  environment:
+    name: develop
+
+deploy-production:
+  stage: develop-production
+  script:
+    - firebase use --token ${FIREBASE_TOKEN} ${CI_COMMIT_REF_NAME}
+    - firebase deploy --token ${FIREBASE_TOKEN}
+  environment:
+    name: production
+  only:
+    - master
+  when: manual
+
+#test_and_deploy:
+#  stage: test_and_deploy
+#  only:
+#    - master
+#    - testnet-prod
+#    - testnet-dev
+#  script:
+#    - yarn
+#    # - yarn test:ci
+#    - npm i -g firebase-tools
+#    - firebase -V
+#    - firebase use --token ${FIREBASE_TOKEN} ${CI_COMMIT_REF_NAME}
+#    - firebase deploy --token ${FIREBASE_TOKEN}
