@@ -52,6 +52,12 @@ export const Drawer = styled(AntdDrawer)`
     .label-wrapper {
       width: 100%;
     }
+
+    .wallet-label-wrapper {
+      word-break: break-word;
+      max-width: 180px;
+      padding: 4px;
+    }
   }
 
   .forget-btn {
