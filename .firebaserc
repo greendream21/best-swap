@@ -2,7 +2,5 @@
   "projects": {
     "default": "bepswap-app",
     "master": "bepswap-app",
-    "testnet-prod": "bepswap-testnet",
-    "testnet-dev": "bepswap-testnet-dev"
   }
 }
