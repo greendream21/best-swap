@@ -499,7 +499,6 @@ class SwapSend extends Component {
       chainData: { tokenInfo },
       pools,
       assetData,
-      runePrice,
     } = this.props;
     const {
       dragReset,
@@ -512,6 +511,7 @@ class SwapSend extends Component {
       password,
     } = this.state;
 
+    const runePrice = 0.01481204; // TODO: get rune price from API
     const swapData = this.getSwapData();
 
     if (!swapData || !Object.keys(tokenInfo).length) {
@@ -529,6 +529,12 @@ class SwapSend extends Component {
       };
     });
 
+    // add rune data in the target token list
+    tokensData.push({
+      asset: 'RUNE-A1F',
+      price: runePrice,
+    });
+
     const { sourceData, targetData } = this.validatePair(assetData, tokensData);
 
     const dragTitle =
@@ -540,7 +546,7 @@ class SwapSend extends Component {
     // calculation
     this.data = getCalcResult(source, target, pools, xValue, runePrice);
     const { Px, slip, outputAmount, outputPrice } = this.data;
-
+    console.log(this.data);
     return (
       <ContentWrapper className="swap-detail-wrapper">
         <Row>
