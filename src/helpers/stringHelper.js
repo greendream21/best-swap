@@ -11,11 +11,19 @@ export const getPair = info => {
   return {};
 };
 
-export const getActualValue = value => {
-  const BASE_NUMBER = 10 ** 8;
+const BASE_NUMBER = 10 ** 8;
 
+export const getActualValue = value => {
   if (value) {
     return Number((value / BASE_NUMBER).toFixed(2));
+  }
+
+  return 0;
+};
+
+export const getBaseValue = value => {
+  if (value) {
+    return Number((value * BASE_NUMBER).toFixed(2));
   }
 
   return 0;

@@ -1,5 +1,6 @@
 import { getSwapMemo } from '../../helpers/memoHelper';
 import { getZValue, getPx, getPz, getSlip } from './calc';
+import { getBaseValue } from '../../helpers/stringHelper';
 
 export const getSwapType = (from, to) => {
   if (from.toLowerCase() === 'rune' || to.toLowerCase() === 'rune') {
@@ -58,6 +59,7 @@ export const getCalcResult = (from, to, pools, xValue, runePrice) => {
     let X = 10000;
     let Y = 10;
     const Px = runePrice;
+
     let result = {};
 
     pools.forEach(poolData => {

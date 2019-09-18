@@ -1,13 +1,32 @@
-import React, { Component, Fragment } from 'react';
+/* eslint-disable react/jsx-one-expression-per-line */
+
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Divider, Input, Icon, Dropdown } from 'antd';
 
 import Coin from '../coin';
 import Label from '../../label';
 import Selection from '../../selection';
-
-import { CoinCardWrapper, Menu } from './coinCard.style';
+import FilterMenu from './filterMenu';
 import CoinData from '../coinData';
+
+import { CoinCardWrapper } from './coinCard.style';
+
+function getTokenName(asset) {
+  return asset.split('-')[0];
+}
+
+function filterFunction(item, searchTerm) {
+  const tokenName = getTokenName(item.asset);
+  return tokenName.toLowerCase().indexOf(searchTerm.toLowerCase()) === 0;
+}
+
+function cellRenderer(data) {
+  const { asset: key, price } = data;
+  const tokenName = getTokenName(key);
+  const node = <CoinData asset={tokenName} price={price} />;
+  return { key, node };
+}
 
 class CoinCard extends Component {
   static propTypes = {
@@ -17,7 +36,9 @@ class CoinCard extends Component {
     price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     slip: PropTypes.number,
     title: PropTypes.string,
+    searchDisable: PropTypes.arrayOf(PropTypes.string),
     withSelection: PropTypes.bool,
+    withSearch: PropTypes.bool,
     onSelect: PropTypes.func,
     onChange: PropTypes.func,
     onChangeAsset: PropTypes.func,
@@ -33,6 +54,8 @@ class CoinCard extends Component {
     slip: undefined,
     title: '',
     withSelection: false,
+    withSearch: false,
+    searchDisable: [],
     onSelect: () => {},
     onChange: () => {},
     onChangeAsset: () => {},
@@ -42,11 +65,12 @@ class CoinCard extends Component {
 
   state = {
     openDropdown: false,
-    focusedDropdown: true,
-    blurCard: false,
+    percentButtonSelected: 0,
   };
 
   onChange = e => {
+    this.setState({ percentButtonSelected: 0 });
+
     this.props.onChange(e.target.value);
   };
 
@@ -56,69 +80,52 @@ class CoinCard extends Component {
     });
   };
 
-  handleBlurDropdown = e => {
-    const { blurCard } = this.state;
-    if (blurCard) {
-      this.setState({
-        openDropdown: false,
-      });
-    } else {
-      this.setState({
-        focusedDropdown: false,
-      });
-    }
+  handleDropdownButtonClicked = () => {
+    const { openDropdown } = this.state;
+    this.handleVisibleChange(!openDropdown);
   };
 
-  handleBlurCard = e => {
-    const { focusedDropdown } = this.state;
-    if (!focusedDropdown) {
-      this.setState({
-        openDropdown: false,
-      });
-    } else {
-      this.setState({
-        blurCard: true,
-      });
-    }
+  handleSelected = percentButtonSelected => {
+    const { onSelect } = this.props;
+    this.setState({ percentButtonSelected });
+    onSelect(percentButtonSelected);
   };
 
   handleChangeAsset = asset => {
     const { onChangeAsset } = this.props;
 
-    onChangeAsset(asset.key);
+    this.setState({ openDropdown: false });
+
+    // HACK: Wait for the dropdown to close
+    setTimeout(() => {
+      onChangeAsset(asset.key);
+    }, 500);
   };
 
-  toggleDropdown = () => {
-    this.setState(prevState => ({
-      openDropdown: !prevState.openDropdown,
-      focusedDropdown: true,
-      blurCard: false,
-    }));
-  };
-
-  renderMenu = () => {
-    const { assetData, asset } = this.props;
+  renderMenu() {
+    const { assetData, asset, withSearch, searchDisable } = this.props;
+    const filteredData = assetData.filter(item => {
+      const tokenName = getTokenName(item.asset);
+      return tokenName.toLowerCase() !== asset.toLowerCase();
+    });
 
     return (
-      <Menu onClick={this.handleChangeAsset} onBlur={this.handleBlurDropdown}>
-        {assetData.map(data => {
-          const { asset: assetName, price } = data;
-          const tokenName = assetName.split('-')[0];
-          if (tokenName.toLowerCase() === asset.toLowerCase()) {
-            return <Fragment key={asset} />;
-          }
-
-          return (
-            <Menu.Item key={assetName}>
-              <CoinData asset={tokenName} price={price} />
-            </Menu.Item>
-          );
-        })}
-      </Menu>
+      <FilterMenu
+        searchEnabled={withSearch}
+        filterFunction={filterFunction}
+        cellRenderer={cellRenderer}
+        disableItemFilter={item => {
+          const tokenName = getTokenName(item.asset).toLowerCase();
+          return searchDisable.indexOf(tokenName) > -1;
+        }}
+        onChangeAsset={this.handleChangeAsset}
+        asset={asset}
+        data={filteredData}
+      />
     );
-  };
+  }
 
-  renderDropDown = () => {
+  renderDropDownButton() {
     const { assetData } = this.props;
     const { openDropdown } = this.state;
 
@@ -129,11 +136,12 @@ class CoinCard extends Component {
         <Icon
           className="dropdown-icon"
           type={iconType}
-          onClick={this.toggleDropdown}
+          onClick={this.handleDropdownButtonClicked}
         />
       );
     }
-  };
+    return null;
+  }
 
   render() {
     const {
@@ -149,23 +157,26 @@ class CoinCard extends Component {
       onChange,
       onChangeAsset,
       className,
+      withSearch,
+      searchDisable,
       ...props
     } = this.props;
-    const { openDropdown } = this.state;
+    const { openDropdown, percentButtonSelected } = this.state;
 
+    // TODO: render dropown menu inline for mobile
     return (
-      <Dropdown
-        overlay={this.renderMenu()}
-        trigger={['']}
-        visible={openDropdown}
-        onVisibleChange={this.handleVisibleChange}
+      <CoinCardWrapper
+        className={`coinCard-wrapper ${className}`}
+        onBlur={this.handleBlurCard}
+        {...props}
       >
-        <CoinCardWrapper
-          className={`coinCard-wrapper ${className}`}
-          onBlur={this.handleBlurCard}
-          {...props}
+        {title && <Label className="title-label">{title}</Label>}
+
+        <Dropdown
+          overlay={this.renderMenu()}
+          trigger={[]}
+          visible={openDropdown}
         >
-          {title && <Label className="title-label">{title}</Label>}
           <div className="card-wrapper">
             <Coin type={asset} size="small" />
             <div className="asset-data">
@@ -174,7 +185,7 @@ class CoinCard extends Component {
               </Label>
               <Input
                 className="asset-amount-label"
-                size="big"
+                size="large"
                 value={amount}
                 style={{ width: '100%' }}
                 onChange={this.onChange}
@@ -197,11 +208,16 @@ class CoinCard extends Component {
                 )}
               </div>
             </div>
-            {this.renderDropDown()}
+            {this.renderDropDownButton()}
           </div>
-          {withSelection && <Selection onSelect={onSelect} />}
-        </CoinCardWrapper>
-      </Dropdown>
+        </Dropdown>
+        {withSelection && (
+          <Selection
+            selected={percentButtonSelected}
+            onSelect={this.handleSelected}
+          />
+        )}
+      </CoinCardWrapper>
     );
   }
 }

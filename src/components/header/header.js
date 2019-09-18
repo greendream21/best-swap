@@ -30,11 +30,8 @@ class Header extends Component {
   };
 
   handleClickTxView = () => {
-    const { setTxTimerModal, txStatus } = this.props;
-
-    if (txStatus.status) {
-      setTxTimerModal(true);
-    }
+    const { setTxTimerModal } = this.props;
+    setTxTimerModal(true);
   };
 
   render() {
@@ -59,7 +56,9 @@ class Header extends Component {
           )}
           {connected && <WalletDrawer />}
           <HeaderSetting />
-          {status && <TxView start={status} onClick={this.handleClickTxView} />}
+          {connected && (
+            <TxView start={status} onClick={this.handleClickTxView} />
+          )}
         </HeaderActionButtons>
       </StyledHeader>
     );

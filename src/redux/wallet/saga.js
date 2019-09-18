@@ -4,6 +4,11 @@ import { push } from 'connected-react-router';
 import actions from './actions';
 import Binance from '../../clients/binance';
 import ChainService from '../../clients/chainservice';
+import {
+  getCoinGeckoURL,
+  getHeaders,
+  axiosRequest,
+} from '../../helpers/apiHelper';
 
 import {
   saveWalletAddress,
@@ -35,6 +40,21 @@ export function* forgetWalletSaga() {
   });
 }
 
+const getRunePriceRequest = async () => {
+  const params = {
+    method: 'get',
+    url: getCoinGeckoURL('simple/price?ids=thorchain&vs_currencies=usd'),
+    headers: getHeaders(),
+  };
+
+  try {
+    const { data } = await axiosRequest(params);
+    return data.thorchain.usd || 0;
+  } catch (error) {
+    return null;
+  }
+};
+
 export function* refreshBalance() {
   yield takeEvery(actions.REFRESH_BALANCE, function*({ payload }) {
     const address = payload;
@@ -55,6 +75,15 @@ export function* refreshBalance() {
           };
         });
 
+        // get rune price
+
+        let price = 0;
+        try {
+          price = yield call(getRunePriceRequest);
+          yield put(actions.getRunePriceSuccess(price));
+        } catch (error) {
+          console.log(error);
+        }
         yield put(actions.refreshBalanceSuccess(coins));
       } catch (error) {
         yield put(actions.refreshBalanceFailed(error));
@@ -108,11 +137,31 @@ export function* refreshStakes() {
   });
 }
 
+export function* getRunePrice() {
+  yield takeEvery(actions.GET_RUNE_PRICE, function*({ payload }) {
+    const params = {
+      method: 'get',
+      url: getCoinGeckoURL('simple/price?ids=thorchain&vs_currencies=usd'),
+      headers: getHeaders(),
+    };
+
+    try {
+      const { data } = yield call(axiosRequest, params);
+      const price = data.thorchain.usd || 0;
+
+      yield put(actions.getRunePriceSuccess(price));
+    } catch (error) {
+      yield put(actions.getRunePriceFailed(error));
+    }
+  });
+}
+
 export default function* rootSaga() {
   yield all([
     fork(saveWalletSaga),
     fork(forgetWalletSaga),
     fork(refreshBalance),
     fork(refreshStakes),
+    fork(getRunePrice),
   ]);
 }

@@ -11,7 +11,7 @@ import Binance from '../../../clients/binance';
 import Button from '../../../components/uielements/button';
 import Drag from '../../../components/uielements/drag';
 import CoinCard from '../../../components/uielements/coins/coinCard';
-import CoinList from '../../../components/uielements/coins/coinList';
+
 import Label from '../../../components/uielements/label';
 import Input from '../../../components/uielements/input/input';
 import CoinData from '../../../components/uielements/coins/coinData';
@@ -56,6 +56,7 @@ class SwapSend extends Component {
     assetData: PropTypes.array.isRequired,
     pools: PropTypes.array.isRequired,
     user: PropTypes.object.isRequired,
+    runePrice: PropTypes.number.isRequired,
     setTxTimerType: PropTypes.func.isRequired,
     setTxTimerModal: PropTypes.func.isRequired,
     setTxTimerStatus: PropTypes.func.isRequired,
@@ -270,8 +271,9 @@ class SwapSend extends Component {
       resetTxStatus,
     } = this.props;
 
-    if (!status) resetTxStatus();
-    else setTxTimerModal(false);
+    // if (!status) resetTxStatus();
+    // else setTxTimerModal(false);
+    setTxTimerModal(false);
   };
 
   handleGotoDetail = () => {
@@ -288,10 +290,10 @@ class SwapSend extends Component {
     this.props.history.push(URL);
   };
 
-  handleSelectTraget = assetsData => targetIndex => {
+  handleSelectTraget = asset => {
     const { view } = this.props;
     const { source } = this.getSwapData();
-    const target = assetsData[targetIndex].asset.split('-')[0].toLowerCase();
+    const target = asset.split('-')[0].toLowerCase();
 
     if (source === target) {
       return;
@@ -347,10 +349,7 @@ class SwapSend extends Component {
   };
 
   handleEndTxTimer = () => {
-    const {
-      setTxTimerStatus,
-      txStatus: { status },
-    } = this.props;
+    const { setTxTimerStatus } = this.props;
 
     setTxTimerStatus(false);
     this.setState({
@@ -377,7 +376,7 @@ class SwapSend extends Component {
       );
       this.hash = result[0].hash;
     } catch (error) {
-      console.log(error);
+      console.log(error); // eslint-disable-line no-console
     }
   };
 
@@ -448,7 +447,7 @@ class SwapSend extends Component {
             <Label weight="bold">{receiveText}</Label>
             <CoinData
               asset={target}
-              assetValue={outputAmount}
+              assetValue={Number(outputAmount)}
               price={priceTo}
             />
             <Label weight="bold">{expectation}</Label>
@@ -473,7 +472,7 @@ class SwapSend extends Component {
                   <Icon type="global" />
                 </a>
               </div>
-              <Label>{this.hash}</Label>
+              <Label>VIEW ON BINANCE CHAIN</Label>
             </div>
           )}
           {value !== 0 && (
@@ -510,6 +509,7 @@ class SwapSend extends Component {
       password,
     } = this.state;
 
+    const runePrice = 0.01481204; // TODO: get rune price from API
     const swapData = this.getSwapData();
 
     if (!swapData || !Object.keys(tokenInfo).length) {
@@ -527,11 +527,13 @@ class SwapSend extends Component {
       };
     });
 
-    const { sourceData, targetData } = this.validatePair(assetData, tokensData);
+    // add rune data in the target token list
+    tokensData.push({
+      asset: 'RUNE-A1F',
+      price: runePrice,
+    });
 
-    const targetIndex = targetData.findIndex(
-      value => value.asset.toLowerCase() === target,
-    );
+    const { sourceData, targetData } = this.validatePair(assetData, tokensData);
 
     const dragTitle =
       view === 'detail' ? 'Drag to swap' : 'Drag to swap and send';
@@ -540,14 +542,17 @@ class SwapSend extends Component {
     const coinCloseIconType = txStatus.status ? 'fullscreen-exit' : 'close';
 
     // calculation
-    const runePrice = 0.04; // TODO: mock price = 0.04
     this.data = getCalcResult(source, target, pools, xValue, runePrice);
     const { Px, slip, outputAmount, outputPrice } = this.data;
-
+    console.log(this.data);
     return (
       <ContentWrapper className="swap-detail-wrapper">
         <Row>
-          <Col className="swap-detail-panel" lg={16} span={24}>
+          <Col
+            className="swap-detail-panel"
+            xs={{ span: 24, offset: 0 }}
+            xl={{ span: 16, offset: 4 }}
+          >
             <div className="swap-type-selector">
               <Button
                 onClick={this.handleGotoDetail}
@@ -596,6 +601,8 @@ class SwapSend extends Component {
                 onChangeAsset={this.handleChangeSource}
                 onSelect={this.handleSelectAmount(source)}
                 withSelection
+                withSearch
+                searchDisable={[target]}
               />
 
               <ArrowContainer>
@@ -605,10 +612,14 @@ class SwapSend extends Component {
               <CoinCard
                 title="You will receive"
                 asset={target}
+                assetData={targetData}
                 amount={outputAmount}
                 price={outputPrice}
                 slip={slip}
+                onChangeAsset={this.handleSelectTraget}
                 disabled
+                withSearch
+                searchDisable={[source]}
               />
             </SwapAssetCard>
             <div className="drag-confirm-wrapper">
@@ -621,21 +632,6 @@ class SwapSend extends Component {
                 onDrag={this.handleDrag}
               />
             </div>
-          </Col>
-          <Col className="swap-token-panel" lg={8} span={24}>
-            <Label className="select-token-label">
-              Select token to receive
-            </Label>
-            <Input
-              className="token-search-input"
-              placeholder="Search Token ..."
-              suffix={<Icon type="search" />}
-            />
-            <CoinList
-              data={targetData}
-              value={targetIndex}
-              onSelect={this.handleSelectTraget(targetData)}
-            />
           </Col>
         </Row>
         <SwapModal
@@ -685,6 +681,7 @@ export default compose(
   connect(
     state => ({
       user: state.Wallet.user,
+      runePrice: state.Wallet.runePrice,
       txStatus: state.App.txStatus,
       chainData: state.ChainService,
       pools: state.Statechain.pools,
