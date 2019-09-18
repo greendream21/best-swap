@@ -1,24 +1,43 @@
-image: node:latest
+image: node:10.15
 
 stages:
-  - test_and_deploy
+#  - test
+  - deploy-develop
+  - develop-production
 
 cache:
   paths:
     - node_modules/
   key: '$CI_BUILD_REPO'
 
-test_and_deploy:
-  stage: test_and_deploy
+before_script:
+  - yarn
+  - npm i -g firebase-tools
+  - firebase -V
+
+#test:
+#  stage: test
+#  script:
+#    - echo Please fix you tests boys!
+#  # - yarn test:ci
+
+deploy-develop:
+  stage: deploy-develop
+  script:
+    - firebase use --token ${FIREBASE_TOKEN} bepswap-testnet-dev
+    - firebase deploy --token ${FIREBASE_TOKEN}
+  environment:
+    name: develop
   only:
     - master
-    - testnet-prod
-    - testnet-dev
+
+deploy-production:
+  stage: develop-production
   script:
-    - yarn
-    # - yarn test:ci
-    - npm i -g firebase-tools
-    - firebase -V
-    - firebase use --token ${FIREBASE_TOKEN} ${CI_COMMIT_REF_NAME}
+    - firebase use --token ${FIREBASE_TOKEN} bepswap-testnet
     - firebase deploy --token ${FIREBASE_TOKEN}
-  
+  environment:
+    name: production
+  only:
+    - master
+  when: manual
