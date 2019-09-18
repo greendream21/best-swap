@@ -186,7 +186,7 @@ class CoinCard extends Component {
               <Input
                 className="asset-amount-label"
                 size="large"
-                value={amount}
+                value={amount.toLocaleString()}
                 style={{ width: '100%' }}
                 onChange={this.onChange}
                 {...props}
@@ -194,7 +194,9 @@ class CoinCard extends Component {
               <Divider />
               <div className="asset-card-footer">
                 <Label size="small" color="gray" weight="bold">
-                  {`$USD ${(amount * price).toFixed(2)}`}
+                  {`$USD ${Number(
+                    (amount * price).toFixed(2),
+                  ).toLocaleString()}`}
                 </Label>
                 {slip !== undefined && (
                   <Label

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon } from 'antd';
+import { TelegramIcon } from '../icons/telegramicon';
 
 import Logo from '../uielements/logo';
 import { StyledFooter, FooterContainer, FooterItem } from './footer.style';
@@ -48,6 +49,13 @@ class Footer extends Component {
                 rel="noopener noreferrer"
               >
                 <Icon type="medium" />
+              </a>
+              <a
+                href="https://t.me/thorchain_org"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Icon component={TelegramIcon} />
               </a>
               <a
                 href="https://github.com/thorchain"
