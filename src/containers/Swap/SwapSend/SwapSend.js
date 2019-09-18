@@ -152,16 +152,16 @@ class SwapSend extends Component {
       user: { keystore, wallet },
     } = this.props;
     const { password } = this.state;
+    this.handleConfirmSwap();
 
     try {
       const privateKey = crypto.getPrivateKeyFromKeyStore(keystore, password);
+      Binance.setPrivateKey(privateKey);
       const address = crypto.getAddressFromPrivateKey(
         privateKey,
         Binance.getPrefix(),
       );
       if (wallet === address) {
-        await Binance.setPrivateKey(privateKey);
-        await this.handleConfirmSwap();
         this.handleStartTimer();
       }
 
