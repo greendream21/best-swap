@@ -15,11 +15,11 @@ before_script:
   - npm i -g firebase-tools
   - firebase -V
 
-test:
-  stage: test
-  script:
-    - echo Please fix you tests boys!
-  # - yarn test:ci
+#test:
+#  stage: test
+#  script:
+#    - echo Please fix you tests boys!
+#  # - yarn test:ci
 
 deploy-develop:
   stage: deploy-develop
