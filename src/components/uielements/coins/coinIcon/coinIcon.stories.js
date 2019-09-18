@@ -7,7 +7,7 @@ import { defaultTheme } from '../../../../settings';
 
 import CoinIcon from './coinIcon';
 
-storiesOf('Components/Coins/Icon', module).add('default', () => {
+storiesOf('Components/Coins/CoinIcon', module).add('default', () => {
   return (
     <ThemeProvider theme={defaultTheme}>
       <AppHolder>
@@ -18,6 +18,7 @@ storiesOf('Components/Coins/Icon', module).add('default', () => {
           <CoinIcon type="ankr" size="small" />
           <CoinIcon type="ftm" size="small" />
           <CoinIcon type="tomo" size="small" />
+          <CoinIcon type="loki" size="small" />
         </div>
         <div style={{ display: 'flex' }}>
           <CoinIcon type="bnb" size="big" />
@@ -28,6 +29,7 @@ storiesOf('Components/Coins/Icon', module).add('default', () => {
           <CoinIcon type="tomo" size="big" />
           <CoinIcon type="blue" size="big" />
           <CoinIcon type="confirm" size="big" />
+          <CoinIcon type="loki" size="big" />
         </div>
       </AppHolder>
     </ThemeProvider>

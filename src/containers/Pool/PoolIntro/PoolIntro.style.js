@@ -14,8 +14,16 @@ export const ContentWrapper = styled(ContentView)`
   }
 
   .rune-diagram-wrapper {
+    display: flex;
     flex-grow: 1;
+    align-items: center;
     height: 100%;
+
+    .ant-row {
+      display: flex;
+      align-items: center;
+      height: 100%;
+    }
 
     .user-avatar-image {
       display: flex;
@@ -38,6 +46,6 @@ export const ContentWrapper = styled(ContentView)`
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-end;
   }
 `;

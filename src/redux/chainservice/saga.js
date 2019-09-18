@@ -1,7 +1,10 @@
 import { all, takeEvery, put, fork, call } from 'redux-saga/effects';
-import axios from 'axios';
 import actions from './actions';
-import { getChainserviceURL, getHeaders } from '../../helpers/apiHelper';
+import {
+  getChainserviceURL,
+  getHeaders,
+  axiosRequest,
+} from '../../helpers/apiHelper';
 
 export function* getUserData() {
   yield takeEvery(actions.GET_USER_DATA_REQUEST, function*({ payload }) {
@@ -9,10 +12,11 @@ export function* getUserData() {
       method: 'get',
       url: getChainserviceURL('userData'),
       headers: getHeaders(),
+      withCredentials: true,
     };
 
     try {
-      const { data } = yield call(axios.request, params);
+      const { data } = yield call(axiosRequest, params);
 
       yield put(actions.getUserDataSuccess(data));
     } catch (error) {
@@ -30,11 +34,41 @@ export function* getTokens() {
     };
 
     try {
-      const { data } = yield call(axios.request, params);
+      const { data } = yield call(axiosRequest, params);
+
+      yield all(
+        data.map(token => {
+          return put(actions.getTokenInfo({ token }));
+        }),
+      );
 
       yield put(actions.getTokensSuccess(data));
     } catch (error) {
       yield put(actions.getTokensFailed(error));
+    }
+  });
+}
+
+export function* getTokenInfo() {
+  yield takeEvery(actions.GET_TOKEN_INFO_REQUEST, function*({ payload }) {
+    const { token } = payload;
+
+    const params = {
+      method: 'get',
+      url: getChainserviceURL(`tokens?token=${token}`),
+      headers: getHeaders(),
+    };
+
+    try {
+      const { data } = yield call(axiosRequest, params);
+
+      yield put(
+        actions.getTokenInfoSuccess({
+          [token]: data,
+        }),
+      );
+    } catch (error) {
+      yield put(actions.getTokenInfoFailed(error));
     }
   });
 }
@@ -50,7 +84,7 @@ export function* getTokenData() {
     };
 
     try {
-      const { data } = yield call(axios.request, params);
+      const { data } = yield call(axiosRequest, params);
 
       yield put(actions.getTokenDataSuccess(data));
     } catch (error) {
@@ -70,7 +104,7 @@ export function* getSwapData() {
     };
 
     try {
-      const { data } = yield call(axios.request, params);
+      const { data } = yield call(axiosRequest, params);
 
       yield put(actions.getSwapDataSuccess(data));
     } catch (error) {
@@ -90,7 +124,7 @@ export function* getSwapTx() {
     };
 
     try {
-      const { data } = yield call(axios.request, params);
+      const { data } = yield call(axiosRequest, params);
 
       yield put(actions.getSwapTxSuccess(data));
     } catch (error) {
@@ -110,7 +144,7 @@ export function* getStakeData() {
     };
 
     try {
-      const { data } = yield call(axios.request, params);
+      const { data } = yield call(axiosRequest, params);
 
       yield put(actions.getStakeDataSuccess(data));
     } catch (error) {
@@ -130,7 +164,7 @@ export function* getStakeTx() {
     };
 
     try {
-      const { data } = yield call(axios.request, params);
+      const { data } = yield call(axiosRequest, params);
 
       yield put(actions.getStakeTxSuccess(data));
     } catch (error) {
@@ -139,6 +173,36 @@ export function* getStakeTx() {
   });
 }
 
+export function* getPoolData() {
+  yield takeEvery(actions.GET_POOL_DATA_REQUEST, function*({ payload }) {
+    const { asset } = payload;
+
+    const params = {
+      method: 'get',
+      url: getChainserviceURL(`poolData?asset=${asset}`),
+      headers: getHeaders(),
+    };
+
+    try {
+      const { data } = yield call(axiosRequest, params);
+
+      yield put(actions.getPoolDataSuccess(data));
+    } catch (error) {
+      yield put(actions.getPoolDataFailed(error));
+    }
+  });
+}
+
 export default function* rootSaga() {
-  yield all([fork(getUserData)]);
+  yield all([
+    fork(getUserData),
+    fork(getTokens),
+    fork(getTokenInfo),
+    fork(getTokenData),
+    fork(getSwapData),
+    fork(getSwapTx),
+    fork(getStakeData),
+    fork(getStakeTx),
+    fork(getPoolData),
+  ]);
 }

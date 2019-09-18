@@ -35,6 +35,6 @@ export const coinNames = [
   },
   {
     id: 'LOK-3C0',
-    name: 'LOKI',
+    name: 'LOK',
   },
 ];

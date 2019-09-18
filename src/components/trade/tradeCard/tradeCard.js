@@ -2,15 +2,15 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import { TradeCardWrapper } from './tradeCard.style';
-import { coinGroup } from '../../../settings';
 import Coin from '../../uielements/coins/coin';
 import Status from '../../uielements/status';
 import Button from '../../uielements/button';
+import { getActualValue } from '../../../helpers/stringHelper';
 
 class TradeCard extends Component {
   static propTypes = {
-    asset: PropTypes.oneOf(coinGroup).isRequired,
-    target: PropTypes.oneOf(coinGroup).isRequired,
+    asset: PropTypes.string.isRequired,
+    target: PropTypes.string.isRequired,
     depth: PropTypes.number,
     poolPrice: PropTypes.number,
     marketPrice: PropTypes.number,
@@ -46,11 +46,11 @@ class TradeCard extends Component {
     } = this.props;
 
     const poolValue = `${asset}:${target}`;
-    const depthValue = `$${depth}`;
-    const poolPriceValue = `$${poolPrice}`;
-    const marketPriceValue = `$${marketPrice}`;
-    const premiumValue = `${premium}%`;
-    const rewardValue = `$${reward}`;
+    const depthValue = `$${getActualValue(depth)}`;
+    const poolPriceValue = `$${getActualValue(poolPrice)}`;
+    const marketPriceValue = `$${getActualValue(marketPrice)}`;
+    const premiumValue = `${getActualValue(premium)}%`;
+    const rewardValue = `$${getActualValue(reward)}`;
 
     return (
       <TradeCardWrapper className={`tradeCard-wrapper ${className}`} {...props}>

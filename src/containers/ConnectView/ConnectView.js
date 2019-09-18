@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Row, Col } from 'antd';
-import PropTypes from 'prop-types';
 
 import { ContentWrapper } from './ConnectView.style';
 import Label from '../../components/uielements/label';
@@ -11,15 +10,11 @@ import WalletConnect from './WalletConnect';
 import Ledger from './Ledger';
 
 class ConnectView extends Component {
-  static propTypes = {
-    onUnlock: PropTypes.func.isRequired,
-  };
-
   constructor(props) {
     super(props);
 
     this.state = {
-      walletType: 'walletconnect',
+      walletType: 'keystore',
     };
   }
 
@@ -30,8 +25,6 @@ class ConnectView extends Component {
   }
 
   render() {
-    const { onUnlock } = this.props;
-
     const btns = [
       {
         label: 'wallet connect',
@@ -74,6 +67,7 @@ class ConnectView extends Component {
                   color="primary"
                   typevalue="ghost"
                   sizevalue="big"
+                  disabled={btn.value === 'walletconnect'}
                 >
                   {btn.label}
                 </Button>
@@ -81,11 +75,6 @@ class ConnectView extends Component {
             })}
           </div>
           <div className="connect-view-content-form">{selected.comp}</div>
-        </Row>
-        <Row className="bottom-nav-button">
-          <Button onClick={onUnlock} color="primary">
-            unlock
-          </Button>
         </Row>
       </ContentWrapper>
     );

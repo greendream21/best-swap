@@ -1,34 +1,26 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { SelectionWrapper } from './selection.style';
-import Button from '../button';
+import { SelectionWrapper, Button } from './selection.style';
 
 class Selection extends Component {
   static propTypes = {
     className: PropTypes.string,
     onSelect: PropTypes.func.isRequired,
+    selected: PropTypes.number,
   };
 
   static defaultProps = {
     className: '',
-  };
-
-  state = {
-    focused: 0,
+    selected: 0,
   };
 
   handleClick = value => {
     const { onSelect } = this.props;
-
     onSelect(value);
-    this.setState({
-      focused: value,
-    });
   };
 
   render() {
-    const { className, ...props } = this.props;
-    const { focused } = this.state;
+    const { className, selected, ...props } = this.props;
 
     return (
       <SelectionWrapper className={`selection-wrapper ${className}`} {...props}>
@@ -36,7 +28,7 @@ class Selection extends Component {
           onClick={() => this.handleClick(25)}
           sizevalue="small"
           typevalue="outline"
-          focused={focused === 25}
+          focused={selected === 25}
         >
           25%
         </Button>
@@ -44,7 +36,7 @@ class Selection extends Component {
           onClick={() => this.handleClick(50)}
           sizevalue="small"
           typevalue="outline"
-          focused={focused === 50}
+          focused={selected === 50}
         >
           50%
         </Button>
@@ -52,7 +44,7 @@ class Selection extends Component {
           onClick={() => this.handleClick(75)}
           sizevalue="small"
           typevalue="outline"
-          focused={focused === 75}
+          focused={selected === 75}
         >
           75%
         </Button>
@@ -60,7 +52,7 @@ class Selection extends Component {
           onClick={() => this.handleClick(100)}
           sizevalue="small"
           typevalue="outline"
-          focused={focused === 100}
+          focused={selected === 100}
         >
           All
         </Button>

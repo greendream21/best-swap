@@ -42,8 +42,8 @@ class TradeIntro extends Component {
             </Label>
           </Col>
         </Row>
-        <Row>
-          <Col span={15} className="rune-diagram-wrapper">
+        <Row className="rune-diagram-wrapper">
+          <Col className="rune-diagrams" span={15}>
             <div className="rune-diagram-pool">
               <Label size="big" weight="bold">
                 POOL

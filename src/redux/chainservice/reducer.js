@@ -3,11 +3,13 @@ import actions from './actions';
 const initState = {
   userData: {},
   tokens: [],
+  tokenInfo: {},
   tokenData: {},
   swapData: {},
   swapTx: {},
   stakeData: {},
   stakeTx: {},
+  poolData: {},
   error: null,
 };
 
@@ -25,6 +27,15 @@ export default function apiReducer(state = initState, action) {
       return {
         ...state,
         tokens: payload,
+        error: null,
+      };
+    case actions.GET_TOKEN_INFO_SUCCESS:
+      return {
+        ...state,
+        tokenInfo: {
+          ...state.tokenInfo,
+          ...payload,
+        },
         error: null,
       };
     case actions.GET_TOKENDATA_SUCCESS:
@@ -55,6 +66,12 @@ export default function apiReducer(state = initState, action) {
       return {
         ...state,
         stakeTx: payload,
+        error: null,
+      };
+    case actions.GET_POOL_DATA_SUCCESS:
+      return {
+        ...state,
+        poolData: payload,
         error: null,
       };
     default:

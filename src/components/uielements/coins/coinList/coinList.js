@@ -1,14 +1,14 @@
 import React, { Fragment, Component } from 'react';
 import PropTypes from 'prop-types';
+import { Scrollbars } from 'react-custom-scrollbars';
 
 import { CoinListWrapper } from './coinList.style';
 import CoinData from '../coinData';
-import { coinGroup, coinNames } from '../../../../settings';
 
 class CoinList extends Component {
   static propTypes = {
     data: PropTypes.array,
-    value: PropTypes.string.isRequired,
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     selected: PropTypes.array,
     onSelect: PropTypes.func.isRequired,
     size: PropTypes.oneOf(['small', 'big']),
@@ -45,35 +45,38 @@ class CoinList extends Component {
         className={`coinList-wrapper ${className}`}
         {...props}
       >
-        {data.map((coinData, index) => {
-          const { asset, assetValue, target, targetValue, price } = coinData;
+        <Scrollbars className="coinList-scroll">
+          {data.map((coinData, index) => {
+            const { asset, assetValue, target, targetValue, price } = coinData;
 
-          const { name: tokenName } = coinNames.find(coin => coin.id === asset);
-          if (tokenName && !coinGroup.includes(tokenName.toLowerCase())) {
-            console.log(asset, 'is not a recognized token');
-            return <Fragment key={asset} />;
-          }
+            const tokenName = asset.split('-')[0];
 
-          const isSelected = selected.includes(index);
-          const activeClass = isSelected || value === index ? 'active' : '';
+            if (!tokenName) {
+              console.log(asset, 'is not a recognized token');
+              return <Fragment key={asset} />;
+            }
 
-          return (
-            <div
-              className={`coinList-row ${activeClass}`}
-              onClick={this.toggleSelect(index)}
-              key={index}
-            >
-              <CoinData
-                asset={tokenName.toLowerCase()}
-                assetValue={assetValue}
-                target={target}
-                targetValue={targetValue}
-                price={price}
-                size={size}
-              />
-            </div>
-          );
-        })}
+            const isSelected = selected.includes(index);
+            const activeClass = isSelected || value === index ? 'active' : '';
+
+            return (
+              <div
+                className={`coinList-row ${activeClass}`}
+                onClick={this.toggleSelect(index)}
+                key={index}
+              >
+                <CoinData
+                  asset={tokenName.toLowerCase()}
+                  assetValue={assetValue}
+                  target={target}
+                  targetValue={targetValue}
+                  price={price}
+                  size={size}
+                />
+              </div>
+            );
+          })}
+        </Scrollbars>
       </CoinListWrapper>
     );
   }

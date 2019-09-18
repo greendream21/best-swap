@@ -8,7 +8,7 @@ import { DynamicCoinWrapper } from './dynamicCoin.style';
 class DynamicCoin extends Component {
   static propTypes = {
     type: PropTypes.string,
-    size: PropTypes.oneOf(['small', 'big']),
+    size: PropTypes.oneOf(['small', 'normal', 'big']),
     className: PropTypes.string,
   };
 
@@ -25,15 +25,17 @@ class DynamicCoin extends Component {
     const startCol = rainbowStop(numbers[0]);
     const stopCol = rainbowStop(numbers[1]);
 
+    const coinName = type.length > 4 ? type.substr(0, 4) : type;
+
     return (
       <DynamicCoinWrapper
         type={type}
-        className={`dynamicCoin-wrapper ${className}`}
+        className={`dynamicCoin-wrapper coinData-coin-avatar ${className}`}
         startCol={startCol}
         stopCol={stopCol}
         {...props}
       >
-        <span>{type}</span>
+        <span>{coinName}</span>
       </DynamicCoinWrapper>
     );
   }

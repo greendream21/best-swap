@@ -12,6 +12,7 @@ const mediaQueries = {
   md: '(min-width: 768px)',
   lg: '(min-width: 992px)',
   xl: '(min-width: 1200px)',
+  xxl: '(min-width: 1600px)',
 };
 
 export const media = Object.keys(mediaQueries).reduce((acc, segment) => {
@@ -28,3 +29,27 @@ export const media = Object.keys(mediaQueries).reduce((acc, segment) => {
 
 export const cleanTag = (component, tagList = []) => props =>
   React.createElement(component, omit(props, tagList));
+
+export function provideResponsiveShow({ showFrom }) {
+  return (
+    showFrom &&
+    css`
+      display: none;
+      ${media[showFrom]`
+        display: block;
+      `}
+    `
+  );
+}
+
+export function provideResponsiveHide({ hideFrom }) {
+  return (
+    hideFrom &&
+    css`
+      display: block;
+      ${media[hideFrom]`
+        display: none;
+      `}
+    `
+  );
+}

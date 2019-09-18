@@ -3,13 +3,12 @@ import PropTypes from 'prop-types';
 import Draggable from 'react-draggable';
 
 import CoinIcon from '../coins/coinIcon';
-import { coinGroup } from '../../../settings';
 import { DragWrapper, TitleLabel } from './drag.style';
 
 class Drag extends Component {
   static propTypes = {
-    source: PropTypes.oneOf(coinGroup).isRequired,
-    target: PropTypes.oneOf(coinGroup).isRequired,
+    source: PropTypes.string.isRequired,
+    target: PropTypes.string.isRequired,
     title: PropTypes.string,
     reset: PropTypes.bool,
     onConfirm: PropTypes.func,
@@ -160,7 +159,14 @@ class Drag extends Component {
   };
 
   render() {
-    const { source, target, title, className, ...props } = this.props;
+    const {
+      source,
+      target,
+      title,
+      className,
+      onConfirm,
+      ...props
+    } = this.props;
     const { pos, overlap, success, missed, dragging } = this.state;
     const dragHandlers = {
       onStart: this.handleDragStart,

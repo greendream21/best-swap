@@ -5,8 +5,10 @@ import styled from 'styled-components';
 import { StatusWrapper } from './status.style';
 import Label from '../label';
 
-const TitleLabel = styled(Label)`
+const NoWrapLabel = styled(Label)`
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 class Status extends Component {
@@ -27,12 +29,12 @@ class Status extends Component {
 
     return (
       <StatusWrapper className={`status-wrapper ${className}`} {...props}>
-        <TitleLabel className="status-title" size="tiny" weight="bold">
+        <NoWrapLabel className="status-title" size="tiny" weight="bold">
           {title}
-        </TitleLabel>
-        <Label className="status-value" size="big">
+        </NoWrapLabel>
+        <NoWrapLabel className="status-value" size="big">
           {value}
-        </Label>
+        </NoWrapLabel>
       </StatusWrapper>
     );
   }

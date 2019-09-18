@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { compose } from 'redux';
 import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Button, Tooltip } from 'antd';
@@ -8,7 +10,7 @@ import Tabs from '../../components/uielements/tabs';
 import PanelHeader from '../../components/uielements/panelHeader';
 import { headerData } from './data';
 
-import { SwapIntro, SwapView, SwapDetail } from '../Swap';
+import { SwapIntro, SwapView, SwapSend } from '../Swap';
 import { PoolIntro, PoolView, PoolStake, PoolCreate } from '../Pool';
 import { TradeIntro, TradeView, TradeDetail } from '../Trade';
 import ViewHeader from '../../components/uielements/viewHeader';
@@ -18,6 +20,10 @@ import FaqsView from '../FaqsView';
 import NetworkView from '../NetworkView';
 import TutorialView from '../TutorialView';
 
+import walletActions from '../../redux/wallet/actions';
+
+const { refreshBalance, refreshStake } = walletActions;
+
 const { TabPane } = Tabs;
 
 class ActionView extends Component {
@@ -25,6 +31,9 @@ class ActionView extends Component {
     type: PropTypes.string,
     view: PropTypes.string,
     info: PropTypes.string,
+    user: PropTypes.object.isRequired,
+    refreshBalance: PropTypes.func.isRequired,
+    refreshStake: PropTypes.func.isRequired,
   };
 
   static defaultProps = {
@@ -36,6 +45,17 @@ class ActionView extends Component {
   state = {
     activeTab: 'swap',
   };
+
+  componentDidMount() {
+    const { user, refreshBalance, refreshStake } = this.props;
+
+    if (user && user.wallet) {
+      const address = user.wallet;
+
+      refreshBalance(address);
+      refreshStake(address);
+    }
+  }
 
   handleChangeTab = activeTab => {
     const { type } = this.props;
@@ -63,11 +83,18 @@ class ActionView extends Component {
 
   handleBack = () => {
     const view = this.getView();
+    if (
+      view === 'connect-view' ||
+      view === 'stats-view' ||
+      view === 'faqs-view'
+    ) {
+      this.props.history.push('/swap');
+    }
     if (view === 'swap-detail' || view === 'swap-send') {
       this.props.history.push('/swap');
     }
     if (view.includes('pool-')) {
-      this.props.history.push('/pool');
+      this.props.history.push('/pools');
     }
     if (view.includes('trade-')) {
       this.props.history.push('/trade');
@@ -76,14 +103,10 @@ class ActionView extends Component {
 
   handleHeaderAction = () => {};
 
-  handleUnlock = () => {
-    this.props.history.push('/swap');
-  };
-
   getHeaderText = () => {
     const view = this.getView();
 
-    return headerData[view] || '';
+    return headerData[view];
   };
 
   getView = () => {
@@ -98,12 +121,14 @@ class ActionView extends Component {
   };
 
   renderHeader = () => {
-    const { type } = this.props;
+    const { type, user } = this.props;
+    const { wallet } = user;
+    const connected = wallet ? true : false;
     const { activeTab } = this.state;
     const active = type || activeTab;
     const headerText = this.getHeaderText();
     const intro = (
-      <Link to="introduction">
+      <Link to="/introduction">
         <Tooltip title="Introduction?">
           <Button shape="circle" size="small" icon="question" />
         </Tooltip>
@@ -112,7 +137,7 @@ class ActionView extends Component {
 
     return (
       <>
-        {!headerText && (
+        {headerText === undefined && (
           <>
             <Tabs
               activeKey={active}
@@ -121,12 +146,12 @@ class ActionView extends Component {
               action
             >
               <TabPane tab="swap" key="swap" />
-              <TabPane tab="pool" key="pool" />
+              <TabPane tab="pools" key="pools" />
             </Tabs>
             {intro}
           </>
         )}
-        {headerText && (
+        {headerText !== undefined && (
           <ViewHeader
             title={headerText}
             actionText="refresh"
@@ -139,14 +164,15 @@ class ActionView extends Component {
   };
 
   render() {
-    const { info } = this.props;
+    const { ticker, info } = this.props;
     const view = this.getView();
+    console.log('View', view);
 
     return (
       <ActionViewWrapper>
         <PanelHeader>{this.renderHeader()}</PanelHeader>
-        {view === 'swap' && <SwapIntro onNext={this.handleSetTab('pool')} />}
-        {view === 'pool' && (
+        {view === 'swap' && <SwapIntro onNext={this.handleSetTab('pools')} />}
+        {view === 'pools' && (
           <PoolIntro
             onBack={this.handleSetTab('swap')}
             onNext={this.handleSetTab('trade')}
@@ -154,32 +180,21 @@ class ActionView extends Component {
         )}
         {view === 'trade' && (
           <TradeIntro
-            onBack={this.handleSetTab('pool')}
+            onBack={this.handleSetTab('pools')}
             onNext={this.handleStart}
           />
         )}
         {view === 'tutorial' && <TutorialView />}
-        {view === 'connect-view' && (
-          <ConnectView onUnlock={this.handleUnlock} />
-        )}
+        {view === 'connect-view' && <ConnectView />}
         {view === 'stats-view' && <StatsView />}
         {view === 'faqs-view' && <FaqsView />}
         {view === 'network-view' && <NetworkView />}
         {view === 'swap-view' && <SwapView />}
-        {view === 'swap-detail' && <SwapDetail view="detail" info={info} />}
-        {view === 'swap-send' && <SwapDetail view="send" info={info} />}
-        {view === 'pool-view' && <PoolView />}
-        {view === 'pool-stake-new' && (
-          <PoolStake view="stake-new" info={info} />
-        )}
-        {view === 'pool-stake-detail' && (
-          <PoolStake view="stake-detail" info={info} />
-        )}
-        {view === 'pool-stake-view' && (
-          <PoolStake view="stake-view" info={info} />
-        )}
-        {view === 'pool-withdraw' && <PoolStake view="withdraw" info={info} />}
-        {view === 'pool-new' && <PoolCreate view="new" info={info} />}
+        {view === 'swap-detail' && <SwapSend view="detail" info={info} />}
+        {view === 'swap-send' && <SwapSend view="send" info={info} />}
+        {view === 'pools-view' && <PoolView />}
+        {/* {view === 'pools-pool' && <PoolStake ticker={ticker} />} */}
+        {/* {view === 'pool-new' && <PoolCreate view="new" info={info} />} */}
         {view === 'trade-view' && <TradeView />}
         {(view === 'trade-buy' || view === 'trade-sell') && (
           <TradeDetail view={view} info={info} />
@@ -189,4 +204,15 @@ class ActionView extends Component {
   }
 }
 
-export default withRouter(ActionView);
+export default compose(
+  connect(
+    state => ({
+      user: state.Wallet.user,
+    }),
+    {
+      refreshBalance,
+      refreshStake,
+    },
+  ),
+  withRouter,
+)(ActionView);

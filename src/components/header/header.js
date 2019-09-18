@@ -7,13 +7,17 @@ import PropTypes from 'prop-types';
 import TxView from '../uielements/txView';
 import Logo from '../uielements/logo';
 
-import { StyledHeader } from './header.style';
+import {
+  StyledHeader,
+  LogoWrapper,
+  HeaderTitle,
+  HeaderActionButtons,
+} from './header.style';
 import HeaderSetting from './headerSetting';
 import WalletDrawer from '../../containers/WalletView/WalletDrawer';
 
-import Button from '../uielements/button';
-
 import appActions from '../../redux/app/actions';
+import WalletButton from '../uielements/walletButton';
 
 const { setTxTimerModal } = appActions;
 
@@ -22,41 +26,40 @@ class Header extends Component {
     title: PropTypes.string.isRequired,
     txStatus: PropTypes.object.isRequired,
     setTxTimerModal: PropTypes.func.isRequired,
+    user: PropTypes.object.isRequired,
   };
 
   handleClickTxView = () => {
-    const { setTxTimerModal, txStatus } = this.props;
-
-    if (txStatus.status) {
-      setTxTimerModal(true);
-    }
+    const { setTxTimerModal } = this.props;
+    setTxTimerModal(true);
   };
 
   render() {
-    const { title, txStatus, wallet } = this.props;
+    const { title, txStatus, user } = this.props;
     const { status } = txStatus;
+    const { wallet } = user;
+    const connected = !!wallet;
 
-    // TODO: hide unlock button if already signed in
     return (
       <StyledHeader>
-        <Link to="/">
-          <Logo className="header-logo" name="bepswap" type="long" />
-        </Link>
-        <p className="header-title">{title}</p>
-        <div className="header-right">
-          <HeaderSetting />
-          <Link to="connect">
-            <Button
-              style={{ margin: '10px 4px' }}
-              color="warning"
-              sizevalue="small"
-            >
-              Unlock
-            </Button>
+        <LogoWrapper>
+          <Link to="/">
+            <Logo name="bepswap" type="long" />
           </Link>
-          <WalletDrawer style={{ margin: '8px 4px' }} />
-          <TxView start={status} onClick={this.handleClickTxView} />
-        </div>
+        </LogoWrapper>
+        <HeaderTitle>{title}</HeaderTitle>
+        <HeaderActionButtons>
+          {!connected && (
+            <Link to="/connect">
+              <WalletButton connected={connected} value={wallet} />
+            </Link>
+          )}
+          {connected && <WalletDrawer />}
+          <HeaderSetting />
+          {connected && (
+            <TxView start={status} onClick={this.handleClickTxView} />
+          )}
+        </HeaderActionButtons>
       </StyledHeader>
     );
   }
@@ -66,7 +69,7 @@ export default compose(
   connect(
     state => ({
       txStatus: state.App.txStatus,
-      wallet: state.Wallet.user,
+      user: state.Wallet.user,
     }),
     {
       setTxTimerModal,

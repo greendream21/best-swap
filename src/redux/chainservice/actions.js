@@ -21,6 +21,20 @@ const actions = {
   getTokensSuccess: payload => ({ type: actions.GET_TOKENS_SUCCESS, payload }),
   getTokensFailed: payload => ({ type: actions.GET_TOKENS_FAILED, payload }),
 
+  GET_TOKEN_INFO_REQUEST: 'GET_TOKEN_INFO_REQUEST',
+  GET_TOKEN_INFO_SUCCESS: 'GET_TOKEN_INFO_SUCCESS',
+  GET_TOKEN_INFO_FAILED: 'GET_TOKEN_INFO_FAILED',
+
+  getTokenInfo: payload => ({ type: actions.GET_TOKEN_INFO_REQUEST, payload }),
+  getTokenInfoSuccess: payload => ({
+    type: actions.GET_TOKEN_INFO_SUCCESS,
+    payload,
+  }),
+  getTokenInfoFailed: payload => ({
+    type: actions.GET_TOKEN_INFO_FAILED,
+    payload,
+  }),
+
   GET_TOKENDATA_REQUEST: 'GET_TOKENDATA_REQUEST',
   GET_TOKENDATA_SUCCESS: 'GET_TOKENDATA_SUCCESS',
   GET_TOKENDATA_FAILED: 'GET_TOKENDATA_FAILED',
@@ -81,6 +95,20 @@ const actions = {
     payload,
   }),
   getStakeTxFailed: payload => ({ type: actions.GET_STAKE_TX_FAILED, payload }),
+
+  GET_POOL_DATA_REQUEST: 'GET_POOL_DATA_REQUEST',
+  GET_POOL_DATA_SUCCESS: 'GET_POOL_DATA_SUCCESS',
+  GET_POOL_DATA_FAILED: 'GET_POOL_DATA_FAILED',
+
+  getPoolData: payload => ({ type: actions.GET_POOL_DATA_REQUEST, payload }),
+  getPoolDataSuccess: payload => ({
+    type: actions.GET_POOL_DATA_SUCCESS,
+    payload,
+  }),
+  getPoolDataFailed: payload => ({
+    type: actions.GET_POOL_DATA_FAILED,
+    payload,
+  }),
 };
 
 export default actions;

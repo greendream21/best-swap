@@ -1,83 +1,79 @@
 import React, { Fragment, Component } from 'react';
+import { compose } from 'redux';
+import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 import Label from '../../../components/uielements/label';
 import AddIcon from '../../../components/uielements/addIcon';
 import PoolCard from '../../../components/pool/poolCard';
 
-import ChainService from '../../../clients/chainservice';
-import StateChain from '../../../clients/statechain';
 import { ContentWrapper } from './PoolView.style';
+import statechainActions from '../../../redux/statechain/actions';
+
+const { getPools } = statechainActions;
 
 class PoolView extends Component {
+  static propTypes = {
+    getPools: PropTypes.func.isRequired,
+    pools: PropTypes.array.isRequired,
+    poolData: PropTypes.object.isRequired,
+    swapData: PropTypes.object.isRequired,
+  };
+
   state = {
     activeAsset: 'rune',
   };
 
-  constructor(props) {
-    super(props);
-
-    this.refreshPools();
+  componentDidMount() {
+    const { getPools } = this.props;
+    getPools();
   }
 
-  refreshPools = () => {
-    StateChain.listPools()
-      .then(async response => {
-        const pools = await Promise.all(
-          response.data.map(async pool => {
-            return await ChainService.getPool(pool.ticker)
-              .then(response => {
-                const data = response.data;
-                return {
-                  target: pool.ticker.toLowerCase(),
-                  depth: data.depth, // TODO: should multiply this by USD price of rune
-                  volume: data.vol24hr,
-                  transaction: data.numStakeTx + data.numSwaps,
-                  roi: data.roiAT,
-                  liq: 1, // TODO: what is number suppose to be??
-                  asset: 'rune',
-                };
-              })
-              .catch(error => {
-                console.error(error);
-              });
-          }),
-        );
-        this.setState({ pools: pools });
-      })
-      .catch(error => {
-        console.error(error);
-      });
-  };
-
-  handleStake = (source, target) => () => {
-    const URL = `/pool/stake-new/${source}-${target}`;
-
-    this.props.history.push(URL);
+  handleStake = ticker => () => {
+    // const URL = `/pool/${ticker}`;
+    // this.props.history.push(URL);
   };
 
   handleNewPool = () => {
-    const URL = '/pool/new/rune';
-
-    this.props.history.push(URL);
+    // const URL = '/pool/new/rune';
+    // this.props.history.push(URL);
   };
 
   renderPoolList = () => {
+    const { pools, poolData, swapData } = this.props;
     const { activeAsset } = this.state;
 
-    return (this.state.pools || []).map((asset, index) => {
-      if (asset !== activeAsset) {
+    return pools.map((pool, index) => {
+      const { ticker } = pool;
+      const poolInfo = poolData[ticker] || {};
+      const swapInfo = swapData[ticker] || {};
+
+      const assetData = {
+        asset: 'rune',
+        target: ticker,
+        depth: poolInfo.depth || 0,
+        volume: poolInfo.vol24hr || 0,
+        transaction: swapInfo.aveTxTkn || 0,
+        roi: poolInfo.roiAT || 0,
+      };
+      const { asset, volume, transaction, liq, roi } = assetData;
+      const target = assetData.target.split('-')[0];
+      const depth = Number(assetData.depth.toFixed(2));
+      const hisRoi = Number(roi.toFixed(2));
+
+      if (target !== activeAsset) {
         return (
           <PoolCard
             className="pool-card"
-            asset={asset.asset}
-            target={asset.target}
-            depth={asset.depth}
-            volume={asset.volume}
-            transaction={asset.transaction}
-            liq={asset.liq}
-            roi={asset.roi}
-            onStake={this.handleStake(asset.target, asset.asset)}
+            asset={asset}
+            target={target}
+            depth={depth}
+            volume={volume}
+            transaction={transaction}
+            liq={liq}
+            roi={hisRoi}
+            onStake={this.handleStake(target)}
             key={index}
           />
         );
@@ -90,15 +86,28 @@ class PoolView extends Component {
     return (
       <ContentWrapper className="pool-view-wrapper">
         <div className="pool-list-view">{this.renderPoolList()}</div>
-        <div className="add-new-pool" onClick={this.handleNewPool}>
+        {/* { TODO: hide addpool button in the testnet } */}
+        {/* <div className="add-new-pool" onClick={this.handleNewPool}>
           <AddIcon />
           <Label size="normal" weight="bold" color="normal">
             ADD NEW POOL
           </Label>
-        </div>
+        </div> */}
       </ContentWrapper>
     );
   }
 }
 
-export default withRouter(PoolView);
+export default compose(
+  connect(
+    state => ({
+      pools: state.Statechain.pools,
+      poolData: state.Statechain.poolData,
+      swapData: state.Statechain.swapData,
+    }),
+    {
+      getPools,
+    },
+  ),
+  withRouter,
+)(PoolView);

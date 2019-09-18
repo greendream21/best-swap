@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { palette, size, key } from 'styled-theme';
+import { media } from '../../helpers/styleHelper';
 
 export const StyledHeader = styled.div`
   display: flex;
@@ -8,24 +9,26 @@ export const StyledHeader = styled.div`
   position: fixed;
   z-index: 1000;
   width: 100vw;
+
   height: ${size('headerHeight', '90px')};
+
+  padding: 0 20px;
+
+  ${media.sm`
+    padding: 0 30px;
+  `}
+  > * {
+    margin-right: 20px;
+  }
+
+  > *:last-child {
+    margin-right: 0;
+  }
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  padding: 0 30px;
   background-color: ${palette('background', 0)};
 
-  .header-logo {
-    cursor: pointer;
-    img {
-      height: 24px;
-    }
-  }
-
-  .header-title {
-    color: ${palette('text', 1)};
-    font-size: ${key('sizes.font.big', '15px')};
-    letter-spacing: 0.9px;
-  }
-
+  /* HACK: this override hack should be in the 
+  dropdown component itself */
   .ant-dropdown-link {
     display: flex;
     align-items: center;
@@ -36,12 +39,47 @@ export const StyledHeader = styled.div`
       font-size: 14px;
     }
   }
+`;
 
-  .header-right {
+export const LogoWrapper = styled.div`
+  img {
+    max-height: 24px;
+  }
+`;
+
+export const HeaderTitle = styled.p`
+  display: none;
+  ${media.sm`
+    display:block;
+  `}
+  color: ${palette('text', 1)};
+  font-size: ${key('sizes.font.big', '15px')};
+  letter-spacing: 0.9px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
+export const HeaderActionButtons = styled.div`
+  display: none;
+
+  ${media.sm`
     display: flex;
+    align-items: center;
+  `}
 
-    .txView-wrapper {
-      margin-left: 10px;
-    }
+  /* HACK: This should be refactored in 
+     the future to not use classes */
+  .wallet-btn-wrapper {
+    margin-right: 14px;
+  }
+
+  .txView-wrapper {
+    margin-left: 10px;
+    align-items: center;
+  }
+
+  .ant-dropdown-link {
+    margin: 0 8px;
   }
 `;

@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Icon } from 'antd';
+import DynamicCoin from '../dynamicCoin';
 
 import { CoinIconWrapper } from './coinIcon.style';
-import { coinGroup } from '../../../../settings';
 import { coinIconGroup } from '../../../icons/coinIcons';
 
 class CoinIcon extends Component {
   static propTypes = {
-    type: PropTypes.oneOf(coinGroup),
+    type: PropTypes.string,
     size: PropTypes.oneOf(['small', 'big']),
     className: PropTypes.string,
   };
@@ -36,6 +36,7 @@ class CoinIcon extends Component {
         </div>
       );
     }
+    return <DynamicCoin type={type} size="normal" />;
   };
 
   render() {
