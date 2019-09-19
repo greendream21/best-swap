@@ -48,7 +48,9 @@ const Keystore = props => {
     setInvalideStatus(false);
   };
 
-  const unlock = () => {
+  const unlock = e => {
+    e.preventDefault();
+
     try {
       const privateKey = crypto.getPrivateKeyFromKeyStore(keystore, password);
       const address = crypto.getAddressFromPrivateKey(
@@ -68,12 +70,6 @@ const Keystore = props => {
     } catch (error) {
       setInvalideStatus(true);
       console.log(error);
-    }
-  };
-
-  const onPasswordKeyDown = e => {
-    if (e.key === 'Enter') {
-      unlock();
     }
   };
 
@@ -112,17 +108,18 @@ const Keystore = props => {
           title="Decryption password:"
           description="This is the password used to decrypt your encrypted keystore file"
         >
-          <Input.Password
-            onChange={onPasswordChange}
-            onKeyDown={onPasswordKeyDown}
-            placeholder="password"
-            allowClear
-          />
-          {invalideStatus && (
-            <div className="ant-form-explain">Password is wrong!</div>
-          )}
+          <Form onSubmit={unlock}>
+            <Input.Password
+              onChange={onPasswordChange}
+              placeholder="password"
+              allowClear
+            />
+            {invalideStatus && (
+              <div className="ant-form-explain">Password is wrong!</div>
+            )}
+          </Form>
         </FormGroup>
-        <Button type="submit" onClick={unlock} disabled={!ready}>
+        <Button htmlType="submit" onClick={unlock} disabled={!ready}>
           Unlock
         </Button>
       </div>
