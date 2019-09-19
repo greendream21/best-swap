@@ -36,8 +36,7 @@ deploy-develop-master:
     name: develop
   only:
     master
-  when:
-    - manual
+  when: manual
 
 deploy-production:
   stage: develop-production
