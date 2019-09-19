@@ -71,6 +71,12 @@ const Keystore = props => {
     }
   };
 
+  const onPasswordKeyDown = e => {
+    if (e.key === 'Enter') {
+      unlock();
+    }
+  };
+
   const ready = (password || '').length > 0 && keystoreError === null;
 
   return (
@@ -109,6 +115,7 @@ const Keystore = props => {
           <Input.Password
             allowClear
             onChange={onPasswordChange}
+            onKeyDown={onPasswordKeyDown}
             placeholder="password"
           />
           {invalideStatus && (
