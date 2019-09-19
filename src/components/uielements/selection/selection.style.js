@@ -9,7 +9,10 @@ export const SelectionWrapper = styled.div`
   width: 200px;
 `;
 
-export const Button = styled(UIButton)`
+export const Button = styled(UIButton).attrs({
+  sizevalue: 'small',
+  typevalue: 'outline',
+})`
   min-width: 45px;
   width: 45px;
   /* TODO: create specific style for muted buttons to avoid using !important */
