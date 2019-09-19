@@ -113,10 +113,10 @@ const Keystore = props => {
           description="This is the password used to decrypt your encrypted keystore file"
         >
           <Input.Password
-            allowClear
             onChange={onPasswordChange}
             onKeyDown={onPasswordKeyDown}
             placeholder="password"
+            allowClear
           />
           {invalideStatus && (
             <div className="ant-form-explain">Password is wrong!</div>

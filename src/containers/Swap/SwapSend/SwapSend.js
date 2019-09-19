@@ -116,7 +116,13 @@ class SwapSend extends Component {
     });
   };
 
-  getNewValue(value, xValue) {
+  onPasswordKeyDown = e => {
+    if (e.key === 'Enter') {
+      this.handleConfirmPassword();
+    }
+  };
+
+  getNewValue = (value, xValue) => {
     const numericRegex = /^[0-9\b]+$/;
 
     const newValue =
@@ -127,8 +133,9 @@ class SwapSend extends Component {
         : Number.isNaN(value)
         ? xValue
         : Number(value);
+
     return newValue;
-  }
+  };
 
   handleChangeValue = value => {
     const { xValue } = this.state;
@@ -684,12 +691,14 @@ class SwapSend extends Component {
           visible={openPrivateModal}
           onOk={this.handleConfirmPassword}
           onCancel={this.handleClosePrivateModal}
+          okText="Confirm"
         >
           <Form.Item className={invalidPassword ? 'has-error' : ''}>
             <Input
               type="password"
               value={password}
               onChange={this.handleChange('password')}
+              onKeyDown={this.onPasswordKeyDown}
               placeholder="Input password"
             />
             {invalidPassword && (

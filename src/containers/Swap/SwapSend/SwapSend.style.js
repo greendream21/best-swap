@@ -227,4 +227,10 @@ export const SwapModalContent = styled.div`
   }
 `;
 
-export const PrivateModal = styled(Modal)``;
+export const PrivateModal = styled(Modal)`
+  .ant-modal-body {
+    .ant-form-item {
+      margin-bottom: 0;
+    }
+  }
+`;
