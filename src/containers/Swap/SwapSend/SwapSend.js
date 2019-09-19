@@ -116,7 +116,7 @@ class SwapSend extends Component {
     });
   };
 
-  getNewValue(value, xValue) {
+  getNewValue = (value, xValue) => {
     const numericRegex = /^[0-9\b]+$/;
 
     const newValue =
@@ -127,8 +127,9 @@ class SwapSend extends Component {
         : Number.isNaN(value)
         ? xValue
         : Number(value);
+
     return newValue;
-  }
+  };
 
   handleChangeValue = value => {
     const { xValue } = this.state;
@@ -160,7 +161,23 @@ class SwapSend extends Component {
     }
   };
 
-  handleConfirmPassword = async () => {
+  handleChangeSource = asset => {
+    const { view } = this.props;
+    const { target } = this.getSwapData();
+    const source = asset.split('-')[0].toLowerCase();
+
+    if (source === target) {
+      return;
+    }
+
+    const URL = `/swap/${view}/${source}-${target}`;
+
+    this.props.history.push(URL);
+  };
+
+  handleConfirmPassword = async e => {
+    e.preventDefault();
+
     const {
       user: { keystore, wallet },
     } = this.props;
@@ -691,18 +708,21 @@ class SwapSend extends Component {
           visible={openPrivateModal}
           onOk={this.handleConfirmPassword}
           onCancel={this.handleClosePrivateModal}
+          okText="Confirm"
         >
-          <Form.Item className={invalidPassword ? 'has-error' : ''}>
-            <Input
-              type="password"
-              value={password}
-              onChange={this.handleChange('password')}
-              placeholder="Input password"
-            />
-            {invalidPassword && (
-              <div className="ant-form-explain">Password is wrong!</div>
-            )}
-          </Form.Item>
+          <Form onSubmit={this.handleConfirmPassword}>
+            <Form.Item className={invalidPassword ? 'has-error' : ''}>
+              <Input
+                type="password"
+                value={password}
+                onChange={this.handleChange('password')}
+                placeholder="Input password"
+              />
+              {invalidPassword && (
+                <div className="ant-form-explain">Password is wrong!</div>
+              )}
+            </Form.Item>
+          </Form>
         </PrivateModal>
         <Modal
           title="PLEASE ADD WALLET"
