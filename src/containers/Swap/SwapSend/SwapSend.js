@@ -106,7 +106,7 @@ class SwapSend extends Component {
 
   handleChangeValue = value => {
     const { xValue } = this.state;
-    const newValue = Number.isNaN(value) ? xValue : Number(value);
+    const newValue = isNaN(value) ? xValue : Number(value); // eslint-disable-line
 
     const { assetData } = this.props;
     const { source } = this.getSwapData();
@@ -226,7 +226,8 @@ class SwapSend extends Component {
     }
 
     if (Number(xValue) <= 0) {
-      notification.error({
+      /* eslint-disable dot-notation */
+      notification['error']({
         message: 'Swap Invalid',
         description: 'You need to enter an amount to swap.',
       });
@@ -266,9 +267,9 @@ class SwapSend extends Component {
 
   handleCloseModal = () => {
     const {
-      // txStatus: { status },
+      txStatus: { status }, // eslint-disable-line no-unused-vars
       setTxTimerModal,
-      // resetTxStatus,
+      resetTxStatus, // eslint-disable-line no-unused-vars
     } = this.props;
 
     // if (!status) resetTxStatus();
