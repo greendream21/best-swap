@@ -27,6 +27,12 @@ import {
   ArrowContainer,
   ArrowImage,
   PrivateModal,
+  RecipientForm,
+  RecipientFormHolder,
+  RecipientFormArrowIcon,
+  RecipientFormItem,
+  RecipientFormItemError,
+  RecipientFormItemCloseButton,
 } from './SwapSend.style';
 import { blackArrowIcon } from '../../../components/icons';
 import { getCalcResult, confirmSwap } from '../utils';
@@ -96,6 +102,8 @@ class SwapSend extends Component {
     return Binance.isValidAddress(address);
   };
 
+  // TODO: Using curried functions for handlers in React
+  //       will lead to performance problems down the track
   handleChange = key => e => {
     this.setState({
       [key]: e.target.value,
@@ -106,7 +114,7 @@ class SwapSend extends Component {
 
   handleChangeValue = value => {
     const { xValue } = this.state;
-    const newValue = isNaN(value) ? xValue : Number(value);
+    const newValue = isNaN(value) ? xValue : Number(value); // eslint-disable-line
 
     const { assetData } = this.props;
     const { source } = this.getSwapData();
@@ -226,6 +234,7 @@ class SwapSend extends Component {
     }
 
     if (Number(xValue) <= 0) {
+      /* eslint-disable dot-notation */
       notification['error']({
         message: 'Swap Invalid',
         description: 'You need to enter an amount to swap.',
@@ -266,9 +275,9 @@ class SwapSend extends Component {
 
   handleCloseModal = () => {
     const {
-      txStatus: { status },
+      txStatus: { status }, // eslint-disable-line no-unused-vars
       setTxTimerModal,
-      resetTxStatus,
+      resetTxStatus, // eslint-disable-line no-unused-vars
     } = this.props;
 
     // if (!status) resetTxStatus();
@@ -544,7 +553,8 @@ class SwapSend extends Component {
     // calculation
     this.data = getCalcResult(source, target, pools, xValue, runePrice);
     const { Px, slip, outputAmount, outputPrice } = this.data;
-    console.log(this.data);
+    console.log(this.data); // eslint-disable-line no-console
+
     return (
       <ContentWrapper className="swap-detail-wrapper">
         <Row>
@@ -553,43 +563,6 @@ class SwapSend extends Component {
             xs={{ span: 24, offset: 0 }}
             xl={{ span: 16, offset: 4 }}
           >
-            <div className="swap-type-selector">
-              <Button
-                onClick={this.handleGotoDetail}
-                sizevalue="big"
-                typevalue="ghost"
-                focused={view === 'detail'}
-              >
-                swap
-              </Button>
-              <Button
-                onClick={this.handleGotoSend}
-                sizevalue="big"
-                typevalue="ghost"
-                focused={view === 'send'}
-              >
-                swap & send
-              </Button>
-            </div>
-            {view === 'send' && (
-              <Form className="recipient-form">
-                <Label weight="bold">Recipient Address:</Label>
-                <Form.Item className={invalidAddress ? 'has-error' : ''}>
-                  <Input
-                    placeholder="bnbeh456..."
-                    sizevalue="normal"
-                    value={address}
-                    onChange={this.handleChange('address')}
-                    ref={this.addressRef}
-                  />
-                  {invalidAddress && (
-                    <div className="ant-form-explain">
-                      Recipient address is invalid!
-                    </div>
-                  )}
-                </Form.Item>
-              </Form>
-            )}
             <SwapAssetCard>
               <CoinCard
                 title="You are swapping"
@@ -620,7 +593,49 @@ class SwapSend extends Component {
                 disabled
                 withSearch
                 searchDisable={[source]}
-              />
+              >
+                <RecipientFormHolder>
+                  <RecipientForm>
+                    {view === 'detail' && (
+                      <>
+                        <RecipientFormArrowIcon />
+                        <Button
+                          onClick={this.handleGotoSend}
+                          sizevalue="small"
+                          typevalue="ghost"
+                          focused={view === 'send'}
+                        >
+                          Forward to alternate address
+                        </Button>
+                      </>
+                    )}
+                    {view === 'send' && (
+                      <>
+                        <RecipientFormArrowIcon />
+                        <RecipientFormItem
+                          className={invalidAddress ? 'has-error' : ''}
+                        >
+                          <Input
+                            placeholder="Recipient Address: Eg. bnbeh456..."
+                            sizevalue="normal"
+                            value={address}
+                            onChange={this.handleChange('address')}
+                            ref={this.addressRef}
+                          />
+                        </RecipientFormItem>
+                        <RecipientFormItemCloseButton
+                          onClick={this.handleGotoDetail}
+                        />
+                      </>
+                    )}
+                  </RecipientForm>
+                  {invalidAddress && (
+                    <RecipientFormItemError>
+                      Recipient address is invalid!
+                    </RecipientFormItemError>
+                  )}
+                </RecipientFormHolder>
+              </CoinCard>
             </SwapAssetCard>
             <div className="drag-confirm-wrapper">
               <Drag
