@@ -1,8 +1,8 @@
 image: node:10.15
 
 stages:
-#  - test
-  - deploy-develop
+  - deploy-develop-merge-request
+  - deploy-develop-master
   - develop-production
 
 cache:
@@ -17,13 +17,17 @@ before_script:
   - npm i -g firebase-tools
   - firebase -V
 
-#test:
-#  stage: test
-#  script:
-#    - echo Please fix you tests boys!
-#  # - yarn test:ci
+deploy-develop-merge-request:
+  stage: deploy-develop
+  script:
+    - firebase use --token ${FIREBASE_TOKEN} bepswap-testnet-dev
+    - firebase deploy --token ${FIREBASE_TOKEN}
+  environment:
+    name: develop
+  when:
+    - merge_requests
 
-deploy-develop:
+deploy-develop-master:
   stage: deploy-develop
   script:
     - firebase use --token ${FIREBASE_TOKEN} bepswap-testnet-dev
@@ -31,7 +35,9 @@ deploy-develop:
   environment:
     name: develop
   only:
-    - master
+    master
+  when:
+    - manual
 
 deploy-production:
   stage: develop-production
