@@ -44,7 +44,7 @@ class SwapCard extends Component {
     } = this.props;
 
     const poolValue = `${asset}:${target}`;
-    const depthValue = `$${getActualValue(depth)}`;
+    const depthValue = `$${getActualValue(depth).toLocaleString()}`;
     const volumeValue = `$${getActualValue(volume)}`;
     const transactionValue = `$${getActualValue(transaction)}`;
     const slipValue = `${getActualValue(slip)}%`;

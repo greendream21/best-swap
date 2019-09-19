@@ -227,7 +227,7 @@ class CoinCard extends Component {
                 <CoinCardInput
                   className="asset-amount-label"
                   size="large"
-                  value={amount}
+                  value={Number(amount).toLocaleString()}
                   style={{ width: '100%' }}
                   onChange={this.onChange}
                   {...props}
