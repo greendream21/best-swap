@@ -165,7 +165,6 @@ class SwapSend extends Component {
       user: { keystore, wallet },
     } = this.props;
     const { password } = this.state;
-    this.handleConfirmSwap();
 
     try {
       const privateKey = crypto.getPrivateKeyFromKeyStore(keystore, password);
@@ -175,7 +174,7 @@ class SwapSend extends Component {
         Binance.getPrefix(),
       );
       if (wallet === address) {
-        this.handleStartTimer();
+        this.handleConfirmSwap();
       }
 
       this.setState({
@@ -403,7 +402,13 @@ class SwapSend extends Component {
         address,
       );
       this.hash = result[0].hash;
+
+      this.handleStartTimer();
     } catch (error) {
+      notification['error']({
+        message: 'Swap Invalid',
+        description: 'Swap information is not valid.',
+      });
       console.log(error); // eslint-disable-line no-console
     }
   };
@@ -419,6 +424,10 @@ class SwapSend extends Component {
       }
       return false;
     });
+
+    if (!sourceAsset) {
+      return;
+    }
 
     const totalAmount = sourceAsset.assetValue || 0;
     const xValue = (totalAmount * amount) / 100;
