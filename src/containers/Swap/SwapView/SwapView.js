@@ -11,8 +11,10 @@ import SwapCard from '../../../components/swap/swapCard';
 import { ContentWrapper } from './SwapView.style';
 
 import statechainActions from '../../../redux/statechain/actions';
+import walletactions from '../../../redux/wallet/actions';
 
 const { getPools } = statechainActions;
+const { getRunePrice } = walletactions;
 
 class SwapView extends Component {
   static propTypes = {
@@ -20,6 +22,7 @@ class SwapView extends Component {
     pools: PropTypes.array.isRequired,
     poolData: PropTypes.object.isRequired,
     swapData: PropTypes.object.isRequired,
+    getRunePrice: PropTypes.func.isRequired,
   };
 
   state = {
@@ -27,9 +30,10 @@ class SwapView extends Component {
   };
 
   componentDidMount() {
-    const { getPools } = this.props;
+    const { getPools, getRunePrice } = this.props;
 
     getPools();
+    getRunePrice();
   }
 
   handleChooseBasePair = asset => () => {
@@ -59,7 +63,7 @@ class SwapView extends Component {
   };
 
   renderSwapList = () => {
-    const { pools, poolData, swapData } = this.props;
+    const { pools, poolData, swapData, runePrice } = this.props;
     const { activeAsset } = this.state;
 
     return pools.map((pool, index) => {
@@ -78,7 +82,7 @@ class SwapView extends Component {
       };
       const { volume, transaction, slip, swaps } = assetData;
       const target = assetData.target.split('-')[0];
-      const depth = Number(assetData.depth.toFixed(2));
+      const depth = Number((Number(assetData.depth) * runePrice).toFixed(2));
 
       if (target !== activeAsset) {
         return (
@@ -121,9 +125,11 @@ export default compose(
       pools: state.Statechain.pools,
       poolData: state.Statechain.poolData,
       swapData: state.Statechain.swapData,
+      runePrice: state.Wallet.runePrice,
     }),
     {
       getPools,
+      getRunePrice,
     },
   ),
   withRouter,
