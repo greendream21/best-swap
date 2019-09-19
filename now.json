@@ -1,0 +1,6 @@
+{
+  "env": {
+    "REACT_APP_CHAINSERVICE_API_URL": "https://testnet-api.bepswap.net",
+    "REACT_APP_STATECHAIN_API_URL": "https://testnet-chain.bepswap.net"
+  }
+}

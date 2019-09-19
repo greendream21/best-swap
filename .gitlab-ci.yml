@@ -1,14 +1,12 @@
 image: node:10.15
 
 stages:
-  - deploy-merge-request
   - deploy-develop
   - develop-production
 
 cache:
   paths:
     - node_modules/
-  key: '$CI_BUILD_REPO'
 
 before_script:
   - echo "REACT_APP_CHAINSERVICE_API_URL:" ${REACT_APP_CHAINSERVICE_API_URL}
@@ -16,16 +14,6 @@ before_script:
   - yarn
   - npm i -g firebase-tools
   - firebase -V
-
-deploy-merge-request:
-  stage: deploy-merge-request
-  script:
-    - firebase use --token ${FIREBASE_TOKEN} bepswap-testnet-review
-    - firebase deploy --token ${FIREBASE_TOKEN}
-  environment:
-    name: develop
-  only:
-    - merge_requests
 
 deploy-develop:
   stage: deploy-develop
