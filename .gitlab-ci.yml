@@ -35,7 +35,7 @@ deploy-develop-master:
   environment:
     name: develop
   only:
-    master
+    - master
   when: manual
 
 deploy-production:
