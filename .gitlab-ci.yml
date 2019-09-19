@@ -11,11 +11,11 @@ cache:
   key: '$CI_BUILD_REPO'
 
 before_script:
+  - echo "REACT_APP_CHAINSERVICE_API_URL:" ${REACT_APP_CHAINSERVICE_API_URL}
+  - echo "REACT_APP_STATECHAIN_API_URL:" ${REACT_APP_STATECHAIN_API_URL}
   - yarn
   - npm i -g firebase-tools
   - firebase -V
-  - echo "REACT_APP_CHAINSERVICE_API_URL:" ${REACT_APP_CHAINSERVICE_API_URL}
-  - echo "REACT_APP_STATECHAIN_API_URL:" ${REACT_APP_STATECHAIN_API_URL}
 
 #test:
 #  stage: test
