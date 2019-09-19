@@ -56,10 +56,6 @@ class Binance {
     this.bnbClient.privateKey = null;
   };
 
-  getBinanceUrl = () => {
-    return this.baseURL;
-  };
-
   getPrefix = () => {
     return isTestnet ? 'tbnb' : 'bnb';
   };

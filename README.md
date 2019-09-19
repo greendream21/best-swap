@@ -64,7 +64,7 @@ Example: `yarn start`
 yarn test
 ```
 
-## Deployment using firebase
+## Deployment
 
 Firebase deploy:
 
