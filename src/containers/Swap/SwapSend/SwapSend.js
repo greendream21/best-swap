@@ -160,20 +160,6 @@ class SwapSend extends Component {
     }
   };
 
-  handleChangeSource = asset => {
-    const { view } = this.props;
-    const { target } = this.getSwapData();
-    const source = asset.split('-')[0].toLowerCase();
-
-    if (source === target) {
-      return;
-    }
-
-    const URL = `/swap/${view}/${source}-${target}`;
-
-    this.props.history.push(URL);
-  };
-
   handleConfirmPassword = async () => {
     const {
       user: { keystore, wallet },
@@ -318,17 +304,33 @@ class SwapSend extends Component {
     this.props.history.push(URL);
   };
 
+  handleChangeSource = asset => {
+    const { view } = this.props;
+    const { source, target } = this.getSwapData();
+    const selectedToken = asset.split('-')[0].toLowerCase();
+
+    let URL;
+    if (selectedToken === target) {
+      URL = `/swap/${view}/${selectedToken}-${source}`;
+      this.props.history.push(URL);
+    } else {
+      URL = `/swap/${view}/${selectedToken}-${target}`;
+    }
+    this.props.history.push(URL);
+  };
+
   handleSelectTraget = asset => {
     const { view } = this.props;
-    const { source } = this.getSwapData();
-    const target = asset.split('-')[0].toLowerCase();
+    const { source, target } = this.getSwapData();
+    const selectedToken = asset.split('-')[0].toLowerCase();
 
-    if (source === target) {
-      return;
+    let URL;
+    if (source === selectedToken) {
+      URL = `/swap/${view}/${target}-${selectedToken}`;
+      this.props.history.push(URL);
+    } else {
+      URL = `/swap/${view}/${source}-${selectedToken}`;
     }
-
-    const URL = `/swap/${view}/${source}-${target}`;
-
     this.props.history.push(URL);
   };
 
@@ -594,7 +596,6 @@ class SwapSend extends Component {
                 onSelect={this.handleSelectAmount(source)}
                 withSelection
                 withSearch
-                searchDisable={[target]}
               />
 
               <ArrowContainer>
@@ -611,7 +612,6 @@ class SwapSend extends Component {
                 onChangeAsset={this.handleSelectTraget}
                 disabled
                 withSearch
-                searchDisable={[source]}
               >
                 <RecipientFormHolder>
                   <RecipientForm>
