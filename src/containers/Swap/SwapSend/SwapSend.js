@@ -116,12 +116,6 @@ class SwapSend extends Component {
     });
   };
 
-  onPasswordKeyDown = e => {
-    if (e.key === 'Enter') {
-      this.handleConfirmPassword();
-    }
-  };
-
   getNewValue = (value, xValue) => {
     const numericRegex = /^[0-9\b]+$/;
 
@@ -181,7 +175,9 @@ class SwapSend extends Component {
     this.props.history.push(URL);
   };
 
-  handleConfirmPassword = async () => {
+  handleConfirmPassword = async e => {
+    e.preventDefault();
+
     const {
       user: { keystore, wallet },
     } = this.props;
@@ -693,18 +689,19 @@ class SwapSend extends Component {
           onCancel={this.handleClosePrivateModal}
           okText="Confirm"
         >
-          <Form.Item className={invalidPassword ? 'has-error' : ''}>
-            <Input
-              type="password"
-              value={password}
-              onChange={this.handleChange('password')}
-              onKeyDown={this.onPasswordKeyDown}
-              placeholder="Input password"
-            />
-            {invalidPassword && (
-              <div className="ant-form-explain">Password is wrong!</div>
-            )}
-          </Form.Item>
+          <Form onSubmit={this.handleConfirmPassword}>
+            <Form.Item className={invalidPassword ? 'has-error' : ''}>
+              <Input
+                type="password"
+                value={password}
+                onChange={this.handleChange('password')}
+                placeholder="Input password"
+              />
+              {invalidPassword && (
+                <div className="ant-form-explain">Password is wrong!</div>
+              )}
+            </Form.Item>
+          </Form>
         </PrivateModal>
         <Modal
           title="PLEASE ADD WALLET"
