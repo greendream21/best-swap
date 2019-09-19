@@ -24,7 +24,7 @@ deploy-develop-merge-request:
     - firebase deploy --token ${FIREBASE_TOKEN}
   environment:
     name: develop
-  when:
+  only:
     - merge_requests
 
 deploy-develop-master:
