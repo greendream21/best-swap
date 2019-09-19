@@ -18,7 +18,7 @@ before_script:
   - firebase -V
 
 deploy-develop-merge-request:
-  stage: deploy-develop
+  stage: deploy-develop-merge-request
   script:
     - firebase use --token ${FIREBASE_TOKEN} bepswap-testnet-dev
     - firebase deploy --token ${FIREBASE_TOKEN}
@@ -28,7 +28,7 @@ deploy-develop-merge-request:
     - merge_requests
 
 deploy-develop-master:
-  stage: deploy-develop
+  stage: deploy-develop-master
   script:
     - firebase use --token ${FIREBASE_TOKEN} bepswap-testnet-dev
     - firebase deploy --token ${FIREBASE_TOKEN}
