@@ -79,6 +79,7 @@ class CoinCard extends Component {
     className: PropTypes.string,
     max: PropTypes.number,
     disabled: PropTypes.bool,
+    children: PropTypes.node,
   };
 
   static defaultProps = {
@@ -97,6 +98,7 @@ class CoinCard extends Component {
     className: '',
     max: 1000000,
     disabled: false,
+    children: null,
   };
 
   state = {
@@ -200,11 +202,12 @@ class CoinCard extends Component {
       className,
       withSearch,
       searchDisable,
+      children,
       ...props
     } = this.props;
     const { openDropdown, percentButtonSelected } = this.state;
 
-    // TODO: render dropown menu inline for mobile
+    // TODO: render dropown menu as bottom fixed sheet for mobile
     return (
       <CoinCardWrapper
         className={`coinCard-wrapper ${className}`}
@@ -261,6 +264,7 @@ class CoinCard extends Component {
             onSelect={this.handlePercentSelected}
           />
         )}
+        {children}
       </CoinCardWrapper>
     );
   }

@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { Form, Icon } from 'antd';
 import { palette } from 'styled-theme';
 import ContentView from '../../../components/utility/contentView';
 import Modal from '../../../components/uielements/modal';
@@ -58,28 +59,6 @@ export const ContentWrapper = styled(ContentView)`
       }
     }
 
-    .recipient-form {
-      display: flex;
-      padding-top: 20px;
-
-      .label-wrapper {
-        width: 130px;
-        padding-top: 14px;
-      }
-
-      .ant-form-item {
-        flex-grow: 1;
-        height: 60px;
-        .ant-form-explain {
-          font-size: 12px;
-        }
-      }
-
-      .ant-form-item-control-wrapper {
-        width: 100%;
-      }
-    }
-
     .drag-confirm-wrapper {
       display: flex;
       justify-content: center;
@@ -110,6 +89,41 @@ export const ContentWrapper = styled(ContentView)`
     }
   }
 `;
+
+export const RecipientFormArrowIcon = styled.div`
+  &:before {
+    content: '⮑';
+  }
+  color: #ccc;
+`;
+
+export const RecipientFormHolder = styled.div`
+  padding-top: 10px;
+`;
+
+export const RecipientForm = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  > * {
+    margin-right: 10px;
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+`;
+
+export const RecipientFormItem = styled.div`
+  flex-grow: 1;
+`;
+
+export const RecipientFormItemError = styled.div`
+  font-size: 12px;
+`;
+
+export const RecipientFormItemCloseButton = styled(Icon).attrs({
+  type: 'close',
+})``;
 
 export const SwapModal = styled(Modal)`
   &.ant-modal {
