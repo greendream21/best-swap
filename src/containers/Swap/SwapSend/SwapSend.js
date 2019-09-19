@@ -312,7 +312,6 @@ class SwapSend extends Component {
     let URL;
     if (selectedToken === target) {
       URL = `/swap/${view}/${selectedToken}-${source}`;
-      this.props.history.push(URL);
     } else {
       URL = `/swap/${view}/${selectedToken}-${target}`;
     }
@@ -327,7 +326,6 @@ class SwapSend extends Component {
     let URL;
     if (source === selectedToken) {
       URL = `/swap/${view}/${target}-${selectedToken}`;
-      this.props.history.push(URL);
     } else {
       URL = `/swap/${view}/${source}-${selectedToken}`;
     }
