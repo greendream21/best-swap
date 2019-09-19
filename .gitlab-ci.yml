@@ -1,8 +1,8 @@
 image: node:10.15
 
 stages:
-  - deploy-develop-merge-request
-  - deploy-develop-master
+  - deploy-merge-request
+  - deploy-develop
   - develop-production
 
 cache:
@@ -17,18 +17,18 @@ before_script:
   - npm i -g firebase-tools
   - firebase -V
 
-deploy-develop-merge-request:
-  stage: deploy-develop-merge-request
+deploy-merge-request:
+  stage: deploy-merge-request
   script:
-    - firebase use --token ${FIREBASE_TOKEN} bepswap-testnet-dev
+    - firebase use --token ${FIREBASE_TOKEN} bepswap-testnet-review
     - firebase deploy --token ${FIREBASE_TOKEN}
   environment:
     name: develop
   only:
     - merge_requests
 
-deploy-develop-master:
-  stage: deploy-develop-master
+deploy-develop:
+  stage: deploy-develop
   script:
     - firebase use --token ${FIREBASE_TOKEN} bepswap-testnet-dev
     - firebase deploy --token ${FIREBASE_TOKEN}
@@ -36,7 +36,6 @@ deploy-develop-master:
     name: develop
   only:
     - master
-  when: manual
 
 deploy-production:
   stage: develop-production
