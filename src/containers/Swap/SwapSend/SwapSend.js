@@ -106,7 +106,7 @@ class SwapSend extends Component {
 
   handleChangeValue = value => {
     const { xValue } = this.state;
-    const newValue = isNaN(value) ? xValue : Number(value);
+    const newValue = Number.isNaN(value) ? xValue : Number(value);
 
     const { assetData } = this.props;
     const { source } = this.getSwapData();
@@ -226,7 +226,7 @@ class SwapSend extends Component {
     }
 
     if (Number(xValue) <= 0) {
-      notification['error']({
+      notification.error({
         message: 'Swap Invalid',
         description: 'You need to enter an amount to swap.',
       });
@@ -266,9 +266,9 @@ class SwapSend extends Component {
 
   handleCloseModal = () => {
     const {
-      txStatus: { status },
+      // txStatus: { status },
       setTxTimerModal,
-      resetTxStatus,
+      // resetTxStatus,
     } = this.props;
 
     // if (!status) resetTxStatus();
@@ -544,7 +544,8 @@ class SwapSend extends Component {
     // calculation
     this.data = getCalcResult(source, target, pools, xValue, runePrice);
     const { Px, slip, outputAmount, outputPrice } = this.data;
-    console.log(this.data);
+    console.log(this.data); // eslint-disable-line no-console
+
     return (
       <ContentWrapper className="swap-detail-wrapper">
         <Row>

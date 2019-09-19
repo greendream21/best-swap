@@ -2,15 +2,49 @@
 
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Divider, Input, Icon, Dropdown } from 'antd';
+import { Dropdown } from 'antd';
 
-import Coin from '../coin';
 import Label from '../../label';
 import Selection from '../../selection';
 import FilterMenu from './filterMenu';
 import CoinData from '../coinData';
 
-import { CoinCardWrapper } from './coinCard.style';
+import {
+  AssetCardFooter,
+  AssetData,
+  AssetNameLabel,
+  CardBorderWrapper,
+  CardTopRow,
+  CoinCardInput,
+  CoinCardWrapper,
+  CoinDropdownButton,
+  CoinDropdownCoin,
+  CoinDropdownVerticalColumn,
+  DropdownIcon,
+  DropdownIconHolder,
+  FooterLabel,
+  HorizontalDivider,
+  VerticalDivider,
+} from './coinCard.style';
+
+function DropdownCarret({ open, onClick, className }) {
+  return (
+    <DropdownIconHolder>
+      <DropdownIcon
+        open={open}
+        className={className}
+        type="caret-down"
+        onClick={onClick}
+      />
+    </DropdownIconHolder>
+  );
+}
+
+DropdownCarret.propTypes = {
+  className: PropTypes.string,
+  open: PropTypes.bool.isRequired,
+  onClick: PropTypes.func,
+};
 
 function getTokenName(asset) {
   return asset.split('-')[0];
@@ -44,6 +78,7 @@ class CoinCard extends Component {
     onChangeAsset: PropTypes.func,
     className: PropTypes.string,
     max: PropTypes.number,
+    disabled: PropTypes.bool,
   };
 
   static defaultProps = {
@@ -61,6 +96,7 @@ class CoinCard extends Component {
     onChangeAsset: () => {},
     className: '',
     max: 1000000,
+    disabled: false,
   };
 
   state = {
@@ -69,7 +105,7 @@ class CoinCard extends Component {
   };
 
   onChange = e => {
-    this.setState({ percentButtonSelected: 0 });
+    this.handleResetPercentButtons();
 
     this.props.onChange(e.target.value);
   };
@@ -80,12 +116,16 @@ class CoinCard extends Component {
     });
   };
 
+  handleResetPercentButtons = () => {
+    this.setState({ percentButtonSelected: 0 });
+  };
+
   handleDropdownButtonClicked = () => {
     const { openDropdown } = this.state;
     this.handleVisibleChange(!openDropdown);
   };
 
-  handleSelected = percentButtonSelected => {
+  handlePercentSelected = percentButtonSelected => {
     const { onSelect } = this.props;
     this.setState({ percentButtonSelected });
     onSelect(percentButtonSelected);
@@ -98,6 +138,7 @@ class CoinCard extends Component {
 
     // HACK: Wait for the dropdown to close
     setTimeout(() => {
+      this.handleResetPercentButtons();
       onChangeAsset(asset.key);
     }, 500);
   };
@@ -126,21 +167,21 @@ class CoinCard extends Component {
   }
 
   renderDropDownButton() {
-    const { assetData } = this.props;
-    const { openDropdown } = this.state;
-
-    const iconType = openDropdown ? 'caret-up' : 'caret-down';
-
-    if (assetData.length) {
-      return (
-        <Icon
-          className="dropdown-icon"
-          type={iconType}
-          onClick={this.handleDropdownButtonClicked}
-        />
-      );
-    }
-    return null;
+    const { assetData, asset } = this.props;
+    const { openDropdown: open } = this.state;
+    const disabled = assetData.length === 0;
+    return (
+      <CoinDropdownButton
+        disabled={disabled}
+        onClick={this.handleDropdownButtonClicked}
+      >
+        <CoinDropdownCoin type={asset} size="small" />
+        <CoinDropdownVerticalColumn>
+          <AssetNameLabel>{asset}</AssetNameLabel>
+          {!disabled ? <DropdownCarret open={open} /> : null}
+        </CoinDropdownVerticalColumn>
+      </CoinDropdownButton>
+    );
   }
 
   render() {
@@ -177,46 +218,47 @@ class CoinCard extends Component {
           trigger={[]}
           visible={openDropdown}
         >
-          <div className="card-wrapper">
-            <Coin type={asset} size="small" />
-            <div className="asset-data">
-              <Label className="asset-name-label" size="small" weight="bold">
-                {asset}
-              </Label>
-              <Input
-                className="asset-amount-label"
-                size="large"
-                value={amount}
-                style={{ width: '100%' }}
-                onChange={this.onChange}
-                {...props}
-              />
-              <Divider />
-              <div className="asset-card-footer">
-                <Label size="small" color="gray" weight="bold">
-                  {`$USD ${Number(
-                    (amount * price).toFixed(2),
-                  ).toLocaleString()}`}
-                </Label>
-                {slip !== undefined && (
-                  <Label
-                    className="asset-slip-label"
-                    size="small"
-                    color="gray"
-                    weight="bold"
-                  >
-                    SLIP: {slip.toFixed(0)} %
-                  </Label>
-                )}
-              </div>
-            </div>
-            {this.renderDropDownButton()}
-          </div>
+          <CardBorderWrapper>
+            <CardTopRow>
+              <AssetData>
+                <CoinCardInput
+                  className="asset-amount-label"
+                  size="large"
+                  value={amount}
+                  style={{ width: '100%' }}
+                  onChange={this.onChange}
+                  {...props}
+                />
+                <HorizontalDivider />
+                <AssetCardFooter>
+                  <FooterLabel>
+                    {`$USD ${Number(
+                      (amount * price).toFixed(2),
+                    ).toLocaleString()}`}
+                  </FooterLabel>
+                  {slip !== undefined && (
+                    <FooterLabel
+                      className="asset-slip-label"
+                      size="small"
+                      color="gray"
+                      weight="bold"
+                    >
+                      SLIP: {slip.toFixed(0)} %
+                    </FooterLabel>
+                  )}
+                </AssetCardFooter>
+              </AssetData>
+
+              <VerticalDivider />
+
+              {this.renderDropDownButton()}
+            </CardTopRow>
+          </CardBorderWrapper>
         </Dropdown>
         {withSelection && (
           <Selection
             selected={percentButtonSelected}
-            onSelect={this.handleSelected}
+            onSelect={this.handlePercentSelected}
           />
         )}
       </CoinCardWrapper>
