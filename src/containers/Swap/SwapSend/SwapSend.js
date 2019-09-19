@@ -182,7 +182,6 @@ class SwapSend extends Component {
       user: { keystore, wallet },
     } = this.props;
     const { password } = this.state;
-    this.handleConfirmSwap();
 
     try {
       const privateKey = crypto.getPrivateKeyFromKeyStore(keystore, password);
@@ -192,7 +191,7 @@ class SwapSend extends Component {
         Binance.getPrefix(),
       );
       if (wallet === address) {
-        this.handleStartTimer();
+        this.handleConfirmSwap();
       }
 
       this.setState({
@@ -321,17 +320,31 @@ class SwapSend extends Component {
     this.props.history.push(URL);
   };
 
+  handleChangeSource = asset => {
+    const { view } = this.props;
+    const { source, target } = this.getSwapData();
+    const selectedToken = asset.split('-')[0].toLowerCase();
+
+    let URL;
+    if (selectedToken === target) {
+      URL = `/swap/${view}/${selectedToken}-${source}`;
+    } else {
+      URL = `/swap/${view}/${selectedToken}-${target}`;
+    }
+    this.props.history.push(URL);
+  };
+
   handleSelectTraget = asset => {
     const { view } = this.props;
-    const { source } = this.getSwapData();
-    const target = asset.split('-')[0].toLowerCase();
+    const { source, target } = this.getSwapData();
+    const selectedToken = asset.split('-')[0].toLowerCase();
 
-    if (source === target) {
-      return;
+    let URL;
+    if (source === selectedToken) {
+      URL = `/swap/${view}/${target}-${selectedToken}`;
+    } else {
+      URL = `/swap/${view}/${source}-${selectedToken}`;
     }
-
-    const URL = `/swap/${view}/${source}-${target}`;
-
     this.props.history.push(URL);
   };
 
@@ -406,7 +419,13 @@ class SwapSend extends Component {
         address,
       );
       this.hash = result[0].hash;
+
+      this.handleStartTimer();
     } catch (error) {
+      notification['error']({
+        message: 'Swap Invalid',
+        description: 'Swap information is not valid.',
+      });
       console.log(error); // eslint-disable-line no-console
     }
   };
@@ -422,6 +441,10 @@ class SwapSend extends Component {
       }
       return false;
     });
+
+    if (!sourceAsset) {
+      return;
+    }
 
     const totalAmount = sourceAsset.assetValue || 0;
     const xValue = (totalAmount * amount) / 100;
@@ -597,7 +620,6 @@ class SwapSend extends Component {
                 onSelect={this.handleSelectAmount(source)}
                 withSelection
                 withSearch
-                searchDisable={[target]}
               />
 
               <ArrowContainer>
@@ -614,7 +636,6 @@ class SwapSend extends Component {
                 onChangeAsset={this.handleSelectTraget}
                 disabled
                 withSearch
-                searchDisable={[source]}
               >
                 <RecipientFormHolder>
                   <RecipientForm>

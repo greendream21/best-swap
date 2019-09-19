@@ -1,6 +1,5 @@
 import { getSwapMemo } from '../../helpers/memoHelper';
 import { getZValue, getPx, getPz, getSlip } from './calc';
-import { getBaseValue } from '../../helpers/stringHelper';
 
 export const getSwapType = (from, to) => {
   if (from.toLowerCase() === 'rune' || to.toLowerCase() === 'rune') {
@@ -55,10 +54,51 @@ export const getCalcResult = (from, to, pools, xValue, runePrice) => {
     };
   }
 
-  if (type === 'single_swap') {
+  if (type === 'single_swap' && to.toLowerCase() === 'rune') {
+    let X = 10;
+    let Y = 10;
+    const Py = runePrice;
+    const rune = 'RUNE-A1F';
+
+    let result = {};
+
+    pools.forEach(poolData => {
+      const { balance_rune, balance_token, pool_address, ticker } = poolData;
+
+      const token = ticker.split('-')[0];
+      if (token.toLowerCase() === from.toLowerCase()) {
+        X = Number(balance_token);
+        Y = Number(balance_rune);
+        result.poolAddressTo = pool_address;
+        result.tickerFrom = ticker;
+      }
+    });
+
+    result.tickerTo = rune;
+    const calcData = { X, Y, Py };
+
+    const Px = getPx(xValue, calcData);
+    const times = (xValue + X) ** 2;
+    const outputToken = Number(((xValue * X * Y) / times).toFixed(2));
+    const outputPy = ((Px * (X + xValue)) / (Y - outputToken)).toFixed(2);
+    const input = xValue * Px;
+    const output = outputToken * outputPy;
+    const slip = input !== 0 ? Math.round(((input - output) / input) * 100) : 0;
+
+    return {
+      ...result,
+      Px,
+      slip,
+      outputAmount: outputToken,
+      outputPrice: outputPy,
+    };
+  }
+
+  if (type === 'single_swap' && from.toLowerCase() === 'rune') {
     let X = 10000;
     let Y = 10;
     const Px = runePrice;
+    const rune = 'RUNE-A1F';
 
     let result = {};
 
@@ -75,7 +115,6 @@ export const getCalcResult = (from, to, pools, xValue, runePrice) => {
     });
 
     // Set RUNE for fromToken as we don't have rune in the pool from statechain
-    const rune = 'RUNE-A1F';
     result.tickerFrom = rune;
 
     const times = (xValue + X) ** 2;
@@ -97,8 +136,8 @@ export const getCalcResult = (from, to, pools, xValue, runePrice) => {
 
 export const validateSwap = (wallet, type, data, amount) => {
   if (type === 'single_swap') {
-    const { poolAddressTo, tickerTo } = data;
-    if (!wallet || !poolAddressTo || !tickerTo || !amount) {
+    const { tickerTo } = data;
+    if (!wallet || !tickerTo || !amount) {
       return false;
     }
   }
@@ -143,51 +182,4 @@ export const confirmSwap = (
       .then(response => resolve(response))
       .catch(error => reject(error));
   });
-  // console.log('memo: ', memo);
-
-  // Stake action
-  // const fromAmount = Number(amount).toFixed(2);
-  // const toAmount = Number(outputAmount).toFixed(2);
-
-  // let outputs;
-  // if (poolAddressFrom !== poolAddressTo) {
-  //   outputs = [
-  //     {
-  //       to: poolAddressFrom,
-  //       coins: [
-  //         {
-  //           denom: tickerFrom,
-  //           amount: fromAmount,
-  //         },
-  //       ],
-  //     },
-  //     {
-  //       to: poolAddressTo,
-  //       coins: [
-  //         {
-  //           denom: tickerTo,
-  //           amount: toAmount,
-  //         },
-  //       ],
-  //     },
-  //   ];
-  // } else {
-  //   outputs = [
-  //     {
-  //       to: poolAddressFrom,
-  //       coins: [
-  //         {
-  //           denom: tickerFrom,
-  //           amount: fromAmount,
-  //         },
-  //         {
-  //           denom: tickerTo,
-  //           amount: toAmount,
-  //         },
-  //       ],
-  //     },
-  //   ];
-  // }
-
-  // Binance.multiSend(wallet, outputs, memo);
 };
