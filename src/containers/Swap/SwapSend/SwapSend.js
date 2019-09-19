@@ -40,6 +40,7 @@ import { getCalcResult, confirmSwap } from '../utils';
 import appActions from '../../../redux/app/actions';
 import chainActions from '../../../redux/chainservice/actions';
 import statechainActions from '../../../redux/statechain/actions';
+import walletactions from '../../../redux/wallet/actions';
 
 const {
   setTxTimerType,
@@ -51,6 +52,7 @@ const {
 
 const { getTokens } = chainActions;
 const { getPools } = statechainActions;
+const { getRunePrice } = walletactions;
 
 class SwapSend extends Component {
   static propTypes = {
@@ -70,6 +72,7 @@ class SwapSend extends Component {
     resetTxStatus: PropTypes.func.isRequired,
     getTokens: PropTypes.func.isRequired,
     getPools: PropTypes.func.isRequired,
+    getRunePrice: PropTypes.func.isRequired,
   };
 
   static defaultProps = {
@@ -90,10 +93,11 @@ class SwapSend extends Component {
   addressRef = React.createRef();
 
   componentDidMount() {
-    const { getTokens, getPools } = this.props;
+    const { getTokens, getPools, getRunePrice } = this.props;
 
     getTokens();
     getPools();
+    getRunePrice();
   }
 
   isValidRecipient = () => {
@@ -112,12 +116,27 @@ class SwapSend extends Component {
     });
   };
 
+  getNewValue(value, xValue) {
+    const numericRegex = /^[0-9\b]+$/;
+
+    const newValue =
+      value.indexOf(',') != -1
+        ? parseInt(value.replace(',', ''))
+        : !numericRegex.test(value)
+        ? 0
+        : Number.isNaN(value)
+        ? xValue
+        : Number(value);
+    return newValue;
+  }
+
   handleChangeValue = value => {
     const { xValue } = this.state;
-    const newValue = isNaN(value) ? xValue : Number(value); // eslint-disable-line
+    const newValue = this.getNewValue(value, xValue);
 
-    const { assetData } = this.props;
+    const { assetData, getRunePrice } = this.props;
     const { source } = this.getSwapData();
+    getRunePrice();
 
     const sourceAsset = assetData.find(data => {
       const { asset } = data;
@@ -128,7 +147,7 @@ class SwapSend extends Component {
       return false;
     });
 
-    const totalAmount = sourceAsset.assetValue || 0;
+    const totalAmount = !sourceAsset ? 0 : sourceAsset.assetValue || 0;
 
     if (totalAmount < newValue) {
       this.setState({
@@ -506,6 +525,7 @@ class SwapSend extends Component {
       chainData: { tokenInfo },
       pools,
       assetData,
+      runePrice,
     } = this.props;
     const {
       dragReset,
@@ -518,7 +538,6 @@ class SwapSend extends Component {
       password,
     } = this.state;
 
-    const runePrice = 0.01481204; // TODO: get rune price from API
     const swapData = this.getSwapData();
 
     if (!swapData || !Object.keys(tokenInfo).length) {
@@ -710,6 +729,7 @@ export default compose(
       setTxTimerStatus,
       setTxTimerValue,
       resetTxStatus,
+      getRunePrice,
     },
   ),
   withRouter,

@@ -1,6 +1,7 @@
 import { keyBy } from 'lodash';
+import Binance from '../../clients/binance';
 
-var getLocation = function(href) {
+const getLocation = href => {
   var l = document.createElement('a');
   l.href = href;
   return l;
@@ -10,7 +11,7 @@ export const menuItems = [
   {
     key: 'binance_chain',
     label: 'binance chain',
-    url: 'dex.binance.org',
+    url: getLocation(Binance.getBinanceUrl()).hostname,
     status: 'green',
   },
   {
