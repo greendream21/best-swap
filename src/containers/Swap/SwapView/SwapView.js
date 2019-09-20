@@ -81,7 +81,7 @@ class SwapView extends Component {
         slip: swapInfo.aveSlipTkn || 0,
       };
       const { volume, transaction, slip, swaps } = assetData;
-      const target = assetData.target.split('-')[0];
+      const target = !assetData.target ? '' : assetData.target.split('-')[0];
       const depth = Number((Number(assetData.depth) * runePrice).toFixed(2));
 
       if (target !== activeAsset) {

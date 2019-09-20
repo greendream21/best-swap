@@ -58,7 +58,7 @@ class PoolView extends Component {
         roi: poolInfo.roiAT || 0,
       };
       const { asset, volume, transaction, liq, roi } = assetData;
-      const target = assetData.target.split('-')[0];
+      const target = !assetData.target ? '' : assetData.target.split('-')[0];
       const depth = Number(assetData.depth.toFixed(2));
       const hisRoi = Number(roi.toFixed(2));
 
