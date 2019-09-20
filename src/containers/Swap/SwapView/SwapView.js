@@ -12,6 +12,7 @@ import { ContentWrapper } from './SwapView.style';
 
 import statechainActions from '../../../redux/statechain/actions';
 import walletactions from '../../../redux/wallet/actions';
+import { getSwapData } from './data';
 
 const { getPools } = statechainActions;
 const { getRunePrice } = walletactions;
@@ -22,7 +23,9 @@ class SwapView extends Component {
     pools: PropTypes.array.isRequired,
     poolData: PropTypes.object.isRequired,
     swapData: PropTypes.object.isRequired,
+    assetData: PropTypes.array.isRequired,
     getRunePrice: PropTypes.func.isRequired,
+    runePrice: PropTypes.number.isRequired,
   };
 
   state = {
@@ -63,7 +66,7 @@ class SwapView extends Component {
   };
 
   renderSwapList = () => {
-    const { pools, poolData, swapData, runePrice } = this.props;
+    const { pools, poolData, swapData, assetData, runePrice } = this.props;
     const { activeAsset } = this.state;
 
     return pools.map((pool, index) => {
@@ -71,31 +74,22 @@ class SwapView extends Component {
       const poolInfo = poolData[ticker] || {};
       const swapInfo = swapData[ticker] || {};
 
-      const assetData = {
-        asset: 'rune',
-        target: ticker,
-        depth: poolInfo.depth || 0,
-        volume: poolInfo.vol24hr || 0,
-        transaction: swapInfo.aveTxTkn || 0,
-        swaps: poolInfo.numSwaps || 0,
-        slip: swapInfo.aveSlipTkn || 0,
-      };
-      const { volume, transaction, slip, swaps } = assetData;
-      const target = !assetData.target ? '' : assetData.target.split('-')[0];
-      const depth = Number((Number(assetData.depth) * runePrice).toFixed(2));
+      const swapCardData = getSwapData(
+        'rune',
+        ticker,
+        poolInfo,
+        swapInfo,
+        assetData,
+        runePrice,
+      );
 
-      if (target !== activeAsset) {
+      if (swapCardData.target !== activeAsset) {
         return (
           <SwapCard
             className="swap-card"
             asset="rune"
-            target={target}
-            depth={depth}
-            volume={volume}
-            transaction={transaction}
-            slip={slip}
-            trade={swaps}
-            onSwap={this.handleSwap(activeAsset, target)}
+            onSwap={this.handleSwap(activeAsset, swapCardData.target)}
+            {...swapCardData}
             key={index}
           />
         );
@@ -126,6 +120,7 @@ export default compose(
       poolData: state.Statechain.poolData,
       swapData: state.Statechain.swapData,
       runePrice: state.Wallet.runePrice,
+      assetData: state.Wallet.assetData,
     }),
     {
       getPools,

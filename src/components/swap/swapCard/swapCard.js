@@ -48,7 +48,7 @@ class SwapCard extends Component {
     const volumeValue = `$${getActualValue(volume)}`;
     const transactionValue = `$${getActualValue(transaction)}`;
     const slipValue = `${getActualValue(slip)}%`;
-    const tradeValue = `${getActualValue(trade)}`;
+    const tradeValue = `${trade}`;
 
     return (
       <CardLayout.Row className={className} {...props}>
