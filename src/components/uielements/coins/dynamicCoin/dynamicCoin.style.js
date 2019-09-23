@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { palette } from 'styled-theme';
 
 const sizes = {
   big: '44px',
@@ -28,4 +29,5 @@ export const DynamicCoinWrapper = styled.div`
     `background: linear-gradient(45deg, ${props.startCol}, ${props.stopCol})`};
   color: white;
   text-transform: uppercase;
+  box-shadow: 0px 0px 4px 1px ${palette('secondary', 2)};
 `;
