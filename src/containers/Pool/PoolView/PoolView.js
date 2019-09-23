@@ -10,8 +10,11 @@ import PoolCard from '../../../components/pool/poolCard';
 
 import { ContentWrapper } from './PoolView.style';
 import statechainActions from '../../../redux/statechain/actions';
+import walletactions from '../../../redux/wallet/actions';
+import { getPoolData } from './data';
 
 const { getPools } = statechainActions;
+const { getRunePrice } = walletactions;
 
 class PoolView extends Component {
   static propTypes = {
@@ -19,6 +22,9 @@ class PoolView extends Component {
     pools: PropTypes.array.isRequired,
     poolData: PropTypes.object.isRequired,
     swapData: PropTypes.object.isRequired,
+    assetData: PropTypes.array.isRequired,
+    getRunePrice: PropTypes.func.isRequired,
+    runePrice: PropTypes.number.isRequired,
   };
 
   state = {
@@ -26,13 +32,15 @@ class PoolView extends Component {
   };
 
   componentDidMount() {
-    const { getPools } = this.props;
+    const { getPools, getRunePrice } = this.props;
+
     getPools();
+    getRunePrice();
   }
 
   handleStake = ticker => () => {
-    // const URL = `/pool/${ticker}`;
-    // this.props.history.push(URL);
+    const URL = `/pool/${ticker.toLowerCase()}`;
+    this.props.history.push(URL);
   };
 
   handleNewPool = () => {
@@ -41,7 +49,7 @@ class PoolView extends Component {
   };
 
   renderPoolList = () => {
-    const { pools, poolData, swapData } = this.props;
+    const { pools, poolData, swapData, runePrice, assetData } = this.props;
     const { activeAsset } = this.state;
 
     return pools.map((pool, index) => {
@@ -49,31 +57,21 @@ class PoolView extends Component {
       const poolInfo = poolData[ticker] || {};
       const swapInfo = swapData[ticker] || {};
 
-      const assetData = {
-        asset: 'rune',
-        target: ticker,
-        depth: poolInfo.depth || 0,
-        volume: poolInfo.vol24hr || 0,
-        transaction: swapInfo.aveTxTkn || 0,
-        roi: poolInfo.roiAT || 0,
-      };
-      const { asset, volume, transaction, liq, roi } = assetData;
-      const target = !assetData.target ? '' : assetData.target.split('-')[0];
-      const depth = Number(assetData.depth.toFixed(2));
-      const hisRoi = Number(roi.toFixed(2));
+      const poolCardData = getPoolData(
+        'rune',
+        ticker,
+        poolInfo,
+        swapInfo,
+        assetData,
+        runePrice,
+      );
 
-      if (target !== activeAsset) {
+      if (poolCardData.target !== activeAsset) {
         return (
           <PoolCard
             className="pool-card"
-            asset={asset}
-            target={target}
-            depth={depth}
-            volume={volume}
-            transaction={transaction}
-            liq={liq}
-            roi={hisRoi}
-            onStake={this.handleStake(target)}
+            {...poolCardData}
+            onStake={this.handleStake(poolCardData.target)}
             key={index}
           />
         );
@@ -104,9 +102,12 @@ export default compose(
       pools: state.Statechain.pools,
       poolData: state.Statechain.poolData,
       swapData: state.Statechain.swapData,
+      runePrice: state.Wallet.runePrice,
+      assetData: state.Wallet.assetData,
     }),
     {
       getPools,
+      getRunePrice,
     },
   ),
   withRouter,

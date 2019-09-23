@@ -14,7 +14,7 @@ class PoolCard extends Component {
     depth: PropTypes.number,
     volume: PropTypes.number,
     transaction: PropTypes.number,
-    liq: PropTypes.number,
+    liqFee: PropTypes.number,
     roi: PropTypes.number,
     onStake: PropTypes.func.isRequired,
     className: PropTypes.string,
@@ -24,7 +24,7 @@ class PoolCard extends Component {
     depth: 0,
     volume: 0,
     transaction: 0,
-    liq: 0,
+    liqFee: 0,
     roi: 0,
     className: '',
   };
@@ -36,7 +36,7 @@ class PoolCard extends Component {
       depth,
       volume,
       transaction,
-      liq,
+      liqFee,
       roi,
       onStake,
       className,
@@ -47,7 +47,7 @@ class PoolCard extends Component {
     const depthValue = `$${getActualValue(depth)}`;
     const volumeValue = `$${getActualValue(volume)}`;
     const transactionValue = `$${getActualValue(transaction)}`;
-    const liqValue = `${getActualValue(liq)}%`;
+    const liqFeeValue = `${getActualValue(liqFee)}%`;
     const roiValue = `${getActualValue(roi)}% pa`;
 
     return (
@@ -74,7 +74,7 @@ class PoolCard extends Component {
             <Status title="Avg. Transaction" value={transactionValue} />
           </CardLayout.Item>
           <CardLayout.Item showFrom="lg">
-            <Status title="Avg. Liq Fee" value={liqValue} />
+            <Status title="Avg. Liq Fee" value={liqFeeValue} />
           </CardLayout.Item>
           <CardLayout.Item showFrom="xl">
             <Status
@@ -85,8 +85,7 @@ class PoolCard extends Component {
           </CardLayout.Item>
         </CardLayout.Group>
         <CardLayout.Item noShrink showFrom="xs">
-          {/* { TODO: disable stake button in the testnet } */}
-          <Button onClick={onStake} color="success" disabled>
+          <Button onClick={onStake} color="success">
             stake
           </Button>
         </CardLayout.Item>
