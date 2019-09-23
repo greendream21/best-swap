@@ -2,6 +2,7 @@ image: node:10.15
 
 stages:
   - deploy-develop
+  - deploy-staging
   - develop-production
 
 cache:
@@ -24,6 +25,16 @@ deploy-develop:
     name: develop
   only:
     - master
+
+deploy-staging:
+  stage: deploy-staging
+  script:
+    - firebase use --token ${FIREBASE_TOKEN} bepswap-testnet-staging
+    - firebase deploy --token ${FIREBASE_TOKEN}
+  environment:
+    name: staging
+  only:
+    - staging
 
 deploy-production:
   stage: develop-production
