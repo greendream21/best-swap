@@ -4,9 +4,6 @@ import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Row, Col, Icon } from 'antd';
-import ChainService from '../../../clients/chainservice';
-import Binance from '../../../clients/binance';
-import CoinGecko from '../../../clients/coingecko';
 
 import Button from '../../../components/uielements/button';
 import Label from '../../../components/uielements/label';
@@ -21,12 +18,17 @@ import Tabs from '../../../components/uielements/tabs';
 import WalletButton from '../../../components/uielements/walletButton';
 
 import appActions from '../../../redux/app/actions';
+import chainActions from '../../../redux/chainservice/actions';
+import statechainActions from '../../../redux/statechain/actions';
+import walletactions from '../../../redux/wallet/actions';
 
 import {
   ContentWrapper,
   ConfirmModal,
   ConfirmModalContent,
 } from './PoolStake.style';
+import { getPoolData } from '../utils';
+import { getActualValue } from '../../../helpers/stringHelper';
 
 const { TabPane } = Tabs;
 
@@ -38,15 +40,29 @@ const {
   resetTxStatus,
 } = appActions;
 
+const { getTokens, getStakeData } = chainActions;
+const { getPools } = statechainActions;
+const { getRunePrice } = walletactions;
+
 class PoolStake extends Component {
   static propTypes = {
     ticker: PropTypes.string.isRequired,
     txStatus: PropTypes.object.isRequired,
+    assetData: PropTypes.array.isRequired,
+    pools: PropTypes.array.isRequired,
+    poolData: PropTypes.object.isRequired,
+    swapData: PropTypes.object.isRequired,
+    user: PropTypes.object.isRequired,
+    runePrice: PropTypes.number.isRequired,
     setTxTimerType: PropTypes.func.isRequired,
     setTxTimerModal: PropTypes.func.isRequired,
     setTxTimerStatus: PropTypes.func.isRequired,
     setTxTimerValue: PropTypes.func.isRequired,
     resetTxStatus: PropTypes.func.isRequired,
+    getTokens: PropTypes.func.isRequired,
+    getStakeData: PropTypes.func.isRequired,
+    getPools: PropTypes.func.isRequired,
+    getRunePrice: PropTypes.func.isRequired,
   };
 
   static defaultProps = {};
@@ -58,91 +74,19 @@ class PoolStake extends Component {
   };
 
   componentDidMount() {
-    this.getPoolData();
-    this.getStakePool();
-    this.getBalance();
-    this.getPrices();
+    const {
+      getTokens,
+      getPools,
+      getRunePrice,
+      getStakeData,
+      ticker,
+    } = this.props;
+
+    getTokens();
+    getPools();
+    getStakeData(ticker);
+    getRunePrice();
   }
-
-  getPrices = () => {
-    CoinGecko.listCoins()
-      .then(response => {
-        const token = response.data.find(
-          coin => coin.symbol === this.props.ticker,
-        );
-        const rune = response.data.find(coin => coin.symbol === 'rune');
-        CoinGecko.price(token.id + ',' + rune.id)
-          .then(response => {
-            this.setState({
-              tokenPrice: response.data[token.id].usd,
-              runePrice: response.data[rune.id].usd,
-            });
-          })
-          .catch(error => {
-            console.error(error);
-          });
-      })
-      .catch(error => {
-        console.error(error);
-      });
-  };
-
-  getBalance = addr => {
-    const { user } = this.props;
-    const { address } = user;
-    Binance.getBalances(address)
-      .then(response => {
-        Binance.getMarkets()
-          .then(markets => {
-            const coins = response.map(coin => {
-              const market = markets.result.find(
-                market => market.base_asset_symbol === coin.symbol,
-              );
-              return {
-                asset: coin.symbol,
-                assetValue: parseFloat(coin.free),
-                price: market ? parseFloat(market.list_price) : 0,
-              };
-            });
-            this.setState({
-              balances: coins,
-              runeAmt: 0,
-              tokenAmt: 0,
-            });
-          })
-          .catch(error => {
-            console.error(error);
-          });
-      })
-      .catch(error => {
-        console.error(error);
-      });
-  };
-
-  getStakePool = () => {
-    const { ticker, user } = this.props;
-    const { address } = user;
-    if (address) {
-      ChainService.stakerData(address, ticker.toUpperCase())
-        .then(response => {
-          this.setState({ stakeData: response.data });
-        })
-        .catch(error => {
-          console.error(error);
-        });
-    }
-  };
-
-  getPoolData = () => {
-    const { ticker } = this.props;
-    ChainService.getPool(ticker.toUpperCase())
-      .then(response => {
-        this.setState({ data: response.data });
-      })
-      .catch(error => {
-        console.error(error);
-      });
-  };
 
   handleGotoDetail = () => {
     const { ticker } = this.props;
@@ -181,22 +125,22 @@ class PoolStake extends Component {
   };
 
   handleGotoStakeView = () => {
-    const { info } = this.props;
-    const URL = `/pool/stake-view/${info}`;
+    const { ticker } = this.props;
+    const URL = `/pool/stake-view/${ticker}`;
 
     this.props.history.push(URL);
   };
 
   handleAddMore = () => {
-    const { info } = this.props;
-    const URL = `/pool/stake-new/${info}`;
+    const { ticker } = this.props;
+    const URL = `/pool/stake-new/${ticker}`;
 
     this.props.history.push(URL);
   };
 
   handleGotoWithdraw = () => {
-    const { info } = this.props;
-    const URL = `/pool/withdraw/${info}`;
+    const { ticker } = this.props;
+    const URL = `/pool/withdraw/${ticker}`;
 
     this.props.history.push(URL);
   };
@@ -234,11 +178,13 @@ class PoolStake extends Component {
     }
   };
 
-  renderStakeModalContent = swapData => {
+  renderStakeModalContent = () => {
     const {
       txStatus: { status, value },
+      ticker,
     } = this.props;
-    const { source, target } = swapData;
+    const source = 'rune';
+    const target = ticker;
 
     const transactionLabels = [
       'sending transaction',
@@ -275,11 +221,14 @@ class PoolStake extends Component {
     );
   };
 
-  renderWithdrawModalContent = swapData => {
+  renderWithdrawModalContent = () => {
     const {
       txStatus: { status, value },
+      ticker,
     } = this.props;
-    const { source, target } = swapData;
+
+    const source = 'rune';
+    const target = ticker;
 
     const transactionLabels = [
       'sending transaction',
@@ -316,29 +265,53 @@ class PoolStake extends Component {
     );
   };
 
-  renderStakeInfo = pair => {
-    const { ticker } = this.props;
+  renderStakeInfo = () => {
+    const { ticker, runePrice, poolData, swapData, assetData } = this.props;
     const source = 'rune';
 
     const stakePool = `${source}:${ticker}`;
-    const data = this.state.data || {};
+
+    const poolInfo = poolData[ticker] || {};
+    const swapInfo = swapData[ticker] || {};
+
+    const {
+      depth,
+      volume24,
+      volumeAT,
+      totalSwaps,
+      totalStakers,
+      roiAT,
+    } = getPoolData('rune', ticker, poolInfo, swapInfo, assetData, runePrice);
+
     const attrs = [
       {
         key: 'depth',
         title: 'Depth',
-        value: '$' + (data.depth * this.state.runePrice).toFixed(2),
+        value: `$${getActualValue(depth).toLocaleString()}`,
       },
-      { key: 'vol24', title: '24hr Volume', value: data.vol24hr },
-      { key: 'volAT', title: 'All Time Volume', value: data.volAT },
-      { key: 'swap', title: 'Total Swaps', value: data.numSwaps },
-      { key: 'stakers', title: 'Total Stakers', value: data.numStakers },
-      { key: 'roi', title: 'All Time RoI', value: data.roiAT },
+      {
+        key: 'vol24',
+        title: '24hr Volume',
+        value: `$${getActualValue(volume24)}`,
+      },
+      {
+        key: 'volAT',
+        title: 'All Time Volume',
+        value: `$${getActualValue(volumeAT)}`,
+      },
+      { key: 'swap', title: 'Total Swaps', value: totalSwaps },
+      { key: 'stakers', title: 'Total Stakers', value: totalStakers },
+      {
+        key: 'roi',
+        title: 'All Time RoI',
+        value: `${getActualValue(roiAT)}% pa`,
+      },
     ];
 
     return (
       <Row className="stake-status-view">
         <Col className="stake-pool-col" span={8}>
-          <Coin type={'rune'} over={ticker} />
+          <Coin type="rune" over={ticker} />
           <Status
             className="stake-pool-status"
             title="Pool"
@@ -354,7 +327,7 @@ class PoolStake extends Component {
     );
   };
 
-  renderShareDetail = pair => {
+  renderShareDetail = () => {
     // const { address } = this.props.user
     const address = 'deleteme';
     const { ticker } = this.props;
@@ -573,12 +546,14 @@ class PoolStake extends Component {
     );
   };
 
-  renderYourShare = pair => {
+  renderYourShare = () => {
     // const { address } = this.props.user
     const address = 'deleteme';
+    const { ticker } = this.props;
 
     const stakeData = this.state.stakeData || { units: 0 };
-    const { source, target } = pair;
+    const source = 'rune';
+    const target = ticker;
 
     return (
       <div className="your-share-wrapper">
@@ -678,8 +653,7 @@ class PoolStake extends Component {
   };
 
   render() {
-    const { ticker, txStatus } = this.props;
-    const pair = { source: 'rune', target: ticker };
+    const { txStatus } = this.props;
 
     const openStakeModal = txStatus.type === 'stake' ? txStatus.modal : false;
     const openWithdrawModal =
@@ -688,13 +662,13 @@ class PoolStake extends Component {
 
     return (
       <ContentWrapper className="pool-stake-wrapper">
-        {this.renderStakeInfo(pair)}
+        {this.renderStakeInfo()}
         <Row className="share-view">
           <Col className="your-share-view" span={8}>
-            {this.renderYourShare(pair)}
+            {this.renderYourShare()}
           </Col>
           <Col className="share-detail-view" span={16}>
-            {this.renderShareDetail(pair)}
+            {this.renderShareDetail()}
           </Col>
         </Row>
         <ConfirmModal
@@ -706,7 +680,7 @@ class PoolStake extends Component {
           footer={null}
           onCancel={this.handleCloseModal}
         >
-          {this.renderWithdrawModalContent(pair)}
+          {this.renderWithdrawModalContent()}
         </ConfirmModal>
         <ConfirmModal
           title="STAKE CONFIRMATION"
@@ -717,7 +691,7 @@ class PoolStake extends Component {
           footer={null}
           onCancel={this.handleCloseModal}
         >
-          {this.renderStakeModalContent(pair)}
+          {this.renderStakeModalContent()}
         </ConfirmModal>
       </ContentWrapper>
     );
@@ -729,8 +703,18 @@ export default compose(
     state => ({
       txStatus: state.App.txStatus,
       user: state.Wallet.user,
+      chainData: state.ChainService,
+      pools: state.Statechain.pools,
+      poolData: state.Statechain.poolData,
+      swapData: state.Statechain.swapData,
+      assetData: state.Wallet.assetData,
+      runePrice: state.Wallet.runePrice,
     }),
     {
+      getTokens,
+      getStakeData,
+      getPools,
+      getRunePrice,
       setTxTimerType,
       setTxTimerModal,
       setTxTimerStatus,
