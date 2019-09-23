@@ -11,7 +11,7 @@ import PoolCard from '../../../components/pool/poolCard';
 import { ContentWrapper } from './PoolView.style';
 import statechainActions from '../../../redux/statechain/actions';
 import walletactions from '../../../redux/wallet/actions';
-import { getPoolData } from './data';
+import { getPoolData } from '../utils';
 
 const { getPools } = statechainActions;
 const { getRunePrice } = walletactions;
@@ -57,21 +57,28 @@ class PoolView extends Component {
       const poolInfo = poolData[ticker] || {};
       const swapInfo = swapData[ticker] || {};
 
-      const poolCardData = getPoolData(
-        'rune',
-        ticker,
-        poolInfo,
-        swapInfo,
-        assetData,
-        runePrice,
-      );
+      const {
+        asset,
+        target,
+        depth,
+        volume24,
+        transaction,
+        liqFee,
+        roiAT,
+      } = getPoolData('rune', ticker, poolInfo, swapInfo, assetData, runePrice);
 
-      if (poolCardData.target !== activeAsset) {
+      if (target !== activeAsset) {
         return (
           <PoolCard
             className="pool-card"
-            {...poolCardData}
-            onStake={this.handleStake(poolCardData.target)}
+            asset={asset}
+            target={target}
+            depth={depth}
+            transaction={transaction}
+            volume={volume24}
+            liqFee={liqFee}
+            roi={roiAT}
+            onStake={this.handleStake(target)}
             key={index}
           />
         );
