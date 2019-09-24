@@ -572,9 +572,6 @@ class PoolStake extends Component {
         {address && stakeData.units === 0 && (
           <>
             <Label size="normal">You don't have any shares in this pool.</Label>
-            <Button onClick={this.handleGotoDetail} color="success">
-              add share
-            </Button>
           </>
         )}
         {address && stakeData.units > 0 && (
