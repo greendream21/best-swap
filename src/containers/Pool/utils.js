@@ -38,3 +38,38 @@ export const getPoolData = (
     totalStakers,
   };
 };
+
+export const getCalcResult = (from, to, pools, rValue, runePrice) => {
+  let R = 10000;
+  let T = 10;
+  const Pr = runePrice;
+  let result = {};
+
+  pools.forEach(poolData => {
+    const { balance_rune, balance_token, pool_address, ticker } = poolData;
+
+    const token = ticker.split('-')[0];
+
+    if (token.toLowerCase() === to.toLowerCase()) {
+      R = Number(balance_rune);
+      T = Number(balance_token);
+      result.poolAddressTo = pool_address;
+      result.tickerTo = ticker;
+    }
+  });
+
+  const poolPrice = (R / T) * runePrice;
+
+  // const calcData = { X, Y, R, Z, Py, Pr: Py };
+
+  // const zValue = getZValue(xValue, calcData).toFixed(2);
+  // const slip = getSlip(xValue, calcData);
+  // const Px = getPx(xValue, calcData);
+  // const Pz = getPz(xValue, calcData).toFixed(2);
+
+  return {
+    ...result,
+    poolPrice,
+    Pr,
+  };
+};

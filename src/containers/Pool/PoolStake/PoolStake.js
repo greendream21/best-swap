@@ -26,7 +26,7 @@ import {
   ConfirmModal,
   ConfirmModalContent,
 } from './PoolStake.style';
-import { getPoolData } from '../utils';
+import { getPoolData, getCalcResult } from '../utils';
 import { getActualValue } from '../../../helpers/stringHelper';
 
 const { TabPane } = Tabs;
@@ -48,6 +48,7 @@ class PoolStake extends Component {
     ticker: PropTypes.string.isRequired,
     txStatus: PropTypes.object.isRequired,
     assetData: PropTypes.array.isRequired,
+    chainData: PropTypes.object.isRequired,
     pools: PropTypes.array.isRequired,
     poolData: PropTypes.object.isRequired,
     swapData: PropTypes.object.isRequired,
@@ -70,22 +71,60 @@ class PoolStake extends Component {
     dragReset: true,
     runePrice: 0,
     tokenPrice: 0,
+    runeAmount: 0,
+    tokenAmount: 0,
+    balance: 50,
   };
 
   componentDidMount() {
-    const {
-      getTokens,
-      getPools,
-      getRunePrice,
-      getStakeData,
-      ticker,
-    } = this.props;
+    const { getTokens, getPools, getRunePrice } = this.props;
 
     getTokens();
     getPools();
-    getStakeData(ticker);
     getRunePrice();
   }
+
+  handleChangeTokenAmount = tokenName => amount => {
+    this.setState({
+      [tokenName]: amount,
+    });
+  };
+
+  handleSelectTokenAmount = token => amount => {
+    const { assetData } = this.props;
+
+    const selectedToken = assetData.find(data => {
+      const { asset } = data;
+      const tokenName = asset.split('-')[0];
+      if (tokenName.toLowerCase() === token.toLowerCase()) {
+        return true;
+      }
+      return false;
+    });
+
+    if (!selectedToken) {
+      return;
+    }
+
+    const totalAmount = selectedToken.assetValue || 0;
+    const value = (totalAmount * amount) / 100;
+
+    if (token === 'rune') {
+      this.setState({
+        runeAmount: value,
+      });
+    } else {
+      this.setState({
+        tokenAmount: value,
+      });
+    }
+  };
+
+  handleChangeBalance = e => {
+    this.setState({
+      balance: e,
+    });
+  };
 
   handleGotoDetail = () => {
     const { ticker } = this.props;
@@ -264,15 +303,12 @@ class PoolStake extends Component {
     );
   };
 
-  renderStakeInfo = () => {
-    const { ticker, runePrice, poolData, swapData, assetData } = this.props;
+  renderStakeInfo = poolStats => {
+    const { ticker } = this.props;
     const source = 'rune';
 
     const target = ticker.split('-')[0].toLowerCase();
     const stakePool = `${source}:${target}`;
-
-    const poolInfo = poolData[ticker] || {};
-    const swapInfo = swapData[ticker] || {};
 
     const {
       depth,
@@ -281,7 +317,7 @@ class PoolStake extends Component {
       totalSwaps,
       totalStakers,
       roiAT,
-    } = getPoolData('rune', ticker, poolInfo, swapInfo, assetData, runePrice);
+    } = poolStats;
 
     const attrs = [
       {
@@ -327,25 +363,23 @@ class PoolStake extends Component {
     );
   };
 
-  renderShareDetail = () => {
-    // const { address } = this.props.user
-    const address = 'deleteme';
-    const { ticker } = this.props;
+  renderShareDetail = poolStats => {
     const {
-      widthdrawPercentage,
-      balances,
+      user: { wallet },
+      ticker,
       runePrice,
+      chainData: { tokenInfo },
+    } = this.props;
+    const {
+      runeAmount,
+      tokenAmount,
+      balance,
+      widthdrawPercentage,
       tokenPrice,
-      runeAmt,
-      tokenAmt,
       dragReset,
     } = this.state;
-    const stakeData = this.state.stakeData || { units: 0 };
-    const source = 'rune';
-    const target = ticker.split('-')[0].toLowerCase();
-    const data = this.state.data || {};
 
-    if (!address) {
+    if (!wallet) {
       return (
         <Link to="/connect">
           <WalletButton connected={false} />
@@ -353,12 +387,27 @@ class PoolStake extends Component {
       );
     }
 
+    const stakeData = this.state.stakeData || { units: 0 };
+    const source = 'rune';
+    const target = ticker.split('-')[0].toLowerCase();
+
+    const tokensData = Object.keys(tokenInfo).map(tokenName => {
+      const { symbol, price } = tokenInfo[tokenName];
+
+      return {
+        asset: symbol,
+        price,
+      };
+    });
+
+    const { depth } = poolStats;
+
     const poolAttrs = [
       { key: 'price', title: 'Pool Price', value: '$0.10' }, // TODO
       {
         key: 'depth',
-        title: 'Depth',
-        value: '$' + (data.depth * runePrice).toFixed(2),
+        title: 'Pool Depth',
+        value: `$${getActualValue(depth * runePrice)}`,
       },
     ];
 
@@ -366,22 +415,15 @@ class PoolStake extends Component {
       { key: 'price', title: 'Pool Price', value: '$0.11' }, // TODO
       {
         key: 'depth',
-        title: 'Depth',
-        value:
-          '$' +
-          (
-            (data.depth + runeAmt + (tokenAmt * tokenPrice) / runePrice) *
-            runePrice
-          ).toFixed(2),
+        title: 'New Depth',
+        value: `$${getActualValue(
+          (depth + runeAmount + (tokenAmount * tokenPrice) / runePrice) *
+            runePrice,
+        )}`,
       },
+      { key: 'share', title: 'Your Share', value: '3%' }, // TODO
     ];
 
-    const tokenBalance = (balances || []).find(
-      coin => coin.asset === ticker.toUpperCase(),
-    ) || { assetValue: 0 };
-    const runeBalance = (balances || []).find(
-      coin => coin.asset === 'RUNE-B1A',
-    ) || { assetValue: 0 };
     return (
       <Tabs>
         <TabPane tab="add" key="add">
@@ -394,37 +436,21 @@ class PoolStake extends Component {
           <div className="stake-card-wrapper">
             <CoinCard
               asset={source}
-              amount={runeAmt}
-              max={runeBalance ? runeBalance.assetValue : 100000}
+              amount={runeAmount}
               price={runePrice}
-              onChange={amt => {
-                this.setState({ runeAmt: amt });
-              }}
-              onSelect={select => {
-                this.setState({
-                  runeAmt: Number(
-                    ((runeBalance.assetValue / 100) * select).toFixed(8),
-                  ),
-                });
-              }}
+              onChange={this.handleChangeTokenAmount('runeAmount')}
+              onSelect={this.handleSelectTokenAmount('rune')}
               withSelection
             />
             <CoinCard
               asset={target}
-              amount={tokenAmt}
-              max={tokenBalance ? tokenBalance.assetValue : 100000}
+              assetData={tokensData}
+              amount={tokenAmount}
               price={tokenPrice}
-              onChange={amt => {
-                this.setState({ tokenAmt: amt });
-              }}
-              onSelect={select => {
-                this.setState({
-                  tokenAmt: Number(
-                    ((tokenBalance.assetValue / 100) * select).toFixed(8),
-                  ),
-                });
-              }}
+              onChange={this.handleChangeTokenAmount('tokenAmount')}
+              onSelect={this.handleSelectTokenAmount(target)}
               withSelection
+              withSearch
             />
           </div>
           <Label className="label-title" size="normal" weight="bold">
@@ -435,10 +461,8 @@ class PoolStake extends Component {
             correct amount.
           </Label>
           <Slider
-            onChange={e => {
-              this.setState({ addAdjust: e });
-            }}
-            defaultValue={50}
+            onChange={this.handleChangeBalance}
+            value={balance}
             min={0}
             max={100}
             tooltipVisible={false}
@@ -645,7 +669,27 @@ class PoolStake extends Component {
   };
 
   render() {
-    const { txStatus } = this.props;
+    const {
+      ticker,
+      runePrice,
+      poolData,
+      swapData,
+      assetData,
+      pools,
+      txStatus,
+    } = this.props;
+
+    const poolInfo = poolData[ticker] || {};
+    const swapInfo = swapData[ticker] || {};
+
+    const poolStats = getPoolData(
+      'rune',
+      ticker,
+      poolInfo,
+      swapInfo,
+      assetData,
+      runePrice,
+    );
 
     const openStakeModal = txStatus.type === 'stake' ? txStatus.modal : false;
     const openWithdrawModal =
@@ -654,13 +698,13 @@ class PoolStake extends Component {
 
     return (
       <ContentWrapper className="pool-stake-wrapper">
-        {this.renderStakeInfo()}
+        {this.renderStakeInfo(poolStats)}
         <Row className="share-view">
           <Col className="your-share-view" span={8}>
             {this.renderYourShare()}
           </Col>
           <Col className="share-detail-view" span={16}>
-            {this.renderShareDetail()}
+            {this.renderShareDetail(poolStats)}
           </Col>
         </Row>
         <ConfirmModal
