@@ -1,5 +1,5 @@
-const answer =
-  'You Swap by sending assets into a pool.\n The pool calculates the correct swap amount and sends it back to you.';
+// const answer =
+//   'You Swap by sending assets into a pool.\n The pool calculates the correct swap amount and sends it back to you.';
 
 export const faqs = [
   {

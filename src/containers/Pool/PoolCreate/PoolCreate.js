@@ -20,6 +20,7 @@ class PoolCreate extends Component {
   static propTypes = {
     info: PropTypes.string,
     view: PropTypes.string.isRequired,
+    history: PropTypes.object,
   };
 
   static defaultProps = {

@@ -1,12 +1,13 @@
 image: node:10.15
 
 stages:
-  - deploy-develop
-  - deploy-staging
-  - develop-production
+  - test
+  - deploy
 
 cache:
+  key: ${CI_COMMIT_REF_SLUG}
   paths:
+    - cache/Cypress
     - node_modules/
 
 before_script:
@@ -16,8 +17,27 @@ before_script:
   - npm i -g firebase-tools
   - firebase -V
 
-deploy-develop:
-  stage: deploy-develop
+test:develop:
+  variables:
+    # provide cypress with our cached folder to install its cache in
+    CYPRESS_CACHE_FOLDER: "$CI_PROJECT_DIR/cache/Cypress"
+  stage: test
+  image: cypress/base:10
+  script:
+    - yarn test
+  environment:
+    name: develop
+  artifacts:
+    expire_in: 1 week
+    when: always
+    paths:
+      - cypress/screenshots
+      - cypress/videos
+
+deploy:develop:
+  stage: deploy
+  except:
+    - schedules
   script:
     - firebase use --token ${FIREBASE_TOKEN} bepswap-testnet-dev
     - firebase deploy --token ${FIREBASE_TOKEN}
@@ -26,18 +46,20 @@ deploy-develop:
   only:
     - master
 
-deploy-staging:
-  stage: deploy-staging
+deploy:staging:
+  stage: deploy
   script:
     - firebase use --token ${FIREBASE_TOKEN} bepswap-testnet-staging
     - firebase deploy --token ${FIREBASE_TOKEN}
   environment:
     name: staging
   only:
-    - staging
+    - schedules
 
-deploy-production:
-  stage: develop-production
+deploy:production:
+  except:
+    - schedules
+  stage: deploy
   script:
     - firebase use --token ${FIREBASE_TOKEN} bepswap-testnet
     - firebase deploy --token ${FIREBASE_TOKEN}

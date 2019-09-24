@@ -30,7 +30,8 @@ const Connector = props => {
     // use the u2f transport
     const timeout = 50000;
     const transport = await ledger.transports.u2f.create(timeout);
-    const app = (window.app = new ledger.app(transport, 100000, 100000));
+    const app = new ledger.app(transport, 100000, 100000);
+    window.app = app;
 
     // get version
     try {
@@ -80,14 +81,14 @@ const Connector = props => {
       </Row>
       <Row>
         <Col span={3}>
-          <img src={'/assets/img/step1.svg'} alt="Step 1" />
+          <img src="/assets/img/step1.svg" alt="Step 1" />
         </Col>
         <Col span={8}>
           <Label weght="bold">Enter PIN Code</Label>
         </Col>
         <Col>
           <img
-            src={'/assets/img/ledger-pin.svg'}
+            src="/assets/img/ledger-pin.svg"
             style={{ padding: 10 }}
             alt="pincode"
           />
@@ -95,7 +96,7 @@ const Connector = props => {
       </Row>
       <Row style={{ marginTop: 20 }}>
         <Col span={3}>
-          <img src={'/assets/img/step2.svg'} alt="Step 2" />
+          <img src="/assets/img/step2.svg" alt="Step 2" />
         </Col>
         <Col span={8}>
           <Row>
@@ -109,7 +110,7 @@ const Connector = props => {
         </Col>
         <Col>
           <img
-            src={'/assets/img/ledger-app.svg'}
+            src="/assets/img/ledger-app.svg"
             style={{ padding: 10 }}
             alt="Open App"
           />

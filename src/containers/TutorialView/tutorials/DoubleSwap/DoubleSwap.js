@@ -34,6 +34,7 @@ const { X, Y, Z, R, Py, Pr } = data;
 class DoubleSwap extends Component {
   static propTypes = {
     view: PropTypes.string,
+    history: PropTypes.object,
   };
 
   static defaultProps = {

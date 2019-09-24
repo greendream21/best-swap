@@ -14,9 +14,11 @@ const { saveWallet } = walletActions;
 
 const WalletConnectPane = props => {
   const walletConnect = async () => {
-    const walletConnector = (window.mywallet = new WalletConnect({
+    window.mywallet = new WalletConnect({
       bridge: 'https://bridge.walletconnect.org', // Required
-    }));
+    });
+
+    const walletConnector = window.mywallet;
 
     walletConnector.killSession();
 
@@ -35,7 +37,7 @@ const WalletConnectPane = props => {
     }
 
     // Subscribe to connection events
-    walletConnector.on('connect', (error, payload) => {
+    walletConnector.on('connect', error => {
       if (error) {
         throw error;
       }
@@ -68,7 +70,7 @@ const WalletConnectPane = props => {
         });
     });
 
-    walletConnector.on('session_update', (error, payload) => {
+    walletConnector.on('session_update', error => {
       if (error) {
         throw error;
       }
@@ -77,7 +79,7 @@ const WalletConnectPane = props => {
       // const { accounts, chainId } = payload.params[0];
     });
 
-    walletConnector.on('disconnect', (error, payload) => {
+    walletConnector.on('disconnect', error => {
       if (error) {
         throw error;
       }
@@ -106,16 +108,16 @@ const WalletConnectPane = props => {
       </Row>
 
       <Row>
-        <Col xs={24} md={3}></Col>
+        <Col xs={24} md={3} />
         <Col xs={24} md={8} style={paneStyle}>
           <img
-            src={'/assets/img/qr-code.svg'}
+            src="/assets/img/qr-code.svg"
             alt="qr-code"
             style={{ margin: 30 }}
             onClick={() => walletConnect()}
           />
         </Col>
-        <Col xs={24} md={13}></Col>
+        <Col xs={24} md={13} />
       </Row>
     </ContentWrapper>
   );

@@ -1,8 +1,15 @@
 import React, { Component } from 'react';
 import ReactPlaceholder from 'react-placeholder';
+import PropTypes from 'prop-types';
 import 'react-placeholder/lib/reactPlaceholder.css';
 
 class AsyncComponent extends Component {
+  static propTypes = {
+    componentArguement: PropTypes.object,
+    componentProps: PropTypes.object,
+    load: PropTypes.object,
+  };
+
   state = {
     Component: undefined,
   };
@@ -14,15 +21,17 @@ class AsyncComponent extends Component {
     let Component;
 
     switch (componentArguement) {
-      case 'googleChart':
+      case 'googleChart': {
         const { Chart: googleChart } = await this.props.load;
 
         Component = googleChart;
         break;
-      default:
+      }
+      default: {
         const { default: newComponent } = await this.props.load;
 
         Component = newComponent;
+      }
     }
 
     if (this.mounted) {

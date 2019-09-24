@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { palette } from 'styled-theme';
+// import { palette } from 'styled-theme';
 import ViewPanel from '../../components/viewPanel';
 
 export const WalletViewWrapper = styled(ViewPanel)`

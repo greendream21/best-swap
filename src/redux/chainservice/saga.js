@@ -7,7 +7,7 @@ import {
 } from '../../helpers/apiHelper';
 
 export function* getUserData() {
-  yield takeEvery(actions.GET_USER_DATA_REQUEST, function*({ payload }) {
+  yield takeEvery(actions.GET_USER_DATA_REQUEST, function*(/* { payload } */) {
     const params = {
       method: 'get',
       url: getChainserviceURL('userData'),
@@ -26,7 +26,7 @@ export function* getUserData() {
 }
 
 export function* getTokens() {
-  yield takeEvery(actions.GET_TOKENS_REQUEST, function*({ payload }) {
+  yield takeEvery(actions.GET_TOKENS_REQUEST, function*(/* { payload } */) {
     const params = {
       method: 'get',
       url: getChainserviceURL('tokens'),

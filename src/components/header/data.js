@@ -2,7 +2,7 @@ import { keyBy } from 'lodash';
 import Binance from '../../clients/binance';
 
 const getLocation = href => {
-  var l = document.createElement('a');
+  const l = document.createElement('a');
   l.href = href;
   return l;
 };

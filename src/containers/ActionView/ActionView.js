@@ -11,7 +11,7 @@ import PanelHeader from '../../components/uielements/panelHeader';
 import { headerData } from './data';
 
 import { SwapIntro, SwapView, SwapSend } from '../Swap';
-import { PoolIntro, PoolView, PoolStake, PoolCreate } from '../Pool';
+import { PoolIntro, PoolView, PoolStake } from '../Pool';
 import { TradeIntro, TradeView, TradeDetail } from '../Trade';
 import ViewHeader from '../../components/uielements/viewHeader';
 import ConnectView from '../ConnectView';
@@ -34,6 +34,8 @@ class ActionView extends Component {
     user: PropTypes.object.isRequired,
     refreshBalance: PropTypes.func.isRequired,
     refreshStake: PropTypes.func.isRequired,
+    history: PropTypes.object.isRequired,
+    ticker: PropTypes.string.isRequired,
   };
 
   static defaultProps = {
@@ -121,9 +123,9 @@ class ActionView extends Component {
   };
 
   renderHeader = () => {
-    const { type, user } = this.props;
-    const { wallet } = user;
-    const connected = wallet ? true : false;
+    const { type /* user */ } = this.props;
+    // const { wallet } = user;
+    // const connected = wallet ? true : false;
     const { activeTab } = this.state;
     const active = type || activeTab;
     const headerText = this.getHeaderText();
@@ -164,7 +166,7 @@ class ActionView extends Component {
   };
 
   render() {
-    const { ticker, info } = this.props;
+    const { info, ticker } = this.props;
     const view = this.getView();
     console.log('View', view);
 

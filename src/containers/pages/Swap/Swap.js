@@ -7,7 +7,7 @@ import ActionView from '../../ActionView';
 
 class Swap extends Component {
   render() {
-    const { view, info } = this.props.match.params;
+    const { view, info } = this.props.match.params; // eslint-disable-line
 
     return (
       <SwapWrapper>

@@ -10,8 +10,12 @@ import Tabs from '../../components/uielements/tabs';
 import Label from '../../components/uielements/label';
 import Button from '../../components/uielements/button';
 import CoinList from '../../components/uielements/coins/coinList';
-
+import chainActions from '../../redux/chainservice/actions';
+import walletActions from '../../redux/wallet/actions';
 import { getPair } from '../../helpers/stringHelper';
+
+const { getTokens } = chainActions;
+const { getRunePrice } = walletActions;
 
 const { TabPane } = Tabs;
 
@@ -28,6 +32,11 @@ class WalletView extends Component {
     loadingStakes: PropTypes.bool.isRequired,
     setAssetData: PropTypes.func.isRequired,
     setStakeData: PropTypes.func.isRequired,
+    getTokens: PropTypes.func.isRequired,
+    getRunePrice: PropTypes.func.isRequired,
+    history: PropTypes.object.isRequired,
+    chainData: PropTypes.object.isRequired,
+    runePrice: PropTypes.object,
   };
 
   static defaultProps = {
@@ -36,6 +45,12 @@ class WalletView extends Component {
     info: '',
     status: '',
   };
+
+  componentDidMount() {
+    const { getTokens, getRunePrice } = this.props;
+    getTokens();
+    getRunePrice();
+  }
 
   getAssetNameByIndex = index => {
     const { assetData } = this.props;
@@ -49,7 +64,7 @@ class WalletView extends Component {
     return assetData.find(data => data.asset === asset);
   };
 
-  handleChangeTab = tag => {};
+  handleChangeTab = (/* tag */) => {};
 
   handleConnect = () => {
     this.props.history.push('/connect');
@@ -69,7 +84,7 @@ class WalletView extends Component {
     this.props.history.push(URL);
   };
 
-  handleSelectStake = key => {};
+  handleSelectStake = (/* key */) => {};
 
   renderAssetTitle = () => {
     const { status, loadingAssets, assetData } = this.props;
@@ -79,7 +94,7 @@ class WalletView extends Component {
     }
 
     if (status === 'connected' && assetData.length === 0) {
-      return `Looks like you don't have anything in your wallet`;
+      return "Looks like you don't have anything in your wallet"; // eslint-disable-line quotes
     }
 
     if (status === 'connected') {
@@ -118,9 +133,9 @@ class WalletView extends Component {
       info,
       user: { wallet },
       assetData,
-      stakeData,
+      chainData: { tokenInfo },
+      runePrice,
       loadingAssets,
-      loadingStakes,
     } = this.props;
     const pair = getPair(info);
     const { source } = pair;
@@ -145,6 +160,8 @@ class WalletView extends Component {
                 data={sortedAssets}
                 value={sourceIndex}
                 selected={selectedAsset}
+                tokenInfo={tokenInfo}
+                runePrice={runePrice}
                 onSelect={this.handleSelectAsset}
               />
             )}
@@ -168,12 +185,20 @@ class WalletView extends Component {
 }
 
 export default compose(
-  connect(state => ({
-    user: state.Wallet.user,
-    assetData: state.Wallet.assetData,
-    stakeData: state.Wallet.stakeData,
-    loadingAssets: state.Wallet.loadingAssets,
-    loadingStakes: state.Wallet.loadingStakes,
-  })),
+  connect(
+    state => ({
+      user: state.Wallet.user,
+      assetData: state.Wallet.assetData,
+      stakeData: state.Wallet.stakeData,
+      loadingAssets: state.Wallet.loadingAssets,
+      loadingStakes: state.Wallet.loadingStakes,
+      chainData: state.ChainService,
+      runePrice: state.Wallet.runePrice,
+    }),
+    {
+      getTokens,
+      getRunePrice,
+    },
+  ),
   withRouter,
 )(WalletView);
