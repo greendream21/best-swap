@@ -13,6 +13,8 @@ class CoinList extends Component {
     onSelect: PropTypes.func.isRequired,
     size: PropTypes.oneOf(['small', 'big']),
     className: PropTypes.string,
+    tokenInfo: PropTypes.object,
+    runePrice: PropTypes.number.isRequired,
   };
 
   static defaultProps = {
@@ -20,6 +22,13 @@ class CoinList extends Component {
     selected: [],
     size: 'small',
     className: '',
+  };
+
+  getTokenPrice = (asset, runePrice, tokenInfo, price) => {
+    if (asset === 'RUNE-A1F') {
+      return runePrice;
+    }
+    return !tokenInfo[asset] ? price : tokenInfo[asset].price;
   };
 
   toggleSelect = key => () => {
@@ -35,6 +44,8 @@ class CoinList extends Component {
       value,
       selected,
       onSelect,
+      runePrice,
+      tokenInfo,
       className,
       ...props
     } = this.props;
@@ -48,6 +59,13 @@ class CoinList extends Component {
         <Scrollbars className="coinList-scroll">
           {data.map((coinData, index) => {
             const { asset, assetValue, target, targetValue, price } = coinData;
+
+            const tokenPrice = this.getTokenPrice(
+              asset,
+              runePrice,
+              tokenInfo,
+              price,
+            );
 
             const tokenName = asset.split('-')[0];
 
@@ -70,7 +88,7 @@ class CoinList extends Component {
                   assetValue={assetValue}
                   target={target}
                   targetValue={targetValue}
-                  price={price}
+                  price={tokenPrice}
                   size={size}
                 />
               </div>
