@@ -29,7 +29,7 @@ import {
   // StakePoolCol,
 } from './PoolStake.style';
 import { getPoolData, getCalcResult } from '../utils';
-import { getActualValue } from '../../../helpers/stringHelper';
+import { getActualValue, getNewValue } from '../../../helpers/stringHelper';
 
 const { TabPane } = Tabs;
 
@@ -89,9 +89,48 @@ class PoolStake extends Component {
   }
 
   handleChangeTokenAmount = tokenName => amount => {
-    this.setState({
-      [tokenName]: amount,
+    const { assetData } = this.props;
+    const { runeAmount, tokenAmount } = this.state;
+
+    let newValue;
+    const source = tokenName.split('-')[0].toLowerCase();
+
+    const sourceAsset = assetData.find(data => {
+      const { asset } = data;
+      const tokenName = asset.split('-')[0];
+      if (tokenName.toLowerCase() === source) {
+        return true;
+      }
+      return false;
     });
+
+    const totalAmount = !sourceAsset ? 0 : sourceAsset.assetValue || 0;
+
+    if (tokenName === 'rune') {
+      newValue = getNewValue(amount, runeAmount);
+
+      if (totalAmount < newValue) {
+        this.setState({
+          runeAmount: totalAmount,
+        });
+      } else {
+        this.setState({
+          runeAmount: newValue,
+        });
+      }
+    } else {
+      newValue = getNewValue(amount, tokenAmount);
+
+      if (totalAmount < newValue) {
+        this.setState({
+          tokenAmount: totalAmount,
+        });
+      } else {
+        this.setState({
+          tokenAmount: newValue,
+        });
+      }
+    }
   };
 
   handleSelectTokenAmount = token => amount => {
@@ -440,7 +479,7 @@ class PoolStake extends Component {
               asset={source}
               amount={runeAmount}
               price={runePrice}
-              onChange={this.handleChangeTokenAmount('runeAmount')}
+              onChange={this.handleChangeTokenAmount('rune')}
               onSelect={this.handleSelectTokenAmount('rune')}
               withSelection
             />
@@ -449,7 +488,7 @@ class PoolStake extends Component {
               assetData={tokensData}
               amount={tokenAmount}
               price={tokenPrice}
-              onChange={this.handleChangeTokenAmount('tokenAmount')}
+              onChange={this.handleChangeTokenAmount(target)}
               onSelect={this.handleSelectTokenAmount(target)}
               withSelection
               withSearch
@@ -492,7 +531,7 @@ class PoolStake extends Component {
             </div>
           </div>
         </TabPane>
-        <TabPane tab="Withdraw" key="withdraw">
+        <TabPane tab="Withdraw" key="withdraw" disabled>
           <Label className="label-title" size="normal" weight="bold">
             ADJUST WITHDRAWAL
           </Label>
