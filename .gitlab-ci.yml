@@ -39,7 +39,7 @@ deploy:staging:
 deploy:production:
   except:
     - schedules
-  stage: develop
+  stage: deploy
   script:
     - firebase use --token ${FIREBASE_TOKEN} bepswap-testnet
     - firebase deploy --token ${FIREBASE_TOKEN}
