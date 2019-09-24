@@ -27,6 +27,7 @@ import {
   ContentWrapper,
   ConfirmModal,
   ConfirmModalContent,
+  // StakePoolCol,
 } from './PoolStake.style';
 import { getPoolData } from '../utils';
 import { getActualValue } from '../../../helpers/stringHelper';
@@ -313,7 +314,7 @@ class PoolStake extends Component {
 
     return (
       <Row className="stake-status-view">
-        <Col className="stake-pool-col" span={8}>
+        <Col className="stake-pool-col" span={24} lg={8}>
           <Coin type="rune" over={ticker} />
           <Status
             className="stake-pool-status"
@@ -321,7 +322,7 @@ class PoolStake extends Component {
             value={stakePool}
           />
         </Col>
-        <Col className="stake-info-col" span={16}>
+        <Col className="stake-info-col" span={24} lg={16}>
           {attrs.map(info => (
             <Status className="stake-info-status" {...info} />
           ))}
@@ -668,10 +669,10 @@ class PoolStake extends Component {
       <ContentWrapper className="pool-stake-wrapper">
         {this.renderStakeInfo()}
         <Row className="share-view">
-          <Col className="your-share-view" span={8}>
+          <Col className="your-share-view" span={24} lg={8}>
             {this.renderYourShare()}
           </Col>
-          <Col className="share-detail-view" span={16}>
+          <Col className="share-detail-view" span={24} lg={16}>
             {this.renderShareDetail()}
           </Col>
         </Row>
