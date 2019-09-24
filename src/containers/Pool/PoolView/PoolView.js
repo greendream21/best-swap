@@ -16,6 +16,7 @@ const { getRunePrice } = walletactions;
 
 class PoolView extends Component {
   static propTypes = {
+    history: PropTypes.object.isRequired,
     getPools: PropTypes.func.isRequired,
     pools: PropTypes.array.isRequired,
     poolData: PropTypes.object.isRequired,

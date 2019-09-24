@@ -39,18 +39,16 @@ export const getPoolData = (
   };
 };
 
-export const getCalcResult = (from, to, pools, rValue, runePrice) => {
+export const getCalcResult = (symbol, pools, rValue, runePrice) => {
   let R = 10000;
   let T = 10;
   const Pr = runePrice;
-  let result = {};
+  const result = {};
 
   pools.forEach(poolData => {
     const { balance_rune, balance_token, pool_address, ticker } = poolData;
 
-    const token = ticker.split('-')[0];
-
-    if (token.toLowerCase() === to.toLowerCase()) {
+    if (ticker.toLowerCase() === symbol.toLowerCase()) {
       R = Number(balance_rune);
       T = Number(balance_token);
       result.poolAddressTo = pool_address;
@@ -58,7 +56,7 @@ export const getCalcResult = (from, to, pools, rValue, runePrice) => {
     }
   });
 
-  const poolPrice = (R / T) * runePrice;
+  const poolPrice = Number((R / T) * runePrice).toFixed(2);
 
   // const calcData = { X, Y, R, Z, Py, Pr: Py };
 

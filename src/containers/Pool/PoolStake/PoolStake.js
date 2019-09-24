@@ -26,6 +26,7 @@ import {
   Tabs,
   ConfirmModal,
   ConfirmModalContent,
+  // StakePoolCol,
 } from './PoolStake.style';
 import { getPoolData, getCalcResult } from '../utils';
 import { getActualValue } from '../../../helpers/stringHelper';
@@ -349,7 +350,7 @@ class PoolStake extends Component {
 
     return (
       <Row className="stake-status-view">
-        <Col className="stake-pool-col" span={8}>
+        <Col className="stake-pool-col" span={24} lg={8}>
           <Coin type="rune" over={target} />
           <Status
             className="stake-pool-status"
@@ -357,7 +358,7 @@ class PoolStake extends Component {
             value={stakePool}
           />
         </Col>
-        <Col className="stake-info-col" span={16}>
+        <Col className="stake-info-col" span={24} lg={16}>
           {attrs.map(info => (
             <Status className="stake-info-status" {...info} />
           ))}
@@ -366,7 +367,7 @@ class PoolStake extends Component {
     );
   };
 
-  renderShareDetail = poolStats => {
+  renderShareDetail = (poolStats, calcResult) => {
     const {
       user: { wallet },
       ticker,
@@ -404,9 +405,10 @@ class PoolStake extends Component {
     });
 
     const { depth } = poolStats;
+    const { poolPrice } = calcResult;
 
     const poolAttrs = [
-      { key: 'price', title: 'Pool Price', value: '$0.10' }, // TODO
+      { key: 'price', title: 'Pool Price', value: `$${poolPrice}` }, // TODO
       {
         key: 'depth',
         title: 'Pool Depth',
@@ -415,7 +417,7 @@ class PoolStake extends Component {
     ];
 
     const newPoolAttrs = [
-      { key: 'price', title: 'Pool Price', value: '$0.11' }, // TODO
+      { key: 'price', title: 'New Price', value: '$0.11' }, // TODO
       {
         key: 'depth',
         title: 'New Depth',
@@ -681,6 +683,7 @@ class PoolStake extends Component {
       pools,
       txStatus,
     } = this.props;
+    const { runeAmount } = this.state;
 
     const poolInfo = poolData[ticker] || {};
     const swapInfo = swapData[ticker] || {};
@@ -694,6 +697,8 @@ class PoolStake extends Component {
       runePrice,
     );
 
+    const calcResult = getCalcResult(ticker, pools, runeAmount, runePrice);
+
     const openStakeModal = txStatus.type === 'stake' ? txStatus.modal : false;
     const openWithdrawModal =
       txStatus.type === 'withdraw' ? txStatus.modal : false;
@@ -703,11 +708,11 @@ class PoolStake extends Component {
       <ContentWrapper className="pool-stake-wrapper">
         {this.renderStakeInfo(poolStats)}
         <Row className="share-view">
-          <Col className="your-share-view" span={8}>
+          <Col className="your-share-view" span={24} lg={8}>
             {this.renderYourShare()}
           </Col>
-          <Col className="share-detail-view" span={16}>
-            {this.renderShareDetail(poolStats)}
+          <Col className="share-detail-view" span={24} lg={16}>
+            {this.renderShareDetail(poolStats, calcResult)}
           </Col>
         </Row>
         <ConfirmModal
