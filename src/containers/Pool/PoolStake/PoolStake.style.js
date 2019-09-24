@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { palette, key } from 'styled-theme';
 import ContentView from '../../../components/utility/contentView';
 import Modal from '../../../components/uielements/modal';
+import UnstyledTabs from '../../../components/uielements/tabs';
 
 export const ContentWrapper = styled(ContentView)`
   padding: 0;
@@ -152,7 +153,7 @@ export const ContentWrapper = styled(ContentView)`
     }
 
     .share-detail-view {
-      padding: 10px 20px;
+      padding: 0;
       .label-no-padding {
         padding: 0;
       }
@@ -284,5 +285,12 @@ export const ConfirmModalContent = styled.div`
         }
       }
     }
+  }
+`;
+
+export const Tabs = styled(UnstyledTabs)`
+  width: 100%;
+  .ant-tabs-tabpane {
+    padding: 0 20px;
   }
 `;
