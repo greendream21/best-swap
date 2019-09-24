@@ -1,9 +1,7 @@
 image: node:10.15
 
 stages:
-  - deploy-develop
-  - deploy-staging
-  - develop-production
+  - deploy
 
 cache:
   paths:
@@ -16,8 +14,10 @@ before_script:
   - npm i -g firebase-tools
   - firebase -V
 
-deploy-develop:
-  stage: deploy-develop
+deploy:develop:
+  stage: deploy
+  except:
+    - schedules
   script:
     - firebase use --token ${FIREBASE_TOKEN} bepswap-testnet-dev
     - firebase deploy --token ${FIREBASE_TOKEN}
@@ -26,18 +26,20 @@ deploy-develop:
   only:
     - master
 
-deploy-staging:
-  stage: deploy-staging
+deploy:staging:
+  stage: deploy
   script:
     - firebase use --token ${FIREBASE_TOKEN} bepswap-testnet-staging
     - firebase deploy --token ${FIREBASE_TOKEN}
   environment:
     name: staging
   only:
-    - staging
+    - schedules
 
-deploy-production:
-  stage: develop-production
+deploy:production:
+  except:
+    - schedules
+  stage: develop
   script:
     - firebase use --token ${FIREBASE_TOKEN} bepswap-testnet
     - firebase deploy --token ${FIREBASE_TOKEN}
