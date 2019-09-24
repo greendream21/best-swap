@@ -118,16 +118,17 @@ class SwapSend extends Component {
 
   getNewValue = (value, xValue) => {
     const numericRegex = /^[0-9\b]+$/;
-
+    /* eslint-disable no-nested-ternary */
     const newValue =
-      value.indexOf(',') != -1
-        ? parseInt(value.replace(',', ''))
+      value.indexOf(',') !== -1
+        ? parseInt(value.replace(',', ''), 10)
         : !numericRegex.test(value)
         ? 0
         : Number.isNaN(value)
         ? xValue
         : Number(value);
 
+    /* eslint-enable no-nested-ternary */
     return newValue;
   };
 

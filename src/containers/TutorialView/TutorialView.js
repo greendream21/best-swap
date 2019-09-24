@@ -18,6 +18,7 @@ class TutorialView extends Component {
   static propTypes = {
     type: PropTypes.string,
     view: PropTypes.string,
+    history: PropTypes.object,
   };
 
   static defaultProps = {

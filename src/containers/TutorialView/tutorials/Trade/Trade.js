@@ -27,6 +27,7 @@ const { X, Y, Px, xm } = data;
 class Trade extends Component {
   static propTypes = {
     view: PropTypes.string,
+    history: PropTypes.object,
   };
 
   static defaultProps = {

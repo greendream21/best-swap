@@ -4,8 +4,8 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-import Label from '../../../components/uielements/label';
-import AddIcon from '../../../components/uielements/addIcon';
+// import Label from '../../../components/uielements/label';
+// import AddIcon from '../../../components/uielements/addIcon';
 import PoolCard from '../../../components/pool/poolCard';
 
 import { ContentWrapper } from './PoolView.style';
@@ -38,9 +38,9 @@ class PoolView extends Component {
     getRunePrice();
   }
 
-  handleStake = ticker => () => {
-    const URL = `/pool/${ticker.toLowerCase()}`;
-    this.props.history.push(URL);
+  handleStake = (/* ticker */) => () => {
+    // const URL = `/pool/${ticker}`;
+    // this.props.history.push(URL);
   };
 
   handleNewPool = () => {

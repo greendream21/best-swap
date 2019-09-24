@@ -20,6 +20,6 @@ class CoinGecko {
     return this.httpClient.get('/simple/price?' + qs);
   }
 }
-
-var coingecko = (window.coingecko = new CoinGecko());
+window.coingecko = new CoinGecko();
+const { coingecko } = window;
 export default coingecko;

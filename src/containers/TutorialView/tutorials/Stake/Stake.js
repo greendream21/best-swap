@@ -20,6 +20,7 @@ const { R, T, Pr, Pt } = data;
 class Stake extends Component {
   static propTypes = {
     view: PropTypes.string,
+    history: PropTypes.object,
   };
 
   static defaultProps = {
@@ -144,7 +145,7 @@ class Stake extends Component {
           </Label>
         </div>
         <Centered>
-          <Label></Label>
+          <Label />
           <Label size="large" color="normal" weight="bold">
             {Vss}
           </Label>

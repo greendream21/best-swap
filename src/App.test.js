@@ -1,9 +1,5 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import App from './App';
-
-it('renders without crashing', () => {
-  const div = document.createElement('div');
-  ReactDOM.render(<App />, div);
-  ReactDOM.unmountComponentAtNode(div);
+// TODO:  This is a stub test to ensure jest is working
+//        We should likely  delete this once we have more tests
+it('should work', () => {
+  expect(true).toBe(true);
 });

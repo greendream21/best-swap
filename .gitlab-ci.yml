@@ -1,10 +1,13 @@
 image: node:10.15
 
 stages:
+  - test
   - deploy
 
 cache:
+  key: ${CI_COMMIT_REF_SLUG}
   paths:
+    - cache/Cypress
     - node_modules/
 
 before_script:
@@ -13,6 +16,23 @@ before_script:
   - yarn
   - npm i -g firebase-tools
   - firebase -V
+
+test:develop:
+  variables:
+    # provide cypress with our cached folder to install its cache in
+    CYPRESS_CACHE_FOLDER: "$CI_PROJECT_DIR/cache/Cypress"
+  stage: test
+  image: cypress/base:10
+  script:
+    - yarn test
+  environment:
+    name: develop
+  artifacts:
+    expire_in: 1 week
+    when: always
+    paths:
+      - cypress/screenshots
+      - cypress/videos
 
 deploy:develop:
   stage: deploy

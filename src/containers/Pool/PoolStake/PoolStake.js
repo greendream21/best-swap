@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 import React, { Component } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
@@ -59,6 +60,8 @@ class PoolStake extends Component {
     setTxTimerStatus: PropTypes.func.isRequired,
     setTxTimerValue: PropTypes.func.isRequired,
     resetTxStatus: PropTypes.func.isRequired,
+    history: PropTypes.object,
+    info: PropTypes.object,
     getTokens: PropTypes.func.isRequired,
     getStakeData: PropTypes.func.isRequired,
     getPools: PropTypes.func.isRequired,
@@ -440,7 +443,8 @@ class PoolStake extends Component {
             </Label>
             <Slider
               onChange={e => {
-                this.setState({ addAdjust: e });
+                // TODO: why are we setting state that is not used?
+                this.setState({ addAdjust: e }); // eslint-disable-line react/no-unused-state
               }}
               defaultValue={50}
               min={0}

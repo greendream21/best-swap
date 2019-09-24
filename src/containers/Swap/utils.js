@@ -17,7 +17,7 @@ export const getCalcResult = (from, to, pools, xValue, runePrice) => {
     let R = 10000;
     let Z = 10;
     const Py = runePrice;
-    let result = {};
+    const result = {};
 
     pools.forEach(poolData => {
       const { balance_rune, balance_token, pool_address, ticker } = poolData;
@@ -60,7 +60,7 @@ export const getCalcResult = (from, to, pools, xValue, runePrice) => {
     const Py = runePrice;
     const rune = 'RUNE-A1F';
 
-    let result = {};
+    const result = {};
 
     pools.forEach(poolData => {
       const { balance_rune, balance_token, pool_address, ticker } = poolData;
@@ -100,7 +100,7 @@ export const getCalcResult = (from, to, pools, xValue, runePrice) => {
     const Px = runePrice;
     const rune = 'RUNE-A1F';
 
-    let result = {};
+    const result = {};
 
     pools.forEach(poolData => {
       const { balance_rune, balance_token, pool_address, ticker } = poolData;

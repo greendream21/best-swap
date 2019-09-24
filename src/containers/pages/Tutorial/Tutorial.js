@@ -7,7 +7,7 @@ import TutorialView from '../../TutorialView';
 
 class Tutorial extends Component {
   render() {
-    const { type, view } = this.props.match.params;
+    const { type, view } = this.props.match.params; // eslint-disable-line
 
     return (
       <TutorialWrapper>

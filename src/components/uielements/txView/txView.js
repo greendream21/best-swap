@@ -45,7 +45,7 @@ class TxView extends Component {
     });
   };
 
-  renderTimerIcon = index => {
+  renderTimerIcon = (/* index */) => {
     return <TimerFullIcon />;
   };
 

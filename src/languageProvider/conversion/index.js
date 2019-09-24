@@ -1,15 +1,15 @@
-import english from './raw/eng.js';
-import danish from './raw/da.js';
+import english from './raw/eng';
+import danish from './raw/da';
 
 export function getKeys(object) {
-  let keys = [];
-  let variables = [];
-  let text = '';
+  const keys = [];
+  const variables = [];
+  // let text = '';
 
   Object.keys(object).forEach(key => {
     keys.push(key);
     variables.push(object[key]);
-    text += object[key] + '\n';
+    // text += object[key] + '\n';
   });
   // getValues(keys);
   return {
@@ -19,7 +19,7 @@ export function getKeys(object) {
 }
 
 export function getValues(enMessages) {
-  const { keys, variables } = getKeys(enMessages);
+  const { keys /* variables */ } = getKeys(enMessages);
   const langs = [english, danish];
   const langsNm = ['eng', 'da'];
 
