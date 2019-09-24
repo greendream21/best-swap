@@ -405,10 +405,10 @@ class PoolStake extends Component {
     });
 
     const { depth } = poolStats;
-    const { poolPrice } = calcResult;
+    const { poolPrice, newPrice, newDepth, share } = calcResult;
 
     const poolAttrs = [
-      { key: 'price', title: 'Pool Price', value: `$${poolPrice}` }, // TODO
+      { key: 'price', title: 'Pool Price', value: `$${poolPrice}` },
       {
         key: 'depth',
         title: 'Pool Depth',
@@ -417,16 +417,13 @@ class PoolStake extends Component {
     ];
 
     const newPoolAttrs = [
-      { key: 'price', title: 'New Price', value: '$0.11' }, // TODO
+      { key: 'price', title: 'New Price', value: `$${newPrice}` },
       {
         key: 'depth',
         title: 'New Depth',
-        value: `$${getActualValue(
-          (depth + runeAmount + (tokenAmount * tokenPrice) / runePrice) *
-            runePrice,
-        )}`,
+        value: `$${getActualValue(newDepth)}`,
       },
-      { key: 'share', title: 'Your Share', value: '3%' }, // TODO
+      { key: 'share', title: 'Your Share', value: `${share}%` },
     ];
 
     return (
@@ -683,7 +680,7 @@ class PoolStake extends Component {
       pools,
       txStatus,
     } = this.props;
-    const { runeAmount } = this.state;
+    const { runeAmount, tokenAmount } = this.state;
 
     const poolInfo = poolData[ticker] || {};
     const swapInfo = swapData[ticker] || {};
@@ -697,7 +694,13 @@ class PoolStake extends Component {
       runePrice,
     );
 
-    const calcResult = getCalcResult(ticker, pools, runeAmount, runePrice);
+    const calcResult = getCalcResult(
+      ticker,
+      pools,
+      runeAmount,
+      runePrice,
+      tokenAmount,
+    );
 
     const openStakeModal = txStatus.type === 'stake' ? txStatus.modal : false;
     const openWithdrawModal =
