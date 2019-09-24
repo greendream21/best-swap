@@ -184,7 +184,7 @@ class PoolStake extends Component {
       ticker,
     } = this.props;
     const source = 'rune';
-    const target = ticker;
+    const target = ticker.split('-')[0].toLowerCase();
 
     const transactionLabels = [
       'sending transaction',
@@ -228,7 +228,7 @@ class PoolStake extends Component {
     } = this.props;
 
     const source = 'rune';
-    const target = ticker;
+    const target = ticker.split('-')[0].toLowerCase();
 
     const transactionLabels = [
       'sending transaction',
@@ -269,7 +269,8 @@ class PoolStake extends Component {
     const { ticker, runePrice, poolData, swapData, assetData } = this.props;
     const source = 'rune';
 
-    const stakePool = `${source}:${ticker}`;
+    const target = ticker.split('-')[0].toLowerCase();
+    const stakePool = `${source}:${target}`;
 
     const poolInfo = poolData[ticker] || {};
     const swapInfo = swapData[ticker] || {};
@@ -311,7 +312,7 @@ class PoolStake extends Component {
     return (
       <Row className="stake-status-view">
         <Col className="stake-pool-col" span={8}>
-          <Coin type="rune" over={ticker} />
+          <Coin type="rune" over={target} />
           <Status
             className="stake-pool-status"
             title="Pool"
@@ -342,7 +343,7 @@ class PoolStake extends Component {
     } = this.state;
     const stakeData = this.state.stakeData || { units: 0 };
     const source = 'rune';
-    const target = ticker;
+    const target = ticker.split('-')[0].toLowerCase();
     const data = this.state.data || {};
 
     if (!address) {

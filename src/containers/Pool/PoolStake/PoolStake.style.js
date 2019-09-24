@@ -20,7 +20,7 @@ export const ContentWrapper = styled(ContentView)`
       justify-content: center;
       align-items: center;
       .stake-pool-status {
-        width: 100px;
+        width: 150px;
         padding: 0 15px;
         .status-value {
           font-weight: bold;

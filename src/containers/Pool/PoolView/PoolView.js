@@ -39,7 +39,7 @@ class PoolView extends Component {
   }
 
   handleStake = ticker => () => {
-    const URL = `/pool/${ticker.toLowerCase()}`;
+    const URL = `/pool/${ticker}`;
     this.props.history.push(URL);
   };
 
@@ -78,7 +78,7 @@ class PoolView extends Component {
             volume={volume24}
             liqFee={liqFee}
             roi={roiAT}
-            onStake={this.handleStake(target)}
+            onStake={this.handleStake(ticker)}
             key={index}
           />
         );

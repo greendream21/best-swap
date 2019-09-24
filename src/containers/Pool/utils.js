@@ -22,7 +22,7 @@ export const getPoolData = (
     swapInfo.aveFeeTkn * tokenPrice + swapInfo.aveFeeRune * runePrice,
   );
 
-  const totalSwap = poolInfo.numSwaps;
+  const totalSwaps = poolInfo.numSwaps;
   const totalStakers = poolInfo.numStakers;
 
   return {
@@ -34,7 +34,7 @@ export const getPoolData = (
     transaction,
     liqFee,
     roiAT,
-    totalSwap,
+    totalSwaps,
     totalStakers,
   };
 };
