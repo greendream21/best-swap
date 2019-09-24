@@ -11,27 +11,17 @@ import { media } from '../../../helpers/styleHelper';
 export const ContentWrapper = styled(ContentView)`
   padding: 0;
 
-  ${media.lg`
-    /* 
-    & > .ant-row {
-      display: flex;
-    } */
-  `}
-
   .stake-status-view {
     ${media.lg`
-      height: 150px;
       padding: 20px 0;
       border-bottom: 1px solid ${palette('border', 0)};
     `}
 
     .stake-pool-col {
-      ${media.lg`
-        display: flex;
-        padding: 20px 20px 20px 40px;
-        justify-content: flex-start;
-        align-items: center;
-      `}
+      display: flex;
+      padding: 20px;
+      justify-content: flex-start;
+      align-items: center;
 
       .stake-pool-status {
         ${media.lg`
@@ -48,13 +38,12 @@ export const ContentWrapper = styled(ContentView)`
     }
 
     .stake-info-col {
-      ${media.lg`
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: flex-start;
-      `}
-
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      padding: 20px;
       .stake-info-status {
+        width: 50%;
         ${media.lg`
           width: 25%;
         `}
@@ -64,7 +53,15 @@ export const ContentWrapper = styled(ContentView)`
 
   .share-view {
     ${media.lg`
+      display:flex;
       flex-grow: 1;
+
+      & > * {
+        border-right: 1px solid ${palette('border', 0)};
+        &:last-child {
+          border-right: none;
+        }
+      }
     `}
 
     .your-share-view,
@@ -142,7 +139,7 @@ export const ContentWrapper = styled(ContentView)`
       ${media.lg`
         display: flex;
         flex-direction: column;
-        border-right: 1px solid ${palette('border', 0)};
+        
       `}
 
       .btn-wrapper {
@@ -163,10 +160,11 @@ export const ContentWrapper = styled(ContentView)`
       }
 
       .your-share-wrapper {
+        padding: 10px 20px;
+
         ${media.lg`
           display: flex;
           flex-direction: column;
-          padding: 10px 20px;
         `}
 
         .your-share-info-wrapper {
@@ -212,9 +210,7 @@ export const ContentWrapper = styled(ContentView)`
     }
 
     .share-detail-view {
-      ${media.lg`
-        padding: 10px 20px;
-      `}
+      padding: 10px 20px;
 
       .label-no-padding {
         ${media.lg`
@@ -228,11 +224,18 @@ export const ContentWrapper = styled(ContentView)`
       }
 
       .stake-card-wrapper {
+        & > * {
+          margin-bottom: 20px;
+        }
+
         ${media.lg`
           display: flex;
           justify-content: space-between;
           width: 100%;
           padding: 15px 0;
+          & > * {
+            margin-bottom: auto;
+          }
         `}
 
         .coinCard-wrapper {
@@ -262,9 +265,16 @@ export const ContentWrapper = styled(ContentView)`
         }
 
         .pool-status-wrapper {
+          display: flex;
+          > * {
+            width: 50%;
+          }
+
           ${media.lg`
-            display: flex;
             align-items: center;
+            > * {
+              width: auto;
+            }
           `}
         }
 
@@ -277,14 +287,25 @@ export const ContentWrapper = styled(ContentView)`
           `}
 
           .info-status-wrapper {
+            display: flex;
+
+            & > * {
+              width: 50%;
+            }
+
             ${media.lg`
-              display: flex;
               align-items: center;
               flex-grow: 1;
+              & > * {
+                width: auto;
+              }
             `}
           }
 
           .drag-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             ${media.lg`
               padding-top: 24px;
               padding-right: 24px;
