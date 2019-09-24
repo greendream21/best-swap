@@ -1,12 +1,14 @@
 import React, { Fragment, Component } from 'react';
 import { withRouter } from 'react-router-dom';
-
+import PropTypes from 'prop-types';
 import TradeCard from '../../../components/trade/tradeCard';
 
 import { ContentWrapper } from './TradeView.style';
 import { assets } from './data';
 
 class TradeView extends Component {
+  static propTypes = { history: PropTypes.object };
+
   state = {};
 
   handleTrade = (type, target) => () => {

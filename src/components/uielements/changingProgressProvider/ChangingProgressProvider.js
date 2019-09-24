@@ -47,17 +47,21 @@ class ChangingProgressProvider extends React.Component {
     const { onChange } = this.props;
 
     this.interval = setInterval(() => {
+      // TODO: use callback version as this may cause bugs
       const valuesIndex =
+        // eslint-disable-next-line react/prop-types,react/no-access-state-in-setstate
         (this.state.valuesIndex + 1) % this.props.values.length;
 
       this.setState({
         valuesIndex,
       });
       onChange(valuesIndex);
+      // eslint-disable-next-line react/prop-types
     }, this.props.interval);
   };
 
   render() {
+    // eslint-disable-next-line react/prop-types
     return this.props.children(this.props.values[this.state.valuesIndex]);
   }
 }

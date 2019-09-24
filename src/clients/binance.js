@@ -1,8 +1,8 @@
 import axios from 'axios';
 import bnbClient from '@binance-chain/javascript-sdk';
-import TokenManagement from '@binance-chain/javascript-sdk';
-
 import { NET, isTestnet } from '../env';
+
+const TokenManagement = bnbClient;
 
 class Binance {
   constructor() {
@@ -126,6 +126,8 @@ class Binance {
   };
 }
 
-var binance = (window.binance = new Binance());
+window.binance = new Binance();
+
+const { binance } = window;
 
 export default binance;

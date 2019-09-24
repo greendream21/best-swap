@@ -33,7 +33,6 @@ REACT_APP_CHAINSERVICE_API_URL = http://xxx
 REACT_APP_STATECHAIN_API_URL = http://xxx
 ```
 
-
 ### Project Setup
 
 ```
@@ -47,6 +46,10 @@ yarn start
 - `start`: run in development mode
 - `build`: build react project
 - `test`: unit test with jest / enzyme
+- `test:all`: Run entire test suite
+- `test:unit`: unit test with jest / enzyme
+- `test:feat`: build the project and run all feature tests
+- `cy:run`: run cypress tests in isolation
 - `storybook`: run storybook for project
 - `build-storybook`: build storybook into the dir `build/storybook`
 - `deploy`: deploy the project on firebase
@@ -58,11 +61,43 @@ Example: `yarn start`
 
 ## Running the tests
 
-- React unit test with jest/enzyme, react-test-renderer
+To run the entire test suite
 
+```bash
+yarn test:all
 ```
-yarn test
+
+### Unit testing with jest
+
+```bash
+yarn test:unit
 ```
+
+1. Run all unit tests with jest/enzyme, react-test-renderer
+
+### Feature testing with cypress
+
+To build the project and run all feature tests
+
+```bash
+yarn test:feat
+```
+
+1. Create a new build
+1. Launch test server on http://localhost:8080 with a simple non-production ready file server
+1. Run feature tests over the build at http://localhost:8080
+
+### Run feature tests over specific url
+
+To run feature tests against a server set the `CYPRESS_baseUrl` env var:
+
+```bash
+CYPRESS_baseUrl=https://testnet.bepswap.net yarn cy:run
+```
+
+The default is `http://localhost:8080`
+
+1. Run feature tests pointing to given url
 
 ## Deployment using firebase
 
@@ -80,6 +115,7 @@ GitLab CI
 - Deploy
 
 Main Branch:
+
 - master
 
 ## Internationalization

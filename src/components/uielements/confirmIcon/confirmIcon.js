@@ -4,6 +4,7 @@ import { IconWrapper } from './confirmIcon.style';
 
 class ConfirmIcon extends Component {
   render() {
+    // eslint-disable-next-line react/prop-types
     const { className, ...otherProps } = this.props;
     return (
       <IconWrapper className={className} {...otherProps}>

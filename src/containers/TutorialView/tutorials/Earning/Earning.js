@@ -25,6 +25,7 @@ const { R, T, WR, WT, VWR, Pr, Pt, SS } = data;
 class Earning extends Component {
   static propTypes = {
     view: PropTypes.string,
+    history: PropTypes.object,
   };
 
   static defaultProps = {
@@ -160,12 +161,12 @@ class Earning extends Component {
           </Label>
         </div>
         <Centered>
-          <Label></Label>
+          <Label />
           <Label size="large" color="normal" weight="bold">
             {view === 'earningintro' && VssValue}
             {view === 'earningplay' && Vss}
           </Label>
-          <Label className="contains-tooltip"></Label>
+          <Label className="contains-tooltip" />
         </Centered>
         <div className="center-text description-label">
           <Label size="big" color="normal">

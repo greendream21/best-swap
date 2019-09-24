@@ -39,7 +39,7 @@ const getSwapDataRequest = async asset => {
 };
 
 export function* getPools() {
-  yield takeEvery(actions.GET_POOLS_REQUEST, function*({ payload }) {
+  yield takeEvery(actions.GET_POOLS_REQUEST, function*(/* { payload } */) {
     const params = {
       method: 'get',
       url: getStatechainURL('swapservice/pools'),

@@ -15,7 +15,7 @@ class InputNumber extends Component {
 
   handleParser = string => {
     const num = Number(string);
-    if (isNaN(num)) {
+    if (Number.isNaN(num)) {
       return 0;
     }
     return num;

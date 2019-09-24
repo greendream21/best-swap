@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
+// import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Layout } from 'antd';
 
@@ -19,7 +19,7 @@ class App extends Component {
     const { url } = this.props.match;
 
     return (
-      <Layout>
+      <Layout data-test="bepswap-app">
         <Header title="SWAP AND STAKE BEP2 ASSETS" />
         <ContentWrapper>
           <AppRouter url={url} />

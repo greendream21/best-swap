@@ -19,6 +19,8 @@ class Label extends Component {
       'white',
     ]),
     weight: PropTypes.string,
+    className: PropTypes.string,
+    children: PropTypes.any,
   };
 
   static defaultProps = {

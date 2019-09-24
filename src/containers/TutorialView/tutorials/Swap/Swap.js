@@ -24,6 +24,7 @@ const { X, Y, Px } = data;
 class Swap extends Component {
   static propTypes = {
     view: PropTypes.string,
+    history: PropTypes.object,
   };
 
   static defaultProps = {

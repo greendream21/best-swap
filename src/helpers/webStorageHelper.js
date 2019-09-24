@@ -15,7 +15,7 @@ export const clearWalletAddress = () => {
 };
 
 export const isUserExist = () => {
-  return getWalletAddress() ? true : false;
+  return !!getWalletAddress();
 };
 
 export const saveKeystore = keystore => {

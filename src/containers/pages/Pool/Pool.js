@@ -6,6 +6,7 @@ import ActionView from '../../ActionView';
 
 class Pool extends Component {
   render() {
+    // eslint-disable-next-line react/prop-types
     const { ticker } = this.props.match.params;
 
     return (

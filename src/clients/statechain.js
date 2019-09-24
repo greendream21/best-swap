@@ -21,7 +21,7 @@ class StateChain {
 
     if (isDevnet) {
       console.log('Using mock chain service');
-      var mock = new MockAdapter(this.httpClient);
+      const mock = new MockAdapter(this.httpClient);
 
       mock.onAny().reply(config => {
         const url = new URL(config.url);
@@ -88,5 +88,6 @@ class StateChain {
   }
 }
 
-var chain = (window.chain = new StateChain());
+const chain = new StateChain();
+window.chain = chain;
 export default chain;

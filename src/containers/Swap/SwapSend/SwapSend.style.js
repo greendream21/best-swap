@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { Form, Icon } from 'antd';
+import { Icon } from 'antd';
 import { palette } from 'styled-theme';
 import ContentView from '../../../components/utility/contentView';
 import Modal from '../../../components/uielements/modal';

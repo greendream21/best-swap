@@ -28,6 +28,7 @@ class WalletView extends Component {
     loadingStakes: PropTypes.bool.isRequired,
     setAssetData: PropTypes.func.isRequired,
     setStakeData: PropTypes.func.isRequired,
+    history: PropTypes.object.isRequired,
   };
 
   static defaultProps = {
@@ -49,7 +50,7 @@ class WalletView extends Component {
     return assetData.find(data => data.asset === asset);
   };
 
-  handleChangeTab = tag => {};
+  handleChangeTab = (/* tag */) => {};
 
   handleConnect = () => {
     this.props.history.push('/connect');
@@ -69,7 +70,7 @@ class WalletView extends Component {
     this.props.history.push(URL);
   };
 
-  handleSelectStake = key => {};
+  handleSelectStake = (/* key */) => {};
 
   renderAssetTitle = () => {
     const { status, loadingAssets, assetData } = this.props;
@@ -79,7 +80,7 @@ class WalletView extends Component {
     }
 
     if (status === 'connected' && assetData.length === 0) {
-      return `Looks like you don't have anything in your wallet`;
+      return "Looks like you don't have anything in your wallet"; // eslint-disable-line quotes
     }
 
     if (status === 'connected') {
@@ -118,9 +119,9 @@ class WalletView extends Component {
       info,
       user: { wallet },
       assetData,
-      stakeData,
+      // stakeData,
       loadingAssets,
-      loadingStakes,
+      // loadingStakes,
     } = this.props;
     const pair = getPair(info);
     const { source } = pair;

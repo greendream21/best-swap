@@ -32,7 +32,7 @@ export function* saveWalletSaga() {
 }
 
 export function* forgetWalletSaga() {
-  yield takeEvery(actions.FORGET_WALLET, function*({ payload }) {
+  yield takeEvery(actions.FORGET_WALLET, function*(/* { payload } */) {
     clearWalletAddress();
     clearKeystore();
 
@@ -138,7 +138,7 @@ export function* refreshStakes() {
 }
 
 export function* getRunePrice() {
-  yield takeEvery(actions.GET_RUNE_PRICE, function*({ payload }) {
+  yield takeEvery(actions.GET_RUNE_PRICE, function*(/* { payload } */) {
     const params = {
       method: 'get',
       url: getCoinGeckoURL('simple/price?ids=thorchain&vs_currencies=usd'),

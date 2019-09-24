@@ -20,7 +20,7 @@ class ChainService {
 
     if (isDevnet) {
       console.log('Using mock chain service');
-      var mock = new MockAdapter(this.httpClient);
+      const mock = new MockAdapter(this.httpClient);
 
       mock.onAny().reply(config => {
         const url = new URL(config.url);
@@ -259,5 +259,6 @@ class ChainService {
   };
 }
 
-var chain = (window.chain = new ChainService());
+const chain = new ChainService();
+window.chain = chain;
 export default chain;

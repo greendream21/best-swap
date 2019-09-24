@@ -36,6 +36,7 @@ export const columns = [
     dataIndex: '',
     key: 'viewAction',
     render: () => (
+      // eslint-disable-next-line no-script-url
       <a className="action" href="javascript:;">
         View
       </a>

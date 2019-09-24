@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 import React, { Component } from 'react';
 import { Row, Col, Icon } from 'antd';
 import PropTypes from 'prop-types';

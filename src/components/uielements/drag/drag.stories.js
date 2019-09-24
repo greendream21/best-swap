@@ -1,3 +1,4 @@
+/* eslint-disable no-alert */
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { ThemeProvider } from 'styled-components';

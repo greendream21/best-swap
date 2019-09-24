@@ -26,6 +26,7 @@ class SwapView extends Component {
     assetData: PropTypes.array.isRequired,
     getRunePrice: PropTypes.func.isRequired,
     runePrice: PropTypes.number.isRequired,
+    history: PropTypes.object,
   };
 
   state = {
