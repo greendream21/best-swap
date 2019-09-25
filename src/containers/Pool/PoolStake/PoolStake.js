@@ -36,6 +36,7 @@ import {
 } from './PoolStake.style';
 import { getPoolData, getCalcResult, confirmStake } from '../utils';
 import { getActualValue, getNewValue } from '../../../helpers/stringHelper';
+import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
 
 const { TabPane } = Tabs;
 
@@ -250,7 +251,7 @@ class PoolStake extends Component {
       );
 
       console.log('stake result: ', result);
-      // this.hash = result[0].hash;
+      this.hash = result[0].hash;
 
       this.handleStartTimer();
     } catch (error) {
@@ -395,11 +396,13 @@ class PoolStake extends Component {
     setTxTimerStatus(false);
   };
 
-  renderStakeModalContent = () => {
+  renderStakeModalContent = (poolStats, calcResult) => {
     const {
       txStatus: { status, value },
       ticker,
     } = this.props;
+    const { runeAmount, tokenAmount } = this.state;
+
     const source = 'rune';
     const target = ticker.split('-')[0].toLowerCase();
 
@@ -414,29 +417,54 @@ class PoolStake extends Component {
     const completed = value !== null && !status;
     const stakeText = !completed ? 'YOU ARE STAKING' : 'YOU STAKED';
 
-    // const testnetTxExlorer = 'https://testnet-explorer.binance.org/tx/';
-    // const txURL = testnetTxExlorer + this.hash;
+    const { Pr } = calcResult;
+    const { tokenPrice } = poolStats;
+    const txURL = TESTNET_TX_BASE_URL + this.hash;
 
     return (
       <ConfirmModalContent>
-        <div className="left-container">
-          <Label weight="bold">{stakeText}</Label>
-          <CoinData asset={source} assetValue={2.49274} price={217.92} />
-          <CoinData asset={target} assetValue={2.49274} price={217.92} />
-        </div>
-        <div className="center-container">
-          <TxTimer
-            reset={status}
-            value={value}
-            onChange={this.handleChangeTxValue}
-            onEnd={this.handleEndTxTimer}
-          />
-          {value !== 0 && (
-            <Label weight="bold">{transactionLabels[value - 1]}</Label>
+        <Row className="modal-content">
+          <div className="left-container">
+            <Label weight="bold">{stakeText}</Label>
+            <CoinData asset={source} assetValue={runeAmount} price={Pr} />
+            <CoinData
+              asset={target}
+              assetValue={tokenAmount}
+              price={tokenPrice}
+            />
+          </div>
+          <div className="center-container">
+            <TxTimer
+              reset={status}
+              value={value}
+              onChange={this.handleChangeTxValue}
+              onEnd={this.handleEndTxTimer}
+            />
+          </div>
+          <div className="right-container" />
+        </Row>
+        <Row className="modal-info-wrapper">
+          {this.hash && (
+            <div className="hash-address">
+              <div className="copy-btn-wrapper">
+                <a href={txURL} target="_blank" rel="noopener noreferrer">
+                  <Icon type="global" />
+                </a>
+              </div>
+              <Label>VIEW ON BINANCE CHAIN</Label>
+            </div>
           )}
-          {completed && <Label weight="bold">complete</Label>}
-        </div>
-        <div className="right-container" />
+          {value !== 0 && (
+            <Label className="tx-label" weight="bold">
+              {transactionLabels[value - 1]}
+            </Label>
+          )}
+          {completed && (
+            <Label className="tx-label" weight="bold">
+              complete
+            </Label>
+          )}
+        </Row>
       </ConfirmModalContent>
     );
   };
@@ -933,7 +961,7 @@ class PoolStake extends Component {
           footer={null}
           onCancel={this.handleCloseModal}
         >
-          {this.renderStakeModalContent()}
+          {this.renderStakeModalContent(poolStats, calcResult)}
         </ConfirmModal>
         <PrivateModal
           title="PASSWORD CONFIRMATION"

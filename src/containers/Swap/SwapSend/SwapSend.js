@@ -36,6 +36,7 @@ import {
 } from './SwapSend.style';
 import { blackArrowIcon } from '../../../components/icons';
 import { getNewValue } from '../../../helpers/stringHelper';
+import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
 import { getCalcResult, confirmSwap } from '../utils';
 
 import appActions from '../../../redux/app/actions';
@@ -465,8 +466,7 @@ class SwapSend extends Component {
       ? 'EXPECTED FEES & SLIP'
       : 'FINAL FEES & SLIP';
 
-    const testnetTxExlorer = 'https://testnet-explorer.binance.org/tx/';
-    const txURL = testnetTxExlorer + this.hash;
+    const txURL = TESTNET_TX_BASE_URL + this.hash;
 
     return (
       <SwapModalContent>
