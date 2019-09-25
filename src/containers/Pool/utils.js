@@ -1,4 +1,7 @@
-import { getFixedNumber } from '../../helpers/stringHelper';
+import {
+  getFixedNumber,
+  getBaseNumberFormat,
+} from '../../helpers/stringHelper';
 
 export const getPoolData = (
   from,
@@ -58,14 +61,13 @@ export const getCalcResult = (symbol, pools, rValue, runePrice, tValue) => {
     }
   });
 
+  const r = getBaseNumberFormat(rValue);
+  const t = getBaseNumberFormat(tValue);
+
   const poolPrice = getFixedNumber((R / T) * runePrice);
-  const newPrice = getFixedNumber((runePrice * (rValue + R)) / (tValue + T));
-  const newDepth = getFixedNumber(
-    runePrice * (1 + (rValue / R + tValue / T) / 2) * R,
-  );
-  const share = getFixedNumber(
-    ((rValue / (rValue + R) + tValue / (tValue + T)) / 2) * 100,
-  );
+  const newPrice = getFixedNumber((runePrice * (r + R)) / (t + T));
+  const newDepth = getFixedNumber(runePrice * (1 + (r / R + t / T) / 2) * R);
+  const share = getFixedNumber(((r / (r + R) + t / (t + T)) / 2) * 100);
   // const calcData = { X, Y, R, Z, Py, Pr: Py };
 
   // const zValue = getZValue(xValue, calcData).toFixed(2);

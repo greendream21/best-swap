@@ -21,6 +21,14 @@ export const getActualValue = value => {
   return 0;
 };
 
+export const getBaseNumberFormat = value => {
+  if (value) {
+    return Number((value * BASE_NUMBER).toFixed(2));
+  }
+
+  return 0;
+};
+
 export const getFixedNumber = value => {
   return Number(Number(value).toFixed(2));
 };
