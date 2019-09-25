@@ -260,6 +260,7 @@ export const ContentWrapper = styled(ContentView)`
         `}
 
         .status-wrapper {
+          width: 60px;
           ${media.lg`
             margin-right: 30px;
           `}

@@ -31,6 +31,7 @@ export const getPoolData = (
   const totalStakers = poolInfo.numStakers;
 
   return {
+    tokenPrice,
     asset,
     target,
     depth,
@@ -68,12 +69,6 @@ export const getCalcResult = (symbol, pools, rValue, runePrice, tValue) => {
   const newPrice = getFixedNumber((runePrice * (r + R)) / (t + T));
   const newDepth = getFixedNumber(runePrice * (1 + (r / R + t / T) / 2) * R);
   const share = getFixedNumber(((r / (r + R) + t / (t + T)) / 2) * 100);
-  // const calcData = { X, Y, R, Z, Py, Pr: Py };
-
-  // const zValue = getZValue(xValue, calcData).toFixed(2);
-  // const slip = getSlip(xValue, calcData);
-  // const Px = getPx(xValue, calcData);
-  // const Pz = getPz(xValue, calcData).toFixed(2);
 
   return {
     ...result,
