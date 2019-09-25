@@ -213,6 +213,10 @@ export const ContentWrapper = styled(ContentView)`
 
     .share-detail-view {
       padding: 0;
+
+      .wallet-btn-wrapper {
+        margin: 20px;
+      }
       .label-no-padding {
         ${media.lg`
           padding: 0;
