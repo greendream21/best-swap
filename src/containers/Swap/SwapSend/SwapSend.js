@@ -35,6 +35,8 @@ import {
   RecipientFormItemCloseButton,
 } from './SwapSend.style';
 import { blackArrowIcon } from '../../../components/icons';
+import { getNewValue } from '../../../helpers/stringHelper';
+import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
 import { getCalcResult, confirmSwap } from '../utils';
 
 import appActions from '../../../redux/app/actions';
@@ -116,25 +118,9 @@ class SwapSend extends Component {
     });
   };
 
-  getNewValue = (value, xValue) => {
-    const numericRegex = /^[0-9\b]+$/;
-    /* eslint-disable no-nested-ternary */
-    const newValue =
-      value.indexOf(',') !== -1
-        ? parseInt(value.replace(',', ''), 10)
-        : !numericRegex.test(value)
-        ? 0
-        : Number.isNaN(value)
-        ? xValue
-        : Number(value);
-
-    /* eslint-enable no-nested-ternary */
-    return newValue;
-  };
-
   handleChangeValue = value => {
     const { xValue } = this.state;
-    const newValue = this.getNewValue(value, xValue);
+    const newValue = getNewValue(value, xValue);
 
     const { assetData, getRunePrice } = this.props;
     const { source } = this.getSwapData();
@@ -278,7 +264,7 @@ class SwapSend extends Component {
     if (keystore) {
       this.handleOpenPrivateModal();
     } else if (wallet) {
-      this.handleStartTimer();
+      this.handleConfirmSwap();
     } else {
       this.setState({
         invalidAddress: true,
@@ -480,8 +466,7 @@ class SwapSend extends Component {
       ? 'EXPECTED FEES & SLIP'
       : 'FINAL FEES & SLIP';
 
-    const testnetTxExlorer = 'https://testnet-explorer.binance.org/tx/';
-    const txURL = testnetTxExlorer + this.hash;
+    const txURL = TESTNET_TX_BASE_URL + this.hash;
 
     return (
       <SwapModalContent>

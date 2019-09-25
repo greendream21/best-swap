@@ -95,7 +95,7 @@ class ActionView extends Component {
     if (view === 'swap-detail' || view === 'swap-send') {
       this.props.history.push('/swap');
     }
-    if (view.includes('pool-')) {
+    if (view.includes('pools-')) {
       this.props.history.push('/pools');
     }
     if (view.includes('trade-')) {
