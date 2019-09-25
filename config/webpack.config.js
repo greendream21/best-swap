@@ -342,6 +342,14 @@ module.exports = function(webpackEnv) {
                 ),
 
                 plugins: [
+                  // Thorchain customization: Add styled-components plugin
+                  [
+                    require.resolve('babel-plugin-styled-components'),
+                    {
+                      fileName: false,
+                    },
+                  ],
+                  // End Thorchain customization
                   [
                     require.resolve('babel-plugin-named-asset-import'),
                     {
