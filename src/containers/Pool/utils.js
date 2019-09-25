@@ -1,3 +1,5 @@
+import { getStakeMemo } from '../../helpers/memoHelper';
+
 import {
   getFixedNumber,
   getBaseNumberFormat,
@@ -78,4 +80,53 @@ export const getCalcResult = (symbol, pools, rValue, runePrice, tValue) => {
     share,
     Pr,
   };
+};
+
+export const validateStake = (wallet, runeAmount, tokenAmount, data) => {
+  const { poolAddressTo } = data;
+  if (!wallet || !poolAddressTo || !runeAmount || !tokenAmount) {
+    return false;
+  }
+  return true;
+};
+
+export const confirmStake = (
+  Binance,
+  wallet,
+  runeAmount,
+  tokenAmount,
+  data,
+) => {
+  return new Promise((resolve, reject) => {
+    console.log('confirm stake', wallet, runeAmount, tokenAmount, data);
+
+    if (!validateStake(wallet, runeAmount, tokenAmount, data)) {
+      return reject();
+    }
+
+    const { poolAddressTo, tickerTo } = data;
+
+    const memo = getStakeMemo(tickerTo);
+    console.log('memo: ', memo);
+
+    const outputs = [
+      {
+        to: poolAddressTo,
+        coins: [
+          {
+            denom: 'RUNE-A1F',
+            amount: runeAmount,
+          },
+          {
+            denom: tickerTo,
+            amount: tokenAmount,
+          },
+        ],
+      },
+    ];
+
+    Binance.multiSend(wallet, outputs, memo)
+      .then(response => resolve(response))
+      .catch(error => reject(error));
+  });
 };
