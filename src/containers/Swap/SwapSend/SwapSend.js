@@ -263,7 +263,7 @@ class SwapSend extends Component {
     if (keystore) {
       this.handleOpenPrivateModal();
     } else if (wallet) {
-      this.handleStartTimer();
+      this.handleConfirmSwap();
     } else {
       this.setState({
         invalidAddress: true,

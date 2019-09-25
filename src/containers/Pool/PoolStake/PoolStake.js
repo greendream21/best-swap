@@ -4,7 +4,10 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Row, Col, Icon } from 'antd';
+import { Row, Col, Icon, Form, notification } from 'antd';
+import { crypto } from '@binance-chain/javascript-sdk';
+
+import Binance from '../../../clients/binance';
 
 import Label from '../../../components/uielements/label';
 import Status from '../../../components/uielements/status';
@@ -15,6 +18,8 @@ import Slider from '../../../components/uielements/slider';
 import TxTimer from '../../../components/uielements/txTimer';
 import Drag from '../../../components/uielements/drag';
 import WalletButton from '../../../components/uielements/walletButton';
+import Modal from '../../../components/uielements/modal';
+import Input from '../../../components/uielements/input';
 
 import appActions from '../../../redux/app/actions';
 import chainActions from '../../../redux/chainservice/actions';
@@ -26,9 +31,10 @@ import {
   Tabs,
   ConfirmModal,
   ConfirmModalContent,
+  PrivateModal,
   // StakePoolCol,
 } from './PoolStake.style';
-import { getPoolData, getCalcResult } from '../utils';
+import { getPoolData, getCalcResult, confirmStake } from '../utils';
 import { getActualValue, getNewValue } from '../../../helpers/stringHelper';
 
 const { TabPane } = Tabs;
@@ -73,6 +79,10 @@ class PoolStake extends Component {
 
   state = {
     dragReset: true,
+    openWalletAlert: false,
+    openPrivateModal: false,
+    invalidPassword: false,
+    password: '',
     runePrice: 0,
     runeAmount: 0,
     tokenAmount: 0,
@@ -92,6 +102,13 @@ class PoolStake extends Component {
     getPools();
     getRunePrice();
   }
+
+  handleChange = key => e => {
+    this.setState({
+      [key]: e.target.value,
+      invalidPassword: false,
+    });
+  };
 
   handleChangeTokenAmount = tokenName => amount => {
     const { assetData } = this.props;
@@ -217,7 +234,66 @@ class PoolStake extends Component {
     });
   };
 
+  handleConfirmStake = async () => {
+    const {
+      user: { wallet },
+    } = this.props;
+    const { runeAmount, tokenAmount } = this.state;
+
+    try {
+      const { result } = await confirmStake(
+        Binance,
+        wallet,
+        runeAmount,
+        tokenAmount,
+        this.data,
+      );
+
+      console.log('stake result: ', result);
+      // this.hash = result[0].hash;
+
+      this.handleStartTimer();
+    } catch (error) {
+      notification.error({
+        message: 'Swap Invalid',
+        description: 'Swap information is not valid.',
+      });
+      console.log(error); // eslint-disable-line no-console
+    }
+  };
+
   handleStake = () => {
+    const {
+      user: { keystore, wallet },
+    } = this.props;
+    const { runeAmount, tokenAmount } = this.state;
+
+    if (!wallet) {
+      this.setState({
+        openWalletAlert: true,
+      });
+      return;
+    }
+
+    if (Number(runeAmount) <= 0 || Number(tokenAmount) <= 0) {
+      notification.error({
+        message: 'Stake Invalid',
+        description: 'You need to enter an amount to stake.',
+      });
+      this.setState({
+        dragReset: true,
+      });
+      return;
+    }
+
+    if (keystore) {
+      this.handleOpenPrivateModal();
+    } else if (wallet) {
+      this.handleConfirmStake();
+    }
+  };
+
+  handleStartTimer = () => {
     const { setTxTimerModal, setTxTimerType, setTxTimerStatus } = this.props;
 
     setTxTimerType('stake');
@@ -225,19 +301,54 @@ class PoolStake extends Component {
     setTxTimerStatus(true);
   };
 
-  handleCloseModal = () => {
-    const {
-      txStatus: { status },
-      setTxTimerModal,
-      resetTxStatus,
-    } = this.props;
+  handleConfirmPassword = e => {
+    e.preventDefault();
 
-    if (!status) resetTxStatus();
-    else setTxTimerModal(false);
+    const {
+      user: { keystore, wallet },
+    } = this.props;
+    const { password } = this.state;
+
+    try {
+      const privateKey = crypto.getPrivateKeyFromKeyStore(keystore, password);
+      Binance.setPrivateKey(privateKey);
+      const address = crypto.getAddressFromPrivateKey(
+        privateKey,
+        Binance.getPrefix(),
+      );
+      if (wallet === address) {
+        this.handleConfirmStake();
+      }
+
+      this.setState({
+        openPrivateModal: false,
+      });
+    } catch (error) {
+      this.setState({
+        password: '',
+        invalidPassword: true,
+      });
+      console.log(error); // eslint-disable-line no-console
+    }
   };
 
-  handleConfirmStake = () => {
-    this.handleGotoStakeView();
+  handleOpenPrivateModal = () => {
+    this.setState({
+      openPrivateModal: true,
+    });
+  };
+
+  handleClosePrivateModal = () => {
+    this.setState({
+      openPrivateModal: false,
+      dragReset: true,
+    });
+  };
+
+  handleCloseModal = () => {
+    const { setTxTimerModal } = this.props;
+
+    setTxTimerModal(false);
   };
 
   handleGotoStakeView = () => {
@@ -276,22 +387,12 @@ class PoolStake extends Component {
   };
 
   handleEndTxTimer = () => {
-    const {
-      txStatus: { type },
-      setTxTimerStatus,
-      resetTxStatus,
-    } = this.props;
+    const { setTxTimerStatus } = this.props;
 
     this.setState({
       dragReset: true,
     });
     setTxTimerStatus(false);
-
-    // staked?
-    if (type === 'stake') {
-      resetTxStatus();
-      this.handleConfirmStake();
-    }
   };
 
   renderStakeModalContent = () => {
@@ -312,6 +413,9 @@ class PoolStake extends Component {
 
     const completed = value !== null && !status;
     const stakeText = !completed ? 'YOU ARE STAKING' : 'YOU STAKED';
+
+    // const testnetTxExlorer = 'https://testnet-explorer.binance.org/tx/';
+    // const txURL = testnetTxExlorer + this.hash;
 
     return (
       <ConfirmModalContent>
@@ -337,11 +441,12 @@ class PoolStake extends Component {
     );
   };
 
-  renderWithdrawModalContent = () => {
+  renderWithdrawModalContent = (poolStats, calcResult) => {
     const {
       txStatus: { status, value },
       ticker,
     } = this.props;
+    const { runeAmount, tokenAmount } = this.state;
 
     const source = 'rune';
     const target = ticker.split('-')[0].toLowerCase();
@@ -356,6 +461,9 @@ class PoolStake extends Component {
 
     const completed = value !== null && !status;
     const withdrawText = !completed ? 'YOU ARE WITHDRAWING' : 'YOU WITHDRAWN';
+
+    const { Pr } = calcResult;
+    const { tokenPrice } = poolStats;
 
     return (
       <ConfirmModalContent>
@@ -374,8 +482,12 @@ class PoolStake extends Component {
         </div>
         <div className="right-container">
           <Label weight="bold">{withdrawText}</Label>
-          <CoinData asset={source} assetValue={2.49274} price={217.92} />
-          <CoinData asset={target} assetValue={2.49274} price={217.92} />
+          <CoinData asset={source} assetValue={runeAmount} price={Pr} />
+          <CoinData
+            asset={target}
+            assetValue={tokenAmount}
+            price={tokenPrice}
+          />
         </div>
       </ConfirmModalContent>
     );
@@ -753,7 +865,14 @@ class PoolStake extends Component {
       pools,
       txStatus,
     } = this.props;
-    const { runeAmount, tokenAmount } = this.state;
+    const {
+      runeAmount,
+      tokenAmount,
+      openPrivateModal,
+      openWalletAlert,
+      password,
+      invalidPassword,
+    } = this.state;
 
     const poolInfo = poolData[ticker] || {};
     const swapInfo = swapData[ticker] || {};
@@ -774,6 +893,9 @@ class PoolStake extends Component {
       runePrice,
       tokenAmount,
     );
+
+    // store calc result
+    this.data = calcResult;
 
     const openStakeModal = txStatus.type === 'stake' ? txStatus.modal : false;
     const openWithdrawModal =
@@ -800,7 +922,7 @@ class PoolStake extends Component {
           footer={null}
           onCancel={this.handleCloseModal}
         >
-          {this.renderWithdrawModalContent()}
+          {this.renderWithdrawModalContent(poolStats, calcResult)}
         </ConfirmModal>
         <ConfirmModal
           title="STAKE CONFIRMATION"
@@ -813,6 +935,36 @@ class PoolStake extends Component {
         >
           {this.renderStakeModalContent()}
         </ConfirmModal>
+        <PrivateModal
+          title="PASSWORD CONFIRMATION"
+          visible={openPrivateModal}
+          onOk={this.handleConfirmPassword}
+          onCancel={this.handleClosePrivateModal}
+          okText="Confirm"
+        >
+          <Form onSubmit={this.handleConfirmPassword}>
+            <Form.Item className={invalidPassword ? 'has-error' : ''}>
+              <Input
+                type="password"
+                value={password}
+                onChange={this.handleChange('password')}
+                placeholder="Input password"
+              />
+              {invalidPassword && (
+                <div className="ant-form-explain">Password is wrong!</div>
+              )}
+            </Form.Item>
+          </Form>
+        </PrivateModal>
+        <Modal
+          title="PLEASE ADD WALLET"
+          visible={openWalletAlert}
+          onOk={this.handleConnectWallet}
+          onCancel={this.hideWalletAlert}
+          okText="Add Wallet"
+        >
+          Please add a wallet to swap tokens.
+        </Modal>
       </ContentWrapper>
     );
   }
