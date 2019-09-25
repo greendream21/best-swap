@@ -37,8 +37,8 @@ class PoolView extends Component {
     getRunePrice();
   }
 
-  handleStake = ticker => () => {
-    const URL = `/pool/${ticker}`;
+  handleStake = symbol => () => {
+    const URL = `/pool/${symbol}`;
     this.props.history.push(URL);
   };
 
@@ -52,9 +52,9 @@ class PoolView extends Component {
     const { activeAsset } = this.state;
 
     return pools.map((pool, index) => {
-      const { ticker } = pool;
-      const poolInfo = poolData[ticker] || {};
-      const swapInfo = swapData[ticker] || {};
+      const { symbol } = pool;
+      const poolInfo = poolData[symbol] || {};
+      const swapInfo = swapData[symbol] || {};
 
       const {
         asset,
@@ -64,7 +64,7 @@ class PoolView extends Component {
         transaction,
         liqFee,
         roiAT,
-      } = getPoolData('rune', ticker, poolInfo, swapInfo, assetData, runePrice);
+      } = getPoolData('rune', symbol, poolInfo, swapInfo, assetData, runePrice);
 
       if (target !== activeAsset) {
         return (
@@ -77,7 +77,7 @@ class PoolView extends Component {
             volume={volume24}
             liqFee={liqFee}
             roi={roiAT}
-            onStake={this.handleStake(ticker)}
+            onStake={this.handleStake(symbol)}
             key={index}
           />
         );

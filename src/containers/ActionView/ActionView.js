@@ -35,7 +35,7 @@ class ActionView extends Component {
     refreshBalance: PropTypes.func.isRequired,
     refreshStake: PropTypes.func.isRequired,
     history: PropTypes.object.isRequired,
-    ticker: PropTypes.string.isRequired,
+    symbol: PropTypes.string.isRequired,
   };
 
   static defaultProps = {
@@ -166,7 +166,7 @@ class ActionView extends Component {
   };
 
   render() {
-    const { info, ticker } = this.props;
+    const { info, symbol } = this.props;
     const view = this.getView();
     console.log('View', view);
 
@@ -195,7 +195,7 @@ class ActionView extends Component {
         {view === 'swap-detail' && <SwapSend view="detail" info={info} />}
         {view === 'swap-send' && <SwapSend view="send" info={info} />}
         {view === 'pools-view' && <PoolView />}
-        {view === 'pools-pool' && <PoolStake ticker={ticker} />}
+        {view === 'pools-pool' && <PoolStake symbol={symbol} />}
         {/* {view === 'pool-new' && <PoolCreate view="new" info={info} />} */}
         {view === 'trade-view' && <TradeView />}
         {(view === 'trade-buy' || view === 'trade-sell') && (

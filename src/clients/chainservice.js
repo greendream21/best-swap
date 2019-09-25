@@ -243,18 +243,18 @@ class ChainService {
     return this.httpClient.get('/health');
   };
 
-  stakerData = (bnb, ticker = '') => {
-    const qs = querystring.stringify({ staker: bnb, asset: ticker });
+  stakerData = (bnb, symbol = '') => {
+    const qs = querystring.stringify({ staker: bnb, asset: symbol });
     return this.httpClient.get('/stakerData?' + qs);
   };
 
-  getPool = ticker => {
-    const qs = querystring.stringify({ asset: ticker });
+  getPool = symbol => {
+    const qs = querystring.stringify({ asset: symbol });
     return this.httpClient.get('/poolData?' + qs);
   };
 
-  swapData = ticker => {
-    const qs = querystring.stringify({ asset: ticker });
+  swapData = symbol => {
+    const qs = querystring.stringify({ asset: symbol });
     return this.httpClient.get('/swapData?' + qs);
   };
 }

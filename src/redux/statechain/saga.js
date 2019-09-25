@@ -52,17 +52,17 @@ export function* getPools() {
 
       const poolResponse = yield all(
         data.map(poolData => {
-          const { ticker } = poolData;
+          const { symbol } = poolData;
 
-          return call(getPoolDataRequest, ticker);
+          return call(getPoolDataRequest, symbol);
         }),
       );
 
       const swapResponse = yield all(
         data.map(poolData => {
-          const { ticker } = poolData;
+          const { symbol } = poolData;
 
-          return call(getSwapDataRequest, ticker);
+          return call(getSwapDataRequest, symbol);
         }),
       );
 
@@ -90,10 +90,10 @@ export function* getPools() {
 
 export function* getPoolInfo() {
   yield takeEvery(actions.GET_POOL_INFO_REQUEST, function*({ payload }) {
-    const ticker = payload;
+    const symbol = payload;
     const params = {
       method: 'get',
-      url: getStatechainURL(`swapservice/pool/${ticker}`),
+      url: getStatechainURL(`swapservice/pool/${symbol}`),
       headers: getHeaders(),
     };
 
