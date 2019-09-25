@@ -105,16 +105,16 @@ export function* refreshStakes() {
         const response = yield call(ChainService.stakerData, address);
 
         const stakeData = yield all(
-          response.data.map(ticker => {
+          response.data.map(symbol => {
             try {
-              const response = call(ChainService.stakerData, address, ticker);
+              const response = call(ChainService.stakerData, address, symbol);
 
               const market = markets.result.find(
-                market => market.base_asset_symbol === ticker,
+                market => market.base_asset_symbol === symbol,
               );
 
               return {
-                target: ticker.toLowerCase(),
+                target: symbol.toLowerCase(),
                 targetValue: response.data.tokensStaked,
                 assetValue: response.data.runeStaked,
                 asset: 'rune',
@@ -122,7 +122,7 @@ export function* refreshStakes() {
               };
             } catch (error) {
               console.error(error);
-              return { target: ticker, asset: 'rune' };
+              return { target: symbol, asset: 'rune' };
             }
           }),
         );

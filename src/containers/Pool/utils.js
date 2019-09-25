@@ -47,20 +47,20 @@ export const getPoolData = (
   };
 };
 
-export const getCalcResult = (symbol, pools, rValue, runePrice, tValue) => {
+export const getCalcResult = (tokenName, pools, rValue, runePrice, tValue) => {
   let R = 10000;
   let T = 10;
   const Pr = runePrice;
   const result = {};
 
   pools.forEach(poolData => {
-    const { balance_rune, balance_token, pool_address, ticker } = poolData;
+    const { balance_rune, balance_token, pool_address, symbol } = poolData;
 
-    if (ticker.toLowerCase() === symbol.toLowerCase()) {
+    if (symbol.toLowerCase() === tokenName.toLowerCase()) {
       R = Number(balance_rune);
       T = Number(balance_token);
       result.poolAddressTo = pool_address;
-      result.tickerTo = ticker;
+      result.symbolTo = symbol;
     }
   });
 
@@ -104,9 +104,9 @@ export const confirmStake = (
       return reject();
     }
 
-    const { poolAddressTo, tickerTo } = data;
+    const { poolAddressTo, symbolTo } = data;
 
-    const memo = getStakeMemo(tickerTo);
+    const memo = getStakeMemo(symbolTo);
     console.log('memo: ', memo);
 
     const outputs = [
@@ -118,7 +118,7 @@ export const confirmStake = (
             amount: runeAmount,
           },
           {
-            denom: tickerTo,
+            denom: symbolTo,
             amount: tokenAmount,
           },
         ],

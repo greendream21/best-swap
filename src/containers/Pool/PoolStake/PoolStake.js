@@ -54,7 +54,7 @@ const { getRunePrice } = walletactions;
 
 class PoolStake extends Component {
   static propTypes = {
-    ticker: PropTypes.string.isRequired,
+    symbol: PropTypes.string.isRequired,
     txStatus: PropTypes.object.isRequired,
     assetData: PropTypes.array.isRequired,
     chainData: PropTypes.object.isRequired,
@@ -223,8 +223,8 @@ class PoolStake extends Component {
   };
 
   handleGotoDetail = () => {
-    const { ticker } = this.props;
-    const URL = `/pool/${ticker}`;
+    const { symbol } = this.props;
+    const URL = `/pool/${symbol}`;
 
     this.props.history.push(URL);
   };
@@ -353,22 +353,22 @@ class PoolStake extends Component {
   };
 
   handleGotoStakeView = () => {
-    const { ticker } = this.props;
-    const URL = `/pool/stake-view/${ticker}`;
+    const { symbol } = this.props;
+    const URL = `/pool/stake-view/${symbol}`;
 
     this.props.history.push(URL);
   };
 
   handleAddMore = () => {
-    const { ticker } = this.props;
-    const URL = `/pool/stake-new/${ticker}`;
+    const { symbol } = this.props;
+    const URL = `/pool/stake-new/${symbol}`;
 
     this.props.history.push(URL);
   };
 
   handleGotoWithdraw = () => {
-    const { ticker } = this.props;
-    const URL = `/pool/withdraw/${ticker}`;
+    const { symbol } = this.props;
+    const URL = `/pool/withdraw/${symbol}`;
 
     this.props.history.push(URL);
   };
@@ -399,12 +399,12 @@ class PoolStake extends Component {
   renderStakeModalContent = (poolStats, calcResult) => {
     const {
       txStatus: { status, value },
-      ticker,
+      symbol,
     } = this.props;
     const { runeAmount, tokenAmount } = this.state;
 
     const source = 'rune';
-    const target = ticker.split('-')[0].toLowerCase();
+    const target = symbol.split('-')[0].toLowerCase();
 
     const transactionLabels = [
       'sending transaction',
@@ -472,12 +472,12 @@ class PoolStake extends Component {
   renderWithdrawModalContent = (poolStats, calcResult) => {
     const {
       txStatus: { status, value },
-      ticker,
+      symbol,
     } = this.props;
     const { runeAmount, tokenAmount } = this.state;
 
     const source = 'rune';
-    const target = ticker.split('-')[0].toLowerCase();
+    const target = symbol.split('-')[0].toLowerCase();
 
     const transactionLabels = [
       'sending transaction',
@@ -522,10 +522,10 @@ class PoolStake extends Component {
   };
 
   renderStakeInfo = poolStats => {
-    const { ticker } = this.props;
+    const { symbol } = this.props;
     const source = 'rune';
 
-    const target = ticker.split('-')[0].toLowerCase();
+    const target = symbol.split('-')[0].toLowerCase();
     const stakePool = `${source}:${target}`;
 
     const {
@@ -584,7 +584,7 @@ class PoolStake extends Component {
   renderShareDetail = (poolStats, calcResult) => {
     const {
       user: { wallet },
-      ticker,
+      symbol,
       runePrice,
       chainData: { tokenInfo },
     } = this.props;
@@ -606,7 +606,7 @@ class PoolStake extends Component {
 
     const stakeData = this.state.stakeData || { units: 0 };
     const source = 'rune';
-    const target = ticker.split('-')[0].toLowerCase();
+    const target = symbol.split('-')[0].toLowerCase();
 
     const tokensData = Object.keys(tokenInfo).map(tokenName => {
       const { symbol, price } = tokenInfo[tokenName];
@@ -783,11 +783,11 @@ class PoolStake extends Component {
   renderYourShare = () => {
     // const { address } = this.props.user
     const address = 'deleteme';
-    const { ticker } = this.props;
+    const { symbol } = this.props;
 
     const stakeData = this.state.stakeData || { units: 0 };
     const source = 'rune';
-    const target = ticker;
+    const target = symbol;
 
     return (
       <div className="your-share-wrapper">
@@ -885,7 +885,7 @@ class PoolStake extends Component {
 
   render() {
     const {
-      ticker,
+      symbol,
       runePrice,
       poolData,
       swapData,
@@ -902,12 +902,12 @@ class PoolStake extends Component {
       invalidPassword,
     } = this.state;
 
-    const poolInfo = poolData[ticker] || {};
-    const swapInfo = swapData[ticker] || {};
+    const poolInfo = poolData[symbol] || {};
+    const swapInfo = swapData[symbol] || {};
 
     const poolStats = getPoolData(
       'rune',
-      ticker,
+      symbol,
       poolInfo,
       swapInfo,
       assetData,
@@ -915,7 +915,7 @@ class PoolStake extends Component {
     );
 
     const calcResult = getCalcResult(
-      ticker,
+      symbol,
       pools,
       runeAmount,
       runePrice,
