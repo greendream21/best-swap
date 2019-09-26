@@ -287,7 +287,7 @@ export const ContentWrapper = styled(ContentView)`
           ${media.lg`
             display: flex;
             flex-direction: row;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
           `}
 
