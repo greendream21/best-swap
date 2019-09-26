@@ -530,6 +530,16 @@ class SwapSend extends Component {
     );
   };
 
+  validateSlip = slip => {
+    if (slip >= 30) {
+      /* eslint-disable dot-notation */
+      notification['error']({
+        message: 'Swap Invalid',
+        description: `Slip ${slip} too high, try less.`,
+      });
+    }
+  };
+
   render() {
     const {
       view,
@@ -585,6 +595,8 @@ class SwapSend extends Component {
     this.data = getCalcResult(source, target, pools, xValue, runePrice);
     const { Px, slip, outputAmount, outputPrice } = this.data;
     console.log(this.data); // eslint-disable-line no-console
+
+    this.validateSlip(slip);
 
     return (
       <ContentWrapper className="swap-detail-wrapper">
