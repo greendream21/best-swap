@@ -124,7 +124,7 @@ class PoolStake extends Component {
   };
 
   handleChangeTokenAmount = tokenName => amount => {
-    const { assetData } = this.props;
+    const { assetData, symbol } = this.props;
     const { runeAmount, tokenAmount, fR, fT } = this.state;
 
     let newValue;
@@ -139,21 +139,40 @@ class PoolStake extends Component {
       return false;
     });
 
+    const targetToken = assetData.find(data => {
+      const { asset } = data;
+      if (asset.toLowerCase() === symbol.toLowerCase()) {
+        return true;
+      }
+      return false;
+    });
+
+    if (!sourceAsset || !targetToken) {
+      return;
+    }
+
     const balance = tokenName === 'rune' ? fR : fT;
 
     const totalAmount = !sourceAsset ? 0 : sourceAsset.assetValue * balance;
+    const totalTokenAmount = targetToken.assetValue * balance || 0;
 
     if (tokenName === 'rune') {
       newValue = getNewValue(amount, runeAmount);
+      const { ratio } = this.data;
+      const tokenValue = newValue * ratio;
+      const tokenAmount =
+        tokenValue <= totalTokenAmount ? tokenValue : totalTokenAmount;
 
       if (totalAmount < newValue) {
         this.setState({
           runeAmount: totalAmount,
+          tokenAmount,
           selectedRune: 0,
         });
       } else {
         this.setState({
           runeAmount: newValue,
+          tokenAmount,
           selectedRune: 0,
         });
       }
@@ -175,7 +194,7 @@ class PoolStake extends Component {
   };
 
   handleSelectTokenAmount = token => amount => {
-    const { assetData } = this.props;
+    const { assetData, symbol } = this.props;
     const { fR, fT } = this.state;
 
     const selectedToken = assetData.find(data => {
@@ -187,17 +206,32 @@ class PoolStake extends Component {
       return false;
     });
 
-    if (!selectedToken) {
+    const targetToken = assetData.find(data => {
+      const { asset } = data;
+      if (asset.toLowerCase() === symbol.toLowerCase()) {
+        return true;
+      }
+      return false;
+    });
+
+    if (!selectedToken || !targetToken) {
       return;
     }
 
     const balance = token === 'rune' ? fR : fT;
     const totalAmount = selectedToken.assetValue || 0;
+    const totalTokenAmount = targetToken.assetValue || 0;
     const value = ((totalAmount * amount) / 100) * balance;
 
     if (token === 'rune') {
+      const { ratio } = this.data;
+      const tokenValue = value * ratio;
+      const tokenAmount =
+        tokenValue <= totalTokenAmount ? tokenValue : totalTokenAmount;
+
       this.setState({
         runeAmount: value,
+        tokenAmount,
         selectedRune: amount,
         runeTotal: totalAmount,
       });
@@ -365,6 +399,12 @@ class PoolStake extends Component {
     const { setTxTimerModal } = this.props;
 
     setTxTimerModal(false);
+  };
+
+  handleSelectTraget = asset => {
+    const URL = `/pool/${asset}`;
+
+    this.props.history.push(URL);
   };
 
   handleGotoStakeView = () => {
@@ -683,9 +723,11 @@ class PoolStake extends Component {
               assetData={tokensData}
               amount={tokenAmount}
               price={tokenPrice}
-              onChange={this.handleChangeTokenAmount(target)}
-              onSelect={this.handleSelectTokenAmount(target)}
-              withSelection
+              onChangeAsset={this.handleSelectTraget}
+              // onChange={this.handleChangeTokenAmount(target)}
+              // onSelect={this.handleSelectTokenAmount(target)}
+              // withSelection
+              disabled
               withSearch
             />
           </div>
