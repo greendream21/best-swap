@@ -598,7 +598,7 @@ class PoolStake extends Component {
     );
   };
 
-  renderShareDetail = (poolStats, calcResult) => {
+  renderShareDetail = poolStats => {
     const {
       user: { wallet },
       symbol,
@@ -634,27 +634,27 @@ class PoolStake extends Component {
       };
     });
 
-    const { depth, tokenPrice } = poolStats;
-    const { poolPrice, newPrice, newDepth, share } = calcResult;
+    const { tokenPrice } = poolStats;
+    // const { poolPrice, newPrice, newDepth, share } = calcResult;
 
-    const poolAttrs = [
-      { key: 'price', title: 'Pool Price', value: `$${poolPrice}` },
-      {
-        key: 'depth',
-        title: 'Pool Depth',
-        value: `$${getActualValue(depth * runePrice)}`,
-      },
-    ];
+    // const poolAttrs = [
+    //   { key: 'price', title: 'Pool Price', value: `$${poolPrice}` },
+    //   {
+    //     key: 'depth',
+    //     title: 'Pool Depth',
+    //     value: `$${getActualValue(depth * runePrice)}`,
+    //   },
+    // ];
 
-    const newPoolAttrs = [
-      { key: 'price', title: 'New Price', value: `$${newPrice}` },
-      {
-        key: 'depth',
-        title: 'New Depth',
-        value: `$${getActualValue(newDepth)}`,
-      },
-      { key: 'share', title: 'Your Share', value: `${share}%` },
-    ];
+    // const newPoolAttrs = [
+    //   { key: 'price', title: 'New Price', value: `$${newPrice}` },
+    //   {
+    //     key: 'depth',
+    //     title: 'New Depth',
+    //     value: `$${getActualValue(newDepth)}`,
+    //   },
+    //   { key: 'share', title: 'Your Share', value: `${share}%` },
+    // ];
 
     return (
       <Tabs>
@@ -700,17 +700,17 @@ class PoolStake extends Component {
             tooltipVisible={false}
           /> */}
           <div className="stake-share-info-wrapper">
-            <div className="pool-status-wrapper">
+            {/* <div className="pool-status-wrapper">
               {poolAttrs.map(info => {
                 return <Status className="share-info-status" {...info} />;
               })}
-            </div>
+            </div> */}
             <div className="share-status-wrapper">
-              <div className="info-status-wrapper">
+              {/* <div className="info-status-wrapper">
                 {newPoolAttrs.map(info => {
                   return <Status className="share-info-status" {...info} />;
                 })}
-              </div>
+              </div> */}
               <Drag
                 title="Drag to stake"
                 source="blue"
@@ -959,7 +959,7 @@ class PoolStake extends Component {
             {this.renderYourShare(poolStats, calcResult, stakeData)}
           </Col>
           <Col className="share-detail-view" span={24} lg={16}>
-            {this.renderShareDetail(poolStats, calcResult)}
+            {this.renderShareDetail(poolStats)}
           </Col>
         </Row>
         <ConfirmModal
