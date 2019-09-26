@@ -146,7 +146,12 @@ export function* getStakeData() {
     try {
       const { data } = yield call(axiosRequest, params);
 
-      yield put(actions.getStakeDataSuccess(data));
+      yield put(
+        actions.getStakeDataSuccess({
+          asset,
+          data,
+        }),
+      );
     } catch (error) {
       yield put(actions.getStakeDataFailed(error));
     }

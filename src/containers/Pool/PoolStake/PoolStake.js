@@ -84,7 +84,6 @@ class PoolStake extends Component {
     openPrivateModal: false,
     invalidPassword: false,
     password: '',
-    runePrice: 0,
     runeAmount: 0,
     tokenAmount: 0,
     balance: 100,
@@ -102,7 +101,20 @@ class PoolStake extends Component {
     getTokens();
     getPools();
     getRunePrice();
+    this.getStakerData();
   }
+
+  getStakerData = () => {
+    const {
+      getStakeData,
+      symbol,
+      user: { wallet },
+    } = this.props;
+
+    if (wallet) {
+      getStakeData({ asset: symbol, staker: wallet });
+    }
+  };
 
   handleChange = key => e => {
     this.setState({
@@ -259,6 +271,9 @@ class PoolStake extends Component {
         message: 'Swap Invalid',
         description: 'Swap information is not valid.',
       });
+      this.setState({
+        dragReset: true,
+      });
       console.log(error); // eslint-disable-line no-console
     }
   };
@@ -394,6 +409,8 @@ class PoolStake extends Component {
       dragReset: true,
     });
     setTxTimerStatus(false);
+
+    this.getStakerData();
   };
 
   renderStakeModalContent = (poolStats, calcResult) => {
@@ -780,67 +797,73 @@ class PoolStake extends Component {
     );
   };
 
-  renderYourShare = () => {
-    // const { address } = this.props.user
-    const address = 'deleteme';
-    const { symbol } = this.props;
+  renderYourShare = (poolStats, calcResult, stakeData) => {
+    const {
+      symbol,
+      user: { wallet },
+      runePrice,
+    } = this.props;
 
-    const stakeData = this.state.stakeData || { units: 0 };
+    console.log(calcResult);
+    console.log(stakeData);
+
+    const stakeInfo = stakeData[symbol] || { units: 0 };
+
+    const { tokenPrice } = poolStats;
+    const { poolUnits, R, T } = calcResult;
     const source = 'rune';
-    const target = symbol;
+    const target = symbol.split('-')[0];
+
+    const { units } = stakeInfo;
+
+    const poolShare = (units / Number(poolUnits)).toFixed(2);
+    const runeShare = getActualValue((R * units) / poolUnits);
+    const tokensShare = getActualValue((T * units) / poolUnits);
+    const runeEarned = getActualValue(stakeInfo.runeEarned);
+    const tokensEarned = getActualValue(stakeInfo.tokensEarned);
 
     return (
       <div className="your-share-wrapper">
         <Label className="label-title" size="normal" weight="bold">
           YOUR SHARE
         </Label>
-        {!address && (
-          <>
-            <Label size="normal">You have not connected your wallet.</Label>
-            <Link to="/connect">
-              <WalletButton connected={false} />
-            </Link>
-          </>
-        )}
-        {address && stakeData.units === 0 && (
+        {wallet && stakeInfo.units === 0 && (
           <>
             <Label size="normal">You don't have any shares in this pool.</Label>
           </>
         )}
-        {address && stakeData.units > 0 && (
+        {wallet && stakeInfo.units > 0 && (
           <>
             <Label size="normal">Your total share of the pool.</Label>
             <div className="your-share-info-wrapper">
               <div className="your-share-info">
                 <Status
                   title={String(source).toUpperCase()}
-                  value={stakeData.runeStaked}
+                  value={runeShare}
                 />
                 <Label
                   className="your-share-price-label"
                   size="normal"
                   color="grey"
                 >
-                  $USD{' '}
-                  {(stakeData.runeStaked * this.state.runePrice).toFixed(2)}
+                  $USD {(runeShare * runePrice).toFixed(2)}
                 </Label>
               </div>
               <div className="your-share-info">
                 <Status
                   title={String(target).toUpperCase()}
-                  value={stakeData.tokensStaked}
+                  value={tokensShare}
                 />
                 <Label
                   className="your-share-price-label"
                   size="normal"
                   color="grey"
                 >
-                  $USD{' '}
-                  {(stakeData.tokensStaked * this.state.tokenPrice).toFixed(2)}
+                  $USD {(tokensShare * tokenPrice).toFixed(2)}
                 </Label>
               </div>
               <div className="your-share-info">
-                <Status title="Pool Share" value={stakeData.units + ' units'} />
+                <Status title="Pool Share" value={`${poolShare}%`} />
               </div>
             </div>
             <Label className="label-title" size="normal" weight="bold">
@@ -851,29 +874,27 @@ class PoolStake extends Component {
               <div className="your-share-info">
                 <Status
                   title={String(source).toUpperCase()}
-                  value={stakeData.runeEarned}
+                  value={runeEarned}
                 />
                 <Label
                   className="your-share-price-label"
                   size="normal"
                   color="grey"
                 >
-                  $USD{' '}
-                  {(stakeData.runeEarned * this.state.runePrice).toFixed(2)}
+                  $USD {(runeEarned * runePrice).toFixed(2)}
                 </Label>
               </div>
               <div className="your-share-info">
                 <Status
                   title={String(target).toUpperCase()}
-                  value={stakeData.tokensEarned}
+                  value={tokensEarned}
                 />
                 <Label
                   className="your-share-price-label"
                   size="normal"
                   color="grey"
                 >
-                  $USD{' '}
-                  {(stakeData.tokensEarned * this.state.tokenPrice).toFixed(2)}
+                  $USD {(tokensEarned * tokenPrice).toFixed(2)}
                 </Label>
               </div>
             </div>
@@ -889,9 +910,9 @@ class PoolStake extends Component {
       runePrice,
       poolData,
       swapData,
-      assetData,
       pools,
       txStatus,
+      chainData: { stakeData, tokenInfo },
     } = this.props;
     const {
       runeAmount,
@@ -910,7 +931,7 @@ class PoolStake extends Component {
       symbol,
       poolInfo,
       swapInfo,
-      assetData,
+      tokenInfo,
       runePrice,
     );
 
@@ -935,7 +956,7 @@ class PoolStake extends Component {
         {this.renderStakeInfo(poolStats)}
         <Row className="share-view">
           <Col className="your-share-view" span={24} lg={8}>
-            {this.renderYourShare()}
+            {this.renderYourShare(poolStats, calcResult, stakeData)}
           </Col>
           <Col className="share-detail-view" span={24} lg={16}>
             {this.renderShareDetail(poolStats, calcResult)}
@@ -1003,12 +1024,12 @@ export default compose(
     state => ({
       txStatus: state.App.txStatus,
       user: state.Wallet.user,
+      assetData: state.Wallet.assetData,
+      runePrice: state.Wallet.runePrice,
       chainData: state.ChainService,
       pools: state.Statechain.pools,
       poolData: state.Statechain.poolData,
       swapData: state.Statechain.swapData,
-      assetData: state.Wallet.assetData,
-      runePrice: state.Wallet.runePrice,
     }),
     {
       getTokens,

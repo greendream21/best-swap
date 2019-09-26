@@ -10,10 +10,10 @@ export const getPoolData = (
   to,
   poolInfo,
   swapInfo,
-  assetData,
+  tokenInfo,
   runePrice,
 ) => {
-  const tokenData = assetData.find(data => data.asset === to);
+  const tokenData = tokenInfo[to];
   const tokenPrice = tokenData ? tokenData.price : 0;
 
   const asset = from;
@@ -54,13 +54,20 @@ export const getCalcResult = (tokenName, pools, rValue, runePrice, tValue) => {
   const result = {};
 
   pools.forEach(poolData => {
-    const { balance_rune, balance_token, pool_address, symbol } = poolData;
+    const {
+      balance_rune,
+      balance_token,
+      pool_address,
+      pool_units,
+      symbol,
+    } = poolData;
 
     if (symbol.toLowerCase() === tokenName.toLowerCase()) {
       R = Number(balance_rune);
       T = Number(balance_token);
       result.poolAddressTo = pool_address;
       result.symbolTo = symbol;
+      result.poolUnits = pool_units;
     }
   });
 
@@ -79,6 +86,8 @@ export const getCalcResult = (tokenName, pools, rValue, runePrice, tValue) => {
     newDepth,
     share,
     Pr,
+    R,
+    T,
   };
 };
 
@@ -115,11 +124,11 @@ export const confirmStake = (
         coins: [
           {
             denom: 'RUNE-A1F',
-            amount: runeAmount,
+            amount: runeAmount.toFixed(8),
           },
           {
             denom: symbolTo,
-            amount: tokenAmount,
+            amount: tokenAmount.toFixed(8),
           },
         ],
       },
