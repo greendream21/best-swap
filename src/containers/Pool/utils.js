@@ -65,6 +65,7 @@ export const getCalcResult = (tokenName, pools, rValue, runePrice, tValue) => {
     if (symbol.toLowerCase() === tokenName.toLowerCase()) {
       R = Number(balance_rune);
       T = Number(balance_token);
+      result.ratio = R / T;
       result.poolAddressTo = pool_address;
       result.symbolTo = symbol;
       result.poolUnits = pool_units;

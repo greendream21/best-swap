@@ -86,7 +86,7 @@ class PoolStake extends Component {
     password: '',
     runeAmount: 0,
     tokenAmount: 0,
-    balance: 100,
+    // balance: 100,
     fR: 1,
     fT: 1,
     selectedRune: 0,
@@ -228,7 +228,7 @@ class PoolStake extends Component {
       });
     }
     this.setState({
-      balance,
+      // balance,
       fR,
       fT,
     });
@@ -608,7 +608,7 @@ class PoolStake extends Component {
     const {
       runeAmount,
       tokenAmount,
-      balance,
+      // balance,
       widthdrawPercentage,
       dragReset,
     } = this.state;
@@ -685,7 +685,7 @@ class PoolStake extends Component {
               withSearch
             />
           </div>
-          <Label className="label-title" size="normal" weight="bold">
+          {/* <Label className="label-title" size="normal" weight="bold">
             ADJUST BALANCE
           </Label>
           <Label size="normal">
@@ -698,7 +698,7 @@ class PoolStake extends Component {
             min={0}
             max={200}
             tooltipVisible={false}
-          />
+          /> */}
           <div className="stake-share-info-wrapper">
             <div className="pool-status-wrapper">
               {poolAttrs.map(info => {
