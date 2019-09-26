@@ -59,7 +59,10 @@ export default function apiReducer(state = initState, action) {
     case actions.GET_STAKE_DATA_SUCCESS:
       return {
         ...state,
-        stakeData: payload,
+        stakeData: {
+          ...state.stakeData,
+          [payload.asset]: payload.data,
+        },
         error: null,
       };
     case actions.GET_STAKE_TX_SUCCESS:
