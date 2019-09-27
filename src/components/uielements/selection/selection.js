@@ -24,18 +24,31 @@ class Selection extends Component {
 
     return (
       <SelectionWrapper className={`selection-wrapper ${className}`} {...props}>
-        <Button onClick={() => this.handleClick(25)} focused={selected === 25}>
+        <Button
+          onClick={() => this.handleClick(25)}
+          focused={selected === 25}
+          tabIndex="-1"
+        >
           25%
         </Button>
-        <Button onClick={() => this.handleClick(50)} focused={selected === 50}>
+        <Button
+          onClick={() => this.handleClick(50)}
+          focused={selected === 50}
+          tabIndex="-1"
+        >
           50%
         </Button>
-        <Button onClick={() => this.handleClick(75)} focused={selected === 75}>
+        <Button
+          onClick={() => this.handleClick(75)}
+          focused={selected === 75}
+          tabIndex="-1"
+        >
           75%
         </Button>
         <Button
           onClick={() => this.handleClick(100)}
           focused={selected === 100}
+          tabIndex="-1"
         >
           All
         </Button>
