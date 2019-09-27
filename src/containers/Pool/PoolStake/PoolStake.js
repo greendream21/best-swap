@@ -724,10 +724,9 @@ class PoolStake extends Component {
               amount={tokenAmount}
               price={tokenPrice}
               onChangeAsset={this.handleSelectTraget}
-              // onChange={this.handleChangeTokenAmount(target)}
-              // onSelect={this.handleSelectTokenAmount(target)}
-              // withSelection
-              disabled
+              onChange={this.handleChangeTokenAmount(target)}
+              onSelect={this.handleSelectTokenAmount(target)}
+              withSelection
               withSearch
             />
           </div>
