@@ -23,18 +23,32 @@ export const ContentWrapper = styled(ContentView)`
       padding: 20px;
       justify-content: flex-start;
       align-items: center;
+      ${media.lg`
+        justify-content: center;
+        padding: 40px 20px;
+      `}
 
-      .stake-pool-status {
-        width: 150px;
+      .pool-status-info {
+        display: flex;
+        flex-direction: column;
         ${media.lg`
           padding: 0 15px;
         `}
 
-        .status-value {
-          ${media.lg`
-            font-weight: bold;
-            font-size: ${key('sizes.font.big', '10px')};
-          `}
+        .stake-pool-status {
+          width: 150px;
+          text-transform: uppercase;
+          padding-bottom: 4px;
+          .status-value {
+            ${media.lg`
+              font-weight: bold;
+              font-size: ${key('sizes.font.big', '10px')};
+            `}
+          }
+        }
+
+        .pool-price-label {
+          padding-top: 4px;
         }
       }
     }
@@ -287,7 +301,7 @@ export const ContentWrapper = styled(ContentView)`
           ${media.lg`
             display: flex;
             flex-direction: row;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
           `}
 

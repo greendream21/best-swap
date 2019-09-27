@@ -86,7 +86,7 @@ class PoolStake extends Component {
     password: '',
     runeAmount: 0,
     tokenAmount: 0,
-    balance: 100,
+    // balance: 100,
     fR: 1,
     fT: 1,
     selectedRune: 0,
@@ -124,7 +124,7 @@ class PoolStake extends Component {
   };
 
   handleChangeTokenAmount = tokenName => amount => {
-    const { assetData } = this.props;
+    const { assetData, symbol } = this.props;
     const { runeAmount, tokenAmount, fR, fT } = this.state;
 
     let newValue;
@@ -139,21 +139,40 @@ class PoolStake extends Component {
       return false;
     });
 
+    const targetToken = assetData.find(data => {
+      const { asset } = data;
+      if (asset.toLowerCase() === symbol.toLowerCase()) {
+        return true;
+      }
+      return false;
+    });
+
+    if (!sourceAsset || !targetToken) {
+      return;
+    }
+
     const balance = tokenName === 'rune' ? fR : fT;
 
     const totalAmount = !sourceAsset ? 0 : sourceAsset.assetValue * balance;
+    const totalTokenAmount = targetToken.assetValue * balance || 0;
 
     if (tokenName === 'rune') {
       newValue = getNewValue(amount, runeAmount);
+      const { ratio } = this.data;
+      const tokenValue = newValue * ratio;
+      const tokenAmount =
+        tokenValue <= totalTokenAmount ? tokenValue : totalTokenAmount;
 
       if (totalAmount < newValue) {
         this.setState({
           runeAmount: totalAmount,
+          tokenAmount,
           selectedRune: 0,
         });
       } else {
         this.setState({
           runeAmount: newValue,
+          tokenAmount,
           selectedRune: 0,
         });
       }
@@ -175,7 +194,7 @@ class PoolStake extends Component {
   };
 
   handleSelectTokenAmount = token => amount => {
-    const { assetData } = this.props;
+    const { assetData, symbol } = this.props;
     const { fR, fT } = this.state;
 
     const selectedToken = assetData.find(data => {
@@ -187,17 +206,32 @@ class PoolStake extends Component {
       return false;
     });
 
-    if (!selectedToken) {
+    const targetToken = assetData.find(data => {
+      const { asset } = data;
+      if (asset.toLowerCase() === symbol.toLowerCase()) {
+        return true;
+      }
+      return false;
+    });
+
+    if (!selectedToken || !targetToken) {
       return;
     }
 
     const balance = token === 'rune' ? fR : fT;
     const totalAmount = selectedToken.assetValue || 0;
+    const totalTokenAmount = targetToken.assetValue || 0;
     const value = ((totalAmount * amount) / 100) * balance;
 
     if (token === 'rune') {
+      const { ratio } = this.data;
+      const tokenValue = value * ratio;
+      const tokenAmount =
+        tokenValue <= totalTokenAmount ? tokenValue : totalTokenAmount;
+
       this.setState({
         runeAmount: value,
+        tokenAmount,
         selectedRune: amount,
         runeTotal: totalAmount,
       });
@@ -228,7 +262,7 @@ class PoolStake extends Component {
       });
     }
     this.setState({
-      balance,
+      // balance,
       fR,
       fT,
     });
@@ -365,6 +399,12 @@ class PoolStake extends Component {
     const { setTxTimerModal } = this.props;
 
     setTxTimerModal(false);
+  };
+
+  handleSelectTraget = asset => {
+    const URL = `/pool/${asset}`;
+
+    this.props.history.push(URL);
   };
 
   handleGotoStakeView = () => {
@@ -538,7 +578,7 @@ class PoolStake extends Component {
     );
   };
 
-  renderStakeInfo = poolStats => {
+  renderStakeInfo = (poolStats, calcResult) => {
     const { symbol } = this.props;
     const source = 'rune';
 
@@ -553,6 +593,7 @@ class PoolStake extends Component {
       totalStakers,
       roiAT,
     } = poolStats;
+    const { poolPrice } = calcResult;
 
     const attrs = [
       {
@@ -583,11 +624,14 @@ class PoolStake extends Component {
       <Row className="stake-status-view">
         <Col className="stake-pool-col" span={24} lg={8}>
           <Coin type="rune" over={target} />
-          <Status
-            className="stake-pool-status"
-            title="Pool"
-            value={stakePool}
-          />
+          <div className="pool-status-info">
+            <Label className="stake-pool-status" size="big" weight="bold">
+              {stakePool}
+            </Label>
+            <Label className="pool-price-label" size="normal" color="grey">
+              $USD {poolPrice}
+            </Label>
+          </div>
         </Col>
         <Col className="stake-info-col" span={24} lg={16}>
           {attrs.map(info => (
@@ -598,7 +642,7 @@ class PoolStake extends Component {
     );
   };
 
-  renderShareDetail = (poolStats, calcResult) => {
+  renderShareDetail = poolStats => {
     const {
       user: { wallet },
       symbol,
@@ -608,7 +652,7 @@ class PoolStake extends Component {
     const {
       runeAmount,
       tokenAmount,
-      balance,
+      // balance,
       widthdrawPercentage,
       dragReset,
     } = this.state;
@@ -634,27 +678,27 @@ class PoolStake extends Component {
       };
     });
 
-    const { depth, tokenPrice } = poolStats;
-    const { poolPrice, newPrice, newDepth, share } = calcResult;
+    const { tokenPrice } = poolStats;
+    // const { poolPrice, newPrice, newDepth, share } = calcResult;
 
-    const poolAttrs = [
-      { key: 'price', title: 'Pool Price', value: `$${poolPrice}` },
-      {
-        key: 'depth',
-        title: 'Pool Depth',
-        value: `$${getActualValue(depth * runePrice)}`,
-      },
-    ];
+    // const poolAttrs = [
+    //   { key: 'price', title: 'Pool Price', value: `$${poolPrice}` },
+    //   {
+    //     key: 'depth',
+    //     title: 'Pool Depth',
+    //     value: `$${getActualValue(depth * runePrice)}`,
+    //   },
+    // ];
 
-    const newPoolAttrs = [
-      { key: 'price', title: 'New Price', value: `$${newPrice}` },
-      {
-        key: 'depth',
-        title: 'New Depth',
-        value: `$${getActualValue(newDepth)}`,
-      },
-      { key: 'share', title: 'Your Share', value: `${share}%` },
-    ];
+    // const newPoolAttrs = [
+    //   { key: 'price', title: 'New Price', value: `$${newPrice}` },
+    //   {
+    //     key: 'depth',
+    //     title: 'New Depth',
+    //     value: `$${getActualValue(newDepth)}`,
+    //   },
+    //   { key: 'share', title: 'Your Share', value: `${share}%` },
+    // ];
 
     return (
       <Tabs>
@@ -679,13 +723,14 @@ class PoolStake extends Component {
               assetData={tokensData}
               amount={tokenAmount}
               price={tokenPrice}
+              onChangeAsset={this.handleSelectTraget}
               onChange={this.handleChangeTokenAmount(target)}
               onSelect={this.handleSelectTokenAmount(target)}
               withSelection
               withSearch
             />
           </div>
-          <Label className="label-title" size="normal" weight="bold">
+          {/* <Label className="label-title" size="normal" weight="bold">
             ADJUST BALANCE
           </Label>
           <Label size="normal">
@@ -698,19 +743,19 @@ class PoolStake extends Component {
             min={0}
             max={200}
             tooltipVisible={false}
-          />
+          /> */}
           <div className="stake-share-info-wrapper">
-            <div className="pool-status-wrapper">
+            {/* <div className="pool-status-wrapper">
               {poolAttrs.map(info => {
                 return <Status className="share-info-status" {...info} />;
               })}
-            </div>
+            </div> */}
             <div className="share-status-wrapper">
-              <div className="info-status-wrapper">
+              {/* <div className="info-status-wrapper">
                 {newPoolAttrs.map(info => {
                   return <Status className="share-info-status" {...info} />;
                 })}
-              </div>
+              </div> */}
               <Drag
                 title="Drag to stake"
                 source="blue"
@@ -953,13 +998,13 @@ class PoolStake extends Component {
 
     return (
       <ContentWrapper className="pool-stake-wrapper">
-        {this.renderStakeInfo(poolStats)}
+        {this.renderStakeInfo(poolStats, calcResult)}
         <Row className="share-view">
           <Col className="your-share-view" span={24} lg={8}>
             {this.renderYourShare(poolStats, calcResult, stakeData)}
           </Col>
           <Col className="share-detail-view" span={24} lg={16}>
-            {this.renderShareDetail(poolStats, calcResult)}
+            {this.renderShareDetail(poolStats)}
           </Col>
         </Row>
         <ConfirmModal
