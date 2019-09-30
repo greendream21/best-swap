@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { Link, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Row, Col, Icon, Form, notification } from 'antd';
 import { crypto } from '@binance-chain/javascript-sdk';
@@ -17,7 +17,6 @@ import CoinData from '../../../components/uielements/coins/coinData';
 import Slider from '../../../components/uielements/slider';
 import TxTimer from '../../../components/uielements/txTimer';
 import Drag from '../../../components/uielements/drag';
-import WalletButton from '../../../components/uielements/walletButton';
 import Modal from '../../../components/uielements/modal';
 import Input from '../../../components/uielements/input';
 
@@ -343,6 +342,21 @@ class PoolStake extends Component {
     }
   };
 
+  handleConnectWallet = () => {
+    this.setState({
+      openWalletAlert: false,
+    });
+
+    this.props.history.push('/connect');
+  };
+
+  hideWalletAlert = () => {
+    this.setState({
+      openWalletAlert: false,
+      dragReset: true,
+    });
+  };
+
   handleStartTimer = () => {
     const { setTxTimerModal, setTxTimerType, setTxTimerStatus } = this.props;
 
@@ -644,7 +658,6 @@ class PoolStake extends Component {
 
   renderShareDetail = poolStats => {
     const {
-      user: { wallet },
       symbol,
       runePrice,
       chainData: { tokenInfo },
@@ -656,14 +669,6 @@ class PoolStake extends Component {
       widthdrawPercentage,
       dragReset,
     } = this.state;
-
-    if (!wallet) {
-      return (
-        <Link to="/connect">
-          <WalletButton connected={false} />
-        </Link>
-      );
-    }
 
     const stakeData = this.state.stakeData || { units: 0 };
     const source = 'rune';
@@ -872,6 +877,7 @@ class PoolStake extends Component {
         <Label className="label-title" size="normal" weight="bold">
           YOUR SHARE
         </Label>
+        {!wallet && <Label size="normal">Please connect your wallet.</Label>}
         {wallet && stakeInfo.units === 0 && (
           <>
             <Label size="normal">You don't have any shares in this pool.</Label>
@@ -1057,7 +1063,7 @@ class PoolStake extends Component {
           onCancel={this.hideWalletAlert}
           okText="Add Wallet"
         >
-          Please add a wallet to swap tokens.
+          Please add a wallet to stake.
         </Modal>
       </ContentWrapper>
     );
