@@ -35,7 +35,7 @@ class ActionView extends Component {
     refreshBalance: PropTypes.func.isRequired,
     refreshStake: PropTypes.func.isRequired,
     history: PropTypes.object.isRequired,
-    symbol: PropTypes.string.isRequired,
+    symbol: PropTypes.string,
   };
 
   static defaultProps = {

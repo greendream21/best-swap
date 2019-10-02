@@ -1,0 +1,64 @@
+{
+  "node_info": {
+    "protocol_version": {
+      "p2p": 7,
+      "block": 10,
+      "app": 0
+    },
+    "id": "1bca643058c56f9c20ebaaad1739522ee7d11cd6",
+    "listen_addr": "10.201.41.106:27146",
+    "network": "Binance-Chain-Nile",
+    "version": "0.31.5",
+    "channels": "3640202122233038",
+    "moniker": "Fuji",
+    "other": {
+      "tx_index": "on",
+      "rpc_address": "tcp://0.0.0.0:27147"
+    }
+  },
+  "sync_info": {
+    "latest_block_hash": "29CCC48BFCD9D43F7DBBB0274C4C0722EBA7B29E53ABCDAB3188C66038E3113D",
+    "latest_app_hash": "95B8E39ECA0C8AC42EEC3873FD303A7BC21B04FB450D02AA5FE5090A36F6E9B0",
+    "latest_block_height": 41928626,
+    "latest_block_time": "2019-09-29T18:40:31.732088112Z",
+    "catching_up": false
+  },
+  "validator_info": {
+    "address": "7B343E041CA130000A8BC00C35152BD7E7740037",
+    "pub_key": [
+      74,
+      93,
+      71,
+      83,
+      235,
+      121,
+      249,
+      46,
+      128,
+      239,
+      226,
+      45,
+      247,
+      172,
+      164,
+      246,
+      102,
+      164,
+      244,
+      75,
+      248,
+      28,
+      83,
+      108,
+      74,
+      9,
+      212,
+      185,
+      197,
+      182,
+      84,
+      181
+    ],
+    "voting_power": 100000000000
+  }
+}

@@ -25,7 +25,7 @@ class SwapView extends Component {
     swapData: PropTypes.object.isRequired,
     assetData: PropTypes.array.isRequired,
     getRunePrice: PropTypes.func.isRequired,
-    runePrice: PropTypes.number.isRequired,
+    runePrice: PropTypes.number,
     history: PropTypes.object,
   };
 
@@ -88,6 +88,7 @@ class SwapView extends Component {
         return (
           <SwapCard
             className="swap-card"
+            data-test={`swap-card-${symbol}`}
             asset="rune"
             onSwap={this.handleSwap(activeAsset, swapCardData.target)}
             {...swapCardData}

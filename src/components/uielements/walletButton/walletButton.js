@@ -6,7 +6,7 @@ import { ButtonWrapper } from './walletButton.style';
 class WalletButton extends Component {
   static propTypes = {
     connected: PropTypes.bool,
-    value: PropTypes.string.isRequired,
+    value: PropTypes.string,
     className: PropTypes.string,
   };
 

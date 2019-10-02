@@ -1,0 +1,15 @@
+{
+  "asset": "BNB",
+  "totalFeesTKN": 4769613281,
+  "totalFeesRune": 0,
+  "vol24hr": 0,
+  "volAT": 298181083990,
+  "depth": 89093850859,
+  "poolUnits": 82126521543,
+  "roiAT": 42956191280.56671,
+  "roi30": 0,
+  "roi12": 0,
+  "numStakers": 2,
+  "numStakeTx": 2,
+  "numSwaps": 47
+}

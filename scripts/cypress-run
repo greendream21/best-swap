@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# This script passes command line vars to cypress and ensures that the video link is still displayed if cypress fails
+
+# Not set -e so that the video link is displayed when cypress returns a non 0 error code
+
+cypress run $@
+
+code=$?
+
+# display video link should run always
+./scripts/display-video-link
+
+exit $code

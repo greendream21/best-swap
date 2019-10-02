@@ -608,6 +608,7 @@ class SwapSend extends Component {
           >
             <SwapAssetCard>
               <CoinCard
+                data-test="coincard-source-input"
                 title="You are swapping"
                 asset={source}
                 assetData={sourceData}
@@ -711,6 +712,7 @@ class SwapSend extends Component {
           <Form onSubmit={this.handleConfirmPassword}>
             <Form.Item className={invalidPassword ? 'has-error' : ''}>
               <Input
+                data-test="password-confirmation-input"
                 type="password"
                 value={password}
                 onChange={this.handleChange('password')}
