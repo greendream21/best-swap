@@ -2,6 +2,7 @@ import React, { Fragment, Component } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
+import { Spin, Icon } from 'antd';
 import PropTypes from 'prop-types';
 
 import Label from '../../../components/uielements/label';
@@ -101,6 +102,16 @@ class SwapView extends Component {
   };
 
   render() {
+    const { runePrice, pools } = this.props;
+    if (runePrice === null || pools.length === 0) {
+      const antIcon = <Icon type="loading" style={{ fontSize: 24 }} spin />;
+      return (
+        <div style={{ textAlign: 'center' }}>
+          <Spin indicator={antIcon} style={{ color: '#31b8f5' }} />
+        </div>
+      );
+    }
+
     return (
       <ContentWrapper className="swap-view-wrapper">
         <div className="view-title">
