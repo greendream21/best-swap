@@ -33,7 +33,12 @@ import {
   PrivateModal,
   // StakePoolCol,
 } from './PoolStake.style';
-import { getPoolData, getCalcResult, confirmStake } from '../utils';
+import {
+  getPoolData,
+  getCalcResult,
+  confirmStake,
+  confirmWithdraw,
+} from '../utils';
 import { getActualValue, getNewValue } from '../../../helpers/stringHelper';
 import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
 
@@ -74,8 +79,6 @@ class PoolStake extends Component {
     getPools: PropTypes.func.isRequired,
     getRunePrice: PropTypes.func.isRequired,
   };
-
-  static defaultProps = {};
 
   state = {
     dragReset: true,
@@ -336,6 +339,7 @@ class PoolStake extends Component {
     }
 
     if (keystore) {
+      this.type = 'stake';
       this.handleOpenPrivateModal();
     } else if (wallet) {
       this.handleConfirmStake();
@@ -357,10 +361,10 @@ class PoolStake extends Component {
     });
   };
 
-  handleStartTimer = () => {
+  handleStartTimer = (type = 'stake') => {
     const { setTxTimerModal, setTxTimerType, setTxTimerStatus } = this.props;
 
-    setTxTimerType('stake');
+    setTxTimerType(type);
     setTxTimerModal(true);
     setTxTimerStatus(true);
   };
@@ -381,7 +385,11 @@ class PoolStake extends Component {
         Binance.getPrefix(),
       );
       if (wallet === address) {
-        this.handleConfirmStake();
+        if (this.type === 'stake') {
+          this.handleConfirmStake();
+        } else if (this.type === 'withdraw') {
+          this.handleConfirmWithdraw();
+        }
       }
 
       this.setState({
@@ -421,33 +429,58 @@ class PoolStake extends Component {
     this.props.history.push(URL);
   };
 
-  handleGotoStakeView = () => {
-    const { symbol } = this.props;
-    const URL = `/pool/stake-view/${symbol}`;
-
-    this.props.history.push(URL);
-  };
-
-  handleAddMore = () => {
-    const { symbol } = this.props;
-    const URL = `/pool/stake-new/${symbol}`;
-
-    this.props.history.push(URL);
-  };
-
-  handleGotoWithdraw = () => {
-    const { symbol } = this.props;
-    const URL = `/pool/withdraw/${symbol}`;
-
-    this.props.history.push(URL);
-  };
-
   handleWithdraw = () => {
-    const { setTxTimerModal, setTxTimerType, setTxTimerStatus } = this.props;
+    const {
+      user: { keystore, wallet },
+    } = this.props;
 
-    setTxTimerType('withdraw');
-    setTxTimerModal(true);
-    setTxTimerStatus(true);
+    if (!wallet) {
+      this.setState({
+        openWalletAlert: true,
+      });
+      return;
+    }
+
+    if (keystore) {
+      this.type = 'withdraw';
+      this.handleOpenPrivateModal();
+    } else if (wallet) {
+      this.handleConfirmWithdraw();
+    }
+  };
+
+  handleConfirmWithdraw = async () => {
+    const {
+      symbol,
+      pools,
+      user: { wallet },
+    } = this.props;
+    const { widthdrawPercentage } = this.state;
+    const withdrawRate = (widthdrawPercentage || 50) / 100;
+
+    try {
+      const { result } = await confirmWithdraw(
+        Binance,
+        wallet,
+        pools,
+        symbol,
+        withdrawRate,
+      );
+
+      console.log('withdraw result: ', result);
+      this.hash = result[0].hash;
+
+      this.handleStartTimer('withdraw');
+    } catch (error) {
+      notification.error({
+        message: 'Withdraw Invalid',
+        description: 'Withdraw information is not valid.',
+      });
+      this.setState({
+        dragReset: true,
+      });
+      console.log(error); // eslint-disable-line no-console
+    }
   };
 
   handleChangeTxValue = value => {
@@ -497,11 +530,15 @@ class PoolStake extends Component {
         <Row className="modal-content">
           <div className="left-container">
             <Label weight="bold">{stakeText}</Label>
-            <CoinData asset={source} assetValue={runeAmount} price={Pr} />
+            <CoinData
+              asset={source}
+              assetValue={runeAmount}
+              price={Pr * runeAmount}
+            />
             <CoinData
               asset={target}
               assetValue={tokenAmount}
-              price={tokenPrice}
+              price={tokenPrice * tokenAmount}
             />
           </div>
           <div className="center-container">
@@ -540,12 +577,12 @@ class PoolStake extends Component {
     );
   };
 
-  renderWithdrawModalContent = (poolStats, calcResult) => {
+  renderWithdrawModalContent = () => {
     const {
       txStatus: { status, value },
       symbol,
+      runePrice,
     } = this.props;
-    const { runeAmount, tokenAmount } = this.state;
 
     const source = 'rune';
     const target = symbol.split('-')[0].toLowerCase();
@@ -561,33 +598,57 @@ class PoolStake extends Component {
     const completed = value !== null && !status;
     const withdrawText = !completed ? 'YOU ARE WITHDRAWING' : 'YOU WITHDRAWN';
 
-    const { Pr } = calcResult;
-    const { tokenPrice } = poolStats;
+    const txURL = TESTNET_TX_BASE_URL + this.hash;
+    const { runeValue, tokenValue, tokenPrice } = this.withdrawData;
 
     return (
       <ConfirmModalContent>
-        <div className="left-container" />
-        <div className="center-container">
-          <TxTimer
-            reset={status}
-            value={value}
-            onChange={this.handleChangeTxValue}
-            onEnd={this.handleEndTxTimer}
-          />
-          {value !== 0 && (
-            <Label weight="bold">{transactionLabels[value - 1]}</Label>
+        <Row className="modal-content">
+          <div className="left-container" />
+          <div className="center-container">
+            <TxTimer
+              reset={status}
+              value={value}
+              onChange={this.handleChangeTxValue}
+              onEnd={this.handleEndTxTimer}
+            />
+          </div>
+          <div className="right-container">
+            <Label weight="bold">{withdrawText}</Label>
+            <CoinData
+              asset={source}
+              assetValue={runeValue}
+              price={runePrice * runeValue}
+            />
+            <CoinData
+              asset={target}
+              assetValue={tokenValue}
+              price={tokenPrice * tokenValue}
+            />
+          </div>
+        </Row>
+        <Row className="modal-info-wrapper">
+          {this.hash && (
+            <div className="hash-address">
+              <div className="copy-btn-wrapper">
+                <a href={txURL} target="_blank" rel="noopener noreferrer">
+                  <Icon type="global" />
+                </a>
+              </div>
+              <Label>VIEW ON BINANCE CHAIN</Label>
+            </div>
           )}
-          {completed && <Label weight="bold">complete</Label>}
-        </div>
-        <div className="right-container">
-          <Label weight="bold">{withdrawText}</Label>
-          <CoinData asset={source} assetValue={runeAmount} price={Pr} />
-          <CoinData
-            asset={target}
-            assetValue={tokenAmount}
-            price={tokenPrice}
-          />
-        </div>
+          {value !== 0 && (
+            <Label className="tx-label" weight="bold">
+              {transactionLabels[value - 1]}
+            </Label>
+          )}
+          {completed && (
+            <Label className="tx-label" weight="bold">
+              complete
+            </Label>
+          )}
+        </Row>
       </ConfirmModalContent>
     );
   };
@@ -656,7 +717,7 @@ class PoolStake extends Component {
     );
   };
 
-  renderShareDetail = poolStats => {
+  renderShareDetail = (poolStats, calcResult, stakeData) => {
     const {
       symbol,
       runePrice,
@@ -670,7 +731,6 @@ class PoolStake extends Component {
       dragReset,
     } = this.state;
 
-    const stakeData = this.state.stakeData || { units: 0 };
     const source = 'rune';
     const target = symbol.split('-')[0].toLowerCase();
 
@@ -683,7 +743,14 @@ class PoolStake extends Component {
       };
     });
 
+    const stakeInfo = stakeData[symbol] || {
+      units: 0,
+      runeStaked: 0,
+      tokensStaked: 0,
+    };
+
     const { tokenPrice } = poolStats;
+    const { R, T, poolUnits } = calcResult;
     // const { poolPrice, newPrice, newDepth, share } = calcResult;
 
     // const poolAttrs = [
@@ -704,6 +771,17 @@ class PoolStake extends Component {
     //   },
     //   { key: 'share', title: 'Your Share', value: `${share}%` },
     // ];
+
+    // withdraw values
+    const withdrawRate = (widthdrawPercentage || 50) / 100;
+    const { units } = stakeInfo;
+    const runeValue = getActualValue(((withdrawRate * units) / poolUnits) * R);
+    const tokenValue = getActualValue(((withdrawRate * units) / poolUnits) * T);
+    this.withdrawData = {
+      runeValue,
+      tokenValue,
+      tokenPrice,
+    };
 
     return (
       <Tabs>
@@ -772,7 +850,7 @@ class PoolStake extends Component {
             </div>
           </div>
         </TabPane>
-        <TabPane tab="Withdraw" key="withdraw" disabled>
+        <TabPane tab="Withdraw" key="withdraw">
           <Label className="label-title" size="normal" weight="bold">
             ADJUST WITHDRAWAL
           </Label>
@@ -796,6 +874,7 @@ class PoolStake extends Component {
             }}
             defaultValue={50}
             max={100}
+            min={1}
           />
           <div className="stake-withdraw-info-wrapper">
             <Label className="label-title" size="normal" weight="bold">
@@ -805,31 +884,13 @@ class PoolStake extends Component {
               <div className="withdraw-asset-wrapper">
                 <CoinData
                   asset={source}
-                  assetValue={Number(
-                    (
-                      stakeData.runeStaked *
-                      ((widthdrawPercentage || 50) / 100)
-                    ).toFixed(8),
-                  )}
-                  price={(
-                    stakeData.runeStaked *
-                    ((widthdrawPercentage || 50) / 100) *
-                    runePrice
-                  ).toFixed(2)}
+                  assetValue={runeValue}
+                  price={runeValue * runePrice}
                 />
                 <CoinData
                   asset={target}
-                  assetValue={Number(
-                    (
-                      stakeData.tokensStaked *
-                      ((widthdrawPercentage || 50) / 100)
-                    ).toFixed(8),
-                  )}
-                  price={(
-                    stakeData.tokensStaked *
-                    ((widthdrawPercentage || 50) / 100) *
-                    tokenPrice
-                  ).toFixed(2)}
+                  assetValue={tokenValue}
+                  price={tokenValue * tokenPrice}
                 />
               </div>
               <Drag
@@ -1010,7 +1071,7 @@ class PoolStake extends Component {
             {this.renderYourShare(poolStats, calcResult, stakeData)}
           </Col>
           <Col className="share-detail-view" span={24} lg={16}>
-            {this.renderShareDetail(poolStats)}
+            {this.renderShareDetail(poolStats, calcResult, stakeData)}
           </Col>
         </Row>
         <ConfirmModal
@@ -1022,7 +1083,7 @@ class PoolStake extends Component {
           footer={null}
           onCancel={this.handleCloseModal}
         >
-          {this.renderWithdrawModalContent(poolStats, calcResult)}
+          {this.renderWithdrawModalContent()}
         </ConfirmModal>
         <ConfirmModal
           title="STAKE CONFIRMATION"

@@ -5,11 +5,13 @@ import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 import PoolCard from '../../../components/pool/poolCard';
+import Label from '../../../components/uielements/label';
+import AddIcon from '../../../components/uielements/addIcon';
 
 import { ContentWrapper } from './PoolView.style';
 import statechainActions from '../../../redux/statechain/actions';
 import walletactions from '../../../redux/wallet/actions';
-import { getPoolData } from '../utils';
+import { getPoolData, getCreatePoolTokens } from '../utils';
 
 const { getPools } = statechainActions;
 const { getRunePrice } = walletactions;
@@ -43,8 +45,16 @@ class PoolView extends Component {
   };
 
   handleNewPool = () => {
-    // const URL = '/pool/new/rune';
-    // this.props.history.push(URL);
+    const { assetData, pools } = this.props;
+    const possibleTokens = getCreatePoolTokens(assetData, pools);
+    console.log(possibleTokens);
+    if (possibleTokens.length) {
+      const symbol = possibleTokens[0].asset;
+      if (symbol.split('-')[0].toLowerCase() !== 'rune') {
+        const URL = `/pool/${symbol}/new`;
+        this.props.history.push(URL);
+      }
+    }
   };
 
   renderPoolList = () => {
@@ -90,13 +100,12 @@ class PoolView extends Component {
     return (
       <ContentWrapper className="pool-view-wrapper">
         <div className="pool-list-view">{this.renderPoolList()}</div>
-        {/* { TODO: hide addpool button in the testnet } */}
-        {/* <div className="add-new-pool" onClick={this.handleNewPool}>
+        <div className="add-new-pool" onClick={this.handleNewPool}>
           <AddIcon />
           <Label size="normal" weight="bold" color="normal">
             ADD NEW POOL
           </Label>
-        </div> */}
+        </div>
       </ContentWrapper>
     );
   }

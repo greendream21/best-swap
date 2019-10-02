@@ -1,4 +1,8 @@
-import { getStakeMemo } from '../../helpers/memoHelper';
+import {
+  getStakeMemo,
+  getCreateMemo,
+  getWithdrawMemo,
+} from '../../helpers/memoHelper';
 
 import {
   getFixedNumber,
@@ -136,6 +140,121 @@ export const confirmStake = (
     ];
 
     Binance.multiSend(wallet, outputs, memo)
+      .then(response => resolve(response))
+      .catch(error => reject(error));
+  });
+};
+
+export const getCreatePoolTokens = (assetData, pools) => {
+  return assetData.filter(data => {
+    let unique = true;
+
+    if (data.asset.split('-')[0].toLowerCase() === 'rune') {
+      return false;
+    }
+
+    pools.forEach(pool => {
+      if (pool.symbol === data.asset) {
+        unique = false;
+      }
+    });
+
+    return unique;
+  });
+};
+
+export const getCreatePoolCalc = (
+  tokenName,
+  pools,
+  rValue,
+  runePrice,
+  tValue,
+) => {
+  const Pr = runePrice;
+
+  if (!pools.length) {
+    return {
+      poolPrice: 0,
+      depth: 0,
+      share: 100,
+    };
+  }
+
+  const poolAddressTo = pools[0].pool_address;
+
+  const r = rValue && getBaseNumberFormat(rValue);
+  const t = getBaseNumberFormat(tValue);
+
+  const poolPrice = tValue && getFixedNumber((r / t) * runePrice);
+  const depth = getFixedNumber(runePrice * r);
+  const share = 100;
+  const tokenSymbol = tokenName;
+
+  return {
+    poolAddressTo,
+    tokenSymbol,
+    poolPrice,
+    depth,
+    share,
+    Pr,
+  };
+};
+
+export const confirmCreatePool = (
+  Binance,
+  wallet,
+  runeAmount,
+  tokenAmount,
+  data,
+) => {
+  return new Promise((resolve, reject) => {
+    console.log('confirm stake', wallet, runeAmount, tokenAmount, data);
+
+    if (!validateStake(wallet, runeAmount, tokenAmount, data)) {
+      return reject();
+    }
+
+    const { poolAddressTo, tokenSymbol } = data;
+
+    const memo = getCreateMemo(tokenSymbol);
+    console.log('memo: ', memo);
+
+    const outputs = [
+      {
+        to: poolAddressTo,
+        coins: [
+          {
+            denom: 'RUNE-A1F',
+            amount: runeAmount.toFixed(8),
+          },
+          {
+            denom: tokenSymbol,
+            amount: tokenAmount.toFixed(8),
+          },
+        ],
+      },
+    ];
+
+    Binance.multiSend(wallet, outputs, memo)
+      .then(response => resolve(response))
+      .catch(error => reject(error));
+  });
+};
+
+export const confirmWithdraw = (Binance, wallet, pools, symbol, percent) => {
+  return new Promise((resolve, reject) => {
+    console.log('confirm withdraw', wallet, percent);
+
+    if (!wallet || !pools || !pools.length) {
+      return reject();
+    }
+
+    const memo = getWithdrawMemo(symbol, percent);
+    console.log('memo: ', memo);
+
+    const poolAddressTo = pools[0].pool_address;
+    const amount = 0.00000001;
+    Binance.transfer(wallet, poolAddressTo, amount, 'BNB', memo)
       .then(response => resolve(response))
       .catch(error => reject(error));
   });

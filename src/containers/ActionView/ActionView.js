@@ -11,7 +11,7 @@ import PanelHeader from '../../components/uielements/panelHeader';
 import { headerData } from './data';
 
 import { SwapIntro, SwapView, SwapSend } from '../Swap';
-import { PoolIntro, PoolView, PoolStake } from '../Pool';
+import { PoolIntro, PoolView, PoolStake, PoolCreate } from '../Pool';
 import { TradeIntro, TradeView, TradeDetail } from '../Trade';
 import ViewHeader from '../../components/uielements/viewHeader';
 import ConnectView from '../ConnectView';
@@ -196,7 +196,7 @@ class ActionView extends Component {
         {view === 'swap-send' && <SwapSend view="send" info={info} />}
         {view === 'pools-view' && <PoolView />}
         {view === 'pools-pool' && <PoolStake symbol={symbol} />}
-        {/* {view === 'pool-new' && <PoolCreate view="new" info={info} />} */}
+        {view === 'pools-new' && <PoolCreate symbol={symbol} />}
         {view === 'trade-view' && <TradeView />}
         {(view === 'trade-buy' || view === 'trade-sell') && (
           <TradeDetail view={view} info={info} />
