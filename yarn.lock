@@ -4826,6 +4826,11 @@ cyclist@^1.0.1:
   resolved "https://registry.yarnpkg.com/cyclist/-/cyclist-1.0.1.tgz#596e9698fd0c80e12038c2b82d6eb1b35b6224d9"
   integrity sha1-WW6WmP0MgOEgOMK4LW6xs1tiJNk=
 
+cypress-file-upload@^3.3.4:
+  version "3.3.4"
+  resolved "https://registry.yarnpkg.com/cypress-file-upload/-/cypress-file-upload-3.3.4.tgz#cbeb8a7a07150a1c60f2873666979e48b6335070"
+  integrity sha512-kfdrQ6cWBw82G7EbHSqZJiOQWRh9cGz9K1mjePNZax00gBL0qOdRTjfkAnR2vEmmJyCfnN3efryjfhFeLrGWVw==
+
 cypress@^3.4.1:
   version "3.4.1"
   resolved "https://registry.yarnpkg.com/cypress/-/cypress-3.4.1.tgz#ca2e4e9864679da686c6a6189603efd409664c30"

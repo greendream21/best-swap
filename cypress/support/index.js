@@ -14,7 +14,13 @@
 // ***********************************************************
 
 // Import commands.js using ES2015 syntax:
-import './commands'
+import './commands';
+
+// Cypress was not failing when run against dev with hotloading running
+// This results in cypress complaining of "Uncaught SyntaxError: Unexpected token {"
+Cypress.on('uncaught:exception', (err, runnable) => {
+  return false;
+});
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')

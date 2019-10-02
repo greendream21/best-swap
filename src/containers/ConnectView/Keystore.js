@@ -110,6 +110,7 @@ const Keystore = props => {
         >
           <Form onSubmit={unlock}>
             <Input.Password
+              data-test="keystore-password"
               onChange={onPasswordChange}
               placeholder="password"
               allowClear
@@ -119,7 +120,12 @@ const Keystore = props => {
             )}
           </Form>
         </FormGroup>
-        <Button htmlType="submit" onClick={unlock} disabled={!ready}>
+        <Button
+          data-test="keystore-submit"
+          htmlType="submit"
+          onClick={unlock}
+          disabled={!ready}
+        >
           Unlock
         </Button>
       </div>

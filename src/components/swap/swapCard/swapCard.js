@@ -81,7 +81,7 @@ class SwapCard extends Component {
           </CardLayout.Item>
         </CardLayout.Group>
         <CardLayout.Item noShrink showFrom="xs">
-          <Button onClick={onSwap} color="success">
+          <Button data-test="swap-button" onClick={onSwap} color="success">
             swap
           </Button>
         </CardLayout.Item>

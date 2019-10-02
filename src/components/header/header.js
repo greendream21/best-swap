@@ -51,7 +51,11 @@ class Header extends Component {
         <HeaderActionButtons>
           {!connected && (
             <Link to="/connect">
-              <WalletButton connected={connected} value={wallet} />
+              <WalletButton
+                data-test="add-wallet-button"
+                connected={connected}
+                value={wallet}
+              />
             </Link>
           )}
           {connected && <WalletDrawer />}

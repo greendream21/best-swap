@@ -212,7 +212,6 @@ class CoinCard extends Component {
       <CoinCardWrapper
         className={`coinCard-wrapper ${className}`}
         onBlur={this.handleBlurCard}
-        {...props}
       >
         {title && <Label className="title-label">{title}</Label>}
 

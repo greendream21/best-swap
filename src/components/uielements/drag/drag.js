@@ -199,10 +199,15 @@ class Drag extends Component {
               onMouseEnter={this.handleFocus}
               onMouseLeave={this.handleBlur}
               className="source-asset"
+              data-test="source-asset"
               type={source}
             />
           </Draggable>
-          <CoinIcon className="target-asset" type={target} />
+          <CoinIcon
+            className="target-asset"
+            data-test="target-asset"
+            type={target}
+          />
         </DragWrapper>
         {title && <TitleLabel color="input">{title}</TitleLabel>}
       </div>

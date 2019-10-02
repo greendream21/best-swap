@@ -99,6 +99,22 @@ The default is `http://localhost:8080`
 
 1. Run feature tests pointing to given url
 
+### Run cypress tests against a local development server
+
+To run tests against the local development server use `cy:run:dev`
+
+First in one terminal window ensure your development server is up:
+
+```bash
+yarn start
+```
+
+Then in a second terminal run the tests
+
+```bash
+yarn cy:run:dev
+```
+
 ## Deployment using firebase
 
 Firebase deploy:
