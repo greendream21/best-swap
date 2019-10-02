@@ -16,6 +16,9 @@ export const Button = styled(UIButton).attrs({
   min-width: 45px;
   width: 45px;
   /* TODO: create specific style for muted buttons to avoid using !important */
-  border-color: ${palette('border', 0)} !important;
-  color: ${palette('border', 0)} !important;
+  border-color: ${palette('primary', 0)} !important;
+  color: ${palette('primary', 0)} !important;
+  &:hover {
+    color: ${palette('border', 0)} !important;
+  }
 `;

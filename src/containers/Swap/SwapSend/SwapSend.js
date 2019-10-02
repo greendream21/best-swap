@@ -34,7 +34,7 @@ import {
   RecipientFormItemError,
   RecipientFormItemCloseButton,
 } from './SwapSend.style';
-import { blackArrowIcon } from '../../../components/icons';
+import { blueArrowIcon } from '../../../components/icons';
 import { getNewValue } from '../../../helpers/stringHelper';
 import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
 import { getCalcResult, confirmSwap } from '../utils';
@@ -622,7 +622,7 @@ class SwapSend extends Component {
               />
 
               <ArrowContainer>
-                <ArrowImage src={blackArrowIcon} alt="blackarrow-icon" />
+                <ArrowImage src={blueArrowIcon} alt="blackarrow-icon" />
               </ArrowContainer>
 
               <CoinCard
@@ -646,6 +646,7 @@ class SwapSend extends Component {
                           sizevalue="small"
                           typevalue="ghost"
                           focused={view === 'send'}
+                          style={{ borderColor: '#33CCFF' }}
                         >
                           Forward to alternate address
                         </Button>
