@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { palette } from 'styled-theme';
 import ContentView from '../../../components/utility/contentView';
+import Modal from '../../../components/uielements/modal';
 
 export const ContentWrapper = styled(ContentView)`
   padding: 0;
@@ -107,6 +108,16 @@ export const ContentWrapper = styled(ContentView)`
           }
         }
       }
+    }
+  }
+`;
+
+// Needs to be rewritten as a reusable component
+
+export const PrivateModal = styled(Modal)`
+  .ant-modal-body {
+    .ant-form-item {
+      margin-bottom: 0;
     }
   }
 `;

@@ -58,7 +58,7 @@ class CoinData extends Component {
           </Label>
           {assetValue && (
             <Label className="coinData-asset-value" type="normal">
-              {Number(assetValue.toFixed(2)).toLocaleString()}
+              {Number(Number(assetValue).toFixed(2)).toLocaleString()}
             </Label>
           )}
         </div>

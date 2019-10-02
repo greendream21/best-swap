@@ -7,11 +7,12 @@ import ActionView from '../../ActionView';
 class Pool extends Component {
   render() {
     // eslint-disable-next-line react/prop-types
-    const { symbol } = this.props.match.params;
+    const { symbol, action } = this.props.match.params;
+    const view = action || 'pool';
 
     return (
       <PoolWrapper>
-        <ActionView type="pools" symbol={symbol} view="pool" />
+        <ActionView type="pools" symbol={symbol} view={view} />
       </PoolWrapper>
     );
   }

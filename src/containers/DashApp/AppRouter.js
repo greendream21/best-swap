@@ -42,7 +42,7 @@ const routes = [
     component: asyncComponent(() => import('../pages/Pool/Pools')),
   },
   {
-    path: 'pool/:symbol?',
+    path: 'pool/:symbol/:action?',
     component: asyncComponent(() => import('../pages/Pool')),
   },
   {
