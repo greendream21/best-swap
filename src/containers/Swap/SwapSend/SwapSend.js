@@ -234,6 +234,8 @@ class SwapSend extends Component {
     } = this.props;
     const { xValue } = this.state;
 
+    // validation
+
     if (!wallet) {
       this.setState({
         openWalletAlert: true,
@@ -258,6 +260,10 @@ class SwapSend extends Component {
         invalidAddress: true,
         dragReset: true,
       });
+      return;
+    }
+
+    if (!this.validateSlip(this.data.slip)) {
       return;
     }
 
@@ -420,10 +426,6 @@ class SwapSend extends Component {
     const { xValue, address } = this.state;
     const { source, target } = this.getSwapData();
 
-    if (!this.validateSlip(this.data.slip)) {
-      return;
-    }
-
     try {
       const { result } = await confirmSwap(
         Binance,
@@ -569,6 +571,9 @@ class SwapSend extends Component {
       notification.error({
         message: 'Swap Invalid',
         description: `Slip ${slip}% is too high, try less.`,
+      });
+      this.setState({
+        dragReset: true,
       });
       return false;
     }
