@@ -14,6 +14,7 @@ export const ContentWrapper = styled(ContentView)`
     align-items: center;
     padding-top: 10px;
     cursor: pointer;
+    width: 160px;
 
     .label-wrapper {
       padding-left: 20px;
