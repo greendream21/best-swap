@@ -128,9 +128,11 @@ class WalletView extends Component {
       info,
       user: { wallet },
       assetData,
+      stakeData,
       chainData: { tokenInfo },
       runePrice,
       loadingAssets,
+      loadingStakes,
     } = this.props;
     const pair = getPair(info);
     const { source } = pair;
@@ -161,7 +163,7 @@ class WalletView extends Component {
               />
             )}
           </TabPane>
-          {/* <TabPane tab="stakes" key="stakes">
+          <TabPane tab="stakes" key="stakes">
             <Label className="asset-title-label">
               {this.renderStakeTitle()}
             </Label>
@@ -169,10 +171,12 @@ class WalletView extends Component {
               <CoinList
                 data={stakeData}
                 value={sourceIndex}
+                runePrice={runePrice}
+                tokenInfo={tokenInfo}
                 onSelect={this.handleSelectStake}
               />
             )}
-          </TabPane> */}
+          </TabPane>
         </Tabs>
       </WalletViewWrapper>
     );
