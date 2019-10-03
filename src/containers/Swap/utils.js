@@ -1,6 +1,8 @@
 import { getSwapMemo } from '../../helpers/memoHelper';
 import { getZValue, getPx, getPz, getSlip } from './calc';
 
+const BASE_NUMBER = 10 ** 8;
+
 export const getSwapType = (from, to) => {
   if (from.toLowerCase() === 'rune' || to.toLowerCase() === 'rune') {
     return 'single_swap';
@@ -84,7 +86,7 @@ export const getCalcResult = (from, to, pools, xValue, runePrice) => {
     const input = xValue * Px;
     const output = outputToken * outputPy;
     const slip = input !== 0 ? Math.round(((input - output) / input) * 100) : 0;
-    const lim = (1 - slip / 100) * outputToken * 10 ** 8;
+    const lim = (1 - slip / 100) * outputToken * BASE_NUMBER;
 
     return {
       ...result,
@@ -125,7 +127,7 @@ export const getCalcResult = (from, to, pools, xValue, runePrice) => {
     const input = xValue * Px;
     const output = outputToken * outputPy;
     const slip = input !== 0 ? Math.round(((input - output) / input) * 100) : 0;
-    const lim = (1 - slip / 100) * outputToken * 10 ** 8;
+    const lim = (1 - slip / 100) * outputToken * BASE_NUMBER;
 
     return {
       ...result,
