@@ -334,8 +334,18 @@ class SwapSend extends Component {
   };
 
   handleReversePair = () => {
-    const { view } = this.props;
+    const { view, assetData } = this.props;
     const { source, target } = this.getSwapData();
+
+    if (
+      !assetData.find(data => data.asset.split('-')[0].toLowerCase() === target)
+    ) {
+      notification.warning({
+        message: 'Cannot Reverse Swap Direction',
+        description: 'Token does not exist in your wallet.',
+      });
+      return;
+    }
 
     const URL = `/swap/${view}/${target}-${source}`;
 
