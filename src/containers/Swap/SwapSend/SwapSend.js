@@ -333,6 +333,15 @@ class SwapSend extends Component {
     this.props.history.push(URL);
   };
 
+  handleReversePair = () => {
+    const { view } = this.props;
+    const { source, target } = this.getSwapData();
+
+    const URL = `/swap/${view}/${target}-${source}`;
+
+    this.props.history.push(URL);
+  };
+
   validatePair = (sourceInfo, targetInfo) => {
     if (!targetInfo.length) {
       this.props.history.push('/swap');
@@ -620,7 +629,11 @@ class SwapSend extends Component {
               />
 
               <ArrowContainer>
-                <Button className="swap-arrow-btn" typevalue="outline">
+                <Button
+                  className="swap-arrow-btn"
+                  typevalue="outline"
+                  onClick={this.handleReversePair}
+                >
                   <Icon type="swap" />
                 </Button>
               </ArrowContainer>
