@@ -430,6 +430,9 @@ class SwapSend extends Component {
         message: 'Swap Invalid',
         description: 'Swap information is not valid.',
       });
+      this.setState({
+        dragReset: true,
+      });
       console.log(error); // eslint-disable-line no-console
     }
   };
