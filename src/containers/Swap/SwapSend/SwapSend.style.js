@@ -4,6 +4,7 @@ import { palette } from 'styled-theme';
 import ContentView from '../../../components/utility/contentView';
 import Modal from '../../../components/uielements/modal';
 import { media, cleanTag } from '../../../helpers/styleHelper';
+import { transition } from '../../../settings/style-util';
 
 export const SwapAssetCard = styled.div`
   display: flex;
@@ -29,6 +30,28 @@ export const ArrowContainer = styled(BaseArrowContainer)`
   align-items: center;
   justify-content: center;
   padding: 20px;
+
+  .swap-arrow-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 54px;
+    height: 40px;
+    border: 1px solid ${palette('primary', 0)};
+    border-radius: 5px;
+    cursor: pointer;
+
+    i {
+      color: ${palette('primary', 0)};
+      ${transition()}
+    }
+
+    &:hover {
+      i {
+        color: #fff;
+      }
+    }
+  }
 `;
 
 export const ContentWrapper = styled(ContentView)`

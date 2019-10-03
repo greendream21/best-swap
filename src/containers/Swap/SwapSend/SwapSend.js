@@ -25,7 +25,6 @@ import {
   SwapModal,
   SwapAssetCard,
   ArrowContainer,
-  ArrowImage,
   PrivateModal,
   RecipientForm,
   RecipientFormHolder,
@@ -34,7 +33,6 @@ import {
   RecipientFormItemError,
   RecipientFormItemCloseButton,
 } from './SwapSend.style';
-import { blueArrowIcon } from '../../../components/icons';
 import { getNewValue } from '../../../helpers/stringHelper';
 import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
 import { getCalcResult, confirmSwap } from '../utils';
@@ -622,7 +620,9 @@ class SwapSend extends Component {
               />
 
               <ArrowContainer>
-                <ArrowImage src={blueArrowIcon} alt="blackarrow-icon" />
+                <Button className="swap-arrow-btn" typevalue="outline">
+                  <Icon type="swap" />
+                </Button>
               </ArrowContainer>
 
               <CoinCard
