@@ -698,7 +698,7 @@ class PoolStake extends Component {
 
     return (
       <Row className="stake-status-view">
-        <Col className="stake-pool-col" span={24} lg={8}>
+        <div className="stake-pool-col">
           <Coin type="rune" over={target} />
           <div className="pool-status-info">
             <Label className="stake-pool-status" size="big" weight="bold">
@@ -708,12 +708,12 @@ class PoolStake extends Component {
               $USD {poolPrice}
             </Label>
           </div>
-        </Col>
-        <Col className="stake-info-col" span={24} lg={16}>
+        </div>
+        <div className="stake-info-col">
           {attrs.map(info => (
             <Status className="stake-info-status" {...info} />
           ))}
-        </Col>
+        </div>
       </Row>
     );
   };
@@ -1068,9 +1068,9 @@ class PoolStake extends Component {
 
     return (
       <ContentWrapper className="pool-stake-wrapper">
-        {this.renderStakeInfo(poolStats, calcResult)}
         <Row className="share-view">
           <Col className="your-share-view" span={24} lg={8}>
+            {this.renderStakeInfo(poolStats, calcResult)}
             {this.renderYourShare(poolStats, calcResult, stakeData)}
           </Col>
           <Col className="share-detail-view" span={24} lg={16}>

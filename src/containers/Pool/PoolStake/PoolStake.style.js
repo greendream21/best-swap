@@ -20,12 +20,11 @@ export const ContentWrapper = styled(ContentView)`
 
     .stake-pool-col {
       display: flex;
-      padding: 20px;
-      justify-content: flex-start;
+      padding: 0px 20px;
+      justify-content: center;
       align-items: center;
       ${media.lg`
         justify-content: center;
-        padding: 40px 20px;
       `}
 
       .pool-status-info {
@@ -57,7 +56,7 @@ export const ContentWrapper = styled(ContentView)`
       display: flex;
       flex-wrap: wrap;
       justify-content: flex-start;
-      padding: 20px;
+      padding: 20px 20px 0 20px;
       .stake-info-status {
         width: 50%;
         ${media.lg`
