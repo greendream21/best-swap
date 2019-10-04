@@ -140,12 +140,12 @@ export const ContentWrapper = styled(ContentView)`
               `}
             }
           }
-
-          .drag-wrapper {
-            ${media.lg`
-              padding-right: 20px;
-            `}
-          }
+        }
+        .drag-container {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          padding-top: 20px;
         }
       }
     }

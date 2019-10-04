@@ -896,6 +896,8 @@ class PoolStake extends Component {
                   price={tokenValue * tokenPrice}
                 />
               </div>
+            </div>
+            <div className="drag-container">
               <Drag
                 title="Drag to withdraw"
                 source="blue"
