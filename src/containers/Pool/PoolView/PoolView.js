@@ -13,6 +13,7 @@ import { ContentWrapper } from './PoolView.style';
 import statechainActions from '../../../redux/statechain/actions';
 import walletactions from '../../../redux/wallet/actions';
 import { getPoolData, getCreatePoolTokens } from '../utils';
+import PoolLoader from '../../../components/utility/loaders/pool';
 
 const { getPools } = statechainActions;
 const { getRunePrice } = walletactions;
@@ -27,6 +28,7 @@ class PoolView extends Component {
     assetData: PropTypes.array.isRequired,
     getRunePrice: PropTypes.func.isRequired,
     runePrice: PropTypes.number.isRequired,
+    loading: PropTypes.bool.isRequired,
   };
 
   state = {
@@ -103,15 +105,22 @@ class PoolView extends Component {
   };
 
   render() {
+    const { loading } = this.props;
+
     return (
       <ContentWrapper className="pool-view-wrapper">
-        <div className="pool-list-view">{this.renderPoolList()}</div>
-        <div className="add-new-pool" onClick={this.handleNewPool}>
-          <AddIcon />
-          <Label size="normal" weight="bold" color="normal">
-            ADD NEW POOL
-          </Label>
-        </div>
+        {loading && <PoolLoader />}
+        {!loading && (
+          <>
+            <div className="pool-list-view">{this.renderPoolList()}</div>
+            <div className="add-new-pool" onClick={this.handleNewPool}>
+              <AddIcon />
+              <Label size="normal" weight="bold" color="normal">
+                ADD NEW POOL
+              </Label>
+            </div>
+          </>
+        )}
       </ContentWrapper>
     );
   }
@@ -123,6 +132,7 @@ export default compose(
       pools: state.Statechain.pools,
       poolData: state.Statechain.poolData,
       swapData: state.Statechain.swapData,
+      loading: state.Statechain.loading,
       runePrice: state.Wallet.runePrice,
       assetData: state.Wallet.assetData,
     }),

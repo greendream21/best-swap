@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import { palette } from 'styled-theme';
 import UIButton from '../button';
 
 export const SelectionWrapper = styled.div`
@@ -15,10 +14,4 @@ export const Button = styled(UIButton).attrs({
 })`
   min-width: 45px;
   width: 45px;
-  /* TODO: create specific style for muted buttons to avoid using !important */
-  border-color: ${palette('primary', 0)} !important;
-  color: ${palette('primary', 0)} !important;
-  &:hover {
-    color: ${palette('border', 0)} !important;
-  }
 `;

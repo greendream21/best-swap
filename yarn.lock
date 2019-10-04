@@ -12250,6 +12250,13 @@ react-color@^2.17.0:
     reactcss "^1.2.0"
     tinycolor2 "^1.4.1"
 
+react-content-loader@^4.3.0:
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/react-content-loader/-/react-content-loader-4.3.0.tgz#c607cbe4415f7d9136c23f27c8505d1c5fbc3982"
+  integrity sha512-AoAuLwtkuswMLaAMdPnhsWJ1KuwXUZSxlR09bg5kxKEnQuCSPMjC20MILSnU+Htj+7m0NjFNQlqcarqMadAcMQ==
+  dependencies:
+    react-native-svg "9.6.4"
+
 react-custom-scrollbars@^4.2.1:
   version "4.2.1"
   resolved "https://registry.yarnpkg.com/react-custom-scrollbars/-/react-custom-scrollbars-4.2.1.tgz#830fd9502927e97e8a78c2086813899b2a8b66db"
@@ -12410,6 +12417,11 @@ react-lifecycles-compat@^3.0.2, react-lifecycles-compat@^3.0.4:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
   integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
+
+react-native-svg@9.6.4:
+  version "9.6.4"
+  resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-9.6.4.tgz#f9ceb228efd07317a5f9c378c6b9c5e13ff50cd0"
+  integrity sha512-6SlbGx0vlXHyDPQXSpX+8o6bNjxKFNJsISoboAkR7YWW6hdnkMg/HJXCgT6oJC0/ClKtSO7ZPrQcK4HR65kDNg==
 
 react-placeholder@^3.0.2:
   version "3.0.2"
