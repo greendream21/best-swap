@@ -15,6 +15,7 @@
 
 // Import commands.js using ES2015 syntax:
 import './commands';
+require('cypress-failed-log');
 
 // Cypress was not failing when run against dev with hotloading running
 // This results in cypress complaining of "Uncaught SyntaxError: Unexpected token {"
