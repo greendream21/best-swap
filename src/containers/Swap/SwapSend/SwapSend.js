@@ -507,7 +507,12 @@ class SwapSend extends Component {
         <Row className="swapmodal-content">
           <div className="left-container">
             <Label weight="bold">{swapText}</Label>
-            <CoinData asset={source} assetValue={xValue} price={priceFrom} />
+            <CoinData
+              data-test="swapmodal-coin-data-send"
+              asset={source}
+              assetValue={xValue}
+              price={priceFrom}
+            />
           </div>
           <div className="center-container">
             <TxTimer
@@ -520,6 +525,7 @@ class SwapSend extends Component {
           <div className="right-container">
             <Label weight="bold">{receiveText}</Label>
             <CoinData
+              data-test="swapmodal-coin-data-receive"
               asset={target}
               assetValue={Number(outputAmount)}
               price={priceTo}
@@ -527,13 +533,21 @@ class SwapSend extends Component {
             <Label weight="bold">{expectation}</Label>
             <div className="expected-status">
               <div className="status-item">
-                <Status title="FEES" value="1 RUNE" />
+                <Status
+                  data-test="swapmodal-fees"
+                  title="FEES"
+                  value="1 RUNE"
+                />
                 <Label className="price-label" size="normal" color="gray">
                   $USD 0.04
                 </Label>
               </div>
               <div className="status-item">
-                <Status title="SLIP" value={`${slipAmount}%`} />
+                <Status
+                  data-test="swapmodal-slip"
+                  title="SLIP"
+                  value={`${slipAmount}%`}
+                />
               </div>
             </div>
           </div>

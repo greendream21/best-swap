@@ -126,6 +126,7 @@ class Binance {
   };
 }
 
+// NOTE: cypress expects this here
 window.binance = new Binance();
 
 const { binance } = window;

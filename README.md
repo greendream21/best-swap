@@ -115,6 +115,8 @@ Then in a second terminal run the tests
 yarn cy:run:dev
 ```
 
+NOTE: Sometimes gitlab heavily throttles CPU which can cause problems when running tests over code that does CPU intensive things such as cryptographic calculations. If this happens again I recommend to replicate/debug using chrome dev tools CPU throttling.
+
 ## Deployment using firebase
 
 Firebase deploy:
