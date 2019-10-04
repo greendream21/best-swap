@@ -552,10 +552,9 @@ class SwapSend extends Component {
 
   validateSlip = slip => {
     if (slip >= 30) {
-      /* eslint-disable dot-notation */
-      notification['error']({
+      notification.error({
         message: 'Swap Invalid',
-        description: `Slip ${slip} too high, try less.`,
+        description: `Slip ${slip}% is too high, try less.`,
       });
     }
   };
