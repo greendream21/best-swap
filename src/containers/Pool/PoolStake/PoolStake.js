@@ -19,6 +19,7 @@ import TxTimer from '../../../components/uielements/txTimer';
 import Drag from '../../../components/uielements/drag';
 import Modal from '../../../components/uielements/modal';
 import Input from '../../../components/uielements/input';
+import Button from '../../../components/uielements/button';
 
 import appActions from '../../../redux/app/actions';
 import chainActions from '../../../redux/chainservice/actions';
@@ -81,6 +82,7 @@ class PoolStake extends Component {
   };
 
   state = {
+    advancedMode: false,
     dragReset: true,
     openWalletAlert: false,
     openPrivateModal: false,
@@ -88,7 +90,7 @@ class PoolStake extends Component {
     password: '',
     runeAmount: 0,
     tokenAmount: 0,
-    // balance: 100,
+    balance: 100,
     fR: 1,
     fT: 1,
     selectedRune: 0,
@@ -312,6 +314,12 @@ class PoolStake extends Component {
       });
       console.log(error); // eslint-disable-line no-console
     }
+  };
+
+  handleSwitchAdvancedMode = () => {
+    this.setState(prevState => ({
+      advancedMode: !prevState.advancedMode,
+    }));
   };
 
   handleStake = () => {
@@ -727,9 +735,10 @@ class PoolStake extends Component {
     const {
       runeAmount,
       tokenAmount,
-      // balance,
+      balance,
       widthdrawPercentage,
       dragReset,
+      advancedMode,
     } = this.state;
 
     const source = 'rune';
@@ -750,28 +759,35 @@ class PoolStake extends Component {
       tokensStaked: 0,
     };
 
-    const { tokenPrice } = poolStats;
-    const { R, T, poolUnits } = calcResult;
-    // const { poolPrice, newPrice, newDepth, share } = calcResult;
+    const { tokenPrice, depth } = poolStats;
+    const {
+      R,
+      T,
+      poolUnits,
+      poolPrice,
+      newPrice,
+      newDepth,
+      share,
+    } = calcResult;
 
-    // const poolAttrs = [
-    //   { key: 'price', title: 'Pool Price', value: `$${poolPrice}` },
-    //   {
-    //     key: 'depth',
-    //     title: 'Pool Depth',
-    //     value: `$${getActualValue(depth * runePrice)}`,
-    //   },
-    // ];
+    const poolAttrs = [
+      { key: 'price', title: 'Pool Price', value: `$${poolPrice}` },
+      {
+        key: 'depth',
+        title: 'Pool Depth',
+        value: `$${getActualValue(depth * runePrice)}`,
+      },
+    ];
 
-    // const newPoolAttrs = [
-    //   { key: 'price', title: 'New Price', value: `$${newPrice}` },
-    //   {
-    //     key: 'depth',
-    //     title: 'New Depth',
-    //     value: `$${getActualValue(newDepth)}`,
-    //   },
-    //   { key: 'share', title: 'Your Share', value: `${share}%` },
-    // ];
+    const newPoolAttrs = [
+      { key: 'price', title: 'New Price', value: `$${newPrice}` },
+      {
+        key: 'depth',
+        title: 'New Depth',
+        value: `$${getActualValue(newDepth)}`,
+      },
+      { key: 'share', title: 'Your Share', value: `${share}%` },
+    ];
 
     // withdraw values
     const withdrawRate = (widthdrawPercentage || 50) / 100;
@@ -789,12 +805,27 @@ class PoolStake extends Component {
     return (
       <Tabs>
         <TabPane tab="add" key="add">
-          <Label className="label-description" size="normal">
-            Select the maximum deposit to stake.
-          </Label>
-          <Label className="label-no-padding" size="normal">
-            Note: Pools always have RUNE as the base asset.
-          </Label>
+          <Row>
+            <Col span={24} lg={12}>
+              <Label className="label-description" size="normal">
+                Select the maximum deposit to stake.
+              </Label>
+              <Label className="label-no-padding" size="normal">
+                Note: Pools always have RUNE as the base asset.
+              </Label>
+            </Col>
+            <Col className="advanced-mode-wrapper" span={24} lg={12}>
+              <Button
+                sizevalue="small"
+                typevalue="outline"
+                focused={advancedMode}
+                onClick={this.handleSwitchAdvancedMode}
+              >
+                advanced mode
+              </Button>
+            </Col>
+          </Row>
+
           <div className="stake-card-wrapper">
             <CoinCard
               asset={source}
@@ -812,36 +843,44 @@ class PoolStake extends Component {
               onChangeAsset={this.handleSelectTraget}
               onChange={this.handleChangeTokenAmount(target)}
               onSelect={this.handleSelectTokenAmount(target)}
-              withSelection
+              withSelection={advancedMode}
               withSearch
             />
           </div>
-          {/* <Label className="label-title" size="normal" weight="bold">
-            ADJUST BALANCE
-          </Label>
-          <Label size="normal">
-            Fine tune balances to ensure you stake on both sides with the
-            correct amount.
-          </Label>
-          <Slider
-            onChange={this.handleChangeBalance}
-            value={balance}
-            min={0}
-            max={200}
-            tooltipVisible={false}
-          /> */}
+          {advancedMode && (
+            <>
+              <Label className="label-title" size="normal" weight="bold">
+                ADJUST BALANCE
+              </Label>
+              <Label size="normal">
+                Fine tune balances to ensure you stake on both sides with the
+                correct amount.
+              </Label>
+              <Slider
+                onChange={this.handleChangeBalance}
+                value={balance}
+                min={0}
+                max={200}
+                tooltipVisible={false}
+              />
+            </>
+          )}
           <div className="stake-share-info-wrapper">
-            {/* <div className="pool-status-wrapper">
-              {poolAttrs.map(info => {
-                return <Status className="share-info-status" {...info} />;
-              })}
-            </div> */}
-            <div className="share-status-wrapper">
-              {/* <div className="info-status-wrapper">
-                {newPoolAttrs.map(info => {
+            {advancedMode && (
+              <div className="pool-status-wrapper">
+                {poolAttrs.map(info => {
                   return <Status className="share-info-status" {...info} />;
                 })}
-              </div> */}
+              </div>
+            )}
+            <div className="share-status-wrapper">
+              {advancedMode && (
+                <div className="info-status-wrapper">
+                  {newPoolAttrs.map(info => {
+                    return <Status className="share-info-status" {...info} />;
+                  })}
+                </div>
+              )}
               <Drag
                 title="Drag to stake"
                 source="blue"

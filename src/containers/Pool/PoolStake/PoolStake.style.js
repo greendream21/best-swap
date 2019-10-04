@@ -66,6 +66,15 @@ export const ContentWrapper = styled(ContentView)`
     }
   }
 
+  .advanced-mode-wrapper {
+    display: flex;
+    justify-content: flex-end;
+
+    .btn-wrapper {
+      margin-top: 20px;
+    }
+  }
+
   .share-view {
     ${media.lg`
       display:flex;
