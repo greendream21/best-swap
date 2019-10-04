@@ -423,7 +423,7 @@ class SwapSend extends Component {
     const {
       user: { wallet },
     } = this.props;
-    const { xValue, address } = this.state;
+    const { xValue, address, slipProtection } = this.state;
     const { source, target } = this.getSwapData();
 
     try {
@@ -434,6 +434,7 @@ class SwapSend extends Component {
         target,
         this.data,
         xValue,
+        slipProtection,
         address,
       );
       this.hash = result[0].hash;
@@ -613,7 +614,6 @@ class SwapSend extends Component {
       openWalletAlert,
       password,
       slipProtection,
-      maxSlip,
     } = this.state;
 
     const swapData = this.getSwapData();
@@ -740,43 +740,16 @@ class SwapSend extends Component {
                 </CardFormHolder>
                 <CardFormHolder className="slip-protection">
                   <CardForm>
-                    {!slipProtection && (
-                      <>
-                        <Button
-                          onClick={this.handleSwitchSlipProtection}
-                          sizevalue="small"
-                          typevalue="ghost"
-                          focused={slipProtection}
-                          style={{ borderColor: '#33CCFF' }}
-                        >
-                          <Icon type="unlock" />
-                        </Button>
-                      </>
-                    )}
-                    {slipProtection && (
-                      <>
-                        <Button
-                          onClick={this.handleSwitchSlipProtection}
-                          sizevalue="small"
-                          typevalue="outline"
-                          focused={slipProtection}
-                          style={{ borderColor: '#33CCFF' }}
-                        >
-                          <Icon type="lock" />
-                        </Button>
-                        <CardFormItem>
-                          Max slip:
-                          <Input
-                            className="slip-input"
-                            placeholder="Input maximum slip amount"
-                            sizevalue="normal"
-                            value={maxSlip}
-                            onChange={this.handleChange('maxSlip')}
-                          />
-                          %
-                        </CardFormItem>
-                      </>
-                    )}
+                    <Button
+                      onClick={this.handleSwitchSlipProtection}
+                      sizevalue="small"
+                      typevalue="outline"
+                      focused={slipProtection}
+                      style={{ borderColor: '#33CCFF' }}
+                    >
+                      <Icon type={slipProtection ? 'lock' : 'unlock'} />
+                    </Button>
+                    <Label>Protect my price (within 3%)</Label>
                   </CardForm>
                 </CardFormHolder>
               </CoinCard>

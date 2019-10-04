@@ -84,7 +84,9 @@ export const ContentWrapper = styled(ContentView)`
 
     .drag-confirm-wrapper {
       display: flex;
+      flex-direction: column;
       justify-content: center;
+      align-items: center;
       padding-top: 20px;
     }
   }

@@ -86,7 +86,7 @@ export const getCalcResult = (from, to, pools, xValue, runePrice) => {
     const input = xValue * Px;
     const output = outputToken * outputPy;
     const slip = input !== 0 ? Math.round(((input - output) / input) * 100) : 0;
-    const lim = (1 - slip / 100) * outputToken * BASE_NUMBER;
+    const lim = Math.round((1 - 3 / 100) * outputToken * BASE_NUMBER);
 
     return {
       ...result,
@@ -127,7 +127,7 @@ export const getCalcResult = (from, to, pools, xValue, runePrice) => {
     const input = xValue * Px;
     const output = outputToken * outputPy;
     const slip = input !== 0 ? Math.round(((input - output) / input) * 100) : 0;
-    const lim = (1 - slip / 100) * outputToken * BASE_NUMBER;
+    const lim = Math.round((1 - 3 / 100) * outputToken * BASE_NUMBER);
 
     return {
       ...result,
@@ -170,6 +170,7 @@ export const confirmSwap = (
   to,
   data,
   amount,
+  protectSlip,
   destAddr = '',
 ) => {
   return new Promise((resolve, reject) => {
@@ -182,7 +183,8 @@ export const confirmSwap = (
 
     const { poolAddressTo, symbolTo, symbolFrom, lim } = data;
 
-    const memo = getSwapMemo(symbolTo, destAddr, lim);
+    const limit = protectSlip ? lim : '';
+    const memo = getSwapMemo(symbolTo, destAddr, limit);
     console.log('memo: ', memo);
     Binance.transfer(wallet, poolAddressTo, amount, symbolFrom, memo)
       .then(response => resolve(response))
