@@ -777,7 +777,11 @@ class PoolStake extends Component {
       {
         key: 'depth',
         title: 'Pool Depth',
+<<<<<<< HEAD
         value: `$${getUserFormat(depth * runePrice)}`,
+=======
+        value: `$${getActualValue(depth * runePrice)}`,
+>>>>>>> Switch advanced mode
       },
     ];
 
@@ -786,7 +790,11 @@ class PoolStake extends Component {
       {
         key: 'depth',
         title: 'New Depth',
+<<<<<<< HEAD
         value: `$${getUserFormat(newDepth)}`,
+=======
+        value: `$${getActualValue(newDepth)}`,
+>>>>>>> Switch advanced mode
       },
       { key: 'share', title: 'Your Share', value: `${share}%` },
     ];
@@ -827,6 +835,10 @@ class PoolStake extends Component {
               </Button>
             </Col>
           </Row>
+<<<<<<< HEAD
+=======
+
+>>>>>>> Switch advanced mode
           <div className="stake-card-wrapper">
             <CoinCard
               data-test="stake-coin-input-rune"
