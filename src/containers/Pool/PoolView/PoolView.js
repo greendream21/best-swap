@@ -3,6 +3,7 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { notification } from 'antd';
 
 import PoolCard from '../../../components/pool/poolCard';
 import Label from '../../../components/uielements/label';
@@ -54,6 +55,11 @@ class PoolView extends Component {
         const URL = `/pool/${symbol}/new`;
         this.props.history.push(URL);
       }
+    } else {
+      notification.warning({
+        message: 'Create Pool Failed',
+        description: 'You cannot create a new pool.',
+      });
     }
   };
 

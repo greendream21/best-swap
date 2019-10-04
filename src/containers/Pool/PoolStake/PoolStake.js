@@ -783,6 +783,8 @@ class PoolStake extends Component {
       tokenPrice,
     };
 
+    const disableWithdraw = stakeInfo.units === 0;
+
     return (
       <Tabs>
         <TabPane tab="add" key="add">
@@ -850,7 +852,7 @@ class PoolStake extends Component {
             </div>
           </div>
         </TabPane>
-        <TabPane tab="Withdraw" key="withdraw">
+        <TabPane tab="Withdraw" key="withdraw" disabled={disableWithdraw}>
           <Label className="label-title" size="normal" weight="bold">
             ADJUST WITHDRAWAL
           </Label>
