@@ -126,7 +126,7 @@ describe('Swapping', () => {
         'tbnb15r82hgf2e7649zhl4dsqgwc5tj64wf2jztrwd5',
         1008,
         'RUNE-A1F',
-        'swap:BNB::',
+        'swap:BNB::77970540000',
       );
 
     cy.get('[data-test="swapmodal-coin-data-send"]').contains('1,008');
