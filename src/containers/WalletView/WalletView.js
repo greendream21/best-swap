@@ -13,6 +13,10 @@ import CoinList from '../../components/uielements/coins/coinList';
 import chainActions from '../../redux/chainservice/actions';
 import walletActions from '../../redux/wallet/actions';
 import { getPair } from '../../helpers/stringHelper';
+import {
+  AssetLoader,
+  StakeLoader,
+} from '../../components/utility/loaders/wallet';
 
 const { getTokens } = chainActions;
 const { getRunePrice } = walletActions;
@@ -93,7 +97,7 @@ class WalletView extends Component {
     const { status, loadingAssets, assetData } = this.props;
 
     if (loadingAssets) {
-      return 'Loading...';
+      return <AssetLoader />;
     }
 
     if (status === 'connected' && assetData.length === 0) {
@@ -110,7 +114,7 @@ class WalletView extends Component {
     const { stakeData, loadingStakes } = this.props;
 
     if (loadingStakes) {
-      return 'Loading...';
+      return <StakeLoader />;
     }
 
     if (stakeData.length > 0) {
