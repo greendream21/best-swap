@@ -266,7 +266,7 @@ class PoolStake extends Component {
       });
     }
     this.setState({
-      // balance,
+      balance,
       fR,
       fT,
     });
@@ -825,7 +825,6 @@ class PoolStake extends Component {
               </Button>
             </Col>
           </Row>
-
           <div className="stake-card-wrapper">
             <CoinCard
               asset={source}
