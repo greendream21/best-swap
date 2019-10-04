@@ -179,8 +179,9 @@ class CoinCard extends Component {
       >
         <CoinDropdownCoin type={asset} size="small" />
         <CoinDropdownVerticalColumn>
-          <AssetNameLabel>{asset}</AssetNameLabel>
-          {!disabled ? <DropdownCarret open={open} /> : null}
+          {!disabled ? (
+            <DropdownCarret className="caret-down" open={open} />
+          ) : null}
         </CoinDropdownVerticalColumn>
       </CoinDropdownButton>
     );
@@ -223,6 +224,7 @@ class CoinCard extends Component {
           <CardBorderWrapper>
             <CardTopRow>
               <AssetData>
+                <AssetNameLabel>{asset}</AssetNameLabel>
                 <CoinCardInput
                   className="asset-amount-label"
                   size="large"

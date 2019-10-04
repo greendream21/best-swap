@@ -53,10 +53,16 @@ export const DropdownIcon = styled(IconBase)`
   ${({ open }) =>
     open ? 'transform: rotate(180deg);' : 'transform: rotate(0);'}
   font-size: 18px;
+
+  &.caret-down {
+    font-size: 22px;
+    color: ${palette('primary', 0)};
+  }
 `;
 
 export const DropdownIconHolder = styled.div`
   transition: transform 0.2s ease-in-out;
+  padding-top: 5px;
 `;
 
 export const AssetNameLabel = styled(Label).attrs({
@@ -117,7 +123,7 @@ export const AssetData = styled.div.attrs({ className: 'asset-data' })`
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  padding: 20px 20px 10px 20px;
+  padding: 5px 20px 10px 20px;
 `;
 
 export const VerticalDivider = styled(Divider).attrs({
