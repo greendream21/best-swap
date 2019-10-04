@@ -3902,7 +3902,7 @@ caseless@~0.12.0:
   resolved "https://registry.yarnpkg.com/caseless/-/caseless-0.12.0.tgz#1b681c21ff84033c826543090689420d187151dc"
   integrity sha1-G2gcIf+EAzyCZUMJBolCDRhxUdw=
 
-chalk@2.4.2, chalk@^2.0.0, chalk@^2.0.1, chalk@^2.1.0, chalk@^2.4.1, chalk@^2.4.2:
+chalk@2.4.2, chalk@^2.0.0, chalk@^2.0.1, chalk@^2.1.0, chalk@^2.3.0, chalk@^2.4.1, chalk@^2.4.2:
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/chalk/-/chalk-2.4.2.tgz#cd42541677a54333cf541a49108c1432b44c9424"
   integrity sha512-Mti+f9lpJNcwF4tWV8/OrTTtF1gZi+f8FqlyAdouralcFWFQWF2+NgCHShjkCb+IFBLq9buZwE1xckQU4peSuQ==
@@ -4826,6 +4826,14 @@ cyclist@^1.0.1:
   resolved "https://registry.yarnpkg.com/cyclist/-/cyclist-1.0.1.tgz#596e9698fd0c80e12038c2b82d6eb1b35b6224d9"
   integrity sha1-WW6WmP0MgOEgOMK4LW6xs1tiJNk=
 
+cypress-failed-log@^2.5.1:
+  version "2.5.1"
+  resolved "https://registry.yarnpkg.com/cypress-failed-log/-/cypress-failed-log-2.5.1.tgz#8c716954d6e5523c5e92e294d477a3f696986265"
+  integrity sha512-SmTMVoV247Ovu4xinhhyfPTc6+JM9YrR0nVW4VKkNHtGSmeW0mzyqfUwiygnR1rS91N0sFYk5HSYMm8hzb+EZw==
+  dependencies:
+    debug "4.1.1"
+    logdown "3.2.8"
+
 cypress-file-upload@^3.3.4:
   version "3.3.4"
   resolved "https://registry.yarnpkg.com/cypress-file-upload/-/cypress-file-upload-3.3.4.tgz#cbeb8a7a07150a1c60f2873666979e48b6335070"
@@ -4912,19 +4920,19 @@ debug@3.2.6, debug@^3.0.0, debug@^3.1.0, debug@^3.2.5, debug@^3.2.6:
   dependencies:
     ms "^2.1.1"
 
+debug@4.1.1, debug@^4.0.1, debug@^4.1.0, debug@^4.1.1:
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/debug/-/debug-4.1.1.tgz#3b72260255109c6b589cee050f1d516139664791"
+  integrity sha512-pYAIzeRo8J6KPEaJ0VWOh5Pzkbw/RetuzehGM7QRRX5he4fPHx2rdKMB256ehJCkX+XRQm16eZLqLNS8RSZXZw==
+  dependencies:
+    ms "^2.1.1"
+
 debug@=3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/debug/-/debug-3.1.0.tgz#5bb5a0672628b64149566ba16819e61518c67261"
   integrity sha512-OX8XqP7/1a9cqkxYw2yXss15f26NKWBpDXQd0/uK/KPqdQhxbPa994hnzjcE2VqQpDslf55723cKPUOGSmMY3g==
   dependencies:
     ms "2.0.0"
-
-debug@^4.0.1, debug@^4.1.0, debug@^4.1.1:
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/debug/-/debug-4.1.1.tgz#3b72260255109c6b589cee050f1d516139664791"
-  integrity sha512-pYAIzeRo8J6KPEaJ0VWOh5Pzkbw/RetuzehGM7QRRX5he4fPHx2rdKMB256ehJCkX+XRQm16eZLqLNS8RSZXZw==
-  dependencies:
-    ms "^2.1.1"
 
 decamelize@^1.1.1, decamelize@^1.1.2, decamelize@^1.2.0:
   version "1.2.0"
@@ -9098,6 +9106,13 @@ log-update@^2.3.0:
     ansi-escapes "^3.0.0"
     cli-cursor "^2.0.0"
     wrap-ansi "^3.0.1"
+
+logdown@3.2.8:
+  version "3.2.8"
+  resolved "https://registry.yarnpkg.com/logdown/-/logdown-3.2.8.tgz#0bfff0c260a4a55f289f6b4420daefec30479843"
+  integrity sha512-ia/AslkwnxwWzaReeADifBwfh2xtUd/T/qdsnkrPlQbefKt4LkUWGSn/xWuhEwY3p2zSIhAZYcWCEGGIy9Lr2w==
+  dependencies:
+    chalk "^2.3.0"
 
 loglevel@^1.4.1:
   version "1.6.4"
