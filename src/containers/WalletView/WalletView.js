@@ -79,7 +79,15 @@ class WalletView extends Component {
     this.props.history.push(URL);
   };
 
-  handleSelectStake = (/* key */) => {};
+  handleSelectStake = key => {
+    const { stakeData } = this.props;
+
+    const selected = stakeData[key];
+    const target = selected.target.toLowerCase();
+
+    const URL = `/pool/${target}`;
+    this.props.history.push(URL);
+  };
 
   renderAssetTitle = () => {
     const { status, loadingAssets, assetData } = this.props;
@@ -128,9 +136,11 @@ class WalletView extends Component {
       info,
       user: { wallet },
       assetData,
+      stakeData,
       chainData: { tokenInfo },
       runePrice,
       loadingAssets,
+      loadingStakes,
     } = this.props;
     const pair = getPair(info);
     const { source } = pair;
@@ -161,18 +171,19 @@ class WalletView extends Component {
               />
             )}
           </TabPane>
-          {/* <TabPane tab="stakes" key="stakes">
+          <TabPane tab="stakes" key="stakes">
             <Label className="asset-title-label">
               {this.renderStakeTitle()}
             </Label>
             {!loadingStakes && (
               <CoinList
                 data={stakeData}
-                value={sourceIndex}
+                runePrice={runePrice}
+                tokenInfo={tokenInfo}
                 onSelect={this.handleSelectStake}
               />
             )}
-          </TabPane> */}
+          </TabPane>
         </Tabs>
       </WalletViewWrapper>
     );

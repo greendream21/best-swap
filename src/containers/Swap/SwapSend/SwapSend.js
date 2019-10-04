@@ -26,12 +26,12 @@ import {
   SwapAssetCard,
   ArrowContainer,
   PrivateModal,
-  RecipientForm,
-  RecipientFormHolder,
-  RecipientFormArrowIcon,
-  RecipientFormItem,
-  RecipientFormItemError,
-  RecipientFormItemCloseButton,
+  CardForm,
+  CardFormHolder,
+  CardFormArrowIcon,
+  CardFormItem,
+  CardFormItemError,
+  CardFormItemCloseButton,
 } from './SwapSend.style';
 import { getNewValue } from '../../../helpers/stringHelper';
 import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
@@ -88,6 +88,8 @@ class SwapSend extends Component {
     password: '',
     invalidPassword: false,
     openWalletAlert: false,
+    slipProtection: true,
+    maxSlip: 30,
   };
 
   addressRef = React.createRef();
@@ -232,6 +234,8 @@ class SwapSend extends Component {
     } = this.props;
     const { xValue } = this.state;
 
+    // validation
+
     if (!wallet) {
       this.setState({
         openWalletAlert: true,
@@ -256,6 +260,10 @@ class SwapSend extends Component {
         invalidAddress: true,
         dragReset: true,
       });
+      return;
+    }
+
+    if (!this.validateSlip(this.data.slip)) {
       return;
     }
 
@@ -303,6 +311,12 @@ class SwapSend extends Component {
     const URL = `/swap/send/${info}`;
 
     this.props.history.push(URL);
+  };
+
+  handleSwitchSlipProtection = () => {
+    this.setState(prevState => ({
+      slipProtection: !prevState.slipProtection,
+    }));
   };
 
   handleChangeSource = asset => {
@@ -565,12 +579,19 @@ class SwapSend extends Component {
   };
 
   validateSlip = slip => {
-    if (slip >= 30) {
+    const { maxSlip } = this.state;
+
+    if (slip >= maxSlip) {
       notification.error({
         message: 'Swap Invalid',
         description: `Slip ${slip}% is too high, try less.`,
       });
+      this.setState({
+        dragReset: true,
+      });
+      return false;
     }
+    return true;
   };
 
   render() {
@@ -591,6 +612,8 @@ class SwapSend extends Component {
       openPrivateModal,
       openWalletAlert,
       password,
+      slipProtection,
+      maxSlip,
     } = this.state;
 
     const swapData = this.getSwapData();
@@ -628,8 +651,6 @@ class SwapSend extends Component {
     this.data = getCalcResult(source, target, pools, xValue, runePrice);
     const { Px, slip, outputAmount, outputPrice } = this.data;
     console.log(this.data); // eslint-disable-line no-console
-
-    this.validateSlip(slip);
 
     return (
       <ContentWrapper className="swap-detail-wrapper">
@@ -675,11 +696,11 @@ class SwapSend extends Component {
                 disabled
                 withSearch
               >
-                <RecipientFormHolder>
-                  <RecipientForm>
+                <CardFormHolder>
+                  <CardForm>
                     {view === 'detail' && (
                       <>
-                        <RecipientFormArrowIcon />
+                        <CardFormArrowIcon />
                         <Button
                           onClick={this.handleGotoSend}
                           sizevalue="small"
@@ -693,8 +714,8 @@ class SwapSend extends Component {
                     )}
                     {view === 'send' && (
                       <>
-                        <RecipientFormArrowIcon />
-                        <RecipientFormItem
+                        <CardFormArrowIcon />
+                        <CardFormItem
                           className={invalidAddress ? 'has-error' : ''}
                         >
                           <Input
@@ -704,19 +725,60 @@ class SwapSend extends Component {
                             onChange={this.handleChange('address')}
                             ref={this.addressRef}
                           />
-                        </RecipientFormItem>
-                        <RecipientFormItemCloseButton
+                        </CardFormItem>
+                        <CardFormItemCloseButton
                           onClick={this.handleGotoDetail}
                         />
                       </>
                     )}
-                  </RecipientForm>
+                  </CardForm>
                   {invalidAddress && (
-                    <RecipientFormItemError>
+                    <CardFormItemError>
                       Recipient address is invalid!
-                    </RecipientFormItemError>
+                    </CardFormItemError>
                   )}
-                </RecipientFormHolder>
+                </CardFormHolder>
+                <CardFormHolder className="slip-protection">
+                  <CardForm>
+                    {!slipProtection && (
+                      <>
+                        <Button
+                          onClick={this.handleSwitchSlipProtection}
+                          sizevalue="small"
+                          typevalue="ghost"
+                          focused={slipProtection}
+                          style={{ borderColor: '#33CCFF' }}
+                        >
+                          <Icon type="unlock" />
+                        </Button>
+                      </>
+                    )}
+                    {slipProtection && (
+                      <>
+                        <Button
+                          onClick={this.handleSwitchSlipProtection}
+                          sizevalue="small"
+                          typevalue="outline"
+                          focused={slipProtection}
+                          style={{ borderColor: '#33CCFF' }}
+                        >
+                          <Icon type="lock" />
+                        </Button>
+                        <CardFormItem>
+                          Max slip:
+                          <Input
+                            className="slip-input"
+                            placeholder="Input maximum slip amount"
+                            sizevalue="normal"
+                            value={maxSlip}
+                            onChange={this.handleChange('maxSlip')}
+                          />
+                          %
+                        </CardFormItem>
+                      </>
+                    )}
+                  </CardForm>
+                </CardFormHolder>
               </CoinCard>
             </SwapAssetCard>
             <div className="drag-confirm-wrapper">

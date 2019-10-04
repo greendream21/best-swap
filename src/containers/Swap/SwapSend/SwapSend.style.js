@@ -113,18 +113,32 @@ export const ContentWrapper = styled(ContentView)`
   }
 `;
 
-export const RecipientFormArrowIcon = styled.div`
+export const CardFormArrowIcon = styled.div`
   &:before {
     content: '⮑';
   }
   color: #ccc;
 `;
 
-export const RecipientFormHolder = styled.div`
+export const CardFormHolder = styled.div`
   padding-top: 10px;
+
+  &.slip-protection {
+    .slip-input {
+      width: 50px;
+      margin: 0 8px;
+    }
+
+    button {
+      height: 25px;
+      min-width: 0px;
+      padding-left: 4px;
+      padding-right: 4px;
+    }
+  }
 `;
 
-export const RecipientForm = styled.div`
+export const CardForm = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -136,15 +150,15 @@ export const RecipientForm = styled.div`
   }
 `;
 
-export const RecipientFormItem = styled.div`
+export const CardFormItem = styled.div`
   flex-grow: 1;
 `;
 
-export const RecipientFormItemError = styled.div`
+export const CardFormItemError = styled.div`
   font-size: 12px;
 `;
 
-export const RecipientFormItemCloseButton = styled(Icon).attrs({
+export const CardFormItemCloseButton = styled(Icon).attrs({
   type: 'close',
 })``;
 
