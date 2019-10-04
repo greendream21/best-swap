@@ -459,12 +459,13 @@ class PoolStake extends Component {
     const withdrawRate = (widthdrawPercentage || 50) / 100;
 
     try {
+      const percentage = withdrawRate * 100;
       const { result } = await confirmWithdraw(
         Binance,
         wallet,
         pools,
         symbol,
-        withdrawRate,
+        percentage,
       );
 
       console.log('withdraw result: ', result);
