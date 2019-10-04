@@ -54,8 +54,9 @@ class WalletView extends Component {
 
   getAssetNameByIndex = index => {
     const { assetData } = this.props;
+    const sortedAssets = _sortBy(assetData, ['asset']);
 
-    return assetData[index].asset || '';
+    return sortedAssets[index].asset || '';
   };
 
   getAssetIndexByName = asset => {
@@ -71,16 +72,10 @@ class WalletView extends Component {
   };
 
   handleSelectAsset = key => {
-    const { page, view, info } = this.props;
-
-    if (!info) return;
-
-    const pair = getPair(info);
-    const { source } = pair;
     const newAssetName = this.getAssetNameByIndex(key);
+    const ticker = newAssetName.split('-')[0].toLowerCase();
 
-    const URL = `/${page}/${view}/${source}-${newAssetName}`;
-
+    const URL = `/swap/detail/${ticker}-rune`;
     this.props.history.push(URL);
   };
 

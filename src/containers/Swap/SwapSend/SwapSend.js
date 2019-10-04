@@ -25,7 +25,6 @@ import {
   SwapModal,
   SwapAssetCard,
   ArrowContainer,
-  ArrowImage,
   PrivateModal,
   RecipientForm,
   RecipientFormHolder,
@@ -34,7 +33,6 @@ import {
   RecipientFormItemError,
   RecipientFormItemCloseButton,
 } from './SwapSend.style';
-import { blueArrowIcon } from '../../../components/icons';
 import { getNewValue } from '../../../helpers/stringHelper';
 import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
 import { getCalcResult, confirmSwap } from '../utils';
@@ -335,6 +333,25 @@ class SwapSend extends Component {
     this.props.history.push(URL);
   };
 
+  handleReversePair = () => {
+    const { view, assetData } = this.props;
+    const { source, target } = this.getSwapData();
+
+    if (
+      !assetData.find(data => data.asset.split('-')[0].toLowerCase() === target)
+    ) {
+      notification.warning({
+        message: 'Cannot Reverse Swap Direction',
+        description: 'Token does not exist in your wallet.',
+      });
+      return;
+    }
+
+    const URL = `/swap/${view}/${target}-${source}`;
+
+    this.props.history.push(URL);
+  };
+
   validatePair = (sourceInfo, targetInfo) => {
     if (!targetInfo.length) {
       this.props.history.push('/swap');
@@ -412,6 +429,9 @@ class SwapSend extends Component {
       notification['error']({
         message: 'Swap Invalid',
         description: 'Swap information is not valid.',
+      });
+      this.setState({
+        dragReset: true,
       });
       console.log(error); // eslint-disable-line no-console
     }
@@ -622,7 +642,13 @@ class SwapSend extends Component {
               />
 
               <ArrowContainer>
-                <ArrowImage src={blueArrowIcon} alt="blackarrow-icon" />
+                <Button
+                  className="swap-arrow-btn"
+                  typevalue="outline"
+                  onClick={this.handleReversePair}
+                >
+                  <Icon type="swap" />
+                </Button>
               </ArrowContainer>
 
               <CoinCard
