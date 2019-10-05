@@ -88,6 +88,7 @@ class PoolView extends Component {
         return (
           <PoolCard
             className="pool-card"
+            data-test={`pool-card-${symbol}`}
             asset={asset}
             target={target}
             depth={depth}
