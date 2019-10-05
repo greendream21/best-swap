@@ -85,7 +85,7 @@ class PoolCard extends Component {
           </CardLayout.Item>
         </CardLayout.Group>
         <CardLayout.Item noShrink showFrom="xs">
-          <Button onClick={onStake} color="success">
+          <Button data-test="stake-button" onClick={onStake} color="success">
             stake
           </Button>
         </CardLayout.Item>

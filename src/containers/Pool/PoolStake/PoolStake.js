@@ -540,11 +540,13 @@ class PoolStake extends Component {
           <div className="left-container">
             <Label weight="bold">{stakeText}</Label>
             <CoinData
+              data-test="stakeconfirm-coin-data-source"
               asset={source}
               assetValue={runeAmount}
               price={Pr * runeAmount}
             />
             <CoinData
+              data-test="stakeconfirm-coin-data-target"
               asset={target}
               assetValue={tokenAmount}
               price={tokenPrice * tokenAmount}
@@ -827,6 +829,7 @@ class PoolStake extends Component {
           </Row>
           <div className="stake-card-wrapper">
             <CoinCard
+              data-test="stake-coin-input-rune"
               asset={source}
               amount={runeAmount}
               price={runePrice}
@@ -835,6 +838,7 @@ class PoolStake extends Component {
               withSelection
             />
             <CoinCard
+              data-test="stake-coin-input-target"
               asset={target}
               assetData={tokensData}
               amount={tokenAmount}
@@ -1149,6 +1153,7 @@ class PoolStake extends Component {
           <Form onSubmit={this.handleConfirmPassword}>
             <Form.Item className={invalidPassword ? 'has-error' : ''}>
               <Input
+                data-test="password-confirmation-input"
                 type="password"
                 value={password}
                 onChange={this.handleChange('password')}
