@@ -40,7 +40,11 @@ import {
   confirmStake,
   confirmWithdraw,
 } from '../utils';
-import { getUserFormat, getNewValue } from '../../../helpers/stringHelper';
+import {
+  getUserFormat,
+  getNewValue,
+  getTickerFormat,
+} from '../../../helpers/stringHelper';
 import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
 
 const { TabPane } = Tabs;
@@ -132,12 +136,12 @@ class PoolStake extends Component {
     const { runeAmount, tokenAmount, fR, fT } = this.state;
 
     let newValue;
-    const source = tokenName.split('-')[0].toLowerCase();
+    const source = getTickerFormat(tokenName);
 
     const sourceAsset = assetData.find(data => {
       const { asset } = data;
-      const tokenName = asset.split('-')[0];
-      if (tokenName.toLowerCase() === source) {
+      const tokenName = getTickerFormat(asset);
+      if (tokenName === source) {
         return true;
       }
       return false;
@@ -203,8 +207,8 @@ class PoolStake extends Component {
 
     const selectedToken = assetData.find(data => {
       const { asset } = data;
-      const tokenName = asset.split('-')[0];
-      if (tokenName.toLowerCase() === token.toLowerCase()) {
+      const tokenName = getTickerFormat(asset);
+      if (tokenName === token.toLowerCase()) {
         return true;
       }
       return false;
@@ -517,7 +521,7 @@ class PoolStake extends Component {
     const { runeAmount, tokenAmount } = this.state;
 
     const source = 'rune';
-    const target = symbol.split('-')[0].toLowerCase();
+    const target = getTickerFormat(symbol);
 
     const transactionLabels = [
       'sending transaction',
@@ -596,7 +600,7 @@ class PoolStake extends Component {
     } = this.props;
 
     const source = 'rune';
-    const target = symbol.split('-')[0].toLowerCase();
+    const target = getTickerFormat(symbol);
 
     const transactionLabels = [
       'sending transaction',
@@ -668,7 +672,7 @@ class PoolStake extends Component {
     const { symbol } = this.props;
     const source = 'rune';
 
-    const target = symbol.split('-')[0].toLowerCase();
+    const target = getTickerFormat(symbol);
     const stakePool = `${source}:${target}`;
 
     const {
@@ -744,7 +748,7 @@ class PoolStake extends Component {
     } = this.state;
 
     const source = 'rune';
-    const target = symbol.split('-')[0].toLowerCase();
+    const target = getTickerFormat(symbol);
 
     const tokensData = Object.keys(tokenInfo).map(tokenName => {
       const { symbol, price } = tokenInfo[tokenName];
@@ -970,7 +974,7 @@ class PoolStake extends Component {
     const { tokenPrice } = poolStats;
     const { poolUnits, R, T } = calcResult;
     const source = 'rune';
-    const target = symbol.split('-')[0];
+    const target = getTickerFormat(symbol);
 
     const { units } = stakeInfo;
 
