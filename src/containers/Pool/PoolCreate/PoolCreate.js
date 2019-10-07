@@ -23,7 +23,7 @@ import statechainActions from '../../../redux/statechain/actions';
 import binanceActions from '../../../redux/binance/actions';
 
 import { ContentWrapper, PrivateModal } from './PoolCreate.style';
-import { getActualValue, getNewValue } from '../../../helpers/stringHelper';
+import { getUserFormat, getNewValue } from '../../../helpers/stringHelper';
 import {
   getCreatePoolCalc,
   getCreatePoolTokens,
@@ -389,7 +389,7 @@ class PoolCreate extends Component {
       {
         key: 'depth',
         title: 'Pool Depth',
-        value: `$${getActualValue(depth)}`,
+        value: `$${getUserFormat(depth)}`,
       },
       { key: 'share', title: 'Your Share', value: `${share}%` },
     ];

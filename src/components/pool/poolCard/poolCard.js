@@ -5,7 +5,7 @@ import CardLayout from '../../cardLayout';
 import Coin from '../../uielements/coins/coin';
 import Status from '../../uielements/status';
 import Button from '../../uielements/button';
-import { getActualValue } from '../../../helpers/stringHelper';
+import { getUserFormat } from '../../../helpers/stringHelper';
 
 class PoolCard extends Component {
   static propTypes = {
@@ -44,11 +44,11 @@ class PoolCard extends Component {
     } = this.props;
 
     const poolValue = `${asset}:${target}`;
-    const depthValue = `$${getActualValue(depth)}`;
-    const volumeValue = `$${getActualValue(volume)}`;
-    const transactionValue = `$${getActualValue(transaction)}`;
-    const liqFeeValue = `${getActualValue(liqFee)}%`;
-    const roiValue = `${getActualValue(roi)}% pa`;
+    const depthValue = `$${getUserFormat(depth)}`;
+    const volumeValue = `$${getUserFormat(volume)}`;
+    const transactionValue = `$${getUserFormat(transaction)}`;
+    const liqFeeValue = `${getUserFormat(liqFee)}%`;
+    const roiValue = `${getUserFormat(roi)}% pa`;
 
     return (
       <CardLayout.Row className={className} {...props}>
