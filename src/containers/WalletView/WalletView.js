@@ -12,7 +12,7 @@ import Button from '../../components/uielements/button';
 import CoinList from '../../components/uielements/coins/coinList';
 import chainActions from '../../redux/chainservice/actions';
 import walletActions from '../../redux/wallet/actions';
-import { getPair } from '../../helpers/stringHelper';
+import { getPair, getTickerFormat } from '../../helpers/stringHelper';
 import {
   AssetLoader,
   StakeLoader,
@@ -77,7 +77,7 @@ class WalletView extends Component {
 
   handleSelectAsset = key => {
     const newAssetName = this.getAssetNameByIndex(key);
-    const ticker = newAssetName.split('-')[0].toLowerCase();
+    const ticker = getTickerFormat(newAssetName);
 
     const URL = `/swap/detail/${ticker}-rune`;
     this.props.history.push(URL);

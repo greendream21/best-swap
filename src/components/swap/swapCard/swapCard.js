@@ -5,7 +5,7 @@ import CardLayout from '../../cardLayout';
 import Coin from '../../uielements/coins/coin';
 import Status from '../../uielements/status';
 import Button from '../../uielements/button';
-import { getActualValue } from '../../../helpers/stringHelper';
+import { getUserFormat } from '../../../helpers/stringHelper';
 
 class SwapCard extends Component {
   static propTypes = {
@@ -44,10 +44,10 @@ class SwapCard extends Component {
     } = this.props;
 
     const poolValue = `${asset}:${target}`;
-    const depthValue = `$${getActualValue(depth).toLocaleString()}`;
-    const volumeValue = `$${getActualValue(volume)}`;
-    const transactionValue = `$${getActualValue(transaction)}`;
-    const slipValue = `${getActualValue(slip)}%`;
+    const depthValue = `$${getUserFormat(depth).toLocaleString()}`;
+    const volumeValue = `$${getUserFormat(volume)}`;
+    const transactionValue = `$${getUserFormat(transaction)}`;
+    const slipValue = `${getUserFormat(slip)}%`;
     const tradeValue = `${trade}`;
 
     return (
