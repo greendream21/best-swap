@@ -8,6 +8,7 @@ import Label from '../../label';
 import Selection from '../../selection';
 import FilterMenu from './filterMenu';
 import CoinData from '../coinData';
+import { getTickerFormat } from '../../../../helpers/stringHelper';
 
 import {
   AssetCardFooter,
@@ -47,7 +48,7 @@ DropdownCarret.propTypes = {
 };
 
 function getTokenName(asset) {
-  return asset.split('-')[0];
+  return getTickerFormat(asset);
 }
 
 function filterFunction(item, searchTerm) {
