@@ -13,6 +13,8 @@ export const getPair = info => {
   return {};
 };
 
+const BASE_NUMBER = 10 ** 8;
+
 export const getUserFormat = value => {
   if (value) {
     return Number((value / BASE_NUMBER).toFixed(2));
