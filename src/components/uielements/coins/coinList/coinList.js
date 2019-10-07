@@ -4,6 +4,7 @@ import { Scrollbars } from 'react-custom-scrollbars';
 
 import { CoinListWrapper } from './coinList.style';
 import CoinData from '../coinData';
+import { getTickerFormat } from '../../../../helpers/stringHelper';
 
 class CoinList extends Component {
   static propTypes = {
@@ -67,7 +68,7 @@ class CoinList extends Component {
               price,
             );
 
-            const tokenName = asset.split('-')[0];
+            const tokenName = getTickerFormat(asset);
 
             if (!tokenName) {
               console.log(asset, 'is not a recognized token');
@@ -84,7 +85,7 @@ class CoinList extends Component {
                 key={index}
               >
                 <CoinData
-                  asset={tokenName.toLowerCase()}
+                  asset={tokenName}
                   assetValue={assetValue}
                   target={target}
                   targetValue={targetValue}

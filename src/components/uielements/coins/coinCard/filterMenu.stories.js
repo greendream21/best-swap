@@ -6,15 +6,16 @@ import FilterMenu from './filterMenu';
 import AppHolder from '../../../../AppStyle';
 import { defaultTheme } from '../../../../settings';
 import CoinData from '../coinData';
+import { getTickerFormat } from '../../../../helpers/stringHelper';
 
 function filterFunction(item, searchTerm) {
-  const tokenName = item.asset.split('-')[0];
-  return tokenName.toLowerCase().indexOf(searchTerm.toLowerCase()) === 0;
+  const tokenName = getTickerFormat(item.asset);
+  return tokenName.indexOf(searchTerm.toLowerCase()) === 0;
 }
 
 function cellRenderer(data) {
   const { asset: key, price } = data;
-  const tokenName = key.split('-')[0];
+  const tokenName = getTickerFormat(key);
   const node = <CoinData asset={tokenName} price={price} />;
   return { key, node };
 }

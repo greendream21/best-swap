@@ -40,7 +40,11 @@ import {
   confirmStake,
   confirmWithdraw,
 } from '../utils';
-import { getActualValue, getNewValue } from '../../../helpers/stringHelper';
+import {
+  getUserFormat,
+  getNewValue,
+  getTickerFormat,
+} from '../../../helpers/stringHelper';
 import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
 
 const { TabPane } = Tabs;
@@ -132,12 +136,12 @@ class PoolStake extends Component {
     const { runeAmount, tokenAmount, fR, fT } = this.state;
 
     let newValue;
-    const source = tokenName.split('-')[0].toLowerCase();
+    const source = getTickerFormat(tokenName);
 
     const sourceAsset = assetData.find(data => {
       const { asset } = data;
-      const tokenName = asset.split('-')[0];
-      if (tokenName.toLowerCase() === source) {
+      const tokenName = getTickerFormat(asset);
+      if (tokenName === source) {
         return true;
       }
       return false;
@@ -203,8 +207,8 @@ class PoolStake extends Component {
 
     const selectedToken = assetData.find(data => {
       const { asset } = data;
-      const tokenName = asset.split('-')[0];
-      if (tokenName.toLowerCase() === token.toLowerCase()) {
+      const tokenName = getTickerFormat(asset);
+      if (tokenName === token.toLowerCase()) {
         return true;
       }
       return false;
@@ -517,7 +521,7 @@ class PoolStake extends Component {
     const { runeAmount, tokenAmount } = this.state;
 
     const source = 'rune';
-    const target = symbol.split('-')[0].toLowerCase();
+    const target = getTickerFormat(symbol);
 
     const transactionLabels = [
       'sending transaction',
@@ -596,7 +600,7 @@ class PoolStake extends Component {
     } = this.props;
 
     const source = 'rune';
-    const target = symbol.split('-')[0].toLowerCase();
+    const target = getTickerFormat(symbol);
 
     const transactionLabels = [
       'sending transaction',
@@ -668,7 +672,7 @@ class PoolStake extends Component {
     const { symbol } = this.props;
     const source = 'rune';
 
-    const target = symbol.split('-')[0].toLowerCase();
+    const target = getTickerFormat(symbol);
     const stakePool = `${source}:${target}`;
 
     const {
@@ -685,24 +689,24 @@ class PoolStake extends Component {
       {
         key: 'depth',
         title: 'Depth',
-        value: `$${getActualValue(depth).toLocaleString()}`,
+        value: `$${getUserFormat(depth).toLocaleString()}`,
       },
       {
         key: 'vol24',
         title: '24hr Volume',
-        value: `$${getActualValue(volume24)}`,
+        value: `$${getUserFormat(volume24)}`,
       },
       {
         key: 'volAT',
         title: 'All Time Volume',
-        value: `$${getActualValue(volumeAT)}`,
+        value: `$${getUserFormat(volumeAT)}`,
       },
       { key: 'swap', title: 'Total Swaps', value: totalSwaps },
       { key: 'stakers', title: 'Total Stakers', value: totalStakers },
       {
         key: 'roi',
         title: 'All Time RoI',
-        value: `${getActualValue(roiAT)}% pa`,
+        value: `${getUserFormat(roiAT)}% pa`,
       },
     ];
 
@@ -744,7 +748,7 @@ class PoolStake extends Component {
     } = this.state;
 
     const source = 'rune';
-    const target = symbol.split('-')[0].toLowerCase();
+    const target = getTickerFormat(symbol);
 
     const tokensData = Object.keys(tokenInfo).map(tokenName => {
       const { symbol, price } = tokenInfo[tokenName];
@@ -777,7 +781,7 @@ class PoolStake extends Component {
       {
         key: 'depth',
         title: 'Pool Depth',
-        value: `$${getActualValue(depth * runePrice)}`,
+        value: `$${getUserFormat(depth * runePrice)}`,
       },
     ];
 
@@ -786,7 +790,7 @@ class PoolStake extends Component {
       {
         key: 'depth',
         title: 'New Depth',
-        value: `$${getActualValue(newDepth)}`,
+        value: `$${getUserFormat(newDepth)}`,
       },
       { key: 'share', title: 'Your Share', value: `${share}%` },
     ];
@@ -794,8 +798,8 @@ class PoolStake extends Component {
     // withdraw values
     const withdrawRate = (widthdrawPercentage || 50) / 100;
     const { units } = stakeInfo;
-    const runeValue = getActualValue(((withdrawRate * units) / poolUnits) * R);
-    const tokenValue = getActualValue(((withdrawRate * units) / poolUnits) * T);
+    const runeValue = getUserFormat(((withdrawRate * units) / poolUnits) * R);
+    const tokenValue = getUserFormat(((withdrawRate * units) / poolUnits) * T);
     this.withdrawData = {
       runeValue,
       tokenValue,
@@ -970,15 +974,15 @@ class PoolStake extends Component {
     const { tokenPrice } = poolStats;
     const { poolUnits, R, T } = calcResult;
     const source = 'rune';
-    const target = symbol.split('-')[0];
+    const target = getTickerFormat(symbol);
 
     const { units } = stakeInfo;
 
     const poolShare = (units / Number(poolUnits)).toFixed(2);
-    const runeShare = getActualValue((R * units) / poolUnits);
-    const tokensShare = getActualValue((T * units) / poolUnits);
-    const runeEarned = getActualValue(stakeInfo.runeEarned);
-    const tokensEarned = getActualValue(stakeInfo.tokensEarned);
+    const runeShare = getUserFormat((R * units) / poolUnits);
+    const tokensShare = getUserFormat((T * units) / poolUnits);
+    const runeEarned = getUserFormat(stakeInfo.runeEarned);
+    const tokensEarned = getUserFormat(stakeInfo.tokensEarned);
 
     return (
       <div className="your-share-wrapper">

@@ -7,6 +7,7 @@ import {
 import {
   getFixedNumber,
   getBaseNumberFormat,
+  getTickerFormat,
 } from '../../helpers/stringHelper';
 
 export const getPoolData = (
@@ -21,7 +22,7 @@ export const getPoolData = (
   const tokenPrice = tokenData ? tokenData.price : 0;
 
   const asset = from;
-  const target = to.split('-')[0];
+  const target = getTickerFormat(to);
   const depth = Number(poolInfo.depth * runePrice);
   const volume24 = poolInfo.vol24hr;
   const volumeAT = poolInfo.volAT;
@@ -149,7 +150,7 @@ export const getCreatePoolTokens = (assetData, pools) => {
   return assetData.filter(data => {
     let unique = true;
 
-    if (data.asset.split('-')[0].toLowerCase() === 'rune') {
+    if (getTickerFormat(data.asset) === 'rune') {
       return false;
     }
 
