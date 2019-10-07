@@ -48,3 +48,9 @@ export const getNewValue = (value, oldValue) => {
   /* eslint-enable no-nested-ternary */
   return newValue;
 };
+
+export const getTickerFormat = symbol => {
+  if (!symbol) return null;
+
+  return symbol.split('-')[0].toLowerCase();
+};
