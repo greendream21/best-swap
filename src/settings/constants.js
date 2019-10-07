@@ -1,1 +1,1 @@
-const BASE_NUMBER = 10 ** 8;
+export const BASE_NUMBER = 10 ** 8;

@@ -1,3 +1,5 @@
+import { BASE_NUMBER } from '../settings/constants';
+
 export const getPair = info => {
   if (info) {
     const source = info.split('-')[0].toLowerCase();
@@ -10,8 +12,6 @@ export const getPair = info => {
   }
   return {};
 };
-
-const BASE_NUMBER = 10 ** 8;
 
 export const getUserFormat = value => {
   if (value) {
