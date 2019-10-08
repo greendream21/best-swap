@@ -11,15 +11,15 @@ class TradeView extends Component {
 
   state = {};
 
-  handleTrade = (type, target) => () => {
-    const URL = `/trade/${type}/rune-${target}`;
+  handleTrade = asset => () => {
+    const URL = `/trade/${asset}`;
 
     this.props.history.push(URL);
   };
 
   renderTradeList = () => {
     return assets.map((asset, index) => {
-      if (asset !== 'rune') {
+      if (asset !== 'bnb') {
         return (
           <TradeCard
             className="trade-card"
@@ -30,8 +30,7 @@ class TradeView extends Component {
             marketPrice={1}
             premium={20}
             reward={230}
-            onBuy={this.handleTrade('buy', asset)}
-            onSell={this.handleTrade('sell', asset)}
+            onTrade={this.handleTrade(asset)}
             key={index}
           />
         );
