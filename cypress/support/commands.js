@@ -70,7 +70,8 @@ function mockBaseRoutes() {
     'token-tomob',
   );
   cy.route(
-    'https://testnet-api.bepswap.com/stakerData?staker=tbnb16hlvxuwq0ju92wghc6ms3kxf88e7aysw3l76zn&asset=',
+    'GET',
+    '/stakerData?staker=tbnb1uf4hln238vmpk366fjrhf3het8slwdxj0h74s3&asset=',
     'fx:base/staked-tokens',
   ).as('staked-tokens');
 }
