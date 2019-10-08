@@ -23,7 +23,7 @@ class TradeView extends Component {
         return (
           <TradeCard
             className="trade-card"
-            asset="rune"
+            asset="bnb"
             target={asset}
             depth={23000}
             poolPrice={1.2}
