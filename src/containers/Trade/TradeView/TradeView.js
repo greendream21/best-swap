@@ -5,6 +5,7 @@ import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 import TradeCard from '../../../components/trade/tradeCard';
+import TradeLoader from '../../../components/utility/loaders/trade';
 import { ContentWrapper } from './TradeView.style';
 import { getTradeData } from '../utils';
 
@@ -104,9 +105,14 @@ class TradeView extends Component {
   };
 
   render() {
+    const { loading } = this.props;
+
     return (
       <ContentWrapper className="trade-view-wrapper">
-        <div className="trade-list-view">{this.renderTradeList()}</div>
+        {loading && <TradeLoader />}
+        {!loading && (
+          <div className="trade-list-view">{this.renderTradeList()}</div>
+        )}
       </ContentWrapper>
     );
   }
