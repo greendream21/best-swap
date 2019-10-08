@@ -200,9 +200,7 @@ class ActionView extends Component {
         {view === 'pools-pool' && <PoolStake symbol={symbol} />}
         {view === 'pools-new' && <PoolCreate symbol={symbol} />}
         {view === 'trade-view' && <TradeView />}
-        {(view === 'trade-buy' || view === 'trade-sell') && (
-          <TradeDetail view={view} info={info} />
-        )}
+        {view === 'trade-detail' && <TradeDetail symbol={symbol} />}
       </ActionViewWrapper>
     );
   }

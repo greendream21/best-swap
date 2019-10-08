@@ -7,6 +7,5 @@ export const headerData = {
   'swap-send': 'swap',
   'pools-new': 'stake',
   'pools-pool': 'stake',
-  'trade-buy': 'trade',
-  'trade-sell': 'trade',
+  'trade-detail': 'trade',
 };
