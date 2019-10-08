@@ -12,7 +12,11 @@ import Button from '../../components/uielements/button';
 import CoinList from '../../components/uielements/coins/coinList';
 import chainActions from '../../redux/chainservice/actions';
 import walletActions from '../../redux/wallet/actions';
-import { getPair } from '../../helpers/stringHelper';
+import { getPair, getTickerFormat } from '../../helpers/stringHelper';
+import {
+  AssetLoader,
+  StakeLoader,
+} from '../../components/utility/loaders/wallet';
 
 const { getTokens } = chainActions;
 const { getRunePrice } = walletActions;
@@ -73,7 +77,7 @@ class WalletView extends Component {
 
   handleSelectAsset = key => {
     const newAssetName = this.getAssetNameByIndex(key);
-    const ticker = newAssetName.split('-')[0].toLowerCase();
+    const ticker = getTickerFormat(newAssetName);
 
     const URL = `/swap/detail/${ticker}-rune`;
     this.props.history.push(URL);
@@ -93,7 +97,7 @@ class WalletView extends Component {
     const { status, loadingAssets, assetData } = this.props;
 
     if (loadingAssets) {
-      return 'Loading...';
+      return <AssetLoader />;
     }
 
     if (status === 'connected' && assetData.length === 0) {
@@ -110,7 +114,7 @@ class WalletView extends Component {
     const { stakeData, loadingStakes } = this.props;
 
     if (loadingStakes) {
-      return 'Loading...';
+      return <StakeLoader />;
     }
 
     if (stakeData.length > 0) {

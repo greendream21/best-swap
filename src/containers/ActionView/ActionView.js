@@ -142,6 +142,7 @@ class ActionView extends Component {
         {headerText === undefined && (
           <>
             <Tabs
+              data-test="action-tabs"
               activeKey={active}
               onChange={this.handleChangeTab}
               style={{ width: '100%' }}

@@ -5,7 +5,7 @@ import { TradeCardWrapper } from './tradeCard.style';
 import Coin from '../../uielements/coins/coin';
 import Status from '../../uielements/status';
 import Button from '../../uielements/button';
-import { getActualValue } from '../../../helpers/stringHelper';
+import { getUserFormat } from '../../../helpers/stringHelper';
 
 class TradeCard extends Component {
   static propTypes = {
@@ -46,11 +46,11 @@ class TradeCard extends Component {
     } = this.props;
 
     const poolValue = `${asset}:${target}`;
-    const depthValue = `$${getActualValue(depth)}`;
-    const poolPriceValue = `$${getActualValue(poolPrice)}`;
-    const marketPriceValue = `$${getActualValue(marketPrice)}`;
-    const premiumValue = `${getActualValue(premium)}%`;
-    const rewardValue = `$${getActualValue(reward)}`;
+    const depthValue = `$${getUserFormat(depth)}`;
+    const poolPriceValue = `$${getUserFormat(poolPrice)}`;
+    const marketPriceValue = `$${getUserFormat(marketPrice)}`;
+    const premiumValue = `${getUserFormat(premium)}%`;
+    const rewardValue = `$${getUserFormat(reward)}`;
 
     return (
       <TradeCardWrapper className={`tradeCard-wrapper ${className}`} {...props}>

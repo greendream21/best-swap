@@ -1,72 +1,24 @@
-function mockSwapRoutes() {
-  // This mocks all the base routes
-  // Currently al these fixtures are in the /swap folder but it may make more sense to pull these
-  // out as we create more tests and then override as required
-
-  cy.route(
-    'GET',
-    'https://api.coingecko.com/api/v3//simple/price?ids=thorchain&vs_currencies=usd',
-    'fx:swap/coingecko',
-  ).as('coingecko');
-  cy.route(
-    'GET',
-    'https://testnet-dex.binance.org/api/v1/node-info',
-    'fx:swap/node-info',
-  ).as('node-info');
-  cy.route('GET', '/swapservice/pools', 'fx:swap/pools').as('pools');
-  cy.route('GET', '/poolData?asset=BNB', 'fx:swap/pool-bnb').as('pool-bnb');
-  cy.route('GET', '/poolData?asset=FSN-F1B', 'fx:swap/pool-fsn').as('pool-fsn');
-  cy.route('GET', '/poolData?asset=TCAN-014', 'fx:swap/pool-tcan').as(
-    'pool-tcan',
-  );
-  cy.route('GET', '/poolData?asset=TOMOB-1E1', 'fx:swap/pool-tomob').as(
-    'pool-tomob',
-  );
-  cy.route('GET', '/poolData?asset=FTM-585', 'fx:swap/pool-ftm').as('pool-ftm');
-  cy.route('GET', '/poolData?asset=LOK-3C0', 'fx:swap/pool-lok').as('pool-lok');
-  cy.route('GET', '/swapData?asset=FSN-F1B', 'fx:swap/swap-fsn').as('swap-fsn');
-  cy.route('GET', '/swapData?asset=BNB', 'fx:swap/swap-bnb').as('swap-bnb');
-  cy.route('GET', '/swapData?asset=FTM-585', 'fx:swap/swap-ftm').as('swap-ftm');
-  cy.route('GET', '/swapData?asset=LOK-3C0', 'fx:swap/swap-lok').as('swap-lok');
-  cy.route('GET', '/swapData?asset=TOMOB-1E1', 'fx:swap/swap-tomob').as(
-    'swap-tomob',
-  );
-  cy.route('GET', '/swapData?asset=TCAN-014', 'fx:swap/swap-tcan').as(
-    'swap-tcan',
-  );
-  cy.route('GET', '/tokens', 'fx:swap/tokens').as('tokens');
-  cy.route('GET', '/tokens?token=BNB', 'fx:swap/token-bnb').as('token-bnb');
-  cy.route('GET', '/tokens?token=FSN-F1B', 'fx:swap/token-fsn').as('token-fsn');
-  cy.route('GET', '/tokens?token=FTM-585', 'fx:swap/token-ftm').as('token-ftm');
-  cy.route('GET', '/tokens?token=LOK-3C0', 'fx:swap/token-lok').as('token-lok');
-  cy.route('GET', '/tokens?token=TCAN-014', 'fx:swap/token-tcan').as(
-    'token-tcan',
-  );
-  cy.route('GET', '/tokens?token=TOMOB-1E1', 'fx:swap/token-tomob').as(
-    'token-tomob',
-  );
-
-  // TODO: Not sure if or how account should change after this exactly
-  cy.route(
-    'POST',
-    'https://testnet-dex.binance.org/api/v1/broadcast?sync=true',
-    'fx:swap/broadcast',
-  ).as('broadcast');
-}
-
 describe('Swapping', () => {
-  before(() => {
+  beforeEach(() => {
     cy.clearCookies();
     cy.clearSessionStorage();
-    cy.server({ force404: true });
-    mockSwapRoutes(); // mock basic routes override specific routes to test failure conditions
+    cy.server();
+    // mockAll the things
+    cy.mockBaseRoutes();
+    cy.mockWalletRoutes();
+    cy.mockChainRoutes();
+    cy.mockCoingeckoRoutes();
   });
 
   it('should be able to swap assets', () => {
     // without a wallet
     cy.visit('/');
 
-    // spy on transfer function
+    // spy on binance client
+    // This is a little implementationy for an integration test
+    // however as transactions are hashed by binance js sdk
+    // it kind of the point at which we can check that
+    // information is being sent to the chain is correct
     cy.window().then(win => {
       cy.spy(win.binance, 'transfer').as('doTransfer');
     });
@@ -126,7 +78,7 @@ describe('Swapping', () => {
         'tbnb15r82hgf2e7649zhl4dsqgwc5tj64wf2jztrwd5',
         1008,
         'RUNE-A1F',
-        'swap:BNB::',
+        'swap:BNB::77970540000',
       );
 
     cy.get('[data-test="swapmodal-coin-data-send"]').contains('1,008');
