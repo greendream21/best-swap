@@ -71,7 +71,7 @@ function mockBaseRoutes() {
   );
   cy.route(
     'GET',
-    '/stakerData?staker=tbnb1uf4hln238vmpk366fjrhf3het8slwdxj0h74s3&asset=',
+    '/stakerData?staker=*&asset=',
     'fx:base/staked-tokens',
   ).as('staked-tokens');
 }
@@ -99,7 +99,6 @@ function mockWalletRoutes() {
   cy.route(
     'GET',
     'https://testnet-dex.binance.org/api/v1/account/tbnb16hlvxuwq0ju92wghc6ms3kxf88e7aysw3l76zn',
-    'fx:wallet/dex-account',
   ).as('dex-account');
 }
 
