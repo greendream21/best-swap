@@ -47,7 +47,7 @@ describe('Swapping', () => {
     // TODO: fix this
     // It may make sense to ensure this process is done synchronously before navigating away from
     // the upload page
-    cy.wait(3000);
+    cy.wait(10000);
 
     cy.get('[data-test="selection-button-25"]').click();
 

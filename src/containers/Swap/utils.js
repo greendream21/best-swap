@@ -1,8 +1,7 @@
 import { getSwapMemo } from '../../helpers/memoHelper';
 import { getTickerFormat } from '../../helpers/stringHelper';
 import { getZValue, getPx, getPz, getSlip } from './calc';
-
-const BASE_NUMBER = 10 ** 8;
+import { BASE_NUMBER } from '../../settings/constants';
 
 export const getSwapType = (from, to) => {
   if (from.toLowerCase() === 'rune' || to.toLowerCase() === 'rune') {

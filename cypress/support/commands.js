@@ -69,6 +69,11 @@ function mockBaseRoutes() {
   cy.route('GET', '/tokens?token=TOMOB-1E1', 'fx:base/token-tomob').as(
     'token-tomob',
   );
+  cy.route(
+    'GET',
+    '/stakerData?staker=*&asset=',
+    'fx:base/staked-tokens',
+  ).as('staked-tokens');
 }
 
 function mockChainRoutes() {
@@ -94,7 +99,6 @@ function mockWalletRoutes() {
   cy.route(
     'GET',
     'https://testnet-dex.binance.org/api/v1/account/tbnb16hlvxuwq0ju92wghc6ms3kxf88e7aysw3l76zn',
-    'fx:wallet/dex-account',
   ).as('dex-account');
 }
 
