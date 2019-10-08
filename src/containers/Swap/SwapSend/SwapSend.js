@@ -33,7 +33,11 @@ import {
   CardFormItemError,
   CardFormItemCloseButton,
 } from './SwapSend.style';
-import { getTickerFormat, getPair } from '../../../helpers/stringHelper';
+import {
+  getTickerFormat,
+  getPair,
+  getFixedNumber,
+} from '../../../helpers/stringHelper';
 import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
 import { getCalcResult, confirmSwap } from '../utils';
 
@@ -464,6 +468,7 @@ class SwapSend extends Component {
   renderSwapModalContent = (swapData, info) => {
     const {
       txStatus: { status, value },
+      runePrice,
     } = this.props;
     const { xValue } = this.state;
     const { source, target } = swapData;
@@ -526,7 +531,7 @@ class SwapSend extends Component {
                   value="1 RUNE"
                 />
                 <Label className="price-label" size="normal" color="gray">
-                  $USD 0.04
+                  $USD {getFixedNumber(runePrice)}
                 </Label>
               </div>
               <div className="status-item">
