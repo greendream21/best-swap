@@ -535,7 +535,11 @@ class SwapSend extends Component {
                   value={feeValue}
                 />
                 <Label className="price-label" size="normal" color="gray">
+<<<<<<< HEAD
                   $USD {getFixedNumber(feePrice)}
+=======
+                  $USD {getFixedNumber(runePrice)}
+>>>>>>> Add rune price
                 </Label>
               </div>
               <div className="status-item">
