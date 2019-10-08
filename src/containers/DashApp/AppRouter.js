@@ -46,7 +46,7 @@ const routes = [
     component: asyncComponent(() => import('../pages/Pool')),
   },
   {
-    path: 'trade/:view?/:info?',
+    path: 'trade/:symbol?',
     component: asyncComponent(() => import('../pages/Trade')),
   },
 ];

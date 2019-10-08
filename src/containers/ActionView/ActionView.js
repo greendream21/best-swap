@@ -150,6 +150,7 @@ class ActionView extends Component {
             >
               <TabPane tab="swap" key="swap" />
               <TabPane tab="pools" key="pools" />
+              <TabPane tab="trade" key="trade" />
             </Tabs>
             {intro}
           </>
