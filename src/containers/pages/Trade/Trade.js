@@ -7,13 +7,15 @@ import ActionView from '../../ActionView';
 
 class Trade extends Component {
   render() {
-    const { view, info } = this.props.match.params; // eslint-disable-line
+    const { symbol } = this.props.match.params; // eslint-disable-line
+    let view = 'detail';
+    if (!symbol) view = 'view';
 
     return (
       <TradeWrapper>
         <Row gutter={32}>
           <Col span={24}>
-            <ActionView type="trade" view={view} info={info} />
+            <ActionView type="trade" view={view} />
           </Col>
         </Row>
       </TradeWrapper>
