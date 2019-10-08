@@ -23,7 +23,7 @@ import statechainActions from '../../../redux/statechain/actions';
 import binanceActions from '../../../redux/binance/actions';
 
 import { ContentWrapper, PrivateModal } from './PoolCreate.style';
-import { getActualValue, getNewValue } from '../../../helpers/stringHelper';
+import { getUserFormat, getTickerFormat } from '../../../helpers/stringHelper';
 import {
   getCreatePoolCalc,
   getCreatePoolTokens,
@@ -109,15 +109,15 @@ class PoolCreate extends Component {
 
   handleChangeTokenAmount = tokenName => amount => {
     const { assetData, symbol } = this.props;
-    const { runeAmount, tokenAmount, fR, fT } = this.state;
+    const { fR, fT } = this.state;
 
     let newValue;
-    const source = tokenName.split('-')[0].toLowerCase();
+    const source = getTickerFormat(tokenName);
 
     const sourceAsset = assetData.find(data => {
       const { asset } = data;
-      const tokenName = asset.split('-')[0];
-      if (tokenName.toLowerCase() === source) {
+      const tokenName = getTickerFormat(asset);
+      if (tokenName === source) {
         return true;
       }
       return false;
@@ -140,7 +140,7 @@ class PoolCreate extends Component {
     const totalAmount = !sourceAsset ? 0 : sourceAsset.assetValue * balance;
 
     if (tokenName === 'rune') {
-      newValue = getNewValue(amount, runeAmount);
+      newValue = amount;
 
       if (totalAmount < newValue) {
         this.setState({
@@ -154,7 +154,7 @@ class PoolCreate extends Component {
         });
       }
     } else {
-      newValue = getNewValue(amount, tokenAmount);
+      newValue = amount;
 
       if (totalAmount < newValue) {
         this.setState({
@@ -176,8 +176,8 @@ class PoolCreate extends Component {
 
     const selectedToken = assetData.find(data => {
       const { asset } = data;
-      const tokenName = asset.split('-')[0];
-      if (tokenName.toLowerCase() === token.toLowerCase()) {
+      const tokenName = getTickerFormat(asset);
+      if (tokenName === token.toLowerCase()) {
         return true;
       }
       return false;
@@ -364,7 +364,7 @@ class PoolCreate extends Component {
     } = this.state;
 
     const source = 'rune';
-    const target = symbol.split('-')[0].toLowerCase();
+    const target = getTickerFormat(symbol);
 
     const tokensData = getCreatePoolTokens(assetData, pools);
 
@@ -389,7 +389,7 @@ class PoolCreate extends Component {
       {
         key: 'depth',
         title: 'Pool Depth',
-        value: `$${getActualValue(depth)}`,
+        value: `$${getUserFormat(depth)}`,
       },
       { key: 'share', title: 'Your Share', value: `${share}%` },
     ];
@@ -487,7 +487,7 @@ class PoolCreate extends Component {
       symbol,
       binanceData: { tokenList, marketList },
     } = this.props;
-    const target = symbol.split('-')[0].toLowerCase();
+    const target = getTickerFormat(symbol);
 
     const title = 'TOKEN DETAILS';
 

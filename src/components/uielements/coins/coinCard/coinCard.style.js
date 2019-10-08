@@ -165,19 +165,3 @@ function AutofocusInput(props) {
 AutofocusInput.propTypes = {
   onFocus: PropTypes.func,
 };
-
-export const CoinCardInput = styled(AutofocusInput)`
-  /* TODO: move these styles to a uielement */
-  &.ant-input {
-    border: none;
-    padding: 0;
-    &:focus {
-      outline: none;
-      border: none;
-      box-shadow: none;
-    }
-  }
-  &.ant-input.ant-input-disabled {
-    background-color: #fff;
-  }
-`;

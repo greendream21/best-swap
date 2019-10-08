@@ -1,7 +1,7 @@
 import { getSwapMemo } from '../../helpers/memoHelper';
+import { getTickerFormat } from '../../helpers/stringHelper';
 import { getZValue, getPx, getPz, getSlip } from './calc';
-
-const BASE_NUMBER = 10 ** 8;
+import { BASE_NUMBER } from '../../settings/constants';
 
 export const getSwapType = (from, to) => {
   if (from.toLowerCase() === 'rune' || to.toLowerCase() === 'rune') {
@@ -24,7 +24,7 @@ export const getCalcResult = (from, to, pools, xValue, runePrice) => {
     pools.forEach(poolData => {
       const { balance_rune, balance_token, pool_address, symbol } = poolData;
 
-      const token = symbol.split('-')[0];
+      const token = getTickerFormat(symbol);
       if (token.toLowerCase() === from.toLowerCase()) {
         X = Number(balance_token);
         Y = Number(balance_rune);
@@ -67,7 +67,7 @@ export const getCalcResult = (from, to, pools, xValue, runePrice) => {
     pools.forEach(poolData => {
       const { balance_rune, balance_token, pool_address, symbol } = poolData;
 
-      const token = symbol.split('-')[0];
+      const token = getTickerFormat(symbol);
       if (token.toLowerCase() === from.toLowerCase()) {
         X = Number(balance_token);
         Y = Number(balance_rune);
@@ -109,7 +109,7 @@ export const getCalcResult = (from, to, pools, xValue, runePrice) => {
     pools.forEach(poolData => {
       const { balance_rune, balance_token, pool_address, symbol } = poolData;
 
-      const token = symbol.split('-')[0];
+      const token = getTickerFormat(symbol);
       if (token.toLowerCase() === to.toLowerCase()) {
         X = Number(balance_rune);
         Y = Number(balance_token);

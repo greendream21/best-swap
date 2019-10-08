@@ -8,11 +8,13 @@ import { notification } from 'antd';
 import PoolCard from '../../../components/pool/poolCard';
 import Label from '../../../components/uielements/label';
 import AddIcon from '../../../components/uielements/addIcon';
+import PoolLoader from '../../../components/utility/loaders/pool';
 
 import { ContentWrapper } from './PoolView.style';
 import statechainActions from '../../../redux/statechain/actions';
 import walletactions from '../../../redux/wallet/actions';
 import { getPoolData, getCreatePoolTokens } from '../utils';
+import { getTickerFormat } from '../../../helpers/stringHelper';
 
 const { getPools } = statechainActions;
 const { getRunePrice } = walletactions;
@@ -27,6 +29,7 @@ class PoolView extends Component {
     assetData: PropTypes.array.isRequired,
     getRunePrice: PropTypes.func.isRequired,
     runePrice: PropTypes.number.isRequired,
+    loading: PropTypes.bool.isRequired,
   };
 
   state = {
@@ -51,7 +54,7 @@ class PoolView extends Component {
     console.log(possibleTokens);
     if (possibleTokens.length) {
       const symbol = possibleTokens[0].asset;
-      if (symbol.split('-')[0].toLowerCase() !== 'rune') {
+      if (getTickerFormat(symbol) !== 'rune') {
         const URL = `/pool/${symbol}/new`;
         this.props.history.push(URL);
       }
@@ -86,6 +89,7 @@ class PoolView extends Component {
         return (
           <PoolCard
             className="pool-card"
+            data-test={`pool-card-${symbol}`}
             asset={asset}
             target={target}
             depth={depth}
@@ -103,15 +107,22 @@ class PoolView extends Component {
   };
 
   render() {
+    const { loading } = this.props;
+
     return (
       <ContentWrapper className="pool-view-wrapper">
-        <div className="pool-list-view">{this.renderPoolList()}</div>
-        <div className="add-new-pool" onClick={this.handleNewPool}>
-          <AddIcon />
-          <Label size="normal" weight="bold" color="normal">
-            ADD NEW POOL
-          </Label>
-        </div>
+        {loading && <PoolLoader />}
+        {!loading && (
+          <>
+            <div className="pool-list-view">{this.renderPoolList()}</div>
+            <div className="add-new-pool" onClick={this.handleNewPool}>
+              <AddIcon />
+              <Label size="normal" weight="bold" color="normal">
+                ADD NEW POOL
+              </Label>
+            </div>
+          </>
+        )}
       </ContentWrapper>
     );
   }
@@ -123,6 +134,7 @@ export default compose(
       pools: state.Statechain.pools,
       poolData: state.Statechain.poolData,
       swapData: state.Statechain.swapData,
+      loading: state.Statechain.loading,
       runePrice: state.Wallet.runePrice,
       assetData: state.Wallet.assetData,
     }),

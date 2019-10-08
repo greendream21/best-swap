@@ -33,7 +33,7 @@ import {
   CardFormItemError,
   CardFormItemCloseButton,
 } from './SwapSend.style';
-import { getNewValue } from '../../../helpers/stringHelper';
+import { getTickerFormat, getPair } from '../../../helpers/stringHelper';
 import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
 import { getCalcResult, confirmSwap } from '../utils';
 
@@ -119,17 +119,17 @@ class SwapSend extends Component {
   };
 
   handleChangeValue = value => {
-    const { xValue } = this.state;
-    const newValue = getNewValue(value, xValue);
+    const { info } = this.props;
+    const newValue = value;
 
     const { assetData, getRunePrice } = this.props;
-    const { source } = this.getSwapData();
+    const { source } = getPair(info);
     getRunePrice();
 
     const sourceAsset = assetData.find(data => {
       const { asset } = data;
-      const tokenName = asset.split('-')[0];
-      if (tokenName.toLowerCase() === source) {
+      const tokenName = getTickerFormat(asset);
+      if (tokenName === source) {
         return true;
       }
       return false;
@@ -149,9 +149,9 @@ class SwapSend extends Component {
   };
 
   handleChangeSource = asset => {
-    const { view } = this.props;
-    const { target } = this.getSwapData();
-    const source = asset.split('-')[0].toLowerCase();
+    const { view, info } = this.props;
+    const { target } = getPair(info);
+    const source = getTickerFormat(asset);
 
     if (source === target) {
       return;
@@ -320,9 +320,9 @@ class SwapSend extends Component {
   };
 
   handleChangeSource = asset => {
-    const { view } = this.props;
-    const { source, target } = this.getSwapData();
-    const selectedToken = asset.split('-')[0].toLowerCase();
+    const { view, info } = this.props;
+    const { source, target } = getPair(info);
+    const selectedToken = getTickerFormat(asset);
 
     let URL;
     if (selectedToken === target) {
@@ -334,9 +334,9 @@ class SwapSend extends Component {
   };
 
   handleSelectTraget = asset => {
-    const { view } = this.props;
-    const { source, target } = this.getSwapData();
-    const selectedToken = asset.split('-')[0].toLowerCase();
+    const { view, info } = this.props;
+    const { source, target } = getPair(info);
+    const selectedToken = getTickerFormat(asset);
 
     let URL;
     if (source === selectedToken) {
@@ -348,12 +348,10 @@ class SwapSend extends Component {
   };
 
   handleReversePair = () => {
-    const { view, assetData } = this.props;
-    const { source, target } = this.getSwapData();
+    const { view, info, assetData } = this.props;
+    const { source, target } = getPair(info);
 
-    if (
-      !assetData.find(data => data.asset.split('-')[0].toLowerCase() === target)
-    ) {
+    if (!assetData.find(data => getTickerFormat(data.asset) === target)) {
       notification.warning({
         message: 'Cannot Reverse Swap Direction',
         description: 'Token does not exist in your wallet.',
@@ -371,15 +369,17 @@ class SwapSend extends Component {
       this.props.history.push('/swap');
     }
 
-    const { source, target } = this.getSwapData();
+    const { info } = this.props;
+
+    const { source, target } = getPair(info);
 
     const targetData = targetInfo.filter(data => {
-      const compare = data.asset.split('-')[0].toLowerCase() !== target;
+      const compare = getTickerFormat(data.asset) !== target;
       return compare;
     });
 
     const sourceData = sourceInfo.filter(data => {
-      const compare = data.asset.split('-')[0].toLowerCase() !== source;
+      const compare = getTickerFormat(data.asset) !== source;
       return compare;
     });
 
@@ -387,21 +387,6 @@ class SwapSend extends Component {
       sourceData,
       targetData,
     };
-  };
-
-  getSwapData = () => {
-    const { info } = this.props;
-
-    if (info) {
-      const source = info.split('-')[0];
-      const target = info.split('-')[1];
-
-      return {
-        source,
-        target,
-      };
-    }
-    return {};
   };
 
   handleChangeTxValue = value => {
@@ -422,9 +407,10 @@ class SwapSend extends Component {
   handleConfirmSwap = async () => {
     const {
       user: { wallet },
+      info,
     } = this.props;
     const { xValue, address, slipProtection } = this.state;
-    const { source, target } = this.getSwapData();
+    const { source, target } = getPair(info);
 
     try {
       const { result } = await confirmSwap(
@@ -457,8 +443,8 @@ class SwapSend extends Component {
 
     const sourceAsset = assetData.find(data => {
       const { asset } = data;
-      const tokenName = asset.split('-')[0];
-      if (tokenName.toLowerCase() === source) {
+      const tokenName = getTickerFormat(asset);
+      if (tokenName === source) {
         return true;
       }
       return false;
@@ -598,6 +584,7 @@ class SwapSend extends Component {
   render() {
     const {
       view,
+      info,
       txStatus,
       chainData: { tokenInfo },
       pools,
@@ -616,7 +603,7 @@ class SwapSend extends Component {
       slipProtection,
     } = this.state;
 
-    const swapData = this.getSwapData();
+    const swapData = getPair(info);
 
     if (!swapData || !Object.keys(tokenInfo).length) {
       return '';

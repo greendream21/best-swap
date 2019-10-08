@@ -2,7 +2,6 @@ import React, { Fragment, Component } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import { Spin, Icon } from 'antd';
 import PropTypes from 'prop-types';
 
 import Label from '../../../components/uielements/label';
@@ -14,6 +13,7 @@ import { ContentWrapper } from './SwapView.style';
 import statechainActions from '../../../redux/statechain/actions';
 import walletactions from '../../../redux/wallet/actions';
 import { getSwapData } from './data';
+import SwapLoader from '../../../components/utility/loaders/swap';
 
 const { getPools } = statechainActions;
 const { getRunePrice } = walletactions;
@@ -27,6 +27,7 @@ class SwapView extends Component {
     assetData: PropTypes.array.isRequired,
     getRunePrice: PropTypes.func.isRequired,
     runePrice: PropTypes.number,
+    loading: PropTypes.bool.isRequired,
     history: PropTypes.object,
   };
 
@@ -102,25 +103,22 @@ class SwapView extends Component {
   };
 
   render() {
-    const { runePrice, pools } = this.props;
-    if (runePrice === null || pools.length === 0) {
-      const antIcon = <Icon type="loading" style={{ fontSize: 24 }} spin />;
-      return (
-        <div style={{ textAlign: 'center' }}>
-          <Spin indicator={antIcon} style={{ color: '#31b8f5' }} />
-        </div>
-      );
-    }
+    const { loading } = this.props;
 
     return (
       <ContentWrapper className="swap-view-wrapper">
-        <div className="view-title">
-          <Label size="normal" weight="bold" color="normal">
-            CHOOSE BASE PAIR
-          </Label>
-        </div>
-        <div className="asset-button-group">{this.renderAssets()}</div>
-        <div className="swap-list-view">{this.renderSwapList()}</div>
+        {loading && <SwapLoader />}
+        {!loading && (
+          <>
+            <div className="view-title">
+              <Label size="normal" weight="bold" color="normal">
+                CHOOSE BASE PAIR
+              </Label>
+            </div>
+            <div className="asset-button-group">{this.renderAssets()}</div>
+            <div className="swap-list-view">{this.renderSwapList()}</div>
+          </>
+        )}
       </ContentWrapper>
     );
   }
@@ -134,6 +132,7 @@ export default compose(
       swapData: state.Statechain.swapData,
       runePrice: state.Wallet.runePrice,
       assetData: state.Wallet.assetData,
+      loading: state.Statechain.loading,
     }),
     {
       getPools,
