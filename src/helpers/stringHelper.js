@@ -29,8 +29,10 @@ export const getBaseNumberFormat = value => {
   return 0;
 };
 
-export const getFixedNumber = value => {
-  return Number(Number(value).toFixed(2));
+export const getFixedNumber = (value, point = 2) => {
+  if (Number.isNaN(value)) return 0;
+
+  return Number(Number(value).toFixed(point));
 };
 
 export const getTickerFormat = symbol => {

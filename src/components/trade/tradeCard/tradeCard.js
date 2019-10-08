@@ -5,7 +5,7 @@ import CardLayout from '../../cardLayout';
 import Coin from '../../uielements/coins/coin';
 import Status from '../../uielements/status';
 import Button from '../../uielements/button';
-import { getUserFormat } from '../../../helpers/stringHelper';
+import { getUserFormat, getFixedNumber } from '../../../helpers/stringHelper';
 
 class TradeCard extends Component {
   static propTypes = {
@@ -45,10 +45,10 @@ class TradeCard extends Component {
 
     const poolValue = `${asset}:${target}`;
     const depthValue = `$${getUserFormat(depth)}`;
-    const poolPriceValue = `$${getUserFormat(poolPrice)}`;
-    const marketPriceValue = `$${getUserFormat(marketPrice)}`;
-    const premiumValue = `${getUserFormat(premium)}%`;
-    const rewardValue = `$${getUserFormat(reward)}`;
+    const poolPriceValue = `$${poolPrice}`;
+    const marketPriceValue = `$${marketPrice}`;
+    const premiumValue = `${getFixedNumber(premium)}%`;
+    const rewardValue = `${reward} BNB`;
 
     return (
       <CardLayout.Row className={className} {...props}>

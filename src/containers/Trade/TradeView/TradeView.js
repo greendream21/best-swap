@@ -8,12 +8,15 @@ import TradeCard from '../../../components/trade/tradeCard';
 import TradeLoader from '../../../components/utility/loaders/trade';
 import { ContentWrapper } from './TradeView.style';
 import { getTradeData } from '../utils';
+import { getFixedNumber } from '../../../helpers/stringHelper';
 
 import statechainActions from '../../../redux/statechain/actions';
-import walletactions from '../../../redux/wallet/actions';
+import walletActions from '../../../redux/wallet/actions';
+import binanceActions from '../../../redux/binance/actions';
 
 const { getPools } = statechainActions;
-const { getRunePrice } = walletactions;
+const { getRunePrice } = walletActions;
+const { getBinanceMarkets } = binanceActions;
 
 class TradeView extends Component {
   static propTypes = {
@@ -24,17 +27,20 @@ class TradeView extends Component {
     swapData: PropTypes.object.isRequired,
     assetData: PropTypes.array.isRequired,
     getRunePrice: PropTypes.func.isRequired,
+    getBinanceMarkets: PropTypes.func.isRequired,
     runePrice: PropTypes.number.isRequired,
+    binanceData: PropTypes.object.isRequired,
     loading: PropTypes.bool.isRequired,
   };
 
   state = {};
 
   componentDidMount() {
-    const { getPools, getRunePrice } = this.props;
+    const { getPools, getRunePrice, getBinanceMarkets } = this.props;
 
     getPools();
     getRunePrice();
+    getBinanceMarkets();
   }
 
   handleTrade = asset => () => {
@@ -44,22 +50,41 @@ class TradeView extends Component {
   };
 
   renderTradeList = () => {
-    const { pools, poolData, swapData, runePrice, assetData } = this.props;
+    const {
+      pools,
+      poolData,
+      runePrice,
+      assetData,
+      binanceData: { marketList },
+    } = this.props;
+
+    const bnbMarket = marketList.find(
+      market => market.base_asset_symbol === 'BNB',
+    );
+    const bnbPrice = Number((bnbMarket && bnbMarket.list_price) || 0);
 
     return pools.map((pool, index) => {
       const { symbol } = pool;
       const poolInfo = poolData[symbol] || {};
-      const swapInfo = swapData[symbol] || {};
 
+      const binanceMarket = marketList.find(
+        market => market.base_asset_symbol === symbol,
+      );
+      const marketPrice = Number(
+        (binanceMarket && binanceMarket.list_price) || 0,
+      );
+
+      console.log(marketPrice);
       if (symbol.toLowerCase() === 'bnb') {
-        const { depth, poolPrice } = getTradeData(
+        const { depth, poolPrice, premium, reward } = getTradeData(
           'rune',
           symbol,
           pool,
           poolInfo,
-          swapInfo,
           assetData,
           runePrice,
+          bnbPrice,
+          marketPrice,
         );
 
         return (
@@ -69,21 +94,23 @@ class TradeView extends Component {
             target="rune"
             depth={depth}
             poolPrice={poolPrice}
-            marketPrice={1}
-            premium={20}
-            reward={230}
+            marketPrice={getFixedNumber(runePrice, 6)}
+            premium={premium}
+            reward={reward}
             onTrade={this.handleTrade(symbol)}
             key={index}
           />
         );
       } else {
-        const { target, depth, poolPrice } = getTradeData(
-          'rune',
+        const { target, depth, poolPrice, premium, reward } = getTradeData(
+          'bnb',
           symbol,
+          pool,
           poolInfo,
-          swapInfo,
           assetData,
           runePrice,
+          bnbPrice,
+          marketPrice,
         );
 
         return (
@@ -93,9 +120,9 @@ class TradeView extends Component {
             target={target}
             depth={depth}
             poolPrice={poolPrice}
-            marketPrice={1}
-            premium={20}
-            reward={230}
+            marketPrice={getFixedNumber(marketPrice, 6)}
+            premium={premium}
+            reward={reward}
             onTrade={this.handleTrade(symbol)}
             key={index}
           />
@@ -105,12 +132,17 @@ class TradeView extends Component {
   };
 
   render() {
-    const { loading } = this.props;
+    const {
+      loading,
+      binanceData: { loadingMarket },
+    } = this.props;
+
+    const isLoading = loading || loadingMarket;
 
     return (
       <ContentWrapper className="trade-view-wrapper">
-        {loading && <TradeLoader />}
-        {!loading && (
+        {isLoading && <TradeLoader />}
+        {!isLoading && (
           <div className="trade-list-view">{this.renderTradeList()}</div>
         )}
       </ContentWrapper>
@@ -127,10 +159,12 @@ export default compose(
       loading: state.Statechain.loading,
       runePrice: state.Wallet.runePrice,
       assetData: state.Wallet.assetData,
+      binanceData: state.Binance,
     }),
     {
       getPools,
       getRunePrice,
+      getBinanceMarkets,
     },
   ),
   withRouter,

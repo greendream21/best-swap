@@ -1,13 +1,18 @@
-import { getTickerFormat, getFixedNumber } from '../../helpers/stringHelper';
+import {
+  getTickerFormat,
+  getFixedNumber,
+  getUserFormat,
+} from '../../helpers/stringHelper';
 
 export const getTradeData = (
   from,
   to,
   poolData,
   poolInfo,
-  swapInfo,
   tokenInfo,
   runePrice,
+  bnbPrice,
+  marketPrice,
 ) => {
   const tokenData = tokenInfo[to];
   const tokenPrice = tokenData ? tokenData.price : 0;
@@ -21,17 +26,17 @@ export const getTradeData = (
   const T = Number(balance_token);
   const poolPrice = getFixedNumber((R / T) * runePrice);
   const depth = Number(poolInfo.depth * runePrice);
-
-  const totalSwaps = poolInfo.numSwaps;
-  const totalStakers = poolInfo.numStakers;
-
+  const premium =
+    poolPrice !== 0 ? getFixedNumber(marketPrice - poolPrice) / poolPrice : 0;
+  const reward = getUserFormat((0.5 * premium * depth * runePrice) / bnbPrice);
+  console.log(to, marketPrice, poolPrice, bnbPrice, reward);
   return {
     tokenPrice,
     asset,
     target,
     depth,
     poolPrice,
-    totalSwaps,
-    totalStakers,
+    premium,
+    reward,
   };
 };
