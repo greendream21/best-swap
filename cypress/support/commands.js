@@ -69,6 +69,10 @@ function mockBaseRoutes() {
   cy.route('GET', '/tokens?token=TOMOB-1E1', 'fx:base/token-tomob').as(
     'token-tomob',
   );
+  cy.route(
+    'https://testnet-api.bepswap.com/stakerData?staker=tbnb16hlvxuwq0ju92wghc6ms3kxf88e7aysw3l76zn&asset=',
+    'fx:base/staked-tokens',
+  ).as('staked-tokens');
 }
 
 function mockChainRoutes() {
