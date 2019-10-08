@@ -12,7 +12,7 @@
     "test:feat:_no-build": "run-p -r cy:launch cy:run",
     "pretest:feat": "yarn build",
     "test:feat": "yarn test:feat:_no-build",
-    "test:unit": "node scripts/test.js --watchAll=false",
+    "test:unit": "jest",
     "cy:launch": "http-server build --silent",
     "cy:run": "./scripts/cypress-run",
     "cy:run:dev": "CYPRESS_baseUrl=http://localhost:3000 yarn cy:run --browser chrome --no-exit",
