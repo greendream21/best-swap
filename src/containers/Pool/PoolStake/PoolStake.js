@@ -40,11 +40,7 @@ import {
   confirmStake,
   confirmWithdraw,
 } from '../utils';
-import {
-  getUserFormat,
-  getNewValue,
-  getTickerFormat,
-} from '../../../helpers/stringHelper';
+import { getUserFormat, getTickerFormat } from '../../../helpers/stringHelper';
 import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
 
 const { TabPane } = Tabs;
@@ -133,7 +129,7 @@ class PoolStake extends Component {
 
   handleChangeTokenAmount = tokenName => amount => {
     const { assetData, symbol } = this.props;
-    const { runeAmount, tokenAmount, fR, fT } = this.state;
+    const { fR, fT } = this.state;
 
     let newValue;
     const source = getTickerFormat(tokenName);
@@ -165,7 +161,7 @@ class PoolStake extends Component {
     const totalTokenAmount = targetToken.assetValue * balance || 0;
 
     if (tokenName === 'rune') {
-      newValue = getNewValue(amount, runeAmount);
+      newValue = amount;
       const { ratio } = this.data;
       const tokenValue = newValue * ratio;
       const tokenAmount =
@@ -185,7 +181,7 @@ class PoolStake extends Component {
         });
       }
     } else {
-      newValue = getNewValue(amount, tokenAmount);
+      newValue = amount;
 
       if (totalAmount < newValue) {
         this.setState({

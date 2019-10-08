@@ -203,3 +203,5 @@ $RECYCLE.BIN/
 
 /cypress/videos
 /cypress/screenshots
+
+/.VSCodeCounter

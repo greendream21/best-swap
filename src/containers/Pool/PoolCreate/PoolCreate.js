@@ -23,11 +23,7 @@ import statechainActions from '../../../redux/statechain/actions';
 import binanceActions from '../../../redux/binance/actions';
 
 import { ContentWrapper, PrivateModal } from './PoolCreate.style';
-import {
-  getUserFormat,
-  getNewValue,
-  getTickerFormat,
-} from '../../../helpers/stringHelper';
+import { getUserFormat, getTickerFormat } from '../../../helpers/stringHelper';
 import {
   getCreatePoolCalc,
   getCreatePoolTokens,
@@ -113,7 +109,7 @@ class PoolCreate extends Component {
 
   handleChangeTokenAmount = tokenName => amount => {
     const { assetData, symbol } = this.props;
-    const { runeAmount, tokenAmount, fR, fT } = this.state;
+    const { fR, fT } = this.state;
 
     let newValue;
     const source = getTickerFormat(tokenName);
@@ -144,7 +140,7 @@ class PoolCreate extends Component {
     const totalAmount = !sourceAsset ? 0 : sourceAsset.assetValue * balance;
 
     if (tokenName === 'rune') {
-      newValue = getNewValue(amount, runeAmount);
+      newValue = amount;
 
       if (totalAmount < newValue) {
         this.setState({
@@ -158,7 +154,7 @@ class PoolCreate extends Component {
         });
       }
     } else {
-      newValue = getNewValue(amount, tokenAmount);
+      newValue = amount;
 
       if (totalAmount < newValue) {
         this.setState({
