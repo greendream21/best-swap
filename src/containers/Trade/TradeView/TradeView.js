@@ -1,52 +1,171 @@
-import React, { Fragment, Component } from 'react';
+import React, { Component } from 'react';
+import { compose } from 'redux';
+import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import TradeCard from '../../../components/trade/tradeCard';
 
+import TradeCard from '../../../components/trade/tradeCard';
+import TradeLoader from '../../../components/utility/loaders/trade';
 import { ContentWrapper } from './TradeView.style';
-import { assets } from './data';
+import { getTradeData } from '../utils';
+import { getFixedNumber } from '../../../helpers/stringHelper';
+
+import statechainActions from '../../../redux/statechain/actions';
+import walletActions from '../../../redux/wallet/actions';
+import binanceActions from '../../../redux/binance/actions';
+
+const { getPools } = statechainActions;
+const { getRunePrice } = walletActions;
+const { getBinanceMarkets } = binanceActions;
 
 class TradeView extends Component {
-  static propTypes = { history: PropTypes.object };
+  static propTypes = {
+    history: PropTypes.object.isRequired,
+    getPools: PropTypes.func.isRequired,
+    pools: PropTypes.array.isRequired,
+    poolData: PropTypes.object.isRequired,
+    swapData: PropTypes.object.isRequired,
+    assetData: PropTypes.array.isRequired,
+    getRunePrice: PropTypes.func.isRequired,
+    getBinanceMarkets: PropTypes.func.isRequired,
+    runePrice: PropTypes.number.isRequired,
+    binanceData: PropTypes.object.isRequired,
+    loading: PropTypes.bool.isRequired,
+  };
 
   state = {};
 
-  handleTrade = (type, target) => () => {
-    const URL = `/trade/${type}/rune-${target}`;
+  componentDidMount() {
+    const { getPools, getRunePrice, getBinanceMarkets } = this.props;
+
+    getPools();
+    getRunePrice();
+    getBinanceMarkets();
+  }
+
+  handleTrade = asset => () => {
+    const URL = `/trade/${asset}`;
 
     this.props.history.push(URL);
   };
 
   renderTradeList = () => {
-    return assets.map((asset, index) => {
-      if (asset !== 'rune') {
+    const {
+      pools,
+      poolData,
+      runePrice,
+      assetData,
+      binanceData: { marketList },
+    } = this.props;
+
+    const bnbMarket = marketList.find(
+      market => market.base_asset_symbol === 'BNB',
+    );
+    const bnbPrice = Number((bnbMarket && bnbMarket.list_price) || 0);
+
+    return pools.map((pool, index) => {
+      const { symbol } = pool;
+      const poolInfo = poolData[symbol] || {};
+
+      const binanceMarket = marketList.find(
+        market => market.base_asset_symbol === symbol,
+      );
+      const marketPrice = Number(
+        (binanceMarket && binanceMarket.list_price) || 0,
+      );
+
+      console.log(marketPrice);
+      if (symbol.toLowerCase() === 'bnb') {
+        const { depth, poolPrice, premium, reward } = getTradeData(
+          'rune',
+          symbol,
+          pool,
+          poolInfo,
+          assetData,
+          runePrice,
+          bnbPrice,
+          marketPrice,
+        );
+
         return (
           <TradeCard
             className="trade-card"
-            asset="rune"
-            target={asset}
-            depth={23000}
-            poolPrice={1.2}
-            marketPrice={1}
-            premium={20}
-            reward={230}
-            onBuy={this.handleTrade('buy', asset)}
-            onSell={this.handleTrade('sell', asset)}
+            asset="bnb"
+            target="rune"
+            depth={depth}
+            poolPrice={poolPrice}
+            marketPrice={getFixedNumber(runePrice, 6)}
+            premium={premium}
+            reward={reward}
+            onTrade={this.handleTrade(symbol)}
+            key={index}
+          />
+        );
+      } else {
+        const { target, depth, poolPrice, premium, reward } = getTradeData(
+          'bnb',
+          symbol,
+          pool,
+          poolInfo,
+          assetData,
+          runePrice,
+          bnbPrice,
+          marketPrice,
+        );
+
+        return (
+          <TradeCard
+            className="trade-card"
+            asset="bnb"
+            target={target}
+            depth={depth}
+            poolPrice={poolPrice}
+            marketPrice={getFixedNumber(marketPrice, 6)}
+            premium={premium}
+            reward={reward}
+            onTrade={this.handleTrade(symbol)}
             key={index}
           />
         );
       }
-      return <Fragment />;
     });
   };
 
   render() {
+    const {
+      loading,
+      binanceData: { loadingMarket },
+    } = this.props;
+
+    const isLoading = loading || loadingMarket;
+
     return (
       <ContentWrapper className="trade-view-wrapper">
-        <div className="trade-list-view">{this.renderTradeList()}</div>
+        {isLoading && <TradeLoader />}
+        {!isLoading && (
+          <div className="trade-list-view">{this.renderTradeList()}</div>
+        )}
       </ContentWrapper>
     );
   }
 }
 
-export default withRouter(TradeView);
+export default compose(
+  connect(
+    state => ({
+      pools: state.Statechain.pools,
+      poolData: state.Statechain.poolData,
+      swapData: state.Statechain.swapData,
+      loading: state.Statechain.loading,
+      runePrice: state.Wallet.runePrice,
+      assetData: state.Wallet.assetData,
+      binanceData: state.Binance,
+    }),
+    {
+      getPools,
+      getRunePrice,
+      getBinanceMarkets,
+    },
+  ),
+  withRouter,
+)(TradeView);
