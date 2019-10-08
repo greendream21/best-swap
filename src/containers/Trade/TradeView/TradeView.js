@@ -1,4 +1,4 @@
-import React, { Fragment, Component } from 'react';
+import React, { Component } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
@@ -50,23 +50,48 @@ class TradeView extends Component {
       const poolInfo = poolData[symbol] || {};
       const swapInfo = swapData[symbol] || {};
 
-      const { target, depth } = getTradeData(
-        'rune',
-        symbol,
-        poolInfo,
-        swapInfo,
-        assetData,
-        runePrice,
-      );
+      if (symbol.toLowerCase() === 'bnb') {
+        const { depth, poolPrice } = getTradeData(
+          'rune',
+          symbol,
+          pool,
+          poolInfo,
+          swapInfo,
+          assetData,
+          runePrice,
+        );
 
-      if (target !== 'bnb') {
+        return (
+          <TradeCard
+            className="trade-card"
+            asset="bnb"
+            target="rune"
+            depth={depth}
+            poolPrice={poolPrice}
+            marketPrice={1}
+            premium={20}
+            reward={230}
+            onTrade={this.handleTrade(symbol)}
+            key={index}
+          />
+        );
+      } else {
+        const { target, depth, poolPrice } = getTradeData(
+          'rune',
+          symbol,
+          poolInfo,
+          swapInfo,
+          assetData,
+          runePrice,
+        );
+
         return (
           <TradeCard
             className="trade-card"
             asset="bnb"
             target={target}
             depth={depth}
-            poolPrice={1.2}
+            poolPrice={poolPrice}
             marketPrice={1}
             premium={20}
             reward={230}
@@ -75,7 +100,6 @@ class TradeView extends Component {
           />
         );
       }
-      return <Fragment />;
     });
   };
 

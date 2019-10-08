@@ -1,8 +1,9 @@
-import { getTickerFormat } from '../../helpers/stringHelper';
+import { getTickerFormat, getFixedNumber } from '../../helpers/stringHelper';
 
 export const getTradeData = (
   from,
   to,
+  poolData,
   poolInfo,
   swapInfo,
   tokenInfo,
@@ -13,16 +14,13 @@ export const getTradeData = (
 
   const asset = from;
   const target = getTickerFormat(to);
+
+  const { balance_rune, balance_token } = poolData;
+
+  const R = Number(balance_rune);
+  const T = Number(balance_token);
+  const poolPrice = getFixedNumber((R / T) * runePrice);
   const depth = Number(poolInfo.depth * runePrice);
-  const volume24 = poolInfo.vol24hr;
-  const volumeAT = poolInfo.volAT;
-  const transaction = Number(
-    swapInfo.aveTxTkn * tokenPrice + swapInfo.aveTxRune * runePrice,
-  );
-  const { roiAT } = poolInfo;
-  const liqFee = Number(
-    swapInfo.aveFeeTkn * tokenPrice + swapInfo.aveFeeRune * runePrice,
-  );
 
   const totalSwaps = poolInfo.numSwaps;
   const totalStakers = poolInfo.numStakers;
@@ -32,11 +30,7 @@ export const getTradeData = (
     asset,
     target,
     depth,
-    volume24,
-    volumeAT,
-    transaction,
-    liqFee,
-    roiAT,
+    poolPrice,
     totalSwaps,
     totalStakers,
   };
