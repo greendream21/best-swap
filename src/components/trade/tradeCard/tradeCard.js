@@ -51,7 +51,7 @@ class TradeCard extends Component {
     const rewardValue = `$${getUserFormat(reward)}`;
 
     return (
-      <CardLayout.Item className={className} {...props}>
+      <CardLayout.Row className={className} {...props}>
         <CardLayout.Group>
           <CardLayout.Item clamp={80}>
             <Coin
@@ -83,13 +83,13 @@ class TradeCard extends Component {
               value={rewardValue}
             />
           </CardLayout.Item>
-          <CardLayout.Item noShrink showFrom="xs">
-            <Button data-test="trade-button" onClick={onTrade} color="success">
-              trade
-            </Button>
-          </CardLayout.Item>
         </CardLayout.Group>
-      </CardLayout.Item>
+        <CardLayout.Item noShrink showFrom="xs">
+          <Button data-test="trade-button" onClick={onTrade} color="success">
+            trade
+          </Button>
+        </CardLayout.Item>
+      </CardLayout.Row>
     );
   }
 }
