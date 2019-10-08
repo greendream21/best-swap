@@ -33,11 +33,7 @@ import {
   CardFormItemError,
   CardFormItemCloseButton,
 } from './SwapSend.style';
-import {
-  getNewValue,
-  getTickerFormat,
-  getPair,
-} from '../../../helpers/stringHelper';
+import { getTickerFormat, getPair } from '../../../helpers/stringHelper';
 import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
 import { getCalcResult, confirmSwap } from '../utils';
 
@@ -124,8 +120,7 @@ class SwapSend extends Component {
 
   handleChangeValue = value => {
     const { info } = this.props;
-    const { xValue } = this.state;
-    const newValue = getNewValue(value, xValue);
+    const newValue = value;
 
     const { assetData, getRunePrice } = this.props;
     const { source } = getPair(info);

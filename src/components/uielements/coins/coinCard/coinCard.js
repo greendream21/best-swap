@@ -8,6 +8,7 @@ import Label from '../../label';
 import Selection from '../../selection';
 import FilterMenu from './filterMenu';
 import CoinData from '../coinData';
+import { CoinCardInput } from './coinCardInput';
 import { getTickerFormat } from '../../../../helpers/stringHelper';
 
 import {
@@ -16,7 +17,6 @@ import {
   AssetNameLabel,
   CardBorderWrapper,
   CardTopRow,
-  CoinCardInput,
   CoinCardWrapper,
   CoinDropdownButton,
   CoinDropdownCoin,
@@ -67,7 +67,7 @@ class CoinCard extends Component {
   static propTypes = {
     asset: PropTypes.string,
     assetData: PropTypes.array,
-    amount: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    amount: PropTypes.number,
     price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     slip: PropTypes.number,
     title: PropTypes.string,
@@ -229,8 +229,7 @@ class CoinCard extends Component {
                 <CoinCardInput
                   className="asset-amount-label"
                   size="large"
-                  value={Number(amount).toLocaleString()}
-                  style={{ width: '100%' }}
+                  value={amount}
                   onChange={this.onChange}
                   {...props}
                 />

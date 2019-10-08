@@ -51,16 +51,28 @@ describe('Swapping', () => {
 
     cy.get('[data-test="selection-button-25"]').click();
 
-    cy.get('[data-test="coincard-source-input"]').should('have.value', '252');
+    cy.get('[data-test="coincard-source-input"]').should(
+      'have.value',
+      '252.00',
+    );
 
     cy.get('[data-test="selection-button-50"]').click();
-    cy.get('[data-test="coincard-source-input"]').should('have.value', '504');
+    cy.get('[data-test="coincard-source-input"]').should(
+      'have.value',
+      '504.00',
+    );
 
     cy.get('[data-test="selection-button-75"]').click();
-    cy.get('[data-test="coincard-source-input"]').should('have.value', '756');
+    cy.get('[data-test="coincard-source-input"]').should(
+      'have.value',
+      '756.00',
+    );
 
     cy.get('[data-test="selection-button-100"]').click();
-    cy.get('[data-test="coincard-source-input"]').should('have.value', '1,008');
+    cy.get('[data-test="coincard-source-input"]').should(
+      'have.value',
+      '1,008.00',
+    );
 
     cy.dragAndDrop('[data-test="source-asset"]', '[data-test="target-asset"]');
 
