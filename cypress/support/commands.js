@@ -185,8 +185,13 @@ Cypress.Commands.overwrite('server', (originalFn, options) => {
                   `Route not stubbed: 
         ${xhr.url}
      Please use cy.route() to allow or stub the url. ie:
-       To allow:  'cy.route("${xhr.url}");'
-       To stub:   'cy.route("${xhr.url}", "fx:myfixture");'`,
+
+       To stub (recommended):  'cy.route("${xhr.url}", "fx:myfixture");'
+       To allow (not recommended):  'cy.route("${xhr.url}");'
+
+     It is best to stub all API requests as otherwise our 
+     tests will become non deterministic
+`,
                 );
               }
             };
