@@ -84,7 +84,7 @@ class TradeView extends Component {
           assetData,
           runePrice,
           bnbPrice,
-          marketPrice,
+          runePrice,
         );
 
         return (
