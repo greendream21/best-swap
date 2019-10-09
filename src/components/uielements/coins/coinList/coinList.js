@@ -85,6 +85,7 @@ class CoinList extends Component {
                 key={index}
               >
                 <CoinData
+                  data-test={`coin-list-item-${tokenName}`}
                   asset={tokenName}
                   assetValue={assetValue}
                   target={target}

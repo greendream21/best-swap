@@ -829,7 +829,8 @@ class PoolStake extends Component {
           </Row>
           <div className="stake-card-wrapper">
             <CoinCard
-              data-test="stake-coin-input-rune"
+              inputProps={{ 'data-test': 'stake-coin-input-rune' }}
+              data-test="coin-card-stake-coin-rune"
               asset={source}
               amount={runeAmount}
               price={runePrice}
@@ -838,7 +839,10 @@ class PoolStake extends Component {
               withSelection
             />
             <CoinCard
-              data-test="stake-coin-input-target"
+              inputProps={{
+                'data-test': 'stake-coin-input-target',
+              }}
+              data-test="coin-card-stake-coin-target"
               asset={target}
               assetData={tokensData}
               amount={tokenAmount}

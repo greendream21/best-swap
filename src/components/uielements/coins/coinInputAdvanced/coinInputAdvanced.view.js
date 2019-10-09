@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 import { Input } from 'antd';
 
-export const CoinCardInputView = styled(Input)`
+export const CoinInputAdvancedView = styled(Input)`
   width: 100%;
   /* TODO: move these styles to a uielement */
   &.ant-input {

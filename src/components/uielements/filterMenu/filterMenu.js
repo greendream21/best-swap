@@ -3,16 +3,17 @@ import { Icon } from 'antd';
 import PropTypes from 'prop-types';
 import { Menu, MenuItem } from './filterMenu.style';
 
-import Input from '../../input';
+import Input from '../input';
 
 export default function FilterMenu({
-  onChangeAsset,
+  onSelect,
   onBlurDropdown,
   disableItemFilter = () => false,
   searchEnabled,
   data,
   filterFunction,
   cellRenderer,
+  placeholder = 'Search Token ...',
   ...props
 }) {
   const [searchTerm, setSearchTerm] = useState('');
@@ -23,9 +24,9 @@ export default function FilterMenu({
       if (!event || !event.key || event.key === '_search') return;
 
       setSearchTerm('');
-      onChangeAsset(event);
+      onSelect(event);
     },
-    [onChangeAsset],
+    [onSelect],
   );
 
   const handleSearchChanged = useCallback(event => {
@@ -54,7 +55,7 @@ export default function FilterMenu({
           <Input
             value={searchTerm}
             onChange={handleSearchChanged}
-            placeholder="Search Token ..."
+            placeholder={placeholder}
             suffix={<Icon type="search" />}
           />
         </Menu.Item>
@@ -74,11 +75,12 @@ export default function FilterMenu({
 }
 
 FilterMenu.propTypes = {
-  onChangeAsset: PropTypes.func.isRequired,
+  onSelect: PropTypes.func.isRequired,
   onBlurDropdown: PropTypes.func,
   filterFunction: PropTypes.func.isRequired,
   searchEnabled: PropTypes.bool,
   cellRenderer: PropTypes.func.isRequired,
   data: PropTypes.array.isRequired,
   disableItemFilter: PropTypes.func,
+  placeholder: PropTypes.string,
 };

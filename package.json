@@ -15,7 +15,7 @@
     "test:unit": "jest",
     "cy:launch": "http-server build --silent",
     "cy:run": "./scripts/cypress-run",
-    "cy:run:dev": "CYPRESS_baseUrl=http://localhost:3000 yarn cy:run --browser chrome --no-exit",
+    "cy:run:dev": "CYPRESS_baseUrl=http://localhost:3000 yarn cy:run --browser chrome",
     "cy:open": "cypress open",
     "cy:open:dev": "CYPRESS_baseUrl=http://localhost:3000 yarn cy:open",
     "deploy": "firebase deploy",
