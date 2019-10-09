@@ -1,6 +1,9 @@
 import { renderHook, act } from '@testing-library/react-hooks';
 
-import { useCoinCardInputBehaviour, isBroadcastable } from './coinCardInput';
+import {
+  useCoinCardInputBehaviour,
+  isBroadcastable,
+} from './coinInputAdvanced';
 
 // Unit testing is really required to ensure a complex component
 // like this actually works as expected.

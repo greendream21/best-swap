@@ -4,7 +4,7 @@ import { ThemeProvider } from 'styled-components';
 
 import AppHolder from '../../../../AppStyle';
 import { defaultTheme } from '../../../../settings';
-import { CoinCardInput } from './coinCardInput';
+import { CoinInputAdvanced } from './coinInputAdvanced';
 
 function CoinCardInputStory() {
   const [value, setValue] = React.useState(1002.34);
@@ -21,15 +21,15 @@ function CoinCardInputStory() {
   }, [setValue]);
   return (
     <div>
-      <CoinCardInput value={value} onChange={handleChange} />;
+      <CoinInputAdvanced value={value} onChange={handleChange} />;
       <button type="button" onClick={setExternalVal}>
-        Doit
+        Send external 40k
       </button>
     </div>
   );
 }
 
-storiesOf('Components/CoinCardInput', module).add('default', () => {
+storiesOf('Components/Coins/CoinCardInput', module).add('default', () => {
   return (
     <ThemeProvider theme={defaultTheme}>
       <AppHolder>
