@@ -13,19 +13,19 @@ const WALLETS = {
   },
 };
 
-function mockWalletRoutes(type) {
+function mockDexWalletRoutes(type) {
   cy.route(
     'GET',
     'https://testnet-dex.binance.org/api/v1/markets?limit=1000&offset=0',
-    'fx:wallet/markets',
+    'fx:dex/#api#v1#markets/GET/200',
   ).as('markets');
 
   if (type === 'full') {
     cy.route(
       'GET',
       `https://testnet-dex.binance.org/api/v1/account/${WALLETS[type].id}`,
-      'fx:wallet/dex-account.full',
-    ).as('dex-account.full');
+      'fx:dex/#api#v1#account#{walletId}/GET/200.account-full',
+    ).as('account-full');
   }
 
   if (type === 'empty') {
@@ -44,7 +44,7 @@ function getWalletPassword(type) {
 }
 
 Cypress.Commands.add('mockWalletRoutes', () => {
-  mockWalletRoutes();
+  mockDexWalletRoutes();
 });
 
 Cypress.Commands.add('getWalletPassword', (type = 'full') => {
@@ -57,7 +57,7 @@ Cypress.Commands.add('uploadWallet', (type = 'full') => {
   if (!fileName) throw new Error('Unknown wallet');
 
   // Upload the wallet
-  mockWalletRoutes(type);
+  mockDexWalletRoutes(type);
   cy.get('[data-test="add-wallet-button"]').click();
 
   cy.fixture(fileName).then(fileContent => {

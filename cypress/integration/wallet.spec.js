@@ -1,4 +1,4 @@
-const fullAccount = require('../fixtures/wallet/dex-account.full.json');
+const fullAccount = require('../fixtures/dex/#api#v1#account#{walletId}/GET/200.account-full.json');
 
 describe('Wallet', () => {
   beforeEach(() => {
