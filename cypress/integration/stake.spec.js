@@ -8,7 +8,7 @@ describe('Staking', () => {
 
   it('should be able to stake assets', () => {
     // mock stakerData
-    cy.route('/stakerData?staker=*', 'fx:base/stakerData');
+    cy.route('/stakerData?staker=*', 'fx:api/#v1#stakerData/GET/200');
 
     cy.visit('/');
 
