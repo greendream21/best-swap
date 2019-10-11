@@ -493,6 +493,10 @@ class SwapSend extends Component {
       : 'FINAL FEES & SLIP';
 
     const txURL = TESTNET_TX_BASE_URL + this.hash;
+    const { fee } = this.data;
+    const actualFee = fee < 1 ? 1 : fee;
+    const feeValue = `${actualFee} RUNE`;
+    const feePrice = getFixedNumber(actualFee * runePrice);
 
     return (
       <SwapModalContent>
@@ -528,10 +532,10 @@ class SwapSend extends Component {
                 <Status
                   data-test="swapmodal-fees"
                   title="FEES"
-                  value="1 RUNE"
+                  value={feeValue}
                 />
                 <Label className="price-label" size="normal" color="gray">
-                  $USD {getFixedNumber(runePrice)}
+                  $USD {getFixedNumber(feePrice)}
                 </Label>
               </div>
               <div className="status-item">
