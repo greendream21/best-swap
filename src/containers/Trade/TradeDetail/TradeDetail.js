@@ -217,10 +217,10 @@ class TradeDetail extends Component {
     return (
       <ContentWrapper className="trade-detail-wrapper">
         <Row className="trade-logos">
-          <Col lg={12}>
+          <Col lg={12} xs={12}>
             <Logo name="bepswap" />
           </Col>
-          <Col lg={12}>
+          <Col lg={12} xs={12}>
             <Logo name="binanceDex" />
           </Col>
         </Row>
@@ -236,7 +236,7 @@ class TradeDetail extends Component {
           </Col>
         </Row>
         <Row className="trade-panel">
-          <Col lg={12}>
+          <Col lg={12} xs={24}>
             <div className="trade-card">
               <CoinCard asset={ticker} amount={13} price={0.4} />
               <Slider defaultValue={50} min={1} max={100} />
@@ -247,7 +247,7 @@ class TradeDetail extends Component {
               </Button>
             </div>
           </Col>
-          <Col lg={12}>
+          <Col lg={12} xs={24}>
             <div className="trade-btn">
               <Button typevalue="outline" color="error">
                 sell
@@ -260,17 +260,17 @@ class TradeDetail extends Component {
           </Col>
         </Row>
         <Row className="trade-expectations">
-          <Col lg={8}>
+          <Col lg={8} xs={24}>
             <Status title="Pool Price After Trade:" value="0.1100 BNB" />
           </Col>
-          <Col lg={8}>
+          <Col lg={8} xs={24}>
             <div className="trade-asset-container">
               <CoinData asset="tomo" assetValue={0.01} price={0.04} />
               <CoinData asset="bnb" assetValue={0.01} price={0.04} />
               <Label>BNB is the trading asset.</Label>
             </div>
           </Col>
-          <Col lg={8}>
+          <Col lg={8} xs={24}>
             <Status title="Market Price After Trade:" value="0.1100 BNB" />
           </Col>
         </Row>

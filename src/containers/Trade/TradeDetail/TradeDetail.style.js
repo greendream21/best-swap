@@ -2,22 +2,15 @@ import styled from 'styled-components';
 import { palette } from 'styled-theme';
 import ContentView from '../../../components/utility/contentView';
 import Modal from '../../../components/uielements/modal';
+import { media } from '../../../helpers/styleHelper';
 
 export const ContentWrapper = styled(ContentView)`
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  padding: 0;
-
-  & > .ant-row {
-    display: flex;
-  }
-
   .trade-logos {
     .ant-col {
       display: flex;
       justify-content: center;
       align-items: center;
+      height: 80px;
 
       &:first-child {
         border-right: 1px solid ${palette('border', 0)};
@@ -56,6 +49,12 @@ export const ContentWrapper = styled(ContentView)`
       display: flex;
       justify-content: space-around;
       align-items: center;
+      ${media.xs`
+        flex-direction: column;
+      `}
+      ${media.lg`
+        flex-direction: row;
+      `}
 
       &:first-child {
         border-right: 1px solid ${palette('border', 0)};
