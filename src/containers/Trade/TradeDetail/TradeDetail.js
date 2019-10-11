@@ -225,9 +225,15 @@ class TradeDetail extends Component {
           </Col>
         </Row>
         <Row className="trade-values">
-          <Col lg={8}>{this.renderBepswapPrice()}</Col>
-          <Col lg={8}>{this.renderPriceAnalysis()}</Col>
-          <Col lg={8}>{this.renderBinancePrice()}</Col>
+          <Col lg={8} xs={24}>
+            {this.renderBepswapPrice()}
+          </Col>
+          <Col lg={8} xs={24}>
+            {this.renderPriceAnalysis()}
+          </Col>
+          <Col lg={8} xs={24}>
+            {this.renderBinancePrice()}
+          </Col>
         </Row>
         <Row className="trade-panel">
           <Col lg={12}>
@@ -254,9 +260,19 @@ class TradeDetail extends Component {
           </Col>
         </Row>
         <Row className="trade-expectations">
-          <Col lg={8}>{this.renderBepswapPrice()}</Col>
-          <Col lg={8}>{this.renderPriceAnalysis()}</Col>
-          <Col lg={8}>{this.renderBinancePrice()}</Col>
+          <Col lg={8}>
+            <Status title="Pool Price After Trade:" value="0.1100 BNB" />
+          </Col>
+          <Col lg={8}>
+            <div className="trade-asset-container">
+              <CoinData asset="tomo" assetValue={0.01} price={0.04} />
+              <CoinData asset="bnb" assetValue={0.01} price={0.04} />
+              <Label>BNB is the trading asset.</Label>
+            </div>
+          </Col>
+          <Col lg={8}>
+            <Status title="Market Price After Trade:" value="0.1100 BNB" />
+          </Col>
         </Row>
         <TradeModal
           title="TRADE CONFIRMATION"

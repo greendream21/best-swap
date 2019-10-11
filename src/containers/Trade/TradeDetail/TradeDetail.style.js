@@ -71,6 +71,34 @@ export const ContentWrapper = styled(ContentView)`
       }
     }
   }
+
+  .trade-expectations {
+    padding-bottom: 20px;
+
+    & > .ant-col {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+
+      & > div {
+        width: 350px;
+      }
+
+      .trade-asset-container {
+        padding: 20px;
+        border: 2px solid ${palette('primary', 0)};
+        border-radius: 4px;
+
+        .coinData-wrapper {
+          margin-bottom: 20px;
+        }
+
+        .label-wrapper {
+          padding: 0;
+        }
+      }
+    }
+  }
 `;
 
 export const TradeModal = styled(Modal)`
