@@ -6,11 +6,8 @@ import { Dropdown } from 'antd';
 
 import Label from '../../label';
 import Selection from '../../selection';
-import FilterMenu from './filterMenu';
-import CoinData from '../coinData';
-import { CoinCardInput } from './coinCardInput';
-import { getTickerFormat } from '../../../../helpers/stringHelper';
-
+import CoinInputAdvanced from '../coinInputAdvanced';
+import CoinCardMenu from './coinCardMenu';
 import {
   AssetCardFooter,
   AssetData,
@@ -47,22 +44,6 @@ DropdownCarret.propTypes = {
   onClick: PropTypes.func,
 };
 
-function getTokenName(asset) {
-  return getTickerFormat(asset);
-}
-
-function filterFunction(item, searchTerm) {
-  const tokenName = getTokenName(item.asset);
-  return tokenName.toLowerCase().indexOf(searchTerm.toLowerCase()) === 0;
-}
-
-function cellRenderer(data) {
-  const { asset: key, price } = data;
-  const tokenName = getTokenName(key);
-  const node = <CoinData asset={tokenName} price={price} />;
-  return { key, node };
-}
-
 class CoinCard extends Component {
   static propTypes = {
     asset: PropTypes.string,
@@ -80,7 +61,13 @@ class CoinCard extends Component {
     className: PropTypes.string,
     max: PropTypes.number,
     disabled: PropTypes.bool,
+    dataTestWrapper: PropTypes.string,
+    dataTestInput: PropTypes.string,
     children: PropTypes.node,
+    inputProps: PropTypes.shape({
+      disabled: PropTypes.bool,
+      'data-test': PropTypes.string,
+    }),
   };
 
   static defaultProps = {
@@ -100,6 +87,7 @@ class CoinCard extends Component {
     max: 1000000,
     disabled: false,
     children: null,
+    inputProps: {},
   };
 
   state = {
@@ -148,23 +136,15 @@ class CoinCard extends Component {
 
   renderMenu() {
     const { assetData, asset, withSearch, searchDisable } = this.props;
-    const filteredData = assetData.filter(item => {
-      const tokenName = getTokenName(item.asset);
-      return tokenName.toLowerCase() !== asset.toLowerCase();
-    });
-
+    const dataTest = this.props['data-test']; // eslint-disable-line
     return (
-      <FilterMenu
-        searchEnabled={withSearch}
-        filterFunction={filterFunction}
-        cellRenderer={cellRenderer}
-        disableItemFilter={item => {
-          const tokenName = getTokenName(item.asset).toLowerCase();
-          return searchDisable.indexOf(tokenName) > -1;
-        }}
-        onChangeAsset={this.handleChangeAsset}
+      <CoinCardMenu
+        data-test={dataTest}
+        assetData={assetData}
         asset={asset}
-        data={filteredData}
+        withSearch={withSearch}
+        searchDisable={searchDisable}
+        onSelect={this.handleChangeAsset}
       />
     );
   }
@@ -175,6 +155,7 @@ class CoinCard extends Component {
     const disabled = assetData.length === 0;
     return (
       <CoinDropdownButton
+        data-test="coin-dropdown-button"
         disabled={disabled}
         onClick={this.handleDropdownButtonClicked}
       >
@@ -205,6 +186,7 @@ class CoinCard extends Component {
       withSearch,
       searchDisable,
       children,
+      inputProps,
       ...props
     } = this.props;
     const { openDropdown, percentButtonSelected } = this.state;
@@ -214,6 +196,7 @@ class CoinCard extends Component {
       <CoinCardWrapper
         className={`coinCard-wrapper ${className}`}
         onBlur={this.handleBlurCard}
+        {...props}
       >
         {title && <Label className="title-label">{title}</Label>}
 
@@ -226,12 +209,12 @@ class CoinCard extends Component {
             <CardTopRow>
               <AssetData>
                 <AssetNameLabel>{asset}</AssetNameLabel>
-                <CoinCardInput
+                <CoinInputAdvanced
                   className="asset-amount-label"
                   size="large"
                   value={amount}
                   onChange={this.onChange}
-                  {...props}
+                  {...inputProps}
                 />
                 <HorizontalDivider />
                 <AssetCardFooter>

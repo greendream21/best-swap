@@ -649,7 +649,8 @@ class SwapSend extends Component {
           >
             <SwapAssetCard>
               <CoinCard
-                data-test="coincard-source-input"
+                data-test="coincard-source"
+                inputProps={{ 'data-test': 'coincard-source-input' }}
                 title="You are swapping"
                 asset={source}
                 assetData={sourceData}
@@ -674,13 +675,17 @@ class SwapSend extends Component {
 
               <CoinCard
                 title="You will receive"
+                inputProps={{
+                  'data-test': 'coincard-target-input',
+                  disabled: true,
+                }}
+                data-test="coincard-target"
                 asset={target}
                 assetData={targetData}
                 amount={outputAmount}
                 price={outputPrice}
                 slip={slip}
                 onChangeAsset={this.handleSelectTraget}
-                disabled
                 withSearch
               >
                 <CardFormHolder>
@@ -689,6 +694,7 @@ class SwapSend extends Component {
                       <>
                         <CardFormArrowIcon />
                         <Button
+                          data-test="forward-to-alternate-address-button"
                           onClick={this.handleGotoSend}
                           sizevalue="small"
                           typevalue="ghost"
@@ -706,6 +712,7 @@ class SwapSend extends Component {
                           className={invalidAddress ? 'has-error' : ''}
                         >
                           <Input
+                            data-test="recipient-address-field"
                             placeholder="Recipient Address: Eg. bnbeh456..."
                             sizevalue="normal"
                             value={address}

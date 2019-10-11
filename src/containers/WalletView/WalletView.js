@@ -153,8 +153,12 @@ class WalletView extends Component {
     const sortedAssets = _sortBy(assetData, ['asset']);
 
     return (
-      <WalletViewWrapper>
-        <Tabs defaultActiveKey="assets" onChange={this.handleChangeTab}>
+      <WalletViewWrapper data-test="wallet-view">
+        <Tabs
+          data-test="wallet-view-tabs"
+          defaultActiveKey="assets"
+          onChange={this.handleChangeTab}
+        >
           <TabPane tab="assets" key="assets">
             <Label className="asset-title-label" weight="bold">
               {this.renderAssetTitle()}
@@ -166,6 +170,7 @@ class WalletView extends Component {
             )}
             {!loadingAssets && (
               <CoinList
+                data-test="wallet-asset-list"
                 data={sortedAssets}
                 value={sourceIndex}
                 selected={selectedAsset}
@@ -181,6 +186,7 @@ class WalletView extends Component {
             </Label>
             {!loadingStakes && (
               <CoinList
+                data-test="wallet-stakes-list"
                 data={stakeData}
                 runePrice={runePrice}
                 tokenInfo={tokenInfo}

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { debounce } from 'lodash';
 import PropTypes from 'prop-types';
-import { CoinCardInputView } from './coinCardInput.view';
+import { CoinInputAdvancedView } from './coinInputAdvanced.view';
 
 function getValueFromEvent(event) {
   return event.target.value;
@@ -136,7 +136,7 @@ export function useCoinCardInputBehaviour({
   };
 }
 
-export function CoinCardInput({
+export function CoinInputAdvanced({
   value,
   onChange,
   onFocus,
@@ -144,7 +144,7 @@ export function CoinCardInput({
   ...props
 }) {
   return (
-    <CoinCardInputView
+    <CoinInputAdvancedView
       {...props}
       {...useCoinCardInputBehaviour({
         value,
@@ -156,7 +156,7 @@ export function CoinCardInput({
     />
   );
 }
-CoinCardInput.propTypes = {
+CoinInputAdvanced.propTypes = {
   value: PropTypes.number.isRequired,
   onChange: PropTypes.func.isRequired,
   onFocus: PropTypes.func,

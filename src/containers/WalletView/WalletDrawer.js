@@ -51,7 +51,12 @@ const WalletDrawer = props => {
 
   return (
     <WalletDrawerWrapper>
-      <WalletButton connected value={wallet} onClick={toggleDrawer} />
+      <WalletButton
+        data-test="wallet-draw-button"
+        connected
+        value={wallet}
+        onClick={toggleDrawer}
+      />
       <Drawer
         placement="right"
         closable={false}
@@ -73,6 +78,7 @@ const WalletDrawer = props => {
         <WalletView status={status} />
         <Button
           className="forget-btn"
+          data-test="wallet-forget-button"
           typevalue="outline"
           color="warning"
           onClick={props.forgetWallet}

@@ -3,44 +3,33 @@ describe('Staking', () => {
     cy.clearCookies();
     cy.clearSessionStorage();
     cy.server();
-    // mockAll the things
-    cy.mockBaseRoutes();
-    cy.mockWalletRoutes();
-    cy.mockChainRoutes();
-    cy.mockCoingeckoRoutes();
+    cy.mockAllTheThings();
   });
 
   it('should be able to stake assets', () => {
     // mock stakerData
-    cy.route('/stakerData?staker=*', 'fx:base/stakerData');
+    cy.route('/stakerData?staker=*', 'fx:api/#v1#stakerData/GET/200');
 
     cy.visit('/');
 
-    // spy on binance client
-    // This is a little implementationy for an integration test
-    // however as transactions are hashed by binance js sdk
-    // it kind of the point at which we can check that
-    // information being sent to the chain is correct
-    cy.window().then(win => {
-      cy.spy(win.binance, 'multiSend').as('doStake');
-    });
+    cy.mockBinanceClientMethod('multiSend', 'doStake');
 
-    // Wait for last swap XHR and price info
-    cy.wait(['@swap-tomob', '@coingecko']);
+    cy.wait(['@swap-tomob', '@coingecko']); // HACK: Wait for last XHR and price info
 
-    cy.uploadWallet();
+    cy.uploadWallet('full');
 
     cy.get('[data-test="action-tabs"]')
       .contains('pools')
       .click();
 
     cy.get('[data-test="pool-card-BNB"] [data-test="stake-button"]').click();
+
     cy.get('[data-test="stake-coin-input-rune"]').type('1000');
-    cy.get('[data-test="stake-coin-input-target"]').type('7');
+    cy.get('[data-test="stake-coin-input-target"]').type('7{enter}'); // Need to loose focus so the value is available to be used
 
     cy.dragAndDrop('[data-test="source-asset"]', '[data-test="target-asset"]');
 
-    cy.getWalletPassword().then(pass => {
+    cy.getWalletPassword('full').then(pass => {
       cy.get('[data-test="password-confirmation-input"]').type(pass);
     });
     cy.contains('Confirm').click();

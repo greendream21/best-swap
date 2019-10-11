@@ -52,12 +52,21 @@ class CoinData extends Component {
           over={target}
           size={size}
         />
-        <div className="coinData-asset-info">
-          <Label className="coinData-asset-label" type="normal" weight="bold">
+        <div className="coinData-asset-info" data-test="coin-data-asset-info">
+          <Label
+            className="coinData-asset-label"
+            data-test="coin-data-asset-label"
+            type="normal"
+            weight="bold"
+          >
             {`${asset} ${target && ':'}`}
           </Label>
           {assetValue && (
-            <Label className="coinData-asset-value" type="normal">
+            <Label
+              className="coinData-asset-value"
+              data-test="coin-data-asset-value"
+              type="normal"
+            >
               {Number(Number(assetValue).toFixed(2)).toLocaleString()}
             </Label>
           )}
