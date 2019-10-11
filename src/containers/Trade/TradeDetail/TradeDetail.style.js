@@ -13,20 +13,19 @@ export const ContentWrapper = styled(ContentView)`
     display: flex;
   }
 
-  .trade-asset-status-row {
-    display: flex;
-    align-items: center;
-    height: 90px;
-    padding: 20px 20px !important;
-    border-bottom: 1px solid ${palette('border', 0)};
+  .trade-logos {
+    .ant-col {
+      display: flex;
+      justify-content: center;
+      align-items: center;
 
-    .coin-wrapper {
-      margin: 0 20px;
-    }
+      &:first-child {
+        border-right: 1px solid ${palette('border', 0)};
+      }
 
-    .status-wrapper {
-      width: 100px;
-      margin-right: 30px;
+      .logo-wrapper {
+        width: 170px;
+      }
     }
   }
 

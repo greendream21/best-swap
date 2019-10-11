@@ -5,14 +5,13 @@ import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Row, Col, Icon } from 'antd';
 
-import Drag from '../../../components/uielements/drag';
 import CoinCard from '../../../components/uielements/coins/coinCard';
-import Coin from '../../../components/uielements/coins/coin';
 import Status from '../../../components/uielements/status';
 import Slider from '../../../components/uielements/slider';
 import TxTimer from '../../../components/uielements/txTimer';
 import CoinData from '../../../components/uielements/coins/coinData';
 import Label from '../../../components/uielements/label';
+import Logo from '../../../components/uielements/logo';
 
 import { blackArrowIcon } from '../../../components/icons';
 
@@ -21,9 +20,6 @@ import {
   TradeModalContent,
   TradeModal,
 } from './TradeDetail.style';
-
-import { getPair } from '../../../helpers/stringHelper';
-import { tradeData } from './data';
 
 import appActions from '../../../redux/app/actions';
 
@@ -37,8 +33,7 @@ const {
 
 class TradeDetail extends Component {
   static propTypes = {
-    info: PropTypes.string,
-    view: PropTypes.string.isRequired,
+    symbol: PropTypes.string.isRequired,
     txStatus: PropTypes.object.isRequired,
     setTxTimerType: PropTypes.func.isRequired,
     setTxTimerModal: PropTypes.func.isRequired,
@@ -47,21 +42,9 @@ class TradeDetail extends Component {
     resetTxStatus: PropTypes.func.isRequired,
   };
 
-  static defaultProps = {
-    info: '',
-  };
+  state = {};
 
-  state = {
-    dragReset: true,
-  };
-
-  handleDrag = () => {
-    this.setState({
-      dragReset: false,
-    });
-  };
-
-  handleEndDrag = () => {
+  handleStartTimer = () => {
     const { setTxTimerModal, setTxTimerType, setTxTimerStatus } = this.props;
 
     setTxTimerType('trade');
@@ -94,16 +77,13 @@ class TradeDetail extends Component {
     const { setTxTimerStatus } = this.props;
 
     setTxTimerStatus(false);
-    this.setState({
-      dragReset: true,
-    });
   };
 
-  renderTradeModalContent = pair => {
+  renderTradeModalContent = () => {
     const {
+      symbol,
       txStatus: { status, value },
     } = this.props;
-    const { source, target } = pair;
 
     const transactionLabels = [
       'sending transaction',
@@ -124,7 +104,7 @@ class TradeDetail extends Component {
       <TradeModalContent>
         <div className="left-container">
           <Label weight="bold">{tradeText}</Label>
-          <CoinData asset={source} assetValue={2.49274} price={217.92} />
+          <CoinData asset="bnb" assetValue={2.49274} price={217.92} />
         </div>
         <div className="center-container">
           <TxTimer
@@ -140,7 +120,7 @@ class TradeDetail extends Component {
         </div>
         <div className="right-container">
           <Label weight="bold">{receiveText}</Label>
-          <CoinData asset={target} assetValue={2.49274} price={217.92} />
+          <CoinData asset={symbol} assetValue={2.49274} price={217.92} />
           <Label weight="bold">{expectation}</Label>
           <div className="expected-status">
             <div className="status-item">
@@ -159,30 +139,20 @@ class TradeDetail extends Component {
   };
 
   render() {
-    const { info, txStatus } = this.props;
-    const { dragReset } = this.state;
-    const pair = getPair(info);
-
-    if (!pair) {
-      return '';
-    }
-
-    const { source, target } = pair;
-
-    const dragTitle = 'Drag to trade';
-    const poolStatus = `${source}:${target}`;
+    const { symbol, txStatus } = this.props;
 
     const openTradeModal = txStatus.type === 'trade' ? txStatus.modal : false;
     const coinCloseIconType = txStatus.status ? 'fullscreen-exit' : 'close';
 
     return (
       <ContentWrapper className="trade-detail-wrapper">
-        <Row className="trade-asset-status-row">
-          <Coin type={source} over={target} />
-          <Status title="Pool" value={poolStatus} />
-          {tradeData.map(info => (
-            <Status {...info} />
-          ))}
+        <Row className="trade-logos">
+          <Col span={24} lg={12}>
+            <Logo name="bepswap" />
+          </Col>
+          <Col span={24} lg={12}>
+            <Logo name="binanceDex" />
+          </Col>
         </Row>
         <Row className="trade-detail-row">
           <Col className="trade-detail-panel" span={16}>
@@ -190,7 +160,7 @@ class TradeDetail extends Component {
               <div className="trade-asset-card">
                 <CoinCard
                   title="You are selling"
-                  asset={source}
+                  asset={symbol}
                   amount={13.54}
                   price={2300}
                   slip={2}
@@ -201,22 +171,12 @@ class TradeDetail extends Component {
               <div className="trade-asset-card">
                 <CoinCard
                   title="You will receive"
-                  asset={target}
+                  asset={symbol}
                   amount={46000}
                   price={2530}
                   slip={2}
                 />
               </div>
-            </div>
-            <div className="drag-confirm-wrapper">
-              <Drag
-                title={dragTitle}
-                source={source}
-                target={target}
-                reset={dragReset}
-                onConfirm={this.handleEndDrag}
-                onDrag={this.handleDrag}
-              />
             </div>
           </Col>
           <Col span={8}>
@@ -236,7 +196,7 @@ class TradeDetail extends Component {
           footer={null}
           onCancel={this.handleCloseModal}
         >
-          {this.renderTradeModalContent(pair)}
+          {this.renderTradeModalContent()}
         </TradeModal>
       </ContentWrapper>
     );
