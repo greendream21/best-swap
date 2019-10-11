@@ -140,15 +140,71 @@ class TradeDetail extends Component {
   };
 
   renderBepswapPrice = () => {
-    return 'bepswap price';
+    return (
+      <div className="bepswap-price-status">
+        <Row>
+          <Col lg={24}>
+            <Status title="Pool Price" value="0.1000 BNB" />
+          </Col>
+        </Row>
+        <Row>
+          <Col lg={12} xs={12}>
+            <Status title="Pool Buy Depth" value="23 BNB" />
+          </Col>
+          <Col lg={12} xs={12}>
+            <Status title="Pool Sell Depth" value="123000 TOMO" />
+          </Col>
+        </Row>
+      </div>
+    );
   };
 
   renderBinancePrice = () => {
-    return 'binance price';
+    return (
+      <div className="binance-price-status">
+        <Row>
+          <Col lg={24}>
+            <Status title="Market Price" value="0.1000 BNB" />
+          </Col>
+        </Row>
+        <Row>
+          <Col lg={12} xs={12}>
+            <Status title="Buy Depth" value="123 BNB" />
+          </Col>
+          <Col lg={12} xs={12}>
+            <Status title="Sell Depth" value="123,000 TOMO" />
+          </Col>
+        </Row>
+      </div>
+    );
   };
 
   renderPriceAnalysis = () => {
-    return 'price analysis';
+    return (
+      <div className="trade-price-analysis">
+        <Row>
+          <Col lg={12} xs={12}>
+            <Status title="Pool Differential" value="+20%" />
+          </Col>
+          <Col lg={12} xs={12}>
+            <Status title="Potential Reward" value="0.10 BNB" />
+          </Col>
+        </Row>
+        <Row>
+          <Col lg={24}>
+            <Label size="tiny" weight="bold">
+              Recommended Trade Move
+            </Label>
+            <Label className="trade-move-value" size="big" weight="normal">
+              BEPSwap Pool: Buy
+            </Label>
+            <Label className="trade-move-value" size="big" weight="normal">
+              BinanceDex: Sell
+            </Label>
+          </Col>
+        </Row>
+      </div>
+    );
   };
 
   render() {
@@ -161,26 +217,20 @@ class TradeDetail extends Component {
     return (
       <ContentWrapper className="trade-detail-wrapper">
         <Row className="trade-logos">
-          <Col span={24} lg={12}>
+          <Col lg={12}>
             <Logo name="bepswap" />
           </Col>
-          <Col span={24} lg={12}>
+          <Col lg={12}>
             <Logo name="binanceDex" />
           </Col>
         </Row>
         <Row className="trade-values">
-          <Col span={24} lg={8}>
-            {this.renderBepswapPrice()}
-          </Col>
-          <Col span={24} lg={8}>
-            {this.renderPriceAnalysis()}
-          </Col>
-          <Col span={24} lg={8}>
-            {this.renderBinancePrice()}
-          </Col>
+          <Col lg={8}>{this.renderBepswapPrice()}</Col>
+          <Col lg={8}>{this.renderPriceAnalysis()}</Col>
+          <Col lg={8}>{this.renderBinancePrice()}</Col>
         </Row>
         <Row className="trade-panel">
-          <Col span={24} lg={12}>
+          <Col lg={12}>
             <div className="trade-card">
               <CoinCard asset={ticker} amount={13} price={0.4} />
               <Slider defaultValue={50} min={1} max={100} />
@@ -191,7 +241,7 @@ class TradeDetail extends Component {
               </Button>
             </div>
           </Col>
-          <Col span={24} lg={12}>
+          <Col lg={12}>
             <div className="trade-btn">
               <Button typevalue="outline" color="error">
                 sell
@@ -204,15 +254,9 @@ class TradeDetail extends Component {
           </Col>
         </Row>
         <Row className="trade-expectations">
-          <Col span={24} lg={8}>
-            {this.renderBepswapPrice()}
-          </Col>
-          <Col span={24} lg={8}>
-            {this.renderPriceAnalysis()}
-          </Col>
-          <Col span={24} lg={8}>
-            {this.renderBinancePrice()}
-          </Col>
+          <Col lg={8}>{this.renderBepswapPrice()}</Col>
+          <Col lg={8}>{this.renderPriceAnalysis()}</Col>
+          <Col lg={8}>{this.renderBinancePrice()}</Col>
         </Row>
         <TradeModal
           title="TRADE CONFIRMATION"

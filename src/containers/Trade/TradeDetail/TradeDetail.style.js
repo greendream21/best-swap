@@ -30,6 +30,25 @@ export const ContentWrapper = styled(ContentView)`
   }
 
   .trade-values {
+    & > .ant-col {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+
+      & > div {
+        width: 350px;
+      }
+
+      .trade-price-analysis {
+        padding: 20px;
+        border: 1px solid ${palette('border', 0)};
+        border-radius: 4px;
+
+        .trade-move-value {
+          padding: 0;
+        }
+      }
+    }
   }
 
   .trade-panel {
