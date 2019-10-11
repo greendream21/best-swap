@@ -11,9 +11,10 @@ import Slider from '../../../components/uielements/slider';
 import TxTimer from '../../../components/uielements/txTimer';
 import CoinData from '../../../components/uielements/coins/coinData';
 import Label from '../../../components/uielements/label';
+import Button from '../../../components/uielements/button';
 import Logo from '../../../components/uielements/logo';
 
-import { blackArrowIcon } from '../../../components/icons';
+import { getTickerFormat } from '../../../helpers/stringHelper';
 
 import {
   ContentWrapper,
@@ -138,9 +139,22 @@ class TradeDetail extends Component {
     );
   };
 
+  renderBepswapPrice = () => {
+    return 'bepswap price';
+  };
+
+  renderBinancePrice = () => {
+    return 'binance price';
+  };
+
+  renderPriceAnalysis = () => {
+    return 'price analysis';
+  };
+
   render() {
     const { symbol, txStatus } = this.props;
 
+    const ticker = getTickerFormat(symbol);
     const openTradeModal = txStatus.type === 'trade' ? txStatus.modal : false;
     const coinCloseIconType = txStatus.status ? 'fullscreen-exit' : 'close';
 
@@ -154,37 +168,50 @@ class TradeDetail extends Component {
             <Logo name="binanceDex" />
           </Col>
         </Row>
-        <Row className="trade-detail-row">
-          <Col className="trade-detail-panel" span={16}>
-            <div className="trade-asset-card-wrapper">
-              <div className="trade-asset-card">
-                <CoinCard
-                  title="You are selling"
-                  asset={symbol}
-                  amount={13.54}
-                  price={2300}
-                  slip={2}
-                />
-                <Slider className="trade-asset-slider" defaultValue={50} />
-              </div>
-              <img src={blackArrowIcon} alt="blackarrow-icon" />
-              <div className="trade-asset-card">
-                <CoinCard
-                  title="You will receive"
-                  asset={symbol}
-                  amount={46000}
-                  price={2530}
-                  slip={2}
-                />
-              </div>
+        <Row className="trade-values">
+          <Col span={24} lg={8}>
+            {this.renderBepswapPrice()}
+          </Col>
+          <Col span={24} lg={8}>
+            {this.renderPriceAnalysis()}
+          </Col>
+          <Col span={24} lg={8}>
+            {this.renderBinancePrice()}
+          </Col>
+        </Row>
+        <Row className="trade-panel">
+          <Col span={24} lg={12}>
+            <div className="bepswap-trade-card">
+              <CoinCard asset={ticker} amount={13} price={0.4} />
+              <Slider defaultValue={50} min={1} max={100} />
+            </div>
+            <div className="bepswap-buy-btn">
+              <Button typevalue="outline" color="success">
+                buy
+              </Button>
             </div>
           </Col>
-          <Col span={8}>
-            <div className="trade-info-wrapper">
-              <Status title="Current Pool Price" value="$1.20" />
-              <Status title="Pool Price After Trade" value="$1.00" />
-              <Status title="Potential Reward" value="$120.03" />
+          <Col span={24} lg={12}>
+            <div className="binance-trade-card">
+              <CoinCard asset={ticker} amount={13} price={0.4} />
+              <Slider defaultValue={50} min={1} max={100} />
             </div>
+            <div className="binance-sell-btn">
+              <Button typevalue="outline" color="error">
+                sell
+              </Button>
+            </div>
+          </Col>
+        </Row>
+        <Row className="trade-expectations">
+          <Col span={24} lg={8}>
+            {this.renderBepswapPrice()}
+          </Col>
+          <Col span={24} lg={8}>
+            {this.renderPriceAnalysis()}
+          </Col>
+          <Col span={24} lg={8}>
+            {this.renderBinancePrice()}
           </Col>
         </Row>
         <TradeModal
