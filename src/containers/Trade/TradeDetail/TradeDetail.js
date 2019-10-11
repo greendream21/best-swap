@@ -181,25 +181,25 @@ class TradeDetail extends Component {
         </Row>
         <Row className="trade-panel">
           <Col span={24} lg={12}>
-            <div className="bepswap-trade-card">
+            <div className="trade-card">
               <CoinCard asset={ticker} amount={13} price={0.4} />
               <Slider defaultValue={50} min={1} max={100} />
             </div>
-            <div className="bepswap-buy-btn">
+            <div className="trade-btn">
               <Button typevalue="outline" color="success">
                 buy
               </Button>
             </div>
           </Col>
           <Col span={24} lg={12}>
-            <div className="binance-trade-card">
-              <CoinCard asset={ticker} amount={13} price={0.4} />
-              <Slider defaultValue={50} min={1} max={100} />
-            </div>
-            <div className="binance-sell-btn">
+            <div className="trade-btn">
               <Button typevalue="outline" color="error">
                 sell
               </Button>
+            </div>
+            <div className="trade-card">
+              <CoinCard asset={ticker} amount={13} price={0.4} />
+              <Slider defaultValue={50} min={1} max={100} />
             </div>
           </Col>
         </Row>
