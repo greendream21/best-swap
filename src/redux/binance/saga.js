@@ -3,6 +3,7 @@ import { all, takeEvery, put, fork, call } from 'redux-saga/effects';
 import actions from './actions';
 import {
   getBinanceTestnetURL,
+  getBinanceMainnetURL,
   getHeaders,
   axiosRequest,
 } from '../../helpers/apiHelper';
@@ -45,6 +46,28 @@ export function* getBinanceMarkets() {
   });
 }
 
+export function* getBinanceTicker() {
+  yield takeEvery(actions.GET_BINANCE_MARKETS, function*({ payload }) {
+    const params = {
+      method: 'get',
+      url: getBinanceMainnetURL(`ticker/24hr?symbol=${payload}`),
+      headers: getHeaders(),
+    };
+
+    try {
+      const { data } = yield call(axiosRequest, params);
+
+      yield put(actions.getBinanceTickerSuccess(data));
+    } catch (error) {
+      yield put(actions.getBinanceTickerFailed(error));
+    }
+  });
+}
+
 export default function* rootSaga() {
-  yield all([fork(getBinanceTokens), fork(getBinanceMarkets)]);
+  yield all([
+    fork(getBinanceTokens),
+    fork(getBinanceMarkets),
+    fork(getBinanceTicker),
+  ]);
 }
