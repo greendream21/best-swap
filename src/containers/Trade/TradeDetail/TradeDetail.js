@@ -23,6 +23,9 @@ import {
 } from './TradeDetail.style';
 
 import appActions from '../../../redux/app/actions';
+import chainActions from '../../../redux/chainservice/actions';
+import statechainActions from '../../../redux/statechain/actions';
+import walletactions from '../../../redux/wallet/actions';
 
 const {
   setTxTimerType,
@@ -32,18 +35,38 @@ const {
   resetTxStatus,
 } = appActions;
 
+const { getTokens } = chainActions;
+const { getPools } = statechainActions;
+const { getRunePrice } = walletactions;
+
 class TradeDetail extends Component {
   static propTypes = {
     symbol: PropTypes.string.isRequired,
+    assetData: PropTypes.array.isRequired,
+    chainData: PropTypes.object.isRequired,
+    pools: PropTypes.array.isRequired,
+    poolData: PropTypes.object.isRequired,
+    swapData: PropTypes.object.isRequired,
     txStatus: PropTypes.object.isRequired,
     setTxTimerType: PropTypes.func.isRequired,
     setTxTimerModal: PropTypes.func.isRequired,
     setTxTimerStatus: PropTypes.func.isRequired,
     setTxTimerValue: PropTypes.func.isRequired,
     resetTxStatus: PropTypes.func.isRequired,
+    getTokens: PropTypes.func.isRequired,
+    getPools: PropTypes.func.isRequired,
+    getRunePrice: PropTypes.func.isRequired,
   };
 
   state = {};
+
+  componentDidMount() {
+    const { getTokens, getPools, getRunePrice } = this.props;
+
+    getTokens();
+    getPools();
+    getRunePrice();
+  }
 
   handleStartTimer = () => {
     const { setTxTimerModal, setTxTimerType, setTxTimerStatus } = this.props;
@@ -208,11 +231,24 @@ class TradeDetail extends Component {
   };
 
   render() {
-    const { symbol, txStatus } = this.props;
+    const {
+      symbol,
+      txStatus,
+      chainData: { tokenInfo },
+    } = this.props;
 
     const ticker = getTickerFormat(symbol);
     const openTradeModal = txStatus.type === 'trade' ? txStatus.modal : false;
     const coinCloseIconType = txStatus.status ? 'fullscreen-exit' : 'close';
+
+    const tokensData = Object.keys(tokenInfo).map(tokenName => {
+      const { symbol, price } = tokenInfo[tokenName];
+
+      return {
+        asset: symbol,
+        price,
+      };
+    });
 
     return (
       <ContentWrapper className="trade-detail-wrapper">
@@ -238,7 +274,12 @@ class TradeDetail extends Component {
         <Row className="trade-panel">
           <Col lg={12} xs={24}>
             <div className="trade-card">
-              <CoinCard asset={ticker} amount={13} price={0.4} />
+              <CoinCard
+                asset={ticker}
+                assetData={tokensData}
+                amount={13}
+                price={0.4}
+              />
               <Slider defaultValue={50} min={1} max={100} />
             </div>
             <div className="trade-btn">
@@ -254,7 +295,12 @@ class TradeDetail extends Component {
               </Button>
             </div>
             <div className="trade-card">
-              <CoinCard asset={ticker} amount={13} price={0.4} />
+              <CoinCard
+                asset={ticker}
+                assetData={tokensData}
+                amount={13}
+                price={0.4}
+              />
               <Slider defaultValue={50} min={1} max={100} />
             </div>
           </Col>
@@ -265,7 +311,7 @@ class TradeDetail extends Component {
           </Col>
           <Col lg={8} xs={24}>
             <div className="trade-asset-container">
-              <CoinData asset="tomo" assetValue={0.01} price={0.04} />
+              <CoinData asset={ticker} assetValue={0.01} price={0.04} />
               <CoinData asset="bnb" assetValue={0.01} price={0.04} />
               <Label>BNB is the trading asset.</Label>
             </div>
@@ -294,8 +340,18 @@ export default compose(
   connect(
     state => ({
       txStatus: state.App.txStatus,
+      user: state.Wallet.user,
+      assetData: state.Wallet.assetData,
+      runePrice: state.Wallet.runePrice,
+      chainData: state.ChainService,
+      pools: state.Statechain.pools,
+      poolData: state.Statechain.poolData,
+      swapData: state.Statechain.swapData,
     }),
     {
+      getTokens,
+      getPools,
+      getRunePrice,
       setTxTimerType,
       setTxTimerModal,
       setTxTimerStatus,
