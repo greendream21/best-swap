@@ -9,19 +9,20 @@ const path = require('path');
 const glob = require('glob-promise');
 
 // Utility function for nice errors
-function formatError(fixtureInfo, message) {
+function formatError(fixtureInfo, message, err) {
   return `
 
 =================================
   VALIDATION FAILURE
 =================================
 
-The folloiwing fixture failed validation:
+The following fixture failed validation:
 
 ${JSON.stringify(fixtureInfo, null, 2)}
 
 ${message}
 
+${err || ''}
 `;
 }
 
@@ -84,9 +85,9 @@ function validateFixture(validator, swaggerSpec, fixtureInfo) {
   let spec;
   try {
     spec = swaggerSpec.paths[pathName][method];
-  } catch (err) {
+  } catch (specError) {
     const possiblePaths = Object.keys(swaggerSpec.paths);
-    const message = `Cannot find specification entry for pathName: "${pathName}" with method "${method}"
+    const message = `Cannot find specification entry for pathName: "${pathName}" with http method "${method}"
 
 Valid paths:
 
@@ -98,11 +99,11 @@ ${possiblePaths.map(thing => ' ' + thing + '\n').join('')}
 
   try {
     validatePath(validator, spec, pathName, status, body);
-  } catch (e) {
+  } catch (validationError) {
     const message = `Fixture failed the following specification within the swagger file: 
 
 ${JSON.stringify(spec, null, 2)}`;
-    throw new Error(formatError(fixtureInfo, message));
+    throw new Error(formatError(fixtureInfo, message, validationError));
   }
 }
 

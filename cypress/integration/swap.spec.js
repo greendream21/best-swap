@@ -17,6 +17,7 @@ describe('Swapping', () => {
     cy.get('[data-test="bepswap-app"]').should('exist');
     cy.get('[data-test="swap-card-BNB"] [data-test="swap-button"]').click();
     cy.get('[data-test="coincard-source-input"]').type('1000{enter}');
+    cy.wait(500); // Remove me once we have more CPU?
     cy.get('[data-test="coincard-source-input"]').should(
       'have.value',
       '1,000.00',
