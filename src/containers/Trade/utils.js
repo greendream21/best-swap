@@ -2,7 +2,9 @@ import {
   getTickerFormat,
   getFixedNumber,
   getUserFormat,
+  compareShallowStr,
 } from '../../helpers/stringHelper';
+import { BASE_NUMBER } from '../../settings/constants';
 
 export const getTradeData = (
   from,
@@ -38,5 +40,59 @@ export const getTradeData = (
     poolPrice,
     premium,
     reward,
+  };
+};
+
+/**
+ * get bnb price from pools
+ * @param {Array} pools pool data from the statechain
+ * @return {String} price of bnb
+ */
+export const getBnbPrice = pools => {
+  let bnbPrice = 0;
+
+  pools.forEach(poolData => {
+    const { symbol, balance_rune, balance_token } = poolData;
+
+    if (compareShallowStr('bnb', symbol)) {
+      const R = Number(balance_rune);
+      const T = Number(balance_token);
+
+      bnbPrice = R / T;
+    }
+  });
+
+  return bnbPrice;
+};
+
+/**
+ * Get prices for bepswap
+ * @param {String} token symbol for token
+ * @param {Array} pools pool data from the statechain
+ * @return {Object} price values for bepswap
+ */
+export const getBepswapPrice = (token, pools, bnbPrice) => {
+  let poolPriceBNB = 0;
+  let poolBuyDepth = 0;
+  let poolSellDepth = 0;
+
+  pools.forEach(poolData => {
+    const { symbol, balance_rune, balance_token } = poolData;
+
+    if (compareShallowStr(token, symbol)) {
+      const R = Number(balance_rune) / BASE_NUMBER;
+      const T = Number(balance_token) / BASE_NUMBER;
+
+      const poolPriceToken = R / T;
+      poolPriceBNB = poolPriceToken / bnbPrice;
+      poolBuyDepth = T / bnbPrice;
+      poolSellDepth = T / poolPriceBNB;
+    }
+  });
+
+  return {
+    poolPriceBNB,
+    poolBuyDepth,
+    poolSellDepth,
   };
 };
