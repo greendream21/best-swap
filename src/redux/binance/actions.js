@@ -29,6 +29,23 @@ const actions = {
     type: actions.GET_BINANCE_MARKETS_FAILED,
     payload,
   }),
+
+  GET_BINANCE_TICKER: 'GET_BINANCE_TICKER',
+  GET_BINANCE_TICKER_SUCCESS: 'GET_BINANCE_TICKER_SUCCESS',
+  GET_BINANCE_TICKER_FAILED: 'GET_BINANCE_TICKER_FAILED',
+
+  getBinanceTicker: payload => ({
+    type: actions.GET_BINANCE_TICKER,
+    payload,
+  }),
+  getBinanceTickerSuccess: payload => ({
+    type: actions.GET_BINANCE_TICKER_SUCCESS,
+    payload,
+  }),
+  getBinanceTickerFailed: payload => ({
+    type: actions.GET_BINANCE_TICKER_FAILED,
+    payload,
+  }),
 };
 
 export default actions;
