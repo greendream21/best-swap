@@ -49,10 +49,11 @@ export function* getBinanceMarkets() {
 }
 
 export function* getBinanceTicker() {
-  yield takeEvery(actions.GET_BINANCE_MARKETS, function*({ payload }) {
+  yield takeEvery(actions.GET_BINANCE_TICKER, function*({ payload }) {
     const ticker = getTickerFormat(payload);
     const tokenName = getTokenName(ticker);
 
+    console.log('token name: ', tokenName);
     const params = {
       method: 'get',
       url: getBinanceMainnetURL(`ticker/24hr?symbol=${tokenName}_BNB`),

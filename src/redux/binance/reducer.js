@@ -59,7 +59,7 @@ export default function apiReducer(state = initState, action) {
     case actions.GET_BINANCE_TICKER_SUCCESS:
       return {
         ...state,
-        ticker: payload,
+        ticker: payload[0] || {},
         loadingTicker: false,
       };
     case actions.GET_BINANCE_TICKER_FAILED:

@@ -21,10 +21,16 @@ import {
 } from './TradeDetail.style';
 
 import appActions from '../../../redux/app/actions';
+import walletactions from '../../../redux/wallet/actions';
 import chainActions from '../../../redux/chainservice/actions';
 import statechainActions from '../../../redux/statechain/actions';
-import walletactions from '../../../redux/wallet/actions';
-import { getBepswapPrice, getBnbPrice } from '../utils';
+import binanceActions from '../../../redux/binance/actions';
+import {
+  getBepswapValues,
+  getBnbPrice,
+  getPriceDiff,
+  getBnbToSell,
+} from '../utils';
 import { getTickerFormat, getFixedNumber } from '../../../helpers/stringHelper';
 
 const {
@@ -38,6 +44,7 @@ const {
 const { getTokens } = chainActions;
 const { getPools } = statechainActions;
 const { getRunePrice } = walletactions;
+const { getBinanceTicker } = binanceActions;
 
 class TradeDetail extends Component {
   static propTypes = {
@@ -47,6 +54,7 @@ class TradeDetail extends Component {
     pools: PropTypes.array.isRequired,
     poolData: PropTypes.object.isRequired,
     swapData: PropTypes.object.isRequired,
+    tickerData: PropTypes.object.isRequired,
     txStatus: PropTypes.object.isRequired,
     setTxTimerType: PropTypes.func.isRequired,
     setTxTimerModal: PropTypes.func.isRequired,
@@ -56,16 +64,24 @@ class TradeDetail extends Component {
     getTokens: PropTypes.func.isRequired,
     getPools: PropTypes.func.isRequired,
     getRunePrice: PropTypes.func.isRequired,
+    getBinanceTicker: PropTypes.func.isRequired,
   };
 
   state = {};
 
   componentDidMount() {
-    const { getTokens, getPools, getRunePrice } = this.props;
+    const {
+      symbol,
+      getTokens,
+      getPools,
+      getRunePrice,
+      getBinanceTicker,
+    } = this.props;
 
     getTokens();
     getPools();
     getRunePrice();
+    getBinanceTicker(symbol);
   }
 
   handleStartTimer = () => {
@@ -214,15 +230,21 @@ class TradeDetail extends Component {
     );
   };
 
-  renderPriceAnalysis = () => {
+  renderPriceAnalysis = (priceDiff, reward) => {
+    const prefix = priceDiff > 0 ? '+' : '';
+    const differential = `${prefix}${Math.round(priceDiff * 100)}%`;
+    const rewardVal = `${getFixedNumber(reward)} BNB`;
+    const bepswapDirection = priceDiff > 0 ? 'Buy' : 'Sell';
+    const binanceDirection = priceDiff > 0 ? 'Sell' : 'Buy';
+
     return (
       <div className="trade-price-analysis">
         <Row>
           <Col lg={12} xs={12}>
-            <Status title="Pool Differential" value="+20%" />
+            <Status title="Pool Differential" value={differential} />
           </Col>
           <Col lg={12} xs={12}>
-            <Status title="Potential Reward" value="0.10 BNB" />
+            <Status title="Potential Reward" value={rewardVal} />
           </Col>
         </Row>
         <Row>
@@ -231,10 +253,10 @@ class TradeDetail extends Component {
               Recommended Trade Move
             </Label>
             <Label className="trade-move-value" size="big" weight="normal">
-              BEPSwap Pool: Buy
+              BEPSwap Pool: <strong>{bepswapDirection}</strong>
             </Label>
             <Label className="trade-move-value" size="big" weight="normal">
-              BinanceDex: Sell
+              BinanceDex: <strong>{binanceDirection}</strong>
             </Label>
           </Col>
         </Row>
@@ -248,6 +270,7 @@ class TradeDetail extends Component {
       txStatus,
       chainData: { tokenInfo },
       pools,
+      tickerData,
     } = this.props;
 
     const ticker = getTickerFormat(symbol);
@@ -264,10 +287,18 @@ class TradeDetail extends Component {
     });
 
     const bnbPrice = getBnbPrice(pools);
-    const bepswapPrices = getBepswapPrice(symbol, pools, bnbPrice);
+    const bepswapValues = getBepswapValues(symbol, pools, bnbPrice);
 
     console.log('bnb price: ', bnbPrice);
-    console.log('bepswap price: ', bepswapPrices);
+    console.log('bepswap price: ', bepswapValues);
+
+    const marketPrice = tickerData.lastPrice || 0;
+    const priceDiff = getPriceDiff(marketPrice, bepswapValues.poolPriceBNB);
+    const bnbToSell = getBnbToSell(priceDiff, bepswapValues);
+
+    console.log('marketPrice: ', marketPrice);
+    console.log('priceDiff: ', priceDiff);
+    console.log('bnbToSell: ', bnbToSell);
 
     return (
       <ContentWrapper className="trade-detail-wrapper">
@@ -281,10 +312,10 @@ class TradeDetail extends Component {
         </Row>
         <Row className="trade-values">
           <Col lg={8} xs={24}>
-            {this.renderBepswapPrice(bepswapPrices)}
+            {this.renderBepswapPrice(bepswapValues)}
           </Col>
           <Col lg={8} xs={24}>
-            {this.renderPriceAnalysis()}
+            {this.renderPriceAnalysis(priceDiff)}
           </Col>
           <Col lg={8} xs={24}>
             {this.renderBinancePrice()}
@@ -366,11 +397,13 @@ export default compose(
       pools: state.Statechain.pools,
       poolData: state.Statechain.poolData,
       swapData: state.Statechain.swapData,
+      tickerData: state.Binance.ticker,
     }),
     {
       getTokens,
       getPools,
       getRunePrice,
+      getBinanceTicker,
       setTxTimerType,
       setTxTimerModal,
       setTxTimerStatus,
