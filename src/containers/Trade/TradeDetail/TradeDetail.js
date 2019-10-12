@@ -14,8 +14,6 @@ import Label from '../../../components/uielements/label';
 import Button from '../../../components/uielements/button';
 import Logo from '../../../components/uielements/logo';
 
-import { getTickerFormat } from '../../../helpers/stringHelper';
-
 import {
   ContentWrapper,
   TradeModalContent,
@@ -26,6 +24,8 @@ import appActions from '../../../redux/app/actions';
 import chainActions from '../../../redux/chainservice/actions';
 import statechainActions from '../../../redux/statechain/actions';
 import walletactions from '../../../redux/wallet/actions';
+import { getBepswapPrice, getBnbPrice } from '../utils';
+import { getTickerFormat, getFixedNumber } from '../../../helpers/stringHelper';
 
 const {
   setTxTimerType,
@@ -162,20 +162,32 @@ class TradeDetail extends Component {
     );
   };
 
-  renderBepswapPrice = () => {
+  renderBepswapPrice = bepswapPrices => {
+    const { symbol } = this.props;
+    const { poolPriceBNB, poolBuyDepth, poolSellDepth } = bepswapPrices;
+
+    const ticker = getTickerFormat(symbol);
+    const poolPrice = `${getFixedNumber(poolPriceBNB, 4)} BNB`;
+
     return (
       <div className="bepswap-price-status">
         <Row>
           <Col lg={24}>
-            <Status title="Pool Price" value="0.1000 BNB" />
+            <Status title="Pool Price" value={poolPrice} />
           </Col>
         </Row>
         <Row>
           <Col lg={12} xs={12}>
-            <Status title="Pool Buy Depth" value="23 BNB" />
+            <Status
+              title="Pool Buy Depth"
+              value={`${getFixedNumber(poolBuyDepth, 0)} BNB`}
+            />
           </Col>
           <Col lg={12} xs={12}>
-            <Status title="Pool Sell Depth" value="123000 TOMO" />
+            <Status
+              title="Pool Sell Depth"
+              value={`${getFixedNumber(poolSellDepth, 0)} ${ticker}`}
+            />
           </Col>
         </Row>
       </div>
@@ -235,6 +247,7 @@ class TradeDetail extends Component {
       symbol,
       txStatus,
       chainData: { tokenInfo },
+      pools,
     } = this.props;
 
     const ticker = getTickerFormat(symbol);
@@ -250,6 +263,12 @@ class TradeDetail extends Component {
       };
     });
 
+    const bnbPrice = getBnbPrice(pools);
+    const bepswapPrices = getBepswapPrice(symbol, pools, bnbPrice);
+
+    console.log('bnb price: ', bnbPrice);
+    console.log('bepswap price: ', bepswapPrices);
+
     return (
       <ContentWrapper className="trade-detail-wrapper">
         <Row className="trade-logos">
@@ -262,7 +281,7 @@ class TradeDetail extends Component {
         </Row>
         <Row className="trade-values">
           <Col lg={8} xs={24}>
-            {this.renderBepswapPrice()}
+            {this.renderBepswapPrice(bepswapPrices)}
           </Col>
           <Col lg={8} xs={24}>
             {this.renderPriceAnalysis()}
