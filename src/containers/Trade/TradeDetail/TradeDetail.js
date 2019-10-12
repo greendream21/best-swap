@@ -329,6 +329,7 @@ class TradeDetail extends Component {
                 assetData={tokensData}
                 amount={13}
                 price={0.4}
+                unit="BNB"
               />
               <Slider defaultValue={50} min={1} max={100} />
             </div>
@@ -350,6 +351,7 @@ class TradeDetail extends Component {
                 assetData={tokensData}
                 amount={13}
                 price={0.4}
+                unit="BNB"
               />
               <Slider defaultValue={50} min={1} max={100} />
             </div>

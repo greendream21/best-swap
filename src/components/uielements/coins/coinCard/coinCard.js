@@ -50,6 +50,7 @@ class CoinCard extends Component {
     assetData: PropTypes.array,
     amount: PropTypes.number,
     price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    unit: PropTypes.string,
     slip: PropTypes.number,
     title: PropTypes.string,
     searchDisable: PropTypes.arrayOf(PropTypes.string),
@@ -75,6 +76,7 @@ class CoinCard extends Component {
     assetData: [],
     amount: 0,
     price: 0,
+    unit: '$USD',
     slip: undefined,
     title: '',
     withSelection: false,
@@ -175,6 +177,7 @@ class CoinCard extends Component {
       assetData,
       amount,
       price,
+      unit,
       slip,
       title,
       max,
@@ -219,7 +222,7 @@ class CoinCard extends Component {
                 <HorizontalDivider />
                 <AssetCardFooter>
                   <FooterLabel>
-                    {`$USD ${Number(
+                    {`${unit} ${Number(
                       (amount * price).toFixed(2),
                     ).toLocaleString()}`}
                   </FooterLabel>
