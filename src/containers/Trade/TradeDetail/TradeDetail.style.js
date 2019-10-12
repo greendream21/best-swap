@@ -11,6 +11,10 @@ export const ContentWrapper = styled(ContentView)`
       justify-content: center;
       align-items: center;
       height: 80px;
+      padding: 0 10px;
+      ${media.lg`
+        padding: 0px;
+      `}
 
       &:first-child {
         border-right: 1px solid ${palette('border', 0)};
@@ -34,8 +38,13 @@ export const ContentWrapper = styled(ContentView)`
 
       .trade-price-analysis {
         padding: 20px;
+        margin: 10px 0;
         border: 1px solid ${palette('border', 0)};
         border-radius: 4px;
+
+        ${media.lg`
+          margin: 0px;
+        `}
 
         .trade-move-value {
           padding: 0;
@@ -51,16 +60,25 @@ export const ContentWrapper = styled(ContentView)`
       align-items: center;
       ${media.xs`
         flex-direction: column;
+        padding: 10px 0;
       `}
       ${media.lg`
         flex-direction: row;
+        padding: 0;
       `}
 
       &:first-child {
-        border-right: 1px solid ${palette('border', 0)};
+        ${media.sm`
+          border-right: 1px solid ${palette('border', 0)};
+        `}
       }
 
       .trade-card {
+        margin: 10px 0;
+        ${media.lg`
+          margin: 0;
+        `}
+
         .slider-wrapper {
           margin: 20px 0;
         }
@@ -84,10 +102,14 @@ export const ContentWrapper = styled(ContentView)`
       }
 
       .trade-asset-container {
+        margin: 10px 0;
         padding: 20px;
         border: 2px solid ${palette('primary', 0)};
         border-radius: 4px;
 
+        ${media.lg`
+          margin: 0px;
+        `}
         .coinData-wrapper {
           margin-bottom: 20px;
         }
