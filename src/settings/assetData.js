@@ -11,6 +11,10 @@ export const tokenNames = {
     mainnet: 'LOKI-6A9',
     testnet: 'LOK-3C0',
   },
+  LOKI: {
+    mainnet: 'LOKI-6A9',
+    testnet: 'LOK-3C0',
+  },
   ERD: {
     mainnet: 'ERD-D06',
     testnet: 'ERD-D85',
@@ -24,6 +28,10 @@ export const tokenNames = {
     testnet: 'FTM-585',
   },
   TCAN: {
+    mainnet: 'CAN-677',
+    testnet: 'TCAN-014',
+  },
+  CAN: {
     mainnet: 'CAN-677',
     testnet: 'TCAN-014',
   },
