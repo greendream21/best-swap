@@ -7,6 +7,8 @@ import {
   getHeaders,
   axiosRequest,
 } from '../../helpers/apiHelper';
+import { getTickerFormat } from '../../helpers/stringHelper';
+import { getTokenName } from '../../helpers/assetHelper';
 
 const TOKEN_LIMIT = 1000;
 
@@ -48,9 +50,12 @@ export function* getBinanceMarkets() {
 
 export function* getBinanceTicker() {
   yield takeEvery(actions.GET_BINANCE_MARKETS, function*({ payload }) {
+    const ticker = getTickerFormat(payload);
+    const tokenName = getTokenName(ticker);
+
     const params = {
       method: 'get',
-      url: getBinanceMainnetURL(`ticker/24hr?symbol=${payload}`),
+      url: getBinanceMainnetURL(`ticker/24hr?symbol=${tokenName}_BNB`),
       headers: getHeaders(),
     };
 
