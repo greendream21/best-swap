@@ -3,9 +3,11 @@ import actions from './actions';
 const initState = {
   tokenList: [],
   marketList: [],
+  ticker: [],
   error: null,
   loadingToken: false,
   loadingMarket: false,
+  loadingTicker: false,
 };
 
 export default function apiReducer(state = initState, action) {
@@ -46,6 +48,24 @@ export default function apiReducer(state = initState, action) {
       return {
         ...state,
         loadingMarket: false,
+        error: payload,
+      };
+    case actions.GET_BINANCE_TICKER:
+      return {
+        ...state,
+        loadingTicker: true,
+        error: null,
+      };
+    case actions.GET_BINANCE_TICKER_SUCCESS:
+      return {
+        ...state,
+        ticker: payload,
+        loadingTicker: false,
+      };
+    case actions.GET_BINANCE_TICKER_FAILED:
+      return {
+        ...state,
+        loadingTicker: false,
         error: payload,
       };
     default:
