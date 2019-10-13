@@ -80,6 +80,23 @@ const actions = {
     type: actions.GET_BINANCE_TRANSACTIONS_FAILED,
     payload,
   }),
+
+  GET_BINANCE_OPEN_ORDERS: 'GET_BINANCE_OPEN_ORDERS',
+  GET_BINANCE_OPEN_ORDERS_SUCCESS: 'GET_BINANCE_OPEN_ORDERS_SUCCESS',
+  GET_BINANCE_OPEN_ORDERS_FAILED: 'GET_BINANCE_OPEN_ORDERS_FAILED',
+
+  getBinanceOpenOrders: payload => ({
+    type: actions.GET_BINANCE_OPEN_ORDERS,
+    payload,
+  }),
+  getBinanceOpenOrdersSuccess: payload => ({
+    type: actions.GET_BINANCE_OPEN_ORDERS_SUCCESS,
+    payload,
+  }),
+  getBinanceOpenOrdersFailed: payload => ({
+    type: actions.GET_BINANCE_OPEN_ORDERS_FAILED,
+    payload,
+  }),
 };
 
 export default actions;

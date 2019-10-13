@@ -7,6 +7,7 @@ const initState = {
   account: {},
   accountSequence: null,
   transactions: {},
+  openOrders: {},
   error: null,
   loadingToken: false,
   loadingMarket: false,
@@ -82,6 +83,12 @@ export default function apiReducer(state = initState, action) {
       return {
         ...state,
         transactions: payload,
+        error: null,
+      };
+    case actions.GET_BINANCE_OPEN_ORDERS_SUCCESS:
+      return {
+        ...state,
+        openOrders: payload,
         error: null,
       };
     default:

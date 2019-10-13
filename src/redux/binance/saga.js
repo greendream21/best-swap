@@ -109,6 +109,28 @@ export function* getBinanceTransactions() {
   });
 }
 
+export function* getBinanceOpenOrders() {
+  yield takeEvery(actions.GET_BINANCE_OPEN_ORDERS, function*({ payload }) {
+    const { address, symbol } = payload;
+
+    const params = {
+      method: 'get',
+      url: getBinanceTestnetURL(
+        `orders/open?address=${address}&symbol=${symbol}`,
+      ),
+      headers: getHeaders(),
+    };
+
+    try {
+      const { data } = yield call(axiosRequest, params);
+
+      yield put(actions.getBinanceOpenOrdersSuccess(data));
+    } catch (error) {
+      yield put(actions.getBinanceOpenOrdersFailed(error));
+    }
+  });
+}
+
 export default function* rootSaga() {
   yield all([
     fork(getBinanceTokens),
@@ -116,5 +138,6 @@ export default function* rootSaga() {
     fork(getBinanceTicker),
     fork(getBinanceAccount),
     fork(getBinanceTransactions),
+    fork(getBinanceOpenOrders),
   ]);
 }
