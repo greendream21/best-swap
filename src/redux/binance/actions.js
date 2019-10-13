@@ -46,6 +46,23 @@ const actions = {
     type: actions.GET_BINANCE_TICKER_FAILED,
     payload,
   }),
+
+  GET_BINANCE_ACCOUNT: 'GET_BINANCE_ACCOUNT',
+  GET_BINANCE_ACCOUNT_SUCCESS: 'GET_BINANCE_ACCOUNT_SUCCESS',
+  GET_BINANCE_ACCOUNT_FAILED: 'GET_BINANCE_ACCOUNT_FAILED',
+
+  getBinanceAccount: payload => ({
+    type: actions.GET_BINANCE_ACCOUNT,
+    payload,
+  }),
+  getBinanceAccountSuccess: payload => ({
+    type: actions.GET_BINANCE_ACCOUNT_SUCCESS,
+    payload,
+  }),
+  getBinanceAccountFailed: payload => ({
+    type: actions.GET_BINANCE_ACCOUNT_FAILED,
+    payload,
+  }),
 };
 
 export default actions;

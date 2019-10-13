@@ -53,7 +53,6 @@ export function* getBinanceTicker() {
     const ticker = getTickerFormat(payload);
     const tokenName = getTokenName(ticker);
 
-    console.log('token name: ', tokenName);
     const params = {
       method: 'get',
       url: getBinanceMainnetURL(`ticker/24hr?symbol=${tokenName}_BNB`),
@@ -70,10 +69,29 @@ export function* getBinanceTicker() {
   });
 }
 
+export function* getBinanceAccount() {
+  yield takeEvery(actions.GET_BINANCE_ACCOUNT, function*({ payload }) {
+    const params = {
+      method: 'get',
+      url: getBinanceTestnetURL(`account/${payload}`),
+      headers: getHeaders(),
+    };
+
+    try {
+      const { data } = yield call(axiosRequest, params);
+
+      yield put(actions.getBinanceAccountSuccess(data));
+    } catch (error) {
+      yield put(actions.getBinanceAccountFailed(error));
+    }
+  });
+}
+
 export default function* rootSaga() {
   yield all([
     fork(getBinanceTokens),
     fork(getBinanceMarkets),
     fork(getBinanceTicker),
+    fork(getBinanceAccount),
   ]);
 }
