@@ -97,6 +97,23 @@ const actions = {
     type: actions.GET_BINANCE_OPEN_ORDERS_FAILED,
     payload,
   }),
+
+  GET_BINANCE_DEPTH: 'GET_BINANCE_DEPTH',
+  GET_BINANCE_DEPTH_SUCCESS: 'GET_BINANCE_DEPTH_SUCCESS',
+  GET_BINANCE_DEPTH_FAILED: 'GET_BINANCE_DEPTH_FAILED',
+
+  getBinanceDepth: payload => ({
+    type: actions.GET_BINANCE_DEPTH,
+    payload,
+  }),
+  getBinanceDepthSuccess: payload => ({
+    type: actions.GET_BINANCE_DEPTH_SUCCESS,
+    payload,
+  }),
+  getBinanceDepthFailed: payload => ({
+    type: actions.GET_BINANCE_DEPTH_FAILED,
+    payload,
+  }),
 };
 
 export default actions;

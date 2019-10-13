@@ -131,6 +131,27 @@ export function* getBinanceOpenOrders() {
   });
 }
 
+export function* getBinanceDepth() {
+  yield takeEvery(actions.GET_BINANCE_TICKER, function*({ payload }) {
+    const ticker = getTickerFormat(payload);
+    const tokenName = getTokenName(ticker);
+
+    const params = {
+      method: 'get',
+      url: getBinanceMainnetURL(`depth?symbol=${tokenName}_BNB`),
+      headers: getHeaders(),
+    };
+
+    try {
+      const { data } = yield call(axiosRequest, params);
+
+      yield put(actions.getBinanceDepthSuccess(data));
+    } catch (error) {
+      yield put(actions.getBinanceDepthFailed(error));
+    }
+  });
+}
+
 export default function* rootSaga() {
   yield all([
     fork(getBinanceTokens),
@@ -139,5 +160,6 @@ export default function* rootSaga() {
     fork(getBinanceAccount),
     fork(getBinanceTransactions),
     fork(getBinanceOpenOrders),
+    fork(getBinanceDepth),
   ]);
 }
