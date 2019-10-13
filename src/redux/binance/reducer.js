@@ -6,6 +6,7 @@ const initState = {
   ticker: [],
   account: {},
   accountSequence: null,
+  transactions: {},
   error: null,
   loadingToken: false,
   loadingMarket: false,
@@ -75,6 +76,12 @@ export default function apiReducer(state = initState, action) {
         ...state,
         account: payload,
         accountSequence: payload.sequence || 0,
+        error: null,
+      };
+    case actions.GET_BINANCE_TRANSACTIONS_SUCCESS:
+      return {
+        ...state,
+        transactions: payload,
         error: null,
       };
     default:

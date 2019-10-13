@@ -87,11 +87,34 @@ export function* getBinanceAccount() {
   });
 }
 
+export function* getBinanceTransactions() {
+  yield takeEvery(actions.GET_BINANCE_TRANSACTIONS, function*({ payload }) {
+    const { address, symbol, startTime, endTime, limit } = payload;
+
+    const params = {
+      method: 'get',
+      url: getBinanceTestnetURL(
+        `transactions?address=${address}&txAsset=${symbol}&startTime=${startTime}&endTime=${endTime}&limit=${limit}`,
+      ),
+      headers: getHeaders(),
+    };
+
+    try {
+      const { data } = yield call(axiosRequest, params);
+
+      yield put(actions.getBinanceTransactionsSuccess(data));
+    } catch (error) {
+      yield put(actions.getBinanceTransactionsFailed(error));
+    }
+  });
+}
+
 export default function* rootSaga() {
   yield all([
     fork(getBinanceTokens),
     fork(getBinanceMarkets),
     fork(getBinanceTicker),
     fork(getBinanceAccount),
+    fork(getBinanceTransactions),
   ]);
 }
