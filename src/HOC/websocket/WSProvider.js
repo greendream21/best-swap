@@ -20,12 +20,12 @@ class WSProvider extends Component {
   };
 
   render() {
-    const { url, children } = this.props;
+    const { url, children, ...props } = this.props;
     const { data } = this.state;
 
     return (
       <>
-        <WSEvent url={url} onMessage={this.handleData} />
+        <WSEvent url={url} onMessage={this.handleData} {...props} />
         {children({ data })}
       </>
     );

@@ -27,6 +27,9 @@ class WSEvent extends React.Component {
   setupWebsocket = () => {
     const websocket = this.state.ws;
 
+    // pass the websocket to parent
+    this.props.onRef(websocket);
+
     websocket.onopen = () => {
       this.logging('Websocket connected');
       if (typeof this.props.onOpen === 'function') this.props.onOpen();
@@ -105,6 +108,7 @@ WSEvent.propTypes = {
   onOpen: PropTypes.func,
   onClose: PropTypes.func,
   onError: PropTypes.func,
+  onRef: PropTypes.func,
   debug: PropTypes.bool,
   reconnect: PropTypes.bool,
   protocol: PropTypes.string,
