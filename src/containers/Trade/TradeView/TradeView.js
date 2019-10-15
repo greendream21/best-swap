@@ -84,7 +84,7 @@ class TradeView extends Component {
           assetData,
           runePrice,
           bnbPrice,
-          marketPrice,
+          runePrice,
         );
 
         return (
@@ -97,7 +97,7 @@ class TradeView extends Component {
             marketPrice={getFixedNumber(runePrice, 6)}
             premium={premium}
             reward={reward}
-            onTrade={this.handleTrade(symbol)}
+            onTrade={this.handleTrade('RUNE-A1F')} // TODO: hardcoded rune symbol
             key={index}
           />
         );

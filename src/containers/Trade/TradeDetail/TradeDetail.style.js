@@ -2,69 +2,121 @@ import styled from 'styled-components';
 import { palette } from 'styled-theme';
 import ContentView from '../../../components/utility/contentView';
 import Modal from '../../../components/uielements/modal';
+import { media } from '../../../helpers/styleHelper';
 
 export const ContentWrapper = styled(ContentView)`
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  padding: 0;
-
-  & > .ant-row {
-    display: flex;
-  }
-
-  .trade-asset-status-row {
-    display: flex;
-    align-items: center;
-    height: 90px;
-    padding: 20px 20px !important;
-    border-bottom: 1px solid ${palette('border', 0)};
-
-    .coin-wrapper {
-      margin: 0 20px;
-    }
-
-    .status-wrapper {
-      width: 100px;
-      margin-right: 30px;
-    }
-  }
-
-  .trade-detail-row {
-    flex-grow: 1;
-
-    .trade-detail-panel {
+  .trade-logos {
+    .ant-col {
       display: flex;
-      flex-direction: column;
-      padding: 10px 20px !important;
-      border-right: 1px solid ${palette('border', 0)};
+      justify-content: center;
+      align-items: center;
+      height: 80px;
+      padding: 0 10px;
+      ${media.lg`
+        padding: 0px;
+      `}
 
-      .trade-asset-card-wrapper {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+      &:first-child {
+        border-right: 1px solid ${palette('border', 0)};
+      }
 
-        .trade-asset-card {
-          height: 150px;
-          .trade-asset-slider {
-            padding: 10px 0;
-          }
+      .logo-wrapper {
+        width: 170px;
+      }
+    }
+  }
+
+  .trade-values {
+    & > .ant-col {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+
+      & > div {
+        width: 350px;
+      }
+
+      .trade-price-analysis {
+        padding: 20px;
+        margin: 10px 0;
+        border: 1px solid ${palette('border', 0)};
+        border-radius: 4px;
+
+        ${media.lg`
+          margin: 0px;
+        `}
+
+        .trade-move-value {
+          padding: 0;
         }
       }
-      .drag-confirm-wrapper {
-        display: flex;
-        justify-content: center;
-        padding-top: 40px;
+    }
+  }
+
+  .trade-panel {
+    .ant-col {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      ${media.xs`
+        flex-direction: column;
+        padding: 10px 0;
+      `}
+      ${media.lg`
+        flex-direction: row;
+        padding: 0;
+      `}
+
+      &:first-child {
+        ${media.sm`
+          border-right: 1px solid ${palette('border', 0)};
+        `}
+      }
+
+      .trade-card {
+        margin: 10px 0;
+        ${media.lg`
+          margin: 0;
+        `}
+
+        .slider-wrapper {
+          margin: 20px 0;
+        }
+      }
+      .trade-btn {
+        margin: 0 40px;
       }
     }
+  }
 
-    .trade-info-wrapper {
+  .trade-expectations {
+    padding-bottom: 20px;
+
+    & > .ant-col {
       display: flex;
-      flex-wrap: wrap;
-      padding: 10px 20px;
+      justify-content: space-around;
+      align-items: center;
 
-      .status-wrapper {
-        width: 50%;
+      & > div {
+        width: 350px;
+      }
+
+      .trade-asset-container {
+        margin: 10px 0;
+        padding: 20px;
+        border: 2px solid ${palette('primary', 0)};
+        border-radius: 4px;
+
+        ${media.lg`
+          margin: 0px;
+        `}
+        .coinData-wrapper {
+          margin-bottom: 20px;
+        }
+
+        .label-wrapper {
+          padding: 0;
+        }
       }
     }
   }

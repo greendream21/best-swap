@@ -7,4 +7,7 @@ export const logoData = {
   thorchain: {
     long: require('../../../assets/SVG/logo-thorchain-black.svg'),
   },
+  binanceDex: {
+    long: require('../../../assets/SVG/binancedex_logo.svg'),
+  },
 };
