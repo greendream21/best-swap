@@ -10,10 +10,13 @@ class WSProvider extends Component {
   };
 
   state = {
-    data: null,
+    data: [],
   };
 
-  handleData = data => {
+  handleData = newData => {
+    const { data } = this.state;
+
+    data.push(JSON.parse(newData));
     this.setState({
       data,
     });

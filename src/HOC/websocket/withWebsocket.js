@@ -8,7 +8,7 @@ export const withWebsocket = (url, dataKey, options) => Component => {
       <WSProvider url={url} {...options}>
         {({ data }) => {
           const newProps = {
-            [dataKey]: JSON.parse(data),
+            [dataKey]: data,
           };
 
           return <Component {...props} {...newProps} />;
