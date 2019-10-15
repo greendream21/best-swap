@@ -40,6 +40,7 @@ import {
 } from '../../../helpers/stringHelper';
 import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
 import { getCalcResult, confirmSwap } from '../utils';
+import { withBinanceTransferWS } from '../../../HOC/websocket/WSBinance';
 
 import appActions from '../../../redux/app/actions';
 import chainActions from '../../../redux/chainservice/actions';
@@ -69,6 +70,7 @@ class SwapSend extends Component {
     pools: PropTypes.array.isRequired,
     user: PropTypes.object.isRequired,
     runePrice: PropTypes.number.isRequired,
+    wsTransfers: PropTypes.object.isRequired,
     setTxTimerType: PropTypes.func.isRequired,
     setTxTimerModal: PropTypes.func.isRequired,
     setTxTimerStatus: PropTypes.func.isRequired,
@@ -599,6 +601,7 @@ class SwapSend extends Component {
       pools,
       assetData,
       runePrice,
+      wsTransfers,
     } = this.props;
     const {
       dragReset,
@@ -612,6 +615,7 @@ class SwapSend extends Component {
       slipProtection,
     } = this.state;
 
+    console.log('binance websocket transfer data: ', wsTransfers);
     const swapData = getPair(info);
 
     if (!swapData || !Object.keys(tokenInfo).length) {
@@ -838,4 +842,5 @@ export default compose(
     },
   ),
   withRouter,
+  withBinanceTransferWS,
 )(SwapSend);
