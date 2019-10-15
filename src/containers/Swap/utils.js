@@ -199,3 +199,49 @@ export const confirmSwap = (
       .catch(error => reject(error));
   });
 };
+
+export const parseTransfer = tx => {
+  const txHash = tx.data.H;
+  const txMemo = tx.data.M;
+  const txFrom = tx.data.f;
+  const txTo = tx.data.t[0].o;
+  const txAmount = tx.data.t[0].c[0].A;
+  const txToken = tx.data.t[0].c[0].a;
+
+  return {
+    txHash,
+    txMemo,
+    txFrom,
+    txTo,
+    txToken,
+    txAmount,
+  };
+};
+
+export const isOutboundTx = tx => {
+  return tx.data.M.inclues('OUTBOUND');
+};
+
+export const getTxResult = (tx, fromAddr, toAddr, fromToken, toToken) => {
+  if (isOutboundTx(tx)) {
+    const { txFrom, txTo, txToken, txAmount } = parseTransfer(tx);
+
+    if (txFrom === toAddr && txTo === fromAddr) {
+      if (txToken === fromToken) {
+        return {
+          type: 'refund',
+          amount: txAmount,
+        };
+      }
+      if (txToken === toToken) {
+        return {
+          type: 'success',
+          amount: txAmount,
+        };
+      }
+      return null;
+    }
+    return null;
+  }
+  return null;
+};

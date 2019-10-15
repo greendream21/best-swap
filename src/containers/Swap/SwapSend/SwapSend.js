@@ -39,7 +39,7 @@ import {
   getFixedNumber,
 } from '../../../helpers/stringHelper';
 import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
-import { getCalcResult, confirmSwap } from '../utils';
+import { getCalcResult, confirmSwap, getTxResult } from '../utils';
 import { withBinanceTransferWS } from '../../../HOC/websocket/WSBinance';
 
 import appActions from '../../../redux/app/actions';
@@ -96,6 +96,7 @@ class SwapSend extends Component {
     openWalletAlert: false,
     slipProtection: true,
     maxSlip: 30,
+    txResult: null,
   };
 
   addressRef = React.createRef();
@@ -106,6 +107,31 @@ class SwapSend extends Component {
     getTokens();
     getPools();
     getRunePrice();
+  }
+
+  componentDidUpdate(prevProps) {
+    const { wsTransfers } = this.props;
+    const length = wsTransfers.length;
+
+    if (length !== prevProps.wsTransfers.length && length > 0) {
+      const lastTx = wsTransfers[length - 1];
+      const { fromAddr, toAddr, fromToken, toToken } = this.txData;
+      const txResult = getTxResult(
+        lastTx,
+        fromAddr,
+        toAddr,
+        fromToken,
+        toToken,
+      );
+
+      if (txResult) {
+        this.setState({
+          txResult,
+        });
+      } else {
+        console.log('swap failed');
+      }
+    }
   }
 
   isValidRecipient = () => {
@@ -472,7 +498,7 @@ class SwapSend extends Component {
       txStatus: { status, value },
       runePrice,
     } = this.props;
-    const { xValue } = this.state;
+    const { xValue, txResult } = this.state;
     const { source, target } = swapData;
     const { Px, slip, outputAmount, outputPrice } = info;
     const priceFrom = Number(Px * xValue);
@@ -487,9 +513,22 @@ class SwapSend extends Component {
       'complete',
     ];
 
-    const completed = value !== null && !status;
+    const completed = value !== null && !status && txResult !== null;
     const swapText = !completed ? 'YOU ARE SWAPPING' : 'YOU SWAPPED';
-    const receiveText = !completed ? 'YOU SHOULD RECEIVE' : 'YOU RECEIVED';
+
+    // eslint-disable-next-line no-nested-ternary
+    const receiveText = !completed
+      ? 'YOU SHOULD RECEIVE'
+      : txResult.type === 'success'
+      ? 'YOU RECEIVED'
+      : 'YOU REFUNDED';
+
+    const tokenAmount = !completed
+      ? Number(outputAmount)
+      : Number(txResult.amount);
+    const priceValue = !completed
+      ? priceTo
+      : Number(Number(txResult.amount) * outputPrice);
     const expectation = !completed
       ? 'EXPECTED FEES & SLIP'
       : 'FINAL FEES & SLIP';
@@ -525,8 +564,8 @@ class SwapSend extends Component {
             <CoinData
               data-test="swapmodal-coin-data-receive"
               asset={target}
-              assetValue={Number(outputAmount)}
-              price={priceTo}
+              assetValue={tokenAmount}
+              price={priceValue}
             />
             <Label weight="bold">{expectation}</Label>
             <div className="expected-status">
