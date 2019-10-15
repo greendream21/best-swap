@@ -219,7 +219,10 @@ export const parseTransfer = tx => {
 };
 
 export const isOutboundTx = tx => {
-  return tx.data.M.inclues('OUTBOUND');
+  if (tx.data.M) {
+    return tx.data.M.includes('OUTBOUND');
+  }
+  return false;
 };
 
 export const getTxResult = (tx, fromAddr, toAddr, fromToken, toToken) => {
@@ -231,12 +234,14 @@ export const getTxResult = (tx, fromAddr, toAddr, fromToken, toToken) => {
         return {
           type: 'refund',
           amount: txAmount,
+          token: txToken,
         };
       }
       if (txToken === toToken) {
         return {
           type: 'success',
           amount: txAmount,
+          token: txToken,
         };
       }
       return null;

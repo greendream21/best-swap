@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { cloneDeep } from 'lodash';
 
 import WSEvent from './WSEvent';
 
@@ -15,10 +16,11 @@ class WSProvider extends Component {
 
   handleData = newData => {
     const { data } = this.state;
+    const dataArray = cloneDeep(data);
 
-    data.push(JSON.parse(newData));
+    dataArray.push(JSON.parse(newData));
     this.setState({
-      data,
+      data: dataArray,
     });
   };
 

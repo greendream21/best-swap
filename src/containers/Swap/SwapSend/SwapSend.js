@@ -112,10 +112,13 @@ class SwapSend extends Component {
   componentDidUpdate(prevProps) {
     const { wsTransfers } = this.props;
     const length = wsTransfers.length;
-
+    console.log(prevProps.wsTransfers.length);
+    console.log(length);
     if (length !== prevProps.wsTransfers.length && length > 0) {
       const lastTx = wsTransfers[length - 1];
       const { fromAddr, toAddr, fromToken, toToken } = this.txData;
+      console.log('txData ', this.txData);
+      console.log('lastTx ', lastTx);
       const txResult = getTxResult(
         lastTx,
         fromAddr,
@@ -123,13 +126,12 @@ class SwapSend extends Component {
         fromToken,
         toToken,
       );
+      console.log('txResult ', txResult);
 
       if (txResult) {
         this.setState({
           txResult,
         });
-      } else {
-        console.log('swap failed');
       }
     }
   }
@@ -456,7 +458,16 @@ class SwapSend extends Component {
         address,
       );
       this.hash = result[0].hash;
+      this.txData = {
+        fromAddr: wallet,
+        toAddr: this.data.poolAddressTo,
+        fromToken: this.data.symbolFrom,
+        toToken: this.data.symbolTo,
+      };
 
+      this.setState({
+        txResult: null,
+      });
       this.handleStartTimer();
     } catch (error) {
       notification['error']({
@@ -523,12 +534,14 @@ class SwapSend extends Component {
       ? 'YOU RECEIVED'
       : 'YOU REFUNDED';
 
+    const targetToken = !completed ? target : getTickerFormat(txResult.token);
     const tokenAmount = !completed
       ? Number(outputAmount)
       : Number(txResult.amount);
     const priceValue = !completed
       ? priceTo
       : Number(Number(txResult.amount) * outputPrice);
+
     const expectation = !completed
       ? 'EXPECTED FEES & SLIP'
       : 'FINAL FEES & SLIP';
@@ -563,7 +576,7 @@ class SwapSend extends Component {
             <Label weight="bold">{receiveText}</Label>
             <CoinData
               data-test="swapmodal-coin-data-receive"
-              asset={target}
+              asset={targetToken}
               assetValue={tokenAmount}
               price={priceValue}
             />
