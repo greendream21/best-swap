@@ -57,7 +57,7 @@ const {
 
 const { getTokens } = chainActions;
 const { getPools } = statechainActions;
-const { getRunePrice } = walletactions;
+const { getRunePrice, refreshBalance } = walletactions;
 
 class SwapSend extends Component {
   static propTypes = {
@@ -79,6 +79,7 @@ class SwapSend extends Component {
     getTokens: PropTypes.func.isRequired,
     getPools: PropTypes.func.isRequired,
     getRunePrice: PropTypes.func.isRequired,
+    refreshBalance: PropTypes.func.isRequired,
   };
 
   static defaultProps = {
@@ -110,7 +111,7 @@ class SwapSend extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { wsTransfers } = this.props;
+    const { wsTransfers, refreshBalance } = this.props;
     const length = wsTransfers.length;
     console.log(prevProps.wsTransfers.length);
     console.log(length);
@@ -132,6 +133,9 @@ class SwapSend extends Component {
         this.setState({
           txResult,
         });
+
+        // refresh balances with update
+        refreshBalance();
       }
     }
   }
@@ -891,6 +895,7 @@ export default compose(
       setTxTimerValue,
       resetTxStatus,
       getRunePrice,
+      refreshBalance,
     },
   ),
   withRouter,
