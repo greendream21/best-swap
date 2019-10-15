@@ -8,14 +8,15 @@ import ActionView from '../../ActionView';
 class Trade extends Component {
   render() {
     const { symbol } = this.props.match.params; // eslint-disable-line
-    let view = 'detail';
-    if (!symbol) view = 'view';
 
     return (
       <TradeWrapper>
         <Row gutter={32}>
           <Col span={24}>
-            <ActionView type="trade" view={view} />
+            {symbol && (
+              <ActionView type="trade" view="detail" symbol={symbol} />
+            )}
+            {!symbol && <ActionView type="trade" />}
           </Col>
         </Row>
       </TradeWrapper>

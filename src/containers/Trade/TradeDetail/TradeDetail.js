@@ -5,16 +5,14 @@ import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Row, Col, Icon } from 'antd';
 
-import Drag from '../../../components/uielements/drag';
 import CoinCard from '../../../components/uielements/coins/coinCard';
-import Coin from '../../../components/uielements/coins/coin';
 import Status from '../../../components/uielements/status';
 import Slider from '../../../components/uielements/slider';
 import TxTimer from '../../../components/uielements/txTimer';
 import CoinData from '../../../components/uielements/coins/coinData';
 import Label from '../../../components/uielements/label';
-
-import { blackArrowIcon } from '../../../components/icons';
+import Button from '../../../components/uielements/button';
+import Logo from '../../../components/uielements/logo';
 
 import {
   ContentWrapper,
@@ -22,10 +20,18 @@ import {
   TradeModal,
 } from './TradeDetail.style';
 
-import { getPair } from '../../../helpers/stringHelper';
-import { tradeData } from './data';
-
 import appActions from '../../../redux/app/actions';
+import walletactions from '../../../redux/wallet/actions';
+import chainActions from '../../../redux/chainservice/actions';
+import statechainActions from '../../../redux/statechain/actions';
+import binanceActions from '../../../redux/binance/actions';
+import {
+  getBepswapValues,
+  getBnbPrice,
+  getPriceDiff,
+  getBnbToSell,
+} from '../utils';
+import { getTickerFormat, getFixedNumber } from '../../../helpers/stringHelper';
 
 const {
   setTxTimerType,
@@ -35,33 +41,50 @@ const {
   resetTxStatus,
 } = appActions;
 
+const { getTokens } = chainActions;
+const { getPools } = statechainActions;
+const { getRunePrice } = walletactions;
+const { getBinanceTicker } = binanceActions;
+
 class TradeDetail extends Component {
   static propTypes = {
-    info: PropTypes.string,
-    view: PropTypes.string.isRequired,
+    symbol: PropTypes.string.isRequired,
+    assetData: PropTypes.array.isRequired,
+    chainData: PropTypes.object.isRequired,
+    pools: PropTypes.array.isRequired,
+    poolData: PropTypes.object.isRequired,
+    swapData: PropTypes.object.isRequired,
+    tickerData: PropTypes.object.isRequired,
     txStatus: PropTypes.object.isRequired,
     setTxTimerType: PropTypes.func.isRequired,
     setTxTimerModal: PropTypes.func.isRequired,
     setTxTimerStatus: PropTypes.func.isRequired,
     setTxTimerValue: PropTypes.func.isRequired,
     resetTxStatus: PropTypes.func.isRequired,
+    getTokens: PropTypes.func.isRequired,
+    getPools: PropTypes.func.isRequired,
+    getRunePrice: PropTypes.func.isRequired,
+    getBinanceTicker: PropTypes.func.isRequired,
   };
 
-  static defaultProps = {
-    info: '',
-  };
+  state = {};
 
-  state = {
-    dragReset: true,
-  };
+  componentDidMount() {
+    const {
+      symbol,
+      getTokens,
+      getPools,
+      getRunePrice,
+      getBinanceTicker,
+    } = this.props;
 
-  handleDrag = () => {
-    this.setState({
-      dragReset: false,
-    });
-  };
+    getTokens();
+    getPools();
+    getRunePrice();
+    getBinanceTicker(symbol);
+  }
 
-  handleEndDrag = () => {
+  handleStartTimer = () => {
     const { setTxTimerModal, setTxTimerType, setTxTimerStatus } = this.props;
 
     setTxTimerType('trade');
@@ -94,16 +117,13 @@ class TradeDetail extends Component {
     const { setTxTimerStatus } = this.props;
 
     setTxTimerStatus(false);
-    this.setState({
-      dragReset: true,
-    });
   };
 
-  renderTradeModalContent = pair => {
+  renderTradeModalContent = () => {
     const {
+      symbol,
       txStatus: { status, value },
     } = this.props;
-    const { source, target } = pair;
 
     const transactionLabels = [
       'sending transaction',
@@ -124,7 +144,7 @@ class TradeDetail extends Component {
       <TradeModalContent>
         <div className="left-container">
           <Label weight="bold">{tradeText}</Label>
-          <CoinData asset={source} assetValue={2.49274} price={217.92} />
+          <CoinData asset="bnb" assetValue={2.49274} price={217.92} />
         </div>
         <div className="center-container">
           <TxTimer
@@ -140,7 +160,7 @@ class TradeDetail extends Component {
         </div>
         <div className="right-container">
           <Label weight="bold">{receiveText}</Label>
-          <CoinData asset={target} assetValue={2.49274} price={217.92} />
+          <CoinData asset={symbol} assetValue={2.49274} price={217.92} />
           <Label weight="bold">{expectation}</Label>
           <div className="expected-status">
             <div className="status-item">
@@ -158,73 +178,198 @@ class TradeDetail extends Component {
     );
   };
 
+  renderBepswapPrice = bepswapPrices => {
+    const { symbol } = this.props;
+    const { poolPriceBNB, poolBuyDepth, poolSellDepth } = bepswapPrices;
+
+    const ticker = getTickerFormat(symbol);
+    const poolPrice = `${getFixedNumber(poolPriceBNB, 4)} BNB`;
+
+    return (
+      <div className="bepswap-price-status">
+        <Row>
+          <Col lg={24}>
+            <Status title="Pool Price" value={poolPrice} />
+          </Col>
+        </Row>
+        <Row>
+          <Col lg={12} xs={12}>
+            <Status
+              title="Pool Buy Depth"
+              value={`${getFixedNumber(poolBuyDepth, 0)} BNB`}
+            />
+          </Col>
+          <Col lg={12} xs={12}>
+            <Status
+              title="Pool Sell Depth"
+              value={`${getFixedNumber(poolSellDepth, 0)} ${ticker}`}
+            />
+          </Col>
+        </Row>
+      </div>
+    );
+  };
+
+  renderBinancePrice = () => {
+    return (
+      <div className="binance-price-status">
+        <Row>
+          <Col lg={24}>
+            <Status title="Market Price" value="0.1000 BNB" />
+          </Col>
+        </Row>
+        <Row>
+          <Col lg={12} xs={12}>
+            <Status title="Buy Depth" value="123 BNB" />
+          </Col>
+          <Col lg={12} xs={12}>
+            <Status title="Sell Depth" value="123,000 TOMO" />
+          </Col>
+        </Row>
+      </div>
+    );
+  };
+
+  renderPriceAnalysis = (priceDiff, reward) => {
+    const prefix = priceDiff > 0 ? '+' : '';
+    const differential = `${prefix}${Math.round(priceDiff * 100)}%`;
+    const rewardVal = `${getFixedNumber(reward)} BNB`;
+    const bepswapDirection = priceDiff > 0 ? 'Buy' : 'Sell';
+    const binanceDirection = priceDiff > 0 ? 'Sell' : 'Buy';
+
+    return (
+      <div className="trade-price-analysis">
+        <Row>
+          <Col lg={12} xs={12}>
+            <Status title="Pool Differential" value={differential} />
+          </Col>
+          <Col lg={12} xs={12}>
+            <Status title="Potential Reward" value={rewardVal} />
+          </Col>
+        </Row>
+        <Row>
+          <Col lg={24}>
+            <Label size="tiny" weight="bold">
+              Recommended Trade Move
+            </Label>
+            <Label className="trade-move-value" size="big" weight="normal">
+              BEPSwap Pool: <strong>{bepswapDirection}</strong>
+            </Label>
+            <Label className="trade-move-value" size="big" weight="normal">
+              BinanceDex: <strong>{binanceDirection}</strong>
+            </Label>
+          </Col>
+        </Row>
+      </div>
+    );
+  };
+
   render() {
-    const { info, txStatus } = this.props;
-    const { dragReset } = this.state;
-    const pair = getPair(info);
+    const {
+      symbol,
+      txStatus,
+      chainData: { tokenInfo },
+      pools,
+      tickerData,
+    } = this.props;
 
-    if (!pair) {
-      return '';
-    }
-
-    const { source, target } = pair;
-
-    const dragTitle = 'Drag to trade';
-    const poolStatus = `${source}:${target}`;
-
+    const ticker = getTickerFormat(symbol);
     const openTradeModal = txStatus.type === 'trade' ? txStatus.modal : false;
     const coinCloseIconType = txStatus.status ? 'fullscreen-exit' : 'close';
 
+    const tokensData = Object.keys(tokenInfo).map(tokenName => {
+      const { symbol, price } = tokenInfo[tokenName];
+
+      return {
+        asset: symbol,
+        price,
+      };
+    });
+
+    const bnbPrice = getBnbPrice(pools);
+    const bepswapValues = getBepswapValues(symbol, pools, bnbPrice);
+
+    console.log('bnb price: ', bnbPrice);
+    console.log('bepswap price: ', bepswapValues);
+
+    const marketPrice = tickerData.lastPrice || 0;
+    const priceDiff = getPriceDiff(marketPrice, bepswapValues.poolPriceBNB);
+    const bnbToSell = getBnbToSell(priceDiff, bepswapValues);
+
+    console.log('marketPrice: ', marketPrice);
+    console.log('priceDiff: ', priceDiff);
+    console.log('bnbToSell: ', bnbToSell);
+
     return (
       <ContentWrapper className="trade-detail-wrapper">
-        <Row className="trade-asset-status-row">
-          <Coin type={source} over={target} />
-          <Status title="Pool" value={poolStatus} />
-          {tradeData.map(info => (
-            <Status {...info} />
-          ))}
+        <Row className="trade-logos">
+          <Col lg={12} xs={12}>
+            <Logo name="bepswap" />
+          </Col>
+          <Col lg={12} xs={12}>
+            <Logo name="binanceDex" />
+          </Col>
         </Row>
-        <Row className="trade-detail-row">
-          <Col className="trade-detail-panel" span={16}>
-            <div className="trade-asset-card-wrapper">
-              <div className="trade-asset-card">
-                <CoinCard
-                  title="You are selling"
-                  asset={source}
-                  amount={13.54}
-                  price={2300}
-                  slip={2}
-                />
-                <Slider className="trade-asset-slider" defaultValue={50} />
-              </div>
-              <img src={blackArrowIcon} alt="blackarrow-icon" />
-              <div className="trade-asset-card">
-                <CoinCard
-                  title="You will receive"
-                  asset={target}
-                  amount={46000}
-                  price={2530}
-                  slip={2}
-                />
-              </div>
-            </div>
-            <div className="drag-confirm-wrapper">
-              <Drag
-                title={dragTitle}
-                source={source}
-                target={target}
-                reset={dragReset}
-                onConfirm={this.handleEndDrag}
-                onDrag={this.handleDrag}
+        <Row className="trade-values">
+          <Col lg={8} xs={24}>
+            {this.renderBepswapPrice(bepswapValues)}
+          </Col>
+          <Col lg={8} xs={24}>
+            {this.renderPriceAnalysis(priceDiff)}
+          </Col>
+          <Col lg={8} xs={24}>
+            {this.renderBinancePrice()}
+          </Col>
+        </Row>
+        <Row className="trade-panel">
+          <Col lg={12} xs={24}>
+            <div className="trade-card">
+              <CoinCard
+                asset={ticker}
+                assetData={tokensData}
+                amount={13}
+                price={0.4}
+                unit="BNB"
               />
+              <Slider defaultValue={50} min={1} max={100} />
+            </div>
+            <div className="trade-btn">
+              <Button typevalue="outline" color="success">
+                buy
+              </Button>
             </div>
           </Col>
-          <Col span={8}>
-            <div className="trade-info-wrapper">
-              <Status title="Current Pool Price" value="$1.20" />
-              <Status title="Pool Price After Trade" value="$1.00" />
-              <Status title="Potential Reward" value="$120.03" />
+          <Col lg={12} xs={24}>
+            <div className="trade-btn">
+              <Button typevalue="outline" color="error">
+                sell
+              </Button>
             </div>
+            <div className="trade-card">
+              <CoinCard
+                asset={ticker}
+                assetData={tokensData}
+                amount={13}
+                price={0.4}
+                unit="BNB"
+              />
+              <Slider defaultValue={50} min={1} max={100} />
+            </div>
+          </Col>
+        </Row>
+        <Row className="trade-expectations">
+          <Col lg={8} xs={24}>
+            <Status title="Pool Price After Trade:" value="0.1100 BNB" />
+          </Col>
+          <Col lg={8} xs={24}>
+            <div className="trade-asset-container">
+              <CoinData asset={ticker} assetValue={0.01} price={0.04} />
+              <CoinData asset="bnb" assetValue={0.01} price={0.04} />
+              <Label>BNB is the trading asset.</Label>
+            </div>
+          </Col>
+          <Col lg={8} xs={24}>
+            <Status title="Market Price After Trade:" value="0.1100 BNB" />
           </Col>
         </Row>
         <TradeModal
@@ -236,7 +381,7 @@ class TradeDetail extends Component {
           footer={null}
           onCancel={this.handleCloseModal}
         >
-          {this.renderTradeModalContent(pair)}
+          {this.renderTradeModalContent()}
         </TradeModal>
       </ContentWrapper>
     );
@@ -247,8 +392,20 @@ export default compose(
   connect(
     state => ({
       txStatus: state.App.txStatus,
+      user: state.Wallet.user,
+      assetData: state.Wallet.assetData,
+      runePrice: state.Wallet.runePrice,
+      chainData: state.ChainService,
+      pools: state.Statechain.pools,
+      poolData: state.Statechain.poolData,
+      swapData: state.Statechain.swapData,
+      tickerData: state.Binance.ticker,
     }),
     {
+      getTokens,
+      getPools,
+      getRunePrice,
+      getBinanceTicker,
       setTxTimerType,
       setTxTimerModal,
       setTxTimerStatus,

@@ -26,6 +26,9 @@ storiesOf('Components/Logos', module)
           <Row>
             <Logo name="thorchain" type="long" />
           </Row>
+          <Row>
+            <Logo name="binanceDex" type="long" />
+          </Row>
         </AppHolder>
       </ThemeProvider>
     );

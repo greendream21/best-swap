@@ -19,7 +19,7 @@ class Logo extends Component {
     const logoURL = logoData[name][type];
 
     return (
-      <LogoWrapper {...otherProps}>
+      <LogoWrapper className="logo-wrapper" {...otherProps}>
         <img src={logoURL} alt="bepswap-logo" />
       </LogoWrapper>
     );
