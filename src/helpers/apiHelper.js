@@ -7,6 +7,7 @@ export const BINANCE_TESTNET_URL = process.env.REACT_APP_BINANCE_TESTNET_URL;
 export const BINANCE_MAINNET_URL = process.env.REACT_APP_BINANCE_MAINNET_URL;
 export const TESTNET_TX_BASE_URL = 'https://testnet-explorer.binance.org/tx/';
 
+console.log('coingecko url ', COINGECKO_API_URL);
 export const getChainserviceURL = url => `${CHAINSERVICE_BASE_URL}/${url}`;
 export const getStatechainURL = url => `${STATECHAIN_BASE_URL}/${url}`;
 export const getCoinGeckoURL = url => `${COINGECKO_API_URL}/${url}`;

@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 class WSEvent extends React.Component {
   constructor(props) {
     super(props);
-
     this.state = {
       ws: window.WebSocket
         ? new window.WebSocket(this.props.url, this.props.protocol)
