@@ -115,7 +115,7 @@ class SwapSend extends Component {
     const length = wsTransfers.length;
     console.log(prevProps.wsTransfers.length);
     console.log(length);
-    if (length !== prevProps.wsTransfers.length && length > 0) {
+    if (length !== prevProps.wsTransfers.length && length > 1) {
       const lastTx = wsTransfers[length - 1];
       const { fromAddr, toAddr, fromToken, toToken } = this.txData;
       console.log('txData ', this.txData);
