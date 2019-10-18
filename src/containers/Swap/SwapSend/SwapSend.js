@@ -103,6 +103,8 @@ class SwapSend extends Component {
 
   addressRef = React.createRef();
 
+  delta = 1000;
+
   componentDidMount() {
     const { getTokens, getPools, getRunePrice } = this.props;
 
@@ -133,7 +135,7 @@ class SwapSend extends Component {
       if (txResult) {
         const curTime = new Date();
         this.delta = curTime - this.txStarted;
-
+        console.log(this.delta);
         this.setState({
           txResult,
           timerStatus: true,
@@ -583,6 +585,7 @@ class SwapSend extends Component {
               reset={status}
               status={timerStatus}
               value={value}
+              txDuration={this.delta}
               onChange={this.handleChangeTxValue}
               onEnd={this.handleEndTxTimer}
             />

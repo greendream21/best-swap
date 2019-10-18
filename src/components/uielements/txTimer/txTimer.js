@@ -20,6 +20,7 @@ class TxTimer extends Component {
     status: PropTypes.bool,
     value: PropTypes.number,
     interval: PropTypes.number,
+    txDuration: PropTypes.number,
     onChange: PropTypes.func,
     onEnd: PropTypes.func,
     className: PropTypes.string,
@@ -30,6 +31,7 @@ class TxTimer extends Component {
     status: false,
     value: 0,
     interval: 1000,
+    txDuration: 1000,
     onChange: () => {},
     onEnd: () => {},
     className: '',
@@ -81,6 +83,7 @@ class TxTimer extends Component {
       reset,
       status,
       interval,
+      txDuration,
       onEnd,
       className,
       ...props
@@ -100,7 +103,7 @@ class TxTimer extends Component {
           onChange={this.handleChange}
         >
           {percentage => {
-            const durations = [0, 300, 1200, 1000, 300];
+            const durations = [0, 300, 1200, 1000, txDuration];
             const percentageIndex = values.findIndex(
               value => value === percentage,
             );
