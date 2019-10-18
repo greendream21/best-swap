@@ -22,7 +22,7 @@ class ChangingProgressProvider extends React.Component {
   interval = null;
 
   componentDidMount() {
-    // this.startTimer();
+    this.startTimer();
   }
 
   componentDidUpdate(prevProps) {

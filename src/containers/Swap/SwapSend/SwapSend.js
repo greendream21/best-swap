@@ -98,6 +98,7 @@ class SwapSend extends Component {
     slipProtection: true,
     maxSlip: 30,
     txResult: null,
+    timerStatus: true,
   };
 
   addressRef = React.createRef();
@@ -130,10 +131,13 @@ class SwapSend extends Component {
       console.log('txResult ', txResult);
 
       if (txResult) {
+        const curTime = new Date();
+        this.delta = curTime - this.txStarted;
+
         this.setState({
           txResult,
+          timerStatus: true,
         });
-
         // refresh balances with update
         refreshBalance();
       }
@@ -430,6 +434,12 @@ class SwapSend extends Component {
   handleChangeTxValue = value => {
     const { setTxTimerValue } = this.props;
 
+    if (value === 3) {
+      this.setState({
+        timerStatus: false,
+      });
+      this.txStarted = new Date();
+    }
     setTxTimerValue(value);
   };
 
@@ -513,7 +523,7 @@ class SwapSend extends Component {
       txStatus: { status, value },
       runePrice,
     } = this.props;
-    const { xValue, txResult } = this.state;
+    const { xValue, txResult, timerStatus } = this.state;
     const { source, target } = swapData;
     const { Px, slip, outputAmount, outputPrice } = info;
     const priceFrom = Number(Px * xValue);
@@ -571,6 +581,7 @@ class SwapSend extends Component {
           <div className="center-container">
             <TxTimer
               reset={status}
+              status={timerStatus}
               value={value}
               onChange={this.handleChangeTxValue}
               onEnd={this.handleEndTxTimer}
