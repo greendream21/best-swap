@@ -17,6 +17,7 @@ import { TxTimerWrapper } from './txTimer.style';
 class TxTimer extends Component {
   static propTypes = {
     reset: PropTypes.bool,
+    status: PropTypes.bool,
     value: PropTypes.number,
     onChange: PropTypes.func,
     onEnd: PropTypes.func,
@@ -25,6 +26,7 @@ class TxTimer extends Component {
 
   static defaultProps = {
     reset: true,
+    status: false,
     value: 0,
     onChange: () => {},
     onEnd: () => {},
@@ -72,7 +74,14 @@ class TxTimer extends Component {
   };
 
   render() {
-    const { value: indexValue, reset, onEnd, className, ...props } = this.props;
+    const {
+      value: indexValue,
+      reset,
+      status,
+      onEnd,
+      className,
+      ...props
+    } = this.props;
     const { resetTimer } = this.state;
     const values = [0, 25, 50, 75, 100];
     let totalDuration = 0;
@@ -83,6 +92,7 @@ class TxTimer extends Component {
         <ChangingProgressProvider
           values={values}
           reset={resetTimer}
+          status={status}
           onChange={this.handleChange}
         >
           {percentage => {

@@ -4,12 +4,14 @@ import PropTypes from 'prop-types';
 class ChangingProgressProvider extends React.Component {
   static propTypes = {
     reset: PropTypes.bool,
+    status: PropTypes.bool,
     onChange: PropTypes.func,
   };
 
   static defaultProps = {
     interval: 1000,
     reset: false,
+    status: false,
     onChange: () => {},
   };
 
@@ -20,7 +22,7 @@ class ChangingProgressProvider extends React.Component {
   interval = null;
 
   componentDidMount() {
-    this.startTimer();
+    // this.startTimer();
   }
 
   componentDidUpdate(prevProps) {
@@ -36,6 +38,13 @@ class ChangingProgressProvider extends React.Component {
           this.startTimer();
         },
       );
+    }
+
+    if (prevProps.status === false && this.props.status === true) {
+      this.startTimer();
+    }
+    if (prevProps.status === true && this.props.status === false) {
+      clearInterval(this.interval);
     }
   }
 
