@@ -112,6 +112,9 @@ class TxTimer extends Component {
               totalDuration += duration / 1000;
             });
 
+            if (totalDuration >= 10) totalDuration = Math.round(totalDuration);
+            else totalDuration = Number(totalDuration).toFixed(1);
+
             const hide = percentage === 100;
             const CircularProgressbarStyle = `${
               resetTimer ? 'hide' : ''
