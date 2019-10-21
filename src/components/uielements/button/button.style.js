@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { palette, key } from 'styled-theme';
 import { Button } from 'antd';
+import { transition } from '../../../settings/style-util';
 
 const fontSettings = {
   small: {
@@ -37,21 +38,25 @@ const colorGroups = {
     main: palette('primary', 0),
     darken: palette('secondary', 0),
     lighten: palette('secondary', 1),
+    text: palette('primary', 1),
   },
   success: {
     main: palette('success', 0),
     darken: palette('success', 1),
     lighten: palette('success', 2),
+    text: palette('success', 0),
   },
   warning: {
     main: palette('warning', 0),
     darken: palette('warning', 1),
     lighten: palette('warning', 2),
+    text: palette('warning', 0),
   },
   error: {
     main: palette('error', 0),
     darken: palette('error', 1),
     lighten: palette('error', 2),
+    text: palette('error', 0),
   },
 };
 
@@ -60,7 +65,7 @@ const getBtnThemeColor = () => {
 
   Object.keys(colorGroups).forEach(colorType => {
     const value = {};
-    const { main, lighten, darken } = colorGroups[colorType];
+    const { main, lighten, darken, text } = colorGroups[colorType];
 
     value.default = {
       text: '#fff',
@@ -77,8 +82,8 @@ const getBtnThemeColor = () => {
     };
 
     value.outline = {
-      text: main,
-      border: main,
+      text,
+      border: text,
       background: '#fff',
       action: {
         text: '#fff',
@@ -124,6 +129,7 @@ export const ButtonWrapper = styled(Button)`
     letter-spacing: ${props => fontSettings[props.sizevalue].spacing};
 
     text-transform: uppercase;
+    ${transition()}
 
     /* set theme colors away from antd defaults */
     &,
@@ -131,8 +137,8 @@ export const ButtonWrapper = styled(Button)`
     &:focus {
       color: ${props => colors[props.color][props.typevalue].text};
       border-color: ${props => colors[props.color][props.typevalue].border};
-      background-color: ${props =>
-        colors[props.color][props.typevalue].background};
+      border-image: ${props => colors[props.color][props.typevalue].border};
+      background: ${props => colors[props.color][props.typevalue].background};
     }
 
     /* provide focus styles over the underlying styles */
@@ -152,7 +158,9 @@ export const ButtonWrapper = styled(Button)`
         color: ${props => colors[props.color][props.typevalue].action.text};
         border-color: ${props =>
           colors[props.color][props.typevalue].action.border};
-        background-color: ${props =>
+        border-color: ${props =>
+          colors[props.color][props.typevalue].action.border};
+        background: ${props =>
           colors[props.color][props.typevalue].action.background};
       }
     }

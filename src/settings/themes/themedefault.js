@@ -4,14 +4,21 @@ const COL_DARKEN_RATE = 0.15;
 const COL_LIGHTEN_RATE = 0.35;
 const theme = {};
 
+const DARK_COL = darken(COL_DARKEN_RATE, '#33CCFF');
+const LIGHT_COL = lighten(0.2, '#33CCFF');
+
+const DARK_COL_BASE = darken(COL_DARKEN_RATE, '#50E3C2');
+const LIGHT_COL_BASE = lighten(0.2, '#50E3C2');
+
 theme.palette = {
   primary: [
-    '#33CCFF', // 0: Default
+    'linear-gradient(9.34deg, #50E3C2 19.28%, #33CCFF 106.03%)', // 0: Default
     '#50E3C2', // 1:
     '#F0B90B', // 2:
     'rgba(51, 204, 255, 0.1)', // 3: Selected Background
     'linear-gradient(47.73deg, #50E3C2 0%, #33CCFF 100%)', // 4: Gradient
     '#ECEEEF', // 5: border col
+    '#33CCFF',
   ],
   background: [
     '#fff', // 0: header, footer bg
@@ -24,9 +31,9 @@ theme.palette = {
     'linear-gradient(47.73deg, #50E3C2 0%, #33CCFF 100%)', // 7: gradient bg
   ],
   secondary: [
-    darken(COL_DARKEN_RATE, '#33CCFF'), // darken col
-    lighten(COL_LIGHTEN_RATE, '#33CCFF'), // lighten col
-    lighten(0.2, '#33CCFF'), // lighten col
+    `linear-gradient(9.34deg, ${DARK_COL_BASE} 19.28%, ${DARK_COL} 106.03%)`, // darken col
+    `linear-gradient(9.34deg, ${LIGHT_COL_BASE} 19.28%, ${LIGHT_COL} 106.03%)`, // lighten col
+    'linear-gradient(9.34deg, #50E3C2 19.28%, #33CCFF 106.03%)', // lighten col
   ],
   border: [
     '#ECEEEF', // 0: Border
@@ -65,6 +72,7 @@ theme.palette = {
     '#B7BBBD', // 4: Darker Text (gray)
     '#9B9B9B', // 5: Input Text (input)
     '#919D9D', // 6: Footer Color
+    '#50E3C2', // 7
   ],
   color: [
     '#FEAC01', // 0: Orange
