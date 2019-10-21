@@ -85,3 +85,14 @@ build-docker:
   script:
     - docker build -t registry.gitlab.com/thorchain/bepswap/bepswap-react-app .
     - docker push registry.gitlab.com/thorchain/bepswap/bepswap-react-app
+deploy:reskin:
+  stage: deploy
+  except:
+    - schedules
+  script:
+    - firebase use --token ${FIREBASE_TOKEN} bepswap-testnet-update
+    - firebase deploy --token ${FIREBASE_TOKEN}
+  environment:
+    name: develop
+  only:
+    - bepswap-testnet-reskin
