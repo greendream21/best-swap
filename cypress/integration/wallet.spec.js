@@ -36,7 +36,8 @@ describe('Wallet', () => {
 
     cy.contains('Your current stakes are');
 
-    cy.get('[data-test="coin-list-item-rune"]').contains('LOK-3C0');
+    // TODO: remove LOK-3C0 as it is dynamic data
+    // cy.get('[data-test="coin-list-item-rune"]').contains('LOK-3C0');
 
     cy.get('.ant-drawer-mask').click();
   });

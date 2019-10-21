@@ -260,3 +260,99 @@ export const confirmWithdraw = (Binance, wallet, pools, symbol, percent) => {
       .catch(error => reject(error));
   });
 };
+
+export const getTxType = tx => {
+  const memo = tx.data.M;
+  let txType = null;
+
+  if (memo) {
+    const str = memo.toLowerCase();
+
+    const memoTypes = [
+      {
+        type: 'stake',
+        memos: ['stake', 'st', '+'],
+      },
+      {
+        type: 'withdraw',
+        memos: ['withdraw', 'wd', '-'],
+      },
+    ];
+
+    memoTypes.forEach(memoData => {
+      const { type, memos } = memoData;
+      let matched = false;
+
+      memos.forEach(memoText => {
+        if (str.includes(`${memoText}:`)) {
+          matched = true;
+        }
+      });
+
+      if (matched) {
+        txType = type;
+      }
+    });
+  }
+
+  return txType;
+};
+
+export const parseTransfer = tx => {
+  const txHash = tx.data.H;
+  const txMemo = tx.data.M;
+  const txFrom = tx.data.f;
+  const txInfo = tx.data.t[0];
+  const txTo = txInfo.o;
+  const txData = txInfo.c;
+
+  return {
+    txHash,
+    txMemo,
+    txFrom,
+    txTo,
+    txData,
+  };
+};
+
+export const stakedResult = (
+  tx,
+  fromAddr,
+  toAddr,
+  toToken,
+  runeAmount,
+  tokenAmount,
+) => {
+  const txType = getTxType(tx);
+
+  console.log('tx type: ', txType);
+  if (txType === 'stake') {
+    const { txFrom, txTo, txData } = parseTransfer(tx);
+    if (txFrom === fromAddr && txTo === toAddr && txData.length === 2) {
+      let success = true;
+
+      console.log('tx data: ', txData);
+
+      txData.forEach(data => {
+        const tickerFormat = getTickerFormat(data.a);
+        if (tickerFormat === 'rune') {
+          // compare rune amount from previous stake tx
+          if (Number(data.A) !== runeAmount) {
+            success = false;
+          }
+        }
+
+        // compare token symbol and amount from previous stake tx
+        if (tickerFormat !== 'rune' && data.a !== toToken) {
+          if (Number(data.A) !== tokenAmount) {
+            success = false;
+          }
+        }
+      });
+
+      return success;
+    }
+  }
+
+  return null;
+};

@@ -57,12 +57,12 @@ export default function apiReducer(state = initState, action) {
     case actions.REFRESH_STAKES:
       return {
         ...state,
+        stakeData: [],
         loadingStakes: true,
       };
     case actions.REFRESH_STAKES_SUCCESS:
       return {
         ...state,
-        stakeData: payload,
         loadingStakes: false,
       };
     case actions.REFRESH_STAKES_FAILED:
@@ -70,6 +70,12 @@ export default function apiReducer(state = initState, action) {
         ...state,
         loadingStakes: false,
         error: payload,
+      };
+    case actions.GET_USER_STAKE_DATA_SUCCESS:
+      return {
+        ...state,
+        stakeData: [...state.stakeData, payload],
+        error: null,
       };
     case actions.SET_ASSET_DATA:
       return {

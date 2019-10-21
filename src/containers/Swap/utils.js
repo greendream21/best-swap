@@ -244,9 +244,7 @@ export const getTxResult = (tx, fromAddr, toAddr, fromToken, toToken) => {
           token: txToken,
         };
       }
-      return null;
     }
-    return null;
   }
   return null;
 };
