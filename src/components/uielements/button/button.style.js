@@ -1,7 +1,6 @@
 import styled from 'styled-components';
 import { palette, key } from 'styled-theme';
 import { Button } from 'antd';
-import { transition } from '../../../settings/style-util';
 
 const fontSettings = {
   small: {
@@ -142,6 +141,8 @@ export const ButtonWrapper = styled(Button)`
     justify-content: space-around;
     align-items: center;
 
+    border-radius: ${props =>
+      props.round ? sizes[props.sizevalue].height : '3px'};
     min-width: ${props => sizes[props.sizevalue].width};
     height: ${props => sizes[props.sizevalue].height};
     font-size: ${props => fontSettings[props.sizevalue].size};

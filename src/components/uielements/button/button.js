@@ -10,6 +10,7 @@ class Button extends Component {
     weight: PropTypes.string,
     typevalue: PropTypes.oneOf(['default', 'outline', 'ghost']),
     focused: PropTypes.bool,
+    round: PropTypes.bool,
     className: PropTypes.string,
     children: PropTypes.node,
   };
@@ -20,6 +21,7 @@ class Button extends Component {
     weight: 'bold',
     typevalue: 'default',
     focused: false,
+    round: false,
     className: '',
   };
 

@@ -63,6 +63,36 @@ storiesOf('Components/Button', module)
               </Button>
             </Row>
             <Row>
+              <Button sizevalue="normal" color="primary" round>
+                Primary Filled Round Normal
+              </Button>
+              <Button
+                sizevalue="normal"
+                color="primary"
+                typevalue="outline"
+                round
+              >
+                Primary Outlined Round Normal
+              </Button>
+              <Button
+                sizevalue="normal"
+                color="primary"
+                typevalue="ghost"
+                round
+              >
+                Primary Ghost Round Normal
+              </Button>
+              <Button
+                sizevalue="normal"
+                color="primary"
+                typevalue="normal"
+                focused
+                round
+              >
+                Primary Normal Round
+              </Button>
+            </Row>
+            <Row>
               <Button sizevalue="big" color="primary">
                 Primary Filled Big
               </Button>
