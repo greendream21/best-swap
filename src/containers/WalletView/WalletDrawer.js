@@ -13,7 +13,7 @@ import { WalletDrawerWrapper, Drawer } from './WalletDrawer.style';
 
 import walletActions from '../../redux/wallet/actions';
 
-const { forgetWallet, refreshBalance } = walletActions;
+const { forgetWallet, refreshBalance, refreshStake } = walletActions;
 
 const WalletDrawer = props => {
   const [visible, setVisible] = useState(false);
@@ -22,6 +22,7 @@ const WalletDrawer = props => {
   const {
     user: { wallet },
     refreshBalance,
+    refreshStake,
   } = props;
 
   const toggleDrawer = () => {
@@ -41,6 +42,8 @@ const WalletDrawer = props => {
 
   const onClickRefresh = () => {
     refreshBalance(wallet);
+    refreshStake(wallet);
+
     setRefresh(true);
     setTimeout(() => {
       setRefresh(false);
@@ -94,6 +97,7 @@ WalletDrawer.propTypes = {
   user: PropTypes.object.isRequired,
   forgetWallet: PropTypes.func.isRequired,
   refreshBalance: PropTypes.func.isRequired,
+  refreshStake: PropTypes.func.isRequired,
 };
 
 export default connect(
@@ -102,6 +106,7 @@ export default connect(
   }),
   {
     refreshBalance,
+    refreshStake,
     forgetWallet,
   },
 )(WalletDrawer);

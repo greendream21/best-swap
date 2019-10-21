@@ -3,11 +3,12 @@ import { push } from 'connected-react-router';
 
 import actions from './actions';
 import Binance from '../../clients/binance';
-import ChainService from '../../clients/chainservice';
 import {
   getCoinGeckoURL,
   getHeaders,
   axiosRequest,
+  getChainserviceURL,
+  getStatechainURL,
 } from '../../helpers/apiHelper';
 
 import {
@@ -16,6 +17,8 @@ import {
   clearWalletAddress,
   clearKeystore,
 } from '../../helpers/webStorageHelper';
+import { getFixedNumber } from '../../helpers/stringHelper';
+import { BASE_NUMBER } from '../../settings/constants';
 
 export function* saveWalletSaga() {
   yield takeEvery(actions.SAVE_WALLET, function*({ payload }) {
@@ -94,36 +97,119 @@ export function* refreshBalance() {
   });
 }
 
+const getStakerAssets = async address => {
+  const params = {
+    method: 'get',
+    url: getChainserviceURL(`stakerData?staker=${address}`),
+    headers: getHeaders(),
+  };
+
+  try {
+    const data = await axiosRequest(params);
+    return data || [];
+  } catch (error) {
+    return null;
+  }
+};
+
+const getPools = async () => {
+  const params = {
+    method: 'get',
+    url: getStatechainURL('swapservice/pools'),
+    headers: getHeaders(),
+  };
+
+  try {
+    const { data } = await axiosRequest(params);
+    return data;
+  } catch (error) {
+    return null;
+  }
+};
+
+const getRunePriceReq = async () => {
+  const params = {
+    method: 'get',
+    url: getCoinGeckoURL('simple/price?ids=thorchain&vs_currencies=usd'),
+    headers: getHeaders(),
+  };
+
+  try {
+    const { data } = await axiosRequest(params);
+
+    return data.thorchain.usd || 0;
+  } catch (error) {
+    return null;
+  }
+};
+
+const getPoolPrice = (pools, asset, runePrice) => {
+  let poolPrice = 0;
+
+  pools.forEach(poolData => {
+    const { balance_rune, balance_token, symbol } = poolData;
+
+    if (symbol.toLowerCase() === asset.toLowerCase()) {
+      const R = Number(balance_rune);
+      const T = Number(balance_token);
+      poolPrice = getFixedNumber((R / T) * runePrice);
+    }
+  });
+
+  return poolPrice;
+};
+
+export function* getUserStakeData() {
+  yield takeEvery(actions.GET_USER_STAKE_DATA_REQUEST, function*({ payload }) {
+    const { staker, asset, pools, runePrice } = payload;
+
+    const params = {
+      method: 'get',
+      url: getChainserviceURL(`stakerData?staker=${staker}&asset=${asset}`),
+      headers: getHeaders(),
+    };
+    console.log(params);
+    try {
+      const response = yield call(axiosRequest, params);
+
+      const price = getPoolPrice(pools, asset, runePrice);
+
+      const data = {
+        target: asset.toLowerCase(),
+        targetValue: getFixedNumber(response.data.tokensStaked / BASE_NUMBER),
+        assetValue: getFixedNumber(response.data.runeStaked / BASE_NUMBER),
+        asset: 'rune',
+        price,
+      };
+
+      yield put(actions.getUserStakeDataSuccess(data));
+    } catch (error) {
+      yield put(actions.getUserStakeDataFailed(error));
+    }
+  });
+}
+
 export function* refreshStakes() {
   yield takeEvery(actions.REFRESH_STAKES, function*({ payload }) {
     const address = payload;
 
     try {
-      const markets = yield call(Binance.getMarkets);
+      const pools = yield call(getPools);
+      const runePrice = yield call(getRunePriceReq);
 
       try {
-        const response = yield call(ChainService.stakerData, address);
+        const response = yield call(getStakerAssets, address);
 
         const stakeData = yield all(
           response.data.map(symbol => {
-            try {
-              const response = call(ChainService.stakerData, address, symbol);
-
-              const market = markets.result.find(
-                market => market.base_asset_symbol === symbol,
-              );
-
-              return {
-                target: symbol.toLowerCase(),
-                targetValue: response.data.tokensStaked,
-                assetValue: response.data.runeStaked,
-                asset: 'rune',
-                price: market ? parseFloat(market.list_price) : 0,
-              };
-            } catch (error) {
-              console.error(error);
-              return { target: symbol, asset: 'rune' };
-            }
+            return put(
+              actions.getUserStakeData({
+                staker: address,
+                asset: symbol,
+                pools,
+                runePrice,
+              }),
+            );
           }),
         );
 
@@ -162,6 +248,7 @@ export default function* rootSaga() {
     fork(forgetWalletSaga),
     fork(refreshBalance),
     fork(refreshStakes),
+    fork(getUserStakeData),
     fork(getRunePrice),
   ]);
 }

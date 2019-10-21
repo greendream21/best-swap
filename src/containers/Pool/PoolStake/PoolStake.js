@@ -8,6 +8,7 @@ import { Row, Col, Icon, Form, notification } from 'antd';
 import { crypto } from '@binance-chain/javascript-sdk';
 
 import Binance from '../../../clients/binance';
+import { withBinanceTransferWS } from '../../../HOC/websocket/WSBinance';
 
 import Label from '../../../components/uielements/label';
 import Status from '../../../components/uielements/status';
@@ -39,6 +40,7 @@ import {
   getCalcResult,
   confirmStake,
   confirmWithdraw,
+  stakedResult,
 } from '../utils';
 import { getUserFormat, getTickerFormat } from '../../../helpers/stringHelper';
 import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
@@ -55,7 +57,7 @@ const {
 
 const { getTokens, getStakeData } = chainActions;
 const { getPools } = statechainActions;
-const { getRunePrice } = walletactions;
+const { getRunePrice, refreshStake } = walletactions;
 
 class PoolStake extends Component {
   static propTypes = {
@@ -68,6 +70,7 @@ class PoolStake extends Component {
     swapData: PropTypes.object.isRequired,
     user: PropTypes.object.isRequired,
     runePrice: PropTypes.number.isRequired,
+    wsTransfers: PropTypes.object.isRequired,
     setTxTimerType: PropTypes.func.isRequired,
     setTxTimerModal: PropTypes.func.isRequired,
     setTxTimerStatus: PropTypes.func.isRequired,
@@ -79,6 +82,7 @@ class PoolStake extends Component {
     getStakeData: PropTypes.func.isRequired,
     getPools: PropTypes.func.isRequired,
     getRunePrice: PropTypes.func.isRequired,
+    refreshStake: PropTypes.func.isRequired,
   };
 
   state = {
@@ -106,6 +110,44 @@ class PoolStake extends Component {
     getPools();
     getRunePrice();
     this.getStakerData();
+  }
+
+  componentDidUpdate(prevProps) {
+    const {
+      wsTransfers,
+      user: { wallet },
+    } = this.props;
+    const length = wsTransfers.length;
+    console.log(prevProps.wsTransfers.length);
+    console.log(length);
+    if (length !== prevProps.wsTransfers.length && length > 0) {
+      const lastTx = wsTransfers[length - 1];
+      if (!this.stakeData) return;
+
+      const {
+        fromAddr,
+        toAddr,
+        toToken,
+        runeAmount,
+        tokenAmount,
+      } = this.stakeData;
+      console.log('stakeData ', this.stakeData);
+      console.log('lastTx ', lastTx);
+      const txResult = stakedResult(
+        lastTx,
+        fromAddr,
+        toAddr,
+        toToken,
+        runeAmount,
+        tokenAmount,
+      );
+      console.log('txResult ', txResult);
+
+      if (txResult) {
+        // refresh stakes after update
+        refreshStake(wallet);
+      }
+    }
   }
 
   getStakerData = () => {
@@ -302,6 +344,14 @@ class PoolStake extends Component {
 
       console.log('stake result: ', result);
       this.hash = result[0].hash;
+
+      this.stakeData = {
+        fromAddr: wallet,
+        toAddr: this.data.poolAddressTo,
+        toToken: this.data.symbolTo,
+        runeAmount,
+        tokenAmount,
+      };
 
       this.handleStartTimer();
     } catch (error) {
@@ -1076,6 +1126,7 @@ class PoolStake extends Component {
       pools,
       txStatus,
       chainData: { stakeData, tokenInfo },
+      wsTransfers,
     } = this.props;
     const {
       runeAmount,
@@ -1085,6 +1136,8 @@ class PoolStake extends Component {
       password,
       invalidPassword,
     } = this.state;
+
+    console.log('binance websocket transfer data: ', wsTransfers);
 
     const poolInfo = poolData[symbol] || {};
     const swapInfo = swapData[symbol] || {};
@@ -1205,7 +1258,9 @@ export default compose(
       setTxTimerStatus,
       setTxTimerValue,
       resetTxStatus,
+      refreshStake,
     },
   ),
   withRouter,
+  withBinanceTransferWS,
 )(PoolStake);

@@ -101,6 +101,11 @@ function mockBaseRoutes() {
     '/stakerData?staker=*&asset=',
     'fx:api/#v1#stakerData/GET/200.with-asset',
   ).as('staked-tokens');
+  cy.route(
+    'GET',
+    '/stakerData?staker=*',
+    'fx:api/#v1#stakerData/GET/200.with-asset',
+  ).as('staked-tokens');
 }
 
 function mockDexRoutes() {

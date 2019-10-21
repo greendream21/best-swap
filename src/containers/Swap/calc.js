@@ -15,6 +15,15 @@ export const getZValue = (xValue, data) => {
   return (yValue * R * Z) / times;
 };
 
+export const getFee = (xValue, data) => {
+  const { R, Z } = data;
+  const yValue = getYValue(xValue, data);
+  const times = (yValue + R) ** 2;
+  const yTimes = yValue ** 2;
+
+  return (yTimes * Z) / times;
+};
+
 export const getPx = (xValue, data) => {
   const { X, Y, Py } = data;
 
