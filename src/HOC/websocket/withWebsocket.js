@@ -2,10 +2,10 @@ import React from 'react';
 
 import WSProvider from './WSProvider';
 
-export const withWebsocket = (url, dataKey) => Component => {
+export const withWebsocket = (url, dataKey, options) => Component => {
   return props => {
     return (
-      <WSProvider url={url}>
+      <WSProvider url={url} {...options}>
         {({ data }) => {
           const newProps = {
             [dataKey]: data,

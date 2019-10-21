@@ -33,9 +33,14 @@ import {
   CardFormItemError,
   CardFormItemCloseButton,
 } from './SwapSend.style';
-import { getTickerFormat, getPair } from '../../../helpers/stringHelper';
+import {
+  getTickerFormat,
+  getPair,
+  getFixedNumber,
+} from '../../../helpers/stringHelper';
 import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
-import { getCalcResult, confirmSwap } from '../utils';
+import { getCalcResult, confirmSwap, getTxResult } from '../utils';
+import { withBinanceTransferWS } from '../../../HOC/websocket/WSBinance';
 
 import appActions from '../../../redux/app/actions';
 import chainActions from '../../../redux/chainservice/actions';
@@ -52,7 +57,7 @@ const {
 
 const { getTokens } = chainActions;
 const { getPools } = statechainActions;
-const { getRunePrice } = walletactions;
+const { getRunePrice, refreshBalance } = walletactions;
 
 class SwapSend extends Component {
   static propTypes = {
@@ -65,6 +70,7 @@ class SwapSend extends Component {
     pools: PropTypes.array.isRequired,
     user: PropTypes.object.isRequired,
     runePrice: PropTypes.number.isRequired,
+    wsTransfers: PropTypes.object.isRequired,
     setTxTimerType: PropTypes.func.isRequired,
     setTxTimerModal: PropTypes.func.isRequired,
     setTxTimerStatus: PropTypes.func.isRequired,
@@ -73,6 +79,7 @@ class SwapSend extends Component {
     getTokens: PropTypes.func.isRequired,
     getPools: PropTypes.func.isRequired,
     getRunePrice: PropTypes.func.isRequired,
+    refreshBalance: PropTypes.func.isRequired,
   };
 
   static defaultProps = {
@@ -90,9 +97,13 @@ class SwapSend extends Component {
     openWalletAlert: false,
     slipProtection: true,
     maxSlip: 30,
+    txResult: null,
+    timerStatus: true,
   };
 
   addressRef = React.createRef();
+
+  delta = 1000;
 
   componentDidMount() {
     const { getTokens, getPools, getRunePrice } = this.props;
@@ -100,6 +111,43 @@ class SwapSend extends Component {
     getTokens();
     getPools();
     getRunePrice();
+  }
+
+  componentDidUpdate(prevProps) {
+    const {
+      wsTransfers,
+      refreshBalance,
+      user: { wallet },
+    } = this.props;
+    const length = wsTransfers.length;
+    console.log(prevProps.wsTransfers.length);
+    console.log(length);
+    if (length !== prevProps.wsTransfers.length && length > 1) {
+      const lastTx = wsTransfers[length - 1];
+      const { fromAddr, toAddr, fromToken, toToken } = this.txData;
+      console.log('txData ', this.txData);
+      console.log('lastTx ', lastTx);
+      const txResult = getTxResult(
+        lastTx,
+        fromAddr,
+        toAddr,
+        fromToken,
+        toToken,
+      );
+      console.log('txResult ', txResult);
+
+      if (txResult) {
+        const curTime = new Date();
+        this.delta = curTime - this.txStarted;
+        console.log(this.delta);
+        this.setState({
+          txResult,
+          timerStatus: true,
+        });
+        // refresh balances with update
+        refreshBalance(wallet);
+      }
+    }
   }
 
   isValidRecipient = () => {
@@ -392,6 +440,12 @@ class SwapSend extends Component {
   handleChangeTxValue = value => {
     const { setTxTimerValue } = this.props;
 
+    if (value === 3) {
+      this.setState({
+        timerStatus: false,
+      });
+      this.txStarted = new Date();
+    }
     setTxTimerValue(value);
   };
 
@@ -424,7 +478,16 @@ class SwapSend extends Component {
         address,
       );
       this.hash = result[0].hash;
+      this.txData = {
+        fromAddr: wallet,
+        toAddr: this.data.poolAddressTo,
+        fromToken: this.data.symbolFrom,
+        toToken: this.data.symbolTo,
+      };
 
+      this.setState({
+        txResult: null,
+      });
       this.handleStartTimer();
     } catch (error) {
       notification['error']({
@@ -464,8 +527,9 @@ class SwapSend extends Component {
   renderSwapModalContent = (swapData, info) => {
     const {
       txStatus: { status, value },
+      runePrice,
     } = this.props;
-    const { xValue } = this.state;
+    const { xValue, txResult, timerStatus } = this.state;
     const { source, target } = swapData;
     const { Px, slip, outputAmount, outputPrice } = info;
     const priceFrom = Number(Px * xValue);
@@ -480,14 +544,33 @@ class SwapSend extends Component {
       'complete',
     ];
 
-    const completed = value !== null && !status;
+    const completed = value !== null && !status && txResult !== null;
     const swapText = !completed ? 'YOU ARE SWAPPING' : 'YOU SWAPPED';
-    const receiveText = !completed ? 'YOU SHOULD RECEIVE' : 'YOU RECEIVED';
+
+    // eslint-disable-next-line no-nested-ternary
+    const receiveText = !completed
+      ? 'YOU SHOULD RECEIVE'
+      : txResult.type === 'success'
+      ? 'YOU RECEIVED'
+      : 'YOU REFUNDED';
+
+    const targetToken = !completed ? target : getTickerFormat(txResult.token);
+    const tokenAmount = !completed
+      ? Number(outputAmount)
+      : Number(txResult.amount);
+    const priceValue = !completed
+      ? priceTo
+      : Number(Number(txResult.amount) * outputPrice);
+
     const expectation = !completed
       ? 'EXPECTED FEES & SLIP'
       : 'FINAL FEES & SLIP';
 
     const txURL = TESTNET_TX_BASE_URL + this.hash;
+    const { fee } = this.data;
+    const actualFee = fee < 1 ? 1 : fee;
+    const feeValue = `${actualFee} RUNE`;
+    const feePrice = getFixedNumber(actualFee * runePrice);
 
     return (
       <SwapModalContent>
@@ -504,7 +587,9 @@ class SwapSend extends Component {
           <div className="center-container">
             <TxTimer
               reset={status}
+              status={timerStatus}
               value={value}
+              txDuration={this.delta}
               onChange={this.handleChangeTxValue}
               onEnd={this.handleEndTxTimer}
             />
@@ -513,9 +598,9 @@ class SwapSend extends Component {
             <Label weight="bold">{receiveText}</Label>
             <CoinData
               data-test="swapmodal-coin-data-receive"
-              asset={target}
-              assetValue={Number(outputAmount)}
-              price={priceTo}
+              asset={targetToken}
+              assetValue={tokenAmount}
+              price={priceValue}
             />
             <Label weight="bold">{expectation}</Label>
             <div className="expected-status">
@@ -523,10 +608,10 @@ class SwapSend extends Component {
                 <Status
                   data-test="swapmodal-fees"
                   title="FEES"
-                  value="1 RUNE"
+                  value={feeValue}
                 />
                 <Label className="price-label" size="normal" color="gray">
-                  $USD 0.04
+                  $USD {getFixedNumber(feePrice)}
                 </Label>
               </div>
               <div className="status-item">
@@ -590,6 +675,7 @@ class SwapSend extends Component {
       pools,
       assetData,
       runePrice,
+      wsTransfers,
     } = this.props;
     const {
       dragReset,
@@ -603,6 +689,7 @@ class SwapSend extends Component {
       slipProtection,
     } = this.state;
 
+    console.log('binance websocket transfer data: ', wsTransfers);
     const swapData = getPair(info);
 
     if (!swapData || !Object.keys(tokenInfo).length) {
@@ -826,7 +913,9 @@ export default compose(
       setTxTimerValue,
       resetTxStatus,
       getRunePrice,
+      refreshBalance,
     },
   ),
   withRouter,
+  withBinanceTransferWS,
 )(SwapSend);

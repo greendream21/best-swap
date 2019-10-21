@@ -54,6 +54,23 @@ const actions = {
     payload,
   }),
 
+  GET_USER_STAKE_DATA_REQUEST: 'GET_USER_STAKE_DATA_REQUEST',
+  GET_USER_STAKE_DATA_SUCCESS: 'GET_USER_STAKE_DATA_SUCCESS',
+  GET_USER_STAKE_DATA_FAILED: 'GET_USER_STAKE_DATA_FAILED',
+
+  getUserStakeData: payload => ({
+    type: actions.GET_USER_STAKE_DATA_REQUEST,
+    payload,
+  }),
+  getUserStakeDataSuccess: payload => ({
+    type: actions.GET_USER_STAKE_DATA_SUCCESS,
+    payload,
+  }),
+  getUserStakeDataFailed: payload => ({
+    type: actions.GET_USER_STAKE_DATA_FAILED,
+    payload,
+  }),
+
   setAssetData: payload => ({ type: actions.SET_ASSET_DATA, payload }),
   setStakeData: payload => ({ type: actions.SET_STAKE_DATA, payload }),
 };

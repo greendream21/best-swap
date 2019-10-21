@@ -1,6 +1,6 @@
 import { getSwapMemo } from '../../helpers/memoHelper';
-import { getTickerFormat } from '../../helpers/stringHelper';
-import { getZValue, getPx, getPz, getSlip } from './calc';
+import { getTickerFormat, getFixedNumber } from '../../helpers/stringHelper';
+import { getZValue, getPx, getPz, getSlip, getFee } from './calc';
 import { BASE_NUMBER } from '../../settings/constants';
 
 export const getSwapType = (from, to) => {
@@ -46,6 +46,7 @@ export const getCalcResult = (from, to, pools, xValue, runePrice) => {
     const slip = getSlip(xValue, calcData);
     const Px = getPx(xValue, calcData);
     const Pz = getPz(xValue, calcData).toFixed(2);
+    const fee = getFixedNumber(getFee(xValue, calcData));
 
     return {
       ...result,
@@ -53,6 +54,7 @@ export const getCalcResult = (from, to, pools, xValue, runePrice) => {
       slip,
       outputAmount: zValue,
       outputPrice: Pz,
+      fee,
     };
   }
 
@@ -81,12 +83,14 @@ export const getCalcResult = (from, to, pools, xValue, runePrice) => {
 
     const Px = getPx(xValue, calcData);
     const times = (xValue + X) ** 2;
+    const xTimes = xValue ** 2;
     const outputToken = Number(((xValue * X * Y) / times).toFixed(2));
     const outputPy = ((Px * (X + xValue)) / (Y - outputToken)).toFixed(2);
     const input = xValue * Px;
     const output = outputToken * outputPy;
     const slip = input !== 0 ? Math.round(((input - output) / input) * 100) : 0;
     const lim = Math.round((1 - 3 / 100) * outputToken * BASE_NUMBER);
+    const fee = getFixedNumber((xTimes * Y) / times);
 
     return {
       ...result,
@@ -95,6 +99,7 @@ export const getCalcResult = (from, to, pools, xValue, runePrice) => {
       outputAmount: outputToken,
       outputPrice: outputPy,
       lim,
+      fee,
     };
   }
 
@@ -122,12 +127,14 @@ export const getCalcResult = (from, to, pools, xValue, runePrice) => {
     result.symbolFrom = rune;
 
     const times = (xValue + X) ** 2;
+    const xTimes = xValue ** 2;
     const outputToken = Number(((xValue * X * Y) / times).toFixed(2));
     const outputPy = ((Px * (X + xValue)) / (Y - outputToken)).toFixed(2);
     const input = xValue * Px;
     const output = outputToken * outputPy;
     const slip = input !== 0 ? Math.round(((input - output) / input) * 100) : 0;
     const lim = Math.round((1 - 3 / 100) * outputToken * BASE_NUMBER);
+    const fee = getFixedNumber((xTimes * Y) / times);
 
     return {
       ...result,
@@ -136,6 +143,7 @@ export const getCalcResult = (from, to, pools, xValue, runePrice) => {
       outputAmount: outputToken,
       outputPrice: outputPy,
       lim,
+      fee,
     };
   }
 };
@@ -190,4 +198,53 @@ export const confirmSwap = (
       .then(response => resolve(response))
       .catch(error => reject(error));
   });
+};
+
+export const parseTransfer = tx => {
+  const txHash = tx.data.H;
+  const txMemo = tx.data.M;
+  const txFrom = tx.data.f;
+  const txTo = tx.data.t[0].o;
+  const txAmount = tx.data.t[0].c[0].A;
+  const txToken = tx.data.t[0].c[0].a;
+
+  return {
+    txHash,
+    txMemo,
+    txFrom,
+    txTo,
+    txToken,
+    txAmount,
+  };
+};
+
+export const isOutboundTx = tx => {
+  if (tx.data.M) {
+    return tx.data.M.includes('OUTBOUND');
+  }
+  return false;
+};
+
+export const getTxResult = (tx, fromAddr, toAddr, fromToken, toToken) => {
+  if (isOutboundTx(tx)) {
+    const { txFrom, txTo, txToken, txAmount } = parseTransfer(tx);
+
+    if (txFrom === toAddr && txTo === fromAddr) {
+      if (txToken === fromToken) {
+        return {
+          type: 'refund',
+          amount: txAmount,
+          token: txToken,
+        };
+      }
+      if (txToken === toToken) {
+        return {
+          type: 'success',
+          amount: txAmount,
+          token: txToken,
+        };
+      }
+    }
+  }
+  return null;
 };
