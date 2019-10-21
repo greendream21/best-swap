@@ -36,23 +36,26 @@ theme.palette = {
     'linear-gradient(9.34deg, #50E3C2 19.28%, #33CCFF 106.03%)', // lighten col
   ],
   border: [
-    '#ECEEEF', // 0: Border
+    '#E2EBF0', // 0: Border
     '#33CCFF', // 1: BorderBlue
   ],
   warning: [
     '#F3BA2F', // 0: Warning
     darken(COL_DARKEN_RATE, '#F3BA2F'), // darken col
     lighten(COL_LIGHTEN_RATE, '#F3BA2F'), // lighten col
+    'linear-gradient(47.73deg, #F3BA2F 0%, #F3BA2F 100%)', // gradient
   ],
   success: [
     '#30D7A9', // 0: Success
     darken(COL_DARKEN_RATE, '#30D7A9'), // darken col
     lighten(COL_LIGHTEN_RATE, '#30D7A9'), // lighten col
+    'linear-gradient(47.73deg, #30D7A9 0%, #30D7A9 100%)', // gradient
   ],
   error: [
     '#FF4954', // 0: Error
     darken(COL_DARKEN_RATE, '#FF4954'), // darken col
     lighten(COL_LIGHTEN_RATE, '#FF4954'), // lighten col
+    'linear-gradient(47.73deg, #FF4954 0%, #FF4954 100%)', // gradient
   ],
   grayscale: [
     '#bababa', // 0: GreyShade

@@ -39,24 +39,28 @@ const colorGroups = {
     darken: palette('secondary', 0),
     lighten: palette('secondary', 1),
     text: palette('primary', 1),
+    borderBottom: palette('primary', 0),
   },
   success: {
     main: palette('success', 0),
     darken: palette('success', 1),
     lighten: palette('success', 2),
     text: palette('success', 0),
+    borderBottom: palette('success', 3),
   },
   warning: {
     main: palette('warning', 0),
     darken: palette('warning', 1),
     lighten: palette('warning', 2),
     text: palette('warning', 0),
+    borderBottom: palette('warning', 3),
   },
   error: {
     main: palette('error', 0),
     darken: palette('error', 1),
     lighten: palette('error', 2),
     text: palette('error', 0),
+    borderBottom: palette('error', 3),
   },
 };
 
@@ -65,7 +69,9 @@ const getBtnThemeColor = () => {
 
   Object.keys(colorGroups).forEach(colorType => {
     const value = {};
-    const { main, lighten, darken, text } = colorGroups[colorType];
+    const { main, lighten, darken, text, borderBottom } = colorGroups[
+      colorType
+    ];
 
     value.default = {
       text: '#fff',
@@ -107,6 +113,20 @@ const getBtnThemeColor = () => {
         border: main,
       },
     };
+    value.normal = {
+      text: palette('text', 0),
+      border: palette('border', 0),
+      background: '#fff',
+      action: {
+        text: palette('text', 0),
+        border: palette('border', 0),
+        background: '#fff',
+      },
+      focus: {
+        border: palette('border', 0),
+        borderBottom,
+      },
+    };
 
     theme[colorType] = value;
   });
@@ -129,7 +149,6 @@ export const ButtonWrapper = styled(Button)`
     letter-spacing: ${props => fontSettings[props.sizevalue].spacing};
 
     text-transform: uppercase;
-    ${transition()}
 
     /* set theme colors away from antd defaults */
     &,
@@ -139,6 +158,15 @@ export const ButtonWrapper = styled(Button)`
       border-color: ${props => colors[props.color][props.typevalue].border};
       border-image: ${props => colors[props.color][props.typevalue].border};
       background: ${props => colors[props.color][props.typevalue].background};
+      ${props =>
+        props.typevalue === 'normal' &&
+        `
+          background-position: 0 100%;
+          background-repeat: no-repeat;
+          -webkit-background-size: 100% 3px;
+          -moz-background-size: 100% 3px;
+          background-size: 100% 3px;
+        `}
     }
 
     /* provide focus styles over the underlying styles */
@@ -147,6 +175,8 @@ export const ButtonWrapper = styled(Button)`
       border-color: ${props =>
         colors[props.color][props.typevalue].focus
           .border} !important; /* HACK: Border is overridden in selection.style.js buttons we need to create a new style for these buttons remove this when ready */
+      border-image: ${props =>
+        colors[props.color][props.typevalue].focus.border} !important;
     }
 
     /* apply special override styles for .focused class */
@@ -158,10 +188,21 @@ export const ButtonWrapper = styled(Button)`
         color: ${props => colors[props.color][props.typevalue].action.text};
         border-color: ${props =>
           colors[props.color][props.typevalue].action.border};
-        border-color: ${props =>
+        border-image: ${props =>
           colors[props.color][props.typevalue].action.border};
         background: ${props =>
-          colors[props.color][props.typevalue].action.background};
+          props.typevalue === 'normal'
+            ? colors[props.color][props.typevalue].focus.borderBottom
+            : colors[props.color][props.typevalue].action.background};
+        ${props =>
+          props.typevalue === 'normal' &&
+          `
+          background-position: 0 100%;
+          background-repeat: no-repeat;
+          -webkit-background-size: 100% 3px;
+          -moz-background-size: 100% 3px;
+          background-size: 100% 3px;
+        `}
       }
     }
 
