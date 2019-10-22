@@ -118,8 +118,8 @@ theme.sizes = {
       height: '30px',
     },
     big: {
-      width: '100px',
-      height: '50px',
+      width: '166px',
+      height: '70px',
     },
   },
   tooltip: {

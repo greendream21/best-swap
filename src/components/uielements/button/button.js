@@ -18,7 +18,7 @@ class Button extends Component {
   static defaultProps = {
     sizevalue: 'normal',
     color: 'primary',
-    weight: 'bold',
+    weight: '500',
     typevalue: 'default',
     focused: false,
     round: false,

@@ -15,7 +15,7 @@ class CoinButton extends Component {
 
   static defaultProps = {
     cointype: 'bnb',
-    typevalue: 'ghost',
+    typevalue: 'normal',
     reversed: false,
     className: '',
   };

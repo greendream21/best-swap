@@ -2,8 +2,7 @@ import styled from 'styled-components';
 import Button from '../../button';
 
 export const CoinButtonWrapper = styled(Button)`
-  width: 110px;
-  height: 50px;
+  width: 166px;
   padding: 0 10px;
   flex-direction: ${props => (props.reversed ? 'row-reverse' : 'reverse')};
 
