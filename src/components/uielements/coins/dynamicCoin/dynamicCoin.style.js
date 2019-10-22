@@ -2,8 +2,8 @@ import styled from 'styled-components';
 import { palette } from 'styled-theme';
 
 const sizes = {
-  big: '44px',
-  small: '32px',
+  big: '40px',
+  small: '30px',
   normal: '28px',
 };
 
