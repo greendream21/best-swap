@@ -15,7 +15,7 @@ theme.palette = {
     'linear-gradient(9.34deg, #50E3C2 19.28%, #33CCFF 106.03%)', // 0: Default
     '#50E3C2', // 1:
     '#F0B90B', // 2:
-    'rgba(51, 204, 255, 0.1)', // 3: Selected Background
+    'rgba(63, 163, 246, 0.2)', // 3: Selected Background
     'linear-gradient(47.73deg, #50E3C2 0%, #33CCFF 100%)', // 4: Gradient
     '#ECEEEF', // 5: border col
     '#33CCFF',
@@ -24,7 +24,7 @@ theme.palette = {
     '#fff', // 0: header, footer bg
     '#fff', // 1: main bg
     '#F8F9FA', // 2: content bg
-    'rgba(51, 204, 255, 0.1)', // 3: selected bg
+    'rgba(63, 163, 246, 0.2)', // 3: selected bg
     '#50E3C2', // 4: green button bg
     '#33CCFF', // 5: lock bg
     '#ECEEEF', // 6: drag, border bg
