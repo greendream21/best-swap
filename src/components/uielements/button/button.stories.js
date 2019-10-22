@@ -103,7 +103,12 @@ storiesOf('Components/Button', module)
                 Primary Ghost Big
                 <Icon type="arrow-right" />
               </Button>
-              <Button sizevalue="big" color="primary" typevalue="normal">
+              <Button
+                sizevalue="big"
+                color="primary"
+                typevalue="normal"
+                focused
+              >
                 Primary Normal Big
               </Button>
             </Row>
