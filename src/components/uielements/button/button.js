@@ -36,6 +36,7 @@ class Button extends Component {
         {...props}
       >
         {children}
+        {props.typevalue === 'normal' && <div className="borderBottom" />}
       </ButtonWrapper>
     );
   }

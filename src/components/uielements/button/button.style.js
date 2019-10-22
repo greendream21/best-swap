@@ -71,9 +71,7 @@ const getBtnThemeColor = () => {
 
   Object.keys(colorGroups).forEach(colorType => {
     const value = {};
-    const { main, lighten, darken, text, borderBottom } = colorGroups[
-      colorType
-    ];
+    const { main, lighten, darken, text } = colorGroups[colorType];
 
     value.default = {
       text: '#fff',
@@ -126,7 +124,6 @@ const getBtnThemeColor = () => {
       },
       focus: {
         border: palette('border', 0),
-        borderBottom,
       },
     };
 
@@ -162,15 +159,6 @@ export const ButtonWrapper = styled(Button)`
       border-color: ${props => colors[props.color][props.typevalue].border};
       border-image: ${props => colors[props.color][props.typevalue].border};
       background: ${props => colors[props.color][props.typevalue].background};
-      ${props =>
-        props.typevalue === 'normal' &&
-        `
-          background-position: 0 100%;
-          background-repeat: no-repeat;
-          -webkit-background-size: 100% ${sizes[props.sizevalue].borderBottom};
-          -moz-background-size: 100% ${sizes[props.sizevalue].borderBottom};
-          background-size: 100% ${sizes[props.sizevalue].borderBottom};
-        `}
     }
 
     /* provide focus styles over the underlying styles */
@@ -195,24 +183,23 @@ export const ButtonWrapper = styled(Button)`
         border-image: ${props =>
           colors[props.color][props.typevalue].action.border};
         background: ${props =>
-          props.typevalue === 'normal'
-            ? colors[props.color][props.typevalue].focus.borderBottom
-            : colors[props.color][props.typevalue].action.background};
-        ${props =>
-          props.typevalue === 'normal' &&
-          `
-          background-position: 0 100%;
-          background-repeat: no-repeat;
-          -webkit-background-size: 100% ${sizes[props.sizevalue].borderBottom};
-          -moz-background-size: 100% ${sizes[props.sizevalue].borderBottom};
-          background-size: 100% ${sizes[props.sizevalue].borderBottom};
-        `}
+          colors[props.color][props.typevalue].action.background};
+
+        .borderBottom {
+          position: absolute;
+          left: 0;
+          bottom: 0;
+          display: block;
+          min-width: 100%;
+          height: ${props => sizes[props.sizevalue].borderBottom};
+          background: ${palette('primary', 0)};
+        }
       }
     }
 
     i {
       display: flex;
-      font-size: 16px;
+      font-size: 18px;
     }
   }
 `;
