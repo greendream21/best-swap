@@ -21,14 +21,17 @@ const sizes = {
   small: {
     width: key('sizes.button.small.width', '55px'),
     height: key('sizes.button.small.height', '20px'),
+    borderBottom: '2px',
   },
   normal: {
     width: key('sizes.button.normal.width', '100px'),
     height: key('sizes.button.normal.height', '30px'),
+    borderBottom: '3px',
   },
   big: {
     width: key('sizes.button.big.width', '300px'),
     height: key('sizes.button.big.height', '70px'),
+    borderBottom: '4px',
   },
 };
 
@@ -164,9 +167,9 @@ export const ButtonWrapper = styled(Button)`
         `
           background-position: 0 100%;
           background-repeat: no-repeat;
-          -webkit-background-size: 100% 3px;
-          -moz-background-size: 100% 3px;
-          background-size: 100% 3px;
+          -webkit-background-size: 100% ${sizes[props.sizevalue].borderBottom};
+          -moz-background-size: 100% ${sizes[props.sizevalue].borderBottom};
+          background-size: 100% ${sizes[props.sizevalue].borderBottom};
         `}
     }
 
@@ -200,9 +203,9 @@ export const ButtonWrapper = styled(Button)`
           `
           background-position: 0 100%;
           background-repeat: no-repeat;
-          -webkit-background-size: 100% 3px;
-          -moz-background-size: 100% 3px;
-          background-size: 100% 3px;
+          -webkit-background-size: 100% ${sizes[props.sizevalue].borderBottom};
+          -moz-background-size: 100% ${sizes[props.sizevalue].borderBottom};
+          background-size: 100% ${sizes[props.sizevalue].borderBottom};
         `}
       }
     }
