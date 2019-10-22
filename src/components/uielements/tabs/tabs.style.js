@@ -27,7 +27,7 @@ export const StyledTab = component => styled(component)`
       font-weight: bold;
 
       &:hover {
-        color: ${palette('primary', 0)};
+        color: ${palette('primary', 1)};
       }
     }
 
@@ -36,7 +36,6 @@ export const StyledTab = component => styled(component)`
     }
 
     .ant-tabs-ink-bar {
-      bottom: -3px;
       height: 3px;
       background: ${palette('primary', 0)};
     }
