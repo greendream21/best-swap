@@ -2,8 +2,8 @@ import styled from 'styled-components';
 import { palette, key } from 'styled-theme';
 
 const sizes = {
-  small: key('sizes.coin.small', '20px'),
-  big: key('sizes.coin.big', '28px'),
+  small: key('sizes.coin.small', '30px'),
+  big: key('sizes.coin.big', '40px'),
 };
 
 export const CoinIconWrapper = styled.div`

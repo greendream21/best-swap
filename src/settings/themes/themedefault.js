@@ -134,8 +134,8 @@ theme.sizes = {
     large: '18px',
   },
   coin: {
-    small: '20px',
-    big: '28px',
+    small: '30px',
+    big: '40px',
   },
 };
 
