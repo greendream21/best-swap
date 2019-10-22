@@ -159,6 +159,15 @@ export const ButtonWrapper = styled(Button)`
       border-color: ${props => colors[props.color][props.typevalue].border};
       border-image: ${props => colors[props.color][props.typevalue].border};
       background: ${props => colors[props.color][props.typevalue].background};
+      .borderBottom {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        display: block;
+        min-width: 100%;
+        height: ${props => sizes[props.sizevalue].borderBottom};
+        background: transparent;
+      }
     }
 
     /* provide focus styles over the underlying styles */
@@ -186,12 +195,6 @@ export const ButtonWrapper = styled(Button)`
           colors[props.color][props.typevalue].action.background};
 
         .borderBottom {
-          position: absolute;
-          left: 0;
-          bottom: 0;
-          display: block;
-          min-width: 100%;
-          height: ${props => sizes[props.sizevalue].borderBottom};
           background: ${palette('primary', 0)};
         }
       }

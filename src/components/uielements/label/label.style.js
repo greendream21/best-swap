@@ -11,7 +11,7 @@ const fontSettings = {
     spacing: '0.42px',
   },
   normal: {
-    size: key('sizes.font.normal', '11px'),
+    size: key('sizes.font.normal', '12px'),
     spacing: '0.37px',
   },
   big: {
