@@ -42,6 +42,7 @@ export const StyledHeader = styled.div`
 `;
 
 export const LogoWrapper = styled.div`
+  display: flex;
   img {
     max-height: 24px;
   }
