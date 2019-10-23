@@ -56,7 +56,7 @@ const AppHolder = styled.div`
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     &::selection {
-      background: ${palette('primary', 0)};
+      background: ${palette('primary', 1)};
       color: #fff;
     }
   }
