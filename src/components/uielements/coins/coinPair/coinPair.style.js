@@ -3,13 +3,17 @@ import { palette } from 'styled-theme';
 
 export const CoinPairWrapper = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
 
   .coin-data {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+
+    .label-wrapper {
+      padding-bottom: 0;
+    }
   }
 
   .arrow-icon {
