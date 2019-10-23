@@ -3,7 +3,7 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Button, Tooltip } from 'antd';
+import { Button, Tooltip, Icon } from 'antd';
 
 import Tabs from '../uielements/tabs';
 import TxView from '../uielements/txView';
@@ -70,6 +70,25 @@ class Header extends Component {
     const { activeTab } = this.state;
     const active = type || activeTab;
 
+    const swapTab = (
+      <span>
+        <Icon type="swap" />
+        swap
+      </span>
+    );
+    const poolsTab = (
+      <span>
+        <Icon type="database" theme="filled" />
+        pool
+      </span>
+    );
+    const tradeTab = (
+      <span>
+        <Icon type="area-chart" />
+        trade
+      </span>
+    );
+
     return (
       <>
         <Tabs
@@ -78,9 +97,9 @@ class Header extends Component {
           onChange={this.handleChangeTab(type)}
           action
         >
-          <TabPane tab="swap" key="swap" />
-          <TabPane tab="pools" key="pools" />
-          <TabPane tab="trade" key="trade" />
+          <TabPane tab={swapTab} key="swap" />
+          <TabPane tab={poolsTab} key="pools" />
+          <TabPane tab={tradeTab} key="trade" />
         </Tabs>
       </>
     );
