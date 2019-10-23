@@ -129,7 +129,7 @@ theme.sizes = {
   font: {
     tiny: '8px',
     small: '10px',
-    normal: '11px',
+    normal: '12px',
     big: '15px',
     large: '18px',
   },
