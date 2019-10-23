@@ -35,6 +35,7 @@ export const StyledTab = component => styled(component)`
     }
 
     .ant-tabs-ink-bar {
+      bottom: 0px;
       height: 3px;
       background: ${palette('primary', 0)};
     }
