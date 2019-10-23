@@ -1,12 +1,12 @@
-import React, { Fragment, Component } from 'react';
+import React, { Component } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { Icon } from 'antd';
 
 import Label from '../../../components/uielements/label';
 import CoinButton from '../../../components/uielements/coins/coinButton';
-import SwapCard from '../../../components/swap/swapCard';
 
 import { ContentWrapper } from './SwapView.style';
 
@@ -14,6 +14,10 @@ import statechainActions from '../../../redux/statechain/actions';
 import walletactions from '../../../redux/wallet/actions';
 import { getSwapData } from './data';
 import SwapLoader from '../../../components/utility/loaders/swap';
+import CoinPair from '../../../components/uielements/coins/coinPair';
+import Trend from '../../../components/uielements/trend';
+import Button from '../../../components/uielements/button';
+import Table from '../../../components/uielements/table';
 
 const { getPools } = statechainActions;
 const { getRunePrice } = walletactions;
@@ -68,11 +72,65 @@ class SwapView extends Component {
     );
   };
 
+  renderSwapTable = swapViewData => {
+    const columns = [
+      {
+        key: 'pool',
+        title: 'pool',
+        dataIndex: 'pool',
+        render: ({ asset, target }) => <CoinPair from={asset} to={target} />,
+      },
+      {
+        key: 'depth',
+        title: 'depth',
+        dataIndex: 'depth',
+      },
+      {
+        key: 'vol',
+        title: '24h vol',
+        dataIndex: 'volume',
+      },
+      {
+        key: 'transaction',
+        title: 'avg. transaction',
+        dataIndex: 'transaction',
+      },
+      {
+        key: 'slip',
+        title: 'avg. slip',
+        dataIndex: 'slip',
+        render: slip => <Trend value={slip} />,
+      },
+      {
+        key: 'trade',
+        title: 'no. of trades',
+        dataIndex: 'trade',
+      },
+      {
+        key: 'swap',
+        title: (
+          <Button typevalue="outline">
+            <Icon type="sync" />
+            refresh
+          </Button>
+        ),
+        render: () => (
+          <Button round>
+            <Icon type="swap" />
+            swap
+          </Button>
+        ),
+      },
+    ];
+
+    return <Table columns={columns} dataSource={swapViewData} />;
+  };
+
   renderSwapList = () => {
     const { pools, poolData, swapData, assetData, runePrice } = this.props;
     const { activeAsset } = this.state;
 
-    return pools.map((pool, index) => {
+    const swapViewData = pools.reduce((result, pool) => {
       const { symbol } = pool;
       const poolInfo = poolData[symbol] || {};
       const swapInfo = swapData[symbol] || {};
@@ -87,19 +145,13 @@ class SwapView extends Component {
       );
 
       if (swapCardData.target !== activeAsset) {
-        return (
-          <SwapCard
-            className="swap-card"
-            data-test={`swap-card-${symbol}`}
-            asset="rune"
-            onSwap={this.handleSwap(activeAsset, swapCardData.target)}
-            {...swapCardData}
-            key={index}
-          />
-        );
+        result.push(swapCardData);
       }
-      return <Fragment />;
-    });
+
+      return result;
+    }, []);
+
+    return this.renderSwapTable(swapViewData);
   };
 
   render() {

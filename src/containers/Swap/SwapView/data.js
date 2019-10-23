@@ -26,8 +26,10 @@ export const getSwapData = (
   const trade = Number(swapInfo.numTxTkn + swapInfo.numTxRune);
 
   return {
-    asset,
-    target,
+    pool: {
+      asset,
+      target,
+    },
     depth,
     volume,
     transaction,
