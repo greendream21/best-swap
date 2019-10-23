@@ -98,9 +98,11 @@ class CoinCard extends Component {
   };
 
   onChange = e => {
-    this.handleResetPercentButtons();
-
     this.props.onChange(e.target.value);
+  };
+
+  onKeyDown = () => {
+    this.handleResetPercentButtons();
   };
 
   handleVisibleChange = openDropdown => {
@@ -217,6 +219,7 @@ class CoinCard extends Component {
                   size="large"
                   value={amount}
                   onChange={this.onChange}
+                  onKeyDown={this.onKeyDown}
                   {...inputProps}
                 />
                 <HorizontalDivider />
