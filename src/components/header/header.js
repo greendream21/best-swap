@@ -7,12 +7,7 @@ import PropTypes from 'prop-types';
 import TxView from '../uielements/txView';
 import Logo from '../uielements/logo';
 
-import {
-  StyledHeader,
-  LogoWrapper,
-  HeaderTitle,
-  HeaderActionButtons,
-} from './header.style';
+import { StyledHeader, LogoWrapper, HeaderActionButtons } from './header.style';
 import HeaderSetting from './headerSetting';
 import WalletDrawer from '../../containers/WalletView/WalletDrawer';
 
@@ -35,7 +30,7 @@ class Header extends Component {
   };
 
   render() {
-    const { title, txStatus, user } = this.props;
+    const { txStatus, user } = this.props;
     const { status } = txStatus;
     const { wallet } = user;
     const connected = !!wallet;
@@ -47,7 +42,6 @@ class Header extends Component {
             <Logo name="bepswap" type="long" />
           </Link>
         </LogoWrapper>
-        <HeaderTitle>{title}</HeaderTitle>
         <HeaderActionButtons>
           {!connected && (
             <Link to="/connect">
