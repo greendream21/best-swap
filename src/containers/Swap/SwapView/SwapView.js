@@ -115,7 +115,7 @@ class SwapView extends Component {
           </Button>
         ),
         render: () => (
-          <Button round>
+          <Button style={{ margin: 'auto' }} round>
             <Icon type="swap" />
             swap
           </Button>
