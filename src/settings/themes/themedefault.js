@@ -46,10 +46,10 @@ theme.palette = {
     'linear-gradient(47.73deg, #F3BA2F 0%, #F3BA2F 100%)', // gradient
   ],
   success: [
-    '#30D7A9', // 0: Success
-    darken(COL_DARKEN_RATE, '#30D7A9'), // darken col
-    lighten(COL_LIGHTEN_RATE, '#30D7A9'), // lighten col
-    'linear-gradient(47.73deg, #30D7A9 0%, #30D7A9 100%)', // gradient
+    '#50E3C2', // 0: Success
+    darken(COL_DARKEN_RATE, '#50E3C2'), // darken col
+    lighten(COL_LIGHTEN_RATE, '#50E3C2'), // lighten col
+    'linear-gradient(47.73deg, #50E3C2 0%, #50E3C2 100%)', // gradient
   ],
   error: [
     '#FF4954', // 0: Error
