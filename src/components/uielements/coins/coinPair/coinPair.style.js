@@ -10,6 +10,7 @@ export const CoinPairWrapper = styled.div`
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    padding-top: 3px;
 
     .label-wrapper {
       padding-bottom: 0;

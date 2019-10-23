@@ -41,6 +41,8 @@ class Header extends Component {
 
   getPageType = () => {
     const url = window.location.pathname;
+    if (url === '/') return 'swap';
+
     const pageTypes = ['swap', 'pools', 'trade'];
     let pageType = '';
 
@@ -70,6 +72,7 @@ class Header extends Component {
     const { activeTab } = this.state;
     const active = type || activeTab;
 
+    console.log('type ', type);
     const swapTab = (
       <span>
         <Icon type="swap" />
