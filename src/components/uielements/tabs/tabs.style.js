@@ -16,12 +16,11 @@ export const StyledTab = component => styled(component)`
   .ant-tabs-nav {
     height: ${size('panelHeaderHeight', '50px')};
     padding: 0 ${key('sizes.gutter.content', '25px')};
-    font-size: ${key('sizes.font.normal', '11px')};
+    font-size: 12px;
     text-transform: uppercase;
 
     .ant-tabs-tab {
-      padding-bottom: 0px;
-      padding-top: 26px;
+      padding-top: 18px;
       letter-spacing: 2.5px;
       color: ${palette('text', 1)};
       font-weight: bold;

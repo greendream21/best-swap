@@ -90,7 +90,7 @@ class Header extends Component {
     );
 
     return (
-      <>
+      <div className="header-tab-container">
         <Tabs
           data-test="action-tabs"
           activeKey={active}
@@ -101,7 +101,7 @@ class Header extends Component {
           <TabPane tab={poolsTab} key="pools" />
           <TabPane tab={tradeTab} key="trade" />
         </Tabs>
-      </>
+      </div>
     );
   };
 

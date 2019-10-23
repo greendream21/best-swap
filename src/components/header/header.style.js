@@ -10,7 +10,7 @@ export const StyledHeader = styled.div`
   z-index: 1000;
   width: 100vw;
 
-  height: ${size('headerHeight', '90px')};
+  height: ${size('headerHeight', '70px')};
 
   padding: 0 20px;
 
@@ -38,6 +38,13 @@ export const StyledHeader = styled.div`
       padding: 0 5px;
       font-size: 14px;
     }
+  }
+
+  .header-tab-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
   }
 `;
 

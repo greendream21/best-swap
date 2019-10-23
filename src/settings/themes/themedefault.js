@@ -96,7 +96,7 @@ theme.palette = {
 };
 
 theme.sizes = {
-  headerHeight: '90px',
+  headerHeight: '70px',
   footerHeight: '50px',
   panelHeight: '550px',
   panelHeaderHeight: '50px',
