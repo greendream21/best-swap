@@ -114,12 +114,22 @@ class SwapView extends Component {
             refresh
           </Button>
         ),
-        render: () => (
-          <Button style={{ margin: 'auto' }} round>
-            <Icon type="swap" />
-            swap
-          </Button>
-        ),
+        render: (text, record) => {
+          console.log(text);
+          const {
+            pool: { asset, target },
+          } = record;
+          return (
+            <Button
+              onClick={this.handleSwap(asset, target)}
+              style={{ margin: 'auto' }}
+              round
+            >
+              <Icon type="swap" />
+              swap
+            </Button>
+          );
+        },
       },
     ];
 
