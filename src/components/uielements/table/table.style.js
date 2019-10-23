@@ -10,11 +10,14 @@ export const TableWrapper = styled(Table)`
     color: ${palette('text', 5)};
     background-color: #fff;
     text-transform: uppercase;
+    text-align: center;
   }
 
   .ant-table-tbody > tr > td {
     height: 96px;
     text-transform: uppercase;
+    background-color: #fff;
+    text-align: center;
   }
 
   .ant-table-thead
