@@ -6,6 +6,6 @@ export const ContentViewWrapper = styled.div`
   flex-direction: column;
   flex: auto;
 
-  padding: ${key('sizes.gutter.vertical', '20px')}
+  padding: ${key('sizes.gutter.vertical', '10px')}
     ${key('sizes.gutter.horizontal', '30px')};
 `;
