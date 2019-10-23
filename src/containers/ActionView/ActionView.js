@@ -1,19 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
-import { Link, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Button, Tooltip } from 'antd';
 
 import { ActionViewWrapper } from './ActionView.style';
-import Tabs from '../../components/uielements/tabs';
-import PanelHeader from '../../components/uielements/panelHeader';
-import { headerData } from './data';
-
 import { SwapIntro, SwapView, SwapSend } from '../Swap';
 import { PoolIntro, PoolView, PoolStake, PoolCreate } from '../Pool';
 import { TradeIntro, TradeView, TradeDetail } from '../Trade';
-import ViewHeader from '../../components/uielements/viewHeader';
 import ConnectView from '../ConnectView';
 import StatsView from '../StatsView';
 import FaqsView from '../FaqsView';
@@ -23,8 +17,6 @@ import TutorialView from '../TutorialView';
 import walletActions from '../../redux/wallet/actions';
 
 const { refreshBalance, refreshStake } = walletActions;
-
-const { TabPane } = Tabs;
 
 class ActionView extends Component {
   static propTypes = {
@@ -44,10 +36,6 @@ class ActionView extends Component {
     info: '',
   };
 
-  state = {
-    activeTab: 'swap',
-  };
-
   componentDidMount() {
     const { user, refreshBalance, refreshStake } = this.props;
 
@@ -58,26 +46,6 @@ class ActionView extends Component {
       refreshStake(address);
     }
   }
-
-  handleChangeTab = activeTab => {
-    const { type } = this.props;
-
-    if (type) {
-      const URL = `/${activeTab}`;
-
-      this.props.history.push(URL);
-    } else {
-      this.setState({
-        activeTab,
-      });
-    }
-  };
-
-  handleSetTab = activeTab => () => {
-    this.setState({
-      activeTab,
-    });
-  };
 
   handleStart = () => {
     this.props.history.push('/connect');
@@ -103,68 +71,12 @@ class ActionView extends Component {
     }
   };
 
-  handleHeaderAction = () => {};
-
-  getHeaderText = () => {
-    const view = this.getView();
-
-    return headerData[view];
-  };
-
   getView = () => {
     const { type, view } = this.props;
-    const { activeTab } = this.state;
 
     if (type) {
       return `${type}-${view}`;
     }
-
-    return activeTab;
-  };
-
-  renderHeader = () => {
-    const { type /* user */ } = this.props;
-    // const { wallet } = user;
-    // const connected = wallet ? true : false;
-    const { activeTab } = this.state;
-    const active = type || activeTab;
-    const headerText = this.getHeaderText();
-    const intro = (
-      <Link to="/introduction">
-        <Tooltip title="Introduction?">
-          <Button shape="circle" size="small" icon="question" />
-        </Tooltip>
-      </Link>
-    );
-
-    return (
-      <>
-        {headerText === undefined && (
-          <>
-            <Tabs
-              data-test="action-tabs"
-              activeKey={active}
-              onChange={this.handleChangeTab}
-              style={{ width: '100%' }}
-              action
-            >
-              <TabPane tab="swap" key="swap" />
-              <TabPane tab="pools" key="pools" />
-              <TabPane tab="trade" key="trade" />
-            </Tabs>
-            {intro}
-          </>
-        )}
-        {headerText !== undefined && (
-          <ViewHeader
-            title={headerText}
-            actionText="refresh"
-            onBack={this.handleBack}
-            onAction={this.handleHeaderAction}
-          />
-        )}
-      </>
-    );
   };
 
   render() {
@@ -174,7 +86,6 @@ class ActionView extends Component {
 
     return (
       <ActionViewWrapper>
-        <PanelHeader>{this.renderHeader()}</PanelHeader>
         {view === 'swap' && <SwapIntro onNext={this.handleSetTab('pools')} />}
         {view === 'pools' && (
           <PoolIntro
