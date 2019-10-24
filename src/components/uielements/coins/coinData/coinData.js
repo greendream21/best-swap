@@ -89,7 +89,7 @@ class CoinData extends Component {
         )}
         <div className="asset-price-info">
           <Label size="small" color="gray" weight="bold">
-            {`$${Number(price.toFixed(2)).toLocaleString()}`}
+            {`$USD ${Number(price.toFixed(2)).toLocaleString()}`}
           </Label>
         </div>
       </CoinDataWrapper>
