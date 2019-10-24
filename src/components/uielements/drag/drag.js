@@ -203,13 +203,13 @@ class Drag extends Component {
               type={source}
             />
           </Draggable>
+          {title && <TitleLabel color="input">{title}</TitleLabel>}
           <CoinIcon
             className="target-asset"
             data-test="target-asset"
             type={target}
           />
         </DragWrapper>
-        {title && <TitleLabel color="input">{title}</TitleLabel>}
       </div>
     );
   }
