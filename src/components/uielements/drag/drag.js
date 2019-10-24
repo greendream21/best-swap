@@ -105,7 +105,7 @@ class Drag extends Component {
     const { x } = pos;
 
     const overlapLimit = 164;
-    const successLimit = 180;
+    const successLimit = 190;
 
     if (x >= successLimit && !success) {
       this.setState({
@@ -139,7 +139,7 @@ class Drag extends Component {
 
     const { x } = pos;
 
-    const successLimit = 180;
+    const successLimit = 190;
 
     if (x >= successLimit) {
       this.setState(
