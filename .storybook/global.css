@@ -1,30 +1,5 @@
-@font-face {
-  font-family: 'Montserrat';
-  src: url(../src/assets/font/Montserrat-Regular.otf);
-  font-weight: normal;
-}
-@font-face {
-  font-family: 'Montserrat Light';
-  src: url(../src/assets/font/Montserrat-Light.otf);
-  font-weight: lighter;
-}
-@font-face {
-  font-family: 'Montserrat Bold';
-  src: url(../src/assets/font/Montserrat-Bold.otf);
-  font-weight: bold;
-}
-@font-face {
-  font-family: 'Montserrat Medium';
-  src: url(../src/assets/font/Montserrat-Medium.otf);
-  font-weight: medium;
-}
-@font-face {
-  font-family: 'Montserrat Italic';
-  src: url(../src/assets/font/Montserrat-LightItalic.otf);
-  font-weight: italic;
-}
 body {
-  font-family: 'Montserrat Medium';
+  font-family: 'Roboto, sans-serif';
 }
 
 h1,

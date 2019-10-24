@@ -5,7 +5,7 @@ import { Dropdown } from 'antd';
 import { TokenSelectWrapper } from './tokenSelect.style';
 
 import TokenMenu from './tokenMenu';
-import CoinData from '../../coins/coinData';
+import TokenData from '../tokenData';
 
 class TokenSelect extends Component {
   static propTypes = {
@@ -53,7 +53,7 @@ class TokenSelect extends Component {
       >
         <Dropdown overlay={this.renderMenu()} trigger={[]} visible>
           <div>
-            <CoinData asset={asset} price={price} />
+            <TokenData asset={asset} price={price} />
           </div>
         </Dropdown>
       </TokenSelectWrapper>

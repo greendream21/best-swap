@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import FilterMenu from '../../filterMenu';
-import CoinData from '../../coins/coinData';
+import TokenData from '../tokenData';
 
 import { getTickerFormat } from '../../../../helpers/stringHelper';
 
@@ -13,7 +13,7 @@ function filterFunction(item, searchTerm) {
 function cellRenderer(data) {
   const { asset: key, price } = data;
   const tokenName = getTickerFormat(key);
-  const node = <CoinData asset={tokenName} price={price} />; // TODO: token data
+  const node = <TokenData asset={tokenName} price={price} />; // TODO: token data
 
   return { key, node };
 }
