@@ -15,6 +15,10 @@ export const TokenSelectWrapper = styled.div`
   border-radius: 2px;
   text-transform: uppercase;
   ${transition()};
+
+  &:hover {
+    border-color: ${palette('success', 0)};
+  }
 `;
 
 const IconBase = cleanTag(Icon, ['open']);
