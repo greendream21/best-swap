@@ -40,6 +40,9 @@ export const TokenInputWrapper = styled.div`
     justify-content: space-between;
     align-items: center;
 
+    .token-amount-input {
+      width: 50%;
+    }
     .token-amount-label {
       width: 50%;
       font-size: 12px;

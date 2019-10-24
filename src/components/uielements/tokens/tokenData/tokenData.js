@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import { TokenDataWrapper } from './tokenData.style';
 
 import Coin from '../../coins/coin';
-import Label from '../../label';
 
 class TokenData extends Component {
   static propTypes = {
