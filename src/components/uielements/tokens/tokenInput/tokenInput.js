@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { TokenInputWrapper } from './tokenInput.style';
 import CoinInputAdvanced from '../../coins/coinInputAdvanced';
 
-class Status extends Component {
+class TokenInput extends Component {
   static propTypes = {
     title: PropTypes.string,
     status: PropTypes.string,
@@ -52,4 +52,4 @@ class Status extends Component {
   }
 }
 
-export default Status;
+export default TokenInput;
