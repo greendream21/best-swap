@@ -71,7 +71,7 @@ theme.palette = {
     '#323C47', // 0: Normal Text (normal)
     '#848E9C', // 1: Heading
     '#1C2731', // 2: Active (dark)
-    '#4A4A4A', // 3: Text Color (light)
+    '#AAB5C4', // 3: Text Color (light)
     '#B7BBBD', // 4: Darker Text (gray)
     '#9B9B9B', // 5: Input Text (input)
     '#919D9D', // 6: Footer Color
