@@ -16,6 +16,7 @@ storiesOf('Components/Tokens/TokenCard', module).add('default', () => {
         >
           <TokenCard
             title="You are swapping"
+            inputTitle="swap amount"
             asset="bnb"
             assetData={[
               {

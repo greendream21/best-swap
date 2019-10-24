@@ -18,6 +18,7 @@ class TokenCard extends Component {
     unit: PropTypes.string,
     slip: PropTypes.number,
     title: PropTypes.string,
+    inputTitle: PropTypes.string,
     searchDisable: PropTypes.arrayOf(PropTypes.string),
     withSelection: PropTypes.bool,
     withSearch: PropTypes.bool,
@@ -43,6 +44,7 @@ class TokenCard extends Component {
     unit: '$USD',
     slip: undefined,
     title: '',
+    inputTitle: '',
     withSelection: false,
     withSearch: false,
     searchDisable: [],
@@ -65,6 +67,7 @@ class TokenCard extends Component {
       unit,
       slip,
       title,
+      inputTitle,
       max,
       withSelection,
       onSelect,
@@ -86,7 +89,7 @@ class TokenCard extends Component {
         {title && <Label className="title-label">{title}</Label>}
         <div className="token-card-content">
           <TokenInput
-            title="swap amount"
+            title={inputTitle}
             status={slipValue}
             value={amount}
             onChange={onChange}
