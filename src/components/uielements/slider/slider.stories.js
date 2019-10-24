@@ -7,6 +7,11 @@ import { defaultTheme } from '../../../settings';
 
 import Slider from './slider';
 
+const marks = {
+  0: '0%',
+  100: '100%',
+};
+
 storiesOf('Components/Slider', module).add('default', () => {
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -19,6 +24,7 @@ storiesOf('Components/Slider', module).add('default', () => {
           }}
         >
           <Slider defaultValue={30} />
+          <Slider defaultValue={30} marks={marks} />
         </div>
       </AppHolder>
     </ThemeProvider>

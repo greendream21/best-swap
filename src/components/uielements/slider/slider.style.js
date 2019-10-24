@@ -22,5 +22,9 @@ export const SliderWrapper = styled(Slider)`
       border: 3px solid ${palette('success', 0)};
       background: #fff;
     }
+
+    .ant-slider-dot {
+      display: none;
+    }
   }
 `;
