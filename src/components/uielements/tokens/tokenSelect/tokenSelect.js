@@ -1,30 +1,57 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { Dropdown } from 'antd';
 
 import { TokenSelectWrapper } from './tokenSelect.style';
 
+import TokenMenu from './tokenMenu';
+
 class TokenSelect extends Component {
   static propTypes = {
-    title: PropTypes.string,
-    value: PropTypes.string,
+    assetData: PropTypes.array.isRequired,
+    asset: PropTypes.string.isRequired,
+    onSelect: PropTypes.func.isRequired,
+    withSearch: PropTypes.bool,
+    searchDisable: PropTypes.array,
     className: PropTypes.string,
   };
 
   static defaultProps = {
-    title: '',
-    value: '',
+    withSearch: true,
+    searchDisable: [],
     className: '',
   };
 
+  state = {
+    openDropdown: false,
+  };
+
+  renderMenu = () => {
+    const { assetData, asset, withSearch, searchDisable } = this.props;
+
+    return (
+      <TokenMenu
+        assetData={assetData}
+        asset={asset}
+        withSearch={withSearch}
+        searchDisable={searchDisable}
+        onSelect={() => {}}
+      />
+    );
+  };
+
   render() {
-    const { title, value, className, ...props } = this.props;
+    const { asset, assetData, className, ...props } = this.props;
+    const { openDropdown } = this.state;
 
     return (
       <TokenSelectWrapper
         className={`tokenSelect-wrapper ${className}`}
         {...props}
       >
-        sample
+        <Dropdown overlay={this.renderMenu()} trigger={[]} visible>
+          <div>dsfasas</div>
+        </Dropdown>
       </TokenSelectWrapper>
     );
   }

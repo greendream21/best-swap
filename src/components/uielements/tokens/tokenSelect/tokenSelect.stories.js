@@ -7,11 +7,25 @@ import { defaultTheme } from '../../../../settings';
 
 import TokenSelect from './tokenSelect';
 
-storiesOf('Components/Utility/Sample', module).add('default', () => {
+storiesOf('Components/Tokens/TokenSelect', module).add('default', () => {
   return (
     <ThemeProvider theme={defaultTheme}>
       <AppHolder>
-        <TokenSelect />
+        <div style={{ padding: '10px' }}>
+          <TokenSelect
+            asset="bnb"
+            assetData={[
+              {
+                asset: 'rune',
+                price: 100,
+              },
+              {
+                asset: 'tomo',
+                price: 100,
+              },
+            ]}
+          />
+        </div>
       </AppHolder>
     </ThemeProvider>
   );
