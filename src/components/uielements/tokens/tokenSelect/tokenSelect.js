@@ -36,15 +36,17 @@ class TokenSelect extends Component {
     assetData: PropTypes.array.isRequired,
     asset: PropTypes.string.isRequired,
     price: PropTypes.number.isRequired,
-    onSelect: PropTypes.func.isRequired,
     withSearch: PropTypes.bool,
     searchDisable: PropTypes.array,
+    onSelect: PropTypes.func.isRequired,
+    onChangeAsset: PropTypes.func,
     className: PropTypes.string,
   };
 
   static defaultProps = {
     withSearch: true,
     searchDisable: [],
+    onChangeAsset: () => {},
     className: '',
   };
 
@@ -61,6 +63,17 @@ class TokenSelect extends Component {
   handleDropdownButtonClicked = () => {
     const { openDropdown } = this.state;
     this.handleVisibleChange(!openDropdown);
+  };
+
+  handleChangeAsset = asset => {
+    const { onChangeAsset } = this.props;
+
+    this.setState({ openDropdown: false });
+
+    // HACK: Wait for the dropdown to close
+    setTimeout(() => {
+      onChangeAsset(asset.key);
+    }, 500);
   };
 
   renderDropDownButton() {
@@ -89,7 +102,7 @@ class TokenSelect extends Component {
         asset={asset}
         withSearch={withSearch}
         searchDisable={searchDisable}
-        onSelect={() => {}}
+        onSelect={this.handleChangeAsset}
       />
     );
   };
