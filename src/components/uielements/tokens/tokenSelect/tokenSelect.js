@@ -5,11 +5,13 @@ import { Dropdown } from 'antd';
 import { TokenSelectWrapper } from './tokenSelect.style';
 
 import TokenMenu from './tokenMenu';
+import CoinData from '../../coins/coinData';
 
 class TokenSelect extends Component {
   static propTypes = {
     assetData: PropTypes.array.isRequired,
     asset: PropTypes.string.isRequired,
+    price: PropTypes.number.isRequired,
     onSelect: PropTypes.func.isRequired,
     withSearch: PropTypes.bool,
     searchDisable: PropTypes.array,
@@ -41,7 +43,7 @@ class TokenSelect extends Component {
   };
 
   render() {
-    const { asset, assetData, className, ...props } = this.props;
+    const { asset, price, assetData, className, ...props } = this.props;
     const { openDropdown } = this.state;
 
     return (
@@ -50,7 +52,9 @@ class TokenSelect extends Component {
         {...props}
       >
         <Dropdown overlay={this.renderMenu()} trigger={[]} visible>
-          <div>dsfasas</div>
+          <div>
+            <CoinData asset={asset} price={price} />
+          </div>
         </Dropdown>
       </TokenSelectWrapper>
     );
