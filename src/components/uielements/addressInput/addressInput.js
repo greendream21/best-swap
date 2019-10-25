@@ -9,22 +9,19 @@ class AddressInput extends Component {
   static propTypes = {
     value: PropTypes.string,
     onChange: PropTypes.func.isRequired,
+    status: PropTypes.bool,
+    onStatusChange: PropTypes.func.isRequired,
     className: PropTypes.string,
   };
 
   static defaultProps = {
+    status: false,
     value: '',
     className: '',
   };
 
-  state = {
-    status: false,
-  };
-
   setStatus = status => () => {
-    this.setState({
-      status,
-    });
+    this.props.onStatusChange(status);
   };
 
   onChange = e => {
@@ -40,8 +37,7 @@ class AddressInput extends Component {
   };
 
   render() {
-    const { value, className, ...props } = this.props;
-    const { status } = this.state;
+    const { value, status, className, ...props } = this.props;
 
     return (
       <AddressInputWrapper

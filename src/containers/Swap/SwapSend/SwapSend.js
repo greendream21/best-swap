@@ -26,10 +26,8 @@ import {
   PrivateModal,
   CardForm,
   CardFormHolder,
-  CardFormArrowIcon,
   CardFormItem,
   CardFormItemError,
-  CardFormItemCloseButton,
 } from './SwapSend.style';
 import {
   getTickerFormat,
@@ -44,6 +42,7 @@ import appActions from '../../../redux/app/actions';
 import chainActions from '../../../redux/chainservice/actions';
 import statechainActions from '../../../redux/statechain/actions';
 import walletactions from '../../../redux/wallet/actions';
+import AddressInput from '../../../components/uielements/addressInput';
 
 const {
   setTxTimerType,
@@ -343,6 +342,14 @@ class SwapSend extends Component {
     // if (!status) resetTxStatus();
     // else setTxTimerModal(false);
     setTxTimerModal(false);
+  };
+
+  handleChangeSwapType = state => {
+    if (state) {
+      this.handleGotoSend();
+    } else {
+      this.handleGotoDetail();
+    }
   };
 
   handleGotoDetail = () => {
@@ -762,41 +769,14 @@ class SwapSend extends Component {
               />
               <CardFormHolder>
                 <CardForm>
-                  {view === 'detail' && (
-                    <>
-                      <CardFormArrowIcon />
-                      <Button
-                        data-test="forward-to-alternate-address-button"
-                        onClick={this.handleGotoSend}
-                        sizevalue="small"
-                        typevalue="ghost"
-                        focused={view === 'send'}
-                        style={{ borderColor: '#33CCFF' }}
-                      >
-                        Forward to alternate address
-                      </Button>
-                    </>
-                  )}
-                  {view === 'send' && (
-                    <>
-                      <CardFormArrowIcon />
-                      <CardFormItem
-                        className={invalidAddress ? 'has-error' : ''}
-                      >
-                        <Input
-                          data-test="recipient-address-field"
-                          placeholder="Recipient Address: Eg. bnbeh456..."
-                          sizevalue="normal"
-                          value={address}
-                          onChange={this.handleChange('address')}
-                          ref={this.addressRef}
-                        />
-                      </CardFormItem>
-                      <CardFormItemCloseButton
-                        onClick={this.handleGotoDetail}
-                      />
-                    </>
-                  )}
+                  <CardFormItem className={invalidAddress ? 'has-error' : ''}>
+                    <AddressInput
+                      value={address}
+                      onChange={this.handleChange('address')}
+                      status={view === 'send'}
+                      onStatusChange={this.handleChangeSwapType}
+                    />
+                  </CardFormItem>
                 </CardForm>
                 {invalidAddress && (
                   <CardFormItemError>
@@ -804,6 +784,7 @@ class SwapSend extends Component {
                   </CardFormItemError>
                 )}
               </CardFormHolder>
+
               <CardFormHolder className="slip-protection">
                 <CardForm>
                   <Button

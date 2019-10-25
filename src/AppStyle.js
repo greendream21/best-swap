@@ -73,10 +73,6 @@ const AppHolder = styled.div`
   .ant-row > div {
     padding: 0;
   }
-
-  .ant-popover-inner-content {
-    padding: 6px;
-  }
 `;
 
 export default AppHolder;
