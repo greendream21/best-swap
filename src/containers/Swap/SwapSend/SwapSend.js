@@ -720,8 +720,7 @@ class SwapSend extends Component {
 
     const { sourceData, targetData } = this.validatePair(assetData, tokensData);
 
-    const dragTitle =
-      view === 'detail' ? 'Drag to swap' : 'Drag to swap and send';
+    const dragTitle = 'Drag to swap';
 
     const openSwapModal = txStatus.type === 'swap' ? txStatus.modal : false;
     const coinCloseIconType = txStatus.status ? 'fullscreen-exit' : 'close';
