@@ -739,8 +739,12 @@ class SwapSend extends Component {
 
     // calculation
     this.data = getCalcResult(source, target, pools, xValue, runePrice);
-    const { Px, slip, outputAmount, outputPrice } = this.data;
+    const { Px, slip, outputAmount, outputPrice, ratio } = this.data;
     console.log(this.data); // eslint-disable-line no-console
+
+    const ratioLabel = `1 ${source.toUpperCase()} = ${getFixedNumber(
+      ratio,
+    )} ${target.toUpperCase()}`;
 
     return (
       <ContentWrapper className="swap-detail-wrapper">
@@ -751,7 +755,7 @@ class SwapSend extends Component {
             xl={{ span: 6 }}
           >
             <SwapStatusPanel>
-              <Status title="exchange rate" value="1 RUNE = 4 BOLT" />
+              <Status title="exchange rate" value={ratioLabel} />
               <Icon type="swap" onClick={this.handleReversePair} />
               <StepBar />
             </SwapStatusPanel>

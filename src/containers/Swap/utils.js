@@ -39,6 +39,7 @@ export const getCalcResult = (from, to, pools, xValue, runePrice) => {
         result.symbolTo = symbol;
       }
     });
+    result.ratio = (Y / X / Z) * R;
 
     const calcData = { X, Y, R, Z, Py, Pr: Py };
 
@@ -73,6 +74,8 @@ export const getCalcResult = (from, to, pools, xValue, runePrice) => {
       if (token.toLowerCase() === from.toLowerCase()) {
         X = Number(balance_token);
         Y = Number(balance_rune);
+        result.ratio = X / Y;
+
         result.poolAddressTo = pool_address;
         result.symbolFrom = symbol;
       }
@@ -118,6 +121,8 @@ export const getCalcResult = (from, to, pools, xValue, runePrice) => {
       if (token.toLowerCase() === to.toLowerCase()) {
         X = Number(balance_rune);
         Y = Number(balance_token);
+        result.ratio = X / Y;
+
         result.poolAddressTo = pool_address;
         result.symbolTo = symbol;
       }
