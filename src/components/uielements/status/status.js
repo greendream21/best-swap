@@ -29,10 +29,10 @@ class Status extends Component {
 
     return (
       <StatusWrapper className={`status-wrapper ${className}`} {...props}>
-        <NoWrapLabel className="status-title" size="tiny" weight="bold">
+        <NoWrapLabel className="status-title" size="normal" color="gray">
           {title}
         </NoWrapLabel>
-        <NoWrapLabel className="status-value" size="big">
+        <NoWrapLabel className="status-value" size="normal">
           {value}
         </NoWrapLabel>
       </StatusWrapper>
