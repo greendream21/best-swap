@@ -5,7 +5,7 @@ import { transition } from '../../../../settings/style-util';
 export const TokenInputWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  width: 312px;
+  min-width: 212px;
   height: 60px;
   padding: 9px;
   border: 1px solid ${palette('border', 0)};

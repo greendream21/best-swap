@@ -43,6 +43,7 @@ import chainActions from '../../../redux/chainservice/actions';
 import statechainActions from '../../../redux/statechain/actions';
 import walletactions from '../../../redux/wallet/actions';
 import AddressInput from '../../../components/uielements/addressInput';
+import ContentTitle from '../../../components/uielements/contentTitle';
 
 const {
   setTxTimerType,
@@ -736,9 +737,10 @@ class SwapSend extends Component {
           <Col
             className="swap-detail-panel"
             xs={{ span: 24, offset: 0 }}
-            xl={{ span: 16, offset: 4 }}
+            xl={{ span: 10, offset: 6 }}
           >
             <SwapAssetCard>
+              <ContentTitle>you are swapping</ContentTitle>
               <TokenCard
                 title="You are swapping"
                 inputTitle="swap amount"
@@ -783,7 +785,6 @@ class SwapSend extends Component {
                   </CardFormItemError>
                 )}
               </CardFormHolder>
-
               <CardFormHolder className="slip-protection">
                 <CardForm>
                   <Button

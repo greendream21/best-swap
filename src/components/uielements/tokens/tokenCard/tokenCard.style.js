@@ -14,6 +14,7 @@ export const TokenCardWrapper = styled.div`
     align-items: center;
     min-width: 450px;
     .tokenInput-wrapper {
+      flex-grow: 1;
       margin-right: 12px;
     }
   }
