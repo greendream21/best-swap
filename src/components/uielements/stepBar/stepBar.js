@@ -17,7 +17,7 @@ class StepBar extends Component {
     return (
       <StepBarWrapper size={size} {...props}>
         <div className="step-start-dot" />
-        <div className="step-bar" />
+        <div className="step-bar-line" />
         <div className="step-end-dot" />
       </StepBarWrapper>
     );
