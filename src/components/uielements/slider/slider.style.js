@@ -4,7 +4,10 @@ import { Slider } from 'antd';
 
 export const SliderWrapper = styled(Slider)`
   &.ant-slider {
-    margin-bottom: 25px;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-bottom: 10px;
+
     .ant-slider-rail {
       height: 4px;
       background: ${palette('primary', 0)};
@@ -33,4 +36,11 @@ export const SliderWrapper = styled(Slider)`
       }
     }
   }
+`;
+
+export const SliderLabel = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
 `;

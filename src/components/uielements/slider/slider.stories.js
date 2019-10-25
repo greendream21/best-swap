@@ -24,6 +24,7 @@ storiesOf('Components/Slider', module).add('default', () => {
           }}
         >
           <Slider defaultValue={30} />
+          <Slider defaultValue={30} withLabel />
           <Slider defaultValue={30} marks={marks} />
         </div>
       </AppHolder>
