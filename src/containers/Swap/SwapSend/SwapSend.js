@@ -169,6 +169,33 @@ class SwapSend extends Component {
   };
 
   handleChangePercent = percent => {
+    // const { info } = this.props;
+
+    // const { assetData } = this.props;
+    // const { source } = getPair(info);
+
+    // const sourceAsset = assetData.find(data => {
+    //   const { asset } = data;
+    //   const tokenName = getTickerFormat(asset);
+    //   if (tokenName === source) {
+    //     return true;
+    //   }
+    //   return false;
+    // });
+
+    // const totalAmount = !sourceAsset ? 0 : sourceAsset.assetValue || 0;
+    // const newValue = (totalAmount * percent) / 100;
+
+    // if (totalAmount < newValue) {
+    //   this.setState({
+    //     xValue: totalAmount,
+    //   });
+    // } else {
+    //   this.setState({
+    //     xValue: newValue,
+    //   });
+    // }
+
     this.setState({
       percent,
     });
@@ -178,9 +205,8 @@ class SwapSend extends Component {
     const { info } = this.props;
     const newValue = value;
 
-    const { assetData, getRunePrice } = this.props;
+    const { assetData } = this.props;
     const { source } = getPair(info);
-    getRunePrice();
 
     const sourceAsset = assetData.find(data => {
       const { asset } = data;

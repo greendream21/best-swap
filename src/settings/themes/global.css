@@ -1,3 +1,7 @@
+.ant-popover {
+  z-index: 1;
+}
+
 .ant-popover-inner-content {
   padding: 6px;
   font-family: 'Roboto';
