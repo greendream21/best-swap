@@ -32,6 +32,6 @@ export const TableWrapper = styled(Table)`
   .ant-table-tbody
     > tr:hover:not(.ant-table-expanded-row):not(.ant-table-row-selected)
     > td {
-    background: ${palette('success', 2)};
+    background: ${palette('background', 2)};
   }
 `;
