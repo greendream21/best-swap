@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { getFixedNumber } from '../../../../helpers/stringHelper';
 
 import { TokenDataWrapper } from './tokenData.style';
 
@@ -22,6 +23,7 @@ class TokenData extends Component {
 
   render() {
     const { asset, assetValue, price, className, ...props } = this.props;
+    const priceValue = `$${getFixedNumber(price)}`;
 
     return (
       <TokenDataWrapper
@@ -31,9 +33,7 @@ class TokenData extends Component {
       >
         <Coin className="coinData-coin-avatar" type={asset} />
         <div className="coinData-asset-label">{asset}</div>
-        <div className="asset-price-info">
-          {`$${Number(price.toFixed(2)).toLocaleString()}`}
-        </div>
+        <div className="asset-price-info">{priceValue}</div>
       </TokenDataWrapper>
     );
   }

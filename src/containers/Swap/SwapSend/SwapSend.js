@@ -10,8 +10,7 @@ import Binance from '../../../clients/binance';
 
 import Button from '../../../components/uielements/button';
 import Drag from '../../../components/uielements/drag';
-import CoinCard from '../../../components/uielements/coins/coinCard';
-
+import TokenCard from '../../../components/uielements/tokens/tokenCard';
 import Label from '../../../components/uielements/label';
 import Input from '../../../components/uielements/input/input';
 import CoinData from '../../../components/uielements/coins/coinData';
@@ -24,7 +23,6 @@ import {
   SwapModalContent,
   SwapModal,
   SwapAssetCard,
-  ArrowContainer,
   PrivateModal,
   CardForm,
   CardFormHolder,
@@ -735,10 +733,9 @@ class SwapSend extends Component {
             xl={{ span: 16, offset: 4 }}
           >
             <SwapAssetCard>
-              <CoinCard
-                data-test="coincard-source"
-                inputProps={{ 'data-test': 'coincard-source-input' }}
+              <TokenCard
                 title="You are swapping"
+                inputTitle="swap amount"
                 asset={source}
                 assetData={sourceData}
                 amount={xValue}
@@ -749,24 +746,12 @@ class SwapSend extends Component {
                 withSelection
                 withSearch
               />
-
-              <ArrowContainer>
-                <Button
-                  className="swap-arrow-btn"
-                  typevalue="outline"
-                  onClick={this.handleReversePair}
-                >
-                  <Icon type="swap" />
-                </Button>
-              </ArrowContainer>
-
-              <CoinCard
+              <TokenCard
                 title="You will receive"
+                inputTitle="swap amount"
                 inputProps={{
-                  'data-test': 'coincard-target-input',
                   disabled: true,
                 }}
-                data-test="coincard-target"
                 asset={target}
                 assetData={targetData}
                 amount={outputAmount}
@@ -774,66 +759,65 @@ class SwapSend extends Component {
                 slip={slip}
                 onChangeAsset={this.handleSelectTraget}
                 withSearch
-              >
-                <CardFormHolder>
-                  <CardForm>
-                    {view === 'detail' && (
-                      <>
-                        <CardFormArrowIcon />
-                        <Button
-                          data-test="forward-to-alternate-address-button"
-                          onClick={this.handleGotoSend}
-                          sizevalue="small"
-                          typevalue="ghost"
-                          focused={view === 'send'}
-                          style={{ borderColor: '#33CCFF' }}
-                        >
-                          Forward to alternate address
-                        </Button>
-                      </>
-                    )}
-                    {view === 'send' && (
-                      <>
-                        <CardFormArrowIcon />
-                        <CardFormItem
-                          className={invalidAddress ? 'has-error' : ''}
-                        >
-                          <Input
-                            data-test="recipient-address-field"
-                            placeholder="Recipient Address: Eg. bnbeh456..."
-                            sizevalue="normal"
-                            value={address}
-                            onChange={this.handleChange('address')}
-                            ref={this.addressRef}
-                          />
-                        </CardFormItem>
-                        <CardFormItemCloseButton
-                          onClick={this.handleGotoDetail}
-                        />
-                      </>
-                    )}
-                  </CardForm>
-                  {invalidAddress && (
-                    <CardFormItemError>
-                      Recipient address is invalid!
-                    </CardFormItemError>
+              />
+              <CardFormHolder>
+                <CardForm>
+                  {view === 'detail' && (
+                    <>
+                      <CardFormArrowIcon />
+                      <Button
+                        data-test="forward-to-alternate-address-button"
+                        onClick={this.handleGotoSend}
+                        sizevalue="small"
+                        typevalue="ghost"
+                        focused={view === 'send'}
+                        style={{ borderColor: '#33CCFF' }}
+                      >
+                        Forward to alternate address
+                      </Button>
+                    </>
                   )}
-                </CardFormHolder>
-                <CardFormHolder className="slip-protection">
-                  <CardForm>
-                    <Button
-                      onClick={this.handleSwitchSlipProtection}
-                      sizevalue="small"
-                      typevalue="outline"
-                      focused={slipProtection}
-                      style={{ borderColor: '#33CCFF' }}
-                    >
-                      <Icon type={slipProtection ? 'lock' : 'unlock'} />
-                    </Button>
-                    <Label>Protect my price (within 3%)</Label>
-                  </CardForm>
-                </CardFormHolder>
-              </CoinCard>
+                  {view === 'send' && (
+                    <>
+                      <CardFormArrowIcon />
+                      <CardFormItem
+                        className={invalidAddress ? 'has-error' : ''}
+                      >
+                        <Input
+                          data-test="recipient-address-field"
+                          placeholder="Recipient Address: Eg. bnbeh456..."
+                          sizevalue="normal"
+                          value={address}
+                          onChange={this.handleChange('address')}
+                          ref={this.addressRef}
+                        />
+                      </CardFormItem>
+                      <CardFormItemCloseButton
+                        onClick={this.handleGotoDetail}
+                      />
+                    </>
+                  )}
+                </CardForm>
+                {invalidAddress && (
+                  <CardFormItemError>
+                    Recipient address is invalid!
+                  </CardFormItemError>
+                )}
+              </CardFormHolder>
+              <CardFormHolder className="slip-protection">
+                <CardForm>
+                  <Button
+                    onClick={this.handleSwitchSlipProtection}
+                    sizevalue="small"
+                    typevalue="outline"
+                    focused={slipProtection}
+                    style={{ borderColor: '#33CCFF' }}
+                  >
+                    <Icon type={slipProtection ? 'lock' : 'unlock'} />
+                  </Button>
+                  <Label>Protect my price (within 3%)</Label>
+                </CardForm>
+              </CardFormHolder>
             </SwapAssetCard>
             <div className="drag-confirm-wrapper">
               <Drag

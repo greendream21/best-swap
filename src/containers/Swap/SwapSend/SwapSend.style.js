@@ -9,12 +9,6 @@ import { transition } from '../../../settings/style-util';
 export const SwapAssetCard = styled.div`
   display: flex;
   flex-direction: column;
-
-  ${media.md`
-    flex-direction: row;
-    justify-content: space-between;
-    padding: 20px 0;
-  `}
 `;
 
 export const ArrowImage = styled.img`
