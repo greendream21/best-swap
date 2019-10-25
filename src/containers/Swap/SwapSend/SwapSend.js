@@ -44,6 +44,7 @@ import statechainActions from '../../../redux/statechain/actions';
 import walletactions from '../../../redux/wallet/actions';
 import AddressInput from '../../../components/uielements/addressInput';
 import ContentTitle from '../../../components/uielements/contentTitle';
+import Slider from '../../../components/uielements/slider';
 
 const {
   setTxTimerType,
@@ -89,6 +90,7 @@ class SwapSend extends Component {
     invalidAddress: false,
     dragReset: true,
     xValue: 0,
+    percent: 0,
     openPrivateModal: false,
     password: '',
     invalidPassword: false,
@@ -161,6 +163,12 @@ class SwapSend extends Component {
       [key]: e.target.value,
       invalidAddress: false,
       invalidPassword: false,
+    });
+  };
+
+  handleChangePercent = percent => {
+    this.setState({
+      percent,
     });
   };
 
@@ -689,6 +697,7 @@ class SwapSend extends Component {
       invalidAddress,
       invalidPassword,
       xValue,
+      percent,
       openPrivateModal,
       openWalletAlert,
       password,
@@ -754,6 +763,7 @@ class SwapSend extends Component {
                 withSelection
                 withSearch
               />
+              <Slider value={percent} onChange={this.handleChangePercent} />
               <TokenCard
                 title="You will receive"
                 inputTitle="swap amount"

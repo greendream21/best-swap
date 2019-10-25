@@ -49,7 +49,7 @@ export const ArrowContainer = styled(BaseArrowContainer)`
 `;
 
 export const ContentWrapper = styled(ContentView)`
-  padding: 0;
+  padding: 48px 0;
 
   .ant-row {
     display: flex;
@@ -118,6 +118,11 @@ export const CardFormArrowIcon = styled.div`
 
 export const CardFormHolder = styled.div`
   padding-top: 10px;
+  margin: 10px 0;
+
+  .addressInput-wrapper {
+    margin-left: 4px;
+  }
 
   &.slip-protection {
     .slip-input {
