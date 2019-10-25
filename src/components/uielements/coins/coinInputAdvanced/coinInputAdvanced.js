@@ -67,14 +67,17 @@ export function useCoinCardInputBehaviour({
     [setFocus, onFocus],
   );
 
-  const handleChange = useCallback(() => {
-    setFocus(true);
-    const val = getValueFromEvent(event);
-    const isValidNumber = !Number.isNaN(Number(val));
+  const handleChange = useCallback(
+    event => {
+      setFocus(true);
+      const val = getValueFromEvent(event);
+      const isValidNumber = !Number.isNaN(Number(val));
 
-    if (!isValidNumber && val !== '') return;
-    setTextFieldValue(val);
-  }, [focus, setTextFieldValue, setFocus]);
+      if (!isValidNumber && val !== '') return;
+      setTextFieldValue(val);
+    },
+    [focus, setTextFieldValue, setFocus],
+  );
 
   useEffect(() => {
     const numberfiedValueStr = focus
