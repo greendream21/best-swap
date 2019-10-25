@@ -81,7 +81,7 @@ class TokenCard extends Component {
       ...props
     } = this.props;
 
-    const slipValue = slip ? `$usd ${slip}` : null;
+    const slipValue = slip ? `slip ${slip}%` : null;
     const priceValue = `${unit} ${getFixedNumber(amount * price)}`;
 
     return (
