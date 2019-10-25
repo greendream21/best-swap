@@ -29,6 +29,7 @@ theme.palette = {
     '#33CCFF', // 5: lock bg
     '#ECEEEF', // 6: drag, border bg
     'linear-gradient(47.73deg, #50E3C2 0%, #33CCFF 100%)', // 7: gradient bg
+    '#D3DBE7', // 7: gray background
   ],
   secondary: [
     `linear-gradient(9.34deg, ${DARK_COL_BASE} 19.28%, ${DARK_COL} 106.03%)`, // darken col
