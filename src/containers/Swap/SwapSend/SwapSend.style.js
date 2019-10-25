@@ -287,5 +287,9 @@ export const SwapStatusPanel = styled.div`
     font-size: 24px;
     color: ${palette('primary', 1)};
     cursor: pointer;
+
+    &:hover {
+      font-size: 26px;
+    }
   }
 `;

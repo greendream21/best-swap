@@ -752,7 +752,7 @@ class SwapSend extends Component {
           >
             <SwapStatusPanel>
               <Status title="exchange rate" value="1 RUNE = 4 BOLT" />
-              <Icon type="swap" />
+              <Icon type="swap" onClick={this.handleReversePair} />
               <StepBar />
             </SwapStatusPanel>
           </Col>
