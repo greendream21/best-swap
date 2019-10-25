@@ -26,5 +26,11 @@ export const SliderWrapper = styled(Slider)`
     .ant-slider-dot {
       display: none;
     }
+
+    &:hover {
+      .ant-slider-track {
+        background: ${palette('primary', 1)};
+      }
+    }
   }
 `;
