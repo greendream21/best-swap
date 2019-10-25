@@ -272,3 +272,20 @@ export const PrivateModal = styled(Modal)`
     }
   }
 `;
+
+export const SwapStatusPanel = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 200px;
+  margin-top: 120px;
+  margin-left: auto;
+  margin-right: 10px;
+
+  i {
+    transform: rotate(-90deg);
+    font-size: 24px;
+    color: ${palette('primary', 1)};
+    cursor: pointer;
+  }
+`;

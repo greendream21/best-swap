@@ -28,6 +28,7 @@ import {
   CardFormHolder,
   CardFormItem,
   CardFormItemError,
+  SwapStatusPanel,
 } from './SwapSend.style';
 import {
   getTickerFormat,
@@ -45,6 +46,7 @@ import walletactions from '../../../redux/wallet/actions';
 import AddressInput from '../../../components/uielements/addressInput';
 import ContentTitle from '../../../components/uielements/contentTitle';
 import Slider from '../../../components/uielements/slider';
+import StepBar from '../../../components/uielements/stepBar';
 
 const {
   setTxTimerType,
@@ -744,9 +746,20 @@ class SwapSend extends Component {
       <ContentWrapper className="swap-detail-wrapper">
         <Row>
           <Col
+            className="swap-status-panel"
+            xs={{ span: 24, offset: 0 }}
+            xl={{ span: 6 }}
+          >
+            <SwapStatusPanel>
+              <Status title="exchange rate" value="1 RUNE = 4 BOLT" />
+              <Icon type="swap" />
+              <StepBar />
+            </SwapStatusPanel>
+          </Col>
+          <Col
             className="swap-detail-panel"
             xs={{ span: 24, offset: 0 }}
-            xl={{ span: 10, offset: 6 }}
+            xl={{ span: 10 }}
           >
             <SwapAssetCard>
               <ContentTitle>you are swapping</ContentTitle>
@@ -763,7 +776,11 @@ class SwapSend extends Component {
                 withSelection
                 withSearch
               />
-              <Slider value={percent} onChange={this.handleChangePercent} />
+              <Slider
+                value={percent}
+                onChange={this.handleChangePercent}
+                withLabel
+              />
               <TokenCard
                 title="You will receive"
                 inputTitle="swap amount"
