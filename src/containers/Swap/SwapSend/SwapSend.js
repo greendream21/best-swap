@@ -169,32 +169,32 @@ class SwapSend extends Component {
   };
 
   handleChangePercent = percent => {
-    // const { info } = this.props;
+    const { info } = this.props;
 
-    // const { assetData } = this.props;
-    // const { source } = getPair(info);
+    const { assetData } = this.props;
+    const { source } = getPair(info);
 
-    // const sourceAsset = assetData.find(data => {
-    //   const { asset } = data;
-    //   const tokenName = getTickerFormat(asset);
-    //   if (tokenName === source) {
-    //     return true;
-    //   }
-    //   return false;
-    // });
+    const sourceAsset = assetData.find(data => {
+      const { asset } = data;
+      const tokenName = getTickerFormat(asset);
+      if (tokenName === source) {
+        return true;
+      }
+      return false;
+    });
 
-    // const totalAmount = !sourceAsset ? 0 : sourceAsset.assetValue || 0;
-    // const newValue = (totalAmount * percent) / 100;
+    const totalAmount = !sourceAsset ? 0 : sourceAsset.assetValue || 0;
+    const newValue = (totalAmount * percent) / 100;
 
-    // if (totalAmount < newValue) {
-    //   this.setState({
-    //     xValue: totalAmount,
-    //   });
-    // } else {
-    //   this.setState({
-    //     xValue: newValue,
-    //   });
-    // }
+    if (totalAmount < newValue) {
+      this.setState({
+        xValue: totalAmount,
+      });
+    } else {
+      this.setState({
+        xValue: newValue,
+      });
+    }
 
     this.setState({
       percent,
@@ -853,7 +853,7 @@ class SwapSend extends Component {
                   >
                     <Icon type={slipProtection ? 'lock' : 'unlock'} />
                   </Button>
-                  <Label>Protect my price (within 3%)</Label>
+                  <Label>Protect my price (within 30%)</Label>
                 </CardForm>
               </CardFormHolder>
             </SwapAssetCard>

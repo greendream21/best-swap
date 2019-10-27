@@ -177,7 +177,7 @@ class Drag extends Component {
       left: 0,
       top: 0,
       bottom: 0,
-      right: 212,
+      right: 202,
     };
 
     return (

@@ -151,7 +151,7 @@ export function CoinInputAdvanced({
         onChange,
         onFocus,
         minimumFractionDigits,
-        useDebounce: true,
+        useDebounce: false,
       })}
     />
   );
