@@ -82,7 +82,7 @@ class Header extends Component {
     const poolsTab = (
       <span>
         <Icon type="database" theme="filled" />
-        pool
+        stake
       </span>
     );
     const tradeTab = (

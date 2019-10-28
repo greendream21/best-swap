@@ -8,6 +8,7 @@ import {
   getFixedNumber,
   getBaseNumberFormat,
   getTickerFormat,
+  getUserFormat,
 } from '../../helpers/stringHelper';
 
 export const getPoolData = (
@@ -37,6 +38,12 @@ export const getPoolData = (
   const totalSwaps = poolInfo.numSwaps;
   const totalStakers = poolInfo.numStakers;
 
+  const depthValue = `$${getUserFormat(depth).toLocaleString()}`;
+  const volume24Value = `$${getUserFormat(volume24)}`;
+  const transactionValue = `$${getUserFormat(transaction)}`;
+  const liqFeeValue = `${getUserFormat(liqFee)}%`;
+  const roiAtValue = `${getUserFormat(roiAT)}% pa`;
+
   return {
     tokenPrice,
     asset,
@@ -49,6 +56,18 @@ export const getPoolData = (
     roiAT,
     totalSwaps,
     totalStakers,
+    values: {
+      pool: {
+        asset,
+        target,
+      },
+      target,
+      depth: depthValue,
+      volume24: volume24Value,
+      transaction: transactionValue,
+      liqFee: liqFeeValue,
+      roiAT: roiAtValue,
+    },
   };
 };
 

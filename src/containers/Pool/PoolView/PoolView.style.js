@@ -12,7 +12,7 @@ export const ContentWrapper = styled(ContentView)`
   .add-new-pool {
     display: flex;
     align-items: center;
-    padding-top: 10px;
+    padding-top: 20px;
     cursor: pointer;
     width: 160px;
 

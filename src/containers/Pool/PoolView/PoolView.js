@@ -1,14 +1,17 @@
-import React, { Fragment, Component } from 'react';
+import React, { Component } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { notification } from 'antd';
+import { notification, Icon } from 'antd';
 
-import PoolCard from '../../../components/pool/poolCard';
 import Label from '../../../components/uielements/label';
 import AddIcon from '../../../components/uielements/addIcon';
 import PoolLoader from '../../../components/utility/loaders/pool';
+import CoinPair from '../../../components/uielements/coins/coinPair';
+import Trend from '../../../components/uielements/trend';
+import Table from '../../../components/uielements/table';
+import Button from '../../../components/uielements/button';
 
 import { ContentWrapper } from './PoolView.style';
 import statechainActions from '../../../redux/statechain/actions';
@@ -51,7 +54,7 @@ class PoolView extends Component {
   handleNewPool = () => {
     const { assetData, pools } = this.props;
     const possibleTokens = getCreatePoolTokens(assetData, pools);
-    console.log(possibleTokens);
+
     if (possibleTokens.length) {
       const symbol = possibleTokens[0].asset;
       if (getTickerFormat(symbol) !== 'rune') {
@@ -66,44 +69,95 @@ class PoolView extends Component {
     }
   };
 
+  renderPoolTable = swapViewData => {
+    const columns = [
+      {
+        key: 'pool',
+        title: 'pool',
+        dataIndex: 'pool',
+        render: ({ asset, target }) => <CoinPair from={asset} to={target} />,
+      },
+      {
+        key: 'depth',
+        title: 'depth',
+        dataIndex: 'depth',
+      },
+      {
+        key: 'volume24',
+        title: '24h vol',
+        dataIndex: 'volume24',
+      },
+      {
+        key: 'transaction',
+        title: 'avg. transaction',
+        dataIndex: 'transaction',
+      },
+      {
+        key: 'liqFee',
+        title: 'avg. liq fee',
+        dataIndex: 'liqFee',
+        render: slip => <Trend value={slip} />,
+      },
+      {
+        key: 'roiAT',
+        title: 'historical roi',
+        dataIndex: 'roiAT',
+      },
+      {
+        key: 'stake',
+        title: (
+          <Button typevalue="outline">
+            <Icon type="sync" />
+            refresh
+          </Button>
+        ),
+        render: (text, record) => {
+          const {
+            pool: { target },
+          } = record;
+          return (
+            <Button
+              onClick={this.handleStake(target)}
+              style={{ margin: 'auto' }}
+              round
+            >
+              <Icon type="database" />
+              stake
+            </Button>
+          );
+        },
+      },
+    ];
+
+    return <Table columns={columns} dataSource={swapViewData} />;
+  };
+
   renderPoolList = () => {
     const { pools, poolData, swapData, runePrice, assetData } = this.props;
     const { activeAsset } = this.state;
 
-    return pools.map((pool, index) => {
+    const stakeViewData = pools.reduce((result, pool) => {
       const { symbol } = pool;
       const poolInfo = poolData[symbol] || {};
       const swapInfo = swapData[symbol] || {};
 
-      const {
-        asset,
-        target,
-        depth,
-        volume24,
-        transaction,
-        liqFee,
-        roiAT,
-      } = getPoolData('rune', symbol, poolInfo, swapInfo, assetData, runePrice);
+      const { values: stakeCardData } = getPoolData(
+        'rune',
+        symbol,
+        poolInfo,
+        swapInfo,
+        assetData,
+        runePrice,
+      );
 
-      if (target !== activeAsset) {
-        return (
-          <PoolCard
-            className="pool-card"
-            data-test={`pool-card-${symbol}`}
-            asset={asset}
-            target={target}
-            depth={depth}
-            transaction={transaction}
-            volume={volume24}
-            liqFee={liqFee}
-            roi={roiAT}
-            onStake={this.handleStake(symbol)}
-            key={index}
-          />
-        );
+      if (stakeCardData.target !== activeAsset) {
+        result.push(stakeCardData);
       }
-      return <Fragment />;
-    });
+
+      return result;
+    }, []);
+
+    return this.renderPoolTable(stakeViewData);
   };
 
   render() {

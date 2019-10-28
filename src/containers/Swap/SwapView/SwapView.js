@@ -115,7 +115,6 @@ class SwapView extends Component {
           </Button>
         ),
         render: (text, record) => {
-          console.log(text);
           const {
             pool: { asset, target },
           } = record;
