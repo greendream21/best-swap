@@ -77,6 +77,7 @@ theme.palette = {
     '#9B9B9B', // 5: Input Text (input)
     '#919D9D', // 6: Footer Color
     '#50E3C2', // 7
+    '#626D7C', // 8
   ],
   color: [
     '#FEAC01', // 0: Orange

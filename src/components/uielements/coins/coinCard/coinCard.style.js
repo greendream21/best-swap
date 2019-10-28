@@ -8,12 +8,12 @@ import { cleanTag } from '../../../../helpers/styleHelper';
 import Coin from '../coin';
 
 export const CoinCardWrapper = styled.div`
+  min-width: 350px;
   .title-label {
     font-style: italic;
   }
 
   .selection-wrapper {
-    min-width: 250px;
     width: auto;
     margin-top: 10px;
 
@@ -26,10 +26,9 @@ export const CoinCardWrapper = styled.div`
 export const CardBorderWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 10px 10px;
 
   border: 1px solid ${palette('border', 0)};
-  border-radius: 5px;
+  border-radius: 3px;
   background-color: #fff;
 `;
 
@@ -66,15 +65,19 @@ export const DropdownIconHolder = styled.div`
 `;
 
 export const AssetNameLabel = styled(Label).attrs({
-  size: 'small',
+  size: 'normal',
   weight: 'bold',
 })`
+  font-size: 14px;
+  letter-spacing: 0.75px;
   transition: transform 0.2s ease-in-out;
   text-transform: uppercase;
-  padding: 5px 0 0;
+  padding: 8px 16px 6px 16px;
 `;
 
 export const CoinDropdownCoin = styled(Coin)`
+  width: 45px;
+  height: 45px;
   transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
 `;
 
@@ -123,7 +126,11 @@ export const AssetData = styled.div.attrs({ className: 'asset-data' })`
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  padding: 5px 20px 10px 20px;
+  padding: 12px 16px;
+
+  .asset-amount-label {
+    height: 24px;
+  }
 `;
 
 export const VerticalDivider = styled(Divider).attrs({
@@ -137,16 +144,19 @@ export const VerticalDivider = styled(Divider).attrs({
 
 export const HorizontalDivider = styled(Divider)`
   &.ant-divider {
-    margin: 2px 0;
-    background: ${palette('border', 0)};
+    margin: ${props => (props.color === 'primary' ? '4px 0' : '2px 0')};
+
+    background: ${props =>
+      props.color === 'primary' ? palette('success', 0) : palette('border', 0)};
   }
 `;
 
 export const FooterLabel = styled(Label).attrs({
-  size: 'small',
+  size: 'normal',
   color: 'gray',
-  weight: 'bold',
+  weight: 'normal',
 })`
+  letter-spacing: 0.416667px;
   padding: 0;
 `;
 

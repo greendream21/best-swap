@@ -28,7 +28,7 @@ class TokenData extends Component {
     return (
       <TokenDataWrapper
         assetValue={assetValue}
-        className={`coinData-wrapper ${className}`}
+        className={`tokenData-wrapper ${className}`}
         {...props}
       >
         <Coin className="coinData-coin-avatar" type={asset} />
