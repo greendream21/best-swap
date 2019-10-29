@@ -4,7 +4,7 @@ import { size, key, palette } from 'styled-theme';
 export const StyledTab = component => styled(component)`
   .ant-tabs-bar {
     width: ${props => (props.action ? 'auto' : '100%')};
-    border-bottom-width: 0px;
+    border-bottom-width: ${props => (props.withBorder ? '1px' : '0px')};
     .ant-tabs-nav-container,
     .ant-tabs-nav-wrap,
     .ant-tabs-nav-scroll,

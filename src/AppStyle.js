@@ -61,6 +61,10 @@ const AppHolder = styled.div`
     }
   }
 
+  section.ant-layout {
+    background: ${palette('background', 2)};
+  }
+
   .ant-row:not(.ant-form-item) {
     ${'' /* margin-left: -8px;
     margin-right: -8px; */};

@@ -12,7 +12,6 @@ import { withBinanceTransferWS } from '../../../HOC/websocket/WSBinance';
 
 import Label from '../../../components/uielements/label';
 import Status from '../../../components/uielements/status';
-import Coin from '../../../components/uielements/coins/coin';
 import CoinCard from '../../../components/uielements/coins/coinCard';
 import CoinData from '../../../components/uielements/coins/coinData';
 import Slider from '../../../components/uielements/slider';
@@ -33,7 +32,6 @@ import {
   ConfirmModal,
   ConfirmModalContent,
   PrivateModal,
-  // StakePoolCol,
 } from './PoolStake.style';
 import {
   getPoolData,
@@ -42,8 +40,13 @@ import {
   confirmWithdraw,
   stakedResult,
 } from '../utils';
-import { getUserFormat, getTickerFormat } from '../../../helpers/stringHelper';
+import {
+  getUserFormat,
+  getTickerFormat,
+  getFixedNumber,
+} from '../../../helpers/stringHelper';
 import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
+import TokenInfo from '../../../components/uielements/tokens/tokenInfo';
 
 const { TabPane } = Tabs;
 
@@ -714,12 +717,11 @@ class PoolStake extends Component {
     );
   };
 
-  renderStakeInfo = (poolStats, calcResult) => {
+  renderStakeInfo = poolStats => {
     const { symbol } = this.props;
     const source = 'rune';
 
     const target = getTickerFormat(symbol);
-    const stakePool = `${source}:${target}`;
 
     const {
       depth,
@@ -728,8 +730,8 @@ class PoolStake extends Component {
       totalSwaps,
       totalStakers,
       roiAT,
+      liqFee,
     } = poolStats;
-    const { poolPrice } = calcResult;
 
     const attrs = [
       {
@@ -756,26 +758,21 @@ class PoolStake extends Component {
       },
     ];
 
-    return (
-      <Row className="stake-status-view">
-        <div className="stake-pool-col">
-          <Coin type="rune" over={target} />
-          <div className="pool-status-info">
-            <Label className="stake-pool-status" size="big" weight="bold">
-              {stakePool}
-            </Label>
-            <Label className="pool-price-label" size="normal" color="grey">
-              $USD {poolPrice}
-            </Label>
-          </div>
-        </div>
-        <div className="stake-info-col">
-          {attrs.map(info => (
-            <Status className="stake-info-status" {...info} />
-          ))}
-        </div>
-      </Row>
-    );
+    return attrs.map(info => {
+      const { title, value } = info;
+      console.log(title, value);
+      return (
+        <Col className="token-info-card" xs={12} sm={8} md={6} lg={4}>
+          <TokenInfo
+            asset={source}
+            target={target}
+            value={value}
+            label={title}
+            trend={getFixedNumber(liqFee)}
+          />
+        </Col>
+      );
+    });
   };
 
   renderShareDetail = (poolStats, calcResult, stakeData) => {
@@ -855,157 +852,159 @@ class PoolStake extends Component {
     const disableWithdraw = stakeInfo.units === 0;
 
     return (
-      <Tabs>
-        <TabPane tab="add" key="add">
-          <Row>
-            <Col span={24} lg={12}>
-              <Label className="label-description" size="normal">
-                Select the maximum deposit to stake.
-              </Label>
-              <Label className="label-no-padding" size="normal">
-                Note: Pools always have RUNE as the base asset.
-              </Label>
-            </Col>
-            <Col className="advanced-mode-wrapper" span={24} lg={12}>
-              <Button
-                sizevalue="small"
-                typevalue="outline"
-                focused={advancedMode}
-                onClick={this.handleSwitchAdvancedMode}
-              >
-                advanced mode
-              </Button>
-            </Col>
-          </Row>
-          <div className="stake-card-wrapper">
-            <CoinCard
-              inputProps={{ 'data-test': 'stake-coin-input-rune' }}
-              data-test="coin-card-stake-coin-rune"
-              asset={source}
-              amount={runeAmount}
-              price={runePrice}
-              onChange={this.handleChangeTokenAmount('rune')}
-              onSelect={this.handleSelectTokenAmount('rune')}
-              withSelection
-            />
-            <CoinCard
-              inputProps={{
-                'data-test': 'stake-coin-input-target',
-              }}
-              data-test="coin-card-stake-coin-target"
-              asset={target}
-              assetData={tokensData}
-              amount={tokenAmount}
-              price={tokenPrice}
-              onChangeAsset={this.handleSelectTraget}
-              onChange={this.handleChangeTokenAmount(target)}
-              onSelect={this.handleSelectTokenAmount(target)}
-              withSelection={advancedMode}
-              withSearch
-            />
-          </div>
-          {advancedMode && (
-            <>
-              <Label className="label-title" size="normal" weight="bold">
-                ADJUST BALANCE
-              </Label>
-              <Label size="normal">
-                Fine tune balances to ensure you stake on both sides with the
-                correct amount.
-              </Label>
-              <Slider
-                onChange={this.handleChangeBalance}
-                value={balance}
-                min={0}
-                max={200}
-                tooltipVisible={false}
+      <div className="share-detail-wrapper">
+        <Tabs withBorder>
+          <TabPane tab="add" key="add">
+            <Row>
+              <Col span={24} lg={12}>
+                <Label className="label-description" size="normal">
+                  Select the maximum deposit to stake.
+                </Label>
+                <Label className="label-no-padding" size="normal">
+                  Note: Pools always have RUNE as the base asset.
+                </Label>
+              </Col>
+              <Col className="advanced-mode-wrapper" span={24} lg={12}>
+                <Button
+                  sizevalue="small"
+                  typevalue="outline"
+                  focused={advancedMode}
+                  onClick={this.handleSwitchAdvancedMode}
+                >
+                  advanced mode
+                </Button>
+              </Col>
+            </Row>
+            <div className="stake-card-wrapper">
+              <CoinCard
+                inputProps={{ 'data-test': 'stake-coin-input-rune' }}
+                data-test="coin-card-stake-coin-rune"
+                asset={source}
+                amount={runeAmount}
+                price={runePrice}
+                onChange={this.handleChangeTokenAmount('rune')}
+                onSelect={this.handleSelectTokenAmount('rune')}
+                withSelection
               />
-            </>
-          )}
-          <div className="stake-share-info-wrapper">
+              <CoinCard
+                inputProps={{
+                  'data-test': 'stake-coin-input-target',
+                }}
+                data-test="coin-card-stake-coin-target"
+                asset={target}
+                assetData={tokensData}
+                amount={tokenAmount}
+                price={tokenPrice}
+                onChangeAsset={this.handleSelectTraget}
+                onChange={this.handleChangeTokenAmount(target)}
+                onSelect={this.handleSelectTokenAmount(target)}
+                withSelection={advancedMode}
+                withSearch
+              />
+            </div>
             {advancedMode && (
-              <div className="pool-status-wrapper">
-                {poolAttrs.map(info => {
-                  return <Status className="share-info-status" {...info} />;
-                })}
-              </div>
+              <>
+                <Label className="label-title" size="normal" weight="bold">
+                  ADJUST BALANCE
+                </Label>
+                <Label size="normal">
+                  Fine tune balances to ensure you stake on both sides with the
+                  correct amount.
+                </Label>
+                <Slider
+                  onChange={this.handleChangeBalance}
+                  value={balance}
+                  min={0}
+                  max={200}
+                  tooltipVisible={false}
+                />
+              </>
             )}
-            <div className="share-status-wrapper">
+            <div className="stake-share-info-wrapper">
               {advancedMode && (
-                <div className="info-status-wrapper">
-                  {newPoolAttrs.map(info => {
+                <div className="pool-status-wrapper">
+                  {poolAttrs.map(info => {
                     return <Status className="share-info-status" {...info} />;
                   })}
                 </div>
               )}
-              <Drag
-                title="Drag to stake"
-                source="blue"
-                target="confirm"
-                reset={dragReset}
-                onConfirm={this.handleStake}
-                onDrag={this.handleDrag}
-              />
-            </div>
-          </div>
-        </TabPane>
-        <TabPane tab="Withdraw" key="withdraw" disabled={disableWithdraw}>
-          <Label className="label-title" size="normal" weight="bold">
-            ADJUST WITHDRAWAL
-          </Label>
-          <Label size="normal">
-            Choose from 0 to 100% of how much to withdraw.
-          </Label>
-          <div className="withdraw-percent-view">
-            <Label size="large" color="gray" weight="bold">
-              0%
-            </Label>
-            <Label size="large" color="gray" weight="bold">
-              50%
-            </Label>
-            <Label size="large" color="gray" weight="bold">
-              100%
-            </Label>
-          </div>
-          <Slider
-            onChange={e => {
-              this.setState({ widthdrawPercentage: e });
-            }}
-            defaultValue={50}
-            max={100}
-            min={1}
-          />
-          <div className="stake-withdraw-info-wrapper">
-            <Label className="label-title" size="normal" weight="bold">
-              YOU SHOULD RECEIVE
-            </Label>
-            <div className="withdraw-status-wrapper">
-              <div className="withdraw-asset-wrapper">
-                <CoinData
-                  asset={source}
-                  assetValue={runeValue}
-                  price={runeValue * runePrice}
-                />
-                <CoinData
-                  asset={target}
-                  assetValue={tokenValue}
-                  price={tokenValue * tokenPrice}
+              <div className="share-status-wrapper">
+                {advancedMode && (
+                  <div className="info-status-wrapper">
+                    {newPoolAttrs.map(info => {
+                      return <Status className="share-info-status" {...info} />;
+                    })}
+                  </div>
+                )}
+                <Drag
+                  title="Drag to stake"
+                  source="blue"
+                  target="confirm"
+                  reset={dragReset}
+                  onConfirm={this.handleStake}
+                  onDrag={this.handleDrag}
                 />
               </div>
             </div>
-            <div className="drag-container">
-              <Drag
-                title="Drag to withdraw"
-                source="blue"
-                target="confirm"
-                reset={dragReset}
-                onConfirm={this.handleWithdraw}
-                onDrag={this.handleDrag}
-              />
+          </TabPane>
+          <TabPane tab="Withdraw" key="withdraw" disabled={disableWithdraw}>
+            <Label className="label-title" size="normal" weight="bold">
+              ADJUST WITHDRAWAL
+            </Label>
+            <Label size="normal">
+              Choose from 0 to 100% of how much to withdraw.
+            </Label>
+            <div className="withdraw-percent-view">
+              <Label size="large" color="gray" weight="bold">
+                0%
+              </Label>
+              <Label size="large" color="gray" weight="bold">
+                50%
+              </Label>
+              <Label size="large" color="gray" weight="bold">
+                100%
+              </Label>
             </div>
-          </div>
-        </TabPane>
-      </Tabs>
+            <Slider
+              onChange={e => {
+                this.setState({ widthdrawPercentage: e });
+              }}
+              defaultValue={50}
+              max={100}
+              min={1}
+            />
+            <div className="stake-withdraw-info-wrapper">
+              <Label className="label-title" size="normal" weight="bold">
+                YOU SHOULD RECEIVE
+              </Label>
+              <div className="withdraw-status-wrapper">
+                <div className="withdraw-asset-wrapper">
+                  <CoinData
+                    asset={source}
+                    assetValue={runeValue}
+                    price={runeValue * runePrice}
+                  />
+                  <CoinData
+                    asset={target}
+                    assetValue={tokenValue}
+                    price={tokenValue * tokenPrice}
+                  />
+                </div>
+              </div>
+              <div className="drag-container">
+                <Drag
+                  title="Drag to withdraw"
+                  source="blue"
+                  target="confirm"
+                  reset={dragReset}
+                  onConfirm={this.handleWithdraw}
+                  onDrag={this.handleDrag}
+                />
+              </div>
+            </div>
+          </TabPane>
+        </Tabs>
+      </div>
     );
   };
 
@@ -1119,7 +1118,6 @@ class PoolStake extends Component {
 
   render() {
     const {
-      symbol,
       runePrice,
       poolData,
       swapData,
@@ -1138,6 +1136,9 @@ class PoolStake extends Component {
     } = this.state;
 
     console.log('binance websocket transfer data: ', wsTransfers);
+
+    let { symbol } = this.props;
+    symbol = symbol.toUpperCase();
 
     const poolInfo = poolData[symbol] || {};
     const swapInfo = swapData[symbol] || {};
@@ -1168,10 +1169,10 @@ class PoolStake extends Component {
     const coinCloseIconType = txStatus.status ? 'fullscreen-exit' : 'close';
 
     return (
-      <ContentWrapper className="pool-stake-wrapper">
+      <ContentWrapper className="pool-stake-wrapper" transparent>
+        <Row className="stake-info-view">{this.renderStakeInfo(poolStats)}</Row>
         <Row className="share-view">
           <Col className="your-share-view" span={24} lg={8}>
-            {this.renderStakeInfo(poolStats, calcResult)}
             {this.renderYourShare(poolStats, calcResult, stakeData)}
           </Col>
           <Col className="share-detail-view" span={24} lg={16}>

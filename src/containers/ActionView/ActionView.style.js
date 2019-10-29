@@ -25,3 +25,24 @@ export const HeaderAction = styled.div`
     height: ${size('icon', '16px')};
   }
 `;
+
+export const BackLink = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px !important;
+  cursor: pointer;
+
+  i {
+    margin-right: 6px;
+    font-size: 22px;
+    font-weight: bold;
+    color: ${palette('primary', 1)};
+  }
+
+  span {
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+`;

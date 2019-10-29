@@ -43,12 +43,27 @@ class Header extends Component {
     const url = window.location.pathname;
     if (url === '/') return 'swap';
 
-    const pageTypes = ['swap', 'pools', 'trade'];
+    const pageTypes = [
+      {
+        type: 'swap',
+        key: 'swap',
+      },
+      {
+        type: 'pool',
+        key: 'pools',
+      },
+      {
+        type: 'trade',
+        key: 'trade',
+      },
+    ];
     let pageType = '';
 
-    pageTypes.forEach(type => {
+    pageTypes.forEach(data => {
+      const { type, key } = data;
+
       if (url.includes(type)) {
-        pageType = type;
+        pageType = key;
       }
     });
 

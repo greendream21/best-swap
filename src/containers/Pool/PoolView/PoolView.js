@@ -47,7 +47,7 @@ class PoolView extends Component {
   }
 
   handleStake = symbol => () => {
-    const URL = `/pool/${symbol}`;
+    const URL = `/pool/${symbol.toUpperCase()}`;
     this.props.history.push(URL);
   };
 

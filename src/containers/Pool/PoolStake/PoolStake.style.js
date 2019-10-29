@@ -12,6 +12,16 @@ import { media } from '../../../helpers/styleHelper';
 export const ContentWrapper = styled(ContentView)`
   padding: 0;
 
+  .stake-info-view {
+    .token-info-card {
+      padding: 8px;
+
+      &:last-child {
+        padding-right: 0px;
+      }
+    }
+  }
+
   .stake-status-view {
     ${media.lg`
       padding: 20px 0;
@@ -76,20 +86,14 @@ export const ContentWrapper = styled(ContentView)`
   }
 
   .share-view {
-    ${media.lg`
-      display:flex;
-      flex-grow: 1;
-
-      & > * {
-        border-right: 1px solid ${palette('border', 0)};
-        &:last-child {
-          border-right: none;
-        }
-      }
-    `}
+    padding-top: 10px;
 
     .your-share-view,
     .share-detail-view {
+      ${media.lg`
+        height: 570px;
+      `}
+
       .label-title {
         ${media.lg`
           padding-bottom: 0;
@@ -341,6 +345,22 @@ export const ContentWrapper = styled(ContentView)`
         }
       }
     }
+
+    .your-share-view {
+      padding-right: 8px;
+    }
+
+    .share-detail-view {
+      padding-left: 8px;
+    }
+  }
+
+  .your-share-wrapper,
+  .share-detail-wrapper {
+    height: 100%;
+    background: #ffffff;
+    box-shadow: 0px 1px 3px rgba(47, 83, 151, 0.1);
+    border-radius: 3px;
   }
 `;
 

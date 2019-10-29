@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { palette } from 'styled-theme';
 
 export const TokenInfoWrapper = styled.div`
+  position: relative;
   display: flex;
   justify-content: space-between;
   flex-direction: column;
