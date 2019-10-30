@@ -62,6 +62,7 @@ export const getPoolData = (
         target,
       },
       target,
+      symbol: to,
       depth: depthValue,
       volume24: volume24Value,
       transaction: transactionValue,

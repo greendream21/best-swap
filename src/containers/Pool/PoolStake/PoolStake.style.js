@@ -16,6 +16,9 @@ export const ContentWrapper = styled(ContentView)`
     .token-info-card {
       padding: 8px;
 
+      &:first-child {
+        padding-left: 0px;
+      }
       &:last-child {
         padding-right: 0px;
       }
@@ -76,13 +79,12 @@ export const ContentWrapper = styled(ContentView)`
     }
   }
 
-  .advanced-mode-wrapper {
-    display: flex;
-    justify-content: flex-end;
+  .advanced-mode-btn {
+    position: absolute;
+    top: 15px;
+    right: 50px;
 
-    .btn-wrapper {
-      margin-top: 20px;
-    }
+    z-index: 100;
   }
 
   .share-view {
@@ -188,12 +190,56 @@ export const ContentWrapper = styled(ContentView)`
       }
 
       .your-share-wrapper {
-        padding: 10px 20px;
+        padding: 40px 20px;
 
         ${media.lg`
           display: flex;
           flex-direction: column;
         `}
+
+        .label-title {
+          font-size: 15px;
+          text-align: center;
+          font-weight: 500;
+          letter-spacing: 0.04em;
+        }
+
+        .earning-label {
+          margin-top: 40px;
+        }
+
+        .share-placeholder-wrapper {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+
+          width: 100%;
+          height: 100%;
+        }
+
+        .placeholder-label {
+          font-size: 14px;
+          letter-spacing: 0.04em;
+        }
+
+        .placeholder-icon {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+
+          width: 100px;
+          height: 100px;
+          margin-bottom: 20px;
+          border-radius: 50%;
+          background: ${palette('background', 2)};
+          i {
+            svg {
+              width: 60px;
+              height: 60px;
+            }
+          }
+        }
 
         .your-share-info-wrapper {
           ${media.lg`
@@ -269,7 +315,7 @@ export const ContentWrapper = styled(ContentView)`
           }
         `}
 
-        .coinCard-wrapper {
+        .coin-card-wrapper {
           ${media.lg`
             width: calc(50% - 20px);
           `}
@@ -512,6 +558,7 @@ export const ConfirmModalContent = styled.div`
 
 export const Tabs = styled(UnstyledTabs)`
   width: 100%;
+  padding-top: 10px !important;
   .ant-tabs-tabpane {
     padding: 0 20px;
   }

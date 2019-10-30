@@ -100,10 +100,10 @@ class PoolStake extends Component {
     balance: 100,
     fR: 1,
     fT: 1,
-    selectedRune: 0,
-    selectedToken: 0,
     runeTotal: 0,
     tokenTotal: 0,
+    runePercent: 0,
+    tokenPercent: 0,
   };
 
   componentDidMount() {
@@ -216,13 +216,12 @@ class PoolStake extends Component {
         this.setState({
           runeAmount: totalAmount,
           tokenAmount,
-          selectedRune: 0,
+          runePercent: 100,
         });
       } else {
         this.setState({
           runeAmount: newValue,
           tokenAmount,
-          selectedRune: 0,
         });
       }
     } else {
@@ -231,18 +230,17 @@ class PoolStake extends Component {
       if (totalAmount < newValue) {
         this.setState({
           tokenAmount: totalAmount,
-          selectedToken: 0,
+          tokenPercent: 100,
         });
       } else {
         this.setState({
           tokenAmount: newValue,
-          selectedToken: 0,
         });
       }
     }
   };
 
-  handleSelectTokenAmount = token => amount => {
+  handleChangePercent = token => amount => {
     const { assetData, symbol } = this.props;
     const { fR, fT } = this.state;
 
@@ -281,31 +279,31 @@ class PoolStake extends Component {
       this.setState({
         runeAmount: value,
         tokenAmount,
-        selectedRune: amount,
+        runePercent: amount,
         runeTotal: totalAmount,
       });
     } else {
       this.setState({
         tokenAmount: value,
-        selectedToken: amount,
+        tokenPercent: amount,
         tokenTotal: totalAmount,
       });
     }
   };
 
   handleChangeBalance = balance => {
-    const { selectedRune, selectedToken, runeTotal, tokenTotal } = this.state;
+    const { runePercent, tokenPercent, runeTotal, tokenTotal } = this.state;
     const fR = balance <= 100 ? 1 : (200 - balance) / 100;
     const fT = balance >= 100 ? 1 : balance / 100;
 
-    if (selectedRune > 0) {
-      const runeAmount = ((runeTotal * selectedRune) / 100) * fR;
+    if (runePercent > 0) {
+      const runeAmount = ((runeTotal * runePercent) / 100) * fR;
       this.setState({
         runeAmount,
       });
     }
-    if (selectedToken > 0) {
-      const tokenAmount = ((tokenTotal * selectedToken) / 100) * fT;
+    if (tokenPercent > 0) {
+      const tokenAmount = ((tokenTotal * tokenPercent) / 100) * fT;
       this.setState({
         tokenAmount,
       });
@@ -784,6 +782,8 @@ class PoolStake extends Component {
     const {
       runeAmount,
       tokenAmount,
+      runePercent,
+      tokenPercent,
       balance,
       widthdrawPercentage,
       dragReset,
@@ -851,8 +851,17 @@ class PoolStake extends Component {
 
     const disableWithdraw = stakeInfo.units === 0;
 
+    console.log('rune percent: ', runePercent);
     return (
       <div className="share-detail-wrapper">
+        <Button
+          className="advanced-mode-btn"
+          typevalue="outline"
+          focused={advancedMode}
+          onClick={this.handleSwitchAdvancedMode}
+        >
+          advanced mode
+        </Button>
         <Tabs withBorder>
           <TabPane tab="add" key="add">
             <Row>
@@ -864,43 +873,45 @@ class PoolStake extends Component {
                   Note: Pools always have RUNE as the base asset.
                 </Label>
               </Col>
-              <Col className="advanced-mode-wrapper" span={24} lg={12}>
-                <Button
-                  sizevalue="small"
-                  typevalue="outline"
-                  focused={advancedMode}
-                  onClick={this.handleSwitchAdvancedMode}
-                >
-                  advanced mode
-                </Button>
-              </Col>
             </Row>
             <div className="stake-card-wrapper">
-              <CoinCard
-                inputProps={{ 'data-test': 'stake-coin-input-rune' }}
-                data-test="coin-card-stake-coin-rune"
-                asset={source}
-                amount={runeAmount}
-                price={runePrice}
-                onChange={this.handleChangeTokenAmount('rune')}
-                onSelect={this.handleSelectTokenAmount('rune')}
-                withSelection
-              />
-              <CoinCard
-                inputProps={{
-                  'data-test': 'stake-coin-input-target',
-                }}
-                data-test="coin-card-stake-coin-target"
-                asset={target}
-                assetData={tokensData}
-                amount={tokenAmount}
-                price={tokenPrice}
-                onChangeAsset={this.handleSelectTraget}
-                onChange={this.handleChangeTokenAmount(target)}
-                onSelect={this.handleSelectTokenAmount(target)}
-                withSelection={advancedMode}
-                withSearch
-              />
+              <div className="coin-card-wrapper">
+                <CoinCard
+                  inputProps={{ 'data-test': 'stake-coin-input-rune' }}
+                  data-test="coin-card-stake-coin-rune"
+                  asset={source}
+                  amount={runeAmount}
+                  price={runePrice}
+                  onChange={this.handleChangeTokenAmount('rune')}
+                />
+                <Slider
+                  value={runePercent}
+                  onChange={this.handleChangePercent('rune')}
+                  withLabel
+                />
+              </div>
+              <div className="coin-card-wrapper">
+                <CoinCard
+                  inputProps={{
+                    'data-test': 'stake-coin-input-target',
+                  }}
+                  data-test="coin-card-stake-coin-target"
+                  asset={target}
+                  assetData={tokensData}
+                  amount={tokenAmount}
+                  price={tokenPrice}
+                  onChangeAsset={this.handleSelectTraget}
+                  onChange={this.handleChangeTokenAmount(target)}
+                  withSearch
+                />
+                {advancedMode && (
+                  <Slider
+                    value={tokenPercent}
+                    onChange={this.handleChangePercent(target)}
+                    withLabel
+                  />
+                )}
+              </div>
             </div>
             {advancedMode && (
               <>
@@ -1035,14 +1046,19 @@ class PoolStake extends Component {
 
     return (
       <div className="your-share-wrapper">
-        <Label className="label-title" size="normal" weight="bold">
+        <Label className="label-title" size="normal">
           YOUR SHARE
         </Label>
         {!wallet && <Label size="normal">Please connect your wallet.</Label>}
         {wallet && stakeInfo.units === 0 && (
-          <>
-            <Label size="normal">You don't have any shares in this pool.</Label>
-          </>
+          <div className="share-placeholder-wrapper">
+            <div className="placeholder-icon">
+              <Icon type="inbox" />
+            </div>
+            <Label className="placeholder-label">
+              You don't have any shares in this pool.
+            </Label>
+          </div>
         )}
         {wallet && stakeInfo.units > 0 && (
           <>
@@ -1078,7 +1094,11 @@ class PoolStake extends Component {
                 <Status title="Pool Share" value={`${poolShare}%`} />
               </div>
             </div>
-            <Label className="label-title" size="normal" weight="bold">
+            <Label
+              className="label-title earning-label"
+              size="normal"
+              weight="bold"
+            >
               EARNINGS
             </Label>
             <Label size="normal">Total of all earnings from this pool.</Label>

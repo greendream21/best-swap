@@ -162,7 +162,7 @@ class CoinCard extends Component {
         disabled={disabled}
         onClick={this.handleDropdownButtonClicked}
       >
-        <CoinDropdownCoin type={asset} size="large" />
+        <CoinDropdownCoin type={asset} size="big" />
         {!disabled ? (
           <CoinDropdownVerticalColumn>
             <DropdownCarret className="caret-down" open={open} />

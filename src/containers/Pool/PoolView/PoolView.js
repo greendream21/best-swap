@@ -112,12 +112,11 @@ class PoolView extends Component {
           </Button>
         ),
         render: (text, record) => {
-          const {
-            pool: { target },
-          } = record;
+          const { symbol } = record;
+
           return (
             <Button
-              onClick={this.handleStake(target)}
+              onClick={this.handleStake(symbol)}
               style={{ margin: 'auto' }}
               round
             >
