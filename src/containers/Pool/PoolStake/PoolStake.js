@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Row, Col, Icon, Form, notification } from 'antd';
 import { crypto } from '@binance-chain/javascript-sdk';
@@ -20,6 +20,7 @@ import Drag from '../../../components/uielements/drag';
 import Modal from '../../../components/uielements/modal';
 import Input from '../../../components/uielements/input';
 import Button from '../../../components/uielements/button';
+import WalletButton from '../../../components/uielements/walletButton';
 
 import appActions from '../../../redux/app/actions';
 import chainActions from '../../../redux/chainservice/actions';
@@ -1043,13 +1044,26 @@ class PoolStake extends Component {
     const tokensShare = getUserFormat((T * units) / poolUnits);
     const runeEarned = getUserFormat(stakeInfo.runeEarned);
     const tokensEarned = getUserFormat(stakeInfo.tokensEarned);
+    const connected = !!wallet;
 
     return (
       <div className="your-share-wrapper">
         <Label className="label-title" size="normal">
           YOUR SHARE
         </Label>
-        {!wallet && <Label size="normal">Please connect your wallet.</Label>}
+        {!wallet && (
+          <div className="share-placeholder-wrapper">
+            <div className="placeholder-icon">
+              <Icon type="switcher" />
+            </div>
+            <Label className="placeholder-label">
+              Please connect your wallet.
+            </Label>
+            <Link to="/connect">
+              <WalletButton connected={connected} value={wallet} />
+            </Link>
+          </div>
+        )}
         {wallet && stakeInfo.units === 0 && (
           <div className="share-placeholder-wrapper">
             <div className="placeholder-icon">
@@ -1145,6 +1159,7 @@ class PoolStake extends Component {
       txStatus,
       chainData: { stakeData, tokenInfo },
       wsTransfers,
+      user: { wallet },
     } = this.props;
     const {
       runeAmount,
@@ -1188,70 +1203,78 @@ class PoolStake extends Component {
       txStatus.type === 'withdraw' ? txStatus.modal : false;
     const coinCloseIconType = txStatus.status ? 'fullscreen-exit' : 'close';
 
+    const yourShareSpan = wallet ? 8 : 24;
+
     return (
       <ContentWrapper className="pool-stake-wrapper" transparent>
         <Row className="stake-info-view">{this.renderStakeInfo(poolStats)}</Row>
         <Row className="share-view">
-          <Col className="your-share-view" span={24} lg={8}>
+          <Col className="your-share-view" span={24} lg={yourShareSpan}>
             {this.renderYourShare(poolStats, calcResult, stakeData)}
           </Col>
-          <Col className="share-detail-view" span={24} lg={16}>
-            {this.renderShareDetail(poolStats, calcResult, stakeData)}
-          </Col>
+          {wallet && (
+            <Col className="share-detail-view" span={24} lg={16}>
+              {this.renderShareDetail(poolStats, calcResult, stakeData)}
+            </Col>
+          )}
         </Row>
-        <ConfirmModal
-          title="WITHDRAW CONFIRMATION"
-          closeIcon={
-            <Icon type={coinCloseIconType} style={{ color: '#33CCFF' }} />
-          }
-          visible={openWithdrawModal}
-          footer={null}
-          onCancel={this.handleCloseModal}
-        >
-          {this.renderWithdrawModalContent()}
-        </ConfirmModal>
-        <ConfirmModal
-          title="STAKE CONFIRMATION"
-          closeIcon={
-            <Icon type={coinCloseIconType} style={{ color: '#33CCFF' }} />
-          }
-          visible={openStakeModal}
-          footer={null}
-          onCancel={this.handleCloseModal}
-        >
-          {this.renderStakeModalContent(poolStats, calcResult)}
-        </ConfirmModal>
-        <PrivateModal
-          title="PASSWORD CONFIRMATION"
-          visible={openPrivateModal}
-          onOk={this.handleConfirmPassword}
-          onCancel={this.handleClosePrivateModal}
-          okText="Confirm"
-        >
-          <Form onSubmit={this.handleConfirmPassword}>
-            <Form.Item className={invalidPassword ? 'has-error' : ''}>
-              <Input
-                data-test="password-confirmation-input"
-                type="password"
-                value={password}
-                onChange={this.handleChange('password')}
-                placeholder="Input password"
-              />
-              {invalidPassword && (
-                <div className="ant-form-explain">Password is wrong!</div>
-              )}
-            </Form.Item>
-          </Form>
-        </PrivateModal>
-        <Modal
-          title="PLEASE ADD WALLET"
-          visible={openWalletAlert}
-          onOk={this.handleConnectWallet}
-          onCancel={this.hideWalletAlert}
-          okText="Add Wallet"
-        >
-          Please add a wallet to stake.
-        </Modal>
+        {wallet && (
+          <>
+            <ConfirmModal
+              title="WITHDRAW CONFIRMATION"
+              closeIcon={
+                <Icon type={coinCloseIconType} style={{ color: '#33CCFF' }} />
+              }
+              visible={openWithdrawModal}
+              footer={null}
+              onCancel={this.handleCloseModal}
+            >
+              {this.renderWithdrawModalContent()}
+            </ConfirmModal>
+            <ConfirmModal
+              title="STAKE CONFIRMATION"
+              closeIcon={
+                <Icon type={coinCloseIconType} style={{ color: '#33CCFF' }} />
+              }
+              visible={openStakeModal}
+              footer={null}
+              onCancel={this.handleCloseModal}
+            >
+              {this.renderStakeModalContent(poolStats, calcResult)}
+            </ConfirmModal>
+            <PrivateModal
+              title="PASSWORD CONFIRMATION"
+              visible={openPrivateModal}
+              onOk={this.handleConfirmPassword}
+              onCancel={this.handleClosePrivateModal}
+              okText="Confirm"
+            >
+              <Form onSubmit={this.handleConfirmPassword}>
+                <Form.Item className={invalidPassword ? 'has-error' : ''}>
+                  <Input
+                    data-test="password-confirmation-input"
+                    type="password"
+                    value={password}
+                    onChange={this.handleChange('password')}
+                    placeholder="Input password"
+                  />
+                  {invalidPassword && (
+                    <div className="ant-form-explain">Password is wrong!</div>
+                  )}
+                </Form.Item>
+              </Form>
+            </PrivateModal>
+            <Modal
+              title="PLEASE ADD WALLET"
+              visible={openWalletAlert}
+              onOk={this.handleConnectWallet}
+              onCancel={this.hideWalletAlert}
+              okText="Add Wallet"
+            >
+              Please add a wallet to stake.
+            </Modal>
+          </>
+        )}
       </ContentWrapper>
     );
   }

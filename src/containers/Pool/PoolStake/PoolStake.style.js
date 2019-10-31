@@ -172,7 +172,7 @@ export const ContentWrapper = styled(ContentView)`
         
       `}
 
-      .btn-wrapper {
+      .advanced-mode-btn {
         ${media.lg`
           width: 125px;
           margin-top: 10px;

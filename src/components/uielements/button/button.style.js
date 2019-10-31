@@ -95,11 +95,11 @@ const getBtnThemeColor = () => {
       background: '#fff',
       action: {
         text: '#fff',
-        border: main,
+        border: text,
         background: main,
       },
       focus: {
-        border: main,
+        border: text,
       },
     };
     value.ghost = {
