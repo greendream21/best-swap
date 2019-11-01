@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { palette, size, key } from 'styled-theme';
 
 import ViewPanel from '../../components/viewPanel';
+import { media } from '../../helpers/styleHelper';
 
 export const ActionViewWrapper = styled(ViewPanel)``;
 
@@ -29,7 +30,10 @@ export const HeaderAction = styled.div`
 export const BackLink = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 20px !important;
+  margin-bottom: 10px !important;
+  ${media.sm`
+    margin-bottom: 20px !important;
+  `}
   cursor: pointer;
 
   i {

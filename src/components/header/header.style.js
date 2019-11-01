@@ -4,19 +4,19 @@ import { media } from '../../helpers/styleHelper';
 
 export const StyledHeader = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   position: fixed;
   z-index: 1000;
   width: 100vw;
-
   height: ${size('headerHeight', '70px')};
 
-  padding: 0 20px;
-
+  padding: 0 10px;
   ${media.sm`
-    padding: 0 30px;
+    padding: 0 20px;
+    justify-content: space-between;
   `}
+
   > * {
     margin-right: 20px;
   }
@@ -45,11 +45,30 @@ export const StyledHeader = styled.div`
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
+
+    .ant-tabs-nav {
+      padding: 0 10px;
+      ${media.sm`
+        padding: 0 25px;
+      `}
+    }
+
+    .ant-tabs-tab {
+      margin-right: 5px;
+      ${media.sm`
+        margin-right: 32px;
+      `}
+    }
   }
 `;
 
 export const LogoWrapper = styled.div`
-  display: flex;
+  margin-right: 4px;
+  display: none;
+  ${media.sm`
+    margin-right: 20px;
+    display: flex;
+  `}
   img {
     max-height: 24px;
   }

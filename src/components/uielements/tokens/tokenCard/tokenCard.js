@@ -85,7 +85,7 @@ class TokenCard extends Component {
     const priceValue = `${unit} ${getFixedNumber(amount * price)}`;
 
     return (
-      <TokenCardWrapper className={`coinData-wrapper ${className}`} {...props}>
+      <TokenCardWrapper className={`tokenCard-wrapper ${className}`} {...props}>
         {title && <Label className="title-label">{title}</Label>}
         <div className="token-card-content">
           <TokenInput

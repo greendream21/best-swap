@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { media } from '../../../../helpers/styleHelper';
 
 export const TokenCardWrapper = styled.div`
   display: flex;
@@ -11,11 +12,29 @@ export const TokenCardWrapper = styled.div`
 
   .token-card-content {
     display: flex;
-    align-items: center;
-    min-width: 450px;
+    flex-direction: column;
+    ${media.sm`
+      flex-direction: row;
+      align-items: center;
+      min-width: 450px;
+    `}
+
     .tokenInput-wrapper {
       flex-grow: 1;
-      margin-right: 12px;
+      margin-right: 0;
+      margin-bottom: 10px;
+      ${media.sm`
+        margin-bottom: 0;
+        margin-right: 12px;
+      `}
+    }
+
+    .tokenSelect-wrapper {
+      flex-grow: 1;
+      width: auto;
+      ${media.sm`
+        width: 216px;
+      `}
     }
   }
 `;

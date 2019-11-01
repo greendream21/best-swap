@@ -49,7 +49,10 @@ export const ArrowContainer = styled(BaseArrowContainer)`
 `;
 
 export const ContentWrapper = styled(ContentView)`
-  padding: 48px 0;
+  padding: 18px 0;
+  ${media.sm`
+    padding: 48px 0;
+  `}
 
   .ant-row {
     display: flex;

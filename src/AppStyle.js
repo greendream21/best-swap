@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { palette, font } from 'styled-theme';
+import { media } from './helpers/styleHelper';
 
 import normalFont from './assets/font/Montserrat-Regular.otf';
 import lightFont from './assets/font/Montserrat-Light.otf';
@@ -76,6 +77,13 @@ const AppHolder = styled.div`
 
   .ant-row > div {
     padding: 0;
+  }
+
+  .desktop-view {
+    display: none;
+    ${media.sm`
+      display: block;
+    `}
   }
 `;
 

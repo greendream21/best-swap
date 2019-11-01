@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { palette } from 'styled-theme';
 import ContentView from '../../../components/utility/contentView';
+import { media } from '../../../helpers/styleHelper';
 
 export const ContentWrapper = styled(ContentView)`
   background-color: ${palette('background', 2)};
@@ -23,6 +24,18 @@ export const ContentWrapper = styled(ContentView)`
   }
 
   .swap-list-view {
+    display: none;
+    ${media.sm`
+      display: block;
+    `}
+
+    &.mobile-view {
+      display: block;
+      ${media.sm`
+        display: none;
+      `}
+    }
+
     .swap-card {
       margin-bottom: 10px;
     }

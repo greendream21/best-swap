@@ -72,8 +72,41 @@ class SwapView extends Component {
     );
   };
 
-  renderSwapTable = swapViewData => {
-    const columns = [
+  renderSwapTable = (swapViewData, view) => {
+    const mobileColumns = [
+      {
+        key: 'pool',
+        title: 'pool',
+        dataIndex: 'pool',
+        render: ({ asset, target }) => <CoinPair from={asset} to={target} />,
+      },
+      {
+        key: 'swap',
+        title: (
+          <Button typevalue="outline">
+            <Icon type="sync" />
+            refresh
+          </Button>
+        ),
+        render: (text, record) => {
+          const {
+            pool: { asset, target },
+          } = record;
+          return (
+            <Button
+              onClick={this.handleSwap(asset, target)}
+              style={{ margin: 'auto' }}
+              round
+            >
+              <Icon type="swap" />
+              swap
+            </Button>
+          );
+        },
+      },
+    ];
+
+    const desktopColumns = [
       {
         key: 'pool',
         title: 'pool',
@@ -132,10 +165,16 @@ class SwapView extends Component {
       },
     ];
 
+    const columnData = {
+      desktop: desktopColumns,
+      mobile: mobileColumns,
+    };
+    const columns = columnData[view] || desktopColumns;
+
     return <Table columns={columns} dataSource={swapViewData} />;
   };
 
-  renderSwapList = () => {
+  renderSwapList = view => {
     const { pools, poolData, swapData, assetData, runePrice } = this.props;
     const { activeAsset } = this.state;
 
@@ -160,7 +199,7 @@ class SwapView extends Component {
       return result;
     }, []);
 
-    return this.renderSwapTable(swapViewData);
+    return this.renderSwapTable(swapViewData, view);
   };
 
   render() {
@@ -177,7 +216,12 @@ class SwapView extends Component {
               </Label>
             </div>
             <div className="asset-button-group">{this.renderAssets()}</div>
-            <div className="swap-list-view">{this.renderSwapList()}</div>
+            <div className="swap-list-view">
+              {this.renderSwapList('desktop')}
+            </div>
+            <div className="swap-list-view mobile-view">
+              {this.renderSwapList('mobile')}
+            </div>
           </>
         )}
       </ContentWrapper>

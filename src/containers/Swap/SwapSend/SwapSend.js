@@ -738,7 +738,7 @@ class SwapSend extends Component {
       <ContentWrapper className="swap-detail-wrapper">
         <Row>
           <Col
-            className="swap-status-panel"
+            className="swap-status-panel desktop-view"
             xs={{ span: 24, offset: 0 }}
             xl={{ span: 6 }}
           >

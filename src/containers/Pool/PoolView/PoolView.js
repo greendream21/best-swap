@@ -69,8 +69,39 @@ class PoolView extends Component {
     }
   };
 
-  renderPoolTable = swapViewData => {
-    const columns = [
+  renderPoolTable = (swapViewData, view) => {
+    const mobileColumns = [
+      {
+        key: 'pool',
+        title: 'pool',
+        dataIndex: 'pool',
+        render: ({ asset, target }) => <CoinPair from={asset} to={target} />,
+      },
+      {
+        key: 'stake',
+        title: (
+          <Button typevalue="outline">
+            <Icon type="sync" />
+            refresh
+          </Button>
+        ),
+        render: (text, record) => {
+          const { symbol } = record;
+
+          return (
+            <Button
+              onClick={this.handleStake(symbol)}
+              style={{ margin: 'auto' }}
+              round
+            >
+              <Icon type="database" />
+              stake
+            </Button>
+          );
+        },
+      },
+    ];
+    const desktopColumns = [
       {
         key: 'pool',
         title: 'pool',
@@ -128,10 +159,16 @@ class PoolView extends Component {
       },
     ];
 
+    const columnData = {
+      desktop: desktopColumns,
+      mobile: mobileColumns,
+    };
+    const columns = columnData[view] || desktopColumns;
+
     return <Table columns={columns} dataSource={swapViewData} />;
   };
 
-  renderPoolList = () => {
+  renderPoolList = view => {
     const { pools, poolData, swapData, runePrice, assetData } = this.props;
     const { activeAsset } = this.state;
 
@@ -156,7 +193,7 @@ class PoolView extends Component {
       return result;
     }, []);
 
-    return this.renderPoolTable(stakeViewData);
+    return this.renderPoolTable(stakeViewData, view);
   };
 
   render() {
@@ -167,7 +204,12 @@ class PoolView extends Component {
         {loading && <PoolLoader />}
         {!loading && (
           <>
-            <div className="pool-list-view">{this.renderPoolList()}</div>
+            <div className="pool-list-view">
+              {this.renderPoolList('desktop')}
+            </div>
+            <div className="pool-list-view mobile-view">
+              {this.renderPoolList('mobile')}
+            </div>
             <div className="add-new-pool" onClick={this.handleNewPool}>
               <AddIcon />
               <Label size="normal" weight="bold" color="normal">
