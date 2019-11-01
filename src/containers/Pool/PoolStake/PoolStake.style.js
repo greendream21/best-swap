@@ -412,12 +412,10 @@ export const ContentWrapper = styled(ContentView)`
 
 export const ConfirmModal = styled(Modal)`
   &.ant-modal {
-    width: 700px !important;
+    width: 420px !important;
 
     .ant-modal-body {
-      ${media.lg`
-        height: 320px !important;
-      `}
+      padding: 0px;
     }
   }
 `;
@@ -431,22 +429,16 @@ export const ConfirmModalContent = styled.div`
 
   .modal-content {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    align-items: center;
     width: 100%;
+    padding: 30px 0;
+    border-bottom: 1px solid ${palette('border', 0)};
 
     .coinData-wrapper {
-      ${media.lg`
-      width: 200px;
       padding-left: 0;
-      padding-bottom: 8px;
-    `}
-    }
-
-    .left-container,
-    .right-container {
-      ${media.lg`
-      width: 250px;
-    `}
+      padding-bottom: 4px;
+      margin-left: 14px;
     }
 
     .status-wrapper {
@@ -462,58 +454,27 @@ export const ConfirmModalContent = styled.div`
       }
     }
 
-    .left-container {
+    .timer-container {
       ${media.lg`
-      display: flex;
-      flex-direction: column;
-    `}
-    }
-
-    .center-container {
-      ${media.lg`
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 200px;
-    `}
-
-      .label-wrapper {
-        ${media.lg`
-        margin-top: 35px;
-        text-transform: uppercase;
-      `}
-      }
-
-      .before-start-label {
-        ${media.lg`
-        opacity: 0;
-      `}
-      }
-    }
-
-    .right-container {
-      ${media.lg`
-      display: flex;
-      flex-direction: column;
-      padding-left: 20px;
-    `}
-
-      .expected-status {
-        ${media.lg`
-        display: flex;
-      `}
-
-        .status-item {
-          ${media.lg`  
           display: flex;
           flex-direction: column;
-          padding-right: 8px;
+          align-items: center;
+          padding-bottom: 30px;
         `}
-          .price-label {
-            ${media.lg`  
-            padding-top: 4px;
-            padding-bottom: 0;
-          `}
+    }
+
+    .coin-data-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      .coin-data-container {
+        display: flex;
+        flex-direction: column;
+
+        .coinData-wrapper {
+          &:first-child {
+            padding-bottom: 20px;
           }
         }
       }
@@ -521,16 +482,7 @@ export const ConfirmModalContent = styled.div`
   }
 
   .modal-info-wrapper {
-    margin-top: 10px;
-
-    .tx-label {
-      text-transform: uppercase;
-      text-align: center;
-    }
-
-    .before-start-label {
-      opacity: 0;
-    }
+    padding: 20px 0;
 
     .hash-address {
       display: flex;
@@ -547,6 +499,12 @@ export const ConfirmModalContent = styled.div`
         margin-right: 6px;
         color: ${palette('primary', 0)};
         cursor: pointer;
+
+        .view-btn {
+          width: 300px;
+          height: 40px;
+          margin: 24px 0;
+        }
       }
 
       .label-wrapper {

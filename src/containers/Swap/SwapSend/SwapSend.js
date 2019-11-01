@@ -12,7 +12,7 @@ import Button from '../../../components/uielements/button';
 import Drag from '../../../components/uielements/drag';
 import TokenCard from '../../../components/uielements/tokens/tokenCard';
 import Label from '../../../components/uielements/label';
-import Input from '../../../components/uielements/input/input';
+import Input from '../../../components/uielements/input';
 import CoinData from '../../../components/uielements/coins/coinData';
 import Status from '../../../components/uielements/status';
 import TxTimer from '../../../components/uielements/txTimer';
@@ -47,6 +47,7 @@ import AddressInput from '../../../components/uielements/addressInput';
 import ContentTitle from '../../../components/uielements/contentTitle';
 import Slider from '../../../components/uielements/slider';
 import StepBar from '../../../components/uielements/stepBar';
+import Trend from '../../../components/uielements/trend';
 
 const {
   setTxTimerType,
@@ -569,7 +570,6 @@ class SwapSend extends Component {
   renderSwapModalContent = (swapData, info) => {
     const {
       txStatus: { status, value },
-      runePrice,
     } = this.props;
     const { xValue, txResult, timerStatus } = this.state;
     const { source, target } = swapData;
@@ -578,23 +578,15 @@ class SwapSend extends Component {
     const priceTo = Number(outputAmount * outputPrice);
     const slipAmount = slip.toFixed(2);
 
-    const transactionLabels = [
-      'sending transaction',
-      'processing transaction',
-      'signing transaction',
-      'finishing transaction',
-      'complete',
-    ];
+    // const transactionLabels = [
+    //   'sending transaction',
+    //   'processing transaction',
+    //   'signing transaction',
+    //   'finishing transaction',
+    //   'complete',
+    // ];
 
     const completed = value !== null && !status && txResult !== null;
-    const swapText = !completed ? 'YOU ARE SWAPPING' : 'YOU SWAPPED';
-
-    // eslint-disable-next-line no-nested-ternary
-    const receiveText = !completed
-      ? 'YOU SHOULD RECEIVE'
-      : txResult.type === 'success'
-      ? 'YOU RECEIVED'
-      : 'YOU REFUNDED';
 
     const targetToken = !completed ? target : getTickerFormat(txResult.token);
     const tokenAmount = !completed
@@ -604,29 +596,12 @@ class SwapSend extends Component {
       ? priceTo
       : Number(Number(txResult.amount) * outputPrice);
 
-    const expectation = !completed
-      ? 'EXPECTED FEES & SLIP'
-      : 'FINAL FEES & SLIP';
-
     const txURL = TESTNET_TX_BASE_URL + this.hash;
-    const { fee } = this.data;
-    const actualFee = fee < 1 ? 1 : fee;
-    const feeValue = `${actualFee} RUNE`;
-    const feePrice = getFixedNumber(actualFee * runePrice);
 
     return (
       <SwapModalContent>
         <Row className="swapmodal-content">
-          <div className="left-container">
-            <Label weight="bold">{swapText}</Label>
-            <CoinData
-              data-test="swapmodal-coin-data-send"
-              asset={source}
-              assetValue={xValue}
-              price={priceFrom}
-            />
-          </div>
-          <div className="center-container">
+          <div className="timer-container">
             <TxTimer
               reset={status}
               status={timerStatus}
@@ -636,56 +611,36 @@ class SwapSend extends Component {
               onEnd={this.handleEndTxTimer}
             />
           </div>
-          <div className="right-container">
-            <Label weight="bold">{receiveText}</Label>
-            <CoinData
-              data-test="swapmodal-coin-data-receive"
-              asset={targetToken}
-              assetValue={tokenAmount}
-              price={priceValue}
-            />
-            <Label weight="bold">{expectation}</Label>
-            <div className="expected-status">
-              <div className="status-item">
-                <Status
-                  data-test="swapmodal-fees"
-                  title="FEES"
-                  value={feeValue}
-                />
-                <Label className="price-label" size="normal" color="gray">
-                  $USD {getFixedNumber(feePrice)}
-                </Label>
-              </div>
-              <div className="status-item">
-                <Status
-                  data-test="swapmodal-slip"
-                  title="SLIP"
-                  value={`${slipAmount}%`}
-                />
-              </div>
+          <div className="coin-data-wrapper">
+            <StepBar size={50} />
+            <div className="coin-data-container">
+              <CoinData
+                data-test="swapmodal-coin-data-receive"
+                asset={targetToken}
+                assetValue={tokenAmount}
+                price={priceValue}
+              />
+              <CoinData
+                data-test="swapmodal-coin-data-send"
+                asset={source}
+                assetValue={xValue}
+                price={priceFrom}
+              />
             </div>
           </div>
         </Row>
         <Row className="swap-info-wrapper">
+          <Trend value={slipAmount} />
           {this.hash && (
             <div className="hash-address">
               <div className="copy-btn-wrapper">
                 <a href={txURL} target="_blank" rel="noopener noreferrer">
-                  <Icon type="global" />
+                  <Button className="view-btn" color="success">
+                    VIEW ON BINANCE CHAIN
+                  </Button>
                 </a>
               </div>
-              <Label>VIEW ON BINANCE CHAIN</Label>
             </div>
-          )}
-          {value !== 0 && (
-            <Label className="tx-label" weight="bold">
-              {transactionLabels[value - 1]}
-            </Label>
-          )}
-          {completed && (
-            <Label className="tx-label" weight="bold">
-              complete
-            </Label>
           )}
         </Row>
       </SwapModalContent>
@@ -730,6 +685,7 @@ class SwapSend extends Component {
       openWalletAlert,
       password,
       slipProtection,
+      txResult,
     } = this.state;
 
     console.log('binance websocket transfer data: ', wsTransfers);
@@ -771,6 +727,12 @@ class SwapSend extends Component {
     const ratioLabel = `1 ${source.toUpperCase()} = ${getFixedNumber(
       ratio,
     )} ${target.toUpperCase()}`;
+
+    // swap modal
+
+    const completed =
+      txStatus.value !== null && !txStatus.status && txResult !== null;
+    const swapTitle = !completed ? 'YOU ARE SWAPPING' : 'YOU SWAPPED';
 
     return (
       <ContentWrapper className="swap-detail-wrapper">
@@ -870,7 +832,7 @@ class SwapSend extends Component {
           </Col>
         </Row>
         <SwapModal
-          title="SWAP CONFIRMATION"
+          title={swapTitle}
           closeIcon={
             <Icon type={coinCloseIconType} style={{ color: '#33CCFF' }} />
           }
@@ -885,16 +847,19 @@ class SwapSend extends Component {
           visible={openPrivateModal}
           onOk={this.handleConfirmPassword}
           onCancel={this.handleClosePrivateModal}
-          okText="Confirm"
+          okText="CONFIRM"
+          cancelText="CANCEL"
         >
           <Form onSubmit={this.handleConfirmPassword}>
             <Form.Item className={invalidPassword ? 'has-error' : ''}>
               <Input
                 data-test="password-confirmation-input"
                 type="password"
+                typevalue="ghost"
+                sizevalue="big"
                 value={password}
                 onChange={this.handleChange('password')}
-                placeholder="Input password"
+                prefix={<Icon type="lock" />}
               />
               {invalidPassword && (
                 <div className="ant-form-explain">Password is wrong!</div>
@@ -907,7 +872,7 @@ class SwapSend extends Component {
           visible={openWalletAlert}
           onOk={this.handleConnectWallet}
           onCancel={this.hideWalletAlert}
-          okText="Add Wallet"
+          okText="ADD WALLET"
         >
           Please add a wallet to swap tokens.
         </Modal>

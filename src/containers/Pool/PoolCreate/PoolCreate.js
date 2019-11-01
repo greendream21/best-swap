@@ -3,7 +3,7 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Row, Col, Form, notification } from 'antd';
+import { Row, Col, Form, notification, Icon } from 'antd';
 import { crypto } from '@binance-chain/javascript-sdk';
 
 import Binance from '../../../clients/binance';
@@ -462,15 +462,19 @@ class PoolCreate extends Component {
           visible={openPrivateModal}
           onOk={this.handleConfirmPassword}
           onCancel={this.handleClosePrivateModal}
-          okText="Confirm"
+          okText="CONFIRM"
+          cancelText="CANCEL"
         >
           <Form onSubmit={this.handleConfirmPassword}>
             <Form.Item className={invalidPassword ? 'has-error' : ''}>
               <Input
+                data-test="password-confirmation-input"
                 type="password"
+                typevalue="ghost"
+                sizevalue="big"
                 value={password}
                 onChange={this.handleChange('password')}
-                placeholder="Input password"
+                prefix={<Icon type="lock" />}
               />
               {invalidPassword && (
                 <div className="ant-form-explain">Password is wrong!</div>

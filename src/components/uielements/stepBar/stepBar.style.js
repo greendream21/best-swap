@@ -16,7 +16,7 @@ export const StepBarWrapper = styled.div`
 
   .step-bar-line {
     width: 5px;
-    height: 150px;
+    ${props => `height: ${props.size}px;`};
     border-right: 1px solid ${palette('background', 8)};
   }
 `;

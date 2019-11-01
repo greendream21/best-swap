@@ -165,10 +165,10 @@ export const CardFormItemCloseButton = styled(Icon).attrs({
 
 export const SwapModal = styled(Modal)`
   &.ant-modal {
-    width: 700px !important;
+    width: 420px !important;
 
     .ant-modal-body {
-      height: 320px !important;
+      padding: 0px;
     }
   }
 `;
@@ -181,6 +181,7 @@ export const SwapModalContent = styled.div`
   .coinData-wrapper {
     padding-left: 0;
     padding-bottom: 4px;
+    margin-left: 14px;
   }
 
   .status-wrapper {
@@ -194,35 +195,31 @@ export const SwapModalContent = styled.div`
 
   .swapmodal-content {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    align-items: center;
     width: 100%;
+    padding: 30px 0;
+    border-bottom: 1px solid ${palette('border', 0)};
 
-    .left-container {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .center-container {
+    .timer-container {
       display: flex;
       flex-direction: column;
       align-items: center;
+      padding-bottom: 30px;
     }
 
-    .right-container {
+    .coin-data-wrapper {
       display: flex;
-      flex-direction: column;
+      justify-content: center;
+      align-items: center;
 
-      .expected-status {
+      .coin-data-container {
         display: flex;
+        flex-direction: column;
 
-        .status-item {
-          display: flex;
-          flex-direction: column;
-          padding-right: 8px;
-
-          .price-label {
-            padding-top: 4px;
-            padding-bottom: 0;
+        .coinData-wrapper {
+          &:first-child {
+            padding-bottom: 20px;
           }
         }
       }
@@ -230,17 +227,7 @@ export const SwapModalContent = styled.div`
   }
 
   .swap-info-wrapper {
-    margin-top: 10px;
-
-    .tx-label {
-      text-transform: uppercase;
-      text-align: center;
-    }
-
-    .before-start-label {
-      opacity: 0;
-    }
-
+    padding: 20px 0;
     .hash-address {
       display: flex;
       align-items: center;
@@ -256,6 +243,12 @@ export const SwapModalContent = styled.div`
         margin-right: 6px;
         color: ${palette('primary', 0)};
         cursor: pointer;
+
+        .view-btn {
+          width: 300px;
+          height: 40px;
+          margin: 24px 0;
+        }
       }
 
       .label-wrapper {

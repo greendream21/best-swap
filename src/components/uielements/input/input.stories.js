@@ -25,6 +25,12 @@ storiesOf('Components/Input', module)
           >
             <Input color="primary" sizevalue="small" value="this is text!" />
             <Input color="primary" sizevalue="normal" value="this is text!" />
+            <Input
+              color="primary"
+              sizevalue="normal"
+              typevalue="ghost"
+              value="this is text!"
+            />
             <Input color="primary" sizevalue="big" value="this is text!" />
             <Input color="success" sizevalue="big" value="this is text!" />
             <Input color="warning" sizevalue="big" value="this is text!" />

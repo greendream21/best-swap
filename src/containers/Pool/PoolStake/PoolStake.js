@@ -48,6 +48,7 @@ import {
 } from '../../../helpers/stringHelper';
 import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
 import TokenInfo from '../../../components/uielements/tokens/tokenInfo';
+import StepBar from '../../../components/uielements/stepBar';
 
 const { TabPane } = Tabs;
 
@@ -571,17 +572,6 @@ class PoolStake extends Component {
     const source = 'rune';
     const target = getTickerFormat(symbol);
 
-    const transactionLabels = [
-      'sending transaction',
-      'processing transaction',
-      'signing transaction',
-      'finishing transaction',
-      'complete',
-    ];
-
-    const completed = value !== null && !status;
-    const stakeText = !completed ? 'YOU ARE STAKING' : 'YOU STAKED';
-
     const { Pr } = calcResult;
     const { tokenPrice } = poolStats;
     const txURL = TESTNET_TX_BASE_URL + this.hash;
@@ -589,22 +579,7 @@ class PoolStake extends Component {
     return (
       <ConfirmModalContent>
         <Row className="modal-content">
-          <div className="left-container">
-            <Label weight="bold">{stakeText}</Label>
-            <CoinData
-              data-test="stakeconfirm-coin-data-source"
-              asset={source}
-              assetValue={runeAmount}
-              price={Pr * runeAmount}
-            />
-            <CoinData
-              data-test="stakeconfirm-coin-data-target"
-              asset={target}
-              assetValue={tokenAmount}
-              price={tokenPrice * tokenAmount}
-            />
-          </div>
-          <div className="center-container">
+          <div className="timer-container">
             <TxTimer
               reset={status}
               value={value}
@@ -612,28 +587,35 @@ class PoolStake extends Component {
               onEnd={this.handleEndTxTimer}
             />
           </div>
-          <div className="right-container" />
+          <div className="coin-data-wrapper">
+            <StepBar size={50} />
+            <div className="coin-data-container">
+              <CoinData
+                data-test="stakeconfirm-coin-data-source"
+                asset={source}
+                assetValue={runeAmount}
+                price={Pr * runeAmount}
+              />
+              <CoinData
+                data-test="stakeconfirm-coin-data-target"
+                asset={target}
+                assetValue={tokenAmount}
+                price={tokenPrice * tokenAmount}
+              />
+            </div>
+          </div>
         </Row>
         <Row className="modal-info-wrapper">
           {this.hash && (
             <div className="hash-address">
               <div className="copy-btn-wrapper">
                 <a href={txURL} target="_blank" rel="noopener noreferrer">
-                  <Icon type="global" />
+                  <Button className="view-btn" color="success">
+                    VIEW ON BINANCE CHAIN
+                  </Button>
                 </a>
               </div>
-              <Label>VIEW ON BINANCE CHAIN</Label>
             </div>
-          )}
-          {value !== 0 && (
-            <Label className="tx-label" weight="bold">
-              {transactionLabels[value - 1]}
-            </Label>
-          )}
-          {completed && (
-            <Label className="tx-label" weight="bold">
-              complete
-            </Label>
           )}
         </Row>
       </ConfirmModalContent>
@@ -650,25 +632,13 @@ class PoolStake extends Component {
     const source = 'rune';
     const target = getTickerFormat(symbol);
 
-    const transactionLabels = [
-      'sending transaction',
-      'processing transaction',
-      'signing transaction',
-      'finishing transaction',
-      'complete',
-    ];
-
-    const completed = value !== null && !status;
-    const withdrawText = !completed ? 'YOU ARE WITHDRAWING' : 'YOU WITHDRAWN';
-
     const txURL = TESTNET_TX_BASE_URL + this.hash;
     const { runeValue, tokenValue, tokenPrice } = this.withdrawData;
 
     return (
       <ConfirmModalContent>
         <Row className="modal-content">
-          <div className="left-container" />
-          <div className="center-container">
+          <div className="timer-container">
             <TxTimer
               reset={status}
               value={value}
@@ -676,18 +646,20 @@ class PoolStake extends Component {
               onEnd={this.handleEndTxTimer}
             />
           </div>
-          <div className="right-container">
-            <Label weight="bold">{withdrawText}</Label>
-            <CoinData
-              asset={source}
-              assetValue={runeValue}
-              price={runePrice * runeValue}
-            />
-            <CoinData
-              asset={target}
-              assetValue={tokenValue}
-              price={tokenPrice * tokenValue}
-            />
+          <div className="coin-data-wrapper">
+            <StepBar size={50} />
+            <div className="coin-data-container">
+              <CoinData
+                asset={source}
+                assetValue={runeValue}
+                price={runePrice * runeValue}
+              />
+              <CoinData
+                asset={target}
+                assetValue={tokenValue}
+                price={tokenPrice * tokenValue}
+              />
+            </div>
           </div>
         </Row>
         <Row className="modal-info-wrapper">
@@ -695,21 +667,12 @@ class PoolStake extends Component {
             <div className="hash-address">
               <div className="copy-btn-wrapper">
                 <a href={txURL} target="_blank" rel="noopener noreferrer">
-                  <Icon type="global" />
+                  <Button className="view-btn" color="success">
+                    VIEW ON BINANCE CHAIN
+                  </Button>
                 </a>
               </div>
-              <Label>VIEW ON BINANCE CHAIN</Label>
             </div>
-          )}
-          {value !== 0 && (
-            <Label className="tx-label" weight="bold">
-              {transactionLabels[value - 1]}
-            </Label>
-          )}
-          {completed && (
-            <Label className="tx-label" weight="bold">
-              complete
-            </Label>
           )}
         </Row>
       </ConfirmModalContent>
@@ -1205,6 +1168,15 @@ class PoolStake extends Component {
 
     const yourShareSpan = wallet ? 8 : 24;
 
+    // stake confirmation modal
+
+    const completed = txStatus.value !== null && !txStatus.status;
+    const stakeTitle = !completed ? 'YOU ARE STAKING' : 'YOU STAKED';
+
+    // withdraw confirmation modal
+
+    const withdrawText = !completed ? 'YOU ARE WITHDRAWING' : 'YOU WITHDRAWN';
+
     return (
       <ContentWrapper className="pool-stake-wrapper" transparent>
         <Row className="stake-info-view">{this.renderStakeInfo(poolStats)}</Row>
@@ -1221,7 +1193,7 @@ class PoolStake extends Component {
         {wallet && (
           <>
             <ConfirmModal
-              title="WITHDRAW CONFIRMATION"
+              title={withdrawText}
               closeIcon={
                 <Icon type={coinCloseIconType} style={{ color: '#33CCFF' }} />
               }
@@ -1232,7 +1204,7 @@ class PoolStake extends Component {
               {this.renderWithdrawModalContent()}
             </ConfirmModal>
             <ConfirmModal
-              title="STAKE CONFIRMATION"
+              title={stakeTitle}
               closeIcon={
                 <Icon type={coinCloseIconType} style={{ color: '#33CCFF' }} />
               }
@@ -1247,16 +1219,19 @@ class PoolStake extends Component {
               visible={openPrivateModal}
               onOk={this.handleConfirmPassword}
               onCancel={this.handleClosePrivateModal}
-              okText="Confirm"
+              okText="CONFIRM"
+              cancelText="CANCEL"
             >
               <Form onSubmit={this.handleConfirmPassword}>
                 <Form.Item className={invalidPassword ? 'has-error' : ''}>
                   <Input
                     data-test="password-confirmation-input"
                     type="password"
+                    typevalue="ghost"
+                    sizevalue="big"
                     value={password}
                     onChange={this.handleChange('password')}
-                    placeholder="Input password"
+                    prefix={<Icon type="lock" />}
                   />
                   {invalidPassword && (
                     <div className="ant-form-explain">Password is wrong!</div>
@@ -1269,7 +1244,7 @@ class PoolStake extends Component {
               visible={openWalletAlert}
               onOk={this.handleConnectWallet}
               onCancel={this.hideWalletAlert}
-              okText="Add Wallet"
+              okText="ADD WALLET"
             >
               Please add a wallet to stake.
             </Modal>
