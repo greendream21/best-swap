@@ -3,6 +3,7 @@ import ContentLoader from 'react-content-loader';
 
 const SwapLoader = () => (
   <ContentLoader
+    className="content-loader"
     height={400}
     width={1000}
     speed={2}

@@ -824,7 +824,7 @@ class PoolStake extends Component {
           focused={advancedMode}
           onClick={this.handleSwitchAdvancedMode}
         >
-          advanced mode
+          advanced
         </Button>
         <Tabs withBorder>
           <TabPane tab="add" key="add">
@@ -1010,106 +1010,126 @@ class PoolStake extends Component {
     const connected = !!wallet;
 
     return (
-      <div className="your-share-wrapper">
-        <Label className="label-title" size="normal">
-          YOUR SHARE
-        </Label>
-        {!wallet && (
-          <div className="share-placeholder-wrapper">
-            <div className="placeholder-icon">
-              <Icon type="switcher" />
-            </div>
-            <Label className="placeholder-label">
-              Please connect your wallet.
+      <>
+        <div className="your-share-wrapper">
+          {!wallet && (
+            <Label className="label-title" size="normal">
+              YOUR SHARE
             </Label>
-            <Link to="/connect">
-              <WalletButton connected={connected} value={wallet} />
-            </Link>
-          </div>
-        )}
-        {wallet && stakeInfo.units === 0 && (
-          <div className="share-placeholder-wrapper">
-            <div className="placeholder-icon">
-              <Icon type="inbox" />
+          )}
+          {!wallet && (
+            <div className="share-placeholder-wrapper">
+              <div className="placeholder-icon">
+                <Icon type="switcher" />
+              </div>
+              <Label className="placeholder-label">
+                Please connect your wallet.
+              </Label>
+              <Link to="/connect">
+                <WalletButton connected={connected} value={wallet} />
+              </Link>
             </div>
-            <Label className="placeholder-label">
-              You don't have any shares in this pool.
-            </Label>
-          </div>
-        )}
+          )}
+          {wallet && stakeInfo.units === 0 && (
+            <div className="share-placeholder-wrapper">
+              <div className="placeholder-icon">
+                <Icon type="inbox" />
+              </div>
+              <Label className="placeholder-label">
+                You don't have any shares in this pool.
+              </Label>
+            </div>
+          )}
+          {wallet && stakeInfo.units > 0 && (
+            <>
+              <Label className="share-info-title" size="normal">
+                Your total share of the pool
+              </Label>
+              <div className="your-share-info-wrapper">
+                <div className="share-info-row">
+                  <div className="your-share-info">
+                    <Status
+                      title={String(source).toUpperCase()}
+                      value={runeShare}
+                    />
+                    <Label
+                      className="your-share-price-label"
+                      size="normal"
+                      color="grey"
+                    >
+                      $USD {(runeShare * runePrice).toFixed(2)}
+                    </Label>
+                  </div>
+                  <div className="your-share-info">
+                    <Status
+                      title={String(target).toUpperCase()}
+                      value={tokensShare}
+                    />
+                    <Label
+                      className="your-share-price-label"
+                      size="normal"
+                      color="grey"
+                    >
+                      $USD {(tokensShare * tokenPrice).toFixed(2)}
+                    </Label>
+                  </div>
+                </div>
+                <div className="share-info-row">
+                  <div className="your-share-info">
+                    <Status title="Pool Share" value={`${poolShare}%`} />
+                  </div>
+                </div>
+              </div>
+              {!wallet && (
+                <Label
+                  className="label-title earning-label"
+                  size="normal"
+                  weight="bold"
+                >
+                  EARNINGS
+                </Label>
+              )}
+            </>
+          )}
+        </div>
         {wallet && stakeInfo.units > 0 && (
-          <>
-            <Label size="normal">Your total share of the pool.</Label>
-            <div className="your-share-info-wrapper">
-              <div className="your-share-info">
-                <Status
-                  title={String(source).toUpperCase()}
-                  value={runeShare}
-                />
-                <Label
-                  className="your-share-price-label"
-                  size="normal"
-                  color="grey"
-                >
-                  $USD {(runeShare * runePrice).toFixed(2)}
-                </Label>
-              </div>
-              <div className="your-share-info">
-                <Status
-                  title={String(target).toUpperCase()}
-                  value={tokensShare}
-                />
-                <Label
-                  className="your-share-price-label"
-                  size="normal"
-                  color="grey"
-                >
-                  $USD {(tokensShare * tokenPrice).toFixed(2)}
-                </Label>
-              </div>
-              <div className="your-share-info">
-                <Status title="Pool Share" value={`${poolShare}%`} />
-              </div>
-            </div>
-            <Label
-              className="label-title earning-label"
-              size="normal"
-              weight="bold"
-            >
-              EARNINGS
+          <div className="your-share-wrapper">
+            <Label className="share-info-title" size="normal">
+              Your total earnings from the pool
             </Label>
-            <Label size="normal">Total of all earnings from this pool.</Label>
             <div className="your-share-info-wrapper">
-              <div className="your-share-info">
-                <Status
-                  title={String(source).toUpperCase()}
-                  value={runeEarned}
-                />
-                <Label
-                  className="your-share-price-label"
-                  size="normal"
-                  color="grey"
-                >
-                  $USD {(runeEarned * runePrice).toFixed(2)}
-                </Label>
-              </div>
-              <div className="your-share-info">
-                <Status
-                  title={String(target).toUpperCase()}
-                  value={tokensEarned}
-                />
-                <Label
-                  className="your-share-price-label"
-                  size="normal"
-                  color="grey"
-                >
-                  $USD {(tokensEarned * tokenPrice).toFixed(2)}
-                </Label>
+              <div className="share-info-row">
+                <div className="your-share-info">
+                  <Status
+                    title={String(source).toUpperCase()}
+                    value={runeEarned}
+                  />
+                  <Label
+                    className="your-share-price-label"
+                    size="normal"
+                    color="grey"
+                  >
+                    $USD {(runeEarned * runePrice).toFixed(2)}
+                  </Label>
+                </div>
+                <div className="your-share-info">
+                  <Status
+                    title={String(target).toUpperCase()}
+                    value={tokensEarned}
+                  />
+                  <Label
+                    className="your-share-price-label"
+                    size="normal"
+                    color="grey"
+                  >
+                    $USD {(tokensEarned * tokenPrice).toFixed(2)}
+                  </Label>
+                </div>
               </div>
             </div>
-          </>
+          </div>
         )}
-      </div>
+      </>
     );
   };
 

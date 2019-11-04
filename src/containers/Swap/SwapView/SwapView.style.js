@@ -7,6 +7,15 @@ export const ContentWrapper = styled(ContentView)`
   background-color: ${palette('background', 2)};
   padding: 0;
 
+  .content-loader {
+    rect {
+      width: 100%;
+      ${media.sm`
+        display: 80%;
+      `}
+    }
+  }
+
   .view-title {
     padding-top: 10px;
     padding-left: 10px;

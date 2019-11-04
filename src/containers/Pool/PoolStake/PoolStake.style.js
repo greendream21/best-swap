@@ -14,11 +14,8 @@ export const ContentWrapper = styled(ContentView)`
 
   .stake-info-view {
     .token-info-card {
-      padding: 8px;
+      padding: 8px 8px 8px 0;
 
-      &:first-child {
-        padding-left: 0px;
-      }
       &:last-child {
         padding-right: 0px;
       }
@@ -81,10 +78,13 @@ export const ContentWrapper = styled(ContentView)`
 
   .advanced-mode-btn {
     position: absolute;
-    top: 15px;
-    right: 50px;
-
+    top: 25px;
+    right: 10px;
     z-index: 100;
+    ${media.sm`
+      top: 15px;
+      right: 50px;
+    `}
   }
 
   .share-view {
@@ -119,11 +119,11 @@ export const ContentWrapper = styled(ContentView)`
       }
 
       .withdraw-percent-view {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-left: 5px;
         ${media.lg`
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding-left: 5px;
           .label-wrapper {
             width: 40px;
           }
@@ -150,9 +150,7 @@ export const ContentWrapper = styled(ContentView)`
             `}
 
             .coinData-wrapper {
-              ${media.lg`
-                padding: 10px 0;
-              `}
+              padding: 10px 0;
             }
           }
         }
@@ -195,13 +193,22 @@ export const ContentWrapper = styled(ContentView)`
         ${media.lg`
           display: flex;
           flex-direction: column;
+          justify-content: center;
         `}
+
+        &:first-child {
+          margin-bottom: 8px;
+        }
 
         .label-title {
           font-size: 15px;
           text-align: center;
           font-weight: 500;
           letter-spacing: 0.04em;
+        }
+
+        .label-wrapper {
+          text-transform: uppercase;
         }
 
         .earning-label {
@@ -221,6 +228,7 @@ export const ContentWrapper = styled(ContentView)`
         .placeholder-label {
           font-size: 14px;
           letter-spacing: 0.04em;
+          text-transform: uppercase;
         }
 
         .placeholder-icon {
@@ -241,20 +249,28 @@ export const ContentWrapper = styled(ContentView)`
           }
         }
 
+        .share-info-title {
+          padding: 20px 0;
+          text-align: center;
+          text-transform: uppercase;
+        }
+
         .your-share-info-wrapper {
-          ${media.lg`
+          display: flex;
+          flex-direction: column;
+          padding-bottom: 5px;
+
+          .share-info-row {
             display: flex;
-            align-items: baseline;
-            padding-bottom: 5px;
-          `}
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: 20px;
+          }
 
           .your-share-info {
-            ${media.lg`
-              display: flex;
-              flex-direction: column;
-              margin-right: 20px;
-              min-width: 90px;
-            `}
+            & > div {
+              text-align: center;
+            }
 
             .status-title,
             .status-value {
@@ -262,7 +278,12 @@ export const ContentWrapper = styled(ContentView)`
                 padding: 3px 0;
               `}
             }
+
+            .status-value {
+              font-size: 20px;
+            }
             .your-share-price-label {
+              color: ${palette('text', 4)};
               ${media.lg`
                 padding: 0;
               `}
@@ -392,12 +413,13 @@ export const ContentWrapper = styled(ContentView)`
       }
     }
 
-    .your-share-view {
-      padding-right: 8px;
-    }
-
     .share-detail-view {
-      padding-left: 8px;
+      padding-left: 0px;
+      padding-top: 8px;
+      ${media.sm`
+        padding-top: 0px;
+        padding-left: 8px;
+      `}
     }
   }
 
