@@ -1,21 +1,18 @@
 import styled from 'styled-components';
 
 import ContentView from '../../components/utility/contentView';
+import { media } from '../../helpers/styleHelper';
 
 export const ContentWrapper = styled(ContentView)`
-  & > .ant-row {
-    display: flex;
+  .content-view-wrapper {
+    padding: 0;
+    ${media.sm`
+      padding: 0 30px;
+    `}
   }
 
   .connect-view-content {
-    flex-grow: 1;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex: auto;
-
     .keystore-connect-wrapper {
-      width: 400px;
       .file-upload-wrapper {
         display: flex;
         align-items: center;
@@ -32,14 +29,20 @@ export const ContentWrapper = styled(ContentView)`
 
       button {
         height: 50px;
-        min-width: 180px;
+        min-width: 100%;
         margin-bottom: 20px;
+        ${media.sm`
+          min-width: 240px;
+        `}
       }
     }
 
     .connect-view-content-form {
       flex-grow: 1;
-      padding-left: 40px;
+      padding-left: 0px;
+      ${media.sm`
+        padding-left: 40px;
+      `}
     }
   }
 

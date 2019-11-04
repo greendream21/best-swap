@@ -55,7 +55,7 @@ class ConnectView extends Component {
           </Col>
         </Row>
         <Row className="connect-view-content">
-          <div className="connect-view-content-buttons">
+          <Col className="connect-view-content-buttons" xs={24} sm={8}>
             {btns.map(btn => {
               return (
                 <Button
@@ -73,8 +73,10 @@ class ConnectView extends Component {
                 </Button>
               );
             })}
-          </div>
-          <div className="connect-view-content-form">{selected.comp}</div>
+          </Col>
+          <Col className="connect-view-content-form" xs={24} sm={8}>
+            {selected.comp}
+          </Col>
         </Row>
       </ContentWrapper>
     );
