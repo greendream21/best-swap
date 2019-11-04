@@ -60,6 +60,9 @@ const WalletDrawer = props => {
         value={wallet}
         onClick={toggleDrawer}
       />
+      <div className="wallet-mobile-btn" onClick={toggleDrawer}>
+        <Icon type="wallet" />
+      </div>
       <Drawer
         placement="right"
         closable={false}

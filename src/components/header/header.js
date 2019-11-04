@@ -156,6 +156,13 @@ class Header extends Component {
               />
             </Link>
           )}
+          {!connected && (
+            <Link to="/connect">
+              <div className="wallet-mobile-btn">
+                <Icon type="wallet" />
+              </div>
+            </Link>
+          )}
           {connected && <WalletDrawer />}
           <HeaderSetting />
           {connected && (

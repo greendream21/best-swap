@@ -1,10 +1,28 @@
 import styled from 'styled-components';
 import { palette } from 'styled-theme';
 import { Drawer as AntdDrawer } from 'antd';
+import { media } from '../../helpers/styleHelper';
 
 export const WalletDrawerWrapper = styled.div`
   position: relative;
   padding: 8px 4px;
+
+  .wallet-mobile-btn {
+    position: fixed;
+    top: 26px;
+    right: 8px;
+    display: block;
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+    border-radius: 50%;
+    border: 1px solid ${palette('primary', 1)};
+    padding: 4px 7px;
+    color: ${palette('primary', 1)};
+    ${media.sm`
+      display: none;
+    `}
+  }
 `;
 
 export const Drawer = styled(AntdDrawer)`

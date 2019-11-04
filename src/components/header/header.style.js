@@ -88,8 +88,7 @@ export const HeaderTitle = styled.p`
 `;
 
 export const HeaderActionButtons = styled.div`
-  display: none;
-
+  display: block;
   ${media.sm`
     display: flex;
     align-items: center;
@@ -97,16 +96,48 @@ export const HeaderActionButtons = styled.div`
 
   /* HACK: This should be refactored in 
      the future to not use classes */
-  .wallet-btn-wrapper {
+  
+    .wallet-btn-wrapper {
+    display: none !important;
+    ${media.sm`
+        display: flex !important;
+      `}
     margin-right: 14px;
   }
 
+  a {
+    .wallet-mobile-btn {
+      position: fixed;
+      top: 26px;
+      right: 8px;
+      display: block;
+      width: 30px;
+      height: 30px;
+      min-width: 30px;
+      border-radius: 50%;
+      border: 1px solid ${palette('primary', 1)};
+      padding: 4px 7px;
+      color: ${palette('primary', 1)};
+      ${media.sm`
+        display: none;
+      `}
+    }
+  }
+
   .txView-wrapper {
+    display: none;
+    ${media.sm`
+      display: block;
+    `}
     margin-left: 10px;
     align-items: center;
   }
 
   .ant-dropdown-link {
     margin: 0 8px;
+    display: none;
+    ${media.sm`
+      display: flex;
+    `}
   }
 `;

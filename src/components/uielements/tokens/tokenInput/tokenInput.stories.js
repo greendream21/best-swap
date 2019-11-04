@@ -17,6 +17,7 @@ storiesOf('Components/Tokens/TokenInput', module).add('default', () => {
             status="slip 2%"
             amount="12345"
             label="$usd 217.29"
+            onChange={() => {}}
           />
         </div>
       </AppHolder>

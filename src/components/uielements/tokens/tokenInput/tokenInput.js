@@ -22,8 +22,14 @@ class TokenInput extends Component {
     className: '',
   };
 
+  inputRef = React.createRef();
+
   onChange = e => {
     this.props.onChange(e.target.value);
+  };
+
+  handleClickWrapper = () => {
+    this.inputRef.current.firstChild.focus();
   };
 
   render() {
@@ -32,13 +38,14 @@ class TokenInput extends Component {
     return (
       <TokenInputWrapper
         className={`tokenInput-wrapper ${className}`}
+        onClick={this.handleClickWrapper}
         {...props}
       >
         <div className="token-input-header">
           <p className="token-input-title">{title}</p>
           <p className="token-input-header-label">{status}</p>
         </div>
-        <div className="token-input-content">
+        <div className="token-input-content" ref={this.inputRef}>
           <CoinInputAdvanced
             className="token-amount-input"
             size="normal"
