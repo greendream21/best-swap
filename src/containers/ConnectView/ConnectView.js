@@ -1,31 +1,34 @@
 import React, { Component } from 'react';
 import { Row, Col } from 'antd';
 
+import Tabs from '../../components/uielements/tabs';
 import { ContentWrapper } from './ConnectView.style';
-import Label from '../../components/uielements/label';
-import Button from '../../components/uielements/button';
 
 import Keystore from './Keystore';
 import WalletConnect from './WalletConnect';
 import Ledger from './Ledger';
+
+const { TabPane } = Tabs;
 
 class ConnectView extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      walletType: 'keystore',
+      active: 'keystore',
     };
   }
 
-  setWalletType(t) {
+  setWalletType = active => {
     this.setState({
-      walletType: t,
+      active,
     });
-  }
+  };
 
   render() {
-    const btns = [
+    const { active } = this.state;
+
+    const tabs = [
       {
         label: 'wallet connect',
         value: 'walletconnect',
@@ -43,38 +46,30 @@ class ConnectView extends Component {
       },
     ];
 
-    const selected = btns.find(btn => btn.value === this.state.walletType);
+    const selected = tabs.find(tab => tab.value === active);
 
     return (
       <ContentWrapper>
-        <Row className="connect-view-title">
-          <Col span={24}>
-            <Label size="normal" weight="bold" color="normal">
-              SELECT WALLET
-            </Label>
-          </Col>
-        </Row>
-        <Row className="connect-view-content">
-          <Col className="connect-view-content-buttons" xs={24} sm={8}>
-            {btns.map(btn => {
+        <Row className="connect-view-header">
+          <Tabs
+            className="connect-view-tab"
+            activeKey={active}
+            onChange={this.setWalletType}
+            action
+          >
+            {tabs.map(tab => {
               return (
-                <Button
-                  key={btn.value}
-                  onClick={() => {
-                    this.setWalletType(btn.value);
-                  }}
-                  focused={this.state.walletType === btn.value}
-                  color="primary"
-                  typevalue="ghost"
-                  sizevalue="big"
-                  disabled={btn.value === 'walletconnect'}
-                >
-                  {btn.label}
-                </Button>
+                <TabPane
+                  key={tab.value}
+                  tab={tab.label}
+                  disabled={tab.value === 'walletconnect'}
+                />
               );
             })}
-          </Col>
-          <Col className="connect-view-content-form" xs={24} sm={8}>
+          </Tabs>
+        </Row>
+        <Row className="connect-view-content">
+          <Col className="connect-view-content-form" xs={24}>
             {selected.comp}
           </Col>
         </Row>

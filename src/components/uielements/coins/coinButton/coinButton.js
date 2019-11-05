@@ -5,6 +5,8 @@ import { CoinButtonWrapper } from './coinButton.style';
 import CoinIcon from '../coinIcon';
 import Label from '../../label';
 
+import { getFixedNumber } from '../../../../helpers/stringHelper';
+
 class CoinButton extends Component {
   static propTypes = {
     cointype: PropTypes.string,
@@ -24,7 +26,7 @@ class CoinButton extends Component {
 
   render() {
     const { cointype, reversed, price, className, ...props } = this.props;
-    const priceValue = `$${price}`;
+    const priceValue = `$${getFixedNumber(price)}`;
 
     return (
       <CoinButtonWrapper

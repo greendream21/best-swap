@@ -30,7 +30,13 @@ class AddressInput extends Component {
 
   renderPopoverContent = () => {
     return (
-      <div style={{ fontFamily: 'Roboto', color: '#50E3C2' }}>
+      <div
+        style={{
+          fontFamily: 'Roboto, sans-serif',
+          fontSize: '11px',
+          color: '#50E3C2',
+        }}
+      >
         Add Recipient Address
       </div>
     );

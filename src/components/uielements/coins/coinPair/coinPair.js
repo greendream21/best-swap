@@ -4,7 +4,6 @@ import { Icon } from 'antd';
 
 import { CoinPairWrapper } from './coinPair.style';
 import CoinIcon from '../coinIcon';
-import Label from '../../label';
 
 class CoinPair extends Component {
   static propTypes = {
@@ -26,12 +25,10 @@ class CoinPair extends Component {
       <CoinPairWrapper className={`coinPair-wrapper ${className}`} {...props}>
         <div className="coin-data">
           <CoinIcon type={from} />
-          <Label>{from.toUpperCase()}</Label>
         </div>
         <Icon className="arrow-icon" type="caret-right" />
         <div className="coin-data">
           <CoinIcon type={to} />
-          <Label>{to.toUpperCase()}</Label>
         </div>
       </CoinPairWrapper>
     );

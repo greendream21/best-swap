@@ -59,6 +59,7 @@ class SwapView extends Component {
   };
 
   renderAssets = () => {
+    const { runePrice } = this.props;
     const { activeAsset } = this.state;
     const asset = 'rune';
     return (
@@ -67,6 +68,7 @@ class SwapView extends Component {
         onClick={this.handleChooseBasePair(asset)}
         focused={asset === activeAsset}
         disabled={asset !== 'rune'} // enable only rune for base pair
+        price={runePrice}
         key={0}
       />
     );
