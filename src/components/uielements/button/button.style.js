@@ -77,7 +77,7 @@ const getBtnThemeColor = () => {
 
     value.default = {
       text: '#fff',
-      border: main,
+      border: text,
       background: main,
       action: {
         text: '#fff',
@@ -160,7 +160,6 @@ export const ButtonWrapper = styled(Button)`
     &:focus {
       color: ${props => colors[props.color][props.typevalue].text};
       border-color: ${props => colors[props.color][props.typevalue].border};
-      border-image: ${props => colors[props.color][props.typevalue].border};
       background: ${props => colors[props.color][props.typevalue].background};
       ${props =>
         props.typevalue === 'normal' &&
@@ -179,8 +178,6 @@ export const ButtonWrapper = styled(Button)`
       border-color: ${props =>
         colors[props.color][props.typevalue].focus
           .border} !important; /* HACK: Border is overridden in selection.style.js buttons we need to create a new style for these buttons remove this when ready */
-      border-image: ${props =>
-        colors[props.color][props.typevalue].focus.border} !important;
     }
 
     /* apply special override styles for .focused class */
@@ -191,8 +188,6 @@ export const ButtonWrapper = styled(Button)`
       &:active {
         color: ${props => colors[props.color][props.typevalue].action.text};
         border-color: ${props =>
-          colors[props.color][props.typevalue].action.border};
-        border-image: ${props =>
           colors[props.color][props.typevalue].action.border};
         background: ${props =>
           props.typevalue === 'normal'
