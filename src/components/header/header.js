@@ -70,15 +70,16 @@ class Header extends Component {
     return pageType;
   };
 
-  handleChangeTab = type => activeTab => {
-    if (type) {
+  handleChangeTab = activeTab => {
+    const url = window.location.pathname;
+    if (!url.includes('/introduction')) {
       const URL = `/${activeTab}`;
 
       this.props.history.push(URL);
     } else {
-      this.setState({
-        activeTab,
-      });
+      const URL = `/introduction/${activeTab}`;
+
+      this.props.history.push(URL);
     }
   };
 
@@ -87,7 +88,6 @@ class Header extends Component {
     const { activeTab } = this.state;
     const active = type || activeTab;
 
-    console.log('type ', type);
     const swapTab = (
       <span>
         <Icon type="swap" />
@@ -112,7 +112,7 @@ class Header extends Component {
         <Tabs
           data-test="action-tabs"
           activeKey={active}
-          onChange={this.handleChangeTab(type)}
+          onChange={this.handleChangeTab}
           action
         >
           <TabPane tab={swapTab} key="swap" />

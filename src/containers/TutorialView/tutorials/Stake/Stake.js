@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import { Row, Col, Icon } from 'antd';
 import PropTypes from 'prop-types';
 
@@ -36,33 +36,6 @@ class Stake extends Component {
     this.setState({
       [name]: value,
     });
-  };
-
-  handleTry = () => {
-    const URL = '/tutorial/pool/stakingplay';
-
-    this.props.history.push(URL);
-  };
-
-  handleBack = () => {
-    const { view } = this.props;
-
-    if (view === 'stakingintro') {
-      const URL = '/tutorial/swap/doubleplay';
-
-      this.props.history.push(URL);
-    }
-    if (view === 'stakingplay') {
-      const URL = '/tutorial/pool/stakingintro';
-
-      this.props.history.push(URL);
-    }
-  };
-
-  handleGotoEarning = () => {
-    const URL = '/tutorial/pool/earningintro';
-
-    this.props.history.push(URL);
   };
 
   renderFlow = view => {
@@ -171,20 +144,28 @@ class Stake extends Component {
   renderButtons = () => {
     const { view } = this.props;
 
+    let URL = '';
+    if (view === 'stakingintro') {
+      URL = '/tutorial/swap/doubleplay';
+    }
+    if (view === 'stakingplay') {
+      URL = '/tutorial/pool/stakingintro';
+    }
+
     return (
       <Row className="bottom-nav-button">
-        <Button onClick={this.handleBack} color="primary" typevalue="ghost">
-          back
-        </Button>
-        {view === 'stakingplay' && (
-          <Button
-            onClick={this.handleGotoEarning}
-            color="primary"
-            typevalue="outline"
-          >
-            Earning
-            <Icon type="arrow-right" />
+        <Link to={URL}>
+          <Button color="primary" typevalue="ghost">
+            back
           </Button>
+        </Link>
+        {view === 'stakingplay' && (
+          <Link to="/tutorial/pool/earningintro">
+            <Button color="primary" typevalue="outline">
+              Earning
+              <Icon type="arrow-right" />
+            </Button>
+          </Link>
         )}
       </Row>
     );
@@ -251,13 +232,11 @@ class Stake extends Component {
               earnings.
             </Label>
             {view === 'stakingintro' && (
-              <Button
-                className="try-btn"
-                onClick={this.handleTry}
-                typevalue="outline"
-              >
-                try
-              </Button>
+              <Link to="/tutorial/pool/stakingplay">
+                <Button className="try-btn" typevalue="outline">
+                  try
+                </Button>
+              </Link>
             )}
             {view === 'stakingplay' && (
               <>

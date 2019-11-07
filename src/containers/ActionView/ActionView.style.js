@@ -48,5 +48,6 @@ export const BackLink = styled.div`
     font-weight: 500;
     letter-spacing: 1px;
     text-transform: uppercase;
+    color: ${palette('primary', 1)};
   }
 `;

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Icon } from 'antd';
 
@@ -52,12 +52,6 @@ class SwapView extends Component {
     });
   };
 
-  handleSwap = (source, target) => () => {
-    const URL = `/swap/detail/${source.toLowerCase()}-${target.toLowerCase()}`;
-
-    this.props.history.push(URL);
-  };
-
   renderAssets = () => {
     const { runePrice } = this.props;
     const { activeAsset } = this.state;
@@ -75,6 +69,31 @@ class SwapView extends Component {
   };
 
   renderSwapTable = (swapViewData, view) => {
+    const btnCol = {
+      key: 'swap',
+      title: (
+        <Button typevalue="outline">
+          <Icon type="sync" />
+          refresh
+        </Button>
+      ),
+      render: (text, record) => {
+        const {
+          pool: { asset, target },
+        } = record;
+        const URL = `/swap/detail/${asset.toLowerCase()}-${target.toLowerCase()}`;
+
+        return (
+          <Link to={URL}>
+            <Button style={{ margin: 'auto' }} round>
+              <Icon type="swap" />
+              swap
+            </Button>
+          </Link>
+        );
+      },
+    };
+
     const mobileColumns = [
       {
         key: 'pool',
@@ -82,30 +101,7 @@ class SwapView extends Component {
         dataIndex: 'pool',
         render: ({ asset, target }) => <CoinPair from={asset} to={target} />,
       },
-      {
-        key: 'swap',
-        title: (
-          <Button typevalue="outline">
-            <Icon type="sync" />
-            refresh
-          </Button>
-        ),
-        render: (text, record) => {
-          const {
-            pool: { asset, target },
-          } = record;
-          return (
-            <Button
-              onClick={this.handleSwap(asset, target)}
-              style={{ margin: 'auto' }}
-              round
-            >
-              <Icon type="swap" />
-              swap
-            </Button>
-          );
-        },
-      },
+      btnCol,
     ];
 
     const desktopColumns = [
@@ -141,30 +137,7 @@ class SwapView extends Component {
         title: 'no. of trades',
         dataIndex: 'trade',
       },
-      {
-        key: 'swap',
-        title: (
-          <Button typevalue="outline">
-            <Icon type="sync" />
-            refresh
-          </Button>
-        ),
-        render: (text, record) => {
-          const {
-            pool: { asset, target },
-          } = record;
-          return (
-            <Button
-              onClick={this.handleSwap(asset, target)}
-              style={{ margin: 'auto' }}
-              round
-            >
-              <Icon type="swap" />
-              swap
-            </Button>
-          );
-        },
-      },
+      btnCol,
     ];
 
     const columnData = {

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { sortBy as _sortBy } from 'lodash';
 
@@ -67,12 +67,6 @@ class WalletView extends Component {
     const { assetData } = this.props;
 
     return assetData.find(data => data.asset === asset);
-  };
-
-  handleChangeTab = (/* tag */) => {};
-
-  handleConnect = () => {
-    this.props.history.push('/connect');
   };
 
   handleSelectAsset = key => {
@@ -164,9 +158,9 @@ class WalletView extends Component {
               {this.renderAssetTitle()}
             </Label>
             {!wallet && (
-              <Button onClick={this.handleConnect} color="success">
-                connect
-              </Button>
+              <Link to="/connect">
+                <Button color="success">connect</Button>
+              </Link>
             )}
             {!loadingAssets && (
               <CoinList

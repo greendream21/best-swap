@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { notification, Icon } from 'antd';
 
@@ -46,11 +46,6 @@ class PoolView extends Component {
     getRunePrice();
   }
 
-  handleStake = symbol => () => {
-    const URL = `/pool/${symbol.toUpperCase()}`;
-    this.props.history.push(URL);
-  };
-
   handleNewPool = () => {
     const { assetData, pools } = this.props;
     const possibleTokens = getCreatePoolTokens(assetData, pools);
@@ -70,6 +65,29 @@ class PoolView extends Component {
   };
 
   renderPoolTable = (swapViewData, view) => {
+    const buttonCol = {
+      key: 'stake',
+      title: (
+        <Button typevalue="outline">
+          <Icon type="sync" />
+          refresh
+        </Button>
+      ),
+      render: (text, record) => {
+        const { symbol } = record;
+        const URL = `/pool/${symbol.toUpperCase()}`;
+
+        return (
+          <Link to={URL}>
+            <Button style={{ margin: 'auto' }} round>
+              <Icon type="database" />
+              stake
+            </Button>
+          </Link>
+        );
+      },
+    };
+
     const mobileColumns = [
       {
         key: 'pool',
@@ -77,29 +95,7 @@ class PoolView extends Component {
         dataIndex: 'pool',
         render: ({ asset, target }) => <CoinPair from={asset} to={target} />,
       },
-      {
-        key: 'stake',
-        title: (
-          <Button typevalue="outline">
-            <Icon type="sync" />
-            refresh
-          </Button>
-        ),
-        render: (text, record) => {
-          const { symbol } = record;
-
-          return (
-            <Button
-              onClick={this.handleStake(symbol)}
-              style={{ margin: 'auto' }}
-              round
-            >
-              <Icon type="database" />
-              stake
-            </Button>
-          );
-        },
-      },
+      buttonCol,
     ];
     const desktopColumns = [
       {
@@ -134,29 +130,7 @@ class PoolView extends Component {
         title: 'historical roi',
         dataIndex: 'roiAT',
       },
-      {
-        key: 'stake',
-        title: (
-          <Button typevalue="outline">
-            <Icon type="sync" />
-            refresh
-          </Button>
-        ),
-        render: (text, record) => {
-          const { symbol } = record;
-
-          return (
-            <Button
-              onClick={this.handleStake(symbol)}
-              style={{ margin: 'auto' }}
-              round
-            >
-              <Icon type="database" />
-              stake
-            </Button>
-          );
-        },
-      },
+      buttonCol,
     ];
 
     const columnData = {

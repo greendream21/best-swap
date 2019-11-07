@@ -317,13 +317,6 @@ class PoolStake extends Component {
     });
   };
 
-  handleGotoDetail = () => {
-    const { symbol } = this.props;
-    const URL = `/pool/${symbol}`;
-
-    this.props.history.push(URL);
-  };
-
   handleDrag = () => {
     this.setState({
       dragReset: false,

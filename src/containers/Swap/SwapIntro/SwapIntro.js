@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import { Row, Col, Icon } from 'antd';
-import PropTypes from 'prop-types';
 
 import { ContentWrapper } from './SwapIntro.style';
 import Label from '../../../components/uielements/label';
@@ -14,13 +14,7 @@ import {
 } from '../../../components/icons';
 
 class Swap extends Component {
-  static propTypes = {
-    onNext: PropTypes.func.isRequired,
-  };
-
   render() {
-    const { onNext } = this.props;
-
     return (
       <ContentWrapper>
         <Row className="swap-content-pool-text">
@@ -74,10 +68,12 @@ class Swap extends Component {
           </Col>
         </Row>
         <Row className="bottom-nav-button">
-          <Button onClick={onNext} color="primary" typevalue="outline">
-            pools
-            <Icon type="arrow-right" />
-          </Button>
+          <Link to="/introduction/pools">
+            <Button color="primary" typevalue="outline">
+              pools
+              <Icon type="arrow-right" />
+            </Button>
+          </Link>
         </Row>
       </ContentWrapper>
     );

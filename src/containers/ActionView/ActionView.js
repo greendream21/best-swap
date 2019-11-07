@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Icon } from 'antd';
 
@@ -48,33 +48,9 @@ class ActionView extends Component {
     }
   }
 
-  handleStart = () => {
-    this.props.history.push('/connect');
-  };
-
-  handleBack = () => {
-    const view = this.getView();
-    if (
-      view === 'connect-view' ||
-      view === 'stats-view' ||
-      view === 'faqs-view'
-    ) {
-      this.props.history.push('/swap');
-    }
-    if (view === 'swap-detail' || view === 'swap-send') {
-      this.props.history.push('/swap');
-    }
-    if (view.includes('pools-')) {
-      this.props.history.push('/pools');
-    }
-    if (view.includes('trade-')) {
-      this.props.history.push('/trade');
-    }
-  };
-
   getView = () => {
     const { type, view } = this.props;
-
+    console.log('actionview type: ', type, view);
     if (type) {
       return `${type}-${view}`;
     }
@@ -82,14 +58,34 @@ class ActionView extends Component {
 
   renderBack = () => {
     const { view } = this.props;
-
     if (view === 'view') return '';
 
+    const pageView = this.getView();
+    let routing = '';
+
+    if (
+      pageView === 'connect-view' ||
+      pageView === 'stats-view' ||
+      pageView === 'faqs-view'
+    ) {
+      routing = '/swap';
+    }
+    if (pageView === 'swap-detail' || pageView === 'swap-send') {
+      routing = '/swap';
+    }
+    if (pageView.includes('pools-')) {
+      routing = '/pools';
+    }
+    if (pageView.includes('trade-')) {
+      routing = '/trade';
+    }
     return (
-      <BackLink onClick={this.handleBack}>
-        <Icon type="left" />
-        <span>Back</span>
-      </BackLink>
+      <Link to={routing}>
+        <BackLink>
+          <Icon type="left" />
+          <span>Back</span>
+        </BackLink>
+      </Link>
     );
   };
 
@@ -102,19 +98,9 @@ class ActionView extends Component {
       <>
         {this.renderBack()}
         <ActionViewWrapper>
-          {view === 'swap' && <SwapIntro onNext={this.handleSetTab('pools')} />}
-          {view === 'pools' && (
-            <PoolIntro
-              onBack={this.handleSetTab('swap')}
-              onNext={this.handleSetTab('trade')}
-            />
-          )}
-          {view === 'trade' && (
-            <TradeIntro
-              onBack={this.handleSetTab('pools')}
-              onNext={this.handleStart}
-            />
-          )}
+          {view === 'intro-swap' && <SwapIntro />}
+          {view === 'intro-pools' && <PoolIntro />}
+          {view === 'intro-trade' && <TradeIntro />}
           {view === 'tutorial' && <TutorialView />}
           {view === 'connect-view' && <ConnectView />}
           {view === 'stats-view' && <StatsView />}

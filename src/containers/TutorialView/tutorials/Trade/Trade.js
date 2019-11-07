@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import { Row, Col, Icon } from 'antd';
 import PropTypes from 'prop-types';
 
@@ -42,33 +42,6 @@ class Trade extends Component {
     this.setState({
       [name]: value,
     });
-  };
-
-  handleTry = () => {
-    const URL = '/tutorial/trade/tradingplay';
-
-    this.props.history.push(URL);
-  };
-
-  handleBack = () => {
-    const { view } = this.props;
-
-    if (view === 'tradingintro') {
-      const URL = '/tutorial/pool/earningplay';
-
-      this.props.history.push(URL);
-    }
-    if (view === 'tradingplay') {
-      const URL = '/tutorial/trade/tradingintro';
-
-      this.props.history.push(URL);
-    }
-  };
-
-  handleFinish = () => {
-    const URL = '/tutorial';
-
-    this.props.history.push(URL);
   };
 
   renderFlow = view => {
@@ -156,20 +129,28 @@ class Trade extends Component {
   renderButtons = () => {
     const { view } = this.props;
 
+    let URL = '';
+    if (view === 'tradingintro') {
+      URL = '/tutorial/pool/earningplay';
+    }
+    if (view === 'tradingplay') {
+      URL = '/tutorial/trade/tradingintro';
+    }
+
     return (
       <Row className="bottom-nav-button">
-        <Button onClick={this.handleBack} color="primary" typevalue="ghost">
-          back
-        </Button>
-        {view === 'tradingplay' && (
-          <Button
-            onClick={this.handleFinish}
-            color="primary"
-            typevalue="outline"
-          >
-            Finish
-            <Icon type="arrow-right" />
+        <Link to={URL}>
+          <Button color="primary" typevalue="ghost">
+            back
           </Button>
+        </Link>
+        {view === 'tradingplay' && (
+          <Link to="/tutorial">
+            <Button color="primary" typevalue="outline">
+              Finish
+              <Icon type="arrow-right" />
+            </Button>
+          </Link>
         )}
       </Row>
     );
@@ -311,13 +292,11 @@ class Trade extends Component {
               market price moves.
             </Label>
             {view === 'tradingintro' && (
-              <Button
-                className="try-btn"
-                onClick={this.handleTry}
-                typevalue="outline"
-              >
-                try
-              </Button>
+              <Link to="/tutorial/trade/tradingplay">
+                <Button className="try-btn" typevalue="outline">
+                  try
+                </Button>
+              </Link>
             )}
             {view === 'tradingplay' && (
               <>

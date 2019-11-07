@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import { Row, Col, Icon } from 'antd';
 import PropTypes from 'prop-types';
 
@@ -39,24 +39,6 @@ class Swap extends Component {
     this.setState({
       [name]: value,
     });
-  };
-
-  handleTry = () => {
-    const URL = '/tutorial/swap/play';
-
-    this.props.history.push(URL);
-  };
-
-  handleBack = () => {
-    const URL = '/tutorial/swap/intro';
-
-    this.props.history.push(URL);
-  };
-
-  handleGotoDouble = () => {
-    const URL = '/tutorial/swap/doubleintro';
-
-    this.props.history.push(URL);
   };
 
   renderFlow = view => {
@@ -192,17 +174,17 @@ class Swap extends Component {
   renderButtons = () => {
     return (
       <Row className="bottom-nav-button">
-        <Button onClick={this.handleBack} color="primary" typevalue="ghost">
-          back
-        </Button>
-        <Button
-          onClick={this.handleGotoDouble}
-          color="primary"
-          typevalue="outline"
-        >
-          Double
-          <Icon type="arrow-right" />
-        </Button>
+        <Link to="/tutorial/swap/intro">
+          <Button color="primary" typevalue="ghost">
+            back
+          </Button>
+        </Link>
+        <Link to="/tutorial/swap/doubleintro">
+          <Button color="primary" typevalue="outline">
+            Double
+            <Icon type="arrow-right" />
+          </Button>
+        </Link>
       </Row>
     );
   };
@@ -275,13 +257,11 @@ class Swap extends Component {
               You can swap both ways, or swap and send to someone else.
             </Label>
             {view === 'intro' && (
-              <Button
-                className="try-btn"
-                onClick={this.handleTry}
-                typevalue="outline"
-              >
-                try
-              </Button>
+              <Link to="/tutorial/swap/play">
+                <Button className="try-btn" typevalue="outline">
+                  try
+                </Button>
+              </Link>
             )}
             {view === 'play' && (
               <>
