@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="256px" height="256px" viewBox="0 0 256 256" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 57 (83077) - https://sketch.com -->
+    <title>RUNE-ICON-FLASH</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="15.2817171%" y1="87.6283329%" x2="86.0421087%" y2="19.1231758%" id="linearGradient-1">
+            <stop stop-color="#33FF99" offset="0%"></stop>
+            <stop stop-color="#00CCFF" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="RUNE-ICON-FLASH" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <circle id="Oval" fill="url(#linearGradient-1)" cx="128" cy="128" r="128"></circle>
+        <g id="Thorchain_icon" transform="translate(127.600739, 128.228674) rotate(2.000000) translate(-127.600739, -128.228674) translate(56.100739, 52.228674)" fill="#FFFFFF" fill-rule="nonzero">
+            <path d="M71.3913419,75.7749808 L106.194502,107.657792 L0.194502137,151.432982 L71.3913419,75.7749808 Z M142.588182,0.116980005 L71.3913419,75.7749808 L36.5881816,43.8921693 L142.588182,0.116980005 Z" id="Shape"></path>
+        </g>
+    </g>
+</svg>
