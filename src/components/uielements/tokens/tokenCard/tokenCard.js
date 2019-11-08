@@ -94,7 +94,7 @@ class TokenCard extends Component {
             value={amount}
             onChange={onChange}
             label={priceValue}
-            {...inputProps}
+            inputProps={inputProps}
           />
           <TokenSelect
             asset={asset}

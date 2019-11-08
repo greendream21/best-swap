@@ -63,6 +63,13 @@ export const ContentWrapper = styled(ContentView)`
     ${media.sm`
       flex-direction: row;
     `}
+
+    .desktop-view {
+      display: none;
+      ${media.xl`
+        display: block;
+      `}
+    }
   }
 
   .swap-detail-panel {

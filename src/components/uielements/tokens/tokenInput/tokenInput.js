@@ -10,6 +10,7 @@ class TokenInput extends Component {
     status: PropTypes.string,
     value: PropTypes.string,
     label: PropTypes.string,
+    inputProps: PropTypes.object,
     onChange: PropTypes.func.isRequired,
     className: PropTypes.string,
   };
@@ -19,6 +20,7 @@ class TokenInput extends Component {
     value: '',
     status: '',
     label: '',
+    inputProps: {},
     className: '',
   };
 
@@ -33,7 +35,15 @@ class TokenInput extends Component {
   };
 
   render() {
-    const { title, value, status, label, className, ...props } = this.props;
+    const {
+      title,
+      value,
+      status,
+      label,
+      className,
+      inputProps,
+      ...props
+    } = this.props;
 
     return (
       <TokenInputWrapper
@@ -51,6 +61,7 @@ class TokenInput extends Component {
             size="normal"
             value={value}
             onChange={this.onChange}
+            {...inputProps}
           />
           <p className="token-amount-label">{label}</p>
         </div>

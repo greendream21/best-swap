@@ -53,7 +53,9 @@ describe('Wallet', () => {
 
     cy.get('.ant-drawer-mask').click();
 
-    cy.get('[data-test="swap-card-BNB"] [data-test="swap-button"]').click();
+    cy.get(
+      '.swap-list-view.desktop-view [data-test="swap-button-bnb"]',
+    ).click();
     cy.get('[data-test="coincard-source-input"]').type('1000{enter}');
 
     cy.get('[data-test="coincard-source-input"]')

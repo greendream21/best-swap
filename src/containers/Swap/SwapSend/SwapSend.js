@@ -739,7 +739,7 @@ class SwapSend extends Component {
         <Row>
           <Col
             className="swap-status-panel desktop-view"
-            xs={{ span: 24, offset: 0 }}
+            xs={{ span: 0, offset: 0 }}
             xl={{ span: 6 }}
           >
             <SwapStatusPanel>
@@ -765,6 +765,7 @@ class SwapSend extends Component {
                 onChange={this.handleChangeValue}
                 onChangeAsset={this.handleChangeSource}
                 onSelect={this.handleSelectAmount(source)}
+                inputProps={{ 'data-test': 'coincard-source-input' }}
                 withSelection
                 withSearch
               />
@@ -778,6 +779,7 @@ class SwapSend extends Component {
                 inputTitle="swap amount"
                 inputProps={{
                   disabled: true,
+                  'data-test': 'coincard-target-input',
                 }}
                 asset={target}
                 assetData={targetData}

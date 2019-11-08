@@ -82,10 +82,11 @@ class SwapView extends Component {
           pool: { asset, target },
         } = record;
         const URL = `/swap/detail/${asset.toLowerCase()}-${target.toLowerCase()}`;
+        const dataTest = `swap-button-${target.toLowerCase()}`;
 
         return (
           <Link to={URL}>
-            <Button style={{ margin: 'auto' }} round>
+            <Button style={{ margin: 'auto' }} round data-test={dataTest}>
               <Icon type="swap" />
               swap
             </Button>
@@ -191,7 +192,7 @@ class SwapView extends Component {
               </Label>
             </div>
             <div className="asset-button-group">{this.renderAssets()}</div>
-            <div className="swap-list-view">
+            <div className="swap-list-view desktop-view">
               {this.renderSwapList('desktop')}
             </div>
             <div className="swap-list-view mobile-view">
