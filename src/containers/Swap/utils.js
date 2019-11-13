@@ -44,7 +44,7 @@ export const getCalcResult = (from, to, pools, xValue, runePrice) => {
     const calcData = { X, Y, R, Z, Py, Pr: Py };
 
     const zValue = getZValue(xValue, calcData).toFixed(2);
-    const slip = getSlip(xValue, calcData);
+    const slip = getFixedNumber(getSlip(xValue, calcData), 0);
     const Px = getPx(xValue, calcData);
     const Pz = getPz(xValue, calcData).toFixed(2);
     const fee = getFixedNumber(getFee(xValue, calcData));

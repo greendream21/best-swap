@@ -83,6 +83,8 @@ class TokenCard extends Component {
 
     const slipValue = slip ? `slip ${slip}%` : null;
     const priceValue = `${unit} ${getFixedNumber(amount * price)}`;
+    const dataTest = this.props['data-test']; // eslint-disable-line
+    const tokenSelectDataTest = `${dataTest}-select`;
 
     return (
       <TokenCardWrapper className={`tokenCard-wrapper ${className}`} {...props}>
@@ -104,6 +106,7 @@ class TokenCard extends Component {
             searchDisable={searchDisable}
             onSelect={onSelect}
             onChangeAsset={onChangeAsset}
+            data-test={tokenSelectDataTest}
           />
         </div>
         {children}

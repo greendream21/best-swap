@@ -85,6 +85,7 @@ class TokenSelect extends Component {
       <TokenDropdownButton
         disabled={disabled}
         onClick={this.handleDropdownButtonClicked}
+        data-test="coin-dropdown-button"
       >
         {!disabled ? (
           <DropdownCarret className="caret-down" open={open} />
@@ -95,6 +96,8 @@ class TokenSelect extends Component {
 
   renderMenu = () => {
     const { assetData, asset, withSearch, searchDisable } = this.props;
+    const dataTest = this.props['data-test']; // eslint-disable-line
+    const menuDataTest = `${dataTest}-menu`;
 
     return (
       <TokenMenu
@@ -103,6 +106,7 @@ class TokenSelect extends Component {
         withSearch={withSearch}
         searchDisable={searchDisable}
         onSelect={this.handleChangeAsset}
+        data-test={menuDataTest}
       />
     );
   };

@@ -13,7 +13,10 @@ function filterFunction(item, searchTerm) {
 function cellRenderer(data) {
   const { asset: key, price } = data;
   const tokenName = getTickerFormat(key);
-  const node = <TokenData asset={tokenName} price={price} />; // TODO: token data
+  const dataTest = `token-menu-item-${tokenName}`;
+  const node = (
+    <TokenData asset={tokenName} price={price} data-test={dataTest} />
+  );
 
   return { key, node };
 }

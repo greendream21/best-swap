@@ -768,6 +768,7 @@ class SwapSend extends Component {
                 inputProps={{ 'data-test': 'coincard-source-input' }}
                 withSelection
                 withSearch
+                data-test="coincard-source"
               />
               <Slider
                 value={percent}
@@ -788,6 +789,7 @@ class SwapSend extends Component {
                 slip={slip}
                 onChangeAsset={this.handleSelectTraget}
                 withSearch
+                data-test="coincard-target"
               />
               <CardFormHolder>
                 <CardForm>

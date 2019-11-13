@@ -25,7 +25,7 @@ class AddressInput extends Component {
   };
 
   onChange = e => {
-    this.props.onChange(e.target.value);
+    this.props.onChange(e);
   };
 
   renderPopoverContent = () => {
@@ -60,7 +60,11 @@ class AddressInput extends Component {
             overlayClassName="addressInput-popover"
             overlayStyle={{ padding: '6px' }}
           >
-            <div className="addressInput-icon" onClick={this.setStatus(true)}>
+            <div
+              className="addressInput-icon"
+              onClick={this.setStatus(true)}
+              data-test="add-recipient-address-button"
+            >
               <Icon type="plus" />
             </div>
           </Popover>
@@ -77,6 +81,7 @@ class AddressInput extends Component {
               value={value}
               onChange={this.onChange}
               placeholder="Recipient Address: Eg. bnbeh456..."
+              data-test="recipient-address-field"
             />
           </>
         )}

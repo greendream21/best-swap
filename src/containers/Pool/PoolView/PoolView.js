@@ -76,10 +76,11 @@ class PoolView extends Component {
       render: (text, record) => {
         const { symbol } = record;
         const URL = `/pool/${symbol.toUpperCase()}`;
+        const dataTest = `stake-button-${symbol.toLowerCase()}`;
 
         return (
           <Link to={URL}>
-            <Button style={{ margin: 'auto' }} round>
+            <Button style={{ margin: 'auto' }} round data-test={dataTest}>
               <Icon type="database" />
               stake
             </Button>
@@ -178,7 +179,7 @@ class PoolView extends Component {
         {loading && <PoolLoader />}
         {!loading && (
           <>
-            <div className="pool-list-view">
+            <div className="pool-list-view desktop-view">
               {this.renderPoolList('desktop')}
             </div>
             <div className="pool-list-view mobile-view">
