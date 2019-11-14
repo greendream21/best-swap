@@ -2,7 +2,13 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import ChangingProgressProvider from '../changingProgressProvider';
-import { ConfirmIcon } from '../../icons/timerIcons';
+import {
+  TimerChartIcon1,
+  TimerChartIcon2,
+  TimerChartIcon3,
+  TimerChartIcon4,
+  ConfirmIcon,
+} from '../../icons/timerIcons';
 
 import 'react-circular-progressbar/dist/styles.css';
 
@@ -59,6 +65,18 @@ class TxTimer extends Component {
     onChange(value);
   };
 
+  renderTimerIcon = index => {
+    const timerIcons = [
+      <TimerChartIcon1 />,
+      <TimerChartIcon1 />,
+      <TimerChartIcon2 />,
+      <TimerChartIcon3 />,
+      <TimerChartIcon4 />,
+    ];
+
+    return timerIcons[index];
+  };
+
   render() {
     const {
       value: indexValue,
@@ -86,6 +104,9 @@ class TxTimer extends Component {
         >
           {percentage => {
             const durations = [0, 300, 1200, 1000, txDuration];
+            const percentageIndex = values.findIndex(
+              value => value === percentage,
+            );
 
             durations.slice(0, indexValue + 1).forEach(duration => {
               totalDuration += duration / 1000;
@@ -106,6 +127,7 @@ class TxTimer extends Component {
             return (
               <>
                 <div className="timerchart-icon">
+                  {!resetTimer && this.renderTimerIcon(percentageIndex)}
                   {resetTimer && (
                     <div className="confirm-icon">
                       <ConfirmIcon />
@@ -115,15 +137,15 @@ class TxTimer extends Component {
                 <CircularProgressbar
                   className={CircularProgressbarStyle}
                   value={percentage}
-                  text={`${totalDuration}s`}
+                  text={`${totalDuration}sec`}
                   strokeWidth={7}
                   counterClockwise
                   repeat={false}
                   styles={buildStyles({
-                    textColor: '#50E3C2',
+                    textColor: 'gray',
                     textSize: '14px',
-                    pathColor: '#50E3C2',
-                    trailColor: '#F2F2F2',
+                    pathColor: 'rgba(251,252,254,0.57)',
+                    trailColor: 'rgba(0,0,0,0)',
                     pathTransition: `stroke-dashoffset ${duration}s linear 0s`,
                   })}
                 />
