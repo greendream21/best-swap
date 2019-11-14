@@ -21,7 +21,7 @@ export const WalletViewWrapper = styled(ViewPanel)`
   }
 
   .asset-title-label {
-    padding-top: 20px;
+    padding-top: 40px;
   }
 
   .coinList-wrapper {

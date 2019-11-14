@@ -152,6 +152,7 @@ class WalletView extends Component {
           data-test="wallet-view-tabs"
           defaultActiveKey="assets"
           onChange={this.handleChangeTab}
+          withBorder
         >
           <TabPane tab="assets" key="assets">
             <Label className="asset-title-label" weight="bold">

@@ -31,10 +31,6 @@ export const Drawer = styled(AntdDrawer)`
   .ant-drawer-body {
     height: 100%;
     padding: 24px 12px;
-
-    .ant-tabs-ink-bar {
-      bottom: -1px;
-    }
   }
 
   .refresh-balance-icon {
