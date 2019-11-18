@@ -253,6 +253,9 @@ export const ContentWrapper = styled(ContentView)`
           padding: 20px 0;
           text-align: center;
           text-transform: uppercase;
+
+          border: 1px solid ${palette('border', 0)};
+          border-bottom: 3px solid ${palette('primary', 1)};
         }
 
         .your-share-info-wrapper {
@@ -260,11 +263,16 @@ export const ContentWrapper = styled(ContentView)`
           flex-direction: column;
           padding-bottom: 5px;
 
+          border: 1px solid ${palette('border', 0)};
+          border-top: none;
+
           .share-info-row {
             display: flex;
             justify-content: space-around;
             align-items: center;
-            padding-bottom: 20px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            border-top: 1px solid ${palette('border', 0)};
           }
 
           .your-share-info {
