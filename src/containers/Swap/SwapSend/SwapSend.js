@@ -819,7 +819,7 @@ class SwapSend extends Component {
                   >
                     <Icon type={slipProtection ? 'lock' : 'unlock'} />
                   </Button>
-                  <Label>Protect my price (within 30%)</Label>
+                  <Label>Protect my price (within 3%)</Label>
                 </CardForm>
               </CardFormHolder>
             </SwapAssetCard>
