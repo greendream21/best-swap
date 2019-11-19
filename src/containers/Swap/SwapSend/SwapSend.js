@@ -740,7 +740,8 @@ class SwapSend extends Component {
           <Col
             className="swap-status-panel desktop-view"
             xs={{ span: 0, offset: 0 }}
-            xl={{ span: 6 }}
+            md={{ span: 4 }}
+            lg={{ span: 6 }}
           >
             <SwapStatusPanel>
               <Status title="exchange rate" value={ratioLabel} />
@@ -751,7 +752,8 @@ class SwapSend extends Component {
           <Col
             className="swap-detail-panel"
             xs={{ span: 24, offset: 0 }}
-            xl={{ span: 10 }}
+            md={{ span: 16, offset: 4 }}
+            lg={{ span: 12, offset: 0 }}
           >
             <SwapAssetCard>
               <ContentTitle>you are swapping</ContentTitle>

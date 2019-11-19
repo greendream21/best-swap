@@ -66,7 +66,7 @@ export const ContentWrapper = styled(ContentView)`
 
     .desktop-view {
       display: none;
-      ${media.xl`
+      ${media.lg`
         display: block;
       `}
     }
