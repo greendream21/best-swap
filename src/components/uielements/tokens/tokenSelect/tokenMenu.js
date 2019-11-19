@@ -15,7 +15,12 @@ function cellRenderer(data) {
   const tokenName = getTickerFormat(key);
   const dataTest = `token-menu-item-${tokenName}`;
   const node = (
-    <TokenData asset={tokenName} price={price} data-test={dataTest} />
+    <TokenData
+      asset={tokenName}
+      price={price}
+      size="small"
+      data-test={dataTest}
+    />
   );
 
   return { key, node };

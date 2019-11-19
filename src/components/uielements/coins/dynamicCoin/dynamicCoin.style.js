@@ -3,14 +3,14 @@ import { palette } from 'styled-theme';
 
 const sizes = {
   big: '40px',
-  small: '30px',
-  normal: '28px',
+  normal: '32px',
+  small: '32px',
 };
 
 const fontSizes = {
   big: '12px',
-  small: '10px',
   normal: '9px',
+  small: '9px',
 };
 
 export const DynamicCoinWrapper = styled.div`
@@ -24,6 +24,7 @@ export const DynamicCoinWrapper = styled.div`
   border-radius: 50%;
   font-size: ${props => fontSizes[props.size]};
   font-weight: bold;
+  letter-spacing: 0.3px;
 
   ${props =>
     `background: linear-gradient(45deg, ${props.startCol}, ${props.stopCol})`};

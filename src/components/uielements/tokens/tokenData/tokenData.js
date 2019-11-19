@@ -11,6 +11,7 @@ class TokenData extends Component {
     asset: PropTypes.string,
     assetValue: PropTypes.number,
     price: PropTypes.number,
+    size: PropTypes.string,
     className: PropTypes.string,
   };
 
@@ -18,11 +19,12 @@ class TokenData extends Component {
     asset: 'bnb',
     assetValue: null,
     price: 0,
+    size: 'big',
     className: '',
   };
 
   render() {
-    const { asset, assetValue, price, className, ...props } = this.props;
+    const { asset, assetValue, price, size, className, ...props } = this.props;
     const priceValue = `$${getFixedNumber(price)}`;
 
     return (
@@ -31,7 +33,7 @@ class TokenData extends Component {
         className={`tokenData-wrapper ${className}`}
         {...props}
       >
-        <Coin className="coinData-coin-avatar" type={asset} />
+        <Coin className="coinData-coin-avatar" type={asset} size={size} />
         <div className="coinData-asset-label">{asset}</div>
         <div className="asset-price-info">{priceValue}</div>
       </TokenDataWrapper>
