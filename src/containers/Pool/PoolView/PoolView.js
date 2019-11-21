@@ -105,6 +105,14 @@ class PoolView extends Component {
         render: ({ asset, target }) => <CoinPair from={asset} to={target} />,
       },
       {
+        key: 'asset',
+        title: 'asset',
+        dataIndex: 'pool',
+        render: ({ target }) => <p>{target}</p>,
+        sorter: (a, b) => a.pool.target.localeCompare(b.pool.target),
+        sortDirections: ['descend', 'ascend'],
+      },
+      {
         key: 'depth',
         title: 'depth',
         dataIndex: 'depth',
