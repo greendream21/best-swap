@@ -11,6 +11,8 @@ import {
 
 import TokenMenu from './tokenMenu';
 import TokenData from '../tokenData';
+import Ref from '../../../../helpers/event/ref';
+import clickedInNode from '../../../../helpers/event/clickedInNode';
 
 function DropdownCarret({ open, onClick, className }) {
   return (
@@ -52,6 +54,42 @@ class TokenSelect extends Component {
 
   state = {
     openDropdown: false,
+  };
+
+  ref = React.createRef();
+
+  menuRefref = React.createRef();
+
+  componentDidMount() {
+    document.addEventListener('click', this.handleDocumentClick);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('click');
+  }
+
+  handleRef = ref => {
+    if (ref) {
+      this.ref = ref;
+    }
+  };
+
+  handleMenuRef = menuRef => {
+    if (menuRef) {
+      this.menuRef = menuRef;
+    }
+  };
+
+  handleDocumentClick = e => {
+    if (
+      this.ref &&
+      !clickedInNode(this.ref, e) &&
+      !clickedInNode(this.menuRef, e)
+    ) {
+      this.setState({
+        openDropdown: false,
+      });
+    }
   };
 
   handleVisibleChange = openDropdown => {
@@ -100,14 +138,16 @@ class TokenSelect extends Component {
     const menuDataTest = `${dataTest}-menu`;
 
     return (
-      <TokenMenu
-        assetData={assetData}
-        asset={asset}
-        withSearch={withSearch}
-        searchDisable={searchDisable}
-        onSelect={this.handleChangeAsset}
-        data-test={menuDataTest}
-      />
+      <Ref innerRef={this.handleMenuRef}>
+        <TokenMenu
+          assetData={assetData}
+          asset={asset}
+          withSearch={withSearch}
+          searchDisable={searchDisable}
+          onSelect={this.handleChangeAsset}
+          data-test={menuDataTest}
+        />
+      </Ref>
     );
   };
 
@@ -116,15 +156,21 @@ class TokenSelect extends Component {
     const { openDropdown } = this.state;
 
     return (
-      <Dropdown overlay={this.renderMenu()} trigger={[]} visible={openDropdown}>
-        <TokenSelectWrapper
-          className={`tokenSelect-wrapper ${className}`}
-          {...props}
+      <Ref innerRef={this.handleRef}>
+        <Dropdown
+          overlay={this.renderMenu()}
+          trigger={[]}
+          visible={openDropdown}
         >
-          <TokenData asset={asset} price={price} />
-          {this.renderDropDownButton()}
-        </TokenSelectWrapper>
-      </Dropdown>
+          <TokenSelectWrapper
+            className={`tokenSelect-wrapper ${className}`}
+            {...props}
+          >
+            <TokenData asset={asset} price={price} />
+            {this.renderDropDownButton()}
+          </TokenSelectWrapper>
+        </Dropdown>
+      </Ref>
     );
   }
 }
