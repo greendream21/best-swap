@@ -9,7 +9,6 @@ import Label from '../../../components/uielements/label';
 import AddIcon from '../../../components/uielements/addIcon';
 import PoolLoader from '../../../components/utility/loaders/pool';
 import CoinPair from '../../../components/uielements/coins/coinPair';
-import Trend from '../../../components/uielements/trend';
 import Table from '../../../components/uielements/table';
 import Button from '../../../components/uielements/button';
 
@@ -109,27 +108,36 @@ class PoolView extends Component {
         key: 'depth',
         title: 'depth',
         dataIndex: 'depth',
+        sorter: (a, b) => a.raw.depth - b.raw.depth,
+        sortDirections: ['descend', 'ascend'],
       },
       {
         key: 'volume24',
         title: '24h vol',
         dataIndex: 'volume24',
+        sorter: (a, b) => a.raw.volume24 - b.raw.volume24,
+        sortDirections: ['descend', 'ascend'],
       },
       {
         key: 'transaction',
         title: 'avg. transaction',
         dataIndex: 'transaction',
+        sorter: (a, b) => a.raw.transaction - b.raw.transaction,
+        sortDirections: ['descend', 'ascend'],
       },
       {
         key: 'liqFee',
         title: 'avg. liq fee',
         dataIndex: 'liqFee',
-        render: slip => <Trend value={slip} />,
+        sorter: (a, b) => a.raw.liqFee - b.raw.liqFee,
+        sortDirections: ['descend', 'ascend'],
       },
       {
         key: 'roiAT',
         title: 'historical roi',
         dataIndex: 'roiAT',
+        sorter: (a, b) => a.raw.roiAT - b.raw.roiAT,
+        sortDirections: ['descend', 'ascend'],
       },
       buttonCol,
     ];
@@ -152,7 +160,7 @@ class PoolView extends Component {
       const poolInfo = poolData[symbol] || {};
       const swapInfo = swapData[symbol] || {};
 
-      const { values: stakeCardData } = getPoolData(
+      const { values: stakeCardData, raw } = getPoolData(
         'rune',
         symbol,
         poolInfo,
@@ -162,7 +170,7 @@ class PoolView extends Component {
       );
 
       if (stakeCardData.target !== activeAsset) {
-        result.push(stakeCardData);
+        result.push({ ...stakeCardData, raw });
       }
 
       return result;

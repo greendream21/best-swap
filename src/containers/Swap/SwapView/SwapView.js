@@ -116,27 +116,37 @@ class SwapView extends Component {
         key: 'depth',
         title: 'depth',
         dataIndex: 'depth',
+        sorter: (a, b) => a.raw.depth - b.raw.depth,
+        sortDirections: ['descend', 'ascend'],
       },
       {
         key: 'vol',
         title: '24h vol',
         dataIndex: 'volume',
+        sorter: (a, b) => a.raw.volume - b.raw.volume,
+        sortDirections: ['descend', 'ascend'],
       },
       {
         key: 'transaction',
         title: 'avg. transaction',
         dataIndex: 'transaction',
+        sorter: (a, b) => a.raw.transaction - b.raw.transaction,
+        sortDirections: ['descend', 'ascend'],
       },
       {
         key: 'slip',
         title: 'avg. slip',
         dataIndex: 'slip',
         render: slip => <Trend value={slip} />,
+        sorter: (a, b) => a.raw.slip - b.raw.slip,
+        sortDirections: ['descend', 'ascend'],
       },
       {
         key: 'trade',
         title: 'no. of trades',
         dataIndex: 'trade',
+        sorter: (a, b) => a.raw.trade - b.raw.trade,
+        sortDirections: ['descend', 'ascend'],
       },
       btnCol,
     ];
@@ -146,7 +156,7 @@ class SwapView extends Component {
       mobile: mobileColumns,
     };
     const columns = columnData[view] || desktopColumns;
-
+    console.log('swapViewData: ', swapViewData);
     return <Table columns={columns} dataSource={swapViewData} />;
   };
 

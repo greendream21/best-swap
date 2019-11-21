@@ -11,6 +11,10 @@ export const TableWrapper = styled(Table)`
     background-color: #fff;
     text-transform: uppercase;
     text-align: center;
+
+    .ant-table-column-title {
+      padding-top: 6px;
+    }
   }
 
   .ant-table-tbody > tr > td {

@@ -40,5 +40,12 @@ export const getSwapData = (
     transaction: transactionValue,
     slip,
     trade: tradeValue,
+    raw: {
+      depth: getUserFormat(depth),
+      volume: getUserFormat(volume),
+      transaction: getUserFormat(transaction),
+      slip,
+      trade,
+    },
   };
 };

@@ -69,6 +69,13 @@ export const getPoolData = (
       liqFee: liqFeeValue,
       roiAT: roiAtValue,
     },
+    raw: {
+      depth: getUserFormat(depth),
+      volume24: getUserFormat(volume24),
+      transaction: getUserFormat(transaction),
+      liqFee: getUserFormat(liqFee),
+      roiAT: getUserFormat(roiAT),
+    },
   };
 };
 
