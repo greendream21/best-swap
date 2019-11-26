@@ -3,6 +3,7 @@ import walletSaga from './wallet/saga';
 import chainserviceSaga from './chainservice/saga';
 import statechainSaga from './statechain/saga';
 import binanceSaga from './binance/saga';
+import midgardSaga from './midgard/saga';
 
 export default function* rootSaga(/* getState */) {
   yield all([
@@ -10,5 +11,6 @@ export default function* rootSaga(/* getState */) {
     chainserviceSaga(),
     statechainSaga(),
     binanceSaga(),
+    midgardSaga(),
   ]);
 }
