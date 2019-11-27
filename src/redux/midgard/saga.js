@@ -76,6 +76,24 @@ export function* getPools() {
     try {
       const { data } = yield call(axiosRequest, params);
 
+      yield all(
+        data.map(poolData => {
+          const { chain, symbol } = poolData;
+          const assetId = `${chain}.${symbol}`;
+
+          return put(actions.getAssets(assetId));
+        }),
+      );
+
+      yield all(
+        data.map(poolData => {
+          const { chain, symbol } = poolData;
+          const assetId = `${chain}.${symbol}`;
+
+          return put(actions.getPoolData(assetId));
+        }),
+      );
+
       yield put(actions.getPoolsSuccess(data));
     } catch (error) {
       yield put(actions.getPoolsFailed(error));

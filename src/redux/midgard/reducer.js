@@ -1,4 +1,5 @@
 import actions from './actions';
+import { getAssetIdFromPayload } from './utils';
 
 const initState = {
   transaction: {},
@@ -41,9 +42,18 @@ export default function apiReducer(state = initState, action) {
         error: payload,
       };
     case actions.GET_ASSETS_SUCCESS:
+      if (getAssetIdFromPayload(payload)) {
+        return {
+          ...state,
+          assets: {
+            ...state.assets,
+            [getAssetIdFromPayload(payload)]: payload,
+          },
+          error: null,
+        };
+      }
       return {
         ...state,
-        assets: payload,
         error: null,
       };
     case actions.GET_ASSETS_FAILED:
@@ -65,9 +75,18 @@ export default function apiReducer(state = initState, action) {
         error: payload,
       };
     case actions.GET_POOL_DATA_SUCCESS:
+      if (getAssetIdFromPayload(payload)) {
+        return {
+          ...state,
+          poolData: {
+            ...state.assets,
+            [getAssetIdFromPayload(payload)]: payload,
+          },
+          error: null,
+        };
+      }
       return {
         ...state,
-        poolData: payload,
         error: null,
       };
     case actions.GET_POOL_DATA_FAILED:
