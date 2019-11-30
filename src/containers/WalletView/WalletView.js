@@ -160,7 +160,7 @@ class WalletView extends Component {
             </Label>
             {!wallet && (
               <Link to="/connect">
-                <Button color="success">connect</Button>
+                <Button color="success">CONNECT</Button>
               </Link>
             )}
             {!loadingAssets && (

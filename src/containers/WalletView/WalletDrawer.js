@@ -73,24 +73,34 @@ const WalletDrawer = props => {
         <div className="refresh-balance-icon" onClick={onClickRefresh}>
           <Icon type="sync" spin={refresh} />
         </div>
+        <WalletView status={status} />
+        <div className="wallet-drawer-tools">
+          <Button
+            className="forget-btn"
+            data-test="wallet-forget-button"
+            typevalue="outline"
+            color="primary"
+            onClick={props.forgetWallet}
+          >
+            FORGET
+          </Button>
+          <Button
+            className="transaction-btn"
+            data-test="wallet-transaction-button"
+            typevalue="outline"
+            color="warning"
+          >
+            TRANSACTION
+          </Button>
+        </div>
         {wallet && (
           <div className="wallet-address">
-            <div className="copy-btn-wrapper">
-              <Icon type="copy" onClick={onCopyWallet} />
-            </div>
             <Label className="wallet-label-wrapper">{wallet}</Label>
+            <div className="copy-btn-wrapper" onClick={onCopyWallet}>
+              COPY
+            </div>
           </div>
         )}
-        <WalletView status={status} />
-        <Button
-          className="forget-btn"
-          data-test="wallet-forget-button"
-          typevalue="outline"
-          color="warning"
-          onClick={props.forgetWallet}
-        >
-          Forget
-        </Button>
       </Drawer>
     </WalletDrawerWrapper>
   );

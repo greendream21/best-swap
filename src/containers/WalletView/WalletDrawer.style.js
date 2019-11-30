@@ -33,6 +33,14 @@ export const Drawer = styled(AntdDrawer)`
     padding: 24px 12px;
   }
 
+  .ant-tabs-bar {
+    margin-bottom: 0;
+  }
+
+  .ant-tabs-nav {
+    padding-left: 50px;
+  }
+
   .refresh-balance-icon {
     position: absolute;
     top: 15px;
@@ -44,22 +52,27 @@ export const Drawer = styled(AntdDrawer)`
 
   .wallet-address {
     position: absolute;
-    top: 85px;
-    left: 24px;
+    bottom: 35px;
+    left: 34px;
+    width: 80%;
     display: flex;
     align-items: center;
     z-index: 999;
+    border: 0.5px solid #e2ebf0;
+    border-radius: 4px;
 
     .copy-btn-wrapper {
       display: flex;
       justify-content: center;
       align-items: center;
+      height: 36px;
 
-      border: 1px solid ${palette('primary', 0)};
-      border-radius: 4px;
       padding: 4px;
       margin-right: 6px;
+      font-size: 12px;
       color: ${palette('primary', 0)};
+      background: #f4f5f7;
+      border-radius: 4px;
       cursor: pointer;
     }
 
@@ -69,14 +82,21 @@ export const Drawer = styled(AntdDrawer)`
 
     .wallet-label-wrapper {
       word-break: break-word;
-      max-width: 180px;
       padding: 4px;
     }
   }
 
-  .forget-btn {
+  .wallet-drawer-tools {
     position: absolute;
-    bottom: 24px;
-    left: 24px;
+    bottom: 94px;
+    left: 34px;
+    width: 80%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .btn-wrapper {
+      width: 46%;
+    }
   }
 `;
