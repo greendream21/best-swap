@@ -9,6 +9,13 @@ import { transition } from '../../../settings/style-util';
 export const SwapAssetCard = styled.div`
   display: flex;
   flex-direction: column;
+
+  .swaptool-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
 `;
 
 export const ArrowImage = styled.img`
@@ -141,10 +148,16 @@ export const CardFormHolder = styled.div`
     }
 
     button {
-      height: 25px;
+      width: 21px;
+      height: 21px;
       min-width: 0px;
       padding-left: 4px;
       padding-right: 4px;
+      border-radius: 50%;
+
+      i {
+        font-size: 15px;
+      }
     }
   }
 `;

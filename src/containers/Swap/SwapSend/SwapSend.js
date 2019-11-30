@@ -3,7 +3,7 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Row, Col, Icon, Form, notification } from 'antd';
+import { Row, Col, Icon, Form, notification, Popover } from 'antd';
 import { crypto } from '@binance-chain/javascript-sdk';
 
 import Binance from '../../../clients/binance';
@@ -11,7 +11,6 @@ import Binance from '../../../clients/binance';
 import Button from '../../../components/uielements/button';
 import Drag from '../../../components/uielements/drag';
 import TokenCard from '../../../components/uielements/tokens/tokenCard';
-import Label from '../../../components/uielements/label';
 import Input from '../../../components/uielements/input';
 import CoinData from '../../../components/uielements/coins/coinData';
 import Status from '../../../components/uielements/status';
@@ -663,6 +662,20 @@ class SwapSend extends Component {
     return true;
   };
 
+  renderProtectPopoverContent = () => {
+    return (
+      <div
+        style={{
+          fontFamily: 'Roboto, sans-serif',
+          fontSize: '11px',
+          color: '#50E3C2',
+        }}
+      >
+        Protect my price (within 3%)
+      </div>
+    );
+  };
+
   render() {
     const {
       view,
@@ -793,37 +806,47 @@ class SwapSend extends Component {
                 withSearch
                 data-test="coincard-target"
               />
-              <CardFormHolder>
-                <CardForm>
-                  <CardFormItem className={invalidAddress ? 'has-error' : ''}>
-                    <AddressInput
-                      value={address}
-                      onChange={this.handleChange('address')}
-                      status={view === 'send'}
-                      onStatusChange={this.handleChangeSwapType}
-                    />
-                  </CardFormItem>
-                </CardForm>
-                {invalidAddress && (
-                  <CardFormItemError>
-                    Recipient address is invalid!
-                  </CardFormItemError>
-                )}
-              </CardFormHolder>
-              <CardFormHolder className="slip-protection">
-                <CardForm>
-                  <Button
-                    onClick={this.handleSwitchSlipProtection}
-                    sizevalue="small"
-                    typevalue="outline"
-                    focused={slipProtection}
-                    style={{ borderColor: '#33CCFF' }}
-                  >
-                    <Icon type={slipProtection ? 'lock' : 'unlock'} />
-                  </Button>
-                  <Label>Protect my price (within 3%)</Label>
-                </CardForm>
-              </CardFormHolder>
+              <div className="swaptool-container">
+                <CardFormHolder>
+                  <CardForm>
+                    <CardFormItem className={invalidAddress ? 'has-error' : ''}>
+                      <AddressInput
+                        value={address}
+                        onChange={this.handleChange('address')}
+                        status={view === 'send'}
+                        onStatusChange={this.handleChangeSwapType}
+                      />
+                    </CardFormItem>
+                  </CardForm>
+                  {invalidAddress && (
+                    <CardFormItemError>
+                      Recipient address is invalid!
+                    </CardFormItemError>
+                  )}
+                </CardFormHolder>
+                <CardFormHolder className="slip-protection">
+                  <CardForm>
+                    <Popover
+                      content={this.renderProtectPopoverContent()}
+                      placement="left"
+                      trigger={[]}
+                      visible
+                      overlayClassName="protectPrice-popover"
+                      overlayStyle={{ padding: '6px' }}
+                    >
+                      <Button
+                        onClick={this.handleSwitchSlipProtection}
+                        sizevalue="small"
+                        typevalue="outline"
+                        focused={slipProtection}
+                        style={{ borderColor: '#33CCFF' }}
+                      >
+                        <Icon type={slipProtection ? 'lock' : 'unlock'} />
+                      </Button>
+                    </Popover>
+                  </CardForm>
+                </CardFormHolder>
+              </div>
             </SwapAssetCard>
             <div className="drag-confirm-wrapper">
               <Drag
