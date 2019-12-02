@@ -42,7 +42,7 @@ export function* getPools() {
   yield takeEvery(actions.GET_POOLS_REQUEST, function*(/* { payload } */) {
     const params = {
       method: 'get',
-      url: getStatechainURL('swapservice/pools'),
+      url: getStatechainURL('thorchain/pools'),
       headers: getHeaders(),
       withCredentials: true,
     };
@@ -93,7 +93,7 @@ export function* getPoolInfo() {
     const symbol = payload;
     const params = {
       method: 'get',
-      url: getStatechainURL(`swapservice/pool/${symbol}`),
+      url: getStatechainURL(`thorchain/pool/${symbol}`),
       headers: getHeaders(),
     };
 
