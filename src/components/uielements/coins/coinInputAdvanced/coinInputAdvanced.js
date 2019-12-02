@@ -151,11 +151,12 @@ export function CoinInputAdvanced({
         onChange,
         onFocus,
         minimumFractionDigits,
-        useDebounce: true,
+        useDebounce: false,
       })}
     />
   );
 }
+
 CoinInputAdvanced.propTypes = {
   value: PropTypes.number.isRequired,
   onChange: PropTypes.func.isRequired,

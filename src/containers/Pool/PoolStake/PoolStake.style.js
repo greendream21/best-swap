@@ -12,6 +12,16 @@ import { media } from '../../../helpers/styleHelper';
 export const ContentWrapper = styled(ContentView)`
   padding: 0;
 
+  .stake-info-view {
+    .token-info-card {
+      padding: 8px 8px 8px 0;
+
+      &:last-child {
+        padding-right: 0px;
+      }
+    }
+  }
+
   .stake-status-view {
     ${media.lg`
       padding: 20px 0;
@@ -66,30 +76,26 @@ export const ContentWrapper = styled(ContentView)`
     }
   }
 
-  .advanced-mode-wrapper {
-    display: flex;
-    justify-content: flex-end;
-
-    .btn-wrapper {
-      margin-top: 20px;
-    }
+  .advanced-mode-btn {
+    position: absolute;
+    top: 25px;
+    right: 10px;
+    z-index: 100;
+    ${media.sm`
+      top: 15px;
+      right: 50px;
+    `}
   }
 
   .share-view {
-    ${media.lg`
-      display:flex;
-      flex-grow: 1;
-
-      & > * {
-        border-right: 1px solid ${palette('border', 0)};
-        &:last-child {
-          border-right: none;
-        }
-      }
-    `}
+    padding-top: 10px;
 
     .your-share-view,
     .share-detail-view {
+      ${media.lg`
+        height: 570px;
+      `}
+
       .label-title {
         ${media.lg`
           padding-bottom: 0;
@@ -113,11 +119,11 @@ export const ContentWrapper = styled(ContentView)`
       }
 
       .withdraw-percent-view {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-left: 5px;
         ${media.lg`
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding-left: 5px;
           .label-wrapper {
             width: 40px;
           }
@@ -144,9 +150,7 @@ export const ContentWrapper = styled(ContentView)`
             `}
 
             .coinData-wrapper {
-              ${media.lg`
-                padding: 10px 0;
-              `}
+              padding: 10px 0;
             }
           }
         }
@@ -166,7 +170,7 @@ export const ContentWrapper = styled(ContentView)`
         
       `}
 
-      .btn-wrapper {
+      .advanced-mode-btn {
         ${media.lg`
           width: 125px;
           margin-top: 10px;
@@ -184,27 +188,97 @@ export const ContentWrapper = styled(ContentView)`
       }
 
       .your-share-wrapper {
-        padding: 10px 20px;
+        padding: 40px 20px;
 
         ${media.lg`
           display: flex;
           flex-direction: column;
+          justify-content: center;
         `}
 
+        &:first-child {
+          margin-bottom: 8px;
+        }
+
+        .label-title {
+          font-size: 15px;
+          text-align: center;
+          font-weight: 500;
+          letter-spacing: 0.04em;
+        }
+
+        .label-wrapper {
+          text-transform: uppercase;
+        }
+
+        .earning-label {
+          margin-top: 40px;
+        }
+
+        .share-placeholder-wrapper {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+
+          width: 100%;
+          height: 100%;
+        }
+
+        .placeholder-label {
+          font-size: 14px;
+          letter-spacing: 0.04em;
+          text-transform: uppercase;
+        }
+
+        .placeholder-icon {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+
+          width: 100px;
+          height: 100px;
+          margin-bottom: 20px;
+          border-radius: 50%;
+          background: ${palette('background', 2)};
+          i {
+            svg {
+              width: 60px;
+              height: 60px;
+            }
+          }
+        }
+
+        .share-info-title {
+          padding: 20px 0;
+          text-align: center;
+          text-transform: uppercase;
+
+          border: 1px solid ${palette('border', 0)};
+          border-bottom: 3px solid ${palette('primary', 1)};
+        }
+
         .your-share-info-wrapper {
-          ${media.lg`
+          display: flex;
+          flex-direction: column;
+          padding-bottom: 5px;
+
+          border: 1px solid ${palette('border', 0)};
+          border-top: none;
+
+          .share-info-row {
             display: flex;
-            align-items: baseline;
-            padding-bottom: 5px;
-          `}
+            justify-content: space-around;
+            align-items: center;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            border-top: 1px solid ${palette('border', 0)};
+          }
 
           .your-share-info {
-            ${media.lg`
-              display: flex;
-              flex-direction: column;
-              margin-right: 20px;
-              min-width: 90px;
-            `}
+            & > div {
+              text-align: center;
+            }
 
             .status-title,
             .status-value {
@@ -212,7 +286,12 @@ export const ContentWrapper = styled(ContentView)`
                 padding: 3px 0;
               `}
             }
+
+            .status-value {
+              font-size: 20px;
+            }
             .your-share-price-label {
+              color: ${palette('text', 4)};
               ${media.lg`
                 padding: 0;
               `}
@@ -265,7 +344,7 @@ export const ContentWrapper = styled(ContentView)`
           }
         `}
 
-        .coinCard-wrapper {
+        .coin-card-wrapper {
           ${media.lg`
             width: calc(50% - 20px);
           `}
@@ -341,17 +420,32 @@ export const ContentWrapper = styled(ContentView)`
         }
       }
     }
+
+    .share-detail-view {
+      padding-left: 0px;
+      padding-top: 8px;
+      ${media.sm`
+        padding-top: 0px;
+        padding-left: 8px;
+      `}
+    }
+  }
+
+  .your-share-wrapper,
+  .share-detail-wrapper {
+    height: 100%;
+    background: #ffffff;
+    box-shadow: 0px 1px 3px rgba(47, 83, 151, 0.1);
+    border-radius: 3px;
   }
 `;
 
 export const ConfirmModal = styled(Modal)`
   &.ant-modal {
-    width: 700px !important;
+    width: 420px !important;
 
     .ant-modal-body {
-      ${media.lg`
-        height: 320px !important;
-      `}
+      padding: 0px;
     }
   }
 `;
@@ -365,22 +459,16 @@ export const ConfirmModalContent = styled.div`
 
   .modal-content {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    align-items: center;
     width: 100%;
+    padding: 30px 0;
+    border-bottom: 1px solid ${palette('border', 0)};
 
     .coinData-wrapper {
-      ${media.lg`
-      width: 200px;
       padding-left: 0;
-      padding-bottom: 8px;
-    `}
-    }
-
-    .left-container,
-    .right-container {
-      ${media.lg`
-      width: 250px;
-    `}
+      padding-bottom: 4px;
+      margin-left: 14px;
     }
 
     .status-wrapper {
@@ -396,58 +484,27 @@ export const ConfirmModalContent = styled.div`
       }
     }
 
-    .left-container {
+    .timer-container {
       ${media.lg`
-      display: flex;
-      flex-direction: column;
-    `}
-    }
-
-    .center-container {
-      ${media.lg`
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 200px;
-    `}
-
-      .label-wrapper {
-        ${media.lg`
-        margin-top: 35px;
-        text-transform: uppercase;
-      `}
-      }
-
-      .before-start-label {
-        ${media.lg`
-        opacity: 0;
-      `}
-      }
-    }
-
-    .right-container {
-      ${media.lg`
-      display: flex;
-      flex-direction: column;
-      padding-left: 20px;
-    `}
-
-      .expected-status {
-        ${media.lg`
-        display: flex;
-      `}
-
-        .status-item {
-          ${media.lg`  
           display: flex;
           flex-direction: column;
-          padding-right: 8px;
+          align-items: center;
+          padding-bottom: 30px;
         `}
-          .price-label {
-            ${media.lg`  
-            padding-top: 4px;
-            padding-bottom: 0;
-          `}
+    }
+
+    .coin-data-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      .coin-data-container {
+        display: flex;
+        flex-direction: column;
+
+        .coinData-wrapper {
+          &:first-child {
+            padding-bottom: 20px;
           }
         }
       }
@@ -455,16 +512,7 @@ export const ConfirmModalContent = styled.div`
   }
 
   .modal-info-wrapper {
-    margin-top: 10px;
-
-    .tx-label {
-      text-transform: uppercase;
-      text-align: center;
-    }
-
-    .before-start-label {
-      opacity: 0;
-    }
+    padding: 20px 0;
 
     .hash-address {
       display: flex;
@@ -481,6 +529,12 @@ export const ConfirmModalContent = styled.div`
         margin-right: 6px;
         color: ${palette('primary', 0)};
         cursor: pointer;
+
+        .view-btn {
+          width: 300px;
+          height: 40px;
+          margin: 24px 0;
+        }
       }
 
       .label-wrapper {
@@ -492,6 +546,7 @@ export const ConfirmModalContent = styled.div`
 
 export const Tabs = styled(UnstyledTabs)`
   width: 100%;
+  padding-top: 10px !important;
   .ant-tabs-tabpane {
     padding: 0 20px;
   }

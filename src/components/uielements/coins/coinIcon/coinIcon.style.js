@@ -2,8 +2,8 @@ import styled from 'styled-components';
 import { palette, key } from 'styled-theme';
 
 const sizes = {
-  small: key('sizes.coin.small', '20px'),
-  big: key('sizes.coin.big', '28px'),
+  big: key('sizes.coin.big', '40px'),
+  small: key('sizes.coin.small', '30px'),
 };
 
 export const CoinIconWrapper = styled.div`
@@ -19,7 +19,7 @@ export const CoinIconWrapper = styled.div`
   .blue-circle {
     width: ${props => sizes[props.size]};
     height: ${props => sizes[props.size]};
-    background-color: ${palette('primary', 0)};
+    background-color: ${palette('background', 5)};
     border-radius: 50%;
   }
   .confirm-circle {

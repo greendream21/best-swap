@@ -14,6 +14,6 @@ export const ContentWrapper = styled(Content)`
     padding: 20px;/* TODO: add sizes to theme once final */
   `}
   ${media.md`
-    padding: 50px;/* TODO: add sizes to theme once final */
+    padding: 30px;/* TODO: add sizes to theme once final */
   `}
 `;

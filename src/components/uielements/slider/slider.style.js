@@ -4,15 +4,13 @@ import { Slider } from 'antd';
 
 export const SliderWrapper = styled(Slider)`
   &.ant-slider {
-    margin-bottom: 25px;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-bottom: 10px;
+
     .ant-slider-rail {
-      height: 5px;
-      background: linear-gradient(
-        to right,
-        ${palette('primary', 5)} 0%,
-        ${palette('primary', 1)} 50%,
-        ${palette('primary', 5)} 100%
-      );
+      height: 4px;
+      background: ${palette('primary', 0)};
     }
 
     .ant-slider-track {
@@ -20,12 +18,16 @@ export const SliderWrapper = styled(Slider)`
     }
 
     .ant-slider-handle {
-      width: 30px;
-      height: 30px;
-      margin-top: -12px;
-      margin-left: -15px;
-      border: none;
-      box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+      width: 14px;
+      height: 14px;
+      margin-top: -6px;
+      margin-left: -6px;
+      border: 3px solid ${palette('success', 0)};
+      background: #fff;
+    }
+
+    .ant-slider-dot {
+      display: none;
     }
 
     &:hover {
@@ -34,4 +36,11 @@ export const SliderWrapper = styled(Slider)`
       }
     }
   }
+`;
+
+export const SliderLabel = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
 `;

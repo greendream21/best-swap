@@ -4,24 +4,38 @@ import { Table } from 'antd';
 
 export const TableWrapper = styled(Table)`
   .ant-table-thead > tr > th {
-    padding-bottom: 4px;
+    height: 70px;
     border-top: none;
-    font-size: ${key('sizes.font.tiny', '8px')};
-    font-weight: bold;
-    color: ${palette('text', 0)};
+    font-size: ${key('sizes.font.normal', '12px')};
+    color: ${palette('text', 5)};
     background-color: #fff;
+    text-transform: uppercase;
+    text-align: center;
+
+    .ant-table-column-title {
+      padding-top: 6px;
+    }
   }
 
   .ant-table-tbody > tr > td {
-    padding-top: 6px;
-    padding-bottom: 6px;
+    height: 64px;
+    text-transform: uppercase;
+    background-color: #fff;
+    text-align: center;
+  }
 
-    .action {
-      display: flex;
-      float: right;
-      font-weight: bold;
-      text-transform: uppercase;
-      cursor: pointer;
-    }
+  .ant-table-thead
+    > tr.ant-table-row-hover:not(.ant-table-expanded-row):not(.ant-table-row-selected)
+    > td,
+  .ant-table-tbody
+    > tr.ant-table-row-hover:not(.ant-table-expanded-row):not(.ant-table-row-selected)
+    > td,
+  .ant-table-thead
+    > tr:hover:not(.ant-table-expanded-row):not(.ant-table-row-selected)
+    > td,
+  .ant-table-tbody
+    > tr:hover:not(.ant-table-expanded-row):not(.ant-table-row-selected)
+    > td {
+    background: ${palette('background', 2)};
   }
 `;

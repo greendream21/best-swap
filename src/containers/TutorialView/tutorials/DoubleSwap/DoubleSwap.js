@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import { Row, Col, Icon } from 'antd';
 import PropTypes from 'prop-types';
 
@@ -49,33 +49,6 @@ class DoubleSwap extends Component {
     this.setState({
       xValue,
     });
-  };
-
-  handleTry = () => {
-    const URL = '/tutorial/swap/doubleplay';
-
-    this.props.history.push(URL);
-  };
-
-  handleBack = () => {
-    const { view } = this.props;
-
-    if (view === 'doubleintro') {
-      const URL = '/tutorial/swap/play';
-
-      this.props.history.push(URL);
-    }
-    if (view === 'doubleplay') {
-      const URL = '/tutorial/swap/doubleintro';
-
-      this.props.history.push(URL);
-    }
-  };
-
-  handleGotoStaking = () => {
-    const URL = '/tutorial/pool/stakingintro';
-
-    this.props.history.push(URL);
   };
 
   renderFlow = view => {
@@ -273,20 +246,28 @@ class DoubleSwap extends Component {
   renderButtons = () => {
     const { view } = this.props;
 
+    let URL = '';
+    if (view === 'doubleintro') {
+      URL = '/tutorial/swap/play';
+    }
+    if (view === 'doubleplay') {
+      URL = '/tutorial/swap/doubleintro';
+    }
+
     return (
       <Row className="bottom-nav-button">
-        <Button onClick={this.handleBack} color="primary" typevalue="ghost">
-          back
-        </Button>
-        {view === 'doubleplay' && (
-          <Button
-            onClick={this.handleGotoStaking}
-            color="primary"
-            typevalue="outline"
-          >
-            Staking
-            <Icon type="arrow-right" />
+        <Link to={URL}>
+          <Button color="primary" typevalue="ghost">
+            back
           </Button>
+        </Link>
+        {view === 'doubleplay' && (
+          <Link to="/tutorial/pool/stakingintro">
+            <Button color="primary" typevalue="outline">
+              Staking
+              <Icon type="arrow-right" />
+            </Button>
+          </Link>
         )}
       </Row>
     );
@@ -359,13 +340,11 @@ class DoubleSwap extends Component {
               You can swap both ways, or swap and send to someone else.
             </Label>
             {view === 'doubleintro' && (
-              <Button
-                className="try-btn"
-                onClick={this.handleTry}
-                typevalue="outline"
-              >
-                try
-              </Button>
+              <Link to="/tutorial/swap/doubleplay">
+                <Button className="try-btn" typevalue="outline">
+                  try
+                </Button>
+              </Link>
             )}
             {view === 'doubleplay' && (
               <>

@@ -22,7 +22,6 @@ import {
   DropdownIconHolder,
   FooterLabel,
   HorizontalDivider,
-  VerticalDivider,
 } from './coinCard.style';
 
 function DropdownCarret({ open, onClick, className }) {
@@ -163,12 +162,12 @@ class CoinCard extends Component {
         disabled={disabled}
         onClick={this.handleDropdownButtonClicked}
       >
-        <CoinDropdownCoin type={asset} size="small" />
-        <CoinDropdownVerticalColumn>
-          {!disabled ? (
+        <CoinDropdownCoin type={asset} size="big" />
+        {!disabled ? (
+          <CoinDropdownVerticalColumn>
             <DropdownCarret className="caret-down" open={open} />
-          ) : null}
-        </CoinDropdownVerticalColumn>
+          </CoinDropdownVerticalColumn>
+        ) : null}
       </CoinDropdownButton>
     );
   }
@@ -211,9 +210,10 @@ class CoinCard extends Component {
           visible={openDropdown}
         >
           <CardBorderWrapper>
+            <AssetNameLabel>{asset}</AssetNameLabel>
+            <HorizontalDivider />
             <CardTopRow>
               <AssetData>
-                <AssetNameLabel>{asset}</AssetNameLabel>
                 <CoinInputAdvanced
                   className="asset-amount-label"
                   size="large"
@@ -222,7 +222,7 @@ class CoinCard extends Component {
                   onKeyDown={this.onKeyDown}
                   {...inputProps}
                 />
-                <HorizontalDivider />
+                <HorizontalDivider color="primary" />
                 <AssetCardFooter>
                   <FooterLabel>
                     {`${unit} ${Number(
@@ -241,9 +241,6 @@ class CoinCard extends Component {
                   )}
                 </AssetCardFooter>
               </AssetData>
-
-              <VerticalDivider />
-
               {this.renderDropDownButton()}
             </CardTopRow>
           </CardBorderWrapper>

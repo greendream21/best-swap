@@ -1,23 +1,22 @@
 import React, { Component } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { Button, Tooltip, Icon } from 'antd';
 
+import Tabs from '../uielements/tabs';
 import TxView from '../uielements/txView';
 import Logo from '../uielements/logo';
 
-import {
-  StyledHeader,
-  LogoWrapper,
-  HeaderTitle,
-  HeaderActionButtons,
-} from './header.style';
+import { StyledHeader, LogoWrapper, HeaderActionButtons } from './header.style';
 import HeaderSetting from './headerSetting';
 import WalletDrawer from '../../containers/WalletView/WalletDrawer';
 
 import appActions from '../../redux/app/actions';
 import WalletButton from '../uielements/walletButton';
+
+const { TabPane } = Tabs;
 
 const { setTxTimerModal } = appActions;
 
@@ -27,18 +26,116 @@ class Header extends Component {
     txStatus: PropTypes.object.isRequired,
     setTxTimerModal: PropTypes.func.isRequired,
     user: PropTypes.object.isRequired,
+    history: PropTypes.object.isRequired,
+  };
+
+  state = {
+    activeTab: 'swap',
   };
 
   handleClickTxView = () => {
     const { setTxTimerModal } = this.props;
+
     setTxTimerModal(true);
   };
 
+  getPageType = () => {
+    const url = window.location.pathname;
+    if (url === '/') return 'swap';
+
+    const pageTypes = [
+      {
+        type: 'swap',
+        key: 'swap',
+      },
+      {
+        type: 'pool',
+        key: 'pools',
+      },
+      {
+        type: 'trade',
+        key: 'trade',
+      },
+    ];
+    let pageType = '';
+
+    pageTypes.forEach(data => {
+      const { type, key } = data;
+
+      if (url.includes(type)) {
+        pageType = key;
+      }
+    });
+
+    return pageType;
+  };
+
+  handleChangeTab = activeTab => {
+    const url = window.location.pathname;
+    if (!url.includes('/introduction')) {
+      const URL = `/${activeTab}`;
+
+      this.props.history.push(URL);
+    } else {
+      const URL = `/introduction/${activeTab}`;
+
+      this.props.history.push(URL);
+    }
+  };
+
+  renderHeader = () => {
+    const type = this.getPageType();
+    const { activeTab } = this.state;
+    const active = type || activeTab;
+
+    const swapTab = (
+      <span>
+        <Icon type="swap" />
+        swap
+      </span>
+    );
+    const poolsTab = (
+      <span>
+        <Icon type="database" theme="filled" />
+        stake
+      </span>
+    );
+    const tradeTab = (
+      <span>
+        <Icon type="area-chart" />
+        trade
+      </span>
+    );
+
+    return (
+      <div className="header-tab-container">
+        <Tabs
+          data-test="action-tabs"
+          activeKey={active}
+          onChange={this.handleChangeTab}
+          action
+        >
+          <TabPane tab={swapTab} key="swap" />
+          <TabPane tab={poolsTab} key="pools" />
+          <TabPane tab={tradeTab} key="trade" />
+        </Tabs>
+      </div>
+    );
+  };
+
   render() {
-    const { title, txStatus, user } = this.props;
+    const { txStatus, user } = this.props;
     const { status } = txStatus;
     const { wallet } = user;
     const connected = !!wallet;
+
+    const intro = (
+      <Link to="/introduction">
+        <Tooltip title="Introduction?">
+          <Button shape="circle" size="small" icon="question" />
+        </Tooltip>
+      </Link>
+    );
 
     return (
       <StyledHeader>
@@ -46,8 +143,9 @@ class Header extends Component {
           <Link to="/">
             <Logo name="bepswap" type="long" />
           </Link>
+          {intro}
         </LogoWrapper>
-        <HeaderTitle>{title}</HeaderTitle>
+        {this.renderHeader()}
         <HeaderActionButtons>
           {!connected && (
             <Link to="/connect">
@@ -56,6 +154,13 @@ class Header extends Component {
                 connected={connected}
                 value={wallet}
               />
+            </Link>
+          )}
+          {!connected && (
+            <Link to="/connect">
+              <div className="wallet-mobile-btn">
+                <Icon type="wallet" />
+              </div>
             </Link>
           )}
           {connected && <WalletDrawer />}
@@ -79,4 +184,5 @@ export default compose(
       setTxTimerModal,
     },
   ),
+  withRouter,
 )(Header);

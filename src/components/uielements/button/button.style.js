@@ -12,7 +12,7 @@ const fontSettings = {
     spacing: '2.5px',
   },
   big: {
-    size: key('sizes.font.normal', '11px'),
+    size: key('sizes.font.large', '18px'),
     spacing: '2.5px',
   },
 };
@@ -21,14 +21,17 @@ const sizes = {
   small: {
     width: key('sizes.button.small.width', '55px'),
     height: key('sizes.button.small.height', '20px'),
+    borderBottom: '2px',
   },
   normal: {
     width: key('sizes.button.normal.width', '100px'),
     height: key('sizes.button.normal.height', '30px'),
+    borderBottom: '3px',
   },
   big: {
     width: key('sizes.button.big.width', '300px'),
-    height: key('sizes.button.big.height', '50px'),
+    height: key('sizes.button.big.height', '70px'),
+    borderBottom: '4px',
   },
 };
 
@@ -37,21 +40,29 @@ const colorGroups = {
     main: palette('primary', 0),
     darken: palette('secondary', 0),
     lighten: palette('secondary', 1),
+    text: palette('primary', 1),
+    borderBottom: palette('primary', 0),
   },
   success: {
     main: palette('success', 0),
     darken: palette('success', 1),
     lighten: palette('success', 2),
+    text: palette('success', 0),
+    borderBottom: palette('success', 3),
   },
   warning: {
     main: palette('warning', 0),
     darken: palette('warning', 1),
     lighten: palette('warning', 2),
+    text: palette('warning', 0),
+    borderBottom: palette('warning', 3),
   },
   error: {
     main: palette('error', 0),
     darken: palette('error', 1),
     lighten: palette('error', 2),
+    text: palette('error', 0),
+    borderBottom: palette('error', 3),
   },
 };
 
@@ -60,11 +71,13 @@ const getBtnThemeColor = () => {
 
   Object.keys(colorGroups).forEach(colorType => {
     const value = {};
-    const { main, lighten, darken } = colorGroups[colorType];
+    const { main, lighten, darken, text, borderBottom } = colorGroups[
+      colorType
+    ];
 
     value.default = {
       text: '#fff',
-      border: main,
+      border: text,
       background: main,
       action: {
         text: '#fff',
@@ -77,16 +90,16 @@ const getBtnThemeColor = () => {
     };
 
     value.outline = {
-      text: main,
-      border: main,
+      text,
+      border: text,
       background: '#fff',
       action: {
         text: '#fff',
-        border: main,
+        border: text,
         background: main,
       },
       focus: {
-        border: main,
+        border: text,
       },
     };
     value.ghost = {
@@ -100,6 +113,20 @@ const getBtnThemeColor = () => {
       },
       focus: {
         border: main,
+      },
+    };
+    value.normal = {
+      text: palette('text', 0),
+      border: palette('border', 0),
+      background: '#fff',
+      action: {
+        text: palette('text', 0),
+        border: palette('border', 0),
+        background: '#fff',
+      },
+      focus: {
+        border: palette('border', 0),
+        borderBottom,
       },
     };
 
@@ -117,6 +144,8 @@ export const ButtonWrapper = styled(Button)`
     justify-content: space-around;
     align-items: center;
 
+    border-radius: ${props =>
+      props.round ? sizes[props.sizevalue].height : '3px'};
     min-width: ${props => sizes[props.sizevalue].width};
     height: ${props => sizes[props.sizevalue].height};
     font-size: ${props => fontSettings[props.sizevalue].size};
@@ -131,8 +160,16 @@ export const ButtonWrapper = styled(Button)`
     &:focus {
       color: ${props => colors[props.color][props.typevalue].text};
       border-color: ${props => colors[props.color][props.typevalue].border};
-      background-color: ${props =>
-        colors[props.color][props.typevalue].background};
+      background: ${props => colors[props.color][props.typevalue].background};
+      ${props =>
+        props.typevalue === 'normal' &&
+        `
+          background-position: 0 100%;
+          background-repeat: no-repeat;
+          -webkit-background-size: 100% 3px;
+          -moz-background-size: 100% 3px;
+          background-size: 100% 3px;
+        `}
     }
 
     /* provide focus styles over the underlying styles */
@@ -152,14 +189,25 @@ export const ButtonWrapper = styled(Button)`
         color: ${props => colors[props.color][props.typevalue].action.text};
         border-color: ${props =>
           colors[props.color][props.typevalue].action.border};
-        background-color: ${props =>
-          colors[props.color][props.typevalue].action.background};
+        background: ${props =>
+          props.typevalue === 'normal'
+            ? colors[props.color][props.typevalue].focus.borderBottom
+            : colors[props.color][props.typevalue].action.background};
+        ${props =>
+          props.typevalue === 'normal' &&
+          `
+          background-position: 0 100%;
+          background-repeat: no-repeat;
+          -webkit-background-size: 100% 3px;
+          -moz-background-size: 100% 3px;
+          background-size: 100% 3px;
+        `}
       }
     }
 
     i {
       display: flex;
-      font-size: 16px;
+      font-size: 18px;
     }
   }
 `;

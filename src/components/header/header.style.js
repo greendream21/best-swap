@@ -4,19 +4,19 @@ import { media } from '../../helpers/styleHelper';
 
 export const StyledHeader = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   position: fixed;
   z-index: 1000;
   width: 100vw;
+  height: ${size('headerHeight', '70px')};
 
-  height: ${size('headerHeight', '90px')};
-
-  padding: 0 20px;
-
+  padding: 0 10px;
   ${media.sm`
-    padding: 0 30px;
+    padding: 0 20px;
+    justify-content: space-between;
   `}
+
   > * {
     margin-right: 20px;
   }
@@ -39,9 +39,36 @@ export const StyledHeader = styled.div`
       font-size: 14px;
     }
   }
+
+  .header-tab-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+
+    .ant-tabs-nav {
+      padding: 0 10px;
+      ${media.sm`
+        padding: 0 25px;
+      `}
+    }
+
+    .ant-tabs-tab {
+      margin-right: 5px;
+      ${media.sm`
+        margin-right: 32px;
+      `}
+    }
+  }
 `;
 
 export const LogoWrapper = styled.div`
+  margin-right: 4px;
+  display: none;
+  ${media.sm`
+    margin-right: 20px;
+    display: flex;
+  `}
   img {
     max-height: 24px;
   }
@@ -61,8 +88,7 @@ export const HeaderTitle = styled.p`
 `;
 
 export const HeaderActionButtons = styled.div`
-  display: none;
-
+  display: block;
   ${media.sm`
     display: flex;
     align-items: center;
@@ -70,16 +96,48 @@ export const HeaderActionButtons = styled.div`
 
   /* HACK: This should be refactored in 
      the future to not use classes */
-  .wallet-btn-wrapper {
+  
+    .wallet-btn-wrapper {
+    display: none !important;
+    ${media.sm`
+        display: flex !important;
+      `}
     margin-right: 14px;
   }
 
+  a {
+    .wallet-mobile-btn {
+      position: fixed;
+      top: 26px;
+      right: 8px;
+      display: block;
+      width: 30px;
+      height: 30px;
+      min-width: 30px;
+      border-radius: 50%;
+      border: 1px solid ${palette('primary', 1)};
+      padding: 4px 7px;
+      color: ${palette('primary', 1)};
+      ${media.sm`
+        display: none;
+      `}
+    }
+  }
+
   .txView-wrapper {
+    display: none;
+    ${media.sm`
+      display: block;
+    `}
     margin-left: 10px;
     align-items: center;
   }
 
   .ant-dropdown-link {
     margin: 0 8px;
+    display: none;
+    ${media.sm`
+      display: flex;
+    `}
   }
 `;

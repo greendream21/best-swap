@@ -1,19 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
-import { Link, withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Button, Tooltip } from 'antd';
+import { Icon } from 'antd';
 
-import { ActionViewWrapper } from './ActionView.style';
-import Tabs from '../../components/uielements/tabs';
-import PanelHeader from '../../components/uielements/panelHeader';
-import { headerData } from './data';
-
+import { ActionViewWrapper, BackLink } from './ActionView.style';
 import { SwapIntro, SwapView, SwapSend } from '../Swap';
 import { PoolIntro, PoolView, PoolStake, PoolCreate } from '../Pool';
 import { TradeIntro, TradeView, TradeDetail } from '../Trade';
-import ViewHeader from '../../components/uielements/viewHeader';
 import ConnectView from '../ConnectView';
 import StatsView from '../StatsView';
 import FaqsView from '../FaqsView';
@@ -23,8 +18,6 @@ import TutorialView from '../TutorialView';
 import walletActions from '../../redux/wallet/actions';
 
 const { refreshBalance, refreshStake } = walletActions;
-
-const { TabPane } = Tabs;
 
 class ActionView extends Component {
   static propTypes = {
@@ -44,10 +37,6 @@ class ActionView extends Component {
     info: '',
   };
 
-  state = {
-    activeTab: 'swap',
-  };
-
   componentDidMount() {
     const { user, refreshBalance, refreshStake } = this.props;
 
@@ -59,111 +48,44 @@ class ActionView extends Component {
     }
   }
 
-  handleChangeTab = activeTab => {
-    const { type } = this.props;
-
-    if (type) {
-      const URL = `/${activeTab}`;
-
-      this.props.history.push(URL);
-    } else {
-      this.setState({
-        activeTab,
-      });
-    }
-  };
-
-  handleSetTab = activeTab => () => {
-    this.setState({
-      activeTab,
-    });
-  };
-
-  handleStart = () => {
-    this.props.history.push('/connect');
-  };
-
-  handleBack = () => {
-    const view = this.getView();
-    if (
-      view === 'connect-view' ||
-      view === 'stats-view' ||
-      view === 'faqs-view'
-    ) {
-      this.props.history.push('/swap');
-    }
-    if (view === 'swap-detail' || view === 'swap-send') {
-      this.props.history.push('/swap');
-    }
-    if (view.includes('pools-')) {
-      this.props.history.push('/pools');
-    }
-    if (view.includes('trade-')) {
-      this.props.history.push('/trade');
-    }
-  };
-
-  handleHeaderAction = () => {};
-
-  getHeaderText = () => {
-    const view = this.getView();
-
-    return headerData[view];
-  };
-
   getView = () => {
     const { type, view } = this.props;
-    const { activeTab } = this.state;
-
+    console.log('actionview type: ', type, view);
     if (type) {
       return `${type}-${view}`;
     }
-
-    return activeTab;
   };
 
-  renderHeader = () => {
-    const { type /* user */ } = this.props;
-    // const { wallet } = user;
-    // const connected = wallet ? true : false;
-    const { activeTab } = this.state;
-    const active = type || activeTab;
-    const headerText = this.getHeaderText();
-    const intro = (
-      <Link to="/introduction">
-        <Tooltip title="Introduction?">
-          <Button shape="circle" size="small" icon="question" />
-        </Tooltip>
-      </Link>
-    );
+  renderBack = () => {
+    const { view } = this.props;
+    if (view === 'view') return '';
 
+    const pageView = this.getView();
+    let routing = '';
+
+    if (
+      pageView === 'connect-view' ||
+      pageView === 'stats-view' ||
+      pageView === 'faqs-view'
+    ) {
+      routing = '/swap';
+    }
+    if (pageView === 'swap-detail' || pageView === 'swap-send') {
+      routing = '/swap';
+    }
+    if (pageView.includes('pools-')) {
+      routing = '/pools';
+    }
+    if (pageView.includes('trade-')) {
+      routing = '/trade';
+    }
     return (
-      <>
-        {headerText === undefined && (
-          <>
-            <Tabs
-              data-test="action-tabs"
-              activeKey={active}
-              onChange={this.handleChangeTab}
-              style={{ width: '100%' }}
-              action
-            >
-              <TabPane tab="swap" key="swap" />
-              <TabPane tab="pools" key="pools" />
-              <TabPane tab="trade" key="trade" />
-            </Tabs>
-            {intro}
-          </>
-        )}
-        {headerText !== undefined && (
-          <ViewHeader
-            title={headerText}
-            actionText="refresh"
-            onBack={this.handleBack}
-            onAction={this.handleHeaderAction}
-          />
-        )}
-      </>
+      <Link to={routing}>
+        <BackLink>
+          <Icon type="left" />
+          <span>Back</span>
+        </BackLink>
+      </Link>
     );
   };
 
@@ -173,35 +95,27 @@ class ActionView extends Component {
     console.log('View', view);
 
     return (
-      <ActionViewWrapper>
-        <PanelHeader>{this.renderHeader()}</PanelHeader>
-        {view === 'swap' && <SwapIntro onNext={this.handleSetTab('pools')} />}
-        {view === 'pools' && (
-          <PoolIntro
-            onBack={this.handleSetTab('swap')}
-            onNext={this.handleSetTab('trade')}
-          />
-        )}
-        {view === 'trade' && (
-          <TradeIntro
-            onBack={this.handleSetTab('pools')}
-            onNext={this.handleStart}
-          />
-        )}
-        {view === 'tutorial' && <TutorialView />}
-        {view === 'connect-view' && <ConnectView />}
-        {view === 'stats-view' && <StatsView />}
-        {view === 'faqs-view' && <FaqsView />}
-        {view === 'network-view' && <NetworkView />}
-        {view === 'swap-view' && <SwapView />}
-        {view === 'swap-detail' && <SwapSend view="detail" info={info} />}
-        {view === 'swap-send' && <SwapSend view="send" info={info} />}
-        {view === 'pools-view' && <PoolView />}
-        {view === 'pools-pool' && <PoolStake symbol={symbol} />}
-        {view === 'pools-new' && <PoolCreate symbol={symbol} />}
-        {view === 'trade-view' && <TradeView />}
-        {view === 'trade-detail' && <TradeDetail symbol={symbol} />}
-      </ActionViewWrapper>
+      <>
+        {this.renderBack()}
+        <ActionViewWrapper>
+          {view === 'intro-swap' && <SwapIntro />}
+          {view === 'intro-pools' && <PoolIntro />}
+          {view === 'intro-trade' && <TradeIntro />}
+          {view === 'tutorial' && <TutorialView />}
+          {view === 'connect-view' && <ConnectView />}
+          {view === 'stats-view' && <StatsView />}
+          {view === 'faqs-view' && <FaqsView />}
+          {view === 'network-view' && <NetworkView />}
+          {view === 'swap-view' && <SwapView />}
+          {view === 'swap-detail' && <SwapSend view="detail" info={info} />}
+          {view === 'swap-send' && <SwapSend view="send" info={info} />}
+          {view === 'pools-view' && <PoolView />}
+          {view === 'pools-pool' && <PoolStake symbol={symbol} />}
+          {view === 'pools-new' && <PoolCreate symbol={symbol} />}
+          {view === 'trade-view' && <TradeView />}
+          {view === 'trade-detail' && <TradeDetail symbol={symbol} />}
+        </ActionViewWrapper>
+      </>
     );
   }
 }

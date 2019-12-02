@@ -20,25 +20,33 @@ const fontSettings = {
 const sizes = {
   small: '20px',
   normal: '25px',
-  big: '30px',
+  big: '32px',
 };
 
 const colors = {
-  primary: palette('primary', 0),
+  primary: palette('success', 0),
   success: palette('success', 0),
   warning: palette('warning', 0),
   error: palette('error', 0),
 };
 
 export const InputWrapper = styled(Input)`
+  .ant-input,
   &.ant-input {
     height: ${props => sizes[props.sizevalue]};
     font-size: ${props => fontSettings[props.sizevalue].size};
     letter-spacing: ${props => fontSettings[props.sizevalue].spacing};
+    ${props => props.typevalue === 'ghost' && 'border: none;'};
+    ${props => props.typevalue === 'ghost' && 'background: #F0F3F7;'};
+
     &:hover,
     &:focus {
       border-color: ${props => colors[props.color]};
       --antd-wave-shadow-color: ${props => colors[props.color]};
+      box-shadow: ${props =>
+        props.typevalue === 'ghost'
+          ? 'none'
+          : '0 0 0 2px ' + colors[props.color]};
     }
   }
 `;

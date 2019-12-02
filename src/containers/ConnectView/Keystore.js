@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { crypto } from '@binance-chain/javascript-sdk';
 import { FilePicker } from 'react-file-picker';
-import { Icon, Input, Form } from 'antd';
+import { Row, Icon, Input, Form, Tooltip } from 'antd';
 
 import { ContentWrapper } from './ConnectView.style';
 import Binance from '../../clients/binance';
@@ -75,10 +75,22 @@ const Keystore = props => {
 
   const ready = (password || '').length > 0 && keystoreError === null;
 
+  const title = (
+    <div>
+      Decryption password{' '}
+      <Tooltip
+        title="This is the password used to decrypt your encrypted keystore file"
+        placement="bottomRight"
+      >
+        <Icon type="question-circle" />
+      </Tooltip>
+    </div>
+  );
+
   return (
     <ContentWrapper>
       <div className="keystore-connect-wrapper">
-        <Label size="large" weight="bold" color="normal">
+        <Label weight="bold" color="normal">
           Select Keystore File
         </Label>
         <FilePicker
@@ -105,7 +117,7 @@ const Keystore = props => {
         )}
         <FormGroup
           className={invalideStatus ? 'has-error' : ''}
-          title="Decryption password:"
+          title={title}
           description="This is the password used to decrypt your encrypted keystore file"
         >
           <Form onSubmit={unlock}>
@@ -120,14 +132,18 @@ const Keystore = props => {
             )}
           </Form>
         </FormGroup>
-        <Button
-          data-test="keystore-submit"
-          htmlType="submit"
-          onClick={unlock}
-          disabled={!ready}
-        >
-          Unlock
-        </Button>
+        <Row className="keystore-footer">
+          <Button
+            className="unlock-btn"
+            data-test="keystore-submit"
+            htmlType="submit"
+            onClick={unlock}
+            disabled={!ready}
+            round
+          >
+            Unlock
+          </Button>
+        </Row>
       </div>
     </ContentWrapper>
   );

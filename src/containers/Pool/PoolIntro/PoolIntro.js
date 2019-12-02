@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unescaped-entities */
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import { Row, Col, Icon } from 'antd';
-import PropTypes from 'prop-types';
 
 import { ContentWrapper } from './PoolIntro.style';
 import Label from '../../../components/uielements/label';
@@ -15,14 +15,7 @@ import {
 } from '../../../components/icons';
 
 class Pool extends Component {
-  static propTypes = {
-    onNext: PropTypes.func.isRequired,
-    onBack: PropTypes.func.isRequired,
-  };
-
   render() {
-    const { onBack, onNext } = this.props;
-
     return (
       <ContentWrapper>
         <Row className="pool-content-text">
@@ -86,13 +79,17 @@ class Pool extends Component {
           </Col>
         </Row>
         <Row className="bottom-nav-button">
-          <Button onClick={onBack} color="primary" typevalue="ghost">
-            back
-          </Button>
-          <Button onClick={onNext} color="primary" typevalue="outline">
-            trade
-            <Icon type="arrow-right" />
-          </Button>
+          <Link to="/introduction/swap">
+            <Button color="primary" typevalue="ghost">
+              back
+            </Button>
+          </Link>
+          <Link to="/introduction/trade">
+            <Button color="primary" typevalue="outline">
+              trade
+              <Icon type="arrow-right" />
+            </Button>
+          </Link>
         </Row>
       </ContentWrapper>
     );

@@ -67,6 +67,10 @@ class ChangingProgressProvider extends React.Component {
       onChange(valuesIndex);
       // eslint-disable-next-line react/prop-types
     }, this.props.interval);
+
+    setTimeout(() => {
+      clearInterval(this.interval);
+    }, 10000);
   };
 
   render() {

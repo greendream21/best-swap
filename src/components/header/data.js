@@ -15,14 +15,14 @@ export const menuItems = [
     status: 'green',
   },
   {
-    key: 'chain_service',
-    label: 'chain service',
+    key: 'midgard_api',
+    label: 'midgard api',
     url: getLocation(process.env.REACT_APP_CHAINSERVICE_API_URL).hostname,
     status: 'green',
   },
   {
-    key: 'statechain',
-    label: 'statechain',
+    key: 'thorchain',
+    label: 'thorchain',
     url: getLocation(process.env.REACT_APP_STATECHAIN_API_URL).hostname,
     status: 'green',
   },

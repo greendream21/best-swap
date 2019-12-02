@@ -3,25 +3,30 @@ import PropTypes from 'prop-types';
 
 import { CoinButtonWrapper } from './coinButton.style';
 import CoinIcon from '../coinIcon';
-import { coinGroup } from '../../../../settings';
+import Label from '../../label';
+
+import { getFixedNumber } from '../../../../helpers/stringHelper';
 
 class CoinButton extends Component {
   static propTypes = {
-    cointype: PropTypes.oneOf(coinGroup),
+    cointype: PropTypes.string,
     typevalue: PropTypes.string,
+    price: PropTypes.string,
     reversed: PropTypes.bool,
     className: PropTypes.string,
   };
 
   static defaultProps = {
     cointype: 'bnb',
-    typevalue: 'ghost',
+    typevalue: 'normal',
+    price: '0',
     reversed: false,
     className: '',
   };
 
   render() {
-    const { cointype, reversed, className, ...props } = this.props;
+    const { cointype, reversed, price, className, ...props } = this.props;
+    const priceValue = `$${getFixedNumber(price)}`;
 
     return (
       <CoinButtonWrapper
@@ -30,8 +35,15 @@ class CoinButton extends Component {
         reversed={reversed}
         {...props}
       >
-        <CoinIcon type={cointype} />
-        {cointype}
+        <div className="coinButton-content">
+          <CoinIcon type={cointype} />
+          <div className="coin-value">
+            <Label size="large" weight="500">
+              {cointype}
+            </Label>
+            <Label color="input">{priceValue}</Label>
+          </div>
+        </div>
       </CoinButtonWrapper>
     );
   }

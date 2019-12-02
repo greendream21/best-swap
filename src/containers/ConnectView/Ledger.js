@@ -102,11 +102,6 @@ const Connector = props => {
           <Row>
             <Label weight="bol">Open Binance Chain</Label>
           </Row>
-          <Row>
-            <Label weight="small">
-              “Binance Chain Ready” must be on-screen
-            </Label>
-          </Row>
         </Col>
         <Col>
           <img
@@ -116,17 +111,18 @@ const Connector = props => {
           />
         </Col>
       </Row>
+      <Row>
+        <Label weight="small">“Binance Chain Ready” must be on-screen</Label>
+      </Row>
       <Row style={{ marginTop: 20 }}>
-        <Col span={12}>
+        <Col className="ledger-guide-wrapper" span={24}>
           <div>
             <a
               href="https://www.binance.org/static/guides/DEX-Ledger-Documentation.html"
               rel="noopener noreferrer"
               target="_blank"
             >
-              <Label size="small" style={{ color: '#F0B90B' }}>
-                App Installation & Usage Instructions
-              </Label>
+              <Label>App Installation & Usage Instructions</Label>
             </a>
           </div>
           <div>
@@ -135,13 +131,13 @@ const Connector = props => {
               rel="noopener noreferrer"
               target="_blank"
             >
-              <Label size="small" style={{ color: '#F0B90B' }}>
-                Having Connection Issues?
-              </Label>
+              <Label>Having Connection Issues?</Label>
             </a>
           </div>
         </Col>
-        <Col span={12}>
+      </Row>
+      <Row>
+        <Col className="ledger-footer" span={24}>
           <div>
             <div>
               <Label>Index Number</Label>
@@ -159,6 +155,7 @@ const Connector = props => {
             className="ledger-connect-btn"
             onClick={ledgerConnect}
             loading={connecting}
+            round
           >
             Connect to Ledger <Icon type="arrow-right" />
           </Button>

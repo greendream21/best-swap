@@ -34,6 +34,14 @@ storiesOf('Components/Button', module)
               <Button sizevalue="small" color="primary" typevalue="ghost">
                 Primary Ghost Small
               </Button>
+              <Button
+                sizevalue="small"
+                color="primary"
+                typevalue="normal"
+                focused
+              >
+                Primary Normal Small
+              </Button>
             </Row>
             <Row>
               <Button sizevalue="normal" color="primary">
@@ -44,6 +52,44 @@ storiesOf('Components/Button', module)
               </Button>
               <Button sizevalue="normal" color="primary" typevalue="ghost">
                 Primary Ghost Normal
+              </Button>
+              <Button
+                sizevalue="normal"
+                color="primary"
+                typevalue="normal"
+                focused
+              >
+                Primary Normal Normal
+              </Button>
+            </Row>
+            <Row>
+              <Button sizevalue="normal" color="primary" round>
+                Primary Filled Round Normal
+              </Button>
+              <Button
+                sizevalue="normal"
+                color="primary"
+                typevalue="outline"
+                round
+              >
+                Primary Outlined Round Normal
+              </Button>
+              <Button
+                sizevalue="normal"
+                color="primary"
+                typevalue="ghost"
+                round
+              >
+                Primary Ghost Round Normal
+              </Button>
+              <Button
+                sizevalue="normal"
+                color="primary"
+                typevalue="normal"
+                focused
+                round
+              >
+                Primary Normal Round
               </Button>
             </Row>
             <Row>
@@ -57,6 +103,14 @@ storiesOf('Components/Button', module)
                 Primary Ghost Big
                 <Icon type="arrow-right" />
               </Button>
+              <Button
+                sizevalue="big"
+                color="primary"
+                typevalue="normal"
+                focused
+              >
+                Primary Normal Big
+              </Button>
             </Row>
             <Row>
               <Button sizevalue="big" color="success">
@@ -68,6 +122,14 @@ storiesOf('Components/Button', module)
               <Button sizevalue="big" color="success" typevalue="ghost">
                 success Ghost
                 <Icon type="arrow-right" />
+              </Button>
+              <Button
+                sizevalue="big"
+                color="success"
+                typevalue="normal"
+                focused
+              >
+                success Normal
               </Button>
             </Row>
             <Row>
@@ -81,6 +143,14 @@ storiesOf('Components/Button', module)
                 warning Ghost
                 <Icon type="arrow-right" />
               </Button>
+              <Button
+                sizevalue="big"
+                color="warning"
+                typevalue="normal"
+                focused
+              >
+                warning Normal
+              </Button>
             </Row>
             <Row>
               <Button sizevalue="big" color="error">
@@ -92,6 +162,9 @@ storiesOf('Components/Button', module)
               <Button sizevalue="big" color="error" typevalue="ghost">
                 Error Ghost
                 <Icon type="arrow-right" />
+              </Button>
+              <Button sizevalue="big" color="error" typevalue="normal" focused>
+                Error Normal
               </Button>
             </Row>
           </StoryWrapper>

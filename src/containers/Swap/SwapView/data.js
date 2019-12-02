@@ -1,4 +1,4 @@
-import { getTickerFormat } from '../../../helpers/stringHelper';
+import { getTickerFormat, getUserFormat } from '../../../helpers/stringHelper';
 
 export const getSwapData = (
   from,
@@ -25,13 +25,27 @@ export const getSwapData = (
   );
   const trade = Number(swapInfo.numTxTkn + swapInfo.numTxRune);
 
+  const depthValue = `$${getUserFormat(depth).toLocaleString()}`;
+  const volumeValue = `$${getUserFormat(volume)}`;
+  const transactionValue = `$${getUserFormat(transaction)}`;
+  const tradeValue = `${trade}`;
+
   return {
-    asset,
-    target,
-    depth,
-    volume,
-    transaction,
+    pool: {
+      asset,
+      target,
+    },
+    depth: depthValue,
+    volume: volumeValue,
+    transaction: transactionValue,
     slip,
-    trade,
+    trade: tradeValue,
+    raw: {
+      depth: getUserFormat(depth),
+      volume: getUserFormat(volume),
+      transaction: getUserFormat(transaction),
+      slip,
+      trade,
+    },
   };
 };

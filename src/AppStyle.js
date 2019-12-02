@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { palette, font } from 'styled-theme';
+import { media } from './helpers/styleHelper';
 
 import normalFont from './assets/font/Montserrat-Regular.otf';
 import lightFont from './assets/font/Montserrat-Light.otf';
@@ -56,9 +57,13 @@ const AppHolder = styled.div`
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     &::selection {
-      background: ${palette('primary', 0)};
+      background: ${palette('primary', 1)};
       color: #fff;
     }
+  }
+
+  section.ant-layout {
+    background: ${palette('background', 2)};
   }
 
   .ant-row:not(.ant-form-item) {
@@ -72,6 +77,13 @@ const AppHolder = styled.div`
 
   .ant-row > div {
     padding: 0;
+  }
+
+  .desktop-view {
+    display: none;
+    ${media.sm`
+      display: block;
+    `}
   }
 `;
 

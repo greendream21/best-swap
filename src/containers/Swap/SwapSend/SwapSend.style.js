@@ -10,11 +10,12 @@ export const SwapAssetCard = styled.div`
   display: flex;
   flex-direction: column;
 
-  ${media.md`
-    flex-direction: row;
+  .swaptool-container {
+    display: flex;
     justify-content: space-between;
-    padding: 20px 0;
-  `}
+    align-items: center;
+    margin-bottom: 20px;
+  }
 `;
 
 export const ArrowImage = styled.img`
@@ -55,7 +56,10 @@ export const ArrowContainer = styled(BaseArrowContainer)`
 `;
 
 export const ContentWrapper = styled(ContentView)`
-  padding: 0;
+  padding: 18px 0;
+  ${media.sm`
+    padding: 48px 0;
+  `}
 
   .ant-row {
     display: flex;
@@ -66,6 +70,13 @@ export const ContentWrapper = styled(ContentView)`
     ${media.sm`
       flex-direction: row;
     `}
+
+    .desktop-view {
+      display: none;
+      ${media.lg`
+        display: block;
+      `}
+    }
   }
 
   .swap-detail-panel {
@@ -124,6 +135,11 @@ export const CardFormArrowIcon = styled.div`
 
 export const CardFormHolder = styled.div`
   padding-top: 10px;
+  margin: 10px 0;
+
+  .addressInput-wrapper {
+    margin-left: 4px;
+  }
 
   &.slip-protection {
     .slip-input {
@@ -132,10 +148,16 @@ export const CardFormHolder = styled.div`
     }
 
     button {
-      height: 25px;
+      width: 21px;
+      height: 21px;
       min-width: 0px;
       padding-left: 4px;
       padding-right: 4px;
+      border-radius: 50%;
+
+      i {
+        font-size: 15px;
+      }
     }
   }
 `;
@@ -166,10 +188,10 @@ export const CardFormItemCloseButton = styled(Icon).attrs({
 
 export const SwapModal = styled(Modal)`
   &.ant-modal {
-    width: 700px !important;
+    width: 420px !important;
 
     .ant-modal-body {
-      height: 320px !important;
+      padding: 0px;
     }
   }
 `;
@@ -182,6 +204,7 @@ export const SwapModalContent = styled.div`
   .coinData-wrapper {
     padding-left: 0;
     padding-bottom: 4px;
+    margin-left: 14px;
   }
 
   .status-wrapper {
@@ -195,35 +218,31 @@ export const SwapModalContent = styled.div`
 
   .swapmodal-content {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    align-items: center;
     width: 100%;
+    padding: 30px 0;
+    border-bottom: 1px solid ${palette('border', 0)};
 
-    .left-container {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .center-container {
+    .timer-container {
       display: flex;
       flex-direction: column;
       align-items: center;
+      padding-bottom: 30px;
     }
 
-    .right-container {
+    .coin-data-wrapper {
       display: flex;
-      flex-direction: column;
+      justify-content: center;
+      align-items: center;
 
-      .expected-status {
+      .coin-data-container {
         display: flex;
+        flex-direction: column;
 
-        .status-item {
-          display: flex;
-          flex-direction: column;
-          padding-right: 8px;
-
-          .price-label {
-            padding-top: 4px;
-            padding-bottom: 0;
+        .coinData-wrapper {
+          &:first-child {
+            padding-bottom: 20px;
           }
         }
       }
@@ -231,17 +250,7 @@ export const SwapModalContent = styled.div`
   }
 
   .swap-info-wrapper {
-    margin-top: 10px;
-
-    .tx-label {
-      text-transform: uppercase;
-      text-align: center;
-    }
-
-    .before-start-label {
-      opacity: 0;
-    }
-
+    padding: 20px 0;
     .hash-address {
       display: flex;
       align-items: center;
@@ -257,6 +266,12 @@ export const SwapModalContent = styled.div`
         margin-right: 6px;
         color: ${palette('primary', 0)};
         cursor: pointer;
+
+        .view-btn {
+          width: 300px;
+          height: 40px;
+          margin: 24px 0;
+        }
       }
 
       .label-wrapper {
@@ -270,6 +285,27 @@ export const PrivateModal = styled(Modal)`
   .ant-modal-body {
     .ant-form-item {
       margin-bottom: 0;
+    }
+  }
+`;
+
+export const SwapStatusPanel = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 200px;
+  margin-top: 120px;
+  margin-left: auto;
+  margin-right: 10px;
+
+  i {
+    transform: rotate(-90deg);
+    font-size: 24px;
+    color: ${palette('primary', 1)};
+    cursor: pointer;
+
+    &:hover {
+      font-size: 26px;
     }
   }
 `;

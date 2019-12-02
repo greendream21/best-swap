@@ -15,7 +15,7 @@ storiesOf('Components/Drag', module).add('default', () => {
         <div style={{ padding: '20px' }}>
           <Drag
             source="bnb"
-            target="bolt"
+            target="rune"
             title="Drag to swap"
             onConfirm={() => alert('confirmed!')}
           />

@@ -19,7 +19,12 @@ class Modal extends Component {
     const { value, className, children, ...props } = this.props;
 
     return (
-      <ModalWrapper className={`modal-wrapper ${className}`} {...props}>
+      <ModalWrapper
+        className={`modal-wrapper ${className}`}
+        okButtonProps={{ className: 'ok-ant-btn' }}
+        cancelButtonProps={{ className: 'cancel-ant-btn' }}
+        {...props}
+      >
         {children}
       </ModalWrapper>
     );

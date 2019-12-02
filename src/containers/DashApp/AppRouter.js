@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Route } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 import asyncComponent from '../../helpers/AsyncFunc';
@@ -7,10 +7,10 @@ import asyncComponent from '../../helpers/AsyncFunc';
 const routes = [
   {
     path: '',
-    component: asyncComponent(() => import('../pages/Swap')),
+    component: asyncComponent(() => import('../pages/Swap/SwapLanding')),
   },
   {
-    path: 'introduction',
+    path: 'introduction/:view?',
     component: asyncComponent(() => import('../pages/Home')),
   },
   {
@@ -57,17 +57,19 @@ class AppRouter extends Component {
 
     return (
       <div>
-        {routes.map(singleRoute => {
-          const { path, exact = true, ...otherProps } = singleRoute;
-          return (
-            <Route
-              exact={exact}
-              key={singleRoute.path}
-              path={`${url}${singleRoute.path}`}
-              {...otherProps}
-            />
-          );
-        })}
+        <Switch>
+          {routes.map(singleRoute => {
+            const { path, exact = true, ...otherProps } = singleRoute;
+            return (
+              <Route
+                exact={exact}
+                key={singleRoute.path}
+                path={`${url}${singleRoute.path}`}
+                {...otherProps}
+              />
+            );
+          })}
+        </Switch>
       </div>
     );
   }

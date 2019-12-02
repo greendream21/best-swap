@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { sortBy as _sortBy } from 'lodash';
 
@@ -67,12 +67,6 @@ class WalletView extends Component {
     const { assetData } = this.props;
 
     return assetData.find(data => data.asset === asset);
-  };
-
-  handleChangeTab = (/* tag */) => {};
-
-  handleConnect = () => {
-    this.props.history.push('/connect');
   };
 
   handleSelectAsset = key => {
@@ -158,15 +152,16 @@ class WalletView extends Component {
           data-test="wallet-view-tabs"
           defaultActiveKey="assets"
           onChange={this.handleChangeTab}
+          withBorder
         >
           <TabPane tab="assets" key="assets">
             <Label className="asset-title-label" weight="bold">
               {this.renderAssetTitle()}
             </Label>
             {!wallet && (
-              <Button onClick={this.handleConnect} color="success">
-                connect
-              </Button>
+              <Link to="/connect">
+                <Button color="success">CONNECT</Button>
+              </Link>
             )}
             {!loadingAssets && (
               <CoinList

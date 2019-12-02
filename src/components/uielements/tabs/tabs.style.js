@@ -4,8 +4,7 @@ import { size, key, palette } from 'styled-theme';
 export const StyledTab = component => styled(component)`
   .ant-tabs-bar {
     width: ${props => (props.action ? 'auto' : '100%')};
-    border-bottom-width: 3px;
-    border-color: ${palette('primary', 5)};
+    border-bottom-width: ${props => (props.withBorder ? '1px' : '0px')};
     .ant-tabs-nav-container,
     .ant-tabs-nav-wrap,
     .ant-tabs-nav-scroll,
@@ -17,18 +16,17 @@ export const StyledTab = component => styled(component)`
   .ant-tabs-nav {
     height: ${size('panelHeaderHeight', '50px')};
     padding: 0 ${key('sizes.gutter.content', '25px')};
-    font-size: ${key('sizes.font.normal', '11px')};
+    font-size: 12px;
     text-transform: uppercase;
 
     .ant-tabs-tab {
-      padding-bottom: 0px;
-      padding-top: 26px;
+      padding-top: 18px;
       letter-spacing: 2.5px;
       color: ${palette('text', 1)};
       font-weight: bold;
 
       &:hover {
-        color: ${palette('primary', 0)};
+        color: ${palette('primary', 1)};
       }
     }
 
@@ -37,9 +35,9 @@ export const StyledTab = component => styled(component)`
     }
 
     .ant-tabs-ink-bar {
-      bottom: -3px;
+      bottom: 0px;
       height: 3px;
-      background-color: ${palette('primary', 0)};
+      background: ${palette('primary', 0)};
     }
   }
 

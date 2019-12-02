@@ -1,14 +1,16 @@
-import React, { Fragment, Component } from 'react';
+import React, { Component } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { notification } from 'antd';
+import { notification, Icon } from 'antd';
 
-import PoolCard from '../../../components/pool/poolCard';
 import Label from '../../../components/uielements/label';
 import AddIcon from '../../../components/uielements/addIcon';
 import PoolLoader from '../../../components/utility/loaders/pool';
+import CoinPair from '../../../components/uielements/coins/coinPair';
+import Table from '../../../components/uielements/table';
+import Button from '../../../components/uielements/button';
 
 import { ContentWrapper } from './PoolView.style';
 import statechainActions from '../../../redux/statechain/actions';
@@ -43,15 +45,10 @@ class PoolView extends Component {
     getRunePrice();
   }
 
-  handleStake = symbol => () => {
-    const URL = `/pool/${symbol}`;
-    this.props.history.push(URL);
-  };
-
   handleNewPool = () => {
     const { assetData, pools } = this.props;
     const possibleTokens = getCreatePoolTokens(assetData, pools);
-    console.log(possibleTokens);
+
     if (possibleTokens.length) {
       const symbol = possibleTokens[0].asset;
       if (getTickerFormat(symbol) !== 'rune') {
@@ -66,44 +63,128 @@ class PoolView extends Component {
     }
   };
 
-  renderPoolList = () => {
+  renderPoolTable = (swapViewData, view) => {
+    const buttonCol = {
+      key: 'stake',
+      title: (
+        <Button typevalue="outline">
+          <Icon type="sync" />
+          refresh
+        </Button>
+      ),
+      render: (text, record) => {
+        const { symbol } = record;
+        const URL = `/pool/${symbol.toUpperCase()}`;
+        const dataTest = `stake-button-${symbol.toLowerCase()}`;
+
+        return (
+          <Link to={URL}>
+            <Button style={{ margin: 'auto' }} round data-test={dataTest}>
+              <Icon type="database" />
+              stake
+            </Button>
+          </Link>
+        );
+      },
+    };
+
+    const mobileColumns = [
+      {
+        key: 'pool',
+        title: 'pool',
+        dataIndex: 'pool',
+        render: ({ asset, target }) => <CoinPair from={asset} to={target} />,
+      },
+      buttonCol,
+    ];
+    const desktopColumns = [
+      {
+        key: 'pool',
+        title: 'pool',
+        dataIndex: 'pool',
+        render: ({ asset, target }) => <CoinPair from={asset} to={target} />,
+      },
+      {
+        key: 'asset',
+        title: 'asset',
+        dataIndex: 'pool',
+        render: ({ target }) => <p>{target}</p>,
+        sorter: (a, b) => a.pool.target.localeCompare(b.pool.target),
+        sortDirections: ['descend', 'ascend'],
+      },
+      {
+        key: 'depth',
+        title: 'depth',
+        dataIndex: 'depth',
+        sorter: (a, b) => a.raw.depth - b.raw.depth,
+        sortDirections: ['descend', 'ascend'],
+      },
+      {
+        key: 'volume24',
+        title: '24h vol',
+        dataIndex: 'volume24',
+        sorter: (a, b) => a.raw.volume24 - b.raw.volume24,
+        sortDirections: ['descend', 'ascend'],
+      },
+      {
+        key: 'transaction',
+        title: 'avg. transaction',
+        dataIndex: 'transaction',
+        sorter: (a, b) => a.raw.transaction - b.raw.transaction,
+        sortDirections: ['descend', 'ascend'],
+      },
+      {
+        key: 'liqFee',
+        title: 'avg. liq fee',
+        dataIndex: 'liqFee',
+        sorter: (a, b) => a.raw.liqFee - b.raw.liqFee,
+        sortDirections: ['descend', 'ascend'],
+      },
+      {
+        key: 'roiAT',
+        title: 'historical roi',
+        dataIndex: 'roiAT',
+        sorter: (a, b) => a.raw.roiAT - b.raw.roiAT,
+        sortDirections: ['descend', 'ascend'],
+      },
+      buttonCol,
+    ];
+
+    const columnData = {
+      desktop: desktopColumns,
+      mobile: mobileColumns,
+    };
+    const columns = columnData[view] || desktopColumns;
+
+    return <Table columns={columns} dataSource={swapViewData} />;
+  };
+
+  renderPoolList = view => {
     const { pools, poolData, swapData, runePrice, assetData } = this.props;
     const { activeAsset } = this.state;
 
-    return pools.map((pool, index) => {
+    const stakeViewData = pools.reduce((result, pool) => {
       const { symbol } = pool;
       const poolInfo = poolData[symbol] || {};
       const swapInfo = swapData[symbol] || {};
 
-      const {
-        asset,
-        target,
-        depth,
-        volume24,
-        transaction,
-        liqFee,
-        roiAT,
-      } = getPoolData('rune', symbol, poolInfo, swapInfo, assetData, runePrice);
+      const { values: stakeCardData, raw } = getPoolData(
+        'rune',
+        symbol,
+        poolInfo,
+        swapInfo,
+        assetData,
+        runePrice,
+      );
 
-      if (target !== activeAsset) {
-        return (
-          <PoolCard
-            className="pool-card"
-            data-test={`pool-card-${symbol}`}
-            asset={asset}
-            target={target}
-            depth={depth}
-            transaction={transaction}
-            volume={volume24}
-            liqFee={liqFee}
-            roi={roiAT}
-            onStake={this.handleStake(symbol)}
-            key={index}
-          />
-        );
+      if (stakeCardData.target !== activeAsset) {
+        result.push({ ...stakeCardData, raw });
       }
-      return <Fragment />;
-    });
+
+      return result;
+    }, []);
+
+    return this.renderPoolTable(stakeViewData, view);
   };
 
   render() {
@@ -114,7 +195,12 @@ class PoolView extends Component {
         {loading && <PoolLoader />}
         {!loading && (
           <>
-            <div className="pool-list-view">{this.renderPoolList()}</div>
+            <div className="pool-list-view desktop-view">
+              {this.renderPoolList('desktop')}
+            </div>
+            <div className="pool-list-view mobile-view">
+              {this.renderPoolList('mobile')}
+            </div>
             <div className="add-new-pool" onClick={this.handleNewPool}>
               <AddIcon />
               <Label size="normal" weight="bold" color="normal">

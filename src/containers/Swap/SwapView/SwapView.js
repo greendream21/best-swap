@@ -1,12 +1,12 @@
-import React, { Fragment, Component } from 'react';
+import React, { Component } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { Icon } from 'antd';
 
 import Label from '../../../components/uielements/label';
 import CoinButton from '../../../components/uielements/coins/coinButton';
-import SwapCard from '../../../components/swap/swapCard';
 
 import { ContentWrapper } from './SwapView.style';
 
@@ -14,6 +14,10 @@ import statechainActions from '../../../redux/statechain/actions';
 import walletactions from '../../../redux/wallet/actions';
 import { getSwapData } from './data';
 import SwapLoader from '../../../components/utility/loaders/swap';
+import CoinPair from '../../../components/uielements/coins/coinPair';
+import Trend from '../../../components/uielements/trend';
+import Button from '../../../components/uielements/button';
+import Table from '../../../components/uielements/table';
 
 const { getPools } = statechainActions;
 const { getRunePrice } = walletactions;
@@ -48,13 +52,8 @@ class SwapView extends Component {
     });
   };
 
-  handleSwap = (source, target) => () => {
-    const URL = `/swap/detail/${source.toLowerCase()}-${target.toLowerCase()}`;
-
-    this.props.history.push(URL);
-  };
-
   renderAssets = () => {
+    const { runePrice } = this.props;
     const { activeAsset } = this.state;
     const asset = 'rune';
     return (
@@ -63,16 +62,117 @@ class SwapView extends Component {
         onClick={this.handleChooseBasePair(asset)}
         focused={asset === activeAsset}
         disabled={asset !== 'rune'} // enable only rune for base pair
+        price={runePrice}
         key={0}
       />
     );
   };
 
-  renderSwapList = () => {
+  renderSwapTable = (swapViewData, view) => {
+    const btnCol = {
+      key: 'swap',
+      title: (
+        <Button typevalue="outline">
+          <Icon type="sync" />
+          refresh
+        </Button>
+      ),
+      render: (text, record) => {
+        const {
+          pool: { asset, target },
+        } = record;
+        const URL = `/swap/detail/${asset.toLowerCase()}-${target.toLowerCase()}`;
+        const dataTest = `swap-button-${target.toLowerCase()}`;
+
+        return (
+          <Link to={URL}>
+            <Button style={{ margin: 'auto' }} round data-test={dataTest}>
+              <Icon type="swap" />
+              swap
+            </Button>
+          </Link>
+        );
+      },
+    };
+
+    const mobileColumns = [
+      {
+        key: 'pool',
+        title: 'pool',
+        dataIndex: 'pool',
+        render: ({ asset, target }) => <CoinPair from={asset} to={target} />,
+      },
+      btnCol,
+    ];
+
+    const desktopColumns = [
+      {
+        key: 'pool',
+        title: 'pool',
+        dataIndex: 'pool',
+        render: ({ asset, target }) => <CoinPair from={asset} to={target} />,
+      },
+      {
+        key: 'asset',
+        title: 'asset',
+        dataIndex: 'pool',
+        render: ({ target }) => <p>{target}</p>,
+        sorter: (a, b) => a.pool.target.localeCompare(b.pool.target),
+        sortDirections: ['descend', 'ascend'],
+      },
+      {
+        key: 'depth',
+        title: 'depth',
+        dataIndex: 'depth',
+        sorter: (a, b) => a.raw.depth - b.raw.depth,
+        sortDirections: ['descend', 'ascend'],
+      },
+      {
+        key: 'vol',
+        title: '24h vol',
+        dataIndex: 'volume',
+        sorter: (a, b) => a.raw.volume - b.raw.volume,
+        sortDirections: ['descend', 'ascend'],
+      },
+      {
+        key: 'transaction',
+        title: 'avg. transaction',
+        dataIndex: 'transaction',
+        sorter: (a, b) => a.raw.transaction - b.raw.transaction,
+        sortDirections: ['descend', 'ascend'],
+      },
+      {
+        key: 'slip',
+        title: 'avg. slip',
+        dataIndex: 'slip',
+        render: slip => <Trend value={slip} />,
+        sorter: (a, b) => a.raw.slip - b.raw.slip,
+        sortDirections: ['descend', 'ascend'],
+      },
+      {
+        key: 'trade',
+        title: 'no. of trades',
+        dataIndex: 'trade',
+        sorter: (a, b) => a.raw.trade - b.raw.trade,
+        sortDirections: ['descend', 'ascend'],
+      },
+      btnCol,
+    ];
+
+    const columnData = {
+      desktop: desktopColumns,
+      mobile: mobileColumns,
+    };
+    const columns = columnData[view] || desktopColumns;
+    console.log('swapViewData: ', swapViewData);
+    return <Table columns={columns} dataSource={swapViewData} />;
+  };
+
+  renderSwapList = view => {
     const { pools, poolData, swapData, assetData, runePrice } = this.props;
     const { activeAsset } = this.state;
 
-    return pools.map((pool, index) => {
+    const swapViewData = pools.reduce((result, pool) => {
       const { symbol } = pool;
       const poolInfo = poolData[symbol] || {};
       const swapInfo = swapData[symbol] || {};
@@ -87,19 +187,13 @@ class SwapView extends Component {
       );
 
       if (swapCardData.target !== activeAsset) {
-        return (
-          <SwapCard
-            className="swap-card"
-            data-test={`swap-card-${symbol}`}
-            asset="rune"
-            onSwap={this.handleSwap(activeAsset, swapCardData.target)}
-            {...swapCardData}
-            key={index}
-          />
-        );
+        result.push(swapCardData);
       }
-      return <Fragment />;
-    });
+
+      return result;
+    }, []);
+
+    return this.renderSwapTable(swapViewData, view);
   };
 
   render() {
@@ -116,7 +210,12 @@ class SwapView extends Component {
               </Label>
             </div>
             <div className="asset-button-group">{this.renderAssets()}</div>
-            <div className="swap-list-view">{this.renderSwapList()}</div>
+            <div className="swap-list-view desktop-view">
+              {this.renderSwapList('desktop')}
+            </div>
+            <div className="swap-list-view mobile-view">
+              {this.renderSwapList('mobile')}
+            </div>
           </>
         )}
       </ContentWrapper>

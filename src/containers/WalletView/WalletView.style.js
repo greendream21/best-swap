@@ -15,13 +15,9 @@ export const WalletViewWrapper = styled(ViewPanel)`
     }
   }
 
-  .asset-title-label,
-  button {
-    margin-left: 20px;
-  }
-
   .asset-title-label {
-    padding-top: 20px;
+    text-align: center;
+    text-transform: uppercase;
   }
 
   .coinList-wrapper {

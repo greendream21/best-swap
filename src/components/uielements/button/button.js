@@ -10,6 +10,7 @@ class Button extends Component {
     weight: PropTypes.string,
     typevalue: PropTypes.oneOf(['default', 'outline', 'ghost']),
     focused: PropTypes.bool,
+    round: PropTypes.bool,
     className: PropTypes.string,
     children: PropTypes.node,
   };
@@ -17,9 +18,10 @@ class Button extends Component {
   static defaultProps = {
     sizevalue: 'normal',
     color: 'primary',
-    weight: 'bold',
+    weight: '500',
     typevalue: 'default',
     focused: false,
+    round: false,
     className: '',
   };
 
@@ -34,6 +36,7 @@ class Button extends Component {
         {...props}
       >
         {children}
+        {props.typevalue === 'normal' && <div className="borderBottom" />}
       </ButtonWrapper>
     );
   }

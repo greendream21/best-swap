@@ -39,11 +39,12 @@ export const getCalcResult = (from, to, pools, xValue, runePrice) => {
         result.symbolTo = symbol;
       }
     });
+    result.ratio = (Y / X / Z) * R;
 
     const calcData = { X, Y, R, Z, Py, Pr: Py };
 
     const zValue = getZValue(xValue, calcData).toFixed(2);
-    const slip = getSlip(xValue, calcData);
+    const slip = getFixedNumber(getSlip(xValue, calcData), 0);
     const Px = getPx(xValue, calcData);
     const Pz = getPz(xValue, calcData).toFixed(2);
     const fee = getFixedNumber(getFee(xValue, calcData));
@@ -73,6 +74,8 @@ export const getCalcResult = (from, to, pools, xValue, runePrice) => {
       if (token.toLowerCase() === from.toLowerCase()) {
         X = Number(balance_token);
         Y = Number(balance_rune);
+        result.ratio = X / Y;
+
         result.poolAddressTo = pool_address;
         result.symbolFrom = symbol;
       }
@@ -118,6 +121,8 @@ export const getCalcResult = (from, to, pools, xValue, runePrice) => {
       if (token.toLowerCase() === to.toLowerCase()) {
         X = Number(balance_rune);
         Y = Number(balance_token);
+        result.ratio = X / Y;
+
         result.poolAddressTo = pool_address;
         result.symbolTo = symbol;
       }

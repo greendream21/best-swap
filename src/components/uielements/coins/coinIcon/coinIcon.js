@@ -20,7 +20,7 @@ class CoinIcon extends Component {
   };
 
   renderCoinIcon = () => {
-    const { type } = this.props;
+    const { type, size } = this.props;
     const coinIcon = coinIconGroup[type.toLowerCase()] || '';
 
     if (coinIcon) {
@@ -36,7 +36,7 @@ class CoinIcon extends Component {
         </div>
       );
     }
-    return <DynamicCoin type={type} size="normal" />;
+    return <DynamicCoin type={type} size={size} />;
   };
 
   render() {

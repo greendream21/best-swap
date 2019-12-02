@@ -22,6 +22,8 @@ test:develop:
     # provide cypress with our cached folder to install its cache in
     CYPRESS_CACHE_FOLDER: "$CI_PROJECT_DIR/cache/Cypress"
   stage: test
+  except:
+    - bepswap-testnet-reskin
   image: cypress/base:10
   script:
     - yarn test
@@ -85,3 +87,14 @@ build-docker:
   script:
     - docker build -t registry.gitlab.com/thorchain/bepswap/bepswap-react-app .
     - docker push registry.gitlab.com/thorchain/bepswap/bepswap-react-app
+deploy:reskin:
+  stage: deploy
+  except:
+    - schedules
+  script:
+    - firebase use --token ${FIREBASE_TOKEN} bepswap-testnet-update
+    - firebase deploy --token ${FIREBASE_TOKEN}
+  environment:
+    name: develop
+  only:
+    - bepswap-testnet-reskin

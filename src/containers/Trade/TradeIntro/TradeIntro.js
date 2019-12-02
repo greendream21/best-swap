@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import { Row, Col, Icon } from 'antd';
-import PropTypes from 'prop-types';
 
 import { ContentWrapper } from './TradeIntro.style';
 import Label from '../../../components/uielements/label';
@@ -14,14 +14,7 @@ import {
 } from '../../../components/icons';
 
 class TradeIntro extends Component {
-  static propTypes = {
-    onNext: PropTypes.func.isRequired,
-    onBack: PropTypes.func.isRequired,
-  };
-
   render() {
-    const { onBack, onNext } = this.props;
-
     return (
       <ContentWrapper>
         <Row className="trade-content-text">
@@ -83,13 +76,17 @@ class TradeIntro extends Component {
           </Col>
         </Row>
         <Row className="bottom-nav-button">
-          <Button onClick={onBack} color="primary" typevalue="ghost">
-            back
-          </Button>
-          <Button onClick={onNext} color="primary" typevalue="outline">
-            start
-            <Icon type="arrow-right" />
-          </Button>
+          <Link to="/introduction/pools">
+            <Button color="primary" typevalue="ghost">
+              back
+            </Button>
+          </Link>
+          <Link to="/connect">
+            <Button color="primary" typevalue="outline">
+              start
+              <Icon type="arrow-right" />
+            </Button>
+          </Link>
         </Row>
       </ContentWrapper>
     );

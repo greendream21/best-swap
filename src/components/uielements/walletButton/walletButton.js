@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-
-import { ButtonWrapper } from './walletButton.style';
+import { Icon } from 'antd';
+import Button from '../button';
 
 class WalletButton extends Component {
   static propTypes = {
@@ -19,7 +19,21 @@ class WalletButton extends Component {
     const { connected, value } = this.props;
 
     if (!connected) {
-      return 'Add Wallet';
+      return (
+        <span>
+          <Icon
+            type="folder-add"
+            theme="filled"
+            style={{
+              display: 'inline',
+              marginRight: '6px',
+              top: '1px',
+              position: 'relative',
+            }}
+          />
+          Add Wallet
+        </span>
+      );
     }
 
     if (connected) {
@@ -36,13 +50,15 @@ class WalletButton extends Component {
     const { connected, value, className, ...props } = this.props;
 
     return (
-      <ButtonWrapper
+      <Button
         className={`${className} wallet-btn-wrapper`}
-        type="primary"
+        sizevalue="normal"
+        color="primary"
+        round
         {...props}
       >
         {this.getBtnValue()}
-      </ButtonWrapper>
+      </Button>
     );
   }
 }

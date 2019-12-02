@@ -56,6 +56,7 @@ export default function FilterMenu({
             value={searchTerm}
             onChange={handleSearchChanged}
             placeholder={placeholder}
+            typevalue="ghost"
             suffix={<Icon type="search" />}
           />
         </Menu.Item>

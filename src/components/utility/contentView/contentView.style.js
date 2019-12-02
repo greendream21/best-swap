@@ -6,6 +6,10 @@ export const ContentViewWrapper = styled.div`
   flex-direction: column;
   flex: auto;
 
-  padding: ${key('sizes.gutter.vertical', '20px')}
-    ${key('sizes.gutter.horizontal', '30px')};
+  padding-top: ${key('sizes.gutter.vertical', '10px')};
+  padding-bottom: ${key('sizes.gutter.vertical', '10px')};
+  padding-left: ${key('sizes.gutter.horizontal', '30px')};
+  padding-right: ${key('sizes.gutter.horizontal', '30px')};
+
+  background: ${props => (props.transparent ? 'transparent' : '#fff')};
 `;
