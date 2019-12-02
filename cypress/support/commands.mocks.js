@@ -13,8 +13,8 @@ function mockBaseRoutes() {
   // Override for each test case with a specific override
   cy.route(
     'GET',
-    '/swapservice/pools',
-    'fx:chain/#v1#swapservice#pools/GET/200',
+    '/thorchain/pools',
+    'fx:chain/#v1#thorchain#pools/GET/200',
   ).as('pools');
 
   cy.route('GET', '/poolData?asset=BNB', 'fx:api/#v1#poolData/GET/200.bnb').as(

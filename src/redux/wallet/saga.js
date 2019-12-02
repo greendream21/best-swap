@@ -115,7 +115,7 @@ const getStakerAssets = async address => {
 const getPools = async () => {
   const params = {
     method: 'get',
-    url: getStatechainURL('swapservice/pools'),
+    url: getStatechainURL('thorchain/pools'),
     headers: getHeaders(),
   };
 
