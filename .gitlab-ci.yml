@@ -74,6 +74,8 @@ deploy:production:
 build-docker:
   stage: deploy
   image: docker:stable
+  only:
+    - master
   services:
     - docker:dind
   variables:
@@ -86,6 +88,7 @@ build-docker:
   script:
     - docker build -t registry.gitlab.com/thorchain/bepswap/bepswap-react-app .
     - docker push registry.gitlab.com/thorchain/bepswap/bepswap-react-app
+
 deploy:reskin:
   stage: deploy
   except:
