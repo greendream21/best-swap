@@ -9,9 +9,10 @@ describe('Wallet', () => {
   });
 
   it('should show correct wallet balances', () => {
-    cy.visit('/');
-
+    cy.visit('/connect');
     cy.uploadWallet('full');
+    
+    cy.visit('/');
 
     cy.get('[data-test="wallet-draw-button"]').click();
 
@@ -43,9 +44,10 @@ describe('Wallet', () => {
   });
 
   it('should show the empty wallet message', () => {
-    cy.visit('/');
-
+    cy.visit('/connect');
     cy.uploadWallet('empty');
+
+    cy.visit('/swap');
 
     cy.get('[data-test="wallet-draw-button"]').click();
 
