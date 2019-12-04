@@ -11,10 +11,12 @@ function mockCoingeckoRoutes() {
 function mockBaseRoutes() {
   // This mocks all the base routes
   // Override for each test case with a specific override
+  cy.route("https://testnet-api.bepswap.com/v1/pools");
+  
   cy.route(
     'GET',
     '/thorchain/pools',
-    'fx:chain/#v1#thorchain#pools/GET/200',
+    'fx:chain/#v1#swapservice#pools/GET/200',
   ).as('pools');
 
   cy.route('GET', '/poolData?asset=BNB', 'fx:api/#v1#poolData/GET/200.bnb').as(
