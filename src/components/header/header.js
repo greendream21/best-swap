@@ -15,6 +15,7 @@ import WalletDrawer from '../../containers/WalletView/WalletDrawer';
 
 import appActions from '../../redux/app/actions';
 import WalletButton from '../uielements/walletButton';
+import BasePriceSelector from './basePriceSelector';
 
 const { TabPane } = Tabs;
 
@@ -164,6 +165,7 @@ class Header extends Component {
             </Link>
           )}
           {connected && <WalletDrawer />}
+          <BasePriceSelector />
           <HeaderSetting />
           {connected && (
             <TxView start={status} onClick={this.handleClickTxView} />

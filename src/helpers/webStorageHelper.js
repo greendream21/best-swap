@@ -1,5 +1,6 @@
 export const WALLET_ADDRESS = 'WALLET_ADDRESS';
 export const KEY_STORE = 'KEY_STORE';
+export const BASE_PRICE_ASSET = 'BASE_PRICE_ASSET';
 
 export const saveWalletAddress = address => {
   sessionStorage.setItem(WALLET_ADDRESS, address);
@@ -31,4 +32,12 @@ export const getKeystore = () => {
 
 export const clearKeystore = () => {
   sessionStorage.removeItem(KEY_STORE);
+};
+
+export const saveBasePriceAsset = asset => {
+  sessionStorage.setItem(BASE_PRICE_ASSET, asset);
+};
+
+export const getBasePriceAsset = () => {
+  return sessionStorage.getItem(BASE_PRICE_ASSET);
 };
