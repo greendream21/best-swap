@@ -1,13 +1,19 @@
 import actions from './actions';
-import { getWalletAddress, getKeystore } from '../../helpers/webStorageHelper';
+import {
+  getWalletAddress,
+  getKeystore,
+  getBasePriceAsset,
+} from '../../helpers/webStorageHelper';
 
 const wallet = getWalletAddress();
 const keystore = getKeystore();
+const basePriceAsset = getBasePriceAsset() || 'RUNE';
 
 const user = wallet ? { wallet, keystore } : {};
 
 const initState = {
   user,
+  basePriceAsset, // set base price asset as a RUNE
   runePrice: null,
   assetData: [
     {
@@ -26,6 +32,11 @@ export default function apiReducer(state = initState, action) {
   const { type, payload } = action;
 
   switch (type) {
+    case actions.SET_BASE_PRICE_ASSET:
+      return {
+        ...state,
+        basePriceAsset: payload,
+      };
     case actions.SAVE_WALLET:
       return {
         ...state,

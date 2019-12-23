@@ -15,6 +15,8 @@ const actions = {
   SET_ASSET_DATA: 'SET_ASSET_DATA',
   SET_STAKE_DATA: 'SET_STAKE_DATA',
 
+  SET_BASE_PRICE_ASSET: 'SET_BASE_PRICE_ASSET',
+
   checkUser: () => ({ type: actions.CHECK_USER }),
 
   saveWallet: payload => ({ type: actions.SAVE_WALLET, payload }),
@@ -59,6 +61,11 @@ const actions = {
 
   setAssetData: payload => ({ type: actions.SET_ASSET_DATA, payload }),
   setStakeData: payload => ({ type: actions.SET_STAKE_DATA, payload }),
+
+  setBasePriceAsset: payload => ({
+    type: actions.SET_BASE_PRICE_ASSET,
+    payload,
+  }),
 };
 
 export default actions;
