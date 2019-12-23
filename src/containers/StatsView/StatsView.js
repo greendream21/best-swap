@@ -7,10 +7,6 @@ import { ContentWrapper } from './StatsView.style';
 import { stats } from './data';
 import StatusGroup from '../../components/uielements/statusGroup';
 
-import chainserviceActions from '../../redux/chainservice/actions';
-
-const { getUserData } = chainserviceActions;
-
 class StatsView extends Component {
   componentDidMount() {
     const { getUserData } = this.props;
@@ -66,9 +62,6 @@ StatsView.propTypes = {
   getUserData: PropTypes.func.isRequired,
 };
 
-export default connect(
-  state => ({
-    userData: state.Wallet.user,
-  }),
-  { getUserData },
-)(StatsView);
+export default connect(state => ({
+  userData: state.Wallet.user,
+}))(StatsView);

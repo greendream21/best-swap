@@ -5,6 +5,8 @@ import { CoinDataWrapper } from './coinData.style';
 import Coin from '../coin';
 import Label from '../../label';
 
+import { getFixedNumber } from '../../../../helpers/stringHelper';
+
 class CoinData extends Component {
   static propTypes = {
     asset: PropTypes.string,
@@ -37,6 +39,8 @@ class CoinData extends Component {
       className,
       ...props
     } = this.props;
+
+    const priceValue = getFixedNumber(price);
 
     return (
       <CoinDataWrapper
@@ -89,7 +93,7 @@ class CoinData extends Component {
         )}
         <div className="asset-price-info">
           <Label size="small" color="gray" weight="bold">
-            {`$USD ${Number(price.toFixed(2)).toLocaleString()}`}
+            {`$USD ${priceValue}`}
           </Label>
         </div>
       </CoinDataWrapper>

@@ -1,16 +1,25 @@
 import actions from './actions';
-import { getAssetIdFromPayload } from './utils';
+import {
+  getAssetSymbolFromPayload,
+  getBNBPoolAddress,
+  getPoolAddress,
+} from './utils';
 
 const initState = {
   transaction: {},
   stats: {},
   assets: {},
   pools: [],
+  poolAddressData: {},
+  bnbPoolAddress: {},
+  poolAddress: null,
   poolData: {},
   stakers: [],
   stakerData: {},
   stakerPoolData: {},
+  runePrice: 0,
   error: null,
+  poolLoading: false,
 };
 
 export default function apiReducer(state = initState, action) {
@@ -41,13 +50,19 @@ export default function apiReducer(state = initState, action) {
         stats: null,
         error: payload,
       };
-    case actions.GET_ASSETS_SUCCESS:
-      if (getAssetIdFromPayload(payload)) {
+    case actions.GET_RUNE_PRICE_REQUEST:
+      return {
+        ...state,
+        runePrice: 0,
+        error: null,
+      };
+    case actions.GET_ASSET_INFO_SUCCESS:
+      if (getAssetSymbolFromPayload(payload)) {
         return {
           ...state,
           assets: {
             ...state.assets,
-            [getAssetIdFromPayload(payload)]: payload,
+            [getAssetSymbolFromPayload(payload)]: payload,
           },
           error: null,
         };
@@ -56,31 +71,38 @@ export default function apiReducer(state = initState, action) {
         ...state,
         error: null,
       };
-    case actions.GET_ASSETS_FAILED:
+    case actions.GET_ASSET_INFO_FAILED:
       return {
         ...state,
-        assets: null,
+        assets: {},
         error: payload,
+      };
+    case actions.GET_POOLS_REQUEST:
+      return {
+        ...state,
+        poolLoading: true,
+        error: null,
       };
     case actions.GET_POOLS_SUCCESS:
       return {
         ...state,
         pools: payload,
+        poolLoading: false,
         error: null,
       };
     case actions.GET_POOLS_FAILED:
       return {
         ...state,
-        pools: null,
+        poolLoading: false,
         error: payload,
       };
     case actions.GET_POOL_DATA_SUCCESS:
-      if (getAssetIdFromPayload(payload)) {
+      if (getAssetSymbolFromPayload(payload)) {
         return {
           ...state,
           poolData: {
-            ...state.assets,
-            [getAssetIdFromPayload(payload)]: payload,
+            ...state.poolData,
+            [getAssetSymbolFromPayload(payload)]: payload,
           },
           error: null,
         };
@@ -92,7 +114,6 @@ export default function apiReducer(state = initState, action) {
     case actions.GET_POOL_DATA_FAILED:
       return {
         ...state,
-        poolData: null,
         error: payload,
       };
     case actions.GET_STAKERS_SUCCESS:
@@ -120,15 +141,40 @@ export default function apiReducer(state = initState, action) {
         error: payload,
       };
     case actions.GET_STAKER_POOL_DATA_SUCCESS:
+      if (getAssetSymbolFromPayload(payload)) {
+        return {
+          ...state,
+          stakerPoolData: {
+            ...state.stakerPoolData,
+            [getAssetSymbolFromPayload(payload)]: payload,
+          },
+          error: null,
+        };
+      }
       return {
         ...state,
-        stakerPoolData: payload,
         error: null,
       };
     case actions.GET_STAKER_POOL_DATA_FAILED:
       return {
         ...state,
         stakerPoolData: null,
+        error: payload,
+      };
+    case actions.GET_POOL_ADDRESSES_SUCCESS:
+      return {
+        ...state,
+        poolAddressData: payload,
+        bnbPoolAddress: getBNBPoolAddress(payload),
+        poolAddress: getPoolAddress(payload),
+        error: null,
+      };
+    case actions.GET_POOL_ADDRESSES_FAILED:
+      return {
+        ...state,
+        poolAddressData: {},
+        bnbPoolAddress: {},
+        poolAddress: null,
         error: payload,
       };
     default:

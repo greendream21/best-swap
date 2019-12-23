@@ -29,8 +29,14 @@ firebase-tools
 Create `.env` file and set the following variables.
 
 ```
-REACT_APP_CHAINSERVICE_API_URL = http://xxx
-REACT_APP_STATECHAIN_API_URL = http://xxx
+REACT_APP_BINANCE_MAINNET_WS_URI = wss://xxx
+REACT_APP_BINANCE_TESTNET_WS_URI = wss://xxx
+
+REACT_APP_BINANCE_MAINNET_URL = https://xxx
+REACT_APP_BINANCE_TESTNET_URL = https://xxx
+
+REACT_APP_MIDGARD_API_URL = https://xxx
+
 ```
 
 ### Project Setup

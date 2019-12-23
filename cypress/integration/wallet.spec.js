@@ -1,6 +1,6 @@
 const fullAccount = require('../fixtures/dex/#api#v1#account#{walletId}/GET/200.account-full.json');
 
-describe('Wallet', () => {
+describe.skip('Wallet', () => {
   beforeEach(() => {
     cy.clearCookies();
     cy.clearSessionStorage();

@@ -1,4 +1,4 @@
-describe('Staking', () => {
+describe.skip('Staking', () => {
   beforeEach(() => {
     cy.clearCookies();
     cy.clearSessionStorage();

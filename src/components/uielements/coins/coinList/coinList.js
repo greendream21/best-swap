@@ -25,7 +25,7 @@ class CoinList extends Component {
     className: '',
   };
 
-  getTokenPrice = (asset, runePrice, tokenInfo, price) => {
+  getPrice = (asset, runePrice, tokenInfo, price) => {
     if (asset === 'RUNE-A1F') {
       return runePrice;
     }
@@ -61,7 +61,7 @@ class CoinList extends Component {
           {data.map((coinData, index) => {
             const { asset, assetValue, target, targetValue, price } = coinData;
 
-            const tokenPrice = this.getTokenPrice(
+            const priceValue = this.getPrice(
               asset,
               runePrice,
               tokenInfo,
@@ -90,7 +90,7 @@ class CoinList extends Component {
                   assetValue={assetValue}
                   target={target}
                   targetValue={targetValue}
-                  price={tokenPrice}
+                  price={priceValue}
                   size={size}
                 />
               </div>

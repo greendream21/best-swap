@@ -10,25 +10,22 @@ import CoinButton from '../../../components/uielements/coins/coinButton';
 
 import { ContentWrapper } from './SwapView.style';
 
-import statechainActions from '../../../redux/statechain/actions';
-import walletactions from '../../../redux/wallet/actions';
-import { getSwapData } from './data';
 import SwapLoader from '../../../components/utility/loaders/swap';
 import CoinPair from '../../../components/uielements/coins/coinPair';
 import Trend from '../../../components/uielements/trend';
 import Button from '../../../components/uielements/button';
 import Table from '../../../components/uielements/table';
 
-const { getPools } = statechainActions;
-const { getRunePrice } = walletactions;
+import midgardActions from '../../../redux/midgard/actions';
+import { getSwapData } from './data';
+
+const { getPools, getRunePrice } = midgardActions;
 
 class SwapView extends Component {
   static propTypes = {
     getPools: PropTypes.func.isRequired,
     pools: PropTypes.array.isRequired,
     poolData: PropTypes.object.isRequired,
-    swapData: PropTypes.object.isRequired,
-    assetData: PropTypes.array.isRequired,
     getRunePrice: PropTypes.func.isRequired,
     runePrice: PropTypes.number,
     loading: PropTypes.bool.isRequired,
@@ -56,6 +53,7 @@ class SwapView extends Component {
     const { runePrice } = this.props;
     const { activeAsset } = this.state;
     const asset = 'rune';
+
     return (
       <CoinButton
         cointype={asset}
@@ -169,22 +167,14 @@ class SwapView extends Component {
   };
 
   renderSwapList = view => {
-    const { pools, poolData, swapData, assetData, runePrice } = this.props;
+    const { pools, poolData, runePrice } = this.props;
     const { activeAsset } = this.state;
 
     const swapViewData = pools.reduce((result, pool) => {
       const { symbol } = pool;
       const poolInfo = poolData[symbol] || {};
-      const swapInfo = swapData[symbol] || {};
 
-      const swapCardData = getSwapData(
-        'rune',
-        symbol,
-        poolInfo,
-        swapInfo,
-        assetData,
-        runePrice,
-      );
+      const swapCardData = getSwapData('rune', poolInfo, runePrice);
 
       if (swapCardData.target !== activeAsset) {
         result.push(swapCardData);
@@ -226,12 +216,10 @@ class SwapView extends Component {
 export default compose(
   connect(
     state => ({
-      pools: state.Statechain.pools,
-      poolData: state.Statechain.poolData,
-      swapData: state.Statechain.swapData,
-      runePrice: state.Wallet.runePrice,
-      assetData: state.Wallet.assetData,
-      loading: state.Statechain.loading,
+      pools: state.Midgard.pools,
+      poolData: state.Midgard.poolData,
+      runePrice: state.Midgard.runePrice,
+      loading: state.Midgard.poolLoading,
     }),
     {
       getPools,

@@ -11,8 +11,7 @@ cache:
     - node_modules/
 
 before_script:
-  - echo "REACT_APP_CHAINSERVICE_API_URL:" ${REACT_APP_CHAINSERVICE_API_URL}
-  - echo "REACT_APP_STATECHAIN_API_URL:" ${REACT_APP_STATECHAIN_API_URL}
+  - echo "REACT_APP_MIDGARD_API_URL:" ${REACT_APP_MIDGARD_API_URL}
   - yarn
   - npm i -g firebase-tools
   - firebase -V

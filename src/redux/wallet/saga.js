@@ -1,14 +1,13 @@
 import { all, takeEvery, put, fork, call } from 'redux-saga/effects';
 import { push } from 'connected-react-router';
+import { get as _get } from 'lodash';
 
 import actions from './actions';
 import Binance from '../../clients/binance';
 import {
-  getCoinGeckoURL,
   getHeaders,
   axiosRequest,
-  getChainserviceURL,
-  getStatechainURL,
+  getMidgardURL,
 } from '../../helpers/apiHelper';
 
 import {
@@ -43,21 +42,6 @@ export function* forgetWalletSaga() {
   });
 }
 
-const getRunePriceRequest = async () => {
-  const params = {
-    method: 'get',
-    url: getCoinGeckoURL('simple/price?ids=thorchain&vs_currencies=usd'),
-    headers: getHeaders(),
-  };
-
-  try {
-    const { data } = await axiosRequest(params);
-    return data.thorchain.usd || 0;
-  } catch (error) {
-    return null;
-  }
-};
-
 export function* refreshBalance() {
   yield takeEvery(actions.REFRESH_BALANCE, function*({ payload }) {
     const address = payload;
@@ -78,15 +62,6 @@ export function* refreshBalance() {
           };
         });
 
-        // get rune price
-
-        let price = 0;
-        try {
-          price = yield call(getRunePriceRequest);
-          yield put(actions.getRunePriceSuccess(price));
-        } catch (error) {
-          console.log(error);
-        }
         yield put(actions.refreshBalanceSuccess(coins));
       } catch (error) {
         yield put(actions.refreshBalanceFailed(error));
@@ -100,7 +75,7 @@ export function* refreshBalance() {
 const getStakerAssets = async address => {
   const params = {
     method: 'get',
-    url: getChainserviceURL(`stakerData?staker=${address}`),
+    url: getMidgardURL(`stakers/${address}`),
     headers: getHeaders(),
   };
 
@@ -112,72 +87,45 @@ const getStakerAssets = async address => {
   }
 };
 
-const getPools = async () => {
+const getPoolData = async assetId => {
   const params = {
     method: 'get',
-    url: getStatechainURL('thorchain/pools'),
+    url: getMidgardURL(`pools/${assetId}`),
     headers: getHeaders(),
   };
 
   try {
     const { data } = await axiosRequest(params);
+
     return data;
   } catch (error) {
+    console.log('get pool data from midgard error');
     return null;
   }
-};
-
-const getRunePriceReq = async () => {
-  const params = {
-    method: 'get',
-    url: getCoinGeckoURL('simple/price?ids=thorchain&vs_currencies=usd'),
-    headers: getHeaders(),
-  };
-
-  try {
-    const { data } = await axiosRequest(params);
-
-    return data.thorchain.usd || 0;
-  } catch (error) {
-    return null;
-  }
-};
-
-const getPoolPrice = (pools, asset, runePrice) => {
-  let poolPrice = 0;
-
-  pools.forEach(poolData => {
-    const { balance_rune, balance_token, symbol } = poolData;
-
-    if (symbol.toLowerCase() === asset.toLowerCase()) {
-      const R = Number(balance_rune);
-      const T = Number(balance_token);
-      poolPrice = getFixedNumber((R / T) * runePrice);
-    }
-  });
-
-  return poolPrice;
 };
 
 export function* getUserStakeData() {
   yield takeEvery(actions.GET_USER_STAKE_DATA_REQUEST, function*({ payload }) {
-    const { staker, asset, pools, runePrice } = payload;
+    const { address, asset } = payload;
+    const { chain, symbol, ticker } = asset;
+    const assetId = `${chain}.${symbol}`;
 
     const params = {
       method: 'get',
-      url: getChainserviceURL(`stakerData?staker=${staker}&asset=${asset}`),
+      url: getMidgardURL(`stakers?${address}/${assetId}`),
       headers: getHeaders(),
     };
-    console.log(params);
-    try {
-      const response = yield call(axiosRequest, params);
+    console.log('getUserStakeData Param: ', params);
 
-      const price = getPoolPrice(pools, asset, runePrice);
+    try {
+      const { data: userStakerData } = yield call(axiosRequest, params);
+      const poolData = yield call(getPoolData, assetId);
+      const price = _get(poolData, 'price', 0);
 
       const data = {
-        target: asset.toLowerCase(),
-        targetValue: getFixedNumber(response.data.tokensStaked / BASE_NUMBER),
-        assetValue: getFixedNumber(response.data.runeStaked / BASE_NUMBER),
+        target: ticker.toLowerCase(),
+        targetValue: getFixedNumber(userStakerData.assetStaked / BASE_NUMBER),
+        assetValue: getFixedNumber(userStakerData.runeStaked / BASE_NUMBER),
         asset: 'rune',
         price,
       };
@@ -194,50 +142,23 @@ export function* refreshStakes() {
     const address = payload;
 
     try {
-      const pools = yield call(getPools);
-      const runePrice = yield call(getRunePriceReq);
+      const { data: stakerData } = yield call(getStakerAssets, address);
+      const stakerPools = _get(stakerData, 'poolsArray');
 
-      try {
-        const response = yield call(getStakerAssets, address);
+      const stakeData = yield all(
+        stakerPools.map(poolData => {
+          return put(
+            actions.getUserStakeData({
+              address,
+              asset: poolData,
+            }),
+          );
+        }),
+      );
 
-        const stakeData = yield all(
-          response.data.map(symbol => {
-            return put(
-              actions.getUserStakeData({
-                staker: address,
-                asset: symbol,
-                pools,
-                runePrice,
-              }),
-            );
-          }),
-        );
-
-        yield put(actions.refreshStakeSuccess(stakeData));
-      } catch (error) {
-        yield put(actions.refreshStakeFailed(error));
-      }
+      yield put(actions.refreshStakeSuccess(stakeData));
     } catch (error) {
       yield put(actions.refreshStakeFailed(error));
-    }
-  });
-}
-
-export function* getRunePrice() {
-  yield takeEvery(actions.GET_RUNE_PRICE, function*(/* { payload } */) {
-    const params = {
-      method: 'get',
-      url: getCoinGeckoURL('simple/price?ids=thorchain&vs_currencies=usd'),
-      headers: getHeaders(),
-    };
-
-    try {
-      const { data } = yield call(axiosRequest, params);
-      const price = data.thorchain.usd || 0;
-
-      yield put(actions.getRunePriceSuccess(price));
-    } catch (error) {
-      yield put(actions.getRunePriceFailed(error));
     }
   });
 }
@@ -249,6 +170,5 @@ export default function* rootSaga() {
     fork(refreshBalance),
     fork(refreshStakes),
     fork(getUserStakeData),
-    fork(getRunePrice),
   ]);
 }
