@@ -13,7 +13,6 @@ export function* getTransaction() {
       method: 'get',
       url: getMidgardURL(`tx/${address}`),
       headers: getHeaders(),
-      withCredentials: true,
     };
 
     try {
@@ -32,7 +31,6 @@ export function* getStats() {
       method: 'get',
       url: getMidgardURL('stats'),
       headers: getHeaders(),
-      withCredentials: true,
     };
 
     try {
@@ -45,21 +43,20 @@ export function* getStats() {
   });
 }
 
-export function* getAssets() {
-  yield takeEvery(actions.GET_ASSETS_REQUEST, function*({ payload }) {
+export function* getAssetInfo() {
+  yield takeEvery(actions.GET_ASSET_INFO_REQUEST, function*({ payload }) {
     const params = {
       method: 'get',
       url: getMidgardURL(`assets/${payload}`),
       headers: getHeaders(),
-      withCredentials: true,
     };
 
     try {
       const { data } = yield call(axiosRequest, params);
 
-      yield put(actions.getAssetsSuccess(data));
+      yield put(actions.getAssetInfoSuccess(data));
     } catch (error) {
-      yield put(actions.getAssetsFailed(error));
+      yield put(actions.getAssetInfoFailed(error));
     }
   });
 }
@@ -70,7 +67,6 @@ export function* getPools() {
       method: 'get',
       url: getMidgardURL('pools'),
       headers: getHeaders(),
-      withCredentials: true,
     };
 
     try {
@@ -81,7 +77,7 @@ export function* getPools() {
           const { chain, symbol } = poolData;
           const assetId = `${chain}.${symbol}`;
 
-          return put(actions.getAssets(assetId));
+          return put(actions.getAssetInfo(assetId));
         }),
       );
 
@@ -107,7 +103,6 @@ export function* getPoolData() {
       method: 'get',
       url: getMidgardURL(`pools/${payload}`),
       headers: getHeaders(),
-      withCredentials: true,
     };
 
     try {
@@ -126,7 +121,6 @@ export function* getStakers() {
       method: 'get',
       url: getMidgardURL('stakers'),
       headers: getHeaders(),
-      withCredentials: true,
     };
 
     try {
@@ -145,7 +139,6 @@ export function* getStakerData() {
       method: 'get',
       url: getMidgardURL(`stakers/${payload}`),
       headers: getHeaders(),
-      withCredentials: true,
     };
 
     try {
@@ -166,7 +159,6 @@ export function* getStakerPoolData() {
       method: 'get',
       url: getMidgardURL(`stakers/${address}/${asset}`),
       headers: getHeaders(),
-      withCredentials: true,
     };
 
     try {
@@ -179,15 +171,34 @@ export function* getStakerPoolData() {
   });
 }
 
+export function* getPoolAddress() {
+  yield takeEvery(actions.GET_POOL_ADDRESSES_REQUEST, function*() {
+    const params = {
+      method: 'get',
+      url: getMidgardURL('thorchain/pool_addresses'),
+      headers: getHeaders(),
+    };
+
+    try {
+      const { data } = yield call(axiosRequest, params);
+
+      yield put(actions.getPoolAddressSuccess(data));
+    } catch (error) {
+      yield put(actions.getPoolAddressFailed(error));
+    }
+  });
+}
+
 export default function* rootSaga() {
   yield all([
     fork(getTransaction),
     fork(getStats),
-    fork(getAssets),
+    fork(getAssetInfo),
     fork(getPools),
     fork(getPoolData),
     fork(getStakers),
     fork(getStakerData),
     fork(getStakerPoolData),
+    fork(getPoolAddress),
   ]);
 }

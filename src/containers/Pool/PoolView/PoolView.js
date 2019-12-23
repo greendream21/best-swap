@@ -13,25 +13,22 @@ import Table from '../../../components/uielements/table';
 import Button from '../../../components/uielements/button';
 
 import { ContentWrapper } from './PoolView.style';
-import statechainActions from '../../../redux/statechain/actions';
-import walletactions from '../../../redux/wallet/actions';
 import { getPoolData, getCreatePoolTokens } from '../utils';
 import { getTickerFormat } from '../../../helpers/stringHelper';
+import midgardActions from '../../../redux/midgard/actions';
 
-const { getPools } = statechainActions;
-const { getRunePrice } = walletactions;
+const { getPools, getRunePrice } = midgardActions;
 
 class PoolView extends Component {
   static propTypes = {
-    history: PropTypes.object.isRequired,
     getPools: PropTypes.func.isRequired,
     pools: PropTypes.array.isRequired,
     poolData: PropTypes.object.isRequired,
-    swapData: PropTypes.object.isRequired,
-    assetData: PropTypes.array.isRequired,
     getRunePrice: PropTypes.func.isRequired,
     runePrice: PropTypes.number.isRequired,
+    assetData: PropTypes.array.isRequired,
     loading: PropTypes.bool.isRequired,
+    history: PropTypes.object.isRequired,
   };
 
   state = {
@@ -160,20 +157,16 @@ class PoolView extends Component {
   };
 
   renderPoolList = view => {
-    const { pools, poolData, swapData, runePrice, assetData } = this.props;
+    const { pools, poolData, runePrice } = this.props;
     const { activeAsset } = this.state;
 
     const stakeViewData = pools.reduce((result, pool) => {
       const { symbol } = pool;
       const poolInfo = poolData[symbol] || {};
-      const swapInfo = swapData[symbol] || {};
 
       const { values: stakeCardData, raw } = getPoolData(
         'rune',
-        symbol,
         poolInfo,
-        swapInfo,
-        assetData,
         runePrice,
       );
 
@@ -217,11 +210,10 @@ class PoolView extends Component {
 export default compose(
   connect(
     state => ({
-      pools: state.Statechain.pools,
-      poolData: state.Statechain.poolData,
-      swapData: state.Statechain.swapData,
-      loading: state.Statechain.loading,
-      runePrice: state.Wallet.runePrice,
+      pools: state.Midgard.pools,
+      poolData: state.Midgard.poolData,
+      loading: state.Midgard.loading,
+      runePrice: state.Midgard.runePrice,
       assetData: state.Wallet.assetData,
     }),
     {

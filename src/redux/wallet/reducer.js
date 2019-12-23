@@ -87,11 +87,6 @@ export default function apiReducer(state = initState, action) {
         ...state,
         stakeData: payload,
       };
-    case actions.GET_RUNE_PRICE_SUCCESS:
-      return {
-        ...state,
-        runePrice: payload,
-      };
     default:
       return state;
   }

@@ -22,8 +22,7 @@ import {
 
 import appActions from '../../../redux/app/actions';
 import walletactions from '../../../redux/wallet/actions';
-import chainActions from '../../../redux/chainservice/actions';
-import statechainActions from '../../../redux/statechain/actions';
+import midgardActions from '../../../redux/midgard/actions';
 import binanceActions from '../../../redux/binance/actions';
 import {
   getBepswapValues,
@@ -41,8 +40,7 @@ const {
   resetTxStatus,
 } = appActions;
 
-const { getTokens } = chainActions;
-const { getPools } = statechainActions;
+const { getPools } = midgardActions;
 const { getRunePrice } = walletactions;
 const { getBinanceTicker } = binanceActions;
 
@@ -61,7 +59,6 @@ class TradeDetail extends Component {
     setTxTimerStatus: PropTypes.func.isRequired,
     setTxTimerValue: PropTypes.func.isRequired,
     resetTxStatus: PropTypes.func.isRequired,
-    getTokens: PropTypes.func.isRequired,
     getPools: PropTypes.func.isRequired,
     getRunePrice: PropTypes.func.isRequired,
     getBinanceTicker: PropTypes.func.isRequired,
@@ -70,15 +67,8 @@ class TradeDetail extends Component {
   state = {};
 
   componentDidMount() {
-    const {
-      symbol,
-      getTokens,
-      getPools,
-      getRunePrice,
-      getBinanceTicker,
-    } = this.props;
+    const { symbol, getPools, getRunePrice, getBinanceTicker } = this.props;
 
-    getTokens();
     getPools();
     getRunePrice();
     getBinanceTicker(symbol);
@@ -395,14 +385,11 @@ export default compose(
       user: state.Wallet.user,
       assetData: state.Wallet.assetData,
       runePrice: state.Wallet.runePrice,
-      chainData: state.ChainService,
-      pools: state.Statechain.pools,
-      poolData: state.Statechain.poolData,
-      swapData: state.Statechain.swapData,
+      pools: state.Midgard.pools,
+      poolData: state.Midgard.poolData,
       tickerData: state.Binance.ticker,
     }),
     {
-      getTokens,
       getPools,
       getRunePrice,
       getBinanceTicker,

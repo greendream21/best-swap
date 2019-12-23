@@ -44,17 +44,17 @@ const actions = {
     payload,
   }),
 
-  GET_ASSETS_REQUEST: 'GET_ASSETS_REQUEST',
-  GET_ASSETS_SUCCESS: 'GET_ASSETS_SUCCESS',
-  GET_ASSETS_FAILED: 'GET_ASSETS_FAILED',
+  GET_ASSET_INFO_REQUEST: 'GET_ASSET_INFO_REQUEST',
+  GET_ASSET_INFO_SUCCESS: 'GET_ASSET_INFO_SUCCESS',
+  GET_ASSET_INFO_FAILED: 'GET_ASSET_INFO_FAILED',
 
-  getAssets: payload => ({ type: actions.GET_ASSETS_REQUEST, payload }),
-  getAssetsSuccess: payload => ({
-    type: actions.GET_ASSETS_SUCCESS,
+  getAssetInfo: payload => ({ type: actions.GET_ASSET_INFO_REQUEST, payload }),
+  getAssetInfoSuccess: payload => ({
+    type: actions.GET_ASSET_INFO_SUCCESS,
     payload,
   }),
-  getAssetsFailed: payload => ({
-    type: actions.GET_ASSETS_FAILED,
+  getAssetInfoFailed: payload => ({
+    type: actions.GET_ASSET_INFO_FAILED,
     payload,
   }),
 
@@ -133,6 +133,27 @@ const actions = {
     type: actions.GET_STAKER_POOL_DATA_FAILED,
     payload,
   }),
+
+  GET_POOL_ADDRESSES_REQUEST: 'GET_POOL_ADDRESSES_REQUEST',
+  GET_POOL_ADDRESSES_SUCCESS: 'GET_POOL_ADDRESSES_SUCCESS',
+  GET_POOL_ADDRESSES_FAILED: 'GET_POOL_ADDRESSES_FAILED',
+
+  getPoolAddress: payload => ({
+    type: actions.GET_POOL_ADDRESSES_REQUEST,
+    payload,
+  }),
+  getPoolAddressSuccess: payload => ({
+    type: actions.GET_POOL_ADDRESSES_SUCCESS,
+    payload,
+  }),
+  getPoolAddressFailed: payload => ({
+    type: actions.GET_POOL_ADDRESSES_FAILED,
+    payload,
+  }),
+
+  GET_RUNE_PRICE_REQUEST: 'GET_RUNE_PRICE_REQUEST',
+
+  getRunePrice: () => ({ type: actions.GET_RUNE_PRICE_REQUEST }),
 };
 
 export default actions;

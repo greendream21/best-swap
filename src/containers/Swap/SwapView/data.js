@@ -1,29 +1,14 @@
-import { getTickerFormat, getUserFormat } from '../../../helpers/stringHelper';
+import { get as _get } from 'lodash';
+import { getUserFormat } from '../../../helpers/stringHelper';
 
-export const getSwapData = (
-  from,
-  to,
-  poolInfo,
-  swapInfo,
-  assetData,
-  runePrice,
-) => {
-  const tokenData = assetData.find(data => data.asset === to);
-  const tokenPrice = tokenData ? tokenData.price : 0;
-
+export const getSwapData = (from, poolInfo, runePrice) => {
   const asset = from;
-  const target = getTickerFormat(to);
-  const depth = Number(poolInfo.depth * runePrice);
-  const volume = poolInfo.vol24hr;
-  const transaction = Number(
-    swapInfo.aveTxTkn * tokenPrice + swapInfo.aveTxRune * runePrice,
-  );
-  const slip = Number(
-    ((swapInfo.aveSlipTkn * tokenPrice + swapInfo.aveSlipRune * runePrice) /
-      2) *
-      100,
-  );
-  const trade = Number(swapInfo.numTxTkn + swapInfo.numTxRune);
+  const target = _get(poolInfo, 'asset.ticker', '');
+  const depth = Number(poolInfo.runeDepth);
+  const volume = poolInfo.poolVolume24hr;
+  const transaction = Number(poolInfo.poolTxAverage * runePrice);
+  const slip = Number(poolInfo.poolSlipAverage * runePrice * 100);
+  const trade = Number(poolInfo.swappingTxCount);
 
   const depthValue = `$${getUserFormat(depth).toLocaleString()}`;
   const volumeValue = `$${getUserFormat(volume)}`;

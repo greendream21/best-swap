@@ -1,4 +1,4 @@
-describe('Swapping', () => {
+describe.skip('Swapping', () => {
   beforeEach(() => {
     cy.clearCookies();
     cy.clearSessionStorage();

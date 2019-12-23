@@ -10,16 +10,14 @@ import Tabs from '../../components/uielements/tabs';
 import Label from '../../components/uielements/label';
 import Button from '../../components/uielements/button';
 import CoinList from '../../components/uielements/coins/coinList';
-import chainActions from '../../redux/chainservice/actions';
-import walletActions from '../../redux/wallet/actions';
+import midgardActions from '../../redux/midgard/actions';
 import { getPair, getTickerFormat } from '../../helpers/stringHelper';
 import {
   AssetLoader,
   StakeLoader,
 } from '../../components/utility/loaders/wallet';
 
-const { getTokens } = chainActions;
-const { getRunePrice } = walletActions;
+const { getRunePrice, getPools } = midgardActions;
 
 const { TabPane } = Tabs;
 
@@ -36,11 +34,11 @@ class WalletView extends Component {
     loadingStakes: PropTypes.bool.isRequired,
     setAssetData: PropTypes.func.isRequired,
     setStakeData: PropTypes.func.isRequired,
-    getTokens: PropTypes.func.isRequired,
+    getPools: PropTypes.func.isRequired,
     getRunePrice: PropTypes.func.isRequired,
-    history: PropTypes.object.isRequired,
-    chainData: PropTypes.object.isRequired,
+    assets: PropTypes.object.isRequired,
     runePrice: PropTypes.object,
+    history: PropTypes.object.isRequired,
   };
 
   static defaultProps = {
@@ -51,8 +49,8 @@ class WalletView extends Component {
   };
 
   componentDidMount() {
-    const { getTokens, getRunePrice } = this.props;
-    getTokens();
+    const { getPools, getRunePrice } = this.props;
+    getPools();
     getRunePrice();
   }
 
@@ -135,7 +133,7 @@ class WalletView extends Component {
       user: { wallet },
       assetData,
       stakeData,
-      chainData: { tokenInfo },
+      assets,
       runePrice,
       loadingAssets,
       loadingStakes,
@@ -169,7 +167,7 @@ class WalletView extends Component {
                 data={sortedAssets}
                 value={sourceIndex}
                 selected={selectedAsset}
-                tokenInfo={tokenInfo}
+                tokenInfo={assets}
                 runePrice={runePrice}
                 onSelect={this.handleSelectAsset}
               />
@@ -183,8 +181,8 @@ class WalletView extends Component {
               <CoinList
                 data-test="wallet-stakes-list"
                 data={stakeData}
+                tokenInfo={assets}
                 runePrice={runePrice}
-                tokenInfo={tokenInfo}
                 onSelect={this.handleSelectStake}
               />
             )}
@@ -203,11 +201,11 @@ export default compose(
       stakeData: state.Wallet.stakeData,
       loadingAssets: state.Wallet.loadingAssets,
       loadingStakes: state.Wallet.loadingStakes,
-      chainData: state.ChainService,
+      assets: state.Midgard.assets,
       runePrice: state.Wallet.runePrice,
     }),
     {
-      getTokens,
+      getPools,
       getRunePrice,
     },
   ),

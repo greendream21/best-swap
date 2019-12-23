@@ -45,7 +45,7 @@ export const getTradeData = (
 
 /**
  * get bnb price from pools
- * @param {Array} pools pool data from the statechain
+ * @param {Array} pools pool data from the thorchain
  * @return {String} price of bnb
  */
 export const getBnbPrice = pools => {
@@ -68,7 +68,7 @@ export const getBnbPrice = pools => {
 /**
  * Get prices for bepswap
  * @param {String} token symbol for token
- * @param {Array} pools pool data from the statechain
+ * @param {Array} pools pool data from the thorchain
  * @return {Object} price values for bepswap
  */
 export const getBepswapValues = (token, pools, bnbPrice) => {

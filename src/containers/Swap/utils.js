@@ -10,7 +10,14 @@ export const getSwapType = (from, to) => {
   return 'double_swap';
 };
 
-export const getCalcResult = (from, to, pools, xValue, runePrice) => {
+export const getCalcResult = (
+  from,
+  to,
+  pools,
+  poolAddress,
+  xValue,
+  runePrice,
+) => {
   const type = getSwapType(from, to);
 
   if (type === 'double_swap') {
@@ -21,21 +28,31 @@ export const getCalcResult = (from, to, pools, xValue, runePrice) => {
     const Py = runePrice;
     const result = {};
 
-    pools.forEach(poolData => {
-      const { balance_rune, balance_token, pool_address, symbol } = poolData;
+    // CHANGELOG:
+    /*
+      balance_rune => runeStakedTotal
+      balance_token => assetStakedTotal
+    */
+    Object.keys(pools).forEach(key => {
+      const poolData = pools[key];
+      const {
+        runeStakedTotal,
+        assetStakedTotal,
+        asset: { symbol },
+      } = poolData;
 
       const token = getTickerFormat(symbol);
       if (token.toLowerCase() === from.toLowerCase()) {
-        X = Number(balance_token);
-        Y = Number(balance_rune);
-        result.poolAddressFrom = pool_address;
+        X = Number(assetStakedTotal);
+        Y = Number(runeStakedTotal);
+        result.poolAddressFrom = poolAddress;
         result.symbolFrom = symbol;
       }
 
       if (token.toLowerCase() === to.toLowerCase()) {
-        R = Number(balance_rune);
-        Z = Number(balance_token);
-        result.poolAddressTo = pool_address;
+        R = Number(runeStakedTotal);
+        Z = Number(assetStakedTotal);
+        result.poolAddressTo = poolAddress;
         result.symbolTo = symbol;
       }
     });
@@ -67,16 +84,21 @@ export const getCalcResult = (from, to, pools, xValue, runePrice) => {
 
     const result = {};
 
-    pools.forEach(poolData => {
-      const { balance_rune, balance_token, pool_address, symbol } = poolData;
+    Object.keys(pools).forEach(key => {
+      const poolData = pools[key];
+      const {
+        runeStakedTotal,
+        assetStakedTotal,
+        asset: { symbol },
+      } = poolData;
 
       const token = getTickerFormat(symbol);
       if (token.toLowerCase() === from.toLowerCase()) {
-        X = Number(balance_token);
-        Y = Number(balance_rune);
+        X = Number(assetStakedTotal);
+        Y = Number(runeStakedTotal);
         result.ratio = X / Y;
 
-        result.poolAddressTo = pool_address;
+        result.poolAddressTo = poolAddress;
         result.symbolFrom = symbol;
       }
     });
@@ -114,21 +136,26 @@ export const getCalcResult = (from, to, pools, xValue, runePrice) => {
 
     const result = {};
 
-    pools.forEach(poolData => {
-      const { balance_rune, balance_token, pool_address, symbol } = poolData;
+    Object.keys(pools).forEach(key => {
+      const poolData = pools[key];
+      const {
+        runeStakedTotal,
+        assetStakedTotal,
+        asset: { symbol },
+      } = poolData;
 
       const token = getTickerFormat(symbol);
       if (token.toLowerCase() === to.toLowerCase()) {
-        X = Number(balance_rune);
-        Y = Number(balance_token);
+        X = Number(runeStakedTotal);
+        Y = Number(assetStakedTotal);
         result.ratio = X / Y;
 
-        result.poolAddressTo = pool_address;
+        result.poolAddressTo = poolAddress;
         result.symbolTo = symbol;
       }
     });
 
-    // Set RUNE for fromToken as we don't have rune in the pool from statechain
+    // Set RUNE for fromToken as we don't have rune in the pool from thorchain
     result.symbolFrom = rune;
 
     const times = (xValue + X) ** 2;
@@ -194,9 +221,11 @@ export const confirmSwap = (
       return reject();
     }
 
-    const { poolAddressTo, symbolTo, symbolFrom, lim } = data;
+    const { poolAddressTo, symbolTo, symbolFrom } = data;
 
-    const limit = protectSlip ? lim : '';
+    // TODO: ignored limit
+    // const limit = protectSlip ? lim : '';
+    const limit = '';
     const memo = getSwapMemo(symbolTo, destAddr, limit);
     console.log('memo: ', memo);
     Binance.transfer(wallet, poolAddressTo, amount, symbolFrom, memo)

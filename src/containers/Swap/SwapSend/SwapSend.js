@@ -5,6 +5,7 @@ import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Row, Col, Icon, Form, notification, Popover } from 'antd';
 import { crypto } from '@binance-chain/javascript-sdk';
+import { get as _get } from 'lodash';
 
 import Binance from '../../../clients/binance';
 
@@ -39,8 +40,7 @@ import { getCalcResult, confirmSwap, getTxResult } from '../utils';
 import { withBinanceTransferWS } from '../../../HOC/websocket/WSBinance';
 
 import appActions from '../../../redux/app/actions';
-import chainActions from '../../../redux/chainservice/actions';
-import statechainActions from '../../../redux/statechain/actions';
+import midgardActions from '../../../redux/midgard/actions';
 import walletactions from '../../../redux/wallet/actions';
 import AddressInput from '../../../components/uielements/addressInput';
 import ContentTitle from '../../../components/uielements/contentTitle';
@@ -56,9 +56,8 @@ const {
   resetTxStatus,
 } = appActions;
 
-const { getTokens } = chainActions;
-const { getPools } = statechainActions;
-const { getRunePrice, refreshBalance } = walletactions;
+const { getPools, getPoolAddress, getRunePrice } = midgardActions;
+const { refreshBalance } = walletactions;
 
 class SwapSend extends Component {
   static propTypes = {
@@ -66,9 +65,11 @@ class SwapSend extends Component {
     view: PropTypes.string.isRequired,
     history: PropTypes.object,
     txStatus: PropTypes.object.isRequired,
-    chainData: PropTypes.object.isRequired,
     assetData: PropTypes.array.isRequired,
     pools: PropTypes.array.isRequired,
+    poolAddress: PropTypes.string.isRequired,
+    assets: PropTypes.array.isRequired,
+    poolData: PropTypes.array.isRequired,
     user: PropTypes.object.isRequired,
     runePrice: PropTypes.number.isRequired,
     wsTransfers: PropTypes.object.isRequired,
@@ -77,8 +78,8 @@ class SwapSend extends Component {
     setTxTimerStatus: PropTypes.func.isRequired,
     setTxTimerValue: PropTypes.func.isRequired,
     resetTxStatus: PropTypes.func.isRequired,
-    getTokens: PropTypes.func.isRequired,
     getPools: PropTypes.func.isRequired,
+    getPoolAddress: PropTypes.func.isRequired,
     getRunePrice: PropTypes.func.isRequired,
     refreshBalance: PropTypes.func.isRequired,
   };
@@ -108,9 +109,9 @@ class SwapSend extends Component {
   delta = 1000;
 
   componentDidMount() {
-    const { getTokens, getPools, getRunePrice } = this.props;
+    const { getPools, getRunePrice, getPoolAddress } = this.props;
 
-    getTokens();
+    getPoolAddress();
     getPools();
     getRunePrice();
   }
@@ -571,6 +572,7 @@ class SwapSend extends Component {
       txStatus: { status, value },
     } = this.props;
     const { xValue, txResult, timerStatus } = this.state;
+
     const { source, target } = swapData;
     const { Px, slip, outputAmount, outputPrice } = info;
     const priceFrom = Number(Px * xValue);
@@ -681,8 +683,9 @@ class SwapSend extends Component {
       view,
       info,
       txStatus,
-      chainData: { tokenInfo },
-      pools,
+      assets: tokenInfo,
+      poolData,
+      poolAddress,
       assetData,
       runePrice,
       wsTransfers,
@@ -711,7 +714,9 @@ class SwapSend extends Component {
     const { source, target } = swapData;
 
     const tokensData = Object.keys(tokenInfo).map(tokenName => {
-      const { symbol, price } = tokenInfo[tokenName];
+      const tokenData = tokenInfo[tokenName];
+      const symbol = _get(tokenData, 'asset.symbol', null);
+      const price = _get(tokenData, 'priceRune', 0);
 
       return {
         asset: symbol,
@@ -733,7 +738,14 @@ class SwapSend extends Component {
     const coinCloseIconType = txStatus.status ? 'fullscreen-exit' : 'close';
 
     // calculation
-    this.data = getCalcResult(source, target, pools, xValue, runePrice);
+    this.data = getCalcResult(
+      source,
+      target,
+      poolData,
+      poolAddress,
+      xValue,
+      runePrice,
+    );
     const { Px, slip, outputAmount, outputPrice, ratio } = this.data;
     console.log(this.data); // eslint-disable-line no-console
 
@@ -913,16 +925,18 @@ class SwapSend extends Component {
 export default compose(
   connect(
     state => ({
-      user: state.Wallet.user,
-      runePrice: state.Wallet.runePrice,
       txStatus: state.App.txStatus,
-      chainData: state.ChainService,
-      pools: state.Statechain.pools,
+      user: state.Wallet.user,
       assetData: state.Wallet.assetData,
+      pools: state.Midgard.pools,
+      poolAddress: state.Midgard.poolAddress,
+      assets: state.Midgard.assets,
+      poolData: state.Midgard.poolData,
+      runePrice: state.Midgard.runePrice,
     }),
     {
-      getTokens,
       getPools,
+      getPoolAddress,
       setTxTimerType,
       setTxTimerModal,
       setTxTimerStatus,

@@ -17,9 +17,7 @@ import Drag from '../../../components/uielements/drag';
 import Input from '../../../components/uielements/input';
 import { greyArrowIcon } from '../../../components/icons';
 
-import walletactions from '../../../redux/wallet/actions';
-import chainActions from '../../../redux/chainservice/actions';
-import statechainActions from '../../../redux/statechain/actions';
+import midgardActions from '../../../redux/midgard/actions';
 import binanceActions from '../../../redux/binance/actions';
 
 import { ContentWrapper, PrivateModal } from './PoolCreate.style';
@@ -30,24 +28,28 @@ import {
   confirmCreatePool,
 } from '../utils';
 
-const { getTokens, getStakeData } = chainActions;
-const { getPools } = statechainActions;
-const { getRunePrice } = walletactions;
+const {
+  getPools,
+  getStakerPoolData,
+  getRunePrice,
+  getPoolAddress,
+} = midgardActions;
 const { getBinanceTokens, getBinanceMarkets } = binanceActions;
 
 class PoolCreate extends Component {
   static propTypes = {
     symbol: PropTypes.string.isRequired,
     assetData: PropTypes.array.isRequired,
-    chainData: PropTypes.object.isRequired,
     pools: PropTypes.array.isRequired,
+    poolAddress: PropTypes.string.isRequired,
     poolData: PropTypes.object.isRequired,
-    swapData: PropTypes.object.isRequired,
+    stakerPoolData: PropTypes.object.isRequired,
+    assets: PropTypes.object.isRequired,
     user: PropTypes.object.isRequired,
     runePrice: PropTypes.number.isRequired,
-    getTokens: PropTypes.func.isRequired,
-    getStakeData: PropTypes.func.isRequired,
     getPools: PropTypes.func.isRequired,
+    getPoolAddress: PropTypes.func.isRequired,
+    getStakerPoolData: PropTypes.func.isRequired,
     getRunePrice: PropTypes.func.isRequired,
     getBinanceTokens: PropTypes.func.isRequired,
     getBinanceMarkets: PropTypes.func.isRequired,
@@ -73,15 +75,15 @@ class PoolCreate extends Component {
 
   componentDidMount() {
     const {
-      getTokens,
       getPools,
+      getPoolAddress,
       getRunePrice,
       getBinanceMarkets,
       getBinanceTokens,
     } = this.props;
 
-    getTokens();
     getPools();
+    getPoolAddress();
     getRunePrice();
     this.getStakerData();
     getBinanceTokens();
@@ -90,13 +92,13 @@ class PoolCreate extends Component {
 
   getStakerData = () => {
     const {
-      getStakeData,
+      getStakerPoolData,
       symbol,
       user: { wallet },
     } = this.props;
 
     if (wallet) {
-      getStakeData({ asset: symbol, staker: wallet });
+      getStakerPoolData({ asset: symbol, address: wallet });
     }
   };
 
@@ -282,16 +284,20 @@ class PoolCreate extends Component {
       );
       console.log('create pool result: ', result);
       this.hash = result[0].hash;
+      notification.success({
+        message: 'Create Pool Success',
+        description: 'Pool created successfully.',
+      });
     } catch (error) {
       notification.error({
         message: 'Create Pool Failed',
         description: 'Create Pool information is not valid.',
       });
-      this.setState({
-        dragReset: true,
-      });
       console.log(error); // eslint-disable-line no-console
     }
+    this.setState({
+      dragReset: true,
+    });
   };
 
   handleOpenPrivateModal = () => {
@@ -351,7 +357,7 @@ class PoolCreate extends Component {
   };
 
   renderAssetView = () => {
-    const { symbol, runePrice, assetData, pools } = this.props;
+    const { symbol, runePrice, assetData, pools, poolAddress } = this.props;
 
     const {
       runeAmount,
@@ -375,14 +381,14 @@ class PoolCreate extends Component {
 
     this.data = getCreatePoolCalc(
       symbol,
-      pools,
+      poolAddress,
       runeAmount,
       runePrice,
       tokenAmount,
     );
     const { poolPrice, depth, share } = this.data;
 
-    console.log(this.data);
+    console.log('create pool calc data: ', this.data);
 
     const poolAttrs = [
       { key: 'price', title: 'Pool Price', value: `$${poolPrice}` },
@@ -556,17 +562,17 @@ export default compose(
     state => ({
       user: state.Wallet.user,
       assetData: state.Wallet.assetData,
-      runePrice: state.Wallet.runePrice,
-      chainData: state.ChainService,
-      pools: state.Statechain.pools,
-      poolData: state.Statechain.poolData,
-      swapData: state.Statechain.swapData,
+      pools: state.Midgard.pools,
+      poolAddress: state.Midgard.poolAddress,
+      poolData: state.Midgard.poolData,
+      runePrice: state.Midgard.runePrice,
+      stakerPoolData: state.Midgard.stakerPoolData,
       binanceData: state.Binance,
     }),
     {
-      getTokens,
-      getStakeData,
       getPools,
+      getPoolAddress,
+      getStakerPoolData,
       getRunePrice,
       getBinanceTokens,
       getBinanceMarkets,

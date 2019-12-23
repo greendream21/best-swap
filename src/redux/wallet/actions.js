@@ -15,20 +15,6 @@ const actions = {
   SET_ASSET_DATA: 'SET_ASSET_DATA',
   SET_STAKE_DATA: 'SET_STAKE_DATA',
 
-  GET_RUNE_PRICE: 'GET_RUNE_PRICE',
-  GET_RUNE_PRICE_SUCCESS: 'GET_RUNE_PRICE_SUCCESS',
-  GET_RUNE_PRICE_FAILED: 'GET_RUNE_PRICE_FAILED',
-
-  getRunePrice: payload => ({ type: actions.GET_RUNE_PRICE, payload }),
-  getRunePriceSuccess: payload => ({
-    type: actions.GET_RUNE_PRICE_SUCCESS,
-    payload,
-  }),
-  getRunePriceFailed: payload => ({
-    type: actions.GET_RUNE_PRICE_FAILED,
-    payload,
-  }),
-
   checkUser: () => ({ type: actions.CHECK_USER }),
 
   saveWallet: payload => ({ type: actions.SAVE_WALLET, payload }),

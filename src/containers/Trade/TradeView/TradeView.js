@@ -10,12 +10,10 @@ import { ContentWrapper } from './TradeView.style';
 import { getTradeData } from '../utils';
 import { getFixedNumber } from '../../../helpers/stringHelper';
 
-import statechainActions from '../../../redux/statechain/actions';
-import walletActions from '../../../redux/wallet/actions';
+import midgardActions from '../../../redux/midgard/actions';
 import binanceActions from '../../../redux/binance/actions';
 
-const { getPools } = statechainActions;
-const { getRunePrice } = walletActions;
+const { getPools, getRunePrice } = midgardActions;
 const { getBinanceMarkets } = binanceActions;
 
 class TradeView extends Component {
@@ -24,7 +22,6 @@ class TradeView extends Component {
     getPools: PropTypes.func.isRequired,
     pools: PropTypes.array.isRequired,
     poolData: PropTypes.object.isRequired,
-    swapData: PropTypes.object.isRequired,
     assetData: PropTypes.array.isRequired,
     getRunePrice: PropTypes.func.isRequired,
     getBinanceMarkets: PropTypes.func.isRequired,
@@ -153,10 +150,9 @@ class TradeView extends Component {
 export default compose(
   connect(
     state => ({
-      pools: state.Statechain.pools,
-      poolData: state.Statechain.poolData,
-      swapData: state.Statechain.swapData,
-      loading: state.Statechain.loading,
+      pools: state.Midgard.pools,
+      poolData: state.Midgard.poolData,
+      loading: state.Midgard.poolLoading,
       runePrice: state.Wallet.runePrice,
       assetData: state.Wallet.assetData,
       binanceData: state.Binance,
