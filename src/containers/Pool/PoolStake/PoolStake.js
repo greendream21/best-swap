@@ -80,7 +80,7 @@ class PoolStake extends Component {
     assets: PropTypes.object.isRequired,
     user: PropTypes.object.isRequired,
     runePrice: PropTypes.number.isRequired,
-    wsTransfers: PropTypes.object.isRequired,
+    wsTransfers: PropTypes.array.isRequired,
     setTxTimerType: PropTypes.func.isRequired,
     setTxTimerModal: PropTypes.func.isRequired,
     setTxTimerStatus: PropTypes.func.isRequired,
@@ -168,7 +168,7 @@ class PoolStake extends Component {
     } = this.props;
 
     if (wallet) {
-      getStakerPoolData({ asset: symbol, staker: wallet });
+      getStakerPoolData({ asset: symbol, address: wallet });
     }
   };
 
@@ -719,10 +719,10 @@ class PoolStake extends Component {
     ];
 
     return attrs.map(info => {
-      const { title, value } = info;
-      console.log(title, value);
+      const { title, value, key } = info;
+
       return (
-        <Col className="token-info-card" xs={12} sm={8} md={6} lg={4}>
+        <Col className="token-info-card" key={key} xs={12} sm={8} md={6} lg={4}>
           <TokenInfo
             asset={source}
             target={target}

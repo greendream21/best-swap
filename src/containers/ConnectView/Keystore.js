@@ -139,7 +139,7 @@ const Keystore = props => {
             htmlType="submit"
             onClick={unlock}
             disabled={!ready}
-            round
+            round="true"
           >
             Unlock
           </Button>

@@ -54,7 +54,7 @@ class WalletButton extends Component {
         className={`${className} wallet-btn-wrapper`}
         sizevalue="normal"
         color="primary"
-        round
+        round="true"
         {...props}
       >
         {this.getBtnValue()}

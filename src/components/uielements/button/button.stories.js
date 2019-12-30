@@ -63,14 +63,14 @@ storiesOf('Components/Button', module)
               </Button>
             </Row>
             <Row>
-              <Button sizevalue="normal" color="primary" round>
+              <Button sizevalue="normal" color="primary" round="true">
                 Primary Filled Round Normal
               </Button>
               <Button
                 sizevalue="normal"
                 color="primary"
                 typevalue="outline"
-                round
+                round="true"
               >
                 Primary Outlined Round Normal
               </Button>
@@ -78,7 +78,7 @@ storiesOf('Components/Button', module)
                 sizevalue="normal"
                 color="primary"
                 typevalue="ghost"
-                round
+                round="true"
               >
                 Primary Ghost Round Normal
               </Button>
@@ -87,7 +87,7 @@ storiesOf('Components/Button', module)
                 color="primary"
                 typevalue="normal"
                 focused
-                round
+                round="true"
               >
                 Primary Normal Round
               </Button>

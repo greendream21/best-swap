@@ -84,7 +84,11 @@ class SwapView extends Component {
 
         return (
           <Link to={URL}>
-            <Button style={{ margin: 'auto' }} round data-test={dataTest}>
+            <Button
+              style={{ margin: 'auto' }}
+              round="true"
+              data-test={dataTest}
+            >
               <Icon type="swap" />
               swap
             </Button>
@@ -163,13 +167,14 @@ class SwapView extends Component {
     };
     const columns = columnData[view] || desktopColumns;
     console.log('swapViewData: ', swapViewData);
-    return <Table columns={columns} dataSource={swapViewData} />;
+    return <Table columns={columns} dataSource={swapViewData} rowKey="key" />;
   };
 
   renderSwapList = view => {
     const { pools, poolData, runePrice } = this.props;
     const { activeAsset } = this.state;
 
+    let key = 0;
     const swapViewData = pools.reduce((result, pool) => {
       const { symbol } = pool;
       const poolInfo = poolData[symbol] || {};
@@ -177,7 +182,8 @@ class SwapView extends Component {
       const swapCardData = getSwapData('rune', poolInfo, runePrice);
 
       if (swapCardData.target !== activeAsset) {
-        result.push(swapCardData);
+        result.push({ ...swapCardData, key });
+        key += 1;
       }
 
       return result;
