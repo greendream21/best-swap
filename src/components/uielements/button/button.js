@@ -8,9 +8,9 @@ class Button extends Component {
     sizevalue: PropTypes.oneOf(['small', 'normal', 'big']),
     color: PropTypes.oneOf(['primary', 'success', 'warning', 'error']),
     weight: PropTypes.string,
-    typevalue: PropTypes.oneOf(['default', 'outline', 'ghost']),
+    typevalue: PropTypes.oneOf(['default', 'outline', 'ghost', 'normal']),
     focused: PropTypes.bool,
-    round: PropTypes.bool,
+    round: PropTypes.string,
     className: PropTypes.string,
     children: PropTypes.node,
   };
@@ -21,7 +21,7 @@ class Button extends Component {
     weight: '500',
     typevalue: 'default',
     focused: false,
-    round: false,
+    round: 'false',
     className: '',
   };
 

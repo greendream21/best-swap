@@ -7,7 +7,7 @@ import WSEvent from './WSEvent';
 class WSProvider extends Component {
   static propTypes = {
     url: PropTypes.string.isRequired,
-    children: PropTypes.node.isRequired,
+    children: PropTypes.any.isRequired,
   };
 
   state = {

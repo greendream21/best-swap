@@ -76,7 +76,11 @@ class PoolView extends Component {
 
         return (
           <Link to={URL}>
-            <Button style={{ margin: 'auto' }} round data-test={dataTest}>
+            <Button
+              style={{ margin: 'auto' }}
+              round="true"
+              data-test={dataTest}
+            >
               <Icon type="database" />
               stake
             </Button>
@@ -153,13 +157,14 @@ class PoolView extends Component {
     };
     const columns = columnData[view] || desktopColumns;
 
-    return <Table columns={columns} dataSource={swapViewData} />;
+    return <Table columns={columns} dataSource={swapViewData} rowKey="key" />;
   };
 
   renderPoolList = view => {
     const { pools, poolData, runePrice } = this.props;
     const { activeAsset } = this.state;
 
+    let key = 0;
     const stakeViewData = pools.reduce((result, pool) => {
       const { symbol } = pool;
       const poolInfo = poolData[symbol] || {};
@@ -171,7 +176,8 @@ class PoolView extends Component {
       );
 
       if (stakeCardData.target !== activeAsset) {
-        result.push({ ...stakeCardData, raw });
+        result.push({ ...stakeCardData, raw, key });
+        key += 1;
       }
 
       return result;
@@ -212,7 +218,7 @@ export default compose(
     state => ({
       pools: state.Midgard.pools,
       poolData: state.Midgard.poolData,
-      loading: state.Midgard.loading,
+      loading: state.Midgard.poolLoading,
       runePrice: state.Midgard.runePrice,
       assetData: state.Wallet.assetData,
     }),

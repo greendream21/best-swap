@@ -11,7 +11,7 @@ class CoinButton extends Component {
   static propTypes = {
     cointype: PropTypes.string,
     typevalue: PropTypes.string,
-    price: PropTypes.string,
+    price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     reversed: PropTypes.bool,
     className: PropTypes.string,
   };

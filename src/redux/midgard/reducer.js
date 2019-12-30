@@ -12,7 +12,7 @@ const initState = {
   pools: [],
   poolAddressData: {},
   bnbPoolAddress: {},
-  poolAddress: null,
+  poolAddress: '',
   poolData: {},
   stakers: [],
   stakerData: {},

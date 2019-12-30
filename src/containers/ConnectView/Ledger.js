@@ -155,7 +155,7 @@ const Connector = props => {
             className="ledger-connect-btn"
             onClick={ledgerConnect}
             loading={connecting}
-            round
+            round="true"
           >
             Connect to Ledger <Icon type="arrow-right" />
           </Button>
