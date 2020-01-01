@@ -65,7 +65,7 @@ class TokenSelect extends Component {
   }
 
   componentWillUnmount() {
-    document.removeEventListener('click');
+    document.removeEventListener('click', this.handleDocumentClick);
   }
 
   handleRef = ref => {
