@@ -6,7 +6,7 @@ import Label from '../label';
 
 class FormGroup extends Component {
   static propTypes = {
-    title: PropTypes.string,
+    title: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
     description: PropTypes.string,
     className: PropTypes.string,
     children: PropTypes.any,

@@ -84,14 +84,14 @@ const WalletDrawer = props => {
           >
             FORGET
           </Button>
-          <Button
+          {/* <Button
             className="transaction-btn"
             data-test="wallet-transaction-button"
             typevalue="outline"
             color="warning"
           >
             TRANSACTION
-          </Button>
+          </Button> */}
         </div>
         {wallet && (
           <div className="wallet-address">
