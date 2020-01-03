@@ -221,11 +221,9 @@ export const confirmSwap = (
       return reject();
     }
 
-    const { poolAddressTo, symbolTo, symbolFrom } = data;
+    const { poolAddressTo, symbolTo, symbolFrom, lim } = data;
 
-    // TODO: ignored limit
-    // const limit = protectSlip ? lim : '';
-    const limit = '';
+    const limit = protectSlip ? lim : '';
     const memo = getSwapMemo(symbolTo, destAddr, limit);
     console.log('memo: ', memo);
     Binance.transfer(wallet, poolAddressTo, amount, symbolFrom, memo)
