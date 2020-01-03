@@ -10,7 +10,7 @@ class TokenData extends Component {
   static propTypes = {
     asset: PropTypes.string,
     assetValue: PropTypes.number,
-    price: PropTypes.number,
+    price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     size: PropTypes.string,
     className: PropTypes.string,
   };

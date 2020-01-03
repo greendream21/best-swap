@@ -9,7 +9,7 @@ export const AddressInputWrapper = styled.div`
 
   .addressInput-icon {
     margin-top: 10px;
-    width: 21px;
+    min-width: 21px;
     height: 21px;
     border: none;
     border-radius: 50%;

@@ -37,7 +37,7 @@ class TokenSelect extends Component {
   static propTypes = {
     assetData: PropTypes.array.isRequired,
     asset: PropTypes.string.isRequired,
-    price: PropTypes.number.isRequired,
+    price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     withSearch: PropTypes.bool,
     searchDisable: PropTypes.array,
     onSelect: PropTypes.func.isRequired,
@@ -152,7 +152,14 @@ class TokenSelect extends Component {
   };
 
   render() {
-    const { asset, price, assetData, className, ...props } = this.props;
+    const {
+      asset,
+      price,
+      assetData,
+      onChangeAsset,
+      className,
+      ...props
+    } = this.props;
     const { openDropdown } = this.state;
 
     return (

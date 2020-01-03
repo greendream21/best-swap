@@ -8,7 +8,7 @@ class TokenInput extends Component {
   static propTypes = {
     title: PropTypes.string,
     status: PropTypes.string,
-    value: PropTypes.string,
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     label: PropTypes.string,
     inputProps: PropTypes.object,
     onChange: PropTypes.func.isRequired,
@@ -58,7 +58,7 @@ class TokenInput extends Component {
         <div className="token-input-content" ref={this.inputRef}>
           <CoinInputAdvanced
             className="token-amount-input"
-            size="normal"
+            size="default"
             value={value}
             onChange={this.onChange}
             {...inputProps}

@@ -68,11 +68,11 @@ class SwapSend extends Component {
     assetData: PropTypes.array.isRequired,
     pools: PropTypes.array.isRequired,
     poolAddress: PropTypes.string.isRequired,
-    assets: PropTypes.array.isRequired,
-    poolData: PropTypes.array.isRequired,
+    assets: PropTypes.object.isRequired,
+    poolData: PropTypes.object.isRequired,
     user: PropTypes.object.isRequired,
     runePrice: PropTypes.number.isRequired,
-    wsTransfers: PropTypes.object.isRequired,
+    wsTransfers: PropTypes.array.isRequired,
     setTxTimerType: PropTypes.func.isRequired,
     setTxTimerModal: PropTypes.func.isRequired,
     setTxTimerStatus: PropTypes.func.isRequired,
@@ -577,7 +577,7 @@ class SwapSend extends Component {
     const { Px, slip, outputAmount, outputPrice } = info;
     const priceFrom = Number(Px * xValue);
     const priceTo = Number(outputAmount * outputPrice);
-    const slipAmount = slip.toFixed(2);
+    const slipAmount = slip;
 
     // const transactionLabels = [
     //   'sending transaction',
@@ -616,16 +616,16 @@ class SwapSend extends Component {
             <StepBar size={50} />
             <div className="coin-data-container">
               <CoinData
-                data-test="swapmodal-coin-data-receive"
-                asset={targetToken}
-                assetValue={tokenAmount}
-                price={priceValue}
-              />
-              <CoinData
                 data-test="swapmodal-coin-data-send"
                 asset={source}
                 assetValue={xValue}
                 price={priceFrom}
+              />
+              <CoinData
+                data-test="swapmodal-coin-data-receive"
+                asset={targetToken}
+                assetValue={tokenAmount}
+                price={priceValue}
               />
             </div>
           </div>

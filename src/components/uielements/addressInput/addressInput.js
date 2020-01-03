@@ -43,7 +43,7 @@ class AddressInput extends Component {
   };
 
   render() {
-    const { value, status, className, ...props } = this.props;
+    const { value, status, onStatusChange, className, ...props } = this.props;
 
     return (
       <AddressInputWrapper
