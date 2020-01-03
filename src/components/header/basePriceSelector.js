@@ -4,9 +4,10 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Menu, Dropdown, Icon } from 'antd';
 
-import Coin from '../uielements/coins/coin';
 import AssetInfo from '../uielements/tokens/assetInfo';
+import Label from '../uielements/label';
 import { getTickerFormat } from '../../helpers/stringHelper';
+import { BitcoinIcon } from '../icons';
 
 import walletActions from '../../redux/wallet/actions';
 
@@ -83,7 +84,10 @@ class BasePriceSelector extends Component {
         placement="bottomRight"
       >
         <a className="ant-dropdown-link" href="/">
-          <Coin className="asset-avatar" type={baseAsset} size="small" />
+          <div className="currency-icon-container">
+            <BitcoinIcon />
+          </div>
+          <Label>{baseAsset}</Label>
           <Icon type="down" />
         </a>
       </Dropdown>
