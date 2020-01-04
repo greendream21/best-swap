@@ -10,6 +10,7 @@ ENV REACT_APP_BINANCE_MAINNET_URL https://dex.binance.org/api/v1
 ENV REACT_APP_BINANCE_TESTNET_URL https://testnet-dex.binance.org/api/v1
 
 COPY package.json /app/package.json
+RUN npm config set unsafe-perm true
 RUN npm install --silent
 RUN npm install react-scripts@3.0.1 -g --silent
 COPY . /app
