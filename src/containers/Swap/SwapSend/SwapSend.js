@@ -762,7 +762,14 @@ class SwapSend extends Component {
 
     const completed =
       txStatus.value !== null && !txStatus.status && txResult !== null;
-    const swapTitle = !completed ? 'YOU ARE SWAPPING' : 'YOU SWAPPED';
+    const refunded = txResult && txResult.type === 'refund';
+
+    // eslint-disable-next-line no-nested-ternary
+    const swapTitle = !completed
+      ? 'YOU ARE SWAPPING'
+      : refunded
+      ? 'TOKEN REFUNDED'
+      : 'YOU SWAPPED';
 
     return (
       <ContentWrapper className="swap-detail-wrapper">
