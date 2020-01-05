@@ -14,7 +14,7 @@ const NoWrapLabel = styled(Label)`
 class Status extends Component {
   static propTypes = {
     title: PropTypes.string,
-    value: PropTypes.string,
+    value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     className: PropTypes.string,
   };
 

@@ -26,6 +26,5 @@
 
 import './commands.wallet';
 import './commands.chain';
-import './commands.mocks';
 import './commands.utils';
 import './commands.dragdrop';
