@@ -122,7 +122,6 @@ export function* getUserStakeData() {
       url: getMidgardURL(`stakers?${address}/${assetId}`),
       headers: getHeaders(),
     };
-    console.log('getUserStakeData Param: ', params);
 
     try {
       const { data: userStakerData } = yield call(axiosRequest, params);

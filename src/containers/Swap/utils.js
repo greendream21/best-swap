@@ -257,11 +257,18 @@ export const isOutboundTx = tx => {
   return false;
 };
 
-export const getTxResult = (tx, fromAddr, toAddr, fromToken, toToken) => {
-  if (isOutboundTx(tx)) {
-    const { txFrom, txTo, txToken, txAmount } = parseTransfer(tx);
+export const isRefundTx = tx => {
+  if (tx.data.M) {
+    return tx.data.M.toUpperCase().includes('REFUND');
+  }
+  return false;
+};
 
-    if (txFrom === toAddr && txTo === fromAddr) {
+export const getTxResult = (tx, fromAddr, toAddr, fromToken, toToken) => {
+  const { txFrom, txTo, txToken, txAmount } = parseTransfer(tx);
+
+  if (txFrom === toAddr && txTo === fromAddr) {
+    if (isRefundTx(tx)) {
       if (txToken === fromToken) {
         return {
           type: 'refund',
@@ -269,6 +276,8 @@ export const getTxResult = (tx, fromAddr, toAddr, fromToken, toToken) => {
           token: txToken,
         };
       }
+    }
+    if (isOutboundTx(tx)) {
       if (txToken === toToken) {
         return {
           type: 'success',
