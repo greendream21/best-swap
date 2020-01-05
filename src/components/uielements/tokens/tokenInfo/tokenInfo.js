@@ -10,7 +10,7 @@ class TokenInfo extends Component {
     asset: PropTypes.string,
     target: PropTypes.string,
     trend: PropTypes.number,
-    value: PropTypes.string,
+    value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     label: PropTypes.string,
     className: PropTypes.string,
   };

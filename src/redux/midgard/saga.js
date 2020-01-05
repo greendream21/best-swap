@@ -155,18 +155,21 @@ export function* getStakerPoolData() {
   yield takeEvery(actions.GET_STAKER_POOL_DATA_REQUEST, function*({ payload }) {
     const { address, asset } = payload;
 
+    // TODO: currently hardcode the Chain as BNB
+    const assetId = `BNB.${asset}`;
+
     const params = {
       method: 'get',
-      url: getMidgardURL(`stakers/${address}/${asset}`),
+      url: getMidgardURL(`stakers/${address}/${assetId}`),
       headers: getHeaders(),
     };
 
     try {
       const { data } = yield call(axiosRequest, params);
 
-      yield put(actions.getStakerDataSuccess(data));
+      yield put(actions.getStakerPoolDataSuccess(data));
     } catch (error) {
-      yield put(actions.getStakerDataFailed(error));
+      yield put(actions.getStakerPoolDataFailed(error));
     }
   });
 }

@@ -101,12 +101,14 @@ class Header extends Component {
         stake
       </span>
     );
-    const tradeTab = (
-      <span>
-        <Icon type="area-chart" />
-        trade
-      </span>
-    );
+
+    // TODO: Hide trade tab
+    // const tradeTab = (
+    //   <span>
+    //     <Icon type="area-chart" />
+    //     trade
+    //   </span>
+    // );
 
     return (
       <div className="header-tab-container">
@@ -118,7 +120,7 @@ class Header extends Component {
         >
           <TabPane tab={swapTab} key="swap" />
           <TabPane tab={poolsTab} key="pools" />
-          <TabPane tab={tradeTab} key="trade" />
+          {/* <TabPane tab={tradeTab} key="trade" /> */}
         </Tabs>
       </div>
     );

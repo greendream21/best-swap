@@ -285,7 +285,7 @@ export const confirmWithdraw = (
       return reject();
     }
 
-    const memo = getWithdrawMemo(symbol, percent);
+    const memo = getWithdrawMemo(symbol, percent * 100);
     console.log('memo: ', memo);
 
     const amount = 0.00000001;

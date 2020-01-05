@@ -1002,7 +1002,7 @@ class PoolStake extends Component {
 
     const { stakeUnits } = stakeInfo;
 
-    const poolShare = (stakeUnits / Number(poolUnits)).toFixed(2);
+    const poolShare = ((stakeUnits / Number(poolUnits)) * 100).toFixed(2);
     const runeShare = getUserFormat((R * stakeUnits) / poolUnits);
     const tokensShare = getUserFormat((T * stakeUnits) / poolUnits);
     const runeEarned = getUserFormat(stakeInfo.runeEarned);
@@ -1136,7 +1136,6 @@ class PoolStake extends Component {
   render() {
     const {
       runePrice,
-      assets,
       poolData,
       poolAddress,
       stakerPoolData,
@@ -1159,15 +1158,8 @@ class PoolStake extends Component {
     symbol = symbol.toUpperCase();
 
     const poolInfo = poolData[symbol] || {};
-    const assetInfo = assets[symbol] || {};
 
-    const poolStats = getPoolData(
-      'rune',
-      symbol,
-      poolInfo,
-      assetInfo,
-      runePrice,
-    );
+    const poolStats = getPoolData('rune', poolInfo, runePrice);
 
     const calcResult = getCalcResult(
       symbol,
