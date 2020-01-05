@@ -203,6 +203,10 @@ class SwapSend extends Component {
   };
 
   handleChangeValue = value => {
+    if (Number.isNaN(Number(value))) {
+      return;
+    }
+
     const { info } = this.props;
     const newValue = value;
 
@@ -705,6 +709,7 @@ class SwapSend extends Component {
     } = this.state;
 
     console.log('binance websocket transfer data: ', wsTransfers);
+    console.log('xValue: ', xValue);
     const swapData = getPair(info);
 
     if (!swapData || !Object.keys(tokenInfo).length) {
