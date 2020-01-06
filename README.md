@@ -26,6 +26,8 @@ firebase-tools
 
 ### Env variables
 
+While environment variables are not required (sane defaults are set), you can
+configure them.
 Create `.env` file and set the following variables.
 
 ```
@@ -36,7 +38,6 @@ REACT_APP_BINANCE_MAINNET_URL = https://xxx
 REACT_APP_BINANCE_TESTNET_URL = https://xxx
 
 REACT_APP_MIDGARD_API_URL = https://xxx
-
 ```
 
 ### Project Setup
