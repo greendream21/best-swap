@@ -11,6 +11,7 @@ export const CoinButtonWrapper = styled(Button)`
     flex-direction: ${props => (props.reversed ? 'row-reverse' : 'reverse')};
     justify-content: space-between;
     align-items: center;
+    margin-top: 8px;
 
     .coin-value {
       display: flex;
