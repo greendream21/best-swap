@@ -38,7 +38,7 @@ class CoinButton extends Component {
         <div className="coinButton-content">
           <CoinIcon type={cointype} />
           <div className="coin-value">
-            <Label size="large" weight="500">
+            <Label size="big" weight="bold">
               {cointype}
             </Label>
             <Label color="input">{priceValue}</Label>
