@@ -61,10 +61,17 @@ class PoolView extends Component {
   };
 
   renderPoolTable = (swapViewData, view) => {
+    const { getPools } = this.props;
+
     const buttonCol = {
       key: 'stake',
       title: (
-        <Button typevalue="outline">
+        <Button
+          onClick={() => {
+            getPools();
+          }}
+          typevalue="outline"
+        >
           <Icon type="sync" />
           refresh
         </Button>
