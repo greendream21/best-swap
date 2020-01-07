@@ -8,9 +8,6 @@ The structure is this:
 {service}/{pathName}/{method}/{status}{.tag}.json
 ```
 
-- `service` - A short name for the service.
-  - `api` for https://testnet-api.bepswap.com,
-  - `chain` for https://testnet-chain.bepswap.com
 - `pathName` - A name that describes the pathName component of the API call. This has had all the `/`s replaced with `#` so that we can keep a relatively flat folder structure which makes it easier to parse.
 - `method` - `GET`, `PUT`, `POST`, `DELETE` etc.
 - `status` - `200`, `404` etc.
