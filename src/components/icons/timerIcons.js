@@ -4,6 +4,7 @@ import { ReactComponent as TimerChartIcon2 } from '../../assets/timer/timerchart
 import { ReactComponent as TimerChartIcon3 } from '../../assets/timer/timerchart-3.svg';
 import { ReactComponent as TimerChartIcon4 } from '../../assets/timer/timerchart-4.svg';
 import { ReactComponent as ConfirmIcon } from '../../assets/timer/icon-tick-fill.svg';
+import { ReactComponent as RefundIcon } from '../../assets/timer/refund.svg';
 
 export {
   TimerFullIcon,
@@ -12,4 +13,5 @@ export {
   TimerChartIcon3,
   TimerChartIcon4,
   ConfirmIcon,
+  RefundIcon,
 };

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import ChangingProgressProvider from '../changingProgressProvider';
-import { ConfirmIcon } from '../../icons/timerIcons';
+import { ConfirmIcon, RefundIcon } from '../../icons/timerIcons';
 
 import 'react-circular-progressbar/dist/styles.css';
 
@@ -17,6 +17,7 @@ class TxTimer extends Component {
     txDuration: PropTypes.number,
     onChange: PropTypes.func,
     onEnd: PropTypes.func,
+    refunded: PropTypes.bool,
     className: PropTypes.string,
   };
 
@@ -26,6 +27,7 @@ class TxTimer extends Component {
     value: 0,
     interval: 1000,
     txDuration: 1000,
+    refunded: false,
     onChange: () => {},
     onEnd: () => {},
     className: '',
@@ -67,6 +69,7 @@ class TxTimer extends Component {
       interval,
       txDuration,
       onEnd,
+      refunded,
       className,
       ...props
     } = this.props;
@@ -108,7 +111,7 @@ class TxTimer extends Component {
                 <div className="timerchart-icon">
                   {resetTimer && (
                     <div className="confirm-icon">
-                      <ConfirmIcon />
+                      {!refunded ? <ConfirmIcon /> : <RefundIcon />}
                     </div>
                   )}
                 </div>

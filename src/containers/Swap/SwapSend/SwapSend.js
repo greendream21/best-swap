@@ -592,7 +592,7 @@ class SwapSend extends Component {
     // ];
 
     const completed = value !== null && !status && txResult !== null;
-
+    const refunded = txResult ? txResult.type === 'refund' : false;
     const targetToken = !completed ? target : getTickerFormat(txResult.token);
     const tokenAmount = !completed
       ? Number(outputAmount)
@@ -614,6 +614,7 @@ class SwapSend extends Component {
               txDuration={this.delta}
               onChange={this.handleChangeTxValue}
               onEnd={this.handleEndTxTimer}
+              refunded={refunded}
             />
           </div>
           <div className="coin-data-wrapper">
