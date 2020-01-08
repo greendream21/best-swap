@@ -14,6 +14,7 @@ class CoinData extends Component {
     target: PropTypes.string,
     targetValue: PropTypes.number,
     price: PropTypes.number,
+    priceUnit: PropTypes.string,
     size: PropTypes.oneOf(['small', 'big']),
     className: PropTypes.string,
   };
@@ -24,6 +25,7 @@ class CoinData extends Component {
     target: '',
     targetValue: null,
     price: 0,
+    priceUnit: 'RUNE',
     size: 'small',
     className: '',
   };
@@ -35,12 +37,14 @@ class CoinData extends Component {
       target,
       targetValue,
       price,
+      priceUnit,
       size,
       className,
       ...props
     } = this.props;
 
     const priceValue = getFixedNumber(price);
+    const priceLabel = `${priceUnit.toUpperCase()} ${priceValue}`;
 
     return (
       <CoinDataWrapper
@@ -93,7 +97,7 @@ class CoinData extends Component {
         )}
         <div className="asset-price-info">
           <Label size="small" color="gray" weight="bold">
-            {`$USD ${priceValue}`}
+            {priceLabel}
           </Label>
         </div>
       </CoinDataWrapper>

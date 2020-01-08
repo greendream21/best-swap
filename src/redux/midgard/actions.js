@@ -154,6 +154,20 @@ const actions = {
   GET_RUNE_PRICE_REQUEST: 'GET_RUNE_PRICE_REQUEST',
 
   getRunePrice: () => ({ type: actions.GET_RUNE_PRICE_REQUEST }),
+
+  SET_BASE_PRICE_ASSET: 'SET_BASE_PRICE_ASSET',
+
+  setBasePriceAsset: payload => ({
+    type: actions.SET_BASE_PRICE_ASSET,
+    payload,
+  }),
+
+  SET_PRICE_INDEX: 'SET_PRICE_INDEX',
+
+  setPriceIndex: payload => ({
+    type: actions.SET_PRICE_INDEX,
+    payload,
+  }),
 };
 
 export default actions;

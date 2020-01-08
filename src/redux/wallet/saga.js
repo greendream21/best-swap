@@ -15,8 +15,8 @@ import {
   saveKeystore,
   clearWalletAddress,
   clearKeystore,
-  saveBasePriceAsset,
 } from '../../helpers/webStorageHelper';
+
 import { getFixedNumber } from '../../helpers/stringHelper';
 import { BASE_NUMBER } from '../../settings/constants';
 
@@ -40,12 +40,6 @@ export function* forgetWalletSaga() {
     clearKeystore();
 
     yield put(push('/connect'));
-  });
-}
-
-export function* setBasePriceAsset() {
-  yield takeEvery(actions.SET_BASE_PRICE_ASSET, function*({ payload }) {
-    yield call(saveBasePriceAsset, payload);
   });
 }
 
@@ -171,7 +165,6 @@ export function* refreshStakes() {
 
 export default function* rootSaga() {
   yield all([
-    fork(setBasePriceAsset),
     fork(saveWalletSaga),
     fork(forgetWalletSaga),
     fork(refreshBalance),

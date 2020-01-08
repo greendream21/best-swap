@@ -41,7 +41,7 @@ class TokenCard extends Component {
     assetData: [],
     amount: 0,
     price: 0,
-    unit: '$USD',
+    unit: 'RUNE',
     slip: undefined,
     title: '',
     inputTitle: '',
@@ -101,6 +101,7 @@ class TokenCard extends Component {
           <TokenSelect
             asset={asset}
             price={price}
+            priceUnit={unit}
             assetData={assetData}
             withSearch={withSearch}
             searchDisable={searchDisable}

@@ -17,15 +17,15 @@ import { getPoolData, getCreatePoolTokens } from '../utils';
 import { getTickerFormat } from '../../../helpers/stringHelper';
 import midgardActions from '../../../redux/midgard/actions';
 
-const { getPools, getRunePrice } = midgardActions;
+const { getPools } = midgardActions;
 
 class PoolView extends Component {
   static propTypes = {
     getPools: PropTypes.func.isRequired,
     pools: PropTypes.array.isRequired,
     poolData: PropTypes.object.isRequired,
-    getRunePrice: PropTypes.func.isRequired,
-    runePrice: PropTypes.number.isRequired,
+    basePriceAsset: PropTypes.string.isRequired,
+    priceIndex: PropTypes.object.isRequired,
     assetData: PropTypes.array.isRequired,
     loading: PropTypes.bool.isRequired,
     history: PropTypes.object.isRequired,
@@ -36,10 +36,9 @@ class PoolView extends Component {
   };
 
   componentDidMount() {
-    const { getPools, getRunePrice } = this.props;
+    const { getPools } = this.props;
 
     getPools();
-    getRunePrice();
   }
 
   handleNewPool = () => {
@@ -168,7 +167,7 @@ class PoolView extends Component {
   };
 
   renderPoolList = view => {
-    const { pools, poolData, runePrice } = this.props;
+    const { pools, poolData, priceIndex, basePriceAsset } = this.props;
     const { activeAsset } = this.state;
 
     let key = 0;
@@ -179,7 +178,8 @@ class PoolView extends Component {
       const { values: stakeCardData, raw } = getPoolData(
         'rune',
         poolInfo,
-        runePrice,
+        priceIndex,
+        basePriceAsset,
       );
 
       if (stakeCardData.target !== activeAsset) {
@@ -226,12 +226,12 @@ export default compose(
       pools: state.Midgard.pools,
       poolData: state.Midgard.poolData,
       loading: state.Midgard.poolLoading,
-      runePrice: state.Midgard.runePrice,
+      priceIndex: state.Midgard.priceIndex,
+      basePriceAsset: state.Midgard.basePriceAsset,
       assetData: state.Wallet.assetData,
     }),
     {
       getPools,
-      getRunePrice,
     },
   ),
   withRouter,

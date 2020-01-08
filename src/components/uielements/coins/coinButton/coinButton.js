@@ -12,6 +12,7 @@ class CoinButton extends Component {
     cointype: PropTypes.string,
     typevalue: PropTypes.string,
     price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    priceUnit: PropTypes.string,
     reversed: PropTypes.bool,
     className: PropTypes.string,
   };
@@ -20,13 +21,22 @@ class CoinButton extends Component {
     cointype: 'bnb',
     typevalue: 'normal',
     price: '0',
+    priceUnit: 'RUNE',
     reversed: false,
     className: '',
   };
 
   render() {
-    const { cointype, reversed, price, className, ...props } = this.props;
-    const priceValue = `$${getFixedNumber(price)}`;
+    const {
+      cointype,
+      reversed,
+      price,
+      priceUnit,
+      className,
+      ...props
+    } = this.props;
+    const priceValue = getFixedNumber(price);
+    const priceLabel = `${priceUnit.toUpperCase()} ${priceValue}`;
 
     return (
       <CoinButtonWrapper
@@ -41,7 +51,7 @@ class CoinButton extends Component {
             <Label size="big" weight="bold">
               {cointype}
             </Label>
-            <Label color="input">{priceValue}</Label>
+            <Label color="input">{priceLabel}</Label>
           </div>
         </div>
       </CoinButtonWrapper>

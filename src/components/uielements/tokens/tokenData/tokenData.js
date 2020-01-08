@@ -11,6 +11,7 @@ class TokenData extends Component {
     asset: PropTypes.string,
     assetValue: PropTypes.number,
     price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    priceUnit: PropTypes.string,
     size: PropTypes.string,
     className: PropTypes.string,
   };
@@ -19,13 +20,22 @@ class TokenData extends Component {
     asset: 'bnb',
     assetValue: null,
     price: 0,
+    priceUnit: 'RUNE',
     size: 'big',
     className: '',
   };
 
   render() {
-    const { asset, assetValue, price, size, className, ...props } = this.props;
-    const priceValue = `$${getFixedNumber(price)}`;
+    const {
+      asset,
+      assetValue,
+      price,
+      priceUnit,
+      size,
+      className,
+      ...props
+    } = this.props;
+    const priceValue = `${priceUnit} ${getFixedNumber(price)}`;
 
     return (
       <TokenDataWrapper

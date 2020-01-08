@@ -19,15 +19,15 @@ import Table from '../../../components/uielements/table';
 import midgardActions from '../../../redux/midgard/actions';
 import { getSwapData } from './data';
 
-const { getPools, getRunePrice } = midgardActions;
+const { getPools } = midgardActions;
 
 class SwapView extends Component {
   static propTypes = {
     getPools: PropTypes.func.isRequired,
     pools: PropTypes.array.isRequired,
     poolData: PropTypes.object.isRequired,
-    getRunePrice: PropTypes.func.isRequired,
-    runePrice: PropTypes.number,
+    basePriceAsset: PropTypes.string.isRequired,
+    priceIndex: PropTypes.object.isRequired,
     loading: PropTypes.bool.isRequired,
     history: PropTypes.object,
   };
@@ -37,10 +37,9 @@ class SwapView extends Component {
   };
 
   componentDidMount() {
-    const { getPools, getRunePrice } = this.props;
+    const { getPools } = this.props;
 
     getPools();
-    getRunePrice();
   }
 
   handleChooseBasePair = asset => () => {
@@ -50,9 +49,10 @@ class SwapView extends Component {
   };
 
   renderAssets = () => {
-    const { runePrice } = this.props;
+    const { priceIndex, basePriceAsset } = this.props;
     const { activeAsset } = this.state;
     const asset = 'rune';
+    const runePrice = priceIndex.RUNE;
 
     return (
       <CoinButton
@@ -61,6 +61,7 @@ class SwapView extends Component {
         focused={asset === activeAsset}
         disabled={asset !== 'rune'} // enable only rune for base pair
         price={runePrice}
+        priceUnit={basePriceAsset}
         key={0}
       />
     );
@@ -178,7 +179,7 @@ class SwapView extends Component {
   };
 
   renderSwapList = view => {
-    const { pools, poolData, runePrice } = this.props;
+    const { pools, poolData, priceIndex, basePriceAsset } = this.props;
     const { activeAsset } = this.state;
 
     let key = 0;
@@ -186,7 +187,12 @@ class SwapView extends Component {
       const { symbol } = pool;
       const poolInfo = poolData[symbol] || {};
 
-      const swapCardData = getSwapData('rune', poolInfo, runePrice);
+      const swapCardData = getSwapData(
+        'rune',
+        poolInfo,
+        priceIndex,
+        basePriceAsset,
+      );
 
       if (swapCardData.target !== activeAsset) {
         result.push({ ...swapCardData, key });
@@ -231,12 +237,12 @@ export default compose(
     state => ({
       pools: state.Midgard.pools,
       poolData: state.Midgard.poolData,
-      runePrice: state.Midgard.runePrice,
+      priceIndex: state.Midgard.priceIndex,
+      basePriceAsset: state.Midgard.basePriceAsset,
       loading: state.Midgard.poolLoading,
     }),
     {
       getPools,
-      getRunePrice,
     },
   ),
   withRouter,
