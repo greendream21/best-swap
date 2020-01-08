@@ -9,9 +9,9 @@ import Label from '../uielements/label';
 import { getTickerFormat } from '../../helpers/stringHelper';
 import { BitcoinIcon } from '../icons';
 
-import walletActions from '../../redux/wallet/actions';
+import midgardActions from '../../redux/midgard/actions';
 
-const { setBasePriceAsset } = walletActions;
+const { setBasePriceAsset } = midgardActions;
 
 const style = {
   fontWeight: 'bold',
@@ -40,11 +40,11 @@ class BasePriceSelector extends Component {
 
   renderMenu = () => {
     const { assetData, basePriceAsset } = this.props;
-    const baseAsset = getTickerFormat(basePriceAsset);
+    const baseAsset = getTickerFormat(basePriceAsset).toUpperCase();
     const selectedKeys = [baseAsset];
     const menuItems = assetData.map(data => {
       const { asset: symbol } = data;
-      const asset = getTickerFormat(symbol);
+      const asset = getTickerFormat(symbol).toUpperCase();
 
       return {
         asset,
@@ -99,7 +99,7 @@ export default compose(
   connect(
     state => ({
       assetData: state.Wallet.assetData,
-      basePriceAsset: state.Wallet.basePriceAsset,
+      basePriceAsset: state.Midgard.basePriceAsset,
     }),
     {
       setBasePriceAsset,

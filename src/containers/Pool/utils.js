@@ -13,30 +13,32 @@ import {
   getUserFormat,
 } from '../../helpers/stringHelper';
 
-export const getPoolData = (from, poolInfo, runePrice) => {
-  const tokenPrice = _get(poolInfo, 'priceRune', 0);
+export const getPoolData = (from, poolInfo, priceIndex, basePriceAsset) => {
   const asset = from;
   const target = _get(poolInfo, 'asset.ticker', '');
   const symbol = _get(poolInfo, 'asset.symbol', '');
-  const depth = Number(poolInfo.runeDepth);
-  const volume24 = poolInfo.poolVolume24hr;
-  const volumeAT = poolInfo.poolVolume;
+
+  const runePrice = priceIndex.RUNE;
+  const depth = Number(poolInfo.runeDepth) * runePrice;
+  const volume24 = poolInfo.poolVolume24hr * runePrice;
+  const volumeAT = poolInfo.poolVolume * runePrice;
   const transaction = Number(poolInfo.poolTxAverage * runePrice);
 
   const { poolROI: roiAT } = poolInfo;
-  const liqFee = Number(poolInfo.poolFeeAverage * runePrice);
+  const liqFee = Number(poolInfo.poolFeeAverage);
 
   const totalSwaps = poolInfo.swappersCount;
   const totalStakers = poolInfo.stakersCount;
 
-  const depthValue = `$${getUserFormat(depth).toLocaleString()}`;
-  const volume24Value = `$${getUserFormat(volume24)}`;
-  const transactionValue = `$${getUserFormat(transaction)}`;
+  const depthValue = `${basePriceAsset} ${getUserFormat(
+    depth,
+  ).toLocaleString()}`;
+  const volume24Value = `${basePriceAsset} ${getUserFormat(volume24)}`;
+  const transactionValue = `${basePriceAsset} ${getUserFormat(transaction)}`;
   const liqFeeValue = `${getUserFormat(liqFee)}%`;
   const roiAtValue = `${getUserFormat(roiAT)}% pa`;
 
   return {
-    tokenPrice,
     asset,
     target,
     depth,

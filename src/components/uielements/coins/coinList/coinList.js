@@ -15,20 +15,18 @@ class CoinList extends Component {
     size: PropTypes.oneOf(['small', 'big']),
     className: PropTypes.string,
     tokenInfo: PropTypes.object,
-    runePrice: PropTypes.number.isRequired,
+    unit: PropTypes.string,
   };
 
   static defaultProps = {
     data: [],
     selected: [],
     size: 'small',
+    unit: 'RUNE',
     className: '',
   };
 
-  getPrice = (asset, runePrice, tokenInfo, price) => {
-    if (asset === 'RUNE-A1F') {
-      return runePrice;
-    }
+  getPrice = (asset, tokenInfo, price) => {
     return !tokenInfo[asset] ? price : tokenInfo[asset].price;
   };
 
@@ -45,8 +43,8 @@ class CoinList extends Component {
       value,
       selected,
       onSelect,
-      runePrice,
       tokenInfo,
+      unit,
       className,
       ...props
     } = this.props;
@@ -61,12 +59,7 @@ class CoinList extends Component {
           {data.map((coinData, index) => {
             const { asset, assetValue, target, targetValue, price } = coinData;
 
-            const priceValue = this.getPrice(
-              asset,
-              runePrice,
-              tokenInfo,
-              price,
-            );
+            const priceValue = this.getPrice(asset, tokenInfo, price);
 
             const tokenName = getTickerFormat(asset);
 
@@ -91,6 +84,7 @@ class CoinList extends Component {
                   target={target}
                   targetValue={targetValue}
                   price={priceValue}
+                  priceUnit={unit}
                   size={size}
                 />
               </div>

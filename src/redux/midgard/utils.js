@@ -45,3 +45,53 @@ export const getPoolAddress = payload => {
 
   return null;
 };
+
+export const getAssetDataIndex = assetArray => {
+  let assetDataIndex = {};
+
+  assetArray.forEach(assetInfo => {
+    const {
+      asset: { symbol },
+    } = assetInfo;
+
+    if (symbol) {
+      assetDataIndex = { ...assetDataIndex, [symbol]: assetInfo };
+    }
+  });
+
+  return assetDataIndex;
+};
+
+export const getPriceIndex = (assetArray, baseTokenTicker) => {
+  let baseTokenPrice = 1;
+  if (baseTokenTicker.toLowerCase() === 'rune') {
+    baseTokenPrice = 1;
+  }
+
+  const baseTokenInfo = assetArray.find(
+    assetInfo => assetInfo.asset.ticker === baseTokenTicker.toUpperCase(),
+  );
+  baseTokenPrice = baseTokenInfo ? baseTokenInfo.priceRune : 1;
+
+  let priceDataIndex = {
+    RUNE: 1 / baseTokenPrice,
+  };
+
+  assetArray.forEach(assetInfo => {
+    const {
+      asset: { ticker },
+      priceRune,
+    } = assetInfo;
+
+    let price = 0;
+    if (priceRune && baseTokenPrice) {
+      price = 1 / priceRune / baseTokenPrice;
+    }
+
+    if (ticker) {
+      priceDataIndex = { ...priceDataIndex, [ticker]: price };
+    }
+  });
+
+  return priceDataIndex;
+};

@@ -38,6 +38,7 @@ class TokenSelect extends Component {
     assetData: PropTypes.array.isRequired,
     asset: PropTypes.string.isRequired,
     price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    priceUnit: PropTypes.string,
     withSearch: PropTypes.bool,
     searchDisable: PropTypes.array,
     onSelect: PropTypes.func.isRequired,
@@ -46,6 +47,7 @@ class TokenSelect extends Component {
   };
 
   static defaultProps = {
+    priceUnit: 'RUNE',
     withSearch: true,
     searchDisable: [],
     onChangeAsset: () => {},
@@ -155,6 +157,7 @@ class TokenSelect extends Component {
     const {
       asset,
       price,
+      priceUnit,
       assetData,
       onChangeAsset,
       className,
@@ -173,7 +176,7 @@ class TokenSelect extends Component {
             className={`tokenSelect-wrapper ${className}`}
             {...props}
           >
-            <TokenData asset={asset} price={price} />
+            <TokenData asset={asset} price={price} priceUnit={priceUnit} />
             {this.renderDropDownButton()}
           </TokenSelectWrapper>
         </Dropdown>

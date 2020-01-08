@@ -56,7 +56,7 @@ const {
   resetTxStatus,
 } = appActions;
 
-const { getPools, getPoolAddress, getRunePrice } = midgardActions;
+const { getPools, getPoolAddress } = midgardActions;
 const { refreshBalance } = walletactions;
 
 class SwapSend extends Component {
@@ -70,8 +70,9 @@ class SwapSend extends Component {
     poolAddress: PropTypes.string.isRequired,
     assets: PropTypes.object.isRequired,
     poolData: PropTypes.object.isRequired,
+    basePriceAsset: PropTypes.string.isRequired,
+    priceIndex: PropTypes.object.isRequired,
     user: PropTypes.object.isRequired,
-    runePrice: PropTypes.number.isRequired,
     wsTransfers: PropTypes.array.isRequired,
     setTxTimerType: PropTypes.func.isRequired,
     setTxTimerModal: PropTypes.func.isRequired,
@@ -80,7 +81,6 @@ class SwapSend extends Component {
     resetTxStatus: PropTypes.func.isRequired,
     getPools: PropTypes.func.isRequired,
     getPoolAddress: PropTypes.func.isRequired,
-    getRunePrice: PropTypes.func.isRequired,
     refreshBalance: PropTypes.func.isRequired,
   };
 
@@ -109,11 +109,10 @@ class SwapSend extends Component {
   delta = 1000;
 
   componentDidMount() {
-    const { getPools, getRunePrice, getPoolAddress } = this.props;
+    const { getPools, getPoolAddress } = this.props;
 
     getPoolAddress();
     getPools();
-    getRunePrice();
   }
 
   componentDidUpdate(prevProps) {
@@ -123,8 +122,7 @@ class SwapSend extends Component {
       user: { wallet },
     } = this.props;
     const length = wsTransfers.length;
-    console.log(prevProps.wsTransfers.length);
-    console.log(length);
+
     if (length !== prevProps.wsTransfers.length && length > 1) {
       const lastTx = wsTransfers[length - 1];
       const { fromAddr, toAddr, fromToken, toToken } = this.txData;
@@ -692,7 +690,8 @@ class SwapSend extends Component {
       poolData,
       poolAddress,
       assetData,
-      runePrice,
+      priceIndex,
+      basePriceAsset,
       wsTransfers,
     } = this.props;
     const {
@@ -729,6 +728,8 @@ class SwapSend extends Component {
         price,
       };
     });
+
+    const runePrice = priceIndex.RUNE;
 
     // add rune data in the target token list
     tokensData.push({
@@ -802,6 +803,7 @@ class SwapSend extends Component {
                 assetData={sourceData}
                 amount={xValue}
                 price={Px}
+                unit={basePriceAsset}
                 onChange={this.handleChangeValue}
                 onChangeAsset={this.handleChangeSource}
                 onSelect={this.handleSelectAmount(source)}
@@ -826,6 +828,7 @@ class SwapSend extends Component {
                 assetData={targetData}
                 amount={outputAmount}
                 price={outputPrice}
+                unit={basePriceAsset}
                 slip={slip}
                 onChangeAsset={this.handleSelectTraget}
                 withSearch
@@ -945,7 +948,8 @@ export default compose(
       poolAddress: state.Midgard.poolAddress,
       assets: state.Midgard.assets,
       poolData: state.Midgard.poolData,
-      runePrice: state.Midgard.runePrice,
+      priceIndex: state.Midgard.priceIndex,
+      basePriceAsset: state.Midgard.basePriceAsset,
     }),
     {
       getPools,
@@ -955,7 +959,6 @@ export default compose(
       setTxTimerStatus,
       setTxTimerValue,
       resetTxStatus,
-      getRunePrice,
       refreshBalance,
     },
   ),

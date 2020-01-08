@@ -6,6 +6,12 @@ import {
   axiosRequest,
 } from '../../helpers/apiHelper';
 
+import {
+  saveBasePriceAsset,
+  getBasePriceAsset,
+} from '../../helpers/webStorageHelper';
+import { getAssetDataIndex, getPriceIndex } from './utils';
+
 export function* getTransaction() {
   yield takeEvery(actions.GET_TRANSACTION_REQUEST, function*({ payload }) {
     const address = payload;
@@ -61,6 +67,22 @@ export function* getAssetInfo() {
   });
 }
 
+const getAssetRequest = async assetId => {
+  const params = {
+    method: 'get',
+    url: getMidgardURL(`assets/${assetId}`),
+    headers: getHeaders(),
+  };
+
+  try {
+    const { data } = await axiosRequest(params);
+
+    return data;
+  } catch (error) {
+    return {};
+  }
+};
+
 export function* getPools() {
   yield takeEvery(actions.GET_POOLS_REQUEST, function*() {
     const params = {
@@ -72,14 +94,28 @@ export function* getPools() {
     try {
       const { data } = yield call(axiosRequest, params);
 
-      yield all(
+      const assetResponse = yield all(
         data.map(poolData => {
           const { chain, symbol } = poolData;
           const assetId = `${chain}.${symbol}`;
 
-          return put(actions.getAssetInfo(assetId));
+          return call(getAssetRequest, assetId);
         }),
       );
+
+      console.log('asset response: ', assetResponse);
+
+      const assetDataIndex = getAssetDataIndex(assetResponse);
+      const baseTokenTicker = getBasePriceAsset() || 'RUNE';
+      const priceIndex = getPriceIndex(assetResponse, baseTokenTicker);
+
+      const assetPayload = {
+        assetResponse,
+        assetDataIndex,
+      };
+
+      yield put(actions.getAssetInfoSuccess(assetPayload));
+      yield put(actions.setPriceIndex(priceIndex));
 
       yield all(
         data.map(poolData => {
@@ -192,6 +228,12 @@ export function* getPoolAddress() {
   });
 }
 
+export function* setBasePriceAsset() {
+  yield takeEvery(actions.SET_BASE_PRICE_ASSET, function*({ payload }) {
+    yield call(saveBasePriceAsset, payload);
+  });
+}
+
 export default function* rootSaga() {
   yield all([
     fork(getTransaction),
@@ -203,5 +245,6 @@ export default function* rootSaga() {
     fork(getStakerData),
     fork(getStakerPoolData),
     fork(getPoolAddress),
+    fork(setBasePriceAsset),
   ]);
 }

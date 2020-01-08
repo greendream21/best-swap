@@ -17,7 +17,7 @@ import {
   StakeLoader,
 } from '../../components/utility/loaders/wallet';
 
-const { getRunePrice, getPools } = midgardActions;
+const { getPools } = midgardActions;
 
 const { TabPane } = Tabs;
 
@@ -35,9 +35,7 @@ class WalletView extends Component {
     setAssetData: PropTypes.func.isRequired,
     setStakeData: PropTypes.func.isRequired,
     getPools: PropTypes.func.isRequired,
-    getRunePrice: PropTypes.func.isRequired,
     assets: PropTypes.object.isRequired,
-    runePrice: PropTypes.object,
     history: PropTypes.object.isRequired,
   };
 
@@ -49,9 +47,9 @@ class WalletView extends Component {
   };
 
   componentDidMount() {
-    const { getPools, getRunePrice } = this.props;
+    const { getPools } = this.props;
+
     getPools();
-    getRunePrice();
   }
 
   getAssetNameByIndex = index => {
@@ -134,7 +132,6 @@ class WalletView extends Component {
       assetData,
       stakeData,
       assets,
-      runePrice,
       loadingAssets,
       loadingStakes,
     } = this.props;
@@ -168,8 +165,8 @@ class WalletView extends Component {
                 value={sourceIndex}
                 selected={selectedAsset}
                 tokenInfo={assets}
-                runePrice={runePrice}
                 onSelect={this.handleSelectAsset}
+                unit="$USD"
               />
             )}
           </TabPane>
@@ -182,8 +179,8 @@ class WalletView extends Component {
                 data-test="wallet-stakes-list"
                 data={stakeData}
                 tokenInfo={assets}
-                runePrice={runePrice}
                 onSelect={this.handleSelectStake}
+                unit="RUNE"
               />
             )}
           </TabPane>
@@ -202,11 +199,9 @@ export default compose(
       loadingAssets: state.Wallet.loadingAssets,
       loadingStakes: state.Wallet.loadingStakes,
       assets: state.Midgard.assets,
-      runePrice: state.Wallet.runePrice,
     }),
     {
       getPools,
-      getRunePrice,
     },
   ),
   withRouter,

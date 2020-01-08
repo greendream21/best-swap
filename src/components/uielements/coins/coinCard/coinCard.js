@@ -75,7 +75,7 @@ class CoinCard extends Component {
     assetData: [],
     amount: 0,
     price: 0,
-    unit: '$USD',
+    unit: 'RUNE',
     slip: undefined,
     title: '',
     withSelection: false,

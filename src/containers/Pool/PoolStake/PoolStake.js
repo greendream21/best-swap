@@ -60,12 +60,7 @@ const {
   resetTxStatus,
 } = appActions;
 
-const {
-  getPools,
-  getPoolAddress,
-  getStakerPoolData,
-  getRunePrice,
-} = midgardActions;
+const { getPools, getPoolAddress, getStakerPoolData } = midgardActions;
 const { refreshStake } = walletactions;
 
 class PoolStake extends Component {
@@ -76,10 +71,11 @@ class PoolStake extends Component {
     pools: PropTypes.array.isRequired,
     poolAddress: PropTypes.string.isRequired,
     poolData: PropTypes.object.isRequired,
+    basePriceAsset: PropTypes.string.isRequired,
+    priceIndex: PropTypes.object.isRequired,
     stakerPoolData: PropTypes.object.isRequired,
     assets: PropTypes.object.isRequired,
     user: PropTypes.object.isRequired,
-    runePrice: PropTypes.number.isRequired,
     wsTransfers: PropTypes.array.isRequired,
     setTxTimerType: PropTypes.func.isRequired,
     setTxTimerModal: PropTypes.func.isRequired,
@@ -91,7 +87,6 @@ class PoolStake extends Component {
     getStakerPoolData: PropTypes.func.isRequired,
     getPools: PropTypes.func.isRequired,
     getPoolAddress: PropTypes.func.isRequired,
-    getRunePrice: PropTypes.func.isRequired,
     refreshStake: PropTypes.func.isRequired,
   };
 
@@ -114,11 +109,10 @@ class PoolStake extends Component {
   };
 
   componentDidMount() {
-    const { getPoolAddress, getPools, getRunePrice } = this.props;
+    const { getPoolAddress, getPools } = this.props;
 
     getPoolAddress();
     getPools();
-    getRunePrice();
     this.getStakerInfo();
   }
 
@@ -128,8 +122,7 @@ class PoolStake extends Component {
       user: { wallet },
     } = this.props;
     const length = wsTransfers.length;
-    console.log(prevProps.wsTransfers.length);
-    console.log(length);
+
     if (length !== prevProps.wsTransfers.length && length > 0) {
       const lastTx = wsTransfers[length - 1];
       if (!this.stakeData) return;
@@ -564,6 +557,7 @@ class PoolStake extends Component {
     const {
       txStatus: { status, value },
       symbol,
+      priceIndex,
     } = this.props;
     const { runeAmount, tokenAmount } = this.state;
 
@@ -571,7 +565,7 @@ class PoolStake extends Component {
     const target = getTickerFormat(symbol);
 
     const { Pr } = calcResult;
-    const { tokenPrice } = poolStats;
+    const tokenPrice = _get(priceIndex, target.toUpperCase(), 0);
     const txURL = TESTNET_TX_BASE_URL + this.hash;
 
     return (
@@ -624,14 +618,16 @@ class PoolStake extends Component {
     const {
       txStatus: { status, value },
       symbol,
-      runePrice,
+      priceIndex,
     } = this.props;
 
     const source = 'rune';
     const target = getTickerFormat(symbol);
 
+    const runePrice = priceIndex.RUNE;
+    const tokenPrice = _get(priceIndex, target.toUpperCase(), 0);
     const txURL = TESTNET_TX_BASE_URL + this.hash;
-    const { runeValue, tokenValue, tokenPrice } = this.withdrawData;
+    const { runeValue, tokenValue } = this.withdrawData;
 
     return (
       <ConfirmModalContent>
@@ -678,7 +674,7 @@ class PoolStake extends Component {
   };
 
   renderStakeInfo = poolStats => {
-    const { symbol } = this.props;
+    const { symbol, basePriceAsset } = this.props;
     const source = 'rune';
 
     const target = getTickerFormat(symbol);
@@ -697,17 +693,17 @@ class PoolStake extends Component {
       {
         key: 'depth',
         title: 'Depth',
-        value: `$${getUserFormat(depth).toLocaleString()}`,
+        value: `${basePriceAsset} ${getUserFormat(depth).toLocaleString()}`,
       },
       {
         key: 'vol24',
         title: '24hr Volume',
-        value: `$${getUserFormat(volume24)}`,
+        value: `${basePriceAsset} ${getUserFormat(volume24)}`,
       },
       {
         key: 'volAT',
         title: 'All Time Volume',
-        value: `$${getUserFormat(volumeAT)}`,
+        value: `${basePriceAsset} ${getUserFormat(volumeAT)}`,
       },
       { key: 'swap', title: 'Total Swaps', value: totalSwaps },
       { key: 'stakers', title: 'Total Stakers', value: totalStakers },
@@ -736,7 +732,7 @@ class PoolStake extends Component {
   };
 
   renderShareDetail = (poolStats, calcResult, stakeData) => {
-    const { symbol, runePrice, assets } = this.props;
+    const { symbol, priceIndex, basePriceAsset, assets } = this.props;
     const {
       runeAmount,
       tokenAmount,
@@ -750,6 +746,9 @@ class PoolStake extends Component {
 
     const source = 'rune';
     const target = getTickerFormat(symbol);
+
+    const runePrice = priceIndex.RUNE;
+    const tokenPrice = _get(priceIndex, target.toUpperCase(), 0);
 
     const tokensData = Object.keys(assets).map(tokenName => {
       const tokenData = assets[tokenName];
@@ -768,7 +767,7 @@ class PoolStake extends Component {
       assetStaked: 0,
     };
 
-    const { tokenPrice, depth } = poolStats;
+    const { depth } = poolStats;
     const {
       R,
       T,
@@ -780,20 +779,28 @@ class PoolStake extends Component {
     } = calcResult;
 
     const poolAttrs = [
-      { key: 'price', title: 'Pool Price', value: `$${poolPrice}` },
+      {
+        key: 'price',
+        title: 'Pool Price',
+        value: `${basePriceAsset} ${poolPrice}`,
+      },
       {
         key: 'depth',
         title: 'Pool Depth',
-        value: `$${getUserFormat(depth * runePrice)}`,
+        value: `${basePriceAsset} ${getUserFormat(depth * runePrice)}`,
       },
     ];
 
     const newPoolAttrs = [
-      { key: 'price', title: 'New Price', value: `$${newPrice}` },
+      {
+        key: 'price',
+        title: 'New Price',
+        value: `${basePriceAsset} ${newPrice}`,
+      },
       {
         key: 'depth',
         title: 'New Depth',
-        value: `$${getUserFormat(newDepth)}`,
+        value: `${basePriceAsset} ${getUserFormat(newDepth)}`,
       },
       { key: 'share', title: 'Your Share', value: `${share}%` },
     ];
@@ -846,6 +853,7 @@ class PoolStake extends Component {
                   asset={source}
                   amount={runeAmount}
                   price={runePrice}
+                  unit={basePriceAsset}
                   onChange={this.handleChangeTokenAmount('rune')}
                 />
                 <Slider
@@ -864,6 +872,7 @@ class PoolStake extends Component {
                   assetData={tokensData}
                   amount={tokenAmount}
                   price={tokenPrice}
+                  unit={basePriceAsset}
                   onChangeAsset={this.handleSelectTraget}
                   onChange={this.handleChangeTokenAmount(target)}
                   withSearch
@@ -958,11 +967,13 @@ class PoolStake extends Component {
                     asset={source}
                     assetValue={runeValue}
                     price={runeValue * runePrice}
+                    priceUnit={basePriceAsset}
                   />
                   <CoinData
                     asset={target}
                     assetValue={tokenValue}
                     price={tokenValue * tokenPrice}
+                    priceUnit={basePriceAsset}
                   />
                 </div>
               </div>
@@ -987,7 +998,8 @@ class PoolStake extends Component {
     const {
       symbol,
       user: { wallet },
-      runePrice,
+      priceIndex,
+      basePriceAsset,
     } = this.props;
 
     console.log(calcResult);
@@ -995,10 +1007,12 @@ class PoolStake extends Component {
 
     const stakeInfo = stakeData[symbol] || { stakeUnits: 0 };
 
-    const { tokenPrice } = poolStats;
     const { poolUnits, R, T } = calcResult;
     const source = 'rune';
     const target = getTickerFormat(symbol);
+
+    const runePrice = priceIndex.RUNE;
+    const tokenPrice = _get(priceIndex, target.toUpperCase(), 0);
 
     const { stakeUnits } = stakeInfo;
 
@@ -1057,7 +1071,7 @@ class PoolStake extends Component {
                       size="normal"
                       color="grey"
                     >
-                      $USD {(runeShare * runePrice).toFixed(2)}
+                      {basePriceAsset} {(runeShare * runePrice).toFixed(2)}
                     </Label>
                   </div>
                   <div className="your-share-info">
@@ -1070,7 +1084,7 @@ class PoolStake extends Component {
                       size="normal"
                       color="grey"
                     >
-                      $USD {(tokensShare * tokenPrice).toFixed(2)}
+                      {basePriceAsset} {(tokensShare * tokenPrice).toFixed(2)}
                     </Label>
                   </div>
                 </div>
@@ -1109,7 +1123,7 @@ class PoolStake extends Component {
                     size="normal"
                     color="grey"
                   >
-                    $USD {(runeEarned * runePrice).toFixed(2)}
+                    {basePriceAsset} {(runeEarned * runePrice).toFixed(2)}
                   </Label>
                 </div>
                 <div className="your-share-info">
@@ -1122,7 +1136,7 @@ class PoolStake extends Component {
                     size="normal"
                     color="grey"
                   >
-                    $USD {(assetEarned * tokenPrice).toFixed(2)}
+                    {basePriceAsset} {(assetEarned * tokenPrice).toFixed(2)}
                   </Label>
                 </div>
               </div>
@@ -1135,7 +1149,8 @@ class PoolStake extends Component {
 
   render() {
     const {
-      runePrice,
+      priceIndex,
+      basePriceAsset,
       poolData,
       poolAddress,
       stakerPoolData,
@@ -1156,10 +1171,10 @@ class PoolStake extends Component {
 
     let { symbol } = this.props;
     symbol = symbol.toUpperCase();
-
+    const runePrice = priceIndex.RUNE;
     const poolInfo = poolData[symbol] || {};
 
-    const poolStats = getPoolData('rune', poolInfo, runePrice);
+    const poolStats = getPoolData('rune', poolInfo, priceIndex, basePriceAsset);
 
     const calcResult = getCalcResult(
       symbol,
@@ -1278,13 +1293,13 @@ export default compose(
       poolData: state.Midgard.poolData,
       assets: state.Midgard.assets,
       stakerPoolData: state.Midgard.stakerPoolData,
-      runePrice: state.Midgard.runePrice,
+      priceIndex: state.Midgard.priceIndex,
+      basePriceAsset: state.Midgard.basePriceAsset,
     }),
     {
       getPools,
       getPoolAddress,
       getStakerPoolData,
-      getRunePrice,
       setTxTimerType,
       setTxTimerModal,
       setTxTimerStatus,

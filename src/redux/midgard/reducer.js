@@ -3,12 +3,17 @@ import {
   getAssetSymbolFromPayload,
   getBNBPoolAddress,
   getPoolAddress,
+  getPriceIndex,
 } from './utils';
+import { getBasePriceAsset } from '../../helpers/webStorageHelper';
+
+const basePriceAsset = getBasePriceAsset() || 'RUNE';
 
 const initState = {
   transaction: {},
   stats: {},
   assets: {},
+  assetArray: [],
   pools: [],
   poolAddressData: {},
   bnbPoolAddress: {},
@@ -18,6 +23,10 @@ const initState = {
   stakerData: {},
   stakerPoolData: {},
   runePrice: 0,
+  basePriceAsset, // set base price asset as a RUNE
+  priceIndex: {
+    RUNE: 1,
+  },
   error: null,
   poolLoading: false,
 };
@@ -26,6 +35,17 @@ export default function apiReducer(state = initState, action) {
   const { type, payload } = action;
 
   switch (type) {
+    case actions.SET_BASE_PRICE_ASSET:
+      return {
+        ...state,
+        basePriceAsset: payload,
+        priceIndex: getPriceIndex(state.assetArray, payload),
+      };
+    case actions.SET_PRICE_INDEX:
+      return {
+        ...state,
+        priceIndex: payload,
+      };
     case actions.GET_TRANSACTION_SUCCESS:
       return {
         ...state,
@@ -57,24 +77,17 @@ export default function apiReducer(state = initState, action) {
         error: null,
       };
     case actions.GET_ASSET_INFO_SUCCESS:
-      if (getAssetSymbolFromPayload(payload)) {
-        return {
-          ...state,
-          assets: {
-            ...state.assets,
-            [getAssetSymbolFromPayload(payload)]: payload,
-          },
-          error: null,
-        };
-      }
       return {
         ...state,
+        assets: payload.assetDataIndex,
+        assetArray: payload.assetResponse,
         error: null,
       };
     case actions.GET_ASSET_INFO_FAILED:
       return {
         ...state,
         assets: {},
+        assetArray: [],
         error: payload,
       };
     case actions.GET_POOLS_REQUEST:
