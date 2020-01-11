@@ -8,7 +8,6 @@ import { cleanTag } from '../../../../helpers/styleHelper';
 import Coin from '../coin';
 
 export const CoinCardWrapper = styled.div`
-  min-width: 350px;
   .title-label {
     font-style: italic;
   }
