@@ -8,6 +8,7 @@ import { crypto } from '@binance-chain/javascript-sdk';
 
 import Binance from '../../../clients/binance';
 
+import Button from '../../../components/uielements/button';
 import Label from '../../../components/uielements/label';
 import Status from '../../../components/uielements/status';
 import CoinIcon from '../../../components/uielements/coins/coinIcon';
@@ -16,17 +17,36 @@ import Slider from '../../../components/uielements/slider';
 import Drag from '../../../components/uielements/drag';
 import Input from '../../../components/uielements/input';
 import { greyArrowIcon } from '../../../components/icons';
+import TxTimer from '../../../components/uielements/txTimer';
+import StepBar from '../../../components/uielements/stepBar';
+import CoinData from '../../../components/uielements/coins/coinData';
 
+import appActions from '../../../redux/app/actions';
 import midgardActions from '../../../redux/midgard/actions';
 import binanceActions from '../../../redux/binance/actions';
 
-import { ContentWrapper, PrivateModal } from './PoolCreate.style';
+import {
+  ContentWrapper,
+  PrivateModal,
+  ConfirmModal,
+  ConfirmModalContent,
+} from './PoolCreate.style';
 import { getUserFormat, getTickerFormat } from '../../../helpers/stringHelper';
 import {
   getCreatePoolCalc,
   getCreatePoolTokens,
   confirmCreatePool,
 } from '../utils';
+
+import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
+
+const {
+  setTxTimerType,
+  setTxTimerModal,
+  setTxTimerStatus,
+  setTxTimerValue,
+  resetTxStatus,
+} = appActions;
 
 const {
   getPools,
@@ -55,6 +75,12 @@ class PoolCreate extends Component {
     getBinanceMarkets: PropTypes.func.isRequired,
     binanceData: PropTypes.object.isRequired,
     history: PropTypes.object,
+    txStatus: PropTypes.object.isRequired,
+    setTxTimerType: PropTypes.func.isRequired,
+    setTxTimerModal: PropTypes.func.isRequired,
+    setTxTimerStatus: PropTypes.func.isRequired,
+    setTxTimerValue: PropTypes.func.isRequired,
+    resetTxStatus: PropTypes.func.isRequired,
   };
 
   state = {
@@ -262,6 +288,7 @@ class PoolCreate extends Component {
     }
 
     if (keystore) {
+      this.type = 'create';
       this.handleOpenPrivateModal();
     } else if (wallet) {
       this.handleConfirmCreate();
@@ -282,12 +309,12 @@ class PoolCreate extends Component {
         tokenAmount,
         this.data,
       );
+
       console.log('create pool result: ', result);
       this.hash = result[0].hash;
-      notification.success({
-        message: 'Create Pool Success',
-        description: 'Pool created successfully.',
-      });
+
+      // start timer modal
+      this.handleStartTimer();
     } catch (error) {
       notification.error({
         message: 'Create Pool Failed',
@@ -354,6 +381,35 @@ class PoolCreate extends Component {
     const URL = `/pool/${asset}/new`;
 
     this.props.history.push(URL);
+  };
+
+  handleStartTimer = (type = 'create') => {
+    const { setTxTimerModal, setTxTimerType, setTxTimerStatus } = this.props;
+
+    setTxTimerType(type);
+    setTxTimerModal(true);
+    setTxTimerStatus(true);
+  };
+
+  handleCloseModal = () => {
+    const { setTxTimerModal } = this.props;
+
+    setTxTimerModal(false);
+  };
+
+  handleChangeTxValue = value => {
+    const { setTxTimerValue } = this.props;
+
+    setTxTimerValue(value);
+  };
+
+  handleEndTxTimer = () => {
+    const { setTxTimerStatus } = this.props;
+
+    this.setState({
+      dragReset: true,
+    });
+    setTxTimerStatus(false);
   };
 
   renderAssetView = () => {
@@ -541,7 +597,72 @@ class PoolCreate extends Component {
     );
   };
 
+  renderStakeModalContent = () => {
+    const {
+      txStatus: { status, value },
+      symbol,
+    } = this.props;
+    const { runeAmount, tokenAmount } = this.state;
+
+    const source = 'rune';
+    const target = getTickerFormat(symbol);
+
+    const txURL = TESTNET_TX_BASE_URL + this.hash;
+
+    return (
+      <ConfirmModalContent>
+        <Row className="modal-content">
+          <div className="timer-container">
+            <TxTimer
+              reset={status}
+              value={value}
+              onChange={this.handleChangeTxValue}
+              onEnd={this.handleEndTxTimer}
+            />
+          </div>
+          <div className="coin-data-wrapper">
+            <StepBar size={50} />
+            <div className="coin-data-container">
+              <CoinData
+                data-test="stakeconfirm-coin-data-source"
+                asset={source}
+                assetValue={runeAmount}
+                price={0}
+              />
+              <CoinData
+                data-test="stakeconfirm-coin-data-target"
+                asset={target}
+                assetValue={tokenAmount}
+                price={0}
+              />
+            </div>
+          </div>
+        </Row>
+        <Row className="modal-info-wrapper">
+          {this.hash && (
+            <div className="hash-address">
+              <div className="copy-btn-wrapper">
+                <a href={txURL} target="_blank" rel="noopener noreferrer">
+                  <Button className="view-btn" color="success">
+                    VIEW ON BINANCE CHAIN
+                  </Button>
+                </a>
+              </div>
+            </div>
+          )}
+        </Row>
+      </ConfirmModalContent>
+    );
+  };
+
   render() {
+    const { txStatus } = this.props;
+
+    const openCreateModal = txStatus.type === 'create' ? txStatus.modal : false;
+    const completed = txStatus.value !== null && !txStatus.status;
+    const modalTitle = !completed ? 'CREATING POOL' : 'POOL CREATED';
+    const coinCloseIconType = txStatus.status ? 'fullscreen-exit' : 'close';
+
     return (
       <ContentWrapper className="pool-new-wrapper">
         <Row className="pool-new-row">
@@ -552,6 +673,17 @@ class PoolCreate extends Component {
             {this.renderAssetView()}
           </Col>
         </Row>
+        <ConfirmModal
+          title={modalTitle}
+          closeIcon={
+            <Icon type={coinCloseIconType} style={{ color: '#33CCFF' }} />
+          }
+          visible={openCreateModal}
+          footer={null}
+          onCancel={this.handleCloseModal}
+        >
+          {this.renderStakeModalContent()}
+        </ConfirmModal>
       </ContentWrapper>
     );
   }
@@ -568,6 +700,7 @@ export default compose(
       runePrice: state.Midgard.runePrice,
       stakerPoolData: state.Midgard.stakerPoolData,
       binanceData: state.Binance,
+      txStatus: state.App.txStatus,
     }),
     {
       getPools,
@@ -576,6 +709,11 @@ export default compose(
       getRunePrice,
       getBinanceTokens,
       getBinanceMarkets,
+      setTxTimerType,
+      setTxTimerModal,
+      setTxTimerStatus,
+      setTxTimerValue,
+      resetTxStatus,
     },
   ),
   withRouter,
