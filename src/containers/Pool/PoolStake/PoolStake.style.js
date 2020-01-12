@@ -78,8 +78,9 @@ export const ContentWrapper = styled(ContentView)`
 
   .advanced-mode-btn {
     position: absolute;
-    top: 25px;
-    right: 10px;
+    top: 75px;
+    right: 20px;
+    height: 20px;
     z-index: 100;
     ${media.sm`
       top: 15px;
