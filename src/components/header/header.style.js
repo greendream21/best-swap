@@ -150,6 +150,8 @@ export const HeaderActionButtons = styled.div`
     }
 
     .label-wrapper {
+      width: 42px;
+      text-align: center;
       text-transform: uppercase;
     }
   }

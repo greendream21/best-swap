@@ -27,9 +27,9 @@ const itemStyle = {
 
 class BasePriceSelector extends Component {
   static propTypes = {
-    assetData: PropTypes.array.isRequired,
     basePriceAsset: PropTypes.string.isRequired,
     setBasePriceAsset: PropTypes.func.isRequired,
+    pools: PropTypes.array.isRequired,
   };
 
   handleClickItem = ({ key }) => {
@@ -39,17 +39,22 @@ class BasePriceSelector extends Component {
   };
 
   renderMenu = () => {
-    const { assetData, basePriceAsset } = this.props;
+    const { basePriceAsset, pools } = this.props;
     const baseAsset = getTickerFormat(basePriceAsset).toUpperCase();
     const selectedKeys = [baseAsset];
-    const menuItems = assetData.map(data => {
-      const { asset: symbol } = data;
+    const menuItems = pools.map(data => {
+      const { symbol } = data;
       const asset = getTickerFormat(symbol).toUpperCase();
 
       return {
         asset,
         key: asset,
       };
+    });
+
+    menuItems.push({
+      asset: 'RUNE',
+      key: 'RUNE',
     });
 
     const menu = (
@@ -61,6 +66,7 @@ class BasePriceSelector extends Component {
       >
         {menuItems.map(item => {
           const { asset, key } = item;
+
           return (
             <Menu.Item style={itemStyle} key={key}>
               <AssetInfo asset={asset} />
@@ -98,8 +104,8 @@ class BasePriceSelector extends Component {
 export default compose(
   connect(
     state => ({
-      assetData: state.Wallet.assetData,
       basePriceAsset: state.Midgard.basePriceAsset,
+      pools: state.Midgard.pools,
     }),
     {
       setBasePriceAsset,
