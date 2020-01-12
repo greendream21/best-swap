@@ -550,6 +550,7 @@ class PoolStake extends Component {
     });
     setTxTimerStatus(false);
 
+    // get staker info again after finished
     this.getStakerInfo();
   };
 
