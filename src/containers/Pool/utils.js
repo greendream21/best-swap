@@ -103,7 +103,7 @@ export const getCalcResult = (
     if (symbol.toLowerCase() === tokenName.toLowerCase()) {
       R = Number(runeStakedTotal);
       T = Number(assetStakedTotal);
-      result.ratio = R / T;
+      result.ratio = 1 / (R / T);
       result.poolAddress = poolAddress;
       result.symbolTo = symbol;
       result.poolUnits = poolUnits;
