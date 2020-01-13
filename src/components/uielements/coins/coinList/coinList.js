@@ -14,11 +14,13 @@ class CoinList extends Component {
     onSelect: PropTypes.func.isRequired,
     size: PropTypes.oneOf(['small', 'big']),
     className: PropTypes.string,
-    tokenInfo: PropTypes.object,
+    priceIndex: PropTypes.object,
     unit: PropTypes.string,
+    isStakeData: PropTypes.bool,
   };
 
   static defaultProps = {
+    isStakeData: false,
     data: [],
     selected: [],
     size: 'small',
@@ -26,8 +28,8 @@ class CoinList extends Component {
     className: '',
   };
 
-  getPrice = (asset, tokenInfo, price) => {
-    return !tokenInfo[asset] ? price : tokenInfo[asset].price;
+  getPrice = (asset, priceIndex) => {
+    return priceIndex[asset.toUpperCase()] || 0;
   };
 
   toggleSelect = key => () => {
@@ -43,9 +45,10 @@ class CoinList extends Component {
       value,
       selected,
       onSelect,
-      tokenInfo,
+      priceIndex,
       unit,
       className,
+      isStakeData,
       ...props
     } = this.props;
 
@@ -57,9 +60,14 @@ class CoinList extends Component {
       >
         <Scrollbars className="coinList-scroll">
           {data.map((coinData, index) => {
-            const { asset, assetValue, target, targetValue, price } = coinData;
+            const { asset, assetValue, target, targetValue } = coinData;
 
-            const priceValue = this.getPrice(asset, tokenInfo, price);
+            let priceValue;
+            if (!isStakeData) {
+              priceValue = this.getPrice(getTickerFormat(asset), priceIndex);
+            } else {
+              priceValue = this.getPrice(getTickerFormat(target), priceIndex);
+            }
 
             const tokenName = getTickerFormat(asset);
 

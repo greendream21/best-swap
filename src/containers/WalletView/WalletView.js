@@ -35,7 +35,8 @@ class WalletView extends Component {
     setAssetData: PropTypes.func.isRequired,
     setStakeData: PropTypes.func.isRequired,
     getPools: PropTypes.func.isRequired,
-    assets: PropTypes.object.isRequired,
+    priceIndex: PropTypes.object.isRequired,
+    basePriceAsset: PropTypes.string.isRequired,
     history: PropTypes.object.isRequired,
   };
 
@@ -131,7 +132,8 @@ class WalletView extends Component {
       user: { wallet },
       assetData,
       stakeData,
-      assets,
+      priceIndex,
+      basePriceAsset,
       loadingAssets,
       loadingStakes,
     } = this.props;
@@ -164,9 +166,9 @@ class WalletView extends Component {
                 data={sortedAssets}
                 value={sourceIndex}
                 selected={selectedAsset}
-                tokenInfo={assets}
+                priceIndex={priceIndex}
                 onSelect={this.handleSelectAsset}
-                unit="$USD"
+                unit={basePriceAsset}
               />
             )}
           </TabPane>
@@ -178,9 +180,10 @@ class WalletView extends Component {
               <CoinList
                 data-test="wallet-stakes-list"
                 data={stakeData}
-                tokenInfo={assets}
+                priceIndex={priceIndex}
                 onSelect={this.handleSelectStake}
-                unit="RUNE"
+                unit={basePriceAsset}
+                isStakeData
               />
             )}
           </TabPane>
@@ -198,7 +201,8 @@ export default compose(
       stakeData: state.Wallet.stakeData,
       loadingAssets: state.Wallet.loadingAssets,
       loadingStakes: state.Wallet.loadingStakes,
-      assets: state.Midgard.assets,
+      priceIndex: state.Midgard.priceIndex,
+      basePriceAsset: state.Midgard.basePriceAsset,
     }),
     {
       getPools,
