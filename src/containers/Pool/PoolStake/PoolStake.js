@@ -1006,7 +1006,11 @@ class PoolStake extends Component {
     console.log(calcResult);
     console.log('stakeData', stakeData);
 
-    const stakeInfo = stakeData[symbol] || { stakeUnits: 0 };
+    const stakeInfo = stakeData[symbol] || {
+      stakeUnits: 0,
+      runeEarned: 0,
+      assetEarned: 0,
+    };
 
     const { poolUnits, R, T } = calcResult;
     const source = 'rune';
