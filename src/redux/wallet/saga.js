@@ -123,6 +123,7 @@ export function* getUserStakeData() {
       const price = _get(poolData, 'price', 0);
 
       const data = {
+        targetSymbol: symbol,
         target: ticker.toLowerCase(),
         targetValue: getFixedNumber(userStakerData.assetStaked / BASE_NUMBER),
         assetValue: getFixedNumber(userStakerData.runeStaked / BASE_NUMBER),

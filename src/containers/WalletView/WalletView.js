@@ -78,7 +78,7 @@ class WalletView extends Component {
     const { stakeData } = this.props;
 
     const selected = stakeData[key];
-    const target = selected.target.toLowerCase();
+    const target = selected.targetSymbol;
 
     const URL = `/pool/${target}`;
     this.props.history.push(URL);
