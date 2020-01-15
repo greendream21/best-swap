@@ -762,7 +762,7 @@ class PoolStake extends Component {
       };
     });
 
-    const stakeInfo = stakeData[symbol] || {
+    const stakeInfo = (stakeData && stakeData[symbol]) || {
       stakeUnits: 0,
       runeStaked: 0,
       assetStaked: 0,
@@ -1006,7 +1006,7 @@ class PoolStake extends Component {
     console.log(calcResult);
     console.log('stakeData', stakeData);
 
-    const stakeInfo = stakeData[symbol] || {
+    const stakeInfo = (stakeData && stakeData[symbol]) || {
       stakeUnits: 0,
       runeEarned: 0,
       assetEarned: 0,

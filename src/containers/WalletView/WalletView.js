@@ -32,7 +32,6 @@ class WalletView extends Component {
     stakeData: PropTypes.array.isRequired,
     loadingAssets: PropTypes.bool.isRequired,
     loadingStakes: PropTypes.bool.isRequired,
-    setAssetData: PropTypes.func.isRequired,
     setStakeData: PropTypes.func.isRequired,
     getPools: PropTypes.func.isRequired,
     priceIndex: PropTypes.object.isRequired,

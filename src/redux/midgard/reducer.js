@@ -171,7 +171,7 @@ export default function apiReducer(state = initState, action) {
     case actions.GET_STAKER_POOL_DATA_FAILED:
       return {
         ...state,
-        stakerPoolData: null,
+        stakerPoolData: {},
         error: payload,
       };
     case actions.GET_POOL_ADDRESSES_SUCCESS:
