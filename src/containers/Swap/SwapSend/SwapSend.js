@@ -572,6 +572,7 @@ class SwapSend extends Component {
   renderSwapModalContent = (swapData, info) => {
     const {
       txStatus: { status, value },
+      basePriceAsset,
     } = this.props;
     const { xValue, txResult, timerStatus } = this.state;
 
@@ -595,9 +596,15 @@ class SwapSend extends Component {
     const tokenAmount = !completed
       ? Number(outputAmount)
       : Number(txResult.amount);
-    const priceValue = !completed
-      ? priceTo
-      : Number(Number(txResult.amount) * outputPrice);
+    let priceValue = 0;
+
+    if (refunded) {
+      priceValue = priceFrom;
+    } else {
+      priceValue = !completed
+        ? priceTo
+        : Number(Number(txResult.amount) * outputPrice);
+    }
 
     const txURL = TESTNET_TX_BASE_URL + this.hash;
 
@@ -623,12 +630,14 @@ class SwapSend extends Component {
                 asset={source}
                 assetValue={xValue}
                 price={priceFrom}
+                priceUnit={basePriceAsset}
               />
               <CoinData
                 data-test="swapmodal-coin-data-receive"
                 asset={targetToken}
                 assetValue={tokenAmount}
                 price={priceValue}
+                priceUnit={basePriceAsset}
               />
             </div>
           </div>

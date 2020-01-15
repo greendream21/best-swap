@@ -5,6 +5,7 @@ import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Row, Col, Form, notification, Icon } from 'antd';
 import { crypto } from '@binance-chain/javascript-sdk';
+import { get as _get } from 'lodash';
 
 import Binance from '../../../clients/binance';
 
@@ -48,12 +49,7 @@ const {
   resetTxStatus,
 } = appActions;
 
-const {
-  getPools,
-  getStakerPoolData,
-  getRunePrice,
-  getPoolAddress,
-} = midgardActions;
+const { getPools, getStakerPoolData, getPoolAddress } = midgardActions;
 const { getBinanceTokens, getBinanceMarkets } = binanceActions;
 
 class PoolCreate extends Component {
@@ -66,11 +62,11 @@ class PoolCreate extends Component {
     stakerPoolData: PropTypes.object.isRequired,
     assets: PropTypes.object.isRequired,
     user: PropTypes.object.isRequired,
-    runePrice: PropTypes.number.isRequired,
+    basePriceAsset: PropTypes.string.isRequired,
+    priceIndex: PropTypes.object.isRequired,
     getPools: PropTypes.func.isRequired,
     getPoolAddress: PropTypes.func.isRequired,
     getStakerPoolData: PropTypes.func.isRequired,
-    getRunePrice: PropTypes.func.isRequired,
     getBinanceTokens: PropTypes.func.isRequired,
     getBinanceMarkets: PropTypes.func.isRequired,
     binanceData: PropTypes.object.isRequired,
@@ -103,14 +99,12 @@ class PoolCreate extends Component {
     const {
       getPools,
       getPoolAddress,
-      getRunePrice,
       getBinanceMarkets,
       getBinanceTokens,
     } = this.props;
 
     getPools();
     getPoolAddress();
-    getRunePrice();
     this.getStakerData();
     getBinanceTokens();
     getBinanceMarkets();
@@ -321,10 +315,10 @@ class PoolCreate extends Component {
         description: 'Create Pool information is not valid.',
       });
       console.log(error); // eslint-disable-line no-console
+      this.setState({
+        dragReset: true,
+      });
     }
-    this.setState({
-      dragReset: true,
-    });
   };
 
   handleOpenPrivateModal = () => {
@@ -413,7 +407,14 @@ class PoolCreate extends Component {
   };
 
   renderAssetView = () => {
-    const { symbol, runePrice, assetData, pools, poolAddress } = this.props;
+    const {
+      symbol,
+      priceIndex,
+      basePriceAsset,
+      assetData,
+      pools,
+      poolAddress,
+    } = this.props;
 
     const {
       runeAmount,
@@ -428,12 +429,10 @@ class PoolCreate extends Component {
     const source = 'rune';
     const target = getTickerFormat(symbol);
 
+    const runePrice = priceIndex.RUNE;
     const tokensData = getCreatePoolTokens(assetData, pools);
 
-    const tokenInfo = tokensData.find(
-      token => token.asset.toLowerCase() === symbol.toLowerCase(),
-    );
-    const tokenPrice = tokenInfo ? tokenInfo.price : 0;
+    const tokenPrice = _get(priceIndex, target.toUpperCase(), 0);
 
     this.data = getCreatePoolCalc(
       symbol,
@@ -447,11 +446,15 @@ class PoolCreate extends Component {
     console.log('create pool calc data: ', this.data);
 
     const poolAttrs = [
-      { key: 'price', title: 'Pool Price', value: `$${poolPrice}` },
+      {
+        key: 'price',
+        title: 'Pool Price',
+        value: `${basePriceAsset} ${poolPrice}`,
+      },
       {
         key: 'depth',
         title: 'Pool Depth',
-        value: `$${getUserFormat(depth)}`,
+        value: `${basePriceAsset} ${getUserFormat(depth)}`,
       },
       { key: 'share', title: 'Your Share', value: `${share}%` },
     ];
@@ -472,6 +475,7 @@ class PoolCreate extends Component {
             asset={source}
             amount={runeAmount}
             price={runePrice}
+            unit={basePriceAsset}
             onChange={this.handleChangeTokenAmount('rune')}
             onSelect={this.handleSelectTokenAmount('rune')}
             withSelection
@@ -481,6 +485,7 @@ class PoolCreate extends Component {
             assetData={tokensData}
             amount={tokenAmount}
             price={tokenPrice}
+            unit={basePriceAsset}
             onChangeAsset={this.handleSelectTraget}
             onChange={this.handleChangeTokenAmount(target)}
             onSelect={this.handleSelectTokenAmount(target)}
@@ -601,11 +606,14 @@ class PoolCreate extends Component {
     const {
       txStatus: { status, value },
       symbol,
+      priceIndex,
+      basePriceAsset,
     } = this.props;
     const { runeAmount, tokenAmount } = this.state;
 
     const source = 'rune';
     const target = getTickerFormat(symbol);
+    const runePrice = priceIndex.RUNE;
 
     const txURL = TESTNET_TX_BASE_URL + this.hash;
 
@@ -627,13 +635,15 @@ class PoolCreate extends Component {
                 data-test="stakeconfirm-coin-data-source"
                 asset={source}
                 assetValue={runeAmount}
-                price={0}
+                price={runeAmount * runePrice}
+                priceUnit={basePriceAsset}
               />
               <CoinData
                 data-test="stakeconfirm-coin-data-target"
                 asset={target}
                 assetValue={tokenAmount}
                 price={0}
+                priceUnit={basePriceAsset}
               />
             </div>
           </div>
@@ -697,7 +707,8 @@ export default compose(
       pools: state.Midgard.pools,
       poolAddress: state.Midgard.poolAddress,
       poolData: state.Midgard.poolData,
-      runePrice: state.Midgard.runePrice,
+      priceIndex: state.Midgard.priceIndex,
+      basePriceAsset: state.Midgard.basePriceAsset,
       stakerPoolData: state.Midgard.stakerPoolData,
       binanceData: state.Binance,
       txStatus: state.App.txStatus,
@@ -706,7 +717,6 @@ export default compose(
       getPools,
       getPoolAddress,
       getStakerPoolData,
-      getRunePrice,
       getBinanceTokens,
       getBinanceMarkets,
       setTxTimerType,
