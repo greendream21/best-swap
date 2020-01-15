@@ -559,6 +559,7 @@ class PoolStake extends Component {
       txStatus: { status, value },
       symbol,
       priceIndex,
+      basePriceAsset,
     } = this.props;
     const { runeAmount, tokenAmount } = this.state;
 
@@ -588,12 +589,14 @@ class PoolStake extends Component {
                 asset={source}
                 assetValue={runeAmount}
                 price={Pr * runeAmount}
+                priceUnit={basePriceAsset}
               />
               <CoinData
                 data-test="stakeconfirm-coin-data-target"
                 asset={target}
                 assetValue={tokenAmount}
                 price={tokenPrice * tokenAmount}
+                priceUnit={basePriceAsset}
               />
             </div>
           </div>
@@ -620,6 +623,7 @@ class PoolStake extends Component {
       txStatus: { status, value },
       symbol,
       priceIndex,
+      basePriceAsset,
     } = this.props;
 
     const source = 'rune';
@@ -648,11 +652,13 @@ class PoolStake extends Component {
                 asset={source}
                 assetValue={runeValue}
                 price={runePrice * runeValue}
+                priceUnit={basePriceAsset}
               />
               <CoinData
                 asset={target}
                 assetValue={tokenValue}
                 price={tokenPrice * tokenValue}
+                priceUnit={basePriceAsset}
               />
             </div>
           </div>
