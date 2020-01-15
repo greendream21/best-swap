@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
-import { Row, Col } from 'antd';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 
+import { Row, Col } from 'antd';
 import Tabs from '../../components/uielements/tabs';
 import { ContentWrapper } from './ConnectView.style';
 
@@ -8,15 +10,28 @@ import Keystore from './Keystore';
 import WalletConnect from './WalletConnect';
 import Ledger from './Ledger';
 
+import midgardActions from '../../redux/midgard/actions';
+
 const { TabPane } = Tabs;
+const { getPools } = midgardActions;
 
 class ConnectView extends Component {
+  static propTypes = {
+    getPools: PropTypes.func.isRequired,
+  };
+
   constructor(props) {
     super(props);
 
     this.state = {
       active: 'keystore',
     };
+  }
+
+  componentDidMount() {
+    const { getPools } = this.props;
+
+    getPools();
   }
 
   setWalletType = active => {
@@ -78,4 +93,9 @@ class ConnectView extends Component {
   }
 }
 
-export default ConnectView;
+export default connect(
+  null,
+  {
+    getPools,
+  },
+)(ConnectView);
