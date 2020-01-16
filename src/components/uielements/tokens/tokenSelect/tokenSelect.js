@@ -38,6 +38,7 @@ class TokenSelect extends Component {
     assetData: PropTypes.array.isRequired,
     asset: PropTypes.string.isRequired,
     price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    priceIndex: PropTypes.object.isRequired,
     priceUnit: PropTypes.string,
     withSearch: PropTypes.bool,
     searchDisable: PropTypes.array,
@@ -135,7 +136,14 @@ class TokenSelect extends Component {
   }
 
   renderMenu = () => {
-    const { assetData, asset, withSearch, searchDisable } = this.props;
+    const {
+      assetData,
+      asset,
+      priceIndex,
+      priceUnit,
+      withSearch,
+      searchDisable,
+    } = this.props;
     const dataTest = this.props['data-test']; // eslint-disable-line
     const menuDataTest = `${dataTest}-menu`;
 
@@ -144,6 +152,8 @@ class TokenSelect extends Component {
         <TokenMenu
           assetData={assetData}
           asset={asset}
+          priceIndex={priceIndex}
+          priceUnit={priceUnit}
           withSearch={withSearch}
           searchDisable={searchDisable}
           onSelect={this.handleChangeAsset}
@@ -157,6 +167,7 @@ class TokenSelect extends Component {
     const {
       asset,
       price,
+      priceIndex,
       priceUnit,
       assetData,
       onChangeAsset,

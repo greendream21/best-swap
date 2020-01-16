@@ -1,5 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { get as _get } from 'lodash';
+
 import FilterMenu from '../../filterMenu';
 import { getTickerFormat } from '../../../../helpers/stringHelper';
 import CoinData from '../coinData';
@@ -13,22 +15,11 @@ function filterFunction(item, searchTerm) {
   return tokenName.toLowerCase().indexOf(searchTerm.toLowerCase()) === 0;
 }
 
-function cellRenderer(data) {
-  const { asset: key, price } = data;
-  const tokenName = getTokenName(key);
-  const node = (
-    <CoinData
-      data-test={`coincard-menu-item-${tokenName}`}
-      asset={tokenName}
-      price={price}
-    />
-  );
-  return { key, node };
-}
-
 export default function CoinCardMenu({
   assetData,
   asset,
+  priceIndex,
+  unit,
   withSearch,
   searchDisable,
   onSelect,
@@ -39,6 +30,27 @@ export default function CoinCardMenu({
     return tokenName.toLowerCase() !== asset.toLowerCase();
   });
   const dataTest = props['data-test']; // eslint-disable-line
+
+  const cellRenderer = data => {
+    const { asset: key } = data;
+    const tokenName = getTokenName(key);
+
+    let price = 0;
+    const ticker = getTickerFormat(data.asset).toUpperCase();
+    if (ticker === 'RUNE') price = priceIndex.RUNE;
+    else price = _get(priceIndex, ticker, 0);
+
+    const node = (
+      <CoinData
+        data-test={`coincard-menu-item-${tokenName}`}
+        asset={tokenName}
+        price={price}
+        priceUnit={unit}
+      />
+    );
+    return { key, node };
+  };
+
   return (
     <FilterMenu
       {...props}
@@ -60,6 +72,8 @@ export default function CoinCardMenu({
 CoinCardMenu.propTypes = {
   asset: PropTypes.string,
   assetData: PropTypes.array,
+  priceIndex: PropTypes.object.isRequired,
+  unit: PropTypes.string.isRequired,
   searchDisable: PropTypes.arrayOf(PropTypes.string),
   withSearch: PropTypes.bool,
   onSelect: PropTypes.func,

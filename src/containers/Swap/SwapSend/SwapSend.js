@@ -812,6 +812,7 @@ class SwapSend extends Component {
                 assetData={sourceData}
                 amount={xValue}
                 price={Px}
+                priceIndex={priceIndex}
                 unit={basePriceAsset}
                 onChange={this.handleChangeValue}
                 onChangeAsset={this.handleChangeSource}
@@ -837,6 +838,7 @@ class SwapSend extends Component {
                 assetData={targetData}
                 amount={outputAmount}
                 price={outputPrice}
+                priceIndex={priceIndex}
                 unit={basePriceAsset}
                 slip={slip}
                 onChangeAsset={this.handleSelectTraget}
