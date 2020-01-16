@@ -578,7 +578,7 @@ class PoolCreate extends Component {
     );
 
     return (
-      <>
+      <div className="token-detail-container">
         <Label className="label-title" size="normal" weight="bold">
           {title}
         </Label>
@@ -592,13 +592,27 @@ class PoolCreate extends Component {
             <div className="new-token-coin">
               <CoinIcon type={target} />
             </div>
-            <Status title="Token" value={String(token).toUpperCase()} />
-            <Status title="Ticker" value={String(ticker).toUpperCase()} />
-            <Status title="Market Price" value={`$${marketPrice.toFixed(2)}`} />
-            <Status title="Total Supply" value={totalSupply.toFixed(0)} />
+            <Label className="token-name" size="normal">
+              {String(token).toUpperCase()}
+            </Label>
+            <Status
+              title="Ticker"
+              value={String(ticker).toUpperCase()}
+              direction="horizontal"
+            />
+            <Status
+              title="Market Price"
+              value={`$${marketPrice.toFixed(2)}`}
+              direction="horizontal"
+            />
+            <Status
+              title="Total Supply"
+              value={totalSupply.toFixed(0)}
+              direction="horizontal"
+            />
           </div>
         )}
-      </>
+      </div>
     );
   };
 

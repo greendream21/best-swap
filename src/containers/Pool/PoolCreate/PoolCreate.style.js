@@ -6,6 +6,7 @@ import { media } from '../../../helpers/styleHelper';
 
 export const ContentWrapper = styled(ContentView)`
   padding: 0;
+  background: transparent;
 
   & > .ant-row {
     display: flex;
@@ -24,20 +25,12 @@ export const ContentWrapper = styled(ContentView)`
       display: flex;
       flex-direction: column;
       padding: 10px 20px;
-      border-right: 1px solid ${palette('border', 0)};
+      margin-right: 6px;
+      background: #fff;
 
       .new-token-coin {
         padding-top: 20px;
         padding-bottom: 10px;
-      }
-
-      .status-wrapper {
-        .status-title {
-          padding-top: 5px;
-        }
-        .status-value {
-          padding-bottom: 5px;
-        }
       }
 
       .left-arrow-wrapper {
@@ -51,12 +44,47 @@ export const ContentWrapper = styled(ContentView)`
           transform: rotate(180deg);
         }
       }
+
+      .token-detail-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        .new-token-detail-wrapper {
+          width: 70%;
+          height: 300px;
+          padding: 30px;
+          margin-top: 60px;
+          border: 1px solid ${palette('border', 0)};
+
+          .new-token-coin {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            margin-top: -70px;
+          }
+
+          .token-name {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 20px;
+          }
+
+          .status-wrapper {
+            margin-bottom: 20px;
+          }
+        }
+      }
     }
 
     .add-asset-view {
       display: flex;
       flex-direction: column;
       padding: 10px 20px;
+      background: #fff;
 
       .label-no-padding {
         padding: 0;
