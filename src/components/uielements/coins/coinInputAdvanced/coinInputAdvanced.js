@@ -76,7 +76,7 @@ export function useCoinCardInputBehaviour({
       if (!isValidNumber && val !== '') return;
       setTextFieldValue(val);
     },
-    [focus, setTextFieldValue, setFocus],
+    [setTextFieldValue, setFocus],
   );
 
   useEffect(() => {
@@ -103,21 +103,14 @@ export function useCoinCardInputBehaviour({
         },
       });
     }
-  }, [
-    focus,
-    outval,
-    isBroadcastable,
-    setTextFieldValue,
-    formatStringToNumber,
-    textFieldValue,
-  ]);
+  }, [focus, outval, setTextFieldValue, textFieldValue, debouncedOnChange]);
 
   const handleBlur = useCallback(
     event => {
       event.target.blur();
       setFocus(false);
     },
-    [setFocus, focus],
+    [setFocus],
   );
 
   const handleKeyDown = useCallback(
