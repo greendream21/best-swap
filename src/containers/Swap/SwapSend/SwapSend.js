@@ -374,9 +374,9 @@ class SwapSend extends Component {
 
   handleCloseModal = () => {
     const {
-      txStatus: { status }, // eslint-disable-line no-unused-vars
+      txStatus: { status }, // eslint-disable-line  no-unused-vars, @typescript-eslint/no-unused-vars
       setTxTimerModal,
-      resetTxStatus, // eslint-disable-line no-unused-vars
+      resetTxStatus, // eslint-disable-line  no-unused-vars, @typescript-eslint/no-unused-vars
     } = this.props;
 
     // if (!status) resetTxStatus();

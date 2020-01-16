@@ -1,6 +1,11 @@
 {
-  "parser": "babel-eslint",
-  "extends": ["airbnb", "plugin:css-modules/recommended"],
+  "parser": "@typescript-eslint/parser",
+  "extends": [
+    "airbnb",
+    "plugin:css-modules/recommended",
+    "plugin:@typescript-eslint/recommended",
+    "prettier/@typescript-eslint"
+  ],
   "env": {
     "browser": true,
     "jest": true
@@ -19,7 +24,7 @@
       }
     }
   },
-  "plugins": ["react", "import", "css-modules"],
+  "plugins": ["react", "react-hooks", "import", "css-modules"],
   "rules": {
     "camelcase": 0,
     "consistent-return": 0,
@@ -72,7 +77,12 @@
     "react/jsx-uses-vars": 2,
     "react/jsx-no-bind": 0,
     "react/react-in-jsx-scope": 2,
-    "react/jsx-filename-extension": [2, { "extensions": [".js", ".jsx"] }],
+    "react/jsx-filename-extension": [
+      2,
+      { "extensions": [".js", ".jsx", ".ts", ".tsx"] }
+    ],
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
     "jsx-a11y/anchor-is-valid": [
       "error",
       {
@@ -83,6 +93,20 @@
     ],
     "jsx-a11y/no-static-element-interactions": 0,
     "jsx-a11y/click-events-have-key-events": 0,
-    "jsx-a11y/no-noninteractive-element-interactions": 0
+    "jsx-a11y/no-noninteractive-element-interactions": 0,
+    "@typescript-eslint/ban-ts-ignore": "off",
+    "@typescript-eslint/camelcase": "off",
+    "@typescript-eslint/no-empty-function": "off",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/no-use-before-define": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "ignoreRestSiblings": true,
+        "varsIgnorePattern": "^_",
+        "argsIgnorePattern": "^_"
+      }
+    ],
+    "@typescript-eslint/no-var-requires": "off"
   }
 }
