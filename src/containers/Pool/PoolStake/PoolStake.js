@@ -860,6 +860,7 @@ class PoolStake extends Component {
                   asset={source}
                   amount={runeAmount}
                   price={runePrice}
+                  priceIndex={priceIndex}
                   unit={basePriceAsset}
                   onChange={this.handleChangeTokenAmount('rune')}
                 />
@@ -879,6 +880,7 @@ class PoolStake extends Component {
                   assetData={tokensData}
                   amount={tokenAmount}
                   price={tokenPrice}
+                  priceIndex={priceIndex}
                   unit={basePriceAsset}
                   onChangeAsset={this.handleSelectTraget}
                   onChange={this.handleChangeTokenAmount(target)}

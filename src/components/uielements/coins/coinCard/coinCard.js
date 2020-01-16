@@ -49,6 +49,7 @@ class CoinCard extends Component {
     assetData: PropTypes.array,
     amount: PropTypes.number,
     price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    priceIndex: PropTypes.object.isRequired,
     unit: PropTypes.string,
     slip: PropTypes.number,
     title: PropTypes.string,
@@ -138,13 +139,22 @@ class CoinCard extends Component {
   };
 
   renderMenu() {
-    const { assetData, asset, withSearch, searchDisable } = this.props;
+    const {
+      assetData,
+      asset,
+      priceIndex,
+      unit,
+      withSearch,
+      searchDisable,
+    } = this.props;
     const dataTest = this.props['data-test']; // eslint-disable-line
     return (
       <CoinCardMenu
         data-test={dataTest}
         assetData={assetData}
         asset={asset}
+        priceIndex={priceIndex}
+        unit={unit}
         withSearch={withSearch}
         searchDisable={searchDisable}
         onSelect={this.handleChangeAsset}
@@ -178,6 +188,7 @@ class CoinCard extends Component {
       assetData,
       amount,
       price,
+      priceIndex,
       unit,
       slip,
       title,

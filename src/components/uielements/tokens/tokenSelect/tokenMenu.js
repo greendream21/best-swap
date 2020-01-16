@@ -1,5 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { get as _get } from 'lodash';
+
 import FilterMenu from '../../filterMenu';
 import TokenData from '../tokenData';
 
@@ -10,25 +12,11 @@ function filterFunction(item, searchTerm) {
   return tokenName.toLowerCase().indexOf(searchTerm.toLowerCase()) === 0;
 }
 
-function cellRenderer(data) {
-  const { asset: key, price } = data;
-  const tokenName = getTickerFormat(key);
-  const dataTest = `token-menu-item-${tokenName}`;
-  const node = (
-    <TokenData
-      asset={tokenName}
-      price={price}
-      size="small"
-      data-test={dataTest}
-    />
-  );
-
-  return { key, node };
-}
-
 export default function TokenMenu({
   assetData,
   asset,
+  priceUnit,
+  priceIndex,
   withSearch,
   searchDisable,
   onSelect,
@@ -39,6 +27,29 @@ export default function TokenMenu({
 
     return tokenName.toLowerCase() !== asset.toLowerCase();
   });
+
+  const cellRenderer = data => {
+    const { asset: key } = data;
+    const tokenName = getTickerFormat(key);
+    const dataTest = `token-menu-item-${tokenName}`;
+
+    let price = 0;
+    const ticker = getTickerFormat(data.asset).toUpperCase();
+    if (ticker === 'RUNE') price = priceIndex.RUNE;
+    else price = _get(priceIndex, ticker, 0);
+
+    const node = (
+      <TokenData
+        asset={tokenName}
+        price={price}
+        priceUnit={priceUnit}
+        size="small"
+        data-test={dataTest}
+      />
+    );
+
+    return { key, node };
+  };
 
   return (
     <FilterMenu
@@ -59,6 +70,8 @@ export default function TokenMenu({
 
 TokenMenu.propTypes = {
   asset: PropTypes.string,
+  priceIndex: PropTypes.object.isRequired,
+  priceUnit: PropTypes.string.isRequired,
   assetData: PropTypes.array,
   searchDisable: PropTypes.arrayOf(PropTypes.string),
   withSearch: PropTypes.bool,

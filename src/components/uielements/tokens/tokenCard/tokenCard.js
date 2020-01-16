@@ -15,6 +15,7 @@ class TokenCard extends Component {
     assetData: PropTypes.array,
     amount: PropTypes.number,
     price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    priceIndex: PropTypes.object.isRequired,
     unit: PropTypes.string,
     slip: PropTypes.number,
     title: PropTypes.string,
@@ -64,6 +65,7 @@ class TokenCard extends Component {
       assetData,
       amount,
       price,
+      priceIndex,
       unit,
       slip,
       title,
@@ -101,6 +103,7 @@ class TokenCard extends Component {
           <TokenSelect
             asset={asset}
             price={price}
+            priceIndex={priceIndex}
             priceUnit={unit}
             assetData={assetData}
             withSearch={withSearch}
