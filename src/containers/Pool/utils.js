@@ -130,9 +130,9 @@ export const getCalcResult = (
   };
 };
 
-export const validateStake = (wallet, runeAmount, tokenAmount, data) => {
+export const validateStake = (wallet, tokenAmount, data) => {
   const { poolAddress } = data;
-  if (!wallet || !poolAddress || !runeAmount || !tokenAmount) {
+  if (!wallet || !poolAddress || !tokenAmount) {
     return false;
   }
   return true;
@@ -148,34 +148,50 @@ export const confirmStake = (
   return new Promise((resolve, reject) => {
     console.log('confirm stake', wallet, runeAmount, tokenAmount, data);
 
-    if (!validateStake(wallet, runeAmount, tokenAmount, data)) {
+    if (!validateStake(wallet, tokenAmount, data)) {
       return reject();
     }
 
     const { poolAddress, symbolTo } = data;
 
-    const memo = getStakeMemo(symbolTo);
-    console.log('memo: ', memo);
+    if (runeAmount > 0 && tokenAmount > 0) {
+      const memo = getStakeMemo(symbolTo);
+      console.log('memo: ', memo);
 
-    const outputs = [
-      {
-        to: poolAddress,
-        coins: [
-          {
-            denom: 'RUNE-A1F',
-            amount: runeAmount.toFixed(8),
-          },
-          {
-            denom: symbolTo,
-            amount: tokenAmount.toFixed(8),
-          },
-        ],
-      },
-    ];
+      const outputs = [
+        {
+          to: poolAddress,
+          coins: [
+            {
+              denom: 'RUNE-A1F',
+              amount: runeAmount.toFixed(8),
+            },
+            {
+              denom: symbolTo,
+              amount: tokenAmount.toFixed(8),
+            },
+          ],
+        },
+      ];
 
-    Binance.multiSend(wallet, outputs, memo)
-      .then(response => resolve(response))
-      .catch(error => reject(error));
+      Binance.multiSend(wallet, outputs, memo)
+        .then(response => resolve(response))
+        .catch(error => reject(error));
+    } else if (runeAmount <= 0 && tokenAmount) {
+      const memo = getStakeMemo(symbolTo);
+      console.log('memo: ', memo);
+
+      Binance.transfer(wallet, poolAddress, tokenAmount, symbolTo, memo)
+        .then(response => resolve(response))
+        .catch(error => reject(error));
+    } else if (tokenAmount <= 0 && runeAmount) {
+      const memo = getStakeMemo('RUNE-A1F');
+      console.log('memo: ', memo);
+
+      Binance.transfer(wallet, poolAddress, runeAmount, 'RUNE-A1F', memo)
+        .then(response => resolve(response))
+        .catch(error => reject(error));
+    }
   });
 };
 
@@ -242,7 +258,7 @@ export const confirmCreatePool = (
   return new Promise((resolve, reject) => {
     console.log('confirm stake', wallet, runeAmount, tokenAmount, data);
 
-    if (!validateStake(wallet, runeAmount, tokenAmount, data)) {
+    if (!validateStake(wallet, tokenAmount, data)) {
       return reject();
     }
 

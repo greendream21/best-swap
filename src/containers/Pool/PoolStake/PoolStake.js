@@ -379,7 +379,7 @@ class PoolStake extends Component {
       return;
     }
 
-    if (Number(runeAmount) <= 0 || Number(tokenAmount) <= 0) {
+    if (Number(runeAmount) <= 0 && Number(tokenAmount) <= 0) {
       notification.error({
         message: 'Stake Invalid',
         description: 'You need to enter an amount to stake.',
