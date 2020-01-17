@@ -85,7 +85,7 @@ export const getPriceIndex = (assetArray, baseTokenTicker) => {
 
     let price = 0;
     if (priceRune && baseTokenPrice) {
-      price = 1 / baseTokenPrice / priceRune;
+      price = (1 / baseTokenPrice) * priceRune;
     }
 
     if (ticker) {
