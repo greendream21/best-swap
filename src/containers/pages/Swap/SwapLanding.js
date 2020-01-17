@@ -11,7 +11,7 @@ class SwapLanding extends Component {
       <SwapWrapper>
         <Row gutter={32}>
           <Col span={24}>
-            <ActionView type="swap" view="detail" info="bnb-rune" />
+            <ActionView type="swap" view="landing" info="bnb-rune" />
           </Col>
         </Row>
       </SwapWrapper>
