@@ -125,6 +125,7 @@ class PoolView extends Component {
         dataIndex: 'depth',
         sorter: (a, b) => a.raw.depth - b.raw.depth,
         sortDirections: ['descend', 'ascend'],
+        sortOrder: 'descend',
       },
       {
         key: 'volume24',
