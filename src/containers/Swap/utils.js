@@ -43,15 +43,15 @@ export const getCalcResult = (
 
       const token = getTickerFormat(symbol);
       if (token.toLowerCase() === from.toLowerCase()) {
-        X = Number(assetStakedTotal);
-        Y = Number(runeStakedTotal);
+        X = Number(assetStakedTotal / BASE_NUMBER);
+        Y = Number(runeStakedTotal / BASE_NUMBER);
         result.poolAddressFrom = poolAddress;
         result.symbolFrom = symbol;
       }
 
       if (token.toLowerCase() === to.toLowerCase()) {
-        R = Number(runeStakedTotal);
-        Z = Number(assetStakedTotal);
+        R = Number(runeStakedTotal / BASE_NUMBER);
+        Z = Number(assetStakedTotal / BASE_NUMBER);
         result.poolAddressTo = poolAddress;
         result.symbolTo = symbol;
       }
@@ -94,8 +94,8 @@ export const getCalcResult = (
 
       const token = getTickerFormat(symbol);
       if (token.toLowerCase() === from.toLowerCase()) {
-        X = Number(assetStakedTotal);
-        Y = Number(runeStakedTotal);
+        X = Number(assetStakedTotal / BASE_NUMBER);
+        Y = Number(runeStakedTotal / BASE_NUMBER);
         result.ratio = X / Y;
 
         result.poolAddressTo = poolAddress;
@@ -146,8 +146,8 @@ export const getCalcResult = (
 
       const token = getTickerFormat(symbol);
       if (token.toLowerCase() === to.toLowerCase()) {
-        X = Number(runeStakedTotal);
-        Y = Number(assetStakedTotal);
+        X = Number(runeStakedTotal / BASE_NUMBER);
+        Y = Number(assetStakedTotal / BASE_NUMBER);
         result.ratio = X / Y;
 
         result.poolAddressTo = poolAddress;
@@ -167,7 +167,7 @@ export const getCalcResult = (
     const slip = input !== 0 ? Math.round(((input - output) / input) * 100) : 0;
     const lim = Math.round((1 - 3 / 100) * outputToken * BASE_NUMBER);
     const fee = getFixedNumber((xTimes * Y) / times);
-
+    console.log('outputAmount ', X, Y, outputToken);
     return {
       ...result,
       Px,
