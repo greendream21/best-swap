@@ -554,7 +554,7 @@ class PoolStake extends Component {
     this.getStakerInfo();
   };
 
-  renderStakeModalContent = (poolStats, calcResult) => {
+  renderStakeModalContent = () => {
     const {
       txStatus: { status, value },
       symbol,
@@ -566,7 +566,7 @@ class PoolStake extends Component {
     const source = 'rune';
     const target = getTickerFormat(symbol);
 
-    const { Pr } = calcResult;
+    const Pr = priceIndex.RUNE;
     const tokenPrice = _get(priceIndex, target.toUpperCase(), 0);
     const txURL = TESTNET_TX_BASE_URL + this.hash;
 
@@ -1252,7 +1252,7 @@ class PoolStake extends Component {
               footer={null}
               onCancel={this.handleCloseModal}
             >
-              {this.renderStakeModalContent(poolStats, calcResult)}
+              {this.renderStakeModalContent()}
             </ConfirmModal>
             <PrivateModal
               title="PASSWORD CONFIRMATION"
