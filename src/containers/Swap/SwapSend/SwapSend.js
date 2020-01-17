@@ -205,8 +205,19 @@ class SwapSend extends Component {
       return;
     }
 
-    const { info } = this.props;
+    const {
+      info,
+      user: { wallet },
+    } = this.props;
     const newValue = value;
+
+    // if wallet is disconnected, just set the value
+    if (!wallet) {
+      this.setState({
+        xValue: newValue,
+      });
+      return;
+    }
 
     const { assetData } = this.props;
     const { source } = getPair(info);

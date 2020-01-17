@@ -70,7 +70,11 @@ class ActionView extends Component {
     ) {
       routing = '/swap';
     }
-    if (pageView === 'swap-detail' || pageView === 'swap-send') {
+    if (
+      pageView === 'swap-detail' ||
+      pageView === 'swap-landing' ||
+      pageView === 'swap-send'
+    ) {
       routing = '/swap';
     }
     if (pageView.includes('pools-')) {
@@ -79,11 +83,14 @@ class ActionView extends Component {
     if (pageView.includes('trade-')) {
       routing = '/trade';
     }
+
+    const backTitle = pageView === 'swap-landing' ? 'See all pools' : 'Back';
+
     return (
       <Link to={routing}>
         <BackLink>
           <Icon type="left" />
-          <span>Back</span>
+          <span>{backTitle}</span>
         </BackLink>
       </Link>
     );
@@ -108,6 +115,7 @@ class ActionView extends Component {
           {view === 'network-view' && <NetworkView />}
           {view === 'swap-view' && <SwapView />}
           {view === 'swap-detail' && <SwapSend view="detail" info={info} />}
+          {view === 'swap-landing' && <SwapSend view="detail" info={info} />}
           {view === 'swap-send' && <SwapSend view="send" info={info} />}
           {view === 'pools-view' && <PoolView />}
           {view === 'pools-pool' && <PoolStake symbol={symbol} />}
