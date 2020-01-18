@@ -605,10 +605,13 @@ class PoolStake extends Component {
           {this.hash && (
             <div className="hash-address">
               <div className="copy-btn-wrapper">
-                <a href={txURL} target="_blank" rel="noopener noreferrer">
+                <Link to="/pools">
                   <Button className="view-btn" color="success">
-                    VIEW ON BINANCE CHAIN
+                    FINISH
                   </Button>
+                </Link>
+                <a href={txURL} target="_blank" rel="noopener noreferrer">
+                  VIEW TRANSACTION
                 </a>
               </div>
             </div>
@@ -667,10 +670,13 @@ class PoolStake extends Component {
           {this.hash && (
             <div className="hash-address">
               <div className="copy-btn-wrapper">
-                <a href={txURL} target="_blank" rel="noopener noreferrer">
+                <Link to="/pools">
                   <Button className="view-btn" color="success">
-                    VIEW ON BINANCE CHAIN
+                    FINISH
                   </Button>
+                </Link>
+                <a href={txURL} target="_blank" rel="noopener noreferrer">
+                  VIEW TRANSACTION
                 </a>
               </div>
             </div>
