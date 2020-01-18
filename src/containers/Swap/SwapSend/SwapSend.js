@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Row, Col, Icon, Form, notification, Popover } from 'antd';
 import { crypto } from '@binance-chain/javascript-sdk';
@@ -658,10 +658,13 @@ class SwapSend extends Component {
           {this.hash && (
             <div className="hash-address">
               <div className="copy-btn-wrapper">
-                <a href={txURL} target="_blank" rel="noopener noreferrer">
+                <Link to="/swap">
                   <Button className="view-btn" color="success">
-                    VIEW ON BINANCE CHAIN
+                    FINISH
                   </Button>
+                </Link>
+                <a href={txURL} target="_blank" rel="noopener noreferrer">
+                  VIEW TRANSACTION
                 </a>
               </div>
             </div>

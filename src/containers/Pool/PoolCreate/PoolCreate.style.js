@@ -232,12 +232,14 @@ export const ConfirmModalContent = styled.div`
       .copy-btn-wrapper {
         display: flex;
         justify-content: center;
+        flex-direction: column;
         align-items: center;
 
         border: 1px solid ${palette('primary', 0)};
         border-radius: 6px;
         padding: 1px 4px;
         margin-right: 6px;
+        margin-bottom: 16px;
         color: ${palette('primary', 0)};
         cursor: pointer;
 

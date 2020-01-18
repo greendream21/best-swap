@@ -257,6 +257,7 @@ export const SwapModalContent = styled.div`
 
       .copy-btn-wrapper {
         display: flex;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
 
@@ -264,6 +265,7 @@ export const SwapModalContent = styled.div`
         border-radius: 6px;
         padding: 1px 4px;
         margin-right: 6px;
+        margin-bottom: 16px;
         color: ${palette('primary', 0)};
         cursor: pointer;
 
