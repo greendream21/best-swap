@@ -23,7 +23,9 @@ export const TokenCardWrapper = styled.div`
       flex-grow: 1;
       margin-right: 0;
       margin-bottom: 10px;
+
       ${media.sm`
+        width: 50%; 
         margin-bottom: 0;
         margin-right: 12px;
       `}
@@ -33,7 +35,7 @@ export const TokenCardWrapper = styled.div`
       flex-grow: 1;
       width: auto;
       ${media.sm`
-        width: 216px;
+        width: 50%;
       `}
     }
   }
