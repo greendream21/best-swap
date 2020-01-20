@@ -116,11 +116,7 @@ class SwapSend extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const {
-      wsTransfers,
-      refreshBalance,
-      user: { wallet },
-    } = this.props;
+    const { wsTransfers } = this.props;
     const length = wsTransfers.length;
 
     if (length !== prevProps.wsTransfers.length && length > 1 && this.txData) {
@@ -145,8 +141,6 @@ class SwapSend extends Component {
           txResult,
           timerStatus: true,
         });
-        // refresh balances with update
-        refreshBalance(wallet);
       }
     }
   }
