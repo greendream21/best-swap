@@ -90,16 +90,20 @@ class Header extends Component {
     const active = type || activeTab;
 
     const swapTab = (
-      <span>
-        <Icon type="swap" />
-        swap
-      </span>
+      <Link to="/swap">
+        <span>
+          <Icon type="swap" />
+          swap
+        </span>
+      </Link>
     );
     const poolsTab = (
-      <span>
-        <Icon type="database" theme="filled" />
-        stake
-      </span>
+      <Link to="/stake">
+        <span>
+          <Icon type="database" theme="filled" />
+          stake
+        </span>
+      </Link>
     );
 
     // TODO: Hide trade tab
