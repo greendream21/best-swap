@@ -56,7 +56,7 @@ export const getCalcResult = (
         result.symbolTo = symbol;
       }
     });
-    result.ratio = (Y / X / Z) * R;
+    result.ratio = (Z / R / Y) * X;
 
     const calcData = { X, Y, R, Z, Py, Pr: Py };
 
@@ -96,7 +96,7 @@ export const getCalcResult = (
       if (token.toLowerCase() === from.toLowerCase()) {
         X = Number(assetStakedTotal / BASE_NUMBER);
         Y = Number(runeStakedTotal / BASE_NUMBER);
-        result.ratio = X / Y;
+        result.ratio = Y / X;
 
         result.poolAddressTo = poolAddress;
         result.symbolFrom = symbol;
@@ -148,7 +148,7 @@ export const getCalcResult = (
       if (token.toLowerCase() === to.toLowerCase()) {
         X = Number(runeStakedTotal / BASE_NUMBER);
         Y = Number(assetStakedTotal / BASE_NUMBER);
-        result.ratio = X / Y;
+        result.ratio = Y / X;
 
         result.poolAddressTo = poolAddress;
         result.symbolTo = symbol;
