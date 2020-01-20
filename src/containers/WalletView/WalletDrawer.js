@@ -26,6 +26,10 @@ const WalletDrawer = props => {
   } = props;
 
   const toggleDrawer = () => {
+    if (visible === false) {
+      refreshBalance(wallet);
+      refreshStake(wallet);
+    }
     setVisible(!visible);
   };
 

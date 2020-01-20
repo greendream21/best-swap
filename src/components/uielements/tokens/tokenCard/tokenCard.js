@@ -83,7 +83,7 @@ class TokenCard extends Component {
       ...props
     } = this.props;
 
-    const slipValue = slip ? `slip ${slip}%` : null;
+    const slipValue = slip !== undefined ? `slip ${slip}%` : null;
     const priceValue = `${unit} ${getFixedNumber(amount * price)}`;
     const dataTest = this.props['data-test']; // eslint-disable-line
     const tokenSelectDataTest = `${dataTest}-select`;
