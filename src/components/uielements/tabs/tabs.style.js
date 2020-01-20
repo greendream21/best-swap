@@ -19,7 +19,8 @@ export const StyledTab = component => styled(component)`
     font-size: 12px;
     text-transform: uppercase;
 
-    .ant-tabs-tab {
+    .ant-tabs-tab,
+    .ant-tabs-tab a {
       padding-top: 18px;
       letter-spacing: 2.5px;
       color: ${palette('text', 1)};
@@ -30,7 +31,8 @@ export const StyledTab = component => styled(component)`
       }
     }
 
-    .ant-tabs-tab-active {
+    .ant-tabs-tab-active,
+    .ant-tabs-tab-active a {
       color: ${palette('text', 0)};
     }
 
