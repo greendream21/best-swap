@@ -932,7 +932,7 @@ class SwapSend extends Component {
           okText="CONFIRM"
           cancelText="CANCEL"
         >
-          <Form onSubmit={this.handleConfirmPassword}>
+          <Form onSubmit={this.handleConfirmPassword} autocomplete="off">
             <Form.Item className={invalidPassword ? 'has-error' : ''}>
               <Input
                 data-test="password-confirmation-input"
@@ -942,6 +942,7 @@ class SwapSend extends Component {
                 value={password}
                 onChange={this.handleChange('password')}
                 prefix={<Icon type="lock" />}
+                autocomplete="off"
               />
               {invalidPassword && (
                 <div className="ant-form-explain">Password is wrong!</div>
