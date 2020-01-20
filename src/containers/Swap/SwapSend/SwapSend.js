@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { withRouter, Link } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Row, Col, Icon, Form, notification, Popover } from 'antd';
 import { crypto } from '@binance-chain/javascript-sdk';
@@ -123,7 +123,7 @@ class SwapSend extends Component {
     } = this.props;
     const length = wsTransfers.length;
 
-    if (length !== prevProps.wsTransfers.length && length > 1) {
+    if (length !== prevProps.wsTransfers.length && length > 1 && this.txData) {
       const lastTx = wsTransfers[length - 1];
       const { fromAddr, toAddr, fromToken, toToken } = this.txData;
       console.log('txData ', this.txData);
@@ -580,6 +580,12 @@ class SwapSend extends Component {
     });
   };
 
+  handleClickFinish = () => {
+    this.handleCloseModal();
+
+    this.props.history.push('/swap');
+  };
+
   renderSwapModalContent = (swapData, info) => {
     const {
       txStatus: { status, value },
@@ -658,11 +664,13 @@ class SwapSend extends Component {
           {this.hash && (
             <div className="hash-address">
               <div className="copy-btn-wrapper">
-                <Link to="/swap">
-                  <Button className="view-btn" color="success">
-                    FINISH
-                  </Button>
-                </Link>
+                <Button
+                  className="view-btn"
+                  color="success"
+                  onClick={this.handleClickFinish}
+                >
+                  FINISH
+                </Button>
                 <a href={txURL} target="_blank" rel="noopener noreferrer">
                   VIEW TRANSACTION
                 </a>
