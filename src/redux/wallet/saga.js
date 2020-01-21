@@ -117,7 +117,7 @@ export function* getUserStakeData() {
 
     const params = {
       method: 'get',
-      url: getMidgardURL(`stakers?${address}/${assetId}`),
+      url: getMidgardURL(`stakers/${address}/${assetId}`),
       headers: getHeaders(),
     };
 
