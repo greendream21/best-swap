@@ -109,11 +109,14 @@ export const getCalcResult = (
     const Px = getPx(xValue, calcData);
     const times = (xValue + X) ** 2;
     const xTimes = xValue ** 2;
+    const balanceTimes = X ** 2;
     const outputToken = Number(((xValue * X * Y) / times).toFixed(2));
     const outputPy = ((Px * (X + xValue)) / (Y - outputToken)).toFixed(2);
-    const input = xValue * Px;
-    const output = outputToken * outputPy;
-    const slip = input !== 0 ? Math.round(((input - output) / input) * 100) : 0;
+    // const input = xValue * Px;
+    // const output = outputToken * outputPy;
+    const slip = Math.round(
+      (xTimes / (xTimes + X * xValue + balanceTimes)) * 100,
+    );
     const lim = Math.round((1 - 3 / 100) * outputToken * BASE_NUMBER);
     const fee = getFixedNumber((xTimes * Y) / times);
 
@@ -160,11 +163,16 @@ export const getCalcResult = (
 
     const times = (xValue + X) ** 2;
     const xTimes = xValue ** 2;
+    const balanceTimes = X ** 2;
     const outputToken = Number(((xValue * X * Y) / times).toFixed(2));
     const outputPy = ((Px * (X + xValue)) / (Y - outputToken)).toFixed(2);
-    const input = xValue * Px;
-    const output = outputToken * outputPy;
-    const slip = input !== 0 ? Math.round(((input - output) / input) * 100) : 0;
+    // const input = xValue * Px;
+    // const output = outputToken * outputPy;
+
+    const slip = Math.round(
+      (xTimes / (xTimes + X * xValue + balanceTimes)) * 100,
+    );
+    console.log('slip calc', slip);
     const lim = Math.round((1 - 3 / 100) * outputToken * BASE_NUMBER);
     const fee = getFixedNumber((xTimes * Y) / times);
     console.log('outputAmount ', X, Y, outputToken);
