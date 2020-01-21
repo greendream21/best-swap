@@ -141,6 +141,7 @@ class WalletView extends Component {
     const selectedAsset = this.getSelectedAsset(pair);
     const sourceIndex = this.getAssetIndexByName(source);
     const sortedAssets = _sortBy(assetData, ['asset']);
+    const sortedStakerData = _sortBy(stakeData, ['target']);
 
     return (
       <WalletViewWrapper data-test="wallet-view">
@@ -178,7 +179,7 @@ class WalletView extends Component {
             {!loadingStakes && (
               <CoinList
                 data-test="wallet-stakes-list"
-                data={stakeData}
+                data={sortedStakerData}
                 priceIndex={priceIndex}
                 onSelect={this.handleSelectStake}
                 unit={basePriceAsset}
