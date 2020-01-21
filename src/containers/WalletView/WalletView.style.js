@@ -18,6 +18,7 @@ export const WalletViewWrapper = styled(ViewPanel)`
   .asset-title-label {
     text-align: center;
     text-transform: uppercase;
+    color: #626d7c;
   }
 
   .coinList-wrapper {
