@@ -778,11 +778,14 @@ class SwapSend extends Component {
       xValue,
       runePrice,
     );
-    const { Px, slip, outputAmount, outputPrice, ratio } = this.data;
+    const { slip, outputAmount, outputPrice, ratio } = this.data;
     console.log(this.data); // eslint-disable-line no-console
+    const sourcePrice = _get(priceIndex, source.toUpperCase(), outputPrice);
+    const targetPrice = _get(priceIndex, target.toUpperCase(), outputPrice);
 
     const ratioLabel = `1 ${source.toUpperCase()} = ${getFixedNumber(
       ratio,
+      1,
     )} ${target.toUpperCase()}`;
 
     // swap modal
@@ -827,7 +830,7 @@ class SwapSend extends Component {
                 asset={source}
                 assetData={sourceData}
                 amount={xValue}
-                price={Px}
+                price={sourcePrice}
                 priceIndex={priceIndex}
                 unit={basePriceAsset}
                 onChange={this.handleChangeValue}
@@ -853,7 +856,7 @@ class SwapSend extends Component {
                 asset={target}
                 assetData={targetData}
                 amount={outputAmount}
-                price={outputPrice}
+                price={targetPrice}
                 priceIndex={priceIndex}
                 unit={basePriceAsset}
                 slip={slip}
