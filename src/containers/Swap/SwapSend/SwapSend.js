@@ -655,7 +655,7 @@ class SwapSend extends Component {
         </Row>
         <Row className="swap-info-wrapper">
           <Trend value={slipAmount} />
-          {this.hash && (
+          {this.hash && completed && (
             <div className="hash-address">
               <div className="copy-btn-wrapper">
                 <Button

@@ -602,7 +602,7 @@ class PoolStake extends Component {
           </div>
         </Row>
         <Row className="modal-info-wrapper">
-          {this.hash && (
+          {this.hash && !status && (
             <div className="hash-address">
               <div className="copy-btn-wrapper">
                 <Link to="/pools">
@@ -667,7 +667,7 @@ class PoolStake extends Component {
           </div>
         </Row>
         <Row className="modal-info-wrapper">
-          {this.hash && (
+          {this.hash && !status && (
             <div className="hash-address">
               <div className="copy-btn-wrapper">
                 <Link to="/pools">
