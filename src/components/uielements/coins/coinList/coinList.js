@@ -17,6 +17,7 @@ class CoinList extends Component {
     priceIndex: PropTypes.object,
     unit: PropTypes.string,
     isStakeData: PropTypes.bool,
+    type: PropTypes.string,
   };
 
   static defaultProps = {
@@ -26,6 +27,7 @@ class CoinList extends Component {
     size: 'small',
     unit: 'RUNE',
     className: '',
+    type: 'normal',
   };
 
   getPrice = (asset, priceIndex) => {
@@ -47,6 +49,7 @@ class CoinList extends Component {
       onSelect,
       priceIndex,
       unit,
+      type,
       className,
       isStakeData,
       ...props
@@ -94,6 +97,7 @@ class CoinList extends Component {
                   price={priceValue}
                   priceUnit={unit}
                   size={size}
+                  type={type}
                 />
               </div>
             );

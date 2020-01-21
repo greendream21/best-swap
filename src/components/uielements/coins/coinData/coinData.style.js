@@ -2,8 +2,7 @@ import styled from 'styled-components';
 
 export const CoinDataWrapper = styled.div`
   display: flex;
-  align-items: ${props =>
-    props.assetValue && props.size === 'small' ? 'flex-end' : 'center'};
+  align-items: center;
   width: 100%;
   padding: 0 8px;
 
@@ -23,7 +22,7 @@ export const CoinDataWrapper = styled.div`
   .coinData-asset-info,
   .coinData-target-info {
     display: flex;
-    flex-direction: column;
+    flex-direction: ${props => (props.type === 'normal' ? 'column' : 'row')};
     margin: 0 4px;
   }
 
@@ -39,5 +38,16 @@ export const CoinDataWrapper = styled.div`
         `display: flex;
           align-items: flex-end;`}
     }
+  }
+
+  .coinData-asset-label,
+  .coinData-asset-value,
+  .coinData-target-label,
+  .coinData-target-value {
+    color: #626d7c;
+  }
+
+  .coinData-asset-label {
+    margin-right: ${props => (props.type !== 'normal' ? '4px' : 0)};
   }
 `;

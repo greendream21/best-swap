@@ -17,6 +17,7 @@ class CoinData extends Component {
     priceUnit: PropTypes.string,
     size: PropTypes.oneOf(['small', 'big']),
     className: PropTypes.string,
+    type: PropTypes.string,
   };
 
   static defaultProps = {
@@ -28,6 +29,7 @@ class CoinData extends Component {
     priceUnit: 'RUNE',
     size: 'small',
     className: '',
+    type: 'normal',
   };
 
   render() {
@@ -39,6 +41,7 @@ class CoinData extends Component {
       price,
       priceUnit,
       size,
+      type,
       className,
       ...props
     } = this.props;
@@ -51,6 +54,7 @@ class CoinData extends Component {
         size={size}
         target={target}
         assetValue={assetValue}
+        type={type}
         className={`coinData-wrapper ${className}`}
         {...props}
       >
@@ -65,15 +69,16 @@ class CoinData extends Component {
             className="coinData-asset-label"
             data-test="coin-data-asset-label"
             type="normal"
-            weight="bold"
+            weight="600"
           >
-            {`${asset} ${target && ':'}`}
+            {`${asset} ${target && ':'}${type !== 'normal' ? '/ ' : ''}`}
           </Label>
           {assetValue && (
             <Label
               className="coinData-asset-value"
               data-test="coin-data-asset-value"
               type="normal"
+              weight="600"
             >
               {Number(Number(assetValue).toFixed(2)).toLocaleString()}
             </Label>
@@ -81,15 +86,15 @@ class CoinData extends Component {
         </div>
         {target && (
           <div className="coinData-target-info">
-            <Label
-              className="coinData-target-label"
-              type="normal"
-              weight="bold"
-            >
+            <Label className="coinData-target-label" type="normal" weight="600">
               {target}
             </Label>
             {targetValue && (
-              <Label className="coinData-target-value" type="normal">
+              <Label
+                className="coinData-target-value"
+                type="normal"
+                weight="600"
+              >
                 {targetValue}
               </Label>
             )}

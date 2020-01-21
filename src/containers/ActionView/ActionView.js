@@ -17,7 +17,7 @@ import TutorialView from '../TutorialView';
 
 import walletActions from '../../redux/wallet/actions';
 
-const { refreshBalance, refreshStake } = walletActions;
+const { refreshBalance } = walletActions;
 
 class ActionView extends Component {
   static propTypes = {
@@ -26,7 +26,6 @@ class ActionView extends Component {
     info: PropTypes.string,
     user: PropTypes.object.isRequired,
     refreshBalance: PropTypes.func.isRequired,
-    refreshStake: PropTypes.func.isRequired,
     history: PropTypes.object.isRequired,
     symbol: PropTypes.string,
   };
@@ -38,13 +37,12 @@ class ActionView extends Component {
   };
 
   componentDidMount() {
-    const { user, refreshBalance, refreshStake } = this.props;
+    const { user, refreshBalance } = this.props;
 
     if (user && user.wallet) {
       const address = user.wallet;
 
       refreshBalance(address);
-      refreshStake(address);
     }
   }
 
@@ -135,7 +133,6 @@ export default compose(
     }),
     {
       refreshBalance,
-      refreshStake,
     },
   ),
   withRouter,
