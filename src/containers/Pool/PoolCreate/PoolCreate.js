@@ -22,7 +22,12 @@ import TxTimer from '../../../components/uielements/txTimer';
 import StepBar from '../../../components/uielements/stepBar';
 import CoinData from '../../../components/uielements/coins/coinData';
 
-import appActions from '../../../redux/app/actions';
+import {
+  setTxTimerModal,
+  setTxTimerStatus,
+  countTxTimerValue,
+  resetTxStatus,
+} from '../../../redux/app/actions';
 import midgardActions from '../../../redux/midgard/actions';
 import binanceActions from '../../../redux/binance/actions';
 
@@ -40,14 +45,7 @@ import {
 } from '../utils';
 
 import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
-
-const {
-  setTxTimerType,
-  setTxTimerModal,
-  setTxTimerStatus,
-  setTxTimerValue,
-  resetTxStatus,
-} = appActions;
+import { MAX_VALUE } from '../../../redux/app/const';
 
 const { getPools, getStakerPoolData, getPoolAddress } = midgardActions;
 const { getBinanceTokens, getBinanceMarkets } = binanceActions;
@@ -72,10 +70,9 @@ class PoolCreate extends Component {
     binanceData: PropTypes.object.isRequired,
     history: PropTypes.object,
     txStatus: PropTypes.object.isRequired,
-    setTxTimerType: PropTypes.func.isRequired,
     setTxTimerModal: PropTypes.func.isRequired,
     setTxTimerStatus: PropTypes.func.isRequired,
-    setTxTimerValue: PropTypes.func.isRequired,
+    countTxTimerValue: PropTypes.func.isRequired,
     resetTxStatus: PropTypes.func.isRequired,
   };
 
@@ -108,6 +105,11 @@ class PoolCreate extends Component {
     this.getStakerData();
     getBinanceTokens();
     getBinanceMarkets();
+  }
+
+  componentWillUnmount() {
+    const { resetTxStatus } = this.props;
+    resetTxStatus();
   }
 
   getStakerData = () => {
@@ -295,6 +297,9 @@ class PoolCreate extends Component {
     } = this.props;
     const { runeAmount, tokenAmount } = this.state;
 
+    // start timer modal
+    this.handleStartTimer();
+    this.hash = null;
     try {
       const { result } = await confirmCreatePool(
         Binance,
@@ -306,9 +311,6 @@ class PoolCreate extends Component {
 
       console.log('create pool result: ', result);
       this.hash = result[0].hash;
-
-      // start timer modal
-      this.handleStartTimer();
     } catch (error) {
       notification.error({
         message: 'Create Pool Failed',
@@ -377,12 +379,14 @@ class PoolCreate extends Component {
     this.props.history.push(URL);
   };
 
-  handleStartTimer = (type = 'create') => {
-    const { setTxTimerModal, setTxTimerType, setTxTimerStatus } = this.props;
-
-    setTxTimerType(type);
-    setTxTimerModal(true);
-    setTxTimerStatus(true);
+  handleStartTimer = () => {
+    const { resetTxStatus } = this.props;
+    resetTxStatus({
+      type: 'create', // TxTypes.CREATE
+      modal: true,
+      status: true,
+      startTime: Date.now(),
+    });
   };
 
   handleCloseModal = () => {
@@ -391,19 +395,19 @@ class PoolCreate extends Component {
     setTxTimerModal(false);
   };
 
-  handleChangeTxValue = value => {
-    const { setTxTimerValue } = this.props;
-
-    setTxTimerValue(value);
+  handleChangeTxValue = () => {
+    const { countTxTimerValue } = this.props;
+    // ATM we just count a `quarter` w/o any other checks
+    // See https://gitlab.com/thorchain/bepswap/bepswap-react-app/issues/281
+    countTxTimerValue(25);
   };
 
   handleEndTxTimer = () => {
     const { setTxTimerStatus } = this.props;
-
+    setTxTimerStatus(false);
     this.setState({
       dragReset: true,
     });
-    setTxTimerStatus(false);
   };
 
   renderAssetView = () => {
@@ -619,7 +623,7 @@ class PoolCreate extends Component {
 
   renderStakeModalContent = () => {
     const {
-      txStatus: { status, value },
+      txStatus: { status, value, startTime },
       symbol,
       priceIndex,
       basePriceAsset,
@@ -630,6 +634,7 @@ class PoolCreate extends Component {
     const target = getTickerFormat(symbol);
     const runePrice = priceIndex.RUNE;
 
+    const completed = this.hash && !status;
     const txURL = TESTNET_TX_BASE_URL + this.hash;
 
     return (
@@ -637,8 +642,10 @@ class PoolCreate extends Component {
         <Row className="modal-content">
           <div className="timer-container">
             <TxTimer
-              reset={status}
+              status={status}
               value={value}
+              maxValue={MAX_VALUE}
+              startTime={startTime}
               onChange={this.handleChangeTxValue}
               onEnd={this.handleEndTxTimer}
             />
@@ -664,7 +671,7 @@ class PoolCreate extends Component {
           </div>
         </Row>
         <Row className="modal-info-wrapper">
-          {this.hash && !status && (
+          {completed && (
             <div className="hash-address">
               <div className="copy-btn-wrapper">
                 <Link to="/pools">
@@ -737,10 +744,9 @@ export default compose(
       getStakerPoolData,
       getBinanceTokens,
       getBinanceMarkets,
-      setTxTimerType,
       setTxTimerModal,
       setTxTimerStatus,
-      setTxTimerValue,
+      countTxTimerValue,
       resetTxStatus,
     },
   ),

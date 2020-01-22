@@ -13,19 +13,19 @@ import { StyledHeader, LogoWrapper, HeaderActionButtons } from './header.style';
 import HeaderSetting from './headerSetting';
 import WalletDrawer from '../../containers/WalletView/WalletDrawer';
 
-import appActions from '../../redux/app/actions';
+import { setTxTimerModal, setTxTimerStatus } from '../../redux/app/actions';
 import WalletButton from '../uielements/walletButton';
 import BasePriceSelector from './basePriceSelector';
+import { MAX_VALUE } from '../../redux/app/const';
 
 const { TabPane } = Tabs;
-
-const { setTxTimerModal } = appActions;
 
 class Header extends Component {
   static propTypes = {
     title: PropTypes.string.isRequired,
     txStatus: PropTypes.object.isRequired,
     setTxTimerModal: PropTypes.func.isRequired,
+    setTxTimerStatus: PropTypes.func.isRequired,
     user: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired,
   };
@@ -38,6 +38,18 @@ class Header extends Component {
     const { setTxTimerModal } = this.props;
 
     setTxTimerModal(true);
+  };
+
+  handleEndTxView = () => {
+    const {
+      setTxTimerStatus,
+      txStatus: { modal },
+    } = this.props;
+    // Update `status` from here if modal is hided (not running)
+    // to avoid unexptected UX issues within modal (it's final icon won't be visible)
+    if (!modal) {
+      setTxTimerStatus(false);
+    }
   };
 
   getPageType = () => {
@@ -106,7 +118,7 @@ class Header extends Component {
       </Link>
     );
 
-    // TODO: Hide trade tab
+    // TODO (Chris): Hide trade tab
     // const tradeTab = (
     //   <span>
     //     <Icon type="area-chart" />
@@ -132,7 +144,7 @@ class Header extends Component {
 
   render() {
     const { txStatus, user } = this.props;
-    const { status } = txStatus;
+    const { status, value, type } = txStatus;
     const { wallet } = user;
     const connected = !!wallet;
 
@@ -174,7 +186,14 @@ class Header extends Component {
           <BasePriceSelector />
           <HeaderSetting />
           {connected && (
-            <TxView start={status} onClick={this.handleClickTxView} />
+            <TxView
+              status={status}
+              value={value}
+              maxValue={MAX_VALUE}
+              className={type === undefined ? 'disabled' : ''}
+              onClick={type !== undefined && this.handleClickTxView}
+              onEnd={this.handleEndTxView}
+            />
           )}
         </HeaderActionButtons>
       </StyledHeader>
@@ -190,6 +209,7 @@ export default compose(
     }),
     {
       setTxTimerModal,
+      setTxTimerStatus,
     },
   ),
   withRouter,

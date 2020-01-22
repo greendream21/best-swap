@@ -15,7 +15,7 @@ addDecorator(story => (
   </Router>
 ));
 
-const req = require.context('../src', true, /\.stories\.js$/);
+const req = require.context('../src', true, /\.stories\.(js|ts|tsx)$/);
 
 function loadStories() {
   req.keys().forEach(filename => req(filename));

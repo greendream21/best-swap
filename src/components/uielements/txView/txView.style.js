@@ -6,6 +6,11 @@ export const TxViewWrapper = styled.div`
   height: 40px;
   cursor: pointer;
 
+  &.disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+  }
+
   .timerchart-icon {
     position: absolute;
     top: 0px;

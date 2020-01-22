@@ -23,7 +23,12 @@ import Input from '../../../components/uielements/input';
 import Button from '../../../components/uielements/button';
 import WalletButton from '../../../components/uielements/walletButton';
 
-import appActions from '../../../redux/app/actions';
+import {
+  setTxTimerModal,
+  setTxTimerStatus,
+  countTxTimerValue,
+  resetTxStatus,
+} from '../../../redux/app/actions';
 import midgardActions from '../../../redux/midgard/actions';
 import walletactions from '../../../redux/wallet/actions';
 
@@ -49,16 +54,9 @@ import {
 import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
 import TokenInfo from '../../../components/uielements/tokens/tokenInfo';
 import StepBar from '../../../components/uielements/stepBar';
+import { MAX_VALUE } from '../../../redux/app/const';
 
 const { TabPane } = Tabs;
-
-const {
-  setTxTimerType,
-  setTxTimerModal,
-  setTxTimerStatus,
-  setTxTimerValue,
-  resetTxStatus,
-} = appActions;
 
 const { getPools, getPoolAddress, getStakerPoolData } = midgardActions;
 const { refreshStake } = walletactions;
@@ -77,10 +75,9 @@ class PoolStake extends Component {
     assets: PropTypes.object.isRequired,
     user: PropTypes.object.isRequired,
     wsTransfers: PropTypes.array.isRequired,
-    setTxTimerType: PropTypes.func.isRequired,
     setTxTimerModal: PropTypes.func.isRequired,
     setTxTimerStatus: PropTypes.func.isRequired,
-    setTxTimerValue: PropTypes.func.isRequired,
+    countTxTimerValue: PropTypes.func.isRequired,
     resetTxStatus: PropTypes.func.isRequired,
     history: PropTypes.object,
     info: PropTypes.object,
@@ -108,6 +105,8 @@ class PoolStake extends Component {
     tokenPercent: 0,
   };
 
+  hash = null;
+
   componentDidMount() {
     const { getPoolAddress, getPools } = this.props;
 
@@ -123,9 +122,12 @@ class PoolStake extends Component {
     } = this.props;
     const length = wsTransfers.length;
 
-    if (length !== prevProps.wsTransfers.length && length > 0) {
+    if (
+      length !== prevProps.wsTransfers.length &&
+      length > 0 &&
+      this.stakeData
+    ) {
       const lastTx = wsTransfers[length - 1];
-      if (!this.stakeData) return;
 
       const {
         fromAddr,
@@ -151,6 +153,11 @@ class PoolStake extends Component {
         refreshStake(wallet);
       }
     }
+  }
+
+  componentWillUnmount() {
+    const { resetTxStatus } = this.props;
+    resetTxStatus();
   }
 
   getStakerInfo = () => {
@@ -327,6 +334,9 @@ class PoolStake extends Component {
     } = this.props;
     const { runeAmount, tokenAmount } = this.state;
 
+    this.handleStartTimer('stake');
+    this.hash = null;
+
     try {
       const { result } = await confirmStake(
         Binance,
@@ -346,8 +356,6 @@ class PoolStake extends Component {
         runeAmount,
         tokenAmount,
       };
-
-      this.handleStartTimer();
     } catch (error) {
       notification.error({
         message: 'Swap Invalid',
@@ -413,12 +421,14 @@ class PoolStake extends Component {
     });
   };
 
-  handleStartTimer = (type = 'stake') => {
-    const { setTxTimerModal, setTxTimerType, setTxTimerStatus } = this.props;
-
-    setTxTimerType(type);
-    setTxTimerModal(true);
-    setTxTimerStatus(true);
+  handleStartTimer = type => {
+    const { resetTxStatus } = this.props;
+    resetTxStatus({
+      type,
+      modal: true,
+      status: true,
+      startTime: Date.now(),
+    });
   };
 
   handleConfirmPassword = e => {
@@ -536,27 +546,26 @@ class PoolStake extends Component {
     }
   };
 
-  handleChangeTxValue = value => {
-    const { setTxTimerValue } = this.props;
-
-    setTxTimerValue(value);
+  handleChangeTxValue = () => {
+    const { countTxTimerValue } = this.props;
+    // ATM we just count a `quarter` w/o any other checks
+    // See https://gitlab.com/thorchain/bepswap/bepswap-react-app/issues/281
+    countTxTimerValue(25);
   };
 
   handleEndTxTimer = () => {
     const { setTxTimerStatus } = this.props;
-
+    setTxTimerStatus(false);
     this.setState({
       dragReset: true,
     });
-    setTxTimerStatus(false);
-
     // get staker info again after finished
     this.getStakerInfo();
   };
 
   renderStakeModalContent = () => {
     const {
-      txStatus: { status, value },
+      txStatus: { status, value, startTime },
       symbol,
       priceIndex,
       basePriceAsset,
@@ -575,8 +584,10 @@ class PoolStake extends Component {
         <Row className="modal-content">
           <div className="timer-container">
             <TxTimer
-              reset={status}
+              status={status}
               value={value}
+              maxValue={MAX_VALUE}
+              startTime={startTime}
               onChange={this.handleChangeTxValue}
               onEnd={this.handleEndTxTimer}
             />
@@ -623,7 +634,7 @@ class PoolStake extends Component {
 
   renderWithdrawModalContent = () => {
     const {
-      txStatus: { status, value },
+      txStatus: { status, valueIndex, values, startTime },
       symbol,
       priceIndex,
       basePriceAsset,
@@ -643,7 +654,9 @@ class PoolStake extends Component {
           <div className="timer-container">
             <TxTimer
               reset={status}
-              value={value}
+              valueIndex={valueIndex}
+              values={values}
+              startTime={startTime}
               onChange={this.handleChangeTxValue}
               onEnd={this.handleEndTxTimer}
             />
@@ -1216,7 +1229,7 @@ class PoolStake extends Component {
 
     // stake confirmation modal
 
-    const completed = txStatus.value !== null && !txStatus.status;
+    const completed = txStatus.value === MAX_VALUE && !txStatus.status;
     const stakeTitle = !completed ? 'YOU ARE STAKING' : 'YOU STAKED';
 
     // withdraw confirmation modal
@@ -1320,10 +1333,9 @@ export default compose(
       getPools,
       getPoolAddress,
       getStakerPoolData,
-      setTxTimerType,
       setTxTimerModal,
       setTxTimerStatus,
-      setTxTimerValue,
+      countTxTimerValue,
       resetTxStatus,
       refreshStake,
     },

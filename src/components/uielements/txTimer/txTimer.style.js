@@ -13,6 +13,7 @@ export const TxTimerWrapper = styled.div`
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    background-color: #fff;
 
     width: 100%;
     height: 100%;
