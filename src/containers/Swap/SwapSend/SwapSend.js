@@ -39,7 +39,13 @@ import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
 import { getCalcResult, confirmSwap, getTxResult } from '../utils';
 import { withBinanceTransferWS } from '../../../HOC/websocket/WSBinance';
 
-import appActions from '../../../redux/app/actions';
+import {
+  setTxTimerModal,
+  setTxTimerStatus,
+  countTxTimerValue,
+  setTxTimerValue,
+  resetTxStatus,
+} from '../../../redux/app/actions';
 import midgardActions from '../../../redux/midgard/actions';
 import walletactions from '../../../redux/wallet/actions';
 import AddressInput from '../../../components/uielements/addressInput';
@@ -47,14 +53,9 @@ import ContentTitle from '../../../components/uielements/contentTitle';
 import Slider from '../../../components/uielements/slider';
 import StepBar from '../../../components/uielements/stepBar';
 import Trend from '../../../components/uielements/trend';
+import { MAX_VALUE } from '../../../redux/app/const';
 
-const {
-  setTxTimerType,
-  setTxTimerModal,
-  setTxTimerStatus,
-  setTxTimerValue,
-  resetTxStatus,
-} = appActions;
+const emptyPW = '';
 
 const { getPools, getPoolAddress } = midgardActions;
 const { refreshBalance } = walletactions;
@@ -74,10 +75,10 @@ class SwapSend extends Component {
     priceIndex: PropTypes.object.isRequired,
     user: PropTypes.object.isRequired,
     wsTransfers: PropTypes.array.isRequired,
-    setTxTimerType: PropTypes.func.isRequired,
     setTxTimerModal: PropTypes.func.isRequired,
     setTxTimerStatus: PropTypes.func.isRequired,
     setTxTimerValue: PropTypes.func.isRequired,
+    countTxTimerValue: PropTypes.func.isRequired,
     resetTxStatus: PropTypes.func.isRequired,
     getPools: PropTypes.func.isRequired,
     getPoolAddress: PropTypes.func.isRequired,
@@ -90,23 +91,30 @@ class SwapSend extends Component {
 
   state = {
     address: '',
+    invalidPassword: false,
     invalidAddress: false,
     dragReset: true,
     xValue: 0,
     percent: 0,
     openPrivateModal: false,
-    password: '',
-    invalidPassword: false,
+    password: emptyPW,
     openWalletAlert: false,
     slipProtection: true,
     maxSlip: 30,
     txResult: null,
-    timerStatus: true,
   };
 
   addressRef = React.createRef();
 
-  delta = 1000;
+  /**
+   * Hash of swap `tx`
+   */
+  hash = null;
+
+  /**
+   * Datao of swap `tx`
+   */
+  txData = null;
 
   componentDidMount() {
     const { getPools, getPoolAddress } = this.props;
@@ -119,7 +127,7 @@ class SwapSend extends Component {
     const { wsTransfers } = this.props;
     const length = wsTransfers.length;
 
-    if (length !== prevProps.wsTransfers.length && length > 1 && this.txData) {
+    if (length !== prevProps.wsTransfers.length && length > 0 && this.txData) {
       const lastTx = wsTransfers[length - 1];
       const { fromAddr, toAddr, fromToken, toToken } = this.txData;
       console.log('txData ', this.txData);
@@ -134,15 +142,16 @@ class SwapSend extends Component {
       console.log('txResult ', txResult);
 
       if (txResult) {
-        const curTime = new Date();
-        this.delta = curTime - this.txStarted;
-        console.log(this.delta);
         this.setState({
           txResult,
-          timerStatus: true,
         });
       }
     }
+  }
+
+  componentWillUnmount() {
+    const { resetTxStatus } = this.props;
+    resetTxStatus();
   }
 
   isValidRecipient = () => {
@@ -273,10 +282,13 @@ class SwapSend extends Component {
 
       this.setState({
         openPrivateModal: false,
+        invalidPassword: false,
+        // reset pw
+        password: emptyPW,
       });
     } catch (error) {
       this.setState({
-        password: '',
+        password: emptyPW,
         invalidPassword: true,
       });
       console.log(error); // eslint-disable-line no-console
@@ -370,22 +382,18 @@ class SwapSend extends Component {
   };
 
   handleStartTimer = () => {
-    const { setTxTimerModal, setTxTimerType, setTxTimerStatus } = this.props;
+    const { resetTxStatus } = this.props;
 
-    setTxTimerType('swap');
-    setTxTimerModal(true);
-    setTxTimerStatus(true);
+    resetTxStatus({
+      type: 'swap', // TxTypes.SWAP,
+      modal: true,
+      status: true,
+      startTime: Date.now(),
+    });
   };
 
   handleCloseModal = () => {
-    const {
-      txStatus: { status }, // eslint-disable-line  no-unused-vars, @typescript-eslint/no-unused-vars
-      setTxTimerModal,
-      resetTxStatus, // eslint-disable-line  no-unused-vars, @typescript-eslint/no-unused-vars
-    } = this.props;
-
-    // if (!status) resetTxStatus();
-    // else setTxTimerModal(false);
+    const { setTxTimerModal } = this.props;
     setTxTimerModal(false);
   };
 
@@ -487,21 +495,30 @@ class SwapSend extends Component {
     };
   };
 
-  handleChangeTxValue = value => {
-    const { setTxTimerValue } = this.props;
-
-    if (value === 3) {
-      this.setState({
-        timerStatus: false,
-      });
-      this.txStarted = new Date();
+  handleChangeTxTimer = () => {
+    const { countTxTimerValue, setTxTimerValue, txStatus } = this.props;
+    const { txResult } = this.state;
+    const { value } = txStatus;
+    // Count handling depends on `txResult`
+    // If tx has been confirmed, then we jump to last `valueIndex` ...
+    if (txResult !== null && value < MAX_VALUE) {
+      setTxTimerValue(MAX_VALUE);
     }
-    setTxTimerValue(value);
+    // In other cases (no `txResult`) we don't jump to last `indexValue`...
+    if (txResult === null) {
+      // ..., but we are still counting
+      if (value < 75) {
+        // Add a quarter
+        countTxTimerValue(25);
+      } else if (value >= 75 && value < 95) {
+        // With last quarter we just count a little bit to signalize still a progress
+        countTxTimerValue(1);
+      }
+    }
   };
 
   handleEndTxTimer = () => {
     const { setTxTimerStatus } = this.props;
-
     setTxTimerStatus(false);
     this.setState({
       dragReset: true,
@@ -512,10 +529,17 @@ class SwapSend extends Component {
     const {
       user: { wallet },
       info,
+      resetTxStatus,
     } = this.props;
     const { xValue, address, slipProtection } = this.state;
     const { source, target } = getPair(info);
 
+    this.setState({
+      txResult: null,
+    });
+    this.hash = null;
+    this.txData = null;
+    this.handleStartTimer();
     try {
       const { result } = await confirmSwap(
         Binance,
@@ -527,18 +551,15 @@ class SwapSend extends Component {
         slipProtection,
         address,
       );
+
       this.hash = result[0].hash;
+
       this.txData = {
         fromAddr: wallet,
         toAddr: this.data.poolAddressTo,
         fromToken: this.data.symbolFrom,
         toToken: this.data.symbolTo,
       };
-
-      this.setState({
-        txResult: null,
-      });
-      this.handleStartTimer();
     } catch (error) {
       notification['error']({
         message: 'Swap Invalid',
@@ -547,6 +568,7 @@ class SwapSend extends Component {
       this.setState({
         dragReset: true,
       });
+      resetTxStatus();
       console.log(error); // eslint-disable-line no-console
     }
   };
@@ -575,17 +597,17 @@ class SwapSend extends Component {
   };
 
   handleClickFinish = () => {
-    this.handleCloseModal();
-
+    const { resetTxStatus } = this.props;
+    resetTxStatus();
     this.props.history.push('/swap');
   };
 
   renderSwapModalContent = (swapData, info) => {
     const {
-      txStatus: { status, value },
+      txStatus: { status, value, startTime },
       basePriceAsset,
     } = this.props;
-    const { xValue, txResult, timerStatus } = this.state;
+    const { xValue, txResult } = this.state;
 
     const { source, target } = swapData;
     const { Px, slip, outputAmount, outputPrice } = info;
@@ -601,7 +623,7 @@ class SwapSend extends Component {
     //   'complete',
     // ];
 
-    const completed = value !== null && !status && txResult !== null;
+    const completed = !status && txResult !== null;
     const refunded = txResult ? txResult.type === 'refund' : false;
     const targetToken = !completed ? target : getTickerFormat(txResult.token);
     const tokenAmount = !completed
@@ -624,11 +646,11 @@ class SwapSend extends Component {
         <Row className="swapmodal-content">
           <div className="timer-container">
             <TxTimer
-              reset={status}
-              status={timerStatus}
+              status={status}
               value={value}
-              txDuration={this.delta}
-              onChange={this.handleChangeTxValue}
+              maxValue={MAX_VALUE}
+              startTime={startTime}
+              onChange={this.handleChangeTxTimer}
               onEnd={this.handleEndTxTimer}
               refunded={refunded}
             />
@@ -767,7 +789,6 @@ class SwapSend extends Component {
     const dragTitle = 'Drag to swap';
 
     const openSwapModal = txStatus.type === 'swap' ? txStatus.modal : false;
-    const coinCloseIconType = txStatus.status ? 'fullscreen-exit' : 'close';
 
     // calculation
     this.data = getCalcResult(
@@ -790,8 +811,7 @@ class SwapSend extends Component {
 
     // swap modal
 
-    const completed =
-      txStatus.value !== null && !txStatus.status && txResult !== null;
+    const completed = !txStatus.status && txResult !== null;
     const refunded = txResult && txResult.type === 'refund';
 
     // eslint-disable-next-line no-nested-ternary
@@ -920,12 +940,10 @@ class SwapSend extends Component {
         </Row>
         <SwapModal
           title={swapTitle}
-          closeIcon={
-            <Icon type={coinCloseIconType} style={{ color: '#33CCFF' }} />
-          }
           visible={openSwapModal}
           footer={null}
           onCancel={this.handleCloseModal}
+          onClose={this.handleCloseModal}
         >
           {this.renderSwapModalContent(swapData, this.data)}
         </SwapModal>
@@ -936,6 +954,7 @@ class SwapSend extends Component {
           onCancel={this.handleClosePrivateModal}
           okText="CONFIRM"
           cancelText="CANCEL"
+          maskClosable={false}
         >
           <Form onSubmit={this.handleConfirmPassword} autoComplete="off">
             <Form.Item className={invalidPassword ? 'has-error' : ''}>
@@ -955,6 +974,7 @@ class SwapSend extends Component {
             </Form.Item>
           </Form>
         </PrivateModal>
+        )
         <Modal
           title="PLEASE ADD WALLET"
           visible={openWalletAlert}
@@ -985,10 +1005,10 @@ export default compose(
     {
       getPools,
       getPoolAddress,
-      setTxTimerType,
       setTxTimerModal,
       setTxTimerStatus,
       setTxTimerValue,
+      countTxTimerValue,
       resetTxStatus,
       refreshBalance,
     },

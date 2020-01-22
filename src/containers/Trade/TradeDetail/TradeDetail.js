@@ -20,7 +20,12 @@ import {
   TradeModal,
 } from './TradeDetail.style';
 
-import appActions from '../../../redux/app/actions';
+import {
+  setTxTimerModal,
+  setTxTimerStatus,
+  countTxTimerValue,
+  resetTxStatus,
+} from '../../../redux/app/actions';
 import walletactions from '../../../redux/wallet/actions';
 import midgardActions from '../../../redux/midgard/actions';
 import binanceActions from '../../../redux/binance/actions';
@@ -31,14 +36,7 @@ import {
   getBnbToSell,
 } from '../utils';
 import { getTickerFormat, getFixedNumber } from '../../../helpers/stringHelper';
-
-const {
-  setTxTimerType,
-  setTxTimerModal,
-  setTxTimerStatus,
-  setTxTimerValue,
-  resetTxStatus,
-} = appActions;
+import { MAX_VALUE } from '../../../redux/app/const';
 
 const { getPools } = midgardActions;
 const { getRunePrice } = walletactions;
@@ -54,10 +52,9 @@ class TradeDetail extends Component {
     swapData: PropTypes.object.isRequired,
     tickerData: PropTypes.object.isRequired,
     txStatus: PropTypes.object.isRequired,
-    setTxTimerType: PropTypes.func.isRequired,
     setTxTimerModal: PropTypes.func.isRequired,
     setTxTimerStatus: PropTypes.func.isRequired,
-    setTxTimerValue: PropTypes.func.isRequired,
+    countTxTimerValue: PropTypes.func.isRequired,
     resetTxStatus: PropTypes.func.isRequired,
     getPools: PropTypes.func.isRequired,
     getRunePrice: PropTypes.func.isRequired,
@@ -74,12 +71,19 @@ class TradeDetail extends Component {
     getBinanceTicker(symbol);
   }
 
-  handleStartTimer = () => {
-    const { setTxTimerModal, setTxTimerType, setTxTimerStatus } = this.props;
+  componentWillUnmount() {
+    const { resetTxStatus } = this.props;
+    resetTxStatus();
+  }
 
-    setTxTimerType('trade');
-    setTxTimerModal(true);
-    setTxTimerStatus(true);
+  handleStartTimer = () => {
+    const { resetTxStatus } = this.props;
+    resetTxStatus({
+      type: 'trade', // TxTypes.TRADE
+      modal: true,
+      status: true,
+      startTime: Date.now(),
+    });
   };
 
   handleConfirm = () => {
@@ -97,22 +101,21 @@ class TradeDetail extends Component {
     else setTxTimerModal(false);
   };
 
-  handleChangeTxValue = value => {
-    const { setTxTimerValue } = this.props;
-
-    setTxTimerValue(value);
+  handleChangeTxValue = () => {
+    const { countTxTimerValue } = this.props;
+    // ATM we just count a `quarter` w/o any other checks
+    countTxTimerValue(25);
   };
 
   handleEndTxTimer = () => {
     const { setTxTimerStatus } = this.props;
-
     setTxTimerStatus(false);
   };
 
   renderTradeModalContent = () => {
     const {
       symbol,
-      txStatus: { status, value },
+      txStatus: { status, value, startTime },
     } = this.props;
 
     const transactionLabels = [
@@ -138,8 +141,10 @@ class TradeDetail extends Component {
         </div>
         <div className="center-container">
           <TxTimer
-            reset={status}
+            status={status}
             value={value}
+            maxValue={MAX_VALUE}
+            startTime={startTime}
             onChange={this.handleChangeTxValue}
             onEnd={this.handleEndTxTimer}
           />
@@ -393,10 +398,9 @@ export default compose(
       getPools,
       getRunePrice,
       getBinanceTicker,
-      setTxTimerType,
       setTxTimerModal,
       setTxTimerStatus,
-      setTxTimerValue,
+      countTxTimerValue,
       resetTxStatus,
     },
   ),
