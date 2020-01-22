@@ -365,10 +365,21 @@ export const ContentWrapper = styled(ContentView)`
           width: 100%;
         `}
 
+        .info-status-wrapper {
+          flex-wrap: wrap;
+        }
+
         .status-wrapper {
           ${media.lg`
+            width: 110px !important;
             margin-right: 30px;
           `}
+
+          .label-wrapper {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
         }
 
         .pool-status-wrapper {
