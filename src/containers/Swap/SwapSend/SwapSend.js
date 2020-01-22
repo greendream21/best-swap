@@ -799,14 +799,16 @@ class SwapSend extends Component {
       xValue,
       runePrice,
     );
-    const { slip, outputAmount, outputPrice, ratio } = this.data;
+    const { slip, outputAmount, outputPrice } = this.data;
     console.log(this.data); // eslint-disable-line no-console
     const sourcePrice = _get(priceIndex, source.toUpperCase(), outputPrice);
     const targetPrice = _get(priceIndex, target.toUpperCase(), outputPrice);
 
+    const ratio = targetPrice !== 0 ? sourcePrice / targetPrice : 0;
+
     const ratioLabel = `1 ${source.toUpperCase()} = ${getFixedNumber(
       ratio,
-      1,
+      2,
     )} ${target.toUpperCase()}`;
 
     // swap modal
