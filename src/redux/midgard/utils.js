@@ -1,3 +1,5 @@
+import { getFixedNumber } from '../../helpers/stringHelper';
+
 export const getAssetIdFromPayload = payload => {
   const {
     asset: { chain, symbol },
@@ -85,7 +87,7 @@ export const getPriceIndex = (assetArray, baseTokenTicker) => {
 
     let price = 0;
     if (priceRune && baseTokenPrice) {
-      price = (1 / baseTokenPrice) * priceRune;
+      price = getFixedNumber((1 / baseTokenPrice) * priceRune);
     }
 
     if (ticker) {
