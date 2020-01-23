@@ -475,7 +475,7 @@ class PoolCreate extends Component {
     ];
 
     return (
-      <>
+      <div className="create-detail-wrapper">
         <Label className="label-title" size="normal" weight="bold">
           ADD ASSETS
         </Label>
@@ -570,7 +570,7 @@ class PoolCreate extends Component {
             </Form.Item>
           </Form>
         </PrivateModal>
-      </>
+      </div>
     );
   };
 
@@ -714,12 +714,12 @@ class PoolCreate extends Component {
     const coinCloseIconType = txStatus.status ? 'fullscreen-exit' : 'close';
 
     return (
-      <ContentWrapper className="pool-new-wrapper">
+      <ContentWrapper className="pool-new-wrapper" transparent>
         <Row className="pool-new-row">
-          <Col className="token-details-view" span={8}>
+          <Col className="token-details-view" span={24} lg={8}>
             {this.renderTokenDetails()}
           </Col>
-          <Col className="add-asset-view" span={16}>
+          <Col className="add-asset-view" span={24} lg={16}>
             {this.renderAssetView()}
           </Col>
         </Row>
