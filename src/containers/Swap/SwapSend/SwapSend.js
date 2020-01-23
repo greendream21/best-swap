@@ -612,13 +612,18 @@ class SwapSend extends Component {
     const {
       txStatus: { status, value, startTime },
       basePriceAsset,
+      priceIndex,
     } = this.props;
     const { xValue, txResult } = this.state;
 
     const { source, target } = swapData;
-    const { Px, slip, outputAmount, outputPrice } = info;
+    const { slip, outputAmount } = info;
+
+    const Px = priceIndex.RUNE;
+    const tokenPrice = _get(priceIndex, target.toUpperCase(), 0);
+
     const priceFrom = Number(Px * xValue);
-    const priceTo = Number(outputAmount * outputPrice);
+    const priceTo = Number(outputAmount * tokenPrice);
     const slipAmount = slip;
 
     // const transactionLabels = [
@@ -642,7 +647,7 @@ class SwapSend extends Component {
     } else {
       priceValue = !completed
         ? priceTo
-        : Number(Number(txResult.amount) * outputPrice);
+        : Number(Number(txResult.amount) * tokenPrice);
     }
 
     const txURL = TESTNET_TX_BASE_URL + this.hash;

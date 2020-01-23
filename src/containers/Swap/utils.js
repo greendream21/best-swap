@@ -114,9 +114,12 @@ export const getCalcResult = (
     const outputPy = ((Px * (X + xValue)) / (Y - outputToken)).toFixed(2);
     // const input = xValue * Px;
     // const output = outputToken * outputPy;
-    const slip = Math.round(
-      (xTimes / (xTimes + X * xValue + balanceTimes)) * 100,
-    );
+    // const priceSlip = Math.round(
+    //   (xTimes / (xTimes + X * xValue + balanceTimes)) * 100,
+    // );
+
+    // calc trade slip
+    const slip = Math.round(((xValue * (2 * X + xValue)) / balanceTimes) * 100);
     const lim = Math.round((1 - 3 / 100) * outputToken * BASE_NUMBER);
     const fee = getFixedNumber((xTimes * Y) / times);
 
@@ -169,9 +172,13 @@ export const getCalcResult = (
     // const input = xValue * Px;
     // const output = outputToken * outputPy;
 
-    const slip = Math.round(
-      (xTimes / (xTimes + X * xValue + balanceTimes)) * 100,
-    );
+    // const priceSlip = Math.round(
+    //   (xTimes / (xTimes + X * xValue + balanceTimes)) * 100,
+    // );
+
+    // trade slip
+    const slip = Math.round(((xValue * (2 * X + xValue)) / balanceTimes) * 100);
+
     const lim = Math.round((1 - 3 / 100) * outputToken * BASE_NUMBER);
     const fee = getFixedNumber((xTimes * Y) / times);
     return {
