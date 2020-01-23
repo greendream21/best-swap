@@ -34,6 +34,7 @@ import {
   getTickerFormat,
   getPair,
   getFixedNumber,
+  emptyString,
 } from '../../../helpers/stringHelper';
 import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
 import { getCalcResult, confirmSwap, getTxResult } from '../utils';
@@ -54,8 +55,7 @@ import Slider from '../../../components/uielements/slider';
 import StepBar from '../../../components/uielements/stepBar';
 import Trend from '../../../components/uielements/trend';
 import { MAX_VALUE } from '../../../redux/app/const';
-
-const emptyPW = '';
+import { delay } from '../../../helpers/asyncHelper';
 
 const { getPools, getPoolAddress } = midgardActions;
 const { refreshBalance } = walletactions;
@@ -90,14 +90,15 @@ class SwapSend extends Component {
   };
 
   state = {
-    address: '',
+    address: emptyString,
+    password: emptyString,
     invalidPassword: false,
     invalidAddress: false,
+    validatingPassword: false,
     dragReset: true,
     xValue: 0,
     percent: 0,
     openPrivateModal: false,
-    password: emptyPW,
     openWalletAlert: false,
     slipProtection: true,
     maxSlip: 30,
@@ -160,13 +161,17 @@ class SwapSend extends Component {
     return Binance.isValidAddress(address);
   };
 
-  // TODO: Using curried functions for handlers in React
-  //       will lead to performance problems down the track
-  handleChange = key => e => {
+  handleChangePassword = e => {
     this.setState({
-      [key]: e.target.value,
-      invalidAddress: false,
+      password: e.target.value,
       invalidPassword: false,
+    });
+  };
+
+  handleChangeAddress = e => {
+    this.setState({
+      address: e.target.value,
+      invalidAddress: false,
     });
   };
 
@@ -269,6 +274,10 @@ class SwapSend extends Component {
     } = this.props;
     const { password } = this.state;
 
+    this.setState({ validatingPassword: true });
+    // Short delay to render latest state changes of `validatingPassword`
+    await delay(200);
+
     try {
       const privateKey = crypto.getPrivateKeyFromKeyStore(keystore, password);
       Binance.setPrivateKey(privateKey);
@@ -281,14 +290,12 @@ class SwapSend extends Component {
       }
 
       this.setState({
+        validatingPassword: false,
         openPrivateModal: false,
-        invalidPassword: false,
-        // reset pw
-        password: emptyPW,
       });
     } catch (error) {
       this.setState({
-        password: emptyPW,
+        validatingPassword: false,
         invalidPassword: true,
       });
       console.log(error); // eslint-disable-line no-console
@@ -298,10 +305,12 @@ class SwapSend extends Component {
   handleOpenPrivateModal = () => {
     this.setState({
       openPrivateModal: true,
+      password: emptyString,
+      invalidPassword: false,
     });
   };
 
-  handleClosePrivateModal = () => {
+  handleCancelPrivateModal = () => {
     this.setState({
       openPrivateModal: false,
       dragReset: true,
@@ -746,6 +755,7 @@ class SwapSend extends Component {
       address,
       invalidAddress,
       invalidPassword,
+      validatingPassword,
       xValue,
       percent,
       openPrivateModal,
@@ -892,7 +902,7 @@ class SwapSend extends Component {
                     <CardFormItem className={invalidAddress ? 'has-error' : ''}>
                       <AddressInput
                         value={address}
-                        onChange={this.handleChange('address')}
+                        onChange={this.handleChangeAddress}
                         status={view === 'send'}
                         onStatusChange={this.handleChangeSwapType}
                       />
@@ -952,21 +962,26 @@ class SwapSend extends Component {
         <PrivateModal
           title="PASSWORD CONFIRMATION"
           visible={openPrivateModal}
-          onOk={this.handleConfirmPassword}
-          onCancel={this.handleClosePrivateModal}
+          onOk={!validatingPassword && this.handleConfirmPassword}
+          onCancel={this.handleCancelPrivateModal}
           okText="CONFIRM"
           cancelText="CANCEL"
           maskClosable={false}
+          closable={false}
+          closa
         >
           <Form onSubmit={this.handleConfirmPassword} autoComplete="off">
-            <Form.Item className={invalidPassword ? 'has-error' : ''}>
+            <Form.Item
+              className={invalidPassword ? 'has-error' : emptyString}
+              extra={validatingPassword ? 'Validating password ...' : ''}
+            >
               <Input
                 data-test="password-confirmation-input"
                 type="password"
                 typevalue="ghost"
                 sizevalue="big"
                 value={password}
-                onChange={this.handleChange('password')}
+                onChange={this.handleChangePassword}
                 prefix={<Icon type="lock" />}
                 autoComplete="off"
               />

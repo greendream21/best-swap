@@ -37,7 +37,11 @@ import {
   ConfirmModal,
   ConfirmModalContent,
 } from './PoolCreate.style';
-import { getUserFormat, getTickerFormat } from '../../../helpers/stringHelper';
+import {
+  getUserFormat,
+  getTickerFormat,
+  emptyString,
+} from '../../../helpers/stringHelper';
 import {
   getCreatePoolCalc,
   getCreatePoolTokens,
@@ -46,6 +50,7 @@ import {
 
 import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
 import { MAX_VALUE } from '../../../redux/app/const';
+import { delay } from '../../../helpers/asyncHelper';
 
 const { getPools, getStakerPoolData, getPoolAddress } = midgardActions;
 const { getBinanceTokens, getBinanceMarkets } = binanceActions;
@@ -79,8 +84,9 @@ class PoolCreate extends Component {
   state = {
     dragReset: true,
     openPrivateModal: false,
+    password: emptyString,
     invalidPassword: false,
-    password: '',
+    validatingPassword: false,
     runeAmount: 0,
     tokenAmount: 0,
     balance: 100,
@@ -124,9 +130,9 @@ class PoolCreate extends Component {
     }
   };
 
-  handleChange = key => e => {
+  handleChangePasswort = e => {
     this.setState({
-      [key]: e.target.value,
+      password: e.target.value,
       invalidPassword: false,
     });
   };
@@ -325,24 +331,30 @@ class PoolCreate extends Component {
 
   handleOpenPrivateModal = () => {
     this.setState({
+      password: emptyString,
+      invalidPassword: false,
       openPrivateModal: true,
     });
   };
 
-  handleClosePrivateModal = () => {
+  handleCancelPrivateModal = () => {
     this.setState({
       openPrivateModal: false,
       dragReset: true,
     });
   };
 
-  handleConfirmPassword = e => {
+  handleConfirmPassword = async e => {
     e.preventDefault();
 
     const {
       user: { keystore, wallet },
     } = this.props;
     const { password } = this.state;
+
+    this.setState({ validatingPassword: true });
+    // Short delay to render latest state changes of `validatingPassword`
+    await delay(200);
 
     try {
       const privateKey = crypto.getPrivateKeyFromKeyStore(keystore, password);
@@ -356,11 +368,12 @@ class PoolCreate extends Component {
       }
 
       this.setState({
+        validatingPassword: false,
         openPrivateModal: false,
       });
     } catch (error) {
       this.setState({
-        password: '',
+        validatingPassword: false,
         invalidPassword: true,
       });
       console.log(error); // eslint-disable-line no-console
@@ -427,6 +440,7 @@ class PoolCreate extends Component {
       dragReset,
       openPrivateModal,
       invalidPassword,
+      validatingPassword,
       password,
     } = this.state;
 
@@ -531,20 +545,25 @@ class PoolCreate extends Component {
         <PrivateModal
           title="PASSWORD CONFIRMATION"
           visible={openPrivateModal}
-          onOk={this.handleConfirmPassword}
-          onCancel={this.handleClosePrivateModal}
+          onOk={!validatingPassword && this.handleConfirmPassword}
+          onCancel={this.handleCancelPrivateModal}
+          maskClosable={false}
+          closable={false}
           okText="CONFIRM"
           cancelText="CANCEL"
         >
           <Form onSubmit={this.handleConfirmPassword} autoComplete="off">
-            <Form.Item className={invalidPassword ? 'has-error' : ''}>
+            <Form.Item
+              className={invalidPassword ? 'has-error' : ''}
+              extra={validatingPassword ? 'Validating password ...' : ''}
+            >
               <Input
                 data-test="password-confirmation-input"
                 type="password"
                 typevalue="ghost"
                 sizevalue="big"
                 value={password}
-                onChange={this.handleChange('password')}
+                onChange={this.handleChangePassword}
                 prefix={<Icon type="lock" />}
                 autoComplete="off"
               />
