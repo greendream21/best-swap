@@ -50,11 +50,13 @@ import {
   getUserFormat,
   getTickerFormat,
   getFixedNumber,
+  emptyString,
 } from '../../../helpers/stringHelper';
 import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
 import TokenInfo from '../../../components/uielements/tokens/tokenInfo';
 import StepBar from '../../../components/uielements/stepBar';
 import { MAX_VALUE } from '../../../redux/app/const';
+import { delay } from '../../../helpers/asyncHelper';
 
 const { TabPane } = Tabs;
 
@@ -92,8 +94,9 @@ class PoolStake extends Component {
     dragReset: true,
     openWalletAlert: false,
     openPrivateModal: false,
+    password: emptyString,
     invalidPassword: false,
-    password: '',
+    validatingPassword: false,
     runeAmount: 0,
     tokenAmount: 0,
     balance: 100,
@@ -170,9 +173,9 @@ class PoolStake extends Component {
     }
   };
 
-  handleChange = key => e => {
+  handleChangePassword = e => {
     this.setState({
-      [key]: e.target.value,
+      password: e.target.value,
       invalidPassword: false,
     });
   };
@@ -428,13 +431,17 @@ class PoolStake extends Component {
     });
   };
 
-  handleConfirmPassword = e => {
+  handleConfirmPassword = async e => {
     e.preventDefault();
 
     const {
       user: { keystore, wallet },
     } = this.props;
     const { password } = this.state;
+
+    this.setState({ validatingPassword: true });
+    // Short delay to render latest state changes of `validatingPassword`
+    await delay(2000);
 
     try {
       const privateKey = crypto.getPrivateKeyFromKeyStore(keystore, password);
@@ -452,11 +459,12 @@ class PoolStake extends Component {
       }
 
       this.setState({
+        validatingPassword: false,
         openPrivateModal: false,
       });
     } catch (error) {
       this.setState({
-        password: '',
+        validatingPassword: false,
         invalidPassword: true,
       });
       console.error(error); // eslint-disable-line no-console
@@ -466,10 +474,12 @@ class PoolStake extends Component {
   handleOpenPrivateModal = () => {
     this.setState({
       openPrivateModal: true,
+      password: emptyString,
+      invalidPassword: false,
     });
   };
 
-  handleClosePrivateModal = () => {
+  handleCancelPrivateModal = () => {
     this.setState({
       openPrivateModal: false,
       dragReset: true,
@@ -1188,6 +1198,7 @@ class PoolStake extends Component {
       openWalletAlert,
       password,
       invalidPassword,
+      validatingPassword,
     } = this.state;
 
     let { symbol } = this.props;
@@ -1266,19 +1277,24 @@ class PoolStake extends Component {
               title="PASSWORD CONFIRMATION"
               visible={openPrivateModal}
               onOk={this.handleConfirmPassword}
-              onCancel={this.handleClosePrivateModal}
+              onCancel={!validatingPassword && this.handleCancelPrivateModal}
+              maskClosable={false}
+              closable={false}
               okText="CONFIRM"
               cancelText="CANCEL"
             >
               <Form onSubmit={this.handleConfirmPassword} autoComplete="off">
-                <Form.Item className={invalidPassword ? 'has-error' : ''}>
+                <Form.Item
+                  className={invalidPassword ? 'has-error' : emptyString}
+                  extra={validatingPassword ? 'Validating password ...' : ''}
+                >
                   <Input
                     data-test="password-confirmation-input"
                     type="password"
                     typevalue="ghost"
                     sizevalue="big"
                     value={password}
-                    onChange={this.handleChange('password')}
+                    onChange={this.handleChangePassword}
                     prefix={<Icon type="lock" />}
                     autoComplete="off"
                   />

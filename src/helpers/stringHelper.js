@@ -48,3 +48,5 @@ export const compareShallowStr = (str1, str2) => {
     return false;
   }
 };
+
+export const emptyString = '';
