@@ -634,7 +634,7 @@ class PoolStake extends Component {
 
   renderWithdrawModalContent = () => {
     const {
-      txStatus: { status, valueIndex, values, startTime },
+      txStatus: { status, value, startTime },
       symbol,
       priceIndex,
       basePriceAsset,
@@ -653,9 +653,9 @@ class PoolStake extends Component {
         <Row className="modal-content">
           <div className="timer-container">
             <TxTimer
-              reset={status}
-              valueIndex={valueIndex}
-              values={values}
+              status={status}
+              value={value}
+              maxValue={MAX_VALUE}
               startTime={startTime}
               onChange={this.handleChangeTxValue}
               onEnd={this.handleEndTxTimer}
