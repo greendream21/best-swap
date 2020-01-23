@@ -8,25 +8,32 @@ export const ContentWrapper = styled(ContentView)`
   padding: 0;
   background: transparent;
 
-  & > .ant-row {
-    display: flex;
-  }
-
   .pool-new-row {
-    display: flex;
-    flex: auto;
-
     .label-title {
       padding-bottom: 0;
       letter-spacing: 2.5px;
     }
 
+    .token-details-view,
+    .add-asset-view {
+      ${media.lg`
+        height: 470px;
+      `}
+    }
+
+    .token-detail-container,
+    .create-detail-wrapper {
+      height: 100%;
+      background: #ffffff;
+      box-shadow: 0px 1px 3px rgba(47, 83, 151, 0.1);
+      border-radius: 3px;
+    }
+
     .token-details-view {
-      display: flex;
-      flex-direction: column;
-      padding: 10px 20px;
-      margin-right: 6px;
-      background: #fff;
+      padding-top: 8px;
+      ${media.sm`
+        padding-top: 0px;
+      `}
 
       .new-token-coin {
         padding-top: 20px;
@@ -49,12 +56,21 @@ export const ContentWrapper = styled(ContentView)`
         display: flex;
         flex-direction: column;
         align-items: center;
+        padding: 10px 20px;
+        padding-top: 30px;
+        ${media.sm`
+          padding-top: 10px;
+        `}
 
         .new-token-detail-wrapper {
-          width: 70%;
+          width: 90%;
+          ${media.sm`
+            width: 70%;
+          `}
           height: 300px;
           padding: 30px;
           margin-top: 60px;
+          margin-bottom: 30px;
           border: 1px solid ${palette('border', 0)};
 
           .new-token-coin {
@@ -81,26 +97,46 @@ export const ContentWrapper = styled(ContentView)`
     }
 
     .add-asset-view {
-      display: flex;
-      flex-direction: column;
-      padding: 10px 20px;
-      background: #fff;
+      padding-left: 0px;
+      padding-top: 8px;
+      ${media.sm`
+        padding-top: 0px;
+        padding-left: 8px;
+      `}
+
+      .create-detail-wrapper {
+        padding: 10px 20px;
+      }
 
       .label-no-padding {
-        padding: 0;
+        padding-top: 0;
+        ${media.lg`
+          padding: 0;
+        `}
       }
       .label-description {
         padding-bottom: 0;
       }
 
       .stake-card-wrapper {
-        display: flex;
-        justify-content: space-between;
-        width: 100%;
-        padding: 15px 0;
+        & > * {
+          margin-bottom: 20px;
+        }
+
+        ${media.lg`
+          display: flex;
+          justify-content: space-between;
+          width: 100%;
+          padding: 15px 0;
+          & > * {
+            margin-bottom: auto;
+          }
+        `}
 
         .coinCard-wrapper {
-          width: calc(50% - 20px);
+          ${media.lg`
+            width: calc(50% - 20px);
+          `}
         }
       }
 
@@ -116,24 +152,52 @@ export const ContentWrapper = styled(ContentView)`
         width: 100%;
 
         .create-token-detail {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
           width: 100%;
+          ${media.lg`
+            display: flex;
+            justify-content: space-between;
+          `}
 
           .info-status-wrapper {
             display: flex;
-            align-items: center;
-            flex-grow: 1;
+            flex-wrap: wrap;
+            width: 100%;
+            > * {
+              width: 50%;
+            }
+
+            ${media.lg`
+              align-items: center;
+              > * {
+                width: auto;
+              }
+            `}
 
             .status-wrapper {
-              margin-right: 30px;
+              ${media.lg`
+                width: 110px !important;
+                margin-right: 30px;
+              `}
+
+              .label-wrapper {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+              }
             }
           }
 
           .drag-wrapper {
-            padding-top: 24px;
-            padding-right: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 12px;
+            padding-bottom: 12px;
+            ${media.lg`
+              padding-top: 24px;
+              padding-right: 24px;
+              padding-bottom: 0px;
+            `}
           }
         }
       }
