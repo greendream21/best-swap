@@ -48,7 +48,6 @@ class ActionView extends Component {
 
   getView = () => {
     const { type, view } = this.props;
-    console.log('actionview type: ', type, view);
     if (type) {
       return `${type}-${view}`;
     }
@@ -97,7 +96,6 @@ class ActionView extends Component {
   render() {
     const { info, symbol } = this.props;
     const view = this.getView();
-    console.log('View', view);
 
     return (
       <>

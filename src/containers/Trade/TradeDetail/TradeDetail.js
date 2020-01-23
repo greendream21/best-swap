@@ -29,12 +29,7 @@ import {
 import walletactions from '../../../redux/wallet/actions';
 import midgardActions from '../../../redux/midgard/actions';
 import binanceActions from '../../../redux/binance/actions';
-import {
-  getBepswapValues,
-  getBnbPrice,
-  getPriceDiff,
-  getBnbToSell,
-} from '../utils';
+import { getBepswapValues, getBnbPrice, getPriceDiff } from '../utils';
 import { getTickerFormat, getFixedNumber } from '../../../helpers/stringHelper';
 import { MAX_VALUE } from '../../../redux/app/const';
 
@@ -284,16 +279,8 @@ class TradeDetail extends Component {
     const bnbPrice = getBnbPrice(pools);
     const bepswapValues = getBepswapValues(symbol, pools, bnbPrice);
 
-    console.log('bnb price: ', bnbPrice);
-    console.log('bepswap price: ', bepswapValues);
-
     const marketPrice = tickerData.lastPrice || 0;
     const priceDiff = getPriceDiff(marketPrice, bepswapValues.poolPriceBNB);
-    const bnbToSell = getBnbToSell(priceDiff, bepswapValues);
-
-    console.log('marketPrice: ', marketPrice);
-    console.log('priceDiff: ', priceDiff);
-    console.log('bnbToSell: ', bnbToSell);
 
     return (
       <ContentWrapper className="trade-detail-wrapper">

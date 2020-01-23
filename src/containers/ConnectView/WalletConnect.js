@@ -24,15 +24,12 @@ const WalletConnectPane = props => {
 
     // Check if connection is already established
     if (!walletConnector.connected) {
-      console.log('Creating session');
       // create new session
       walletConnector.createSession().then(() => {
         // get uri for QR Code modal
         const uri = walletConnector.uri;
         // display QR Code modal
-        WalletConnectQRCodeModal.open(uri, () => {
-          console.log('QR Code Modal closed');
-        });
+        WalletConnectQRCodeModal.open(uri, () => {});
       });
     }
 
@@ -54,8 +51,6 @@ const WalletConnectPane = props => {
           // Returns the accounts
           const account = result.find(account => account.network === 714);
           const address = crypto.decodeAddress(account.address);
-          console.log('ACCOUNT:', account);
-          console.log('WALLET CONNECT ACCOUNTS RESULTS ' + account.address);
 
           props.saveWallet({
             type: 'walletconnect',

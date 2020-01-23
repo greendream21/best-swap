@@ -146,8 +146,6 @@ export const confirmStake = (
   data,
 ) => {
   return new Promise((resolve, reject) => {
-    console.log('confirm stake', wallet, runeAmount, tokenAmount, data);
-
     if (!validateStake(wallet, tokenAmount, data)) {
       return reject();
     }
@@ -156,7 +154,6 @@ export const confirmStake = (
 
     if (runeAmount > 0 && tokenAmount > 0) {
       const memo = getStakeMemo(symbolTo);
-      console.log('memo: ', memo);
 
       const outputs = [
         {
@@ -179,14 +176,12 @@ export const confirmStake = (
         .catch(error => reject(error));
     } else if (runeAmount <= 0 && tokenAmount) {
       const memo = getStakeMemo(symbolTo);
-      console.log('memo: ', memo);
 
       Binance.transfer(wallet, poolAddress, tokenAmount, symbolTo, memo)
         .then(response => resolve(response))
         .catch(error => reject(error));
     } else if (tokenAmount <= 0 && runeAmount) {
       const memo = getStakeMemo('RUNE-A1F');
-      console.log('memo: ', memo);
 
       Binance.transfer(wallet, poolAddress, runeAmount, 'RUNE-A1F', memo)
         .then(response => resolve(response))
@@ -256,8 +251,6 @@ export const confirmCreatePool = (
   data,
 ) => {
   return new Promise((resolve, reject) => {
-    console.log('confirm stake', wallet, runeAmount, tokenAmount, data);
-
     if (!validateStake(wallet, tokenAmount, data)) {
       return reject();
     }
@@ -265,7 +258,6 @@ export const confirmCreatePool = (
     const { poolAddress, tokenSymbol } = data;
 
     const memo = getCreateMemo(tokenSymbol);
-    console.log('memo: ', memo);
 
     const outputs = [
       {
@@ -297,14 +289,11 @@ export const confirmWithdraw = (
   percent,
 ) => {
   return new Promise((resolve, reject) => {
-    console.log('confirm withdraw', wallet, percent);
-
     if (!wallet || !poolAddress) {
       return reject();
     }
 
     const memo = getWithdrawMemo(symbol, percent * 100);
-    console.log('memo: ', memo);
 
     const amount = 0.00000001;
     Binance.transfer(wallet, poolAddress, amount, 'BNB', memo)
@@ -377,13 +366,10 @@ export const stakedResult = (
 ) => {
   const txType = getTxType(tx);
 
-  console.log('tx type: ', txType);
   if (txType === 'stake') {
     const { txFrom, txTo, txData } = parseTransfer(tx);
     if (txFrom === fromAddr && txTo === toAddr && txData.length === 2) {
       let success = true;
-
-      console.log('tx data: ', txData);
 
       txData.forEach(data => {
         const tickerFormat = getTickerFormat(data.a);

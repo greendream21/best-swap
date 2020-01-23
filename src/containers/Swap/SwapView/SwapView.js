@@ -175,7 +175,6 @@ class SwapView extends Component {
       mobile: mobileColumns,
     };
     const columns = columnData[view] || desktopColumns;
-    console.log('swapViewData: ', swapViewData);
     return <Table columns={columns} dataSource={swapViewData} rowKey="key" />;
   };
 

@@ -12,7 +12,6 @@ function CoinCardInputStory() {
   const handleChange = React.useCallback(
     newVal => {
       setValue(newVal.target.value);
-      console.log({ newVal });
     },
     [setValue],
   );

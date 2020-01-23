@@ -75,7 +75,6 @@ class CoinList extends Component {
             const tokenName = getTickerFormat(asset);
 
             if (!tokenName) {
-              console.log(asset, 'is not a recognized token');
               return <Fragment key={asset} />;
             }
 
