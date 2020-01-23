@@ -531,6 +531,7 @@ export const ConfirmModalContent = styled.div`
       align-items: center;
 
       .copy-btn-wrapper {
+        width: 100%;
         display: flex;
         flex-direction: column;
         justify-content: center;
