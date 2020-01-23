@@ -37,7 +37,7 @@ const TxTimer: React.FC<Props> = (props): JSX.Element => {
   const [totalDuration, setTotalDuration] = useState();
 
   // Check if counter has reached the end
-  const isEnd = useCallback(() => value === maxValue, [value, maxValue]);
+  const isEnd = useCallback(() => value >= maxValue, [value, maxValue]);
 
   // Callback for counting
   const countHandler = useCallback(() => {
@@ -45,6 +45,7 @@ const TxTimer: React.FC<Props> = (props): JSX.Element => {
   }, [onChange]);
   // Interval to inform outside world about counting
   const countInterval = status && !isEnd() ? interval : INACTIVE_INTERVAL;
+
   useInterval(countHandler, countInterval);
 
   // Callback for counting time differences

@@ -21,7 +21,7 @@ const useInterval = (callback: () => void, delay: number = INACTIVE_INTERVAL) =>
     function tick() {
       savedCallback.current();
     }
-    if (delay !== INACTIVE_INTERVAL) {
+    if (!Number.isNaN(delay)) {
       const id = setInterval(tick, delay);
       return () => clearInterval(id);
     }
