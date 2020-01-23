@@ -309,14 +309,13 @@ class PoolCreate extends Component {
         this.data,
       );
 
-      console.log('create pool result: ', result);
       this.hash = result[0].hash;
     } catch (error) {
       notification.error({
         message: 'Create Pool Failed',
         description: 'Create Pool information is not valid.',
       });
-      console.log(error); // eslint-disable-line no-console
+      console.error(error); // eslint-disable-line no-console
       this.setState({
         dragReset: true,
       });
@@ -363,7 +362,7 @@ class PoolCreate extends Component {
         password: '',
         invalidPassword: true,
       });
-      console.log(error); // eslint-disable-line no-console
+      console.error(error); // eslint-disable-line no-console
     }
   };
 
@@ -446,8 +445,6 @@ class PoolCreate extends Component {
       tokenAmount,
     );
     const { poolPrice, depth, share } = this.data;
-
-    console.log('create pool calc data: ', this.data);
 
     const poolAttrs = [
       {
@@ -571,7 +568,6 @@ class PoolCreate extends Component {
     const binanceMarket = marketList.find(
       market => market.base_asset_symbol === symbol,
     );
-    console.log(binanceToken, binanceMarket);
 
     const token = (binanceToken && binanceToken.name) || target;
     const ticker = (binanceToken && binanceToken.original_symbol) || target;

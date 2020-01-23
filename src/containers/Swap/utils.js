@@ -172,10 +172,8 @@ export const getCalcResult = (
     const slip = Math.round(
       (xTimes / (xTimes + X * xValue + balanceTimes)) * 100,
     );
-    console.log('slip calc', slip);
     const lim = Math.round((1 - 3 / 100) * outputToken * BASE_NUMBER);
     const fee = getFixedNumber((xTimes * Y) / times);
-    console.log('outputAmount ', X, Y, outputToken);
     return {
       ...result,
       Px,
@@ -223,7 +221,6 @@ export const confirmSwap = (
 ) => {
   return new Promise((resolve, reject) => {
     const type = getSwapType(from, to);
-    console.log('confirm swap', type, wallet, from, to, data, amount, destAddr);
 
     if (!validateSwap(wallet, type, data, amount)) {
       return reject();
@@ -233,7 +230,6 @@ export const confirmSwap = (
 
     const limit = protectSlip ? lim : '';
     const memo = getSwapMemo(symbolTo, destAddr, limit);
-    console.log('memo: ', memo);
     Binance.transfer(wallet, poolAddressTo, amount, symbolFrom, memo)
       .then(response => resolve(response))
       .catch(error => reject(error));

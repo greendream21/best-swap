@@ -45,9 +45,8 @@ const Connector = props => {
     const hdPath = [44, 714, 0, 0, ledgerIndex];
 
     // select which address to use
-    // TODO: use "bnb" when on mainnet
-    const results = await app.showAddress(Binance.getPrefix(), hdPath);
-    console.log('Results:', results);
+    // TODO (Chad): use "bnb" when on mainnet
+    const _ = await app.showAddress(Binance.getPrefix(), hdPath); // results
 
     // get public key
     let pk;

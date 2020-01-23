@@ -136,8 +136,7 @@ class PoolStake extends Component {
         runeAmount,
         tokenAmount,
       } = this.stakeData;
-      console.log('stakeData ', this.stakeData);
-      console.log('lastTx ', lastTx);
+
       const txResult = stakedResult(
         lastTx,
         fromAddr,
@@ -146,7 +145,6 @@ class PoolStake extends Component {
         runeAmount,
         tokenAmount,
       );
-      console.log('txResult ', txResult);
 
       if (txResult) {
         // refresh stakes after update
@@ -346,7 +344,6 @@ class PoolStake extends Component {
         this.data,
       );
 
-      console.log('stake result: ', result);
       this.hash = result[0].hash;
 
       this.stakeData = {
@@ -364,7 +361,7 @@ class PoolStake extends Component {
       this.setState({
         dragReset: true,
       });
-      console.log(error); // eslint-disable-line no-console
+      console.error(error); // eslint-disable-line no-console
     }
   };
 
@@ -462,7 +459,7 @@ class PoolStake extends Component {
         password: '',
         invalidPassword: true,
       });
-      console.log(error); // eslint-disable-line no-console
+      console.error(error); // eslint-disable-line no-console
     }
   };
 
@@ -530,7 +527,6 @@ class PoolStake extends Component {
         percentage,
       );
 
-      console.log('withdraw result: ', result);
       this.hash = result[0].hash;
 
       this.handleStartTimer('withdraw');
@@ -542,7 +538,7 @@ class PoolStake extends Component {
       this.setState({
         dragReset: true,
       });
-      console.log(error); // eslint-disable-line no-console
+      console.error(error); // eslint-disable-line no-console
     }
   };
 
@@ -848,7 +844,6 @@ class PoolStake extends Component {
 
     const disableWithdraw = stakeUnits === 0;
 
-    console.log('rune percent: ', runePercent);
     return (
       <div className="share-detail-wrapper">
         <Button
@@ -1030,9 +1025,6 @@ class PoolStake extends Component {
       basePriceAsset,
     } = this.props;
 
-    console.log(calcResult);
-    console.log('stakeData', stakeData);
-
     const stakeInfo = (stakeData && stakeData[symbol]) || {
       stakeUnits: 0,
       runeEarned: 0,
@@ -1187,7 +1179,6 @@ class PoolStake extends Component {
       poolAddress,
       stakerPoolData,
       txStatus,
-      wsTransfers,
       user: { wallet },
     } = this.props;
     const {
@@ -1198,8 +1189,6 @@ class PoolStake extends Component {
       password,
       invalidPassword,
     } = this.state;
-
-    console.log('binance websocket transfer data: ', wsTransfers);
 
     let { symbol } = this.props;
     symbol = symbol.toUpperCase();

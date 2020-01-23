@@ -69,7 +69,7 @@ const Keystore = props => {
       setKeystore(null);
     } catch (error) {
       setInvalideStatus(true);
-      console.log(error);
+      console.error(error);
     }
   };
 

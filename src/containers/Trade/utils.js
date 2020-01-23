@@ -31,7 +31,6 @@ export const getTradeData = (
   const premium =
     poolPrice !== 0 ? getFixedNumber(marketPrice - poolPrice) / poolPrice : 0;
   const reward = getUserFormat((0.5 * Math.abs(premium) * depth) / bnbPrice);
-  console.log(to, marketPrice, poolPrice, bnbPrice, reward);
   return {
     tokenPrice,
     asset,

@@ -104,7 +104,7 @@ const getPoolData = async assetId => {
 
     return data;
   } catch (error) {
-    console.log('get pool data from midgard error');
+    console.error('get pool data from midgard error');
     return null;
   }
 };

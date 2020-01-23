@@ -130,8 +130,6 @@ class SwapSend extends Component {
     if (length !== prevProps.wsTransfers.length && length > 0 && this.txData) {
       const lastTx = wsTransfers[length - 1];
       const { fromAddr, toAddr, fromToken, toToken } = this.txData;
-      console.log('txData ', this.txData);
-      console.log('lastTx ', lastTx);
       const txResult = getTxResult(
         lastTx,
         fromAddr,
@@ -139,7 +137,6 @@ class SwapSend extends Component {
         fromToken,
         toToken,
       );
-      console.log('txResult ', txResult);
 
       if (txResult) {
         this.setState({
@@ -291,7 +288,7 @@ class SwapSend extends Component {
         password: emptyPW,
         invalidPassword: true,
       });
-      console.log(error); // eslint-disable-line no-console
+      console.error(error); // eslint-disable-line no-console
     }
   };
 
@@ -569,7 +566,7 @@ class SwapSend extends Component {
         dragReset: true,
       });
       resetTxStatus();
-      console.log(error); // eslint-disable-line no-console
+      console.error(error); // eslint-disable-line no-console
     }
   };
 
@@ -739,7 +736,6 @@ class SwapSend extends Component {
       assetData,
       priceIndex,
       basePriceAsset,
-      wsTransfers,
     } = this.props;
     const {
       dragReset,
@@ -755,8 +751,6 @@ class SwapSend extends Component {
       txResult,
     } = this.state;
 
-    console.log('binance websocket transfer data: ', wsTransfers);
-    console.log('xValue: ', xValue);
     const swapData = getPair(info);
 
     if (!swapData || !Object.keys(tokenInfo).length) {
@@ -800,7 +794,6 @@ class SwapSend extends Component {
       runePrice,
     );
     const { slip, outputAmount, outputPrice } = this.data;
-    console.log(this.data); // eslint-disable-line no-console
     const sourcePrice = _get(priceIndex, source.toUpperCase(), outputPrice);
     const targetPrice = _get(priceIndex, target.toUpperCase(), outputPrice);
 

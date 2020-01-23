@@ -71,7 +71,6 @@ class TradeView extends Component {
         (binanceMarket && binanceMarket.list_price) || 0,
       );
 
-      console.log(marketPrice);
       if (symbol.toLowerCase() === 'bnb') {
         const { depth, poolPrice, premium, reward } = getTradeData(
           'rune',

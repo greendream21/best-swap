@@ -103,8 +103,6 @@ export function* getPools() {
         }),
       );
 
-      console.log('asset response: ', assetResponse);
-
       const assetDataIndex = getAssetDataIndex(assetResponse);
       const baseTokenTicker = getBasePriceAsset() || 'RUNE';
       const priceIndex = getPriceIndex(assetResponse, baseTokenTicker);
