@@ -46,6 +46,7 @@ import {
   countTxTimerValue,
   setTxTimerValue,
   resetTxStatus,
+  setTxHash,
 } from '../../../redux/app/actions';
 import midgardActions from '../../../redux/midgard/actions';
 import walletactions from '../../../redux/wallet/actions';
@@ -78,6 +79,7 @@ class SwapSend extends Component {
     setTxTimerModal: PropTypes.func.isRequired,
     setTxTimerStatus: PropTypes.func.isRequired,
     setTxTimerValue: PropTypes.func.isRequired,
+    setTxHash: PropTypes.func.isRequired,
     countTxTimerValue: PropTypes.func.isRequired,
     resetTxStatus: PropTypes.func.isRequired,
     getPools: PropTypes.func.isRequired,
@@ -113,9 +115,9 @@ class SwapSend extends Component {
   hash = null;
 
   /**
-   * Datao of swap `tx`
+   * Calculated result
    */
-  txData = null;
+  calcResult = null;
 
   componentDidMount() {
     const { getPools, getPoolAddress } = this.props;
@@ -125,19 +127,25 @@ class SwapSend extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { wsTransfers } = this.props;
-    const length = wsTransfers.length;
+    const {
+      wsTransfers,
+      txStatus: { hash },
+    } = this.props;
 
-    if (length !== prevProps.wsTransfers.length && length > 0 && this.txData) {
-      const lastTx = wsTransfers[length - 1];
-      const { fromAddr, toAddr, fromToken, toToken } = this.txData;
-      const txResult = getTxResult(
-        lastTx,
-        fromAddr,
-        toAddr,
-        fromToken,
-        toToken,
-      );
+    const { txResult } = this.state;
+    const length = wsTransfers.length;
+    const lastTx = wsTransfers[length - 1];
+
+    if (
+      length !== prevProps.wsTransfers.length &&
+      length > 0 &&
+      hash !== undefined &&
+      txResult === null
+    ) {
+      const txResult = getTxResult({
+        tx: lastTx,
+        hash,
+      });
 
       if (txResult) {
         this.setState({
@@ -371,7 +379,7 @@ class SwapSend extends Component {
       return;
     }
 
-    if (!this.validateSlip(this.data.slip)) {
+    if (!this.validateSlip(this.calcResult.slip)) {
       return;
     }
 
@@ -535,6 +543,7 @@ class SwapSend extends Component {
     const {
       user: { wallet },
       info,
+      setTxHash,
       resetTxStatus,
     } = this.props;
     const { xValue, address, slipProtection } = this.state;
@@ -543,8 +552,7 @@ class SwapSend extends Component {
     this.setState({
       txResult: null,
     });
-    this.hash = null;
-    this.txData = null;
+
     this.handleStartTimer();
     try {
       const { result } = await confirmSwap(
@@ -552,20 +560,13 @@ class SwapSend extends Component {
         wallet,
         source,
         target,
-        this.data,
+        this.calcResult,
         xValue,
         slipProtection,
         address,
       );
 
-      this.hash = result[0].hash;
-
-      this.txData = {
-        fromAddr: wallet,
-        toAddr: this.data.poolAddressTo,
-        fromToken: this.data.symbolFrom,
-        toToken: this.data.symbolTo,
-      };
+      setTxHash(result[0]?.hash);
     } catch (error) {
       notification['error']({
         message: 'Swap Invalid',
@@ -610,7 +611,7 @@ class SwapSend extends Component {
 
   renderSwapModalContent = (swapData, info) => {
     const {
-      txStatus: { status, value, startTime },
+      txStatus: { status, value, startTime, hash },
       basePriceAsset,
       priceIndex,
     } = this.props;
@@ -635,7 +636,7 @@ class SwapSend extends Component {
     // ];
 
     const completed = !status && txResult !== null;
-    const refunded = txResult ? txResult.type === 'refund' : false;
+    const refunded = txResult?.type === 'refund' ?? false;
     const targetToken = !completed ? target : getTickerFormat(txResult.token);
     const tokenAmount = !completed
       ? Number(outputAmount)
@@ -650,7 +651,7 @@ class SwapSend extends Component {
         : Number(Number(txResult.amount) * tokenPrice);
     }
 
-    const txURL = TESTNET_TX_BASE_URL + this.hash;
+    const txURL = TESTNET_TX_BASE_URL + hash;
 
     return (
       <SwapModalContent>
@@ -688,16 +689,18 @@ class SwapSend extends Component {
         </Row>
         <Row className="swap-info-wrapper">
           <Trend value={slipAmount} />
-          {this.hash && completed && (
+          {hash && (
             <div className="hash-address">
               <div className="copy-btn-wrapper">
-                <Button
-                  className="view-btn"
-                  color="success"
-                  onClick={this.handleClickFinish}
-                >
-                  FINISH
-                </Button>
+                {completed && (
+                  <Button
+                    className="view-btn"
+                    color="success"
+                    onClick={this.handleClickFinish}
+                  >
+                    FINISH
+                  </Button>
+                )}
                 <a href={txURL} target="_blank" rel="noopener noreferrer">
                   VIEW TRANSACTION
                 </a>
@@ -800,7 +803,7 @@ class SwapSend extends Component {
     const openSwapModal = txStatus.type === 'swap' ? txStatus.modal : false;
 
     // calculation
-    this.data = getCalcResult(
+    this.calcResult = getCalcResult(
       source,
       target,
       poolData,
@@ -808,7 +811,7 @@ class SwapSend extends Component {
       xValue,
       runePrice,
     );
-    const { slip, outputAmount, outputPrice } = this.data;
+    const { slip, outputAmount, outputPrice } = this.calcResult;
     const sourcePrice = _get(priceIndex, source.toUpperCase(), outputPrice);
     const targetPrice = _get(priceIndex, target.toUpperCase(), outputPrice);
 
@@ -955,7 +958,7 @@ class SwapSend extends Component {
           onCancel={this.handleCloseModal}
           onClose={this.handleCloseModal}
         >
-          {this.renderSwapModalContent(swapData, this.data)}
+          {this.renderSwapModalContent(swapData, this.calcResult)}
         </SwapModal>
         <PrivateModal
           title="PASSWORD CONFIRMATION"
@@ -1024,6 +1027,7 @@ export default compose(
       setTxTimerStatus,
       setTxTimerValue,
       countTxTimerValue,
+      setTxHash,
       resetTxStatus,
       refreshBalance,
     },

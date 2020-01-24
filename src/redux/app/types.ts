@@ -36,6 +36,10 @@ export interface TxStatus {
    * `false` -> <TxTimer /> component is not counting
    */
   readonly status: boolean;
+  /**
+   * Transaction hash - optional
+   */
+  readonly hash?: string;
 }
 
 /**
