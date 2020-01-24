@@ -43,9 +43,9 @@ import {
   emptyString,
 } from '../../../helpers/stringHelper';
 import {
-  getCreatePoolCalc,
   getCreatePoolTokens,
   confirmCreatePool,
+  getCreatePoolCalc,
 } from '../utils';
 
 import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
@@ -117,6 +117,18 @@ class PoolCreate extends Component {
     const { resetTxStatus } = this.props;
     resetTxStatus();
   }
+
+  getData = () => {
+    const { symbol, poolAddress } = this.props;
+    const { runeAmount, tokenAmount, runePrice } = this.state;
+    return getCreatePoolCalc(
+      symbol,
+      poolAddress,
+      runeAmount,
+      runePrice,
+      tokenAmount,
+    );
+  };
 
   getStakerData = () => {
     const {
@@ -312,7 +324,7 @@ class PoolCreate extends Component {
         wallet,
         runeAmount,
         tokenAmount,
-        this.data,
+        this.getData(),
       );
 
       this.hash = result[0].hash;
@@ -423,14 +435,7 @@ class PoolCreate extends Component {
   };
 
   renderAssetView = () => {
-    const {
-      symbol,
-      priceIndex,
-      basePriceAsset,
-      assetData,
-      pools,
-      poolAddress,
-    } = this.props;
+    const { symbol, priceIndex, basePriceAsset, assetData, pools } = this.props;
 
     const {
       runeAmount,
@@ -451,14 +456,7 @@ class PoolCreate extends Component {
 
     const tokenPrice = _get(priceIndex, target.toUpperCase(), 0);
 
-    this.data = getCreatePoolCalc(
-      symbol,
-      poolAddress,
-      runeAmount,
-      runePrice,
-      tokenAmount,
-    );
-    const { poolPrice, depth, share } = this.data;
+    const { poolPrice, depth, share } = this.getData();
 
     const poolAttrs = [
       {

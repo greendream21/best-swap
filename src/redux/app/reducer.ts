@@ -7,6 +7,7 @@ import {
   COUNT_TX_TIMER_VALUE,
   SET_TX_TIMER_START_TIME,
   RESET_TX_STATUS,
+  SET_TX_HASH,
 } from './actions';
 import { MIN_VALUE, MAX_VALUE } from './const';
 import { State } from './types';
@@ -84,13 +85,24 @@ const appReducer = (state = initState, action: AppActionsTypes): State => {
           startTime: action.payload,
         },
       };
+    case SET_TX_HASH:
+      return {
+        ...state,
+        txStatus: {
+          ...state.txStatus,
+          hash: action.payload,
+        },
+      };
     case RESET_TX_STATUS: {
       const { payload } = action;
-      const txStatus = payload ? { ...initState.txStatus, ...payload } : { ...initState.txStatus };
+      const txStatus = payload
+        ? { ...initState.txStatus, ...payload }
+        : { ...initState.txStatus };
       return {
         ...state,
         txStatus,
-      }; }
+      };
+    }
     default:
       return state;
   }

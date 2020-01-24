@@ -28,6 +28,8 @@ import {
   setTxTimerStatus,
   countTxTimerValue,
   resetTxStatus,
+  setTxTimerValue,
+  setTxHash,
 } from '../../../redux/app/actions';
 import midgardActions from '../../../redux/midgard/actions';
 import walletactions from '../../../redux/wallet/actions';
@@ -44,7 +46,7 @@ import {
   getCalcResult,
   confirmStake,
   confirmWithdraw,
-  stakedResult,
+  withdrawResult,
 } from '../utils';
 import {
   getUserFormat,
@@ -56,6 +58,7 @@ import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
 import TokenInfo from '../../../components/uielements/tokens/tokenInfo';
 import StepBar from '../../../components/uielements/stepBar';
 import { MAX_VALUE } from '../../../redux/app/const';
+import { getHashFromTransfer } from '../../../helpers/binance';
 import { delay } from '../../../helpers/asyncHelper';
 
 const { TabPane } = Tabs;
@@ -80,6 +83,8 @@ class PoolStake extends Component {
     setTxTimerModal: PropTypes.func.isRequired,
     setTxTimerStatus: PropTypes.func.isRequired,
     countTxTimerValue: PropTypes.func.isRequired,
+    setTxTimerValue: PropTypes.func.isRequired,
+    setTxHash: PropTypes.func.isRequired,
     resetTxStatus: PropTypes.func.isRequired,
     history: PropTypes.object,
     info: PropTypes.object,
@@ -106,6 +111,7 @@ class PoolStake extends Component {
     tokenTotal: 0,
     runePercent: 0,
     tokenPercent: 0,
+    txResult: false,
   };
 
   hash = null;
@@ -122,36 +128,42 @@ class PoolStake extends Component {
     const {
       wsTransfers,
       user: { wallet },
+      txStatus: { type, hash },
     } = this.props;
+    const { txResult } = this.state;
     const length = wsTransfers.length;
 
     if (
       length !== prevProps.wsTransfers.length &&
       length > 0 &&
-      this.stakeData
+      hash !== undefined &&
+      !txResult
     ) {
       const lastTx = wsTransfers[length - 1];
+      const transferHash = getHashFromTransfer(lastTx);
 
-      const {
-        fromAddr,
-        toAddr,
-        toToken,
-        runeAmount,
-        tokenAmount,
-      } = this.stakeData;
+      // Currently we do a different handling for `stake` + `withdraw`
+      // See https://thorchain.slack.com/archives/CL5B4M4BC/p1579816500171200
+      if (type === 'stake' /* TxTypes.STAKE */) {
+        if (transferHash === hash) {
+          // Just refresh stakes after update
+          refreshStake(wallet);
+        }
+      }
 
-      const txResult = stakedResult(
-        lastTx,
-        fromAddr,
-        toAddr,
-        toToken,
-        runeAmount,
-        tokenAmount,
-      );
+      if (type === 'withdraw' /* TxTypes.WITHDRAW */) {
+        const txResult = withdrawResult({
+          tx: lastTx,
+          hash,
+        });
 
-      if (txResult) {
-        // refresh stakes after update
-        refreshStake(wallet);
+        if (txResult) {
+          this.setState({
+            txResult: true,
+          });
+          // refresh stakes after update
+          refreshStake(wallet);
+        }
       }
     }
   }
@@ -215,7 +227,7 @@ class PoolStake extends Component {
 
     if (tokenName === 'rune') {
       newValue = amount;
-      const { ratio } = this.data;
+      const { ratio } = this.getData();
       const tokenValue = newValue * ratio;
       const tokenAmount =
         tokenValue <= totalTokenAmount ? tokenValue : totalTokenAmount;
@@ -279,7 +291,7 @@ class PoolStake extends Component {
     const value = ((totalAmount * amount) / 100) * balance;
 
     if (token === 'rune') {
-      const { ratio } = this.data;
+      const { ratio } = this.getData();
       const tokenValue = value * ratio;
       const tokenAmount =
         tokenValue <= totalTokenAmount ? tokenValue : totalTokenAmount;
@@ -329,14 +341,34 @@ class PoolStake extends Component {
     });
   };
 
+  getData = () => {
+    const { symbol, poolData, poolAddress } = this.props;
+    const { runeAmount, tokenAmount, runePrice } = this.state;
+
+    return getCalcResult(
+      symbol,
+      poolData,
+      poolAddress,
+      runeAmount,
+      runePrice,
+      tokenAmount,
+    );
+  };
+
   handleConfirmStake = async () => {
     const {
       user: { wallet },
+      setTxHash,
     } = this.props;
     const { runeAmount, tokenAmount } = this.state;
 
     this.handleStartTimer('stake');
-    this.hash = null;
+
+    this.setState({
+      txResult: false,
+    });
+
+    const data = this.getData();
 
     try {
       const { result } = await confirmStake(
@@ -344,15 +376,15 @@ class PoolStake extends Component {
         wallet,
         runeAmount,
         tokenAmount,
-        this.data,
+        data,
       );
 
-      this.hash = result[0].hash;
+      setTxHash(result[0].hash);
 
       this.stakeData = {
         fromAddr: wallet,
-        toAddr: this.data.poolAddressTo,
-        toToken: this.data.symbolTo,
+        toAddr: data.poolAddress,
+        toToken: data.symbolTo,
         runeAmount,
         tokenAmount,
       };
@@ -523,9 +555,16 @@ class PoolStake extends Component {
       symbol,
       poolAddress,
       user: { wallet },
+      setTxHash,
     } = this.props;
     const { widthdrawPercentage } = this.state;
     const withdrawRate = (widthdrawPercentage || 50) / 100;
+
+    this.handleStartTimer('withdraw');
+
+    this.setState({
+      txResult: false,
+    });
 
     try {
       const percentage = withdrawRate * 100;
@@ -537,9 +576,7 @@ class PoolStake extends Component {
         percentage,
       );
 
-      this.hash = result[0].hash;
-
-      this.handleStartTimer('withdraw');
+      setTxHash(result[0].hash);
     } catch (error) {
       notification.error({
         message: 'Withdraw Invalid',
@@ -553,10 +590,51 @@ class PoolStake extends Component {
   };
 
   handleChangeTxValue = () => {
-    const { countTxTimerValue } = this.props;
-    // ATM we just count a `quarter` w/o any other checks
-    // See https://gitlab.com/thorchain/bepswap/bepswap-react-app/issues/281
-    countTxTimerValue(25);
+    const {
+      countTxTimerValue,
+      setTxTimerValue,
+      txStatus: { value, type, hash },
+    } = this.props;
+    const { txResult } = this.state;
+
+    // Count handling depends on `type`
+    if (type === 'withdraw') {
+      // If tx has been confirmed finally,
+      // then we jump to last `valueIndex` ...
+      if (txResult && value < MAX_VALUE) {
+        setTxTimerValue(MAX_VALUE);
+      }
+      // In other cases (no `txResult`) we don't jump to last `indexValue`...
+      if (!txResult) {
+        // ..., but we are still counting
+        if (value < 75) {
+          // Add a quarter
+          countTxTimerValue(25);
+        } else if (value >= 75 && value < 95) {
+          // With last quarter we just count a little bit to signalize still a progress
+          countTxTimerValue(1);
+        }
+      }
+    }
+
+    if (type === 'stake') {
+      // If tx has been sent successfully,
+      // we jump to last `valueIndex` ...
+      if (hash && value < MAX_VALUE) {
+        setTxTimerValue(MAX_VALUE);
+      }
+      // In other cases (no `hash`) we don't jump to last `indexValue`...
+      if (!hash) {
+        // ..., but we are still counting
+        if (value < 75) {
+          // Add a quarter
+          countTxTimerValue(25);
+        } else if (value >= 75 && value < 95) {
+          // With last quarter we just count a little bit to signalize still a progress
+          countTxTimerValue(1);
+        }
+      }
+    }
   };
 
   handleEndTxTimer = () => {
@@ -569,9 +647,9 @@ class PoolStake extends Component {
     this.getStakerInfo();
   };
 
-  renderStakeModalContent = () => {
+  renderStakeModalContent = completed => {
     const {
-      txStatus: { status, value, startTime },
+      txStatus: { status, value, startTime, hash },
       symbol,
       priceIndex,
       basePriceAsset,
@@ -583,7 +661,7 @@ class PoolStake extends Component {
 
     const Pr = priceIndex.RUNE;
     const tokenPrice = _get(priceIndex, target.toUpperCase(), 0);
-    const txURL = TESTNET_TX_BASE_URL + this.hash;
+    const txURL = TESTNET_TX_BASE_URL + hash;
 
     return (
       <ConfirmModalContent>
@@ -619,7 +697,7 @@ class PoolStake extends Component {
           </div>
         </Row>
         <Row className="modal-info-wrapper">
-          {this.hash && !status && (
+          {completed && (
             <div className="hash-address">
               <div className="copy-btn-wrapper">
                 <Link to="/pools">
@@ -638,9 +716,9 @@ class PoolStake extends Component {
     );
   };
 
-  renderWithdrawModalContent = () => {
+  renderWithdrawModalContent = (txSent, completed) => {
     const {
-      txStatus: { status, value, startTime },
+      txStatus: { status, value, startTime, hash },
       symbol,
       priceIndex,
       basePriceAsset,
@@ -651,7 +729,7 @@ class PoolStake extends Component {
 
     const runePrice = priceIndex.RUNE;
     const tokenPrice = _get(priceIndex, target.toUpperCase(), 0);
-    const txURL = TESTNET_TX_BASE_URL + this.hash;
+    const txURL = TESTNET_TX_BASE_URL + hash;
     const { runeValue, tokenValue } = this.withdrawData;
 
     return (
@@ -686,14 +764,16 @@ class PoolStake extends Component {
           </div>
         </Row>
         <Row className="modal-info-wrapper">
-          {this.hash && !status && (
+          {txSent && (
             <div className="hash-address">
               <div className="copy-btn-wrapper">
-                <Link to="/pools">
-                  <Button className="view-btn" color="success">
-                    FINISH
-                  </Button>
-                </Link>
+                {completed && (
+                  <Link to="/pools">
+                    <Button className="view-btn" color="success">
+                      FINISH
+                    </Button>
+                  </Link>
+                )}
                 <a href={txURL} target="_blank" rel="noopener noreferrer">
                   VIEW TRANSACTION
                 </a>
@@ -850,6 +930,7 @@ class PoolStake extends Component {
       runeValue,
       tokenValue,
       tokenPrice,
+      percentage: widthdrawPercentage,
     };
 
     const disableWithdraw = stakeUnits === 0;
@@ -1198,6 +1279,7 @@ class PoolStake extends Component {
       openWalletAlert,
       password,
       invalidPassword,
+      txResult,
       validatingPassword,
     } = this.state;
 
@@ -1217,9 +1299,6 @@ class PoolStake extends Component {
       tokenAmount,
     );
 
-    // store calc result
-    this.data = calcResult;
-
     const openStakeModal = txStatus.type === 'stake' ? txStatus.modal : false;
     const openWithdrawModal =
       txStatus.type === 'withdraw' ? txStatus.modal : false;
@@ -1229,7 +1308,13 @@ class PoolStake extends Component {
 
     // stake confirmation modal
 
-    const completed = txStatus.value === MAX_VALUE && !txStatus.status;
+    const txSent = txStatus.hash !== undefined;
+
+    // TODO(veado): Completed depending on `txStatus.type`, too (no txResult for `stake` atm)
+    const completed =
+      txStatus.type === 'stake'
+        ? txSent && !txStatus.status
+        : txResult && !txStatus.status;
     const stakeTitle = !completed ? 'YOU ARE STAKING' : 'YOU STAKED';
 
     // withdraw confirmation modal
@@ -1260,7 +1345,7 @@ class PoolStake extends Component {
               footer={null}
               onCancel={this.handleCloseModal}
             >
-              {this.renderWithdrawModalContent()}
+              {this.renderWithdrawModalContent(txSent, completed)}
             </ConfirmModal>
             <ConfirmModal
               title={stakeTitle}
@@ -1271,8 +1356,9 @@ class PoolStake extends Component {
               footer={null}
               onCancel={this.handleCloseModal}
             >
-              {this.renderStakeModalContent()}
+              {this.renderStakeModalContent(completed)}
             </ConfirmModal>
+
             <PrivateModal
               title="PASSWORD CONFIRMATION"
               visible={openPrivateModal}
@@ -1341,6 +1427,8 @@ export default compose(
       setTxTimerModal,
       setTxTimerStatus,
       countTxTimerValue,
+      setTxTimerValue,
+      setTxHash,
       resetTxStatus,
       refreshStake,
     },

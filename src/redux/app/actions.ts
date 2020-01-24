@@ -30,6 +30,11 @@ export interface SetTxTimerStartTime {
   payload: number;
 }
 
+export interface SetTxHash {
+  type: typeof SET_TX_HASH;
+  payload: string;
+}
+
 export interface ResetTxStatus {
   type: typeof RESET_TX_STATUS;
   payload?: TxStatus;
@@ -42,6 +47,7 @@ export type AppActionsTypes =
   | SetTxTimerValue
   | CountTxTimerValue
   | SetTxTimerStartTime
+  | SetTxHash
   | ResetTxStatus;
 
 export const SET_TX_TIMER_TYPE = 'SET_TX_TIMER_TYPE';
@@ -50,6 +56,7 @@ export const SET_TX_TIMER_STATUS = 'SET_TX_TIMER_STATUS';
 export const SET_TX_TIMER_VALUE = 'SET_TX_TIMER_VALUE';
 export const COUNT_TX_TIMER_VALUE = 'COUNT_TX_TIMER_VALUE';
 export const SET_TX_TIMER_START_TIME = 'SET_TX_TIMER_START_TIME';
+export const SET_TX_HASH = 'SET_TX_HASH';
 export const RESET_TX_STATUS = 'RESET_TX_STATUS';
 
 export const setTxTimerType = (payload: TxTypes): SetTxTimerType => ({
@@ -79,6 +86,11 @@ export const countTxTimerValue = (payload: number): CountTxTimerValue => ({
 
 export const setTxTimerStartTime = (payload: number): SetTxTimerStartTime => ({
   type: SET_TX_TIMER_START_TIME,
+  payload,
+});
+
+export const setTxHash = (payload: string): SetTxHash => ({
+  type: SET_TX_HASH,
   payload,
 });
 

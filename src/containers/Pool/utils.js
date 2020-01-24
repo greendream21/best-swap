@@ -12,6 +12,7 @@ import {
   getTickerFormat,
   getUserFormat,
 } from '../../helpers/stringHelper';
+import { getTxHashFromMemo } from '../../helpers/binance';
 
 export const getPoolData = (from, poolInfo, priceIndex, basePriceAsset) => {
   const asset = from;
@@ -302,9 +303,8 @@ export const confirmWithdraw = (
   });
 };
 
-export const getTxType = tx => {
-  const memo = tx.data.M;
-  let txType = null;
+export const getTxType = (memo) /* string */ => {
+  let txType = 'unknown';
 
   if (memo) {
     const str = memo.toLowerCase();
@@ -317,6 +317,10 @@ export const getTxType = tx => {
       {
         type: 'withdraw',
         memos: ['withdraw', 'wd', '-'],
+      },
+      {
+        type: 'outbound',
+        memos: ['outbound'],
       },
     ];
 
@@ -356,21 +360,20 @@ export const parseTransfer = tx => {
   };
 };
 
-export const stakedResult = (
+export const stakedResult = ({
   tx,
   fromAddr,
   toAddr,
   toToken,
   runeAmount,
   tokenAmount,
-) => {
-  const txType = getTxType(tx);
-
+}) => {
+  const txType = getTxType(tx?.data?.M);
+  let success = false;
+  const { txFrom, txTo, txData } = parseTransfer(tx);
   if (txType === 'stake') {
-    const { txFrom, txTo, txData } = parseTransfer(tx);
-    if (txFrom === fromAddr && txTo === toAddr && txData.length === 2) {
-      let success = true;
-
+    success = true;
+    if (txFrom === toAddr && txTo === fromAddr && txData.length === 2) {
       txData.forEach(data => {
         const tickerFormat = getTickerFormat(data.a);
         if (tickerFormat === 'rune') {
@@ -379,7 +382,6 @@ export const stakedResult = (
             success = false;
           }
         }
-
         // compare token symbol and amount from previous stake tx
         if (tickerFormat !== 'rune' && data.a !== toToken) {
           if (Number(data.A) !== tokenAmount) {
@@ -387,10 +389,17 @@ export const stakedResult = (
           }
         }
       });
-
-      return success;
     }
   }
+  return success;
+};
 
-  return null;
+export const withdrawResult = ({ tx, hash }) => {
+  const txType = getTxType(tx?.data?.M);
+  const txHash = getTxHashFromMemo(tx);
+  let success = false;
+  if (txType === 'outbound' && hash === txHash) {
+    success = true;
+  }
+  return success;
 };

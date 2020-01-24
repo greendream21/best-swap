@@ -2,6 +2,7 @@ import { getSwapMemo } from '../../helpers/memoHelper';
 import { getTickerFormat, getFixedNumber } from '../../helpers/stringHelper';
 import { getZValue, getPx, getPz, getSlip, getFee } from './calc';
 import { BASE_NUMBER } from '../../settings/constants';
+import { getTxHashFromMemo } from '../../helpers/binance';
 
 export const getSwapType = (from, to) => {
   if (from.toLowerCase() === 'rune' || to.toLowerCase() === 'rune') {
@@ -244,12 +245,15 @@ export const confirmSwap = (
 };
 
 export const parseTransfer = tx => {
-  const txHash = tx.data.H;
-  const txMemo = tx.data.M;
-  const txFrom = tx.data.f;
-  const txTo = tx.data.t[0].o;
-  const txAmount = tx.data.t[0].c[0].A;
-  const txToken = tx.data.t[0].c[0].a;
+  const data = tx?.data ?? {};
+  const txHash = data?.H;
+  const txMemo = data?.M;
+  const txFrom = data?.f;
+  const t = data?.t ?? [];
+  const txTo = t[0]?.o;
+  const c = t[0]?.c ?? [];
+  const txAmount = c[0]?.A;
+  const txToken = c[0]?.a;
 
   return {
     txHash,
@@ -261,42 +265,30 @@ export const parseTransfer = tx => {
   };
 };
 
-export const isOutboundTx = tx => {
-  if (tx.data.M) {
-    return tx.data.M.includes('OUTBOUND');
-  }
-  return false;
-};
+export const isOutboundTx = tx =>
+  tx?.data?.M?.toUpperCase().includes('OUTBOUND') ?? false;
 
-export const isRefundTx = tx => {
-  if (tx.data.M) {
-    return tx.data.M.toUpperCase().includes('REFUND');
-  }
-  return false;
-};
+export const isRefundTx = tx =>
+  tx?.data?.M?.toUpperCase().includes('REFUND') ?? false;
 
-export const getTxResult = (tx, fromAddr, toAddr, fromToken, toToken) => {
-  const { txFrom, txTo, txToken, txAmount } = parseTransfer(tx);
+export const getTxResult = ({ tx, hash }) => {
+  const { txToken, txAmount } = parseTransfer(tx);
 
-  if (txFrom === toAddr && txTo === fromAddr) {
-    if (isRefundTx(tx)) {
-      if (txToken === fromToken) {
-        return {
-          type: 'refund',
-          amount: txAmount,
-          token: txToken,
-        };
-      }
-    }
-    if (isOutboundTx(tx)) {
-      if (txToken === toToken) {
-        return {
-          type: 'success',
-          amount: txAmount,
-          token: txToken,
-        };
-      }
-    }
+  if (isRefundTx(tx) && getTxHashFromMemo(tx) === hash) {
+    return {
+      type: 'refund',
+      amount: txAmount,
+      token: txToken,
+    };
   }
+
+  if (isOutboundTx(tx) && getTxHashFromMemo(tx) === hash) {
+    return {
+      type: 'success',
+      amount: txAmount,
+      token: txToken,
+    };
+  }
+
   return null;
 };
