@@ -303,7 +303,7 @@ export const confirmWithdraw = (
   });
 };
 
-export const getTxType = (memo) /* string */ => {
+export const getTxType = memo => {
   let txType = 'unknown';
 
   if (memo) {
