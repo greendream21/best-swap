@@ -61,8 +61,6 @@ class TokenSelect extends Component {
 
   ref = React.createRef();
 
-  menuRefref = React.createRef();
-
   componentDidMount() {
     document.addEventListener('click', this.handleDocumentClick);
   }

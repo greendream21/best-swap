@@ -3,6 +3,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Dropdown } from 'antd';
+import { sortBy as _sortBy } from 'lodash';
 
 import Label from '../../label';
 import Selection from '../../selection';
@@ -23,6 +24,9 @@ import {
   FooterLabel,
   HorizontalDivider,
 } from './coinCard.style';
+
+import Ref from '../../../../helpers/event/ref';
+import clickedInNode from '../../../../helpers/event/clickedInNode';
 
 function DropdownCarret({ open, onClick, className }) {
   return (
@@ -97,6 +101,40 @@ class CoinCard extends Component {
     percentButtonSelected: 0,
   };
 
+  ref = React.createRef();
+
+  componentDidMount() {
+    document.addEventListener('click', this.handleDocumentClick);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('click', this.handleDocumentClick);
+  }
+
+  handleRef = ref => {
+    if (ref) {
+      this.ref = ref;
+    }
+  };
+
+  handleMenuRef = menuRef => {
+    if (menuRef) {
+      this.menuRef = menuRef;
+    }
+  };
+
+  handleDocumentClick = e => {
+    if (
+      this.ref &&
+      !clickedInNode(this.ref, e) &&
+      !clickedInNode(this.menuRef, e)
+    ) {
+      this.setState({
+        openDropdown: false,
+      });
+    }
+  };
+
   onChange = e => {
     this.props.onChange(e.target.value);
   };
@@ -148,17 +186,21 @@ class CoinCard extends Component {
       searchDisable,
     } = this.props;
     const dataTest = this.props['data-test']; // eslint-disable-line
+    const sortedAssetData = _sortBy(assetData, ['asset']);
+
     return (
-      <CoinCardMenu
-        data-test={dataTest}
-        assetData={assetData}
-        asset={asset}
-        priceIndex={priceIndex}
-        unit={unit}
-        withSearch={withSearch}
-        searchDisable={searchDisable}
-        onSelect={this.handleChangeAsset}
-      />
+      <Ref innerRef={this.handleMenuRef}>
+        <CoinCardMenu
+          data-test={dataTest}
+          assetData={sortedAssetData}
+          asset={asset}
+          priceIndex={priceIndex}
+          unit={unit}
+          withSearch={withSearch}
+          searchDisable={searchDisable}
+          onSelect={this.handleChangeAsset}
+        />
+      </Ref>
     );
   }
 
@@ -208,62 +250,64 @@ class CoinCard extends Component {
 
     // TODO: render dropown menu as bottom fixed sheet for mobile
     return (
-      <CoinCardWrapper
-        className={`coinCard-wrapper ${className}`}
-        onBlur={this.handleBlurCard}
-        {...props}
-      >
-        {title && <Label className="title-label">{title}</Label>}
-
-        <Dropdown
-          overlay={this.renderMenu()}
-          trigger={[]}
-          visible={openDropdown}
+      <Ref innerRef={this.handleRef}>
+        <CoinCardWrapper
+          className={`coinCard-wrapper ${className}`}
+          onBlur={this.handleBlurCard}
+          {...props}
         >
-          <CardBorderWrapper>
-            <AssetNameLabel>{asset}</AssetNameLabel>
-            <HorizontalDivider />
-            <CardTopRow>
-              <AssetData>
-                <CoinInputAdvanced
-                  className="asset-amount-label"
-                  size="large"
-                  value={amount}
-                  onChange={this.onChange}
-                  onKeyDown={this.onKeyDown}
-                  {...inputProps}
-                />
-                <HorizontalDivider color="primary" />
-                <AssetCardFooter>
-                  <FooterLabel>
-                    {`${unit} ${Number(
-                      (amount * price).toFixed(2),
-                    ).toLocaleString()}`}
-                  </FooterLabel>
-                  {slip !== undefined && (
-                    <FooterLabel
-                      className="asset-slip-label"
-                      size="small"
-                      color="gray"
-                      weight="bold"
-                    >
-                      SLIP: {slip.toFixed(0)} %
+          {title && <Label className="title-label">{title}</Label>}
+
+          <Dropdown
+            overlay={this.renderMenu()}
+            trigger={[]}
+            visible={openDropdown}
+          >
+            <CardBorderWrapper>
+              <AssetNameLabel>{asset}</AssetNameLabel>
+              <HorizontalDivider />
+              <CardTopRow>
+                <AssetData>
+                  <CoinInputAdvanced
+                    className="asset-amount-label"
+                    size="large"
+                    value={amount}
+                    onChange={this.onChange}
+                    onKeyDown={this.onKeyDown}
+                    {...inputProps}
+                  />
+                  <HorizontalDivider color="primary" />
+                  <AssetCardFooter>
+                    <FooterLabel>
+                      {`${unit} ${Number(
+                        (amount * price).toFixed(2),
+                      ).toLocaleString()}`}
                     </FooterLabel>
-                  )}
-                </AssetCardFooter>
-              </AssetData>
-              {this.renderDropDownButton()}
-            </CardTopRow>
-          </CardBorderWrapper>
-        </Dropdown>
-        {withSelection && (
-          <Selection
-            selected={percentButtonSelected}
-            onSelect={this.handlePercentSelected}
-          />
-        )}
-        {children}
-      </CoinCardWrapper>
+                    {slip !== undefined && (
+                      <FooterLabel
+                        className="asset-slip-label"
+                        size="small"
+                        color="gray"
+                        weight="bold"
+                      >
+                        SLIP: {slip.toFixed(0)} %
+                      </FooterLabel>
+                    )}
+                  </AssetCardFooter>
+                </AssetData>
+                {this.renderDropDownButton()}
+              </CardTopRow>
+            </CardBorderWrapper>
+          </Dropdown>
+          {withSelection && (
+            <Selection
+              selected={percentButtonSelected}
+              onSelect={this.handlePercentSelected}
+            />
+          )}
+          {children}
+        </CoinCardWrapper>
+      </Ref>
     );
   }
 }
