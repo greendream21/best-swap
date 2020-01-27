@@ -8,16 +8,6 @@ import Label from '../label';
 const { Panel } = AntdCollapse;
 
 class Collapse extends Component {
-  static propTypes = {
-    data: PropTypes.array,
-    className: PropTypes.string,
-  };
-
-  static defaultProps = {
-    data: [],
-    className: '',
-  };
-
   render() {
     const { data, className, ...props } = this.props;
 
@@ -46,5 +36,15 @@ class Collapse extends Component {
     );
   }
 }
+
+Collapse.propTypes = {
+  data: PropTypes.array,
+  className: PropTypes.string,
+};
+
+Collapse.defaultProps = {
+  data: [],
+  className: '',
+};
 
 export default Collapse;

@@ -56,47 +56,25 @@ const { getPools, getStakerPoolData, getPoolAddress } = midgardActions;
 const { getBinanceTokens, getBinanceMarkets } = binanceActions;
 
 class PoolCreate extends Component {
-  static propTypes = {
-    symbol: PropTypes.string.isRequired,
-    assetData: PropTypes.array.isRequired,
-    pools: PropTypes.array.isRequired,
-    poolAddress: PropTypes.string.isRequired,
-    poolData: PropTypes.object.isRequired,
-    stakerPoolData: PropTypes.object.isRequired,
-    assets: PropTypes.object.isRequired,
-    user: PropTypes.object.isRequired,
-    basePriceAsset: PropTypes.string.isRequired,
-    priceIndex: PropTypes.object.isRequired,
-    getPools: PropTypes.func.isRequired,
-    getPoolAddress: PropTypes.func.isRequired,
-    getStakerPoolData: PropTypes.func.isRequired,
-    getBinanceTokens: PropTypes.func.isRequired,
-    getBinanceMarkets: PropTypes.func.isRequired,
-    binanceData: PropTypes.object.isRequired,
-    history: PropTypes.object,
-    txStatus: PropTypes.object.isRequired,
-    setTxTimerModal: PropTypes.func.isRequired,
-    setTxTimerStatus: PropTypes.func.isRequired,
-    countTxTimerValue: PropTypes.func.isRequired,
-    resetTxStatus: PropTypes.func.isRequired,
-  };
-
-  state = {
-    dragReset: true,
-    openPrivateModal: false,
-    password: emptyString,
-    invalidPassword: false,
-    validatingPassword: false,
-    runeAmount: 0,
-    tokenAmount: 0,
-    balance: 100,
-    fR: 1,
-    fT: 1,
-    selectedRune: 0,
-    selectedToken: 0,
-    runeTotal: 0,
-    tokenTotal: 0,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      dragReset: true,
+      openPrivateModal: false,
+      password: emptyString,
+      invalidPassword: false,
+      validatingPassword: false,
+      runeAmount: 0,
+      tokenAmount: 0,
+      balance: 100,
+      fR: 1,
+      fT: 1,
+      selectedRune: 0,
+      selectedToken: 0,
+      runeTotal: 0,
+      tokenTotal: 0,
+    };
+  }
 
   componentDidMount() {
     const {
@@ -540,7 +518,7 @@ class PoolCreate extends Component {
         <PrivateModal
           title="PASSWORD CONFIRMATION"
           visible={openPrivateModal}
-          onOk={!validatingPassword && this.handleConfirmPassword}
+          onOk={!validatingPassword ? this.handleConfirmPassword : undefined}
           onCancel={this.handleCancelPrivateModal}
           maskClosable={false}
           closable={false}
@@ -736,6 +714,31 @@ class PoolCreate extends Component {
     );
   }
 }
+
+PoolCreate.propTypes = {
+  symbol: PropTypes.string.isRequired,
+  assetData: PropTypes.array.isRequired,
+  pools: PropTypes.array.isRequired,
+  poolAddress: PropTypes.string.isRequired,
+  poolData: PropTypes.object.isRequired,
+  stakerPoolData: PropTypes.object.isRequired,
+  assets: PropTypes.object.isRequired,
+  user: PropTypes.object.isRequired,
+  basePriceAsset: PropTypes.string.isRequired,
+  priceIndex: PropTypes.object.isRequired,
+  getPools: PropTypes.func.isRequired,
+  getPoolAddress: PropTypes.func.isRequired,
+  getStakerPoolData: PropTypes.func.isRequired,
+  getBinanceTokens: PropTypes.func.isRequired,
+  getBinanceMarkets: PropTypes.func.isRequired,
+  binanceData: PropTypes.object.isRequired,
+  history: PropTypes.object,
+  txStatus: PropTypes.object.isRequired,
+  setTxTimerModal: PropTypes.func.isRequired,
+  setTxTimerStatus: PropTypes.func.isRequired,
+  countTxTimerValue: PropTypes.func.isRequired,
+  resetTxStatus: PropTypes.func.isRequired,
+};
 
 export default compose(
   connect(

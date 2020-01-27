@@ -4,18 +4,6 @@ import PropTypes from 'prop-types';
 import { SliderWrapper, SliderLabel } from './slider.style';
 
 class Slider extends Component {
-  static propTypes = {
-    withLabel: PropTypes.bool,
-    tooltipPlacement: PropTypes.string,
-    className: PropTypes.string,
-  };
-
-  static defaultProps = {
-    withLabel: false,
-    tooltipPlacement: 'bottom',
-    className: '',
-  };
-
   render() {
     const { withLabel, tooltipPlacement, className, ...props } = this.props;
 
@@ -36,5 +24,17 @@ class Slider extends Component {
     );
   }
 }
+
+Slider.propTypes = {
+  withLabel: PropTypes.bool,
+  tooltipPlacement: PropTypes.string,
+  className: PropTypes.string,
+};
+
+Slider.defaultProps = {
+  withLabel: false,
+  tooltipPlacement: 'bottom',
+  className: '',
+};
 
 export default Slider;

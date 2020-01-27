@@ -8,27 +8,6 @@ import Button from '../../uielements/button';
 import { getUserFormat } from '../../../helpers/stringHelper';
 
 class SwapCard extends Component {
-  static propTypes = {
-    asset: PropTypes.string.isRequired,
-    target: PropTypes.string.isRequired,
-    depth: PropTypes.number,
-    volume: PropTypes.number,
-    transaction: PropTypes.number,
-    slip: PropTypes.number,
-    trade: PropTypes.number,
-    onSwap: PropTypes.func.isRequired,
-    className: PropTypes.string,
-  };
-
-  static defaultProps = {
-    depth: 0,
-    volume: 0,
-    transaction: 0,
-    slip: 0,
-    trade: 0,
-    className: '',
-  };
-
   render() {
     const {
       asset,
@@ -51,6 +30,7 @@ class SwapCard extends Component {
     const tradeValue = `${trade}`;
 
     return (
+      // eslint-disable-next-line react/jsx-props-no-spreading
       <CardLayout.Row className={className} {...props}>
         <CardLayout.Group>
           <CardLayout.Item clamp={80}>
@@ -89,5 +69,26 @@ class SwapCard extends Component {
     );
   }
 }
+
+SwapCard.propTypes = {
+  asset: PropTypes.string.isRequired,
+  target: PropTypes.string.isRequired,
+  depth: PropTypes.number,
+  volume: PropTypes.number,
+  transaction: PropTypes.number,
+  slip: PropTypes.number,
+  trade: PropTypes.number,
+  onSwap: PropTypes.func.isRequired,
+  className: PropTypes.string,
+};
+
+SwapCard.defaultProps = {
+  depth: 0,
+  volume: 0,
+  transaction: 0,
+  slip: 0,
+  trade: 0,
+  className: '',
+};
 
 export default SwapCard;

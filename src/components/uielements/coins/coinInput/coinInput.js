@@ -8,30 +8,6 @@ import InputNumber from '../../inputNumber';
 import Label from '../../label';
 
 class CoinInput extends Component {
-  static propTypes = {
-    title: PropTypes.string,
-    asset: PropTypes.oneOf(coinGroup),
-    amount: PropTypes.number,
-    price: PropTypes.number,
-    slip: PropTypes.number,
-    step: PropTypes.number,
-    reverse: PropTypes.bool,
-    className: PropTypes.string,
-    onChange: PropTypes.func,
-  };
-
-  static defaultProps = {
-    title: '',
-    asset: 'bnb',
-    amount: 0,
-    price: 1,
-    step: 1,
-    slip: undefined,
-    reverse: false,
-    className: '',
-    onChange: () => {},
-  };
-
   render() {
     const {
       title,
@@ -89,5 +65,29 @@ class CoinInput extends Component {
     );
   }
 }
+
+CoinInput.propTypes = {
+  title: PropTypes.string,
+  asset: PropTypes.oneOf(coinGroup),
+  amount: PropTypes.number,
+  price: PropTypes.number,
+  slip: PropTypes.number,
+  step: PropTypes.number,
+  reverse: PropTypes.bool,
+  className: PropTypes.string,
+  onChange: PropTypes.func,
+};
+
+CoinInput.defaultProps = {
+  title: '',
+  asset: 'bnb',
+  amount: 0,
+  price: 1,
+  step: 1,
+  slip: undefined,
+  reverse: false,
+  className: '',
+  onChange: () => {},
+};
 
 export default CoinInput;

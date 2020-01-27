@@ -7,20 +7,6 @@ import CoinIcon from '../coinIcon';
 import DynamicCoin from '../dynamicCoin';
 
 class Coin extends Component {
-  static propTypes = {
-    type: PropTypes.string,
-    over: PropTypes.string,
-    size: PropTypes.oneOf(['small', 'big']),
-    className: PropTypes.string,
-  };
-
-  static defaultProps = {
-    type: 'bnb',
-    over: '',
-    size: 'big',
-    className: '',
-  };
-
   render() {
     const { type, size, over, className, ...props } = this.props;
     const isDynamicIcon = !coinGroup.includes(type.toLowerCase());
@@ -69,5 +55,19 @@ class Coin extends Component {
     );
   }
 }
+
+Coin.propTypes = {
+  type: PropTypes.string,
+  over: PropTypes.string,
+  size: PropTypes.oneOf(['small', 'big']),
+  className: PropTypes.string,
+};
+
+Coin.defaultProps = {
+  type: 'bnb',
+  over: '',
+  size: 'big',
+  className: '',
+};
 
 export default Coin;

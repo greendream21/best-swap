@@ -18,9 +18,12 @@ const itemStyle = {
 };
 
 class HeaderSetting extends Component {
-  state = {
-    curItem: null,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      curItem: null,
+    };
+  }
 
   handleClickItem = ({ key }) => {
     this.setState({

@@ -6,26 +6,6 @@ import InputNumber from '../inputNumber';
 import Label from '../label';
 
 class InputForm extends Component {
-  static propTypes = {
-    title: PropTypes.string,
-    type: PropTypes.string,
-    value: PropTypes.number,
-    step: PropTypes.number,
-    reverse: PropTypes.bool,
-    className: PropTypes.string,
-    onChange: PropTypes.func,
-  };
-
-  static defaultProps = {
-    title: '',
-    type: '',
-    value: 0,
-    step: 1,
-    reverse: false,
-    className: '',
-    onChange: () => {},
-  };
-
   render() {
     const {
       title,
@@ -59,5 +39,25 @@ class InputForm extends Component {
     );
   }
 }
+
+InputForm.propTypes = {
+  title: PropTypes.string,
+  type: PropTypes.string,
+  value: PropTypes.number,
+  step: PropTypes.number,
+  reverse: PropTypes.bool,
+  className: PropTypes.string,
+  onChange: PropTypes.func,
+};
+
+InputForm.defaultProps = {
+  title: '',
+  type: '',
+  value: 0,
+  step: 1,
+  reverse: false,
+  className: '',
+  onChange: () => {},
+};
 
 export default InputForm;

@@ -62,51 +62,6 @@ const { getPools, getPoolAddress } = midgardActions;
 const { refreshBalance } = walletactions;
 
 class SwapSend extends Component {
-  static propTypes = {
-    info: PropTypes.string,
-    view: PropTypes.string.isRequired,
-    history: PropTypes.object,
-    txStatus: PropTypes.object.isRequired,
-    assetData: PropTypes.array.isRequired,
-    pools: PropTypes.array.isRequired,
-    poolAddress: PropTypes.string.isRequired,
-    assets: PropTypes.object.isRequired,
-    poolData: PropTypes.object.isRequired,
-    basePriceAsset: PropTypes.string.isRequired,
-    priceIndex: PropTypes.object.isRequired,
-    user: PropTypes.object.isRequired,
-    wsTransfers: PropTypes.array.isRequired,
-    setTxTimerModal: PropTypes.func.isRequired,
-    setTxTimerStatus: PropTypes.func.isRequired,
-    setTxTimerValue: PropTypes.func.isRequired,
-    setTxHash: PropTypes.func.isRequired,
-    countTxTimerValue: PropTypes.func.isRequired,
-    resetTxStatus: PropTypes.func.isRequired,
-    getPools: PropTypes.func.isRequired,
-    getPoolAddress: PropTypes.func.isRequired,
-    refreshBalance: PropTypes.func.isRequired,
-  };
-
-  static defaultProps = {
-    info: '',
-  };
-
-  state = {
-    address: emptyString,
-    password: emptyString,
-    invalidPassword: false,
-    invalidAddress: false,
-    validatingPassword: false,
-    dragReset: true,
-    xValue: 0,
-    percent: 0,
-    openPrivateModal: false,
-    openWalletAlert: false,
-    slipProtection: true,
-    maxSlip: 30,
-    txResult: null,
-  };
-
   addressRef = React.createRef();
 
   /**
@@ -118,6 +73,25 @@ class SwapSend extends Component {
    * Calculated result
    */
   calcResult = null;
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      address: emptyString,
+      password: emptyString,
+      invalidPassword: false,
+      invalidAddress: false,
+      validatingPassword: false,
+      dragReset: true,
+      xValue: 0,
+      percent: 0,
+      openPrivateModal: false,
+      openWalletAlert: false,
+      slipProtection: true,
+      maxSlip: 30,
+      txResult: null,
+    };
+  }
 
   componentDidMount() {
     const { getPools, getPoolAddress } = this.props;
@@ -967,7 +941,7 @@ class SwapSend extends Component {
         <PrivateModal
           title="PASSWORD CONFIRMATION"
           visible={openPrivateModal}
-          onOk={!validatingPassword && this.handleConfirmPassword}
+          onOk={!validatingPassword ? this.handleConfirmPassword : undefined}
           onCancel={this.handleCancelPrivateModal}
           okText="CONFIRM"
           cancelText="CANCEL"
@@ -1010,6 +984,35 @@ class SwapSend extends Component {
     );
   }
 }
+
+SwapSend.propTypes = {
+  info: PropTypes.string,
+  view: PropTypes.string.isRequired,
+  history: PropTypes.object,
+  txStatus: PropTypes.object.isRequired,
+  assetData: PropTypes.array.isRequired,
+  pools: PropTypes.array.isRequired,
+  poolAddress: PropTypes.string.isRequired,
+  assets: PropTypes.object.isRequired,
+  poolData: PropTypes.object.isRequired,
+  basePriceAsset: PropTypes.string.isRequired,
+  priceIndex: PropTypes.object.isRequired,
+  user: PropTypes.object.isRequired,
+  wsTransfers: PropTypes.array.isRequired,
+  setTxTimerModal: PropTypes.func.isRequired,
+  setTxTimerStatus: PropTypes.func.isRequired,
+  setTxTimerValue: PropTypes.func.isRequired,
+  setTxHash: PropTypes.func.isRequired,
+  countTxTimerValue: PropTypes.func.isRequired,
+  resetTxStatus: PropTypes.func.isRequired,
+  getPools: PropTypes.func.isRequired,
+  getPoolAddress: PropTypes.func.isRequired,
+  refreshBalance: PropTypes.func.isRequired,
+};
+
+SwapSend.defaultProps = {
+  info: '',
+};
 
 export default compose(
   connect(

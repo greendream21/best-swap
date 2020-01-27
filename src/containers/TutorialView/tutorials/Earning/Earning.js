@@ -23,20 +23,14 @@ import { data, getVr, getSS, getVss, getWr, getWt } from './data';
 const { R, T, WR, WT, VWR, Pr, Pt, SS } = data;
 
 class Earning extends Component {
-  static propTypes = {
-    view: PropTypes.string,
-    history: PropTypes.object,
-  };
-
-  static defaultProps = {
-    view: 'intro',
-  };
-
-  state = {
-    rValue: 200000,
-    tValue: 400000,
-    wss: 0,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      rValue: 200000,
+      tValue: 400000,
+      wss: 0,
+    };
+  }
 
   handleChangeValue = name => value => {
     this.setState({
@@ -308,5 +302,14 @@ class Earning extends Component {
     );
   }
 }
+
+Earning.propTypes = {
+  view: PropTypes.string,
+  history: PropTypes.object,
+};
+
+Earning.defaultProps = {
+  view: 'intro',
+};
 
 export default withRouter(Earning);

@@ -7,18 +7,6 @@ import { CoinIconWrapper } from './coinIcon.style';
 import { coinIconGroup } from '../../../icons/coinIcons';
 
 class CoinIcon extends Component {
-  static propTypes = {
-    type: PropTypes.string,
-    size: PropTypes.oneOf(['small', 'big']),
-    className: PropTypes.string,
-  };
-
-  static defaultProps = {
-    type: 'bnb',
-    size: 'big',
-    className: '',
-  };
-
   renderCoinIcon = () => {
     const { type, size } = this.props;
     const coinIcon = coinIconGroup[type.toLowerCase()] || '';
@@ -53,5 +41,17 @@ class CoinIcon extends Component {
     );
   }
 }
+
+CoinIcon.propTypes = {
+  type: PropTypes.string,
+  size: PropTypes.oneOf(['small', 'big']),
+  className: PropTypes.string,
+};
+
+CoinIcon.defaultProps = {
+  type: 'bnb',
+  size: 'big',
+  className: '',
+};
 
 export default CoinIcon;

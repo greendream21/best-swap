@@ -4,14 +4,6 @@ import PropTypes from 'prop-types';
 import { StepBarWrapper } from './stepBar.style';
 
 class StepBar extends Component {
-  static propTypes = {
-    size: PropTypes.number,
-  };
-
-  static defaultProps = {
-    size: 150,
-  };
-
   render() {
     const { size, ...props } = this.props;
     return (
@@ -23,5 +15,13 @@ class StepBar extends Component {
     );
   }
 }
+
+StepBar.propTypes = {
+  size: PropTypes.number,
+};
+
+StepBar.defaultProps = {
+  size: 150,
+};
 
 export default StepBar;

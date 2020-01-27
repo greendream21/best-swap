@@ -5,14 +5,12 @@ import { cloneDeep } from 'lodash';
 import WSEvent from './WSEvent';
 
 class WSProvider extends Component {
-  static propTypes = {
-    url: PropTypes.string.isRequired,
-    children: PropTypes.any.isRequired,
-  };
-
-  state = {
-    data: [],
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      data: [],
+    };
+  }
 
   handleData = newData => {
     const { data } = this.state;
@@ -36,5 +34,10 @@ class WSProvider extends Component {
     );
   }
 }
+
+WSProvider.propTypes = {
+  url: PropTypes.string.isRequired,
+  children: PropTypes.any.isRequired,
+};
 
 export default WSProvider;

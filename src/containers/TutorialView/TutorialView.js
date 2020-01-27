@@ -15,17 +15,6 @@ import Trade from './tutorials/Trade';
 const { TabPane } = Tabs;
 
 class TutorialView extends Component {
-  static propTypes = {
-    type: PropTypes.string,
-    view: PropTypes.string,
-    history: PropTypes.object,
-  };
-
-  static defaultProps = {
-    type: 'swap',
-    view: 'intro',
-  };
-
   handleChangeTab = activeTab => {
     this.goToTutorial(activeTab);
   };
@@ -93,5 +82,16 @@ class TutorialView extends Component {
     );
   }
 }
+
+TutorialView.propTypes = {
+  type: PropTypes.string,
+  view: PropTypes.string,
+  history: PropTypes.object,
+};
+
+TutorialView.defaultProps = {
+  type: 'swap',
+  view: 'intro',
+};
 
 export default withRouter(TutorialView);

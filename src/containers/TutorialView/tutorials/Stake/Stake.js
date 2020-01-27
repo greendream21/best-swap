@@ -18,19 +18,13 @@ import { data, getVr, getSS, getVss } from './data';
 const { R, T, Pr, Pt } = data;
 
 class Stake extends Component {
-  static propTypes = {
-    view: PropTypes.string,
-    history: PropTypes.object,
-  };
-
-  static defaultProps = {
-    view: 'intro',
-  };
-
-  state = {
-    rValue: 0,
-    tValue: 0,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      rValue: 0,
+      tValue: 0,
+    };
+  }
 
   handleChangeValue = name => value => {
     this.setState({
@@ -267,5 +261,14 @@ class Stake extends Component {
     );
   }
 }
+
+Stake.propTypes = {
+  view: PropTypes.string,
+  history: PropTypes.object,
+};
+
+Stake.defaultProps = {
+  view: 'intro',
+};
 
 export default withRouter(Stake);

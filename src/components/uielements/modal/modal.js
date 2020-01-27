@@ -4,17 +4,6 @@ import PropTypes from 'prop-types';
 import { ModalWrapper } from './modal.style';
 
 class Modal extends Component {
-  static propTypes = {
-    value: PropTypes.string,
-    className: PropTypes.string,
-    children: PropTypes.node.isRequired,
-  };
-
-  static defaultProps = {
-    value: '',
-    className: '',
-  };
-
   render() {
     const { value, className, children, ...props } = this.props;
 
@@ -30,5 +19,16 @@ class Modal extends Component {
     );
   }
 }
+
+Modal.propTypes = {
+  value: PropTypes.string,
+  className: PropTypes.string,
+  children: PropTypes.node.isRequired,
+};
+
+Modal.defaultProps = {
+  value: '',
+  className: '',
+};
 
 export default Modal;

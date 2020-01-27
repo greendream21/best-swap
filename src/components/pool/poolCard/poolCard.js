@@ -8,27 +8,6 @@ import Button from '../../uielements/button';
 import { getUserFormat } from '../../../helpers/stringHelper';
 
 class PoolCard extends Component {
-  static propTypes = {
-    asset: PropTypes.string.isRequired,
-    target: PropTypes.string.isRequired,
-    depth: PropTypes.number,
-    volume: PropTypes.number,
-    transaction: PropTypes.number,
-    liqFee: PropTypes.number,
-    roi: PropTypes.number,
-    onStake: PropTypes.func.isRequired,
-    className: PropTypes.string,
-  };
-
-  static defaultProps = {
-    depth: 0,
-    volume: 0,
-    transaction: 0,
-    liqFee: 0,
-    roi: 0,
-    className: '',
-  };
-
   render() {
     const {
       asset,
@@ -51,6 +30,7 @@ class PoolCard extends Component {
     const roiValue = `${getUserFormat(roi)}% pa`;
 
     return (
+      // eslint-disable-next-line react/jsx-props-no-spreading
       <CardLayout.Row className={className} {...props}>
         <CardLayout.Group>
           <CardLayout.Item clamp={80}>
@@ -93,5 +73,26 @@ class PoolCard extends Component {
     );
   }
 }
+
+PoolCard.propTypes = {
+  asset: PropTypes.string.isRequired,
+  target: PropTypes.string.isRequired,
+  depth: PropTypes.number,
+  volume: PropTypes.number,
+  transaction: PropTypes.number,
+  liqFee: PropTypes.number,
+  roi: PropTypes.number,
+  onStake: PropTypes.func.isRequired,
+  className: PropTypes.string,
+};
+
+PoolCard.defaultProps = {
+  depth: 0,
+  volume: 0,
+  transaction: 0,
+  liqFee: 0,
+  roi: 0,
+  className: '',
+};
 
 export default PoolCard;

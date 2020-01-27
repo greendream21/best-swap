@@ -22,19 +22,12 @@ import { getSwapData } from './data';
 const { getPools } = midgardActions;
 
 class SwapView extends Component {
-  static propTypes = {
-    getPools: PropTypes.func.isRequired,
-    pools: PropTypes.array.isRequired,
-    poolData: PropTypes.object.isRequired,
-    basePriceAsset: PropTypes.string.isRequired,
-    priceIndex: PropTypes.object.isRequired,
-    loading: PropTypes.bool.isRequired,
-    history: PropTypes.object,
-  };
-
-  state = {
-    activeAsset: 'rune',
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      activeAsset: 'rune',
+    };
+  }
 
   componentDidMount() {
     const { getPools } = this.props;
@@ -231,6 +224,16 @@ class SwapView extends Component {
     );
   }
 }
+
+SwapView.propTypes = {
+  getPools: PropTypes.func.isRequired,
+  pools: PropTypes.array.isRequired,
+  poolData: PropTypes.object.isRequired,
+  basePriceAsset: PropTypes.string.isRequired,
+  priceIndex: PropTypes.object.isRequired,
+  loading: PropTypes.bool.isRequired,
+  history: PropTypes.object,
+};
 
 export default compose(
   connect(

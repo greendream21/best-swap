@@ -20,20 +20,12 @@ import midgardActions from '../../../redux/midgard/actions';
 const { getPools } = midgardActions;
 
 class PoolView extends Component {
-  static propTypes = {
-    getPools: PropTypes.func.isRequired,
-    pools: PropTypes.array.isRequired,
-    poolData: PropTypes.object.isRequired,
-    basePriceAsset: PropTypes.string.isRequired,
-    priceIndex: PropTypes.object.isRequired,
-    assetData: PropTypes.array.isRequired,
-    loading: PropTypes.bool.isRequired,
-    history: PropTypes.object.isRequired,
-  };
-
-  state = {
-    activeAsset: 'rune',
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      activeAsset: 'rune',
+    };
+  }
 
   componentDidMount() {
     const { getPools } = this.props;
@@ -220,6 +212,17 @@ class PoolView extends Component {
     );
   }
 }
+
+PoolView.propTypes = {
+  getPools: PropTypes.func.isRequired,
+  pools: PropTypes.array.isRequired,
+  poolData: PropTypes.object.isRequired,
+  basePriceAsset: PropTypes.string.isRequired,
+  priceIndex: PropTypes.object.isRequired,
+  assetData: PropTypes.array.isRequired,
+  loading: PropTypes.bool.isRequired,
+  history: PropTypes.object.isRequired,
+};
 
 export default compose(
   connect(

@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-// import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Layout } from 'antd';
 
@@ -9,12 +8,6 @@ import AppRouter from './AppRouter';
 import { ContentWrapper } from './App.style';
 
 class App extends Component {
-  static propTypes = {
-    match: PropTypes.shape({
-      url: PropTypes.string.isRequired,
-    }).isRequired,
-  };
-
   render() {
     const { url } = this.props.match;
 
@@ -29,5 +22,11 @@ class App extends Component {
     );
   }
 }
+
+App.propTypes = {
+  match: PropTypes.shape({
+    url: PropTypes.string.isRequired,
+  }).isRequired,
+};
 
 export default App;

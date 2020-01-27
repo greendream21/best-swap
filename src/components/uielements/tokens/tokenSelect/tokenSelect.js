@@ -34,32 +34,14 @@ DropdownCarret.propTypes = {
 };
 
 class TokenSelect extends Component {
-  static propTypes = {
-    assetData: PropTypes.array.isRequired,
-    asset: PropTypes.string.isRequired,
-    price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-    priceIndex: PropTypes.object.isRequired,
-    priceUnit: PropTypes.string,
-    withSearch: PropTypes.bool,
-    searchDisable: PropTypes.array,
-    onSelect: PropTypes.func.isRequired,
-    onChangeAsset: PropTypes.func,
-    className: PropTypes.string,
-  };
-
-  static defaultProps = {
-    priceUnit: 'RUNE',
-    withSearch: true,
-    searchDisable: [],
-    onChangeAsset: () => {},
-    className: '',
-  };
-
-  state = {
-    openDropdown: false,
-  };
-
   ref = React.createRef();
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      openDropdown: false,
+    };
+  }
 
   componentDidMount() {
     document.addEventListener('click', this.handleDocumentClick);
@@ -193,5 +175,26 @@ class TokenSelect extends Component {
     );
   }
 }
+
+TokenSelect.propTypes = {
+  assetData: PropTypes.array.isRequired,
+  asset: PropTypes.string.isRequired,
+  price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  priceIndex: PropTypes.object.isRequired,
+  priceUnit: PropTypes.string,
+  withSearch: PropTypes.bool,
+  searchDisable: PropTypes.array,
+  onSelect: PropTypes.func.isRequired,
+  onChangeAsset: PropTypes.func,
+  className: PropTypes.string,
+};
+
+TokenSelect.defaultProps = {
+  priceUnit: 'RUNE',
+  withSearch: true,
+  searchDisable: [],
+  onChangeAsset: () => {},
+  className: '',
+};
 
 export default TokenSelect;

@@ -7,29 +7,6 @@ import CoinData from '../coinData';
 import { getTickerFormat } from '../../../../helpers/stringHelper';
 
 class CoinList extends Component {
-  static propTypes = {
-    data: PropTypes.array,
-    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    selected: PropTypes.array,
-    onSelect: PropTypes.func.isRequired,
-    size: PropTypes.oneOf(['small', 'big']),
-    className: PropTypes.string,
-    priceIndex: PropTypes.object,
-    unit: PropTypes.string,
-    isStakeData: PropTypes.bool,
-    type: PropTypes.string,
-  };
-
-  static defaultProps = {
-    isStakeData: false,
-    data: [],
-    selected: [],
-    size: 'small',
-    unit: 'RUNE',
-    className: '',
-    type: 'normal',
-  };
-
   getPrice = (asset, priceIndex) => {
     return priceIndex[asset.toUpperCase()] || 0;
   };
@@ -106,5 +83,28 @@ class CoinList extends Component {
     );
   }
 }
+
+CoinList.propTypes = {
+  data: PropTypes.array,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  selected: PropTypes.array,
+  onSelect: PropTypes.func.isRequired,
+  size: PropTypes.oneOf(['small', 'big']),
+  className: PropTypes.string,
+  priceIndex: PropTypes.object,
+  unit: PropTypes.string,
+  isStakeData: PropTypes.bool,
+  type: PropTypes.string,
+};
+
+CoinList.defaultProps = {
+  isStakeData: false,
+  data: [],
+  selected: [],
+  size: 'small',
+  unit: 'RUNE',
+  className: '',
+  type: 'normal',
+};
 
 export default CoinList;

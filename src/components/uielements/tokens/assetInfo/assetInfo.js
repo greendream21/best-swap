@@ -6,18 +6,6 @@ import { AssetInfoWrapper } from './assetInfo.style';
 import Coin from '../../coins/coin';
 
 class AssetInfo extends Component {
-  static propTypes = {
-    asset: PropTypes.string,
-    size: PropTypes.string,
-    className: PropTypes.string,
-  };
-
-  static defaultProps = {
-    asset: 'bnb',
-    size: 'small',
-    className: '',
-  };
-
   render() {
     const { asset, size, className, ...props } = this.props;
 
@@ -29,5 +17,16 @@ class AssetInfo extends Component {
     );
   }
 }
+
+AssetInfo.propTypes = {
+  asset: PropTypes.string,
+  size: PropTypes.string,
+  className: PropTypes.string,
+};
+AssetInfo.defaultProps = {
+  asset: 'bnb',
+  size: 'small',
+  className: '',
+};
 
 export default AssetInfo;

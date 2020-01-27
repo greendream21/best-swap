@@ -5,25 +5,6 @@ import { TokenInputWrapper } from './tokenInput.style';
 import CoinInputAdvanced from '../../coins/coinInputAdvanced';
 
 class TokenInput extends Component {
-  static propTypes = {
-    title: PropTypes.string,
-    status: PropTypes.string,
-    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    label: PropTypes.string,
-    inputProps: PropTypes.object,
-    onChange: PropTypes.func.isRequired,
-    className: PropTypes.string,
-  };
-
-  static defaultProps = {
-    title: '',
-    value: '',
-    status: '',
-    label: '',
-    inputProps: {},
-    className: '',
-  };
-
   inputRef = React.createRef();
 
   onChange = e => {
@@ -69,5 +50,24 @@ class TokenInput extends Component {
     );
   }
 }
+
+TokenInput.propTypes = {
+  title: PropTypes.string,
+  status: PropTypes.string,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  label: PropTypes.string,
+  inputProps: PropTypes.object,
+  onChange: PropTypes.func.isRequired,
+  className: PropTypes.string,
+};
+
+TokenInput.defaultProps = {
+  title: '',
+  value: '',
+  status: '',
+  label: '',
+  inputProps: {},
+  className: '',
+};
 
 export default TokenInput;

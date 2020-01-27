@@ -17,20 +17,10 @@ const { getPools, getRunePrice } = midgardActions;
 const { getBinanceMarkets } = binanceActions;
 
 class TradeView extends Component {
-  static propTypes = {
-    history: PropTypes.object.isRequired,
-    getPools: PropTypes.func.isRequired,
-    pools: PropTypes.array.isRequired,
-    poolData: PropTypes.object.isRequired,
-    assetData: PropTypes.array.isRequired,
-    getRunePrice: PropTypes.func.isRequired,
-    getBinanceMarkets: PropTypes.func.isRequired,
-    runePrice: PropTypes.number.isRequired,
-    binanceData: PropTypes.object.isRequired,
-    loading: PropTypes.bool.isRequired,
-  };
-
-  state = {};
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
 
   componentDidMount() {
     const { getPools, getRunePrice, getBinanceMarkets } = this.props;
@@ -145,6 +135,19 @@ class TradeView extends Component {
     );
   }
 }
+
+TradeView.propTypes = {
+  history: PropTypes.object.isRequired,
+  getPools: PropTypes.func.isRequired,
+  pools: PropTypes.array.isRequired,
+  poolData: PropTypes.object.isRequired,
+  assetData: PropTypes.array.isRequired,
+  getRunePrice: PropTypes.func.isRequired,
+  getBinanceMarkets: PropTypes.func.isRequired,
+  runePrice: PropTypes.number.isRequired,
+  binanceData: PropTypes.object.isRequired,
+  loading: PropTypes.bool.isRequired,
+};
 
 export default compose(
   connect(

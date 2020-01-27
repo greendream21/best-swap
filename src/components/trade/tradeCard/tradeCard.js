@@ -8,27 +8,6 @@ import Button from '../../uielements/button';
 import { getUserFormat, getFixedNumber } from '../../../helpers/stringHelper';
 
 class TradeCard extends Component {
-  static propTypes = {
-    asset: PropTypes.string.isRequired,
-    target: PropTypes.string.isRequired,
-    depth: PropTypes.number,
-    poolPrice: PropTypes.number,
-    marketPrice: PropTypes.number,
-    premium: PropTypes.number,
-    reward: PropTypes.number,
-    onTrade: PropTypes.func.isRequired,
-    className: PropTypes.string,
-  };
-
-  static defaultProps = {
-    depth: 0,
-    poolPrice: 0,
-    marketPrice: 0,
-    premium: 0,
-    reward: 0,
-    className: '',
-  };
-
   render() {
     const {
       asset,
@@ -51,6 +30,7 @@ class TradeCard extends Component {
     const rewardValue = `${reward} BNB`;
 
     return (
+      // eslint-disable-next-line react/jsx-props-no-spreading
       <CardLayout.Row className={className} {...props}>
         <CardLayout.Group>
           <CardLayout.Item clamp={80}>
@@ -93,5 +73,26 @@ class TradeCard extends Component {
     );
   }
 }
+
+TradeCard.propTypes = {
+  asset: PropTypes.string.isRequired,
+  target: PropTypes.string.isRequired,
+  depth: PropTypes.number,
+  poolPrice: PropTypes.number,
+  marketPrice: PropTypes.number,
+  premium: PropTypes.number,
+  reward: PropTypes.number,
+  onTrade: PropTypes.func.isRequired,
+  className: PropTypes.string,
+};
+
+TradeCard.defaultProps = {
+  depth: 0,
+  poolPrice: 0,
+  marketPrice: 0,
+  premium: 0,
+  reward: 0,
+  className: '',
+};
 
 export default TradeCard;

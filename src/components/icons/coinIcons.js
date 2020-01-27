@@ -1,15 +1,14 @@
-export const bnbIcon = require('../../assets/SVG/coin-bnb.svg');
-export const boltIcon = require('../../assets/SVG/coin-bolt.svg');
-export const runeIcon = require('../../assets/SVG/coin-rune.svg');
-export const runeFlashIcon = require('../../assets/SVG/rune-flash-icon.svg');
-export const ankrIcon = require('../../assets/SVG/coin-ankr.svg');
-export const ftmIcon = require('../../assets/SVG/coin-ftm.svg');
-export const tomoIcon = require('../../assets/SVG/coin-tomob.svg');
-export const mithIcon = require('../../assets/SVG/coin-mith.svg');
-export const elrondIcon = require('../../assets/SVG/coin-elrond.svg');
-export const oneIcon = require('../../assets/SVG/coin-one.svg');
-export const ravenIcon = require('../../assets/PNG/raven.png');
-export const cosIcon = require('../../assets/PNG/cos.png');
+import bnbIcon from '../../assets/SVG/coin-bnb.svg';
+import boltIcon from '../../assets/SVG/coin-bolt.svg';
+import runeFlashIcon from '../../assets/SVG/rune-flash-icon.svg';
+import ankrIcon from '../../assets/SVG/coin-ankr.svg';
+import ftmIcon from '../../assets/SVG/coin-ftm.svg';
+import tomoIcon from '../../assets/SVG/coin-tomob.svg';
+import mithIcon from '../../assets/SVG/coin-mith.svg';
+import elrondIcon from '../../assets/SVG/coin-elrond.svg';
+import oneIcon from '../../assets/SVG/coin-one.svg';
+import ravenIcon from '../../assets/PNG/raven.png';
+import cosIcon from '../../assets/PNG/cos.png';
 
 export const coinIconGroup = {
   bnb: bnbIcon,

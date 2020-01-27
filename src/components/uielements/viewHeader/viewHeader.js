@@ -6,25 +6,12 @@ import Label from '../label';
 import { HeaderWrapper } from './viewHeader.style';
 
 class ViewHeader extends Component {
-  static propTypes = {
-    title: PropTypes.string,
-    actionText: PropTypes.string,
-    onAction: PropTypes.func,
-    back: PropTypes.bool,
-    onBack: PropTypes.func,
-  };
-
-  static defaultProps = {
-    title: '',
-    actionText: '',
-    back: true,
-    onAction: () => {},
-    onBack: () => {},
-  };
-
-  state = {
-    loading: false,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      loading: false,
+    };
+  }
 
   handleRefresh = () => {
     const { onAction } = this.props;
@@ -74,5 +61,21 @@ class ViewHeader extends Component {
     );
   }
 }
+
+ViewHeader.propTypes = {
+  title: PropTypes.string,
+  actionText: PropTypes.string,
+  onAction: PropTypes.func,
+  back: PropTypes.bool,
+  onBack: PropTypes.func,
+};
+
+ViewHeader.defaultProps = {
+  title: '',
+  actionText: '',
+  back: true,
+  onAction: () => {},
+  onBack: () => {},
+};
 
 export default ViewHeader;
