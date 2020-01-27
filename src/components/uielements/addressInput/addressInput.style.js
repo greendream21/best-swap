@@ -8,7 +8,7 @@ export const AddressInputWrapper = styled.div`
   ${transition()}
 
   .addressInput-icon {
-    margin-top: 10px;
+    margin-top: 12px;
     min-width: 21px;
     height: 21px;
     border: none;
