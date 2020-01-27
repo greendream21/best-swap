@@ -6,20 +6,6 @@ import { AddressInputWrapper } from './addressInput.style';
 import Input from '../input';
 
 class AddressInput extends Component {
-  static propTypes = {
-    value: PropTypes.string,
-    onChange: PropTypes.func.isRequired,
-    status: PropTypes.bool,
-    onStatusChange: PropTypes.func.isRequired,
-    className: PropTypes.string,
-  };
-
-  static defaultProps = {
-    status: false,
-    value: '',
-    className: '',
-  };
-
   setStatus = status => () => {
     this.props.onStatusChange(status);
   };
@@ -93,5 +79,19 @@ class AddressInput extends Component {
     );
   }
 }
+
+AddressInput.propTypes = {
+  value: PropTypes.string,
+  onChange: PropTypes.func.isRequired,
+  status: PropTypes.bool,
+  onStatusChange: PropTypes.func.isRequired,
+  className: PropTypes.string,
+};
+
+AddressInput.defaultProps = {
+  status: false,
+  value: '',
+  className: '',
+};
 
 export default AddressInput;

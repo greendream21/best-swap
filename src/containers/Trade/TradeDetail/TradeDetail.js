@@ -38,25 +38,10 @@ const { getRunePrice } = walletactions;
 const { getBinanceTicker } = binanceActions;
 
 class TradeDetail extends Component {
-  static propTypes = {
-    symbol: PropTypes.string.isRequired,
-    assetData: PropTypes.array.isRequired,
-    chainData: PropTypes.object.isRequired,
-    pools: PropTypes.array.isRequired,
-    poolData: PropTypes.object.isRequired,
-    swapData: PropTypes.object.isRequired,
-    tickerData: PropTypes.object.isRequired,
-    txStatus: PropTypes.object.isRequired,
-    setTxTimerModal: PropTypes.func.isRequired,
-    setTxTimerStatus: PropTypes.func.isRequired,
-    countTxTimerValue: PropTypes.func.isRequired,
-    resetTxStatus: PropTypes.func.isRequired,
-    getPools: PropTypes.func.isRequired,
-    getRunePrice: PropTypes.func.isRequired,
-    getBinanceTicker: PropTypes.func.isRequired,
-  };
-
-  state = {};
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
 
   componentDidMount() {
     const { symbol, getPools, getRunePrice, getBinanceTicker } = this.props;
@@ -369,6 +354,24 @@ class TradeDetail extends Component {
     );
   }
 }
+
+TradeDetail.propTypes = {
+  symbol: PropTypes.string.isRequired,
+  assetData: PropTypes.array.isRequired,
+  chainData: PropTypes.object.isRequired,
+  pools: PropTypes.array.isRequired,
+  poolData: PropTypes.object.isRequired,
+  swapData: PropTypes.object.isRequired,
+  tickerData: PropTypes.object.isRequired,
+  txStatus: PropTypes.object.isRequired,
+  setTxTimerModal: PropTypes.func.isRequired,
+  setTxTimerStatus: PropTypes.func.isRequired,
+  countTxTimerValue: PropTypes.func.isRequired,
+  resetTxStatus: PropTypes.func.isRequired,
+  getPools: PropTypes.func.isRequired,
+  getRunePrice: PropTypes.func.isRequired,
+  getBinanceTicker: PropTypes.func.isRequired,
+};
 
 export default compose(
   connect(

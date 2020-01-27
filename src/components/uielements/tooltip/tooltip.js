@@ -4,15 +4,6 @@ import PropTypes from 'prop-types';
 import { TooltipWrapper } from './tooltip.style';
 
 class Tooltip extends Component {
-  static propTypes = {
-    className: PropTypes.string,
-    children: PropTypes.node.isRequired,
-  };
-
-  static defaultProps = {
-    className: '',
-  };
-
   render() {
     const { children, className = '', ...props } = this.props;
 
@@ -23,5 +14,14 @@ class Tooltip extends Component {
     );
   }
 }
+
+Tooltip.propTypes = {
+  className: PropTypes.string,
+  children: PropTypes.node.isRequired,
+};
+
+Tooltip.defaultProps = {
+  className: '',
+};
 
 export default Tooltip;

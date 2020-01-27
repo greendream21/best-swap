@@ -12,20 +12,6 @@ const NoWrapLabel = styled(Label)`
 `;
 
 class Status extends Component {
-  static propTypes = {
-    title: PropTypes.string,
-    value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-    direction: PropTypes.string,
-    className: PropTypes.string,
-  };
-
-  static defaultProps = {
-    title: '',
-    value: '',
-    direction: 'vertical',
-    className: '',
-  };
-
   render() {
     const { title, value, direction, className, ...props } = this.props;
 
@@ -45,5 +31,19 @@ class Status extends Component {
     );
   }
 }
+
+Status.propTypes = {
+  title: PropTypes.string,
+  value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  direction: PropTypes.string,
+  className: PropTypes.string,
+};
+
+Status.defaultProps = {
+  title: '',
+  value: '',
+  direction: 'vertical',
+  className: '',
+};
 
 export default Status;

@@ -4,17 +4,6 @@ import { Icon } from 'antd';
 import Button from '../button';
 
 class WalletButton extends Component {
-  static propTypes = {
-    connected: PropTypes.bool,
-    value: PropTypes.string,
-    className: PropTypes.string,
-  };
-
-  static defaultProps = {
-    connected: false,
-    className: '',
-  };
-
   getBtnValue = () => {
     const { connected, value } = this.props;
 
@@ -62,5 +51,16 @@ class WalletButton extends Component {
     );
   }
 }
+
+WalletButton.propTypes = {
+  connected: PropTypes.bool,
+  value: PropTypes.string,
+  className: PropTypes.string,
+};
+
+WalletButton.defaultProps = {
+  connected: false,
+  className: '',
+};
 
 export default WalletButton;

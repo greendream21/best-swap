@@ -9,10 +9,6 @@ import { getFixedNumber } from '../../../helpers/stringHelper';
 import { TrendWrapper } from './trend.style';
 
 class Trend extends Component {
-  static propTypes = {
-    value: PropTypes.number.isRequired,
-  };
-
   render() {
     const { value, ...otherProps } = this.props;
     const trend = value >= 0;
@@ -27,5 +23,9 @@ class Trend extends Component {
     );
   }
 }
+
+Trend.propTypes = {
+  value: PropTypes.number.isRequired,
+};
 
 export default Trend;

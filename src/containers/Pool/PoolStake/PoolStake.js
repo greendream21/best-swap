@@ -67,54 +67,30 @@ const { getPools, getPoolAddress, getStakerPoolData } = midgardActions;
 const { refreshStake } = walletactions;
 
 class PoolStake extends Component {
-  static propTypes = {
-    symbol: PropTypes.string.isRequired,
-    txStatus: PropTypes.object.isRequired,
-    assetData: PropTypes.array.isRequired,
-    pools: PropTypes.array.isRequired,
-    poolAddress: PropTypes.string.isRequired,
-    poolData: PropTypes.object.isRequired,
-    basePriceAsset: PropTypes.string.isRequired,
-    priceIndex: PropTypes.object.isRequired,
-    stakerPoolData: PropTypes.object.isRequired,
-    assets: PropTypes.object.isRequired,
-    user: PropTypes.object.isRequired,
-    wsTransfers: PropTypes.array.isRequired,
-    setTxTimerModal: PropTypes.func.isRequired,
-    setTxTimerStatus: PropTypes.func.isRequired,
-    countTxTimerValue: PropTypes.func.isRequired,
-    setTxTimerValue: PropTypes.func.isRequired,
-    setTxHash: PropTypes.func.isRequired,
-    resetTxStatus: PropTypes.func.isRequired,
-    history: PropTypes.object,
-    info: PropTypes.object,
-    getStakerPoolData: PropTypes.func.isRequired,
-    getPools: PropTypes.func.isRequired,
-    getPoolAddress: PropTypes.func.isRequired,
-    refreshStake: PropTypes.func.isRequired,
-  };
-
-  state = {
-    advancedMode: false,
-    dragReset: true,
-    openWalletAlert: false,
-    openPrivateModal: false,
-    password: emptyString,
-    invalidPassword: false,
-    validatingPassword: false,
-    runeAmount: 0,
-    tokenAmount: 0,
-    balance: 100,
-    fR: 1,
-    fT: 1,
-    runeTotal: 0,
-    tokenTotal: 0,
-    runePercent: 0,
-    tokenPercent: 0,
-    txResult: false,
-  };
-
   hash = null;
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      advancedMode: false,
+      dragReset: true,
+      openWalletAlert: false,
+      openPrivateModal: false,
+      password: emptyString,
+      invalidPassword: false,
+      validatingPassword: false,
+      runeAmount: 0,
+      tokenAmount: 0,
+      balance: 100,
+      fR: 1,
+      fT: 1,
+      runeTotal: 0,
+      tokenTotal: 0,
+      runePercent: 0,
+      tokenPercent: 0,
+      txResult: false,
+    };
+  }
 
   componentDidMount() {
     const { getPoolAddress, getPools } = this.props;
@@ -1184,7 +1160,7 @@ class PoolStake extends Component {
                     <Label
                       className="your-share-price-label"
                       size="normal"
-                      color="grey"
+                      color="gray"
                     >
                       {basePriceAsset} {(runeShare * runePrice).toFixed(2)}
                     </Label>
@@ -1197,7 +1173,7 @@ class PoolStake extends Component {
                     <Label
                       className="your-share-price-label"
                       size="normal"
-                      color="grey"
+                      color="gray"
                     >
                       {basePriceAsset} {(tokensShare * tokenPrice).toFixed(2)}
                     </Label>
@@ -1236,7 +1212,7 @@ class PoolStake extends Component {
                   <Label
                     className="your-share-price-label"
                     size="normal"
-                    color="grey"
+                    color="gray"
                   >
                     {basePriceAsset} {(runeEarned * runePrice).toFixed(2)}
                   </Label>
@@ -1249,7 +1225,7 @@ class PoolStake extends Component {
                   <Label
                     className="your-share-price-label"
                     size="normal"
-                    color="grey"
+                    color="gray"
                   >
                     {basePriceAsset} {(assetEarned * tokenPrice).toFixed(2)}
                   </Label>
@@ -1363,7 +1339,9 @@ class PoolStake extends Component {
               title="PASSWORD CONFIRMATION"
               visible={openPrivateModal}
               onOk={this.handleConfirmPassword}
-              onCancel={!validatingPassword && this.handleCancelPrivateModal}
+              onCancel={
+                !validatingPassword ? this.handleCancelPrivateModal : undefined
+              }
               maskClosable={false}
               closable={false}
               okText="CONFIRM"
@@ -1405,6 +1383,33 @@ class PoolStake extends Component {
     );
   }
 }
+
+PoolStake.propTypes = {
+  symbol: PropTypes.string.isRequired,
+  txStatus: PropTypes.object.isRequired,
+  assetData: PropTypes.array.isRequired,
+  pools: PropTypes.array.isRequired,
+  poolAddress: PropTypes.string.isRequired,
+  poolData: PropTypes.object.isRequired,
+  basePriceAsset: PropTypes.string.isRequired,
+  priceIndex: PropTypes.object.isRequired,
+  stakerPoolData: PropTypes.object.isRequired,
+  assets: PropTypes.object.isRequired,
+  user: PropTypes.object.isRequired,
+  wsTransfers: PropTypes.array.isRequired,
+  setTxTimerModal: PropTypes.func.isRequired,
+  setTxTimerStatus: PropTypes.func.isRequired,
+  countTxTimerValue: PropTypes.func.isRequired,
+  setTxTimerValue: PropTypes.func.isRequired,
+  setTxHash: PropTypes.func.isRequired,
+  resetTxStatus: PropTypes.func.isRequired,
+  history: PropTypes.object,
+  info: PropTypes.object,
+  getStakerPoolData: PropTypes.func.isRequired,
+  getPools: PropTypes.func.isRequired,
+  getPoolAddress: PropTypes.func.isRequired,
+  refreshStake: PropTypes.func.isRequired,
+};
 
 export default compose(
   connect(

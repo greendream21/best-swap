@@ -4,18 +4,6 @@ import PropTypes from 'prop-types';
 import { TokenInputWrapper } from './tokenInput.style';
 
 class Status extends Component {
-  static propTypes = {
-    title: PropTypes.string,
-    value: PropTypes.string,
-    className: PropTypes.string,
-  };
-
-  static defaultProps = {
-    title: '',
-    value: '',
-    className: '',
-  };
-
   render() {
     const { title, value, className, ...props } = this.props;
 
@@ -29,5 +17,17 @@ class Status extends Component {
     );
   }
 }
+
+Status.propTypes = {
+  title: PropTypes.string,
+  value: PropTypes.string,
+  className: PropTypes.string,
+};
+
+Status.defaultProps = {
+  title: '',
+  value: '',
+  className: '',
+};
 
 export default Status;

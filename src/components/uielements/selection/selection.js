@@ -3,17 +3,6 @@ import PropTypes from 'prop-types';
 import { SelectionWrapper, Button } from './selection.style';
 
 class Selection extends Component {
-  static propTypes = {
-    className: PropTypes.string,
-    onSelect: PropTypes.func.isRequired,
-    selected: PropTypes.number,
-  };
-
-  static defaultProps = {
-    className: '',
-    selected: 0,
-  };
-
   handleClick = value => {
     const { onSelect } = this.props;
     onSelect(value);
@@ -60,5 +49,16 @@ class Selection extends Component {
     );
   }
 }
+
+Selection.propTypes = {
+  className: PropTypes.string,
+  onSelect: PropTypes.func.isRequired,
+  selected: PropTypes.number,
+};
+
+Selection.defaultProps = {
+  className: '',
+  selected: 0,
+};
 
 export default Selection;

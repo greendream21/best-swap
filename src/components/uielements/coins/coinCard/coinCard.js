@@ -48,60 +48,15 @@ DropdownCarret.propTypes = {
 };
 
 class CoinCard extends Component {
-  static propTypes = {
-    asset: PropTypes.string,
-    assetData: PropTypes.array,
-    amount: PropTypes.number,
-    price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    priceIndex: PropTypes.object.isRequired,
-    unit: PropTypes.string,
-    slip: PropTypes.number,
-    title: PropTypes.string,
-    searchDisable: PropTypes.arrayOf(PropTypes.string),
-    withSelection: PropTypes.bool,
-    withSearch: PropTypes.bool,
-    onSelect: PropTypes.func,
-    onChange: PropTypes.func,
-    onChangeAsset: PropTypes.func,
-    className: PropTypes.string,
-    max: PropTypes.number,
-    disabled: PropTypes.bool,
-    dataTestWrapper: PropTypes.string,
-    dataTestInput: PropTypes.string,
-    children: PropTypes.node,
-    inputProps: PropTypes.shape({
-      disabled: PropTypes.bool,
-      'data-test': PropTypes.string,
-    }),
-  };
-
-  static defaultProps = {
-    asset: 'bnb',
-    assetData: [],
-    amount: 0,
-    price: 0,
-    unit: 'RUNE',
-    slip: undefined,
-    title: '',
-    withSelection: false,
-    withSearch: false,
-    searchDisable: [],
-    onSelect: () => {},
-    onChange: () => {},
-    onChangeAsset: () => {},
-    className: '',
-    max: 1000000,
-    disabled: false,
-    children: null,
-    inputProps: {},
-  };
-
-  state = {
-    openDropdown: false,
-    percentButtonSelected: 0,
-  };
-
   ref = React.createRef();
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      openDropdown: false,
+      percentButtonSelected: 0,
+    };
+  }
 
   componentDidMount() {
     document.addEventListener('click', this.handleDocumentClick);
@@ -311,5 +266,53 @@ class CoinCard extends Component {
     );
   }
 }
+
+CoinCard.propTypes = {
+  asset: PropTypes.string,
+  assetData: PropTypes.array,
+  amount: PropTypes.number,
+  price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  priceIndex: PropTypes.object.isRequired,
+  unit: PropTypes.string,
+  slip: PropTypes.number,
+  title: PropTypes.string,
+  searchDisable: PropTypes.arrayOf(PropTypes.string),
+  withSelection: PropTypes.bool,
+  withSearch: PropTypes.bool,
+  onSelect: PropTypes.func,
+  onChange: PropTypes.func,
+  onChangeAsset: PropTypes.func,
+  className: PropTypes.string,
+  max: PropTypes.number,
+  disabled: PropTypes.bool,
+  dataTestWrapper: PropTypes.string,
+  dataTestInput: PropTypes.string,
+  children: PropTypes.node,
+  inputProps: PropTypes.shape({
+    disabled: PropTypes.bool,
+    'data-test': PropTypes.string,
+  }),
+};
+
+CoinCard.defaultProps = {
+  asset: 'bnb',
+  assetData: [],
+  amount: 0,
+  price: 0,
+  unit: 'RUNE',
+  slip: undefined,
+  title: '',
+  withSelection: false,
+  withSearch: false,
+  searchDisable: [],
+  onSelect: () => {},
+  onChange: () => {},
+  onChangeAsset: () => {},
+  className: '',
+  max: 1000000,
+  disabled: false,
+  children: null,
+  inputProps: {},
+};
 
 export default CoinCard;

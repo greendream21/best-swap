@@ -16,10 +16,6 @@ const { TabPane } = Tabs;
 const { getPools } = midgardActions;
 
 class ConnectView extends Component {
-  static propTypes = {
-    getPools: PropTypes.func.isRequired,
-  };
-
   constructor(props) {
     super(props);
 
@@ -93,9 +89,10 @@ class ConnectView extends Component {
   }
 }
 
-export default connect(
-  null,
-  {
-    getPools,
-  },
-)(ConnectView);
+ConnectView.propTypes = {
+  getPools: PropTypes.func.isRequired,
+};
+
+export default connect(null, {
+  getPools,
+})(ConnectView);

@@ -5,18 +5,6 @@ import { FormGroupWrapper } from './formGroup.style';
 import Label from '../label';
 
 class FormGroup extends Component {
-  static propTypes = {
-    title: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
-    description: PropTypes.string,
-    className: PropTypes.string,
-    children: PropTypes.any,
-  };
-
-  static defaultProps = {
-    title: '',
-    description: '',
-  };
-
   render() {
     const {
       title,
@@ -43,5 +31,17 @@ class FormGroup extends Component {
     );
   }
 }
+
+FormGroup.propTypes = {
+  title: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+  description: PropTypes.string,
+  className: PropTypes.string,
+  children: PropTypes.any,
+};
+
+FormGroup.defaultProps = {
+  title: '',
+  description: '',
+};
 
 export default FormGroup;

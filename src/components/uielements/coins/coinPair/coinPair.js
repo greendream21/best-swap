@@ -6,18 +6,6 @@ import { CoinPairWrapper } from './coinPair.style';
 import CoinIcon from '../coinIcon';
 
 class CoinPair extends Component {
-  static propTypes = {
-    from: PropTypes.string.isRequired,
-    to: PropTypes.string.isRequired,
-    size: PropTypes.oneOf(['small', 'big']),
-    className: PropTypes.string,
-  };
-
-  static defaultProps = {
-    size: 'big',
-    className: '',
-  };
-
   render() {
     const { from, to, className, ...props } = this.props;
 
@@ -34,5 +22,17 @@ class CoinPair extends Component {
     );
   }
 }
+
+CoinPair.propTypes = {
+  from: PropTypes.string.isRequired,
+  to: PropTypes.string.isRequired,
+  size: PropTypes.oneOf(['small', 'big']),
+  className: PropTypes.string,
+};
+
+CoinPair.defaultProps = {
+  size: 'big',
+  className: '',
+};
 
 export default CoinPair;

@@ -4,15 +4,12 @@ import PropTypes from 'prop-types';
 import 'react-placeholder/lib/reactPlaceholder.css';
 
 class AsyncComponent extends Component {
-  static propTypes = {
-    componentArguement: PropTypes.object,
-    componentProps: PropTypes.object,
-    load: PropTypes.object,
-  };
-
-  state = {
-    Component: undefined,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      Component: undefined,
+    };
+  }
 
   async componentDidMount() {
     this.mounted = true;
@@ -55,5 +52,11 @@ class AsyncComponent extends Component {
     );
   }
 }
+
+AsyncComponent.propTypes = {
+  componentArguement: PropTypes.object,
+  componentProps: PropTypes.object,
+  load: PropTypes.object,
+};
 
 export default AsyncComponent;

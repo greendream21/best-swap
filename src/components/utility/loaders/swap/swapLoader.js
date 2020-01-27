@@ -7,8 +7,8 @@ const SwapLoader = () => (
     height={400}
     width={1000}
     speed={2}
-    primaryColor="#F8F9FA"
-    secondaryColor="#ECEEEF"
+    primarycolor="#F8F9FA"
+    secondarycolor="#ECEEEF"
   >
     <rect x="0" y="20" rx="2" ry="2" width="120" height="20" />
     <rect x="0" y="56" rx="4" ry="4" width="120" height="50" />

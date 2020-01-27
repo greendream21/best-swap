@@ -8,24 +8,6 @@ import Label from '../../label';
 import { getFixedNumber } from '../../../../helpers/stringHelper';
 
 class CoinButton extends Component {
-  static propTypes = {
-    cointype: PropTypes.string,
-    typevalue: PropTypes.string,
-    price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    priceUnit: PropTypes.string,
-    reversed: PropTypes.bool,
-    className: PropTypes.string,
-  };
-
-  static defaultProps = {
-    cointype: 'bnb',
-    typevalue: 'normal',
-    price: '0',
-    priceUnit: 'RUNE',
-    reversed: false,
-    className: '',
-  };
-
   render() {
     const {
       cointype,
@@ -58,5 +40,23 @@ class CoinButton extends Component {
     );
   }
 }
+
+CoinButton.propTypes = {
+  cointype: PropTypes.string,
+  typevalue: PropTypes.string,
+  price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  priceUnit: PropTypes.string,
+  reversed: PropTypes.bool,
+  className: PropTypes.string,
+};
+
+CoinButton.defaultProps = {
+  cointype: 'bnb',
+  typevalue: 'normal',
+  price: '0',
+  priceUnit: 'RUNE',
+  reversed: false,
+  className: '',
+};
 
 export default CoinButton;

@@ -8,30 +8,6 @@ import Label from '../../label';
 import { getFixedNumber } from '../../../../helpers/stringHelper';
 
 class CoinData extends Component {
-  static propTypes = {
-    asset: PropTypes.string,
-    assetValue: PropTypes.number,
-    target: PropTypes.string,
-    targetValue: PropTypes.number,
-    price: PropTypes.number,
-    priceUnit: PropTypes.string,
-    size: PropTypes.oneOf(['small', 'big']),
-    className: PropTypes.string,
-    type: PropTypes.string,
-  };
-
-  static defaultProps = {
-    asset: 'bnb',
-    assetValue: null,
-    target: '',
-    targetValue: null,
-    price: 0,
-    priceUnit: 'RUNE',
-    size: 'small',
-    className: '',
-    type: 'normal',
-  };
-
   render() {
     const {
       asset,
@@ -109,5 +85,29 @@ class CoinData extends Component {
     );
   }
 }
+
+CoinData.propTypes = {
+  asset: PropTypes.string,
+  assetValue: PropTypes.number,
+  target: PropTypes.string,
+  targetValue: PropTypes.number,
+  price: PropTypes.number,
+  priceUnit: PropTypes.string,
+  size: PropTypes.oneOf(['small', 'big']),
+  className: PropTypes.string,
+  type: PropTypes.string,
+};
+
+CoinData.defaultProps = {
+  asset: 'bnb',
+  assetValue: null,
+  target: '',
+  targetValue: null,
+  price: 0,
+  priceUnit: 'RUNE',
+  size: 'small',
+  className: '',
+  type: 'normal',
+};
 
 export default CoinData;

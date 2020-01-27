@@ -22,18 +22,12 @@ import { data } from './data';
 const { X, Y, Px } = data;
 
 class Swap extends Component {
-  static propTypes = {
-    view: PropTypes.string,
-    history: PropTypes.object,
-  };
-
-  static defaultProps = {
-    view: 'intro',
-  };
-
-  state = {
-    xValue: 0,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      xValue: 0,
+    };
+  }
 
   handleChangeValue = name => value => {
     this.setState({
@@ -293,5 +287,13 @@ class Swap extends Component {
     );
   }
 }
+Swap.propTypes = {
+  view: PropTypes.string,
+  history: PropTypes.object,
+};
+
+Swap.defaultProps = {
+  view: 'intro',
+};
 
 export default withRouter(Swap);

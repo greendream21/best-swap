@@ -21,18 +21,12 @@ import { MAX_VALUE } from '../../redux/app/const';
 const { TabPane } = Tabs;
 
 class Header extends Component {
-  static propTypes = {
-    title: PropTypes.string.isRequired,
-    txStatus: PropTypes.object.isRequired,
-    setTxTimerModal: PropTypes.func.isRequired,
-    setTxTimerStatus: PropTypes.func.isRequired,
-    user: PropTypes.object.isRequired,
-    history: PropTypes.object.isRequired,
-  };
-
-  state = {
-    activeTab: 'swap',
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      activeTab: 'swap',
+    };
+  }
 
   handleClickTxView = () => {
     const { setTxTimerModal } = this.props;
@@ -191,7 +185,7 @@ class Header extends Component {
               value={value}
               maxValue={MAX_VALUE}
               className={type === undefined ? 'disabled' : ''}
-              onClick={type !== undefined && this.handleClickTxView}
+              onClick={type !== undefined ? this.handleClickTxView : undefined}
               onEnd={this.handleEndTxView}
             />
           )}
@@ -200,6 +194,15 @@ class Header extends Component {
     );
   }
 }
+
+Header.propTypes = {
+  title: PropTypes.string.isRequired,
+  txStatus: PropTypes.object.isRequired,
+  setTxTimerModal: PropTypes.func.isRequired,
+  setTxTimerStatus: PropTypes.func.isRequired,
+  user: PropTypes.object.isRequired,
+  history: PropTypes.object.isRequired,
+};
 
 export default compose(
   connect(

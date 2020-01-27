@@ -6,36 +6,21 @@ import CoinIcon from '../coins/coinIcon';
 import { DragWrapper, TitleLabel } from './drag.style';
 
 class Drag extends Component {
-  static propTypes = {
-    source: PropTypes.string.isRequired,
-    target: PropTypes.string.isRequired,
-    title: PropTypes.string,
-    reset: PropTypes.bool,
-    onConfirm: PropTypes.func,
-    onDrag: PropTypes.func,
-    className: PropTypes.string,
-  };
-
-  static defaultProps = {
-    onConfirm: () => {},
-    onDrag: () => {},
-    reset: true,
-    title: '',
-    className: '',
-  };
-
-  state = {
-    focused: true,
-    overlap: false,
-    success: false,
-    disabled: false,
-    missed: false,
-    dragging: false,
-    pos: {
-      x: 0,
-      y: 0,
-    },
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      focused: true,
+      overlap: false,
+      success: false,
+      disabled: false,
+      missed: false,
+      dragging: false,
+      pos: {
+        x: 0,
+        y: 0,
+      },
+    };
+  }
 
   componentDidUpdate = prevProps => {
     if (prevProps.reset === false && this.props.reset === true) {
@@ -214,5 +199,23 @@ class Drag extends Component {
     );
   }
 }
+
+Drag.propTypes = {
+  source: PropTypes.string.isRequired,
+  target: PropTypes.string.isRequired,
+  title: PropTypes.string,
+  reset: PropTypes.bool,
+  onConfirm: PropTypes.func,
+  onDrag: PropTypes.func,
+  className: PropTypes.string,
+};
+
+Drag.defaultProps = {
+  onConfirm: () => {},
+  onDrag: () => {},
+  reset: true,
+  title: '',
+  className: '',
+};
 
 export default Drag;

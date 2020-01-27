@@ -26,12 +26,6 @@ const itemStyle = {
 };
 
 class BasePriceSelector extends Component {
-  static propTypes = {
-    basePriceAsset: PropTypes.string.isRequired,
-    setBasePriceAsset: PropTypes.func.isRequired,
-    pools: PropTypes.array.isRequired,
-  };
-
   handleClickItem = ({ key }) => {
     const { setBasePriceAsset } = this.props;
 
@@ -100,6 +94,12 @@ class BasePriceSelector extends Component {
     );
   }
 }
+
+BasePriceSelector.propTypes = {
+  basePriceAsset: PropTypes.string.isRequired,
+  setBasePriceAsset: PropTypes.func.isRequired,
+  pools: PropTypes.array.isRequired,
+};
 
 export default compose(
   connect(

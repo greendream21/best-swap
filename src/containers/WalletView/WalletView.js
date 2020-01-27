@@ -22,30 +22,6 @@ const { getPools } = midgardActions;
 const { TabPane } = Tabs;
 
 class WalletView extends Component {
-  static propTypes = {
-    user: PropTypes.object,
-    page: PropTypes.string,
-    view: PropTypes.string,
-    info: PropTypes.string,
-    status: PropTypes.string,
-    assetData: PropTypes.array.isRequired,
-    stakeData: PropTypes.array.isRequired,
-    loadingAssets: PropTypes.bool.isRequired,
-    loadingStakes: PropTypes.bool.isRequired,
-    setStakeData: PropTypes.func.isRequired,
-    getPools: PropTypes.func.isRequired,
-    priceIndex: PropTypes.object.isRequired,
-    basePriceAsset: PropTypes.string.isRequired,
-    history: PropTypes.object.isRequired,
-  };
-
-  static defaultProps = {
-    page: '',
-    view: '',
-    info: '',
-    status: '',
-  };
-
   componentDidMount() {
     const { getPools } = this.props;
 
@@ -193,6 +169,30 @@ class WalletView extends Component {
     );
   }
 }
+
+WalletView.propTypes = {
+  user: PropTypes.object,
+  page: PropTypes.string,
+  view: PropTypes.string,
+  info: PropTypes.string,
+  status: PropTypes.string,
+  assetData: PropTypes.array.isRequired,
+  stakeData: PropTypes.array.isRequired,
+  loadingAssets: PropTypes.bool.isRequired,
+  loadingStakes: PropTypes.bool.isRequired,
+  setStakeData: PropTypes.func.isRequired,
+  getPools: PropTypes.func.isRequired,
+  priceIndex: PropTypes.object.isRequired,
+  basePriceAsset: PropTypes.string.isRequired,
+  history: PropTypes.object.isRequired,
+};
+
+WalletView.defaultProps = {
+  page: '',
+  view: '',
+  info: '',
+  status: '',
+};
 
 export default compose(
   connect(

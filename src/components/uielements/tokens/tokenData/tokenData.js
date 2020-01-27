@@ -7,24 +7,6 @@ import { TokenDataWrapper } from './tokenData.style';
 import Coin from '../../coins/coin';
 
 class TokenData extends Component {
-  static propTypes = {
-    asset: PropTypes.string,
-    assetValue: PropTypes.number,
-    price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    priceUnit: PropTypes.string,
-    size: PropTypes.string,
-    className: PropTypes.string,
-  };
-
-  static defaultProps = {
-    asset: 'bnb',
-    assetValue: null,
-    price: 0,
-    priceUnit: 'RUNE',
-    size: 'big',
-    className: '',
-  };
-
   render() {
     const {
       asset,
@@ -50,5 +32,23 @@ class TokenData extends Component {
     );
   }
 }
+
+TokenData.propTypes = {
+  asset: PropTypes.string,
+  assetValue: PropTypes.number,
+  price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  priceUnit: PropTypes.string,
+  size: PropTypes.string,
+  className: PropTypes.string,
+};
+
+TokenData.defaultProps = {
+  asset: 'bnb',
+  assetValue: null,
+  price: 0,
+  priceUnit: 'RUNE',
+  size: 'big',
+  className: '',
+};
 
 export default TokenData;

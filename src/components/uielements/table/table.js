@@ -4,14 +4,6 @@ import PropTypes from 'prop-types';
 import { TableWrapper } from './table.style';
 
 class Table extends Component {
-  static propTypes = {
-    className: PropTypes.string,
-  };
-
-  static defaultProps = {
-    className: '',
-  };
-
   render() {
     const { className, ...props } = this.props;
 
@@ -24,5 +16,13 @@ class Table extends Component {
     );
   }
 }
+
+Table.propTypes = {
+  className: PropTypes.string,
+};
+
+Table.defaultProps = {
+  className: '',
+};
 
 export default Table;

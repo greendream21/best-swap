@@ -6,17 +6,6 @@ import { TooltipIconWrapper } from './tooltipIcon.style';
 import Button from '../button';
 
 class TooltipIcon extends Component {
-  static propTypes = {
-    text: PropTypes.string,
-    className: PropTypes.string,
-  };
-
-  static defaultProps = {
-    text: '',
-    size: 'normal',
-    className: '',
-  };
-
   render() {
     const { text, className = '', ...props } = this.props;
 
@@ -37,5 +26,16 @@ class TooltipIcon extends Component {
     );
   }
 }
+
+TooltipIcon.propTypes = {
+  text: PropTypes.string,
+  className: PropTypes.string,
+};
+
+TooltipIcon.defaultProps = {
+  text: '',
+  size: 'normal',
+  className: '',
+};
 
 export default TooltipIcon;

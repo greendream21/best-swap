@@ -3,10 +3,8 @@ import { connect } from 'react-redux';
 import { ConnectedRouter } from 'connected-react-router';
 import { Route } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
-import { IntlProvider } from 'react-intl';
+import en_US from 'antd/es/locale-provider/en_US'; // same as default `locale` of `antd`
 import PropTypes from 'prop-types';
-
-import AppLocale from './languageProvider';
 
 import asyncComponent from './helpers/AsyncFunc';
 
@@ -29,26 +27,19 @@ const routes = [
 
 const PublicRoutes = props => {
   const { history } = props;
-  const language = 'en';
-  const currentAppLocale = AppLocale[language];
 
   return (
-    <ConfigProvider locale={currentAppLocale.antd}>
-      <IntlProvider
-        locale={currentAppLocale.locale}
-        messages={currentAppLocale.messages}
-      >
-        <ConnectedRouter history={history}>
-          <div>
-            {routes.map(singleRoute => {
-              const { exact = false, ...otherProps } = singleRoute;
-              return (
-                <Route exact={exact} key={singleRoute.path} {...otherProps} />
-              );
-            })}
-          </div>
-        </ConnectedRouter>
-      </IntlProvider>
+    <ConfigProvider locale={en_US}>
+      <ConnectedRouter history={history}>
+        <div>
+          {routes.map(singleRoute => {
+            const { exact = false, ...otherProps } = singleRoute;
+            return (
+              <Route exact={exact} key={singleRoute.path} {...otherProps} />
+            );
+          })}
+        </div>
+      </ConnectedRouter>
     </ConfigProvider>
   );
 };

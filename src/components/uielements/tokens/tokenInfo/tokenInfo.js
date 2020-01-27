@@ -6,24 +6,6 @@ import Trend from '../../trend';
 import Label from '../../label';
 
 class TokenInfo extends Component {
-  static propTypes = {
-    asset: PropTypes.string,
-    target: PropTypes.string,
-    trend: PropTypes.number,
-    value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-    label: PropTypes.string,
-    className: PropTypes.string,
-  };
-
-  static defaultProps = {
-    asset: 'bnb',
-    target: 'bnb',
-    value: '',
-    label: '',
-    trend: 0,
-    className: '',
-  };
-
   render() {
     const {
       asset,
@@ -48,5 +30,23 @@ class TokenInfo extends Component {
     );
   }
 }
+
+TokenInfo.propTypes = {
+  asset: PropTypes.string,
+  target: PropTypes.string,
+  trend: PropTypes.number,
+  value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  label: PropTypes.string,
+  className: PropTypes.string,
+};
+
+TokenInfo.defaultProps = {
+  asset: 'bnb',
+  target: 'bnb',
+  value: '',
+  label: '',
+  trend: 0,
+  className: '',
+};
 
 export default TokenInfo;

@@ -6,18 +6,6 @@ import { rainbowStop, getIntFromName } from '../../../../helpers/colorHelper';
 import { DynamicCoinWrapper } from './dynamicCoin.style';
 
 class DynamicCoin extends Component {
-  static propTypes = {
-    type: PropTypes.string,
-    size: PropTypes.oneOf(['small', 'normal', 'big']),
-    className: PropTypes.string,
-  };
-
-  static defaultProps = {
-    type: 'bnb',
-    size: 'big',
-    className: '',
-  };
-
   render() {
     const { type, className, ...props } = this.props;
 
@@ -40,5 +28,17 @@ class DynamicCoin extends Component {
     );
   }
 }
+
+DynamicCoin.propTypes = {
+  type: PropTypes.string,
+  size: PropTypes.oneOf(['small', 'normal', 'big']),
+  className: PropTypes.string,
+};
+
+DynamicCoin.defaultProps = {
+  type: 'bnb',
+  size: 'big',
+  className: '',
+};
 
 export default DynamicCoin;

@@ -1,4 +1,4 @@
-// TODO: conflicts with prettier
+// TODO (Rudi): conflicts with prettier
 /* eslint-disable operator-linebreak */
 import styled, { css } from 'styled-components';
 import {

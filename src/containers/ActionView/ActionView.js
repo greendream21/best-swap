@@ -20,22 +20,6 @@ import walletActions from '../../redux/wallet/actions';
 const { refreshBalance } = walletActions;
 
 class ActionView extends Component {
-  static propTypes = {
-    type: PropTypes.string,
-    view: PropTypes.string,
-    info: PropTypes.string,
-    user: PropTypes.object.isRequired,
-    refreshBalance: PropTypes.func.isRequired,
-    history: PropTypes.object.isRequired,
-    symbol: PropTypes.string,
-  };
-
-  static defaultProps = {
-    type: '',
-    view: 'view',
-    info: '',
-  };
-
   componentDidMount() {
     const { user, refreshBalance } = this.props;
 
@@ -123,6 +107,22 @@ class ActionView extends Component {
     );
   }
 }
+
+ActionView.propTypes = {
+  type: PropTypes.string,
+  view: PropTypes.string,
+  info: PropTypes.string,
+  user: PropTypes.object.isRequired,
+  refreshBalance: PropTypes.func.isRequired,
+  history: PropTypes.object.isRequired,
+  symbol: PropTypes.string,
+};
+
+ActionView.defaultProps = {
+  type: '',
+  view: 'view',
+  info: '',
+};
 
 export default compose(
   connect(

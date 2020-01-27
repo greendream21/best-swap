@@ -5,18 +5,6 @@ import { StatusGroupWrapper } from './statusGroup.style';
 import Label from '../label';
 
 class StatusGroup extends Component {
-  static propTypes = {
-    title: PropTypes.string,
-    status: PropTypes.array,
-    className: PropTypes.string,
-  };
-
-  static defaultProps = {
-    title: '',
-    status: [],
-    className: '',
-  };
-
   render() {
     const { title, status, className, ...props } = this.props;
 
@@ -54,5 +42,17 @@ class StatusGroup extends Component {
     );
   }
 }
+
+StatusGroup.propTypes = {
+  title: PropTypes.string,
+  status: PropTypes.array,
+  className: PropTypes.string,
+};
+
+StatusGroup.defaultProps = {
+  title: '',
+  status: [],
+  className: '',
+};
 
 export default StatusGroup;

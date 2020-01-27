@@ -32,18 +32,12 @@ import {
 const { X, Y, Z, R, Py, Pr } = data;
 
 class DoubleSwap extends Component {
-  static propTypes = {
-    view: PropTypes.string,
-    history: PropTypes.object,
-  };
-
-  static defaultProps = {
-    view: 'doubleintro',
-  };
-
-  state = {
-    xValue: 0,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      xValue: 0,
+    };
+  }
 
   handleChangeX = xValue => {
     this.setState({
@@ -376,5 +370,14 @@ class DoubleSwap extends Component {
     );
   }
 }
+
+DoubleSwap.propTypes = {
+  view: PropTypes.string,
+  history: PropTypes.object,
+};
+
+DoubleSwap.defaultProps = {
+  view: 'doubleintro',
+};
 
 export default withRouter(DoubleSwap);
