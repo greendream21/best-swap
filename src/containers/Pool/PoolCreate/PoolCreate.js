@@ -51,6 +51,7 @@ import {
 import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
 import { MAX_VALUE } from '../../../redux/app/const';
 import { delay } from '../../../helpers/asyncHelper';
+import TokenDetailLoader from '../../../components/utility/loaders/tokenDetail';
 
 const { getPools, getStakerPoolData, getPoolAddress } = midgardActions;
 const { getBinanceTokens, getBinanceMarkets } = binanceActions;
@@ -588,24 +589,29 @@ class PoolCreate extends Component {
             <div className="new-token-coin">
               <CoinIcon type={target} />
             </div>
-            <Label className="token-name" size="normal">
-              {String(token).toUpperCase()}
-            </Label>
-            <Status
-              title="Ticker"
-              value={String(ticker).toUpperCase()}
-              direction="horizontal"
-            />
-            <Status
-              title="Market Price"
-              value={`$${marketPrice.toFixed(2)}`}
-              direction="horizontal"
-            />
-            <Status
-              title="Total Supply"
-              value={totalSupply.toFixed(0)}
-              direction="horizontal"
-            />
+            {!binanceToken && <TokenDetailLoader />}
+            {binanceToken && (
+              <>
+                <Label className="token-name" size="normal">
+                  {String(token).toUpperCase()}
+                </Label>
+                <Status
+                  title="Ticker"
+                  value={String(ticker).toUpperCase()}
+                  direction="horizontal"
+                />
+                <Status
+                  title="Market Price"
+                  value={`$${marketPrice.toFixed(2)}`}
+                  direction="horizontal"
+                />
+                <Status
+                  title="Total Supply"
+                  value={totalSupply.toFixed(0)}
+                  direction="horizontal"
+                />
+              </>
+            )}
           </div>
         )}
       </div>
