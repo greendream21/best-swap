@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { sortBy as _sortBy } from 'lodash';
 
 import { TokenCardWrapper } from './tokenCard.style';
 
@@ -87,6 +88,7 @@ class TokenCard extends Component {
     const priceValue = `${unit} ${getFixedNumber(amount * price)}`;
     const dataTest = this.props['data-test']; // eslint-disable-line
     const tokenSelectDataTest = `${dataTest}-select`;
+    const sortedAssetData = _sortBy(assetData, ['asset']);
 
     return (
       <TokenCardWrapper className={`tokenCard-wrapper ${className}`} {...props}>
@@ -105,7 +107,7 @@ class TokenCard extends Component {
             price={price}
             priceIndex={priceIndex}
             priceUnit={unit}
-            assetData={assetData}
+            assetData={sortedAssetData}
             withSearch={withSearch}
             searchDisable={searchDisable}
             onSelect={onSelect}
