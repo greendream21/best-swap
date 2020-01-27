@@ -89,7 +89,7 @@ class BasePriceSelector extends Component {
         trigger={['click']}
         placement="bottomRight"
       >
-        <a className="ant-dropdown-link" href="/">
+        <a className="ant-dropdown-link baseprice-selector" href="/">
           <div className="currency-icon-container">
             <BitcoinIcon />
           </div>

@@ -17,10 +17,6 @@ export const StyledHeader = styled.div`
     justify-content: space-between;
   `}
 
-  > * {
-    margin-right: 20px;
-  }
-
   > *:last-child {
     margin-right: 0;
   }
@@ -136,18 +132,28 @@ export const HeaderActionButtons = styled.div`
   .ant-dropdown-link {
     margin: 0 8px;
     display: none;
+
+    &.baseprice-selector {
+      display: flex;
+
+      .currency-icon-container {
+        display: none;
+        ${media.sm`
+          display: block;
+        `}
+
+        svg {
+          width: 20px;
+          height: 20px;
+          margin-top: 6px;
+          margin-right: 4px;
+        }
+      }
+    }
+
     ${media.sm`
       display: flex;
     `}
-
-    .currency-icon-container {
-      svg {
-        width: 20px;
-        height: 20px;
-        margin-top: 6px;
-        margin-right: 4px;
-      }
-    }
 
     .label-wrapper {
       width: 42px;
