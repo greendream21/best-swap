@@ -923,7 +923,11 @@ class SwapSend extends Component {
                       trigger={[]}
                       visible
                       overlayClassName="protectPrice-popover"
-                      overlayStyle={{ padding: '6px' }}
+                      overlayStyle={{
+                        padding: '6px',
+                        animationDuration: '0s !important',
+                        animation: 'none !important',
+                      }}
                     >
                       <Button
                         onClick={this.handleSwitchSlipProtection}

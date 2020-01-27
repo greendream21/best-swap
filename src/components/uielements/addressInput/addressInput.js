@@ -58,7 +58,11 @@ class AddressInput extends Component {
             trigger={[]}
             visible
             overlayClassName="addressInput-popover"
-            overlayStyle={{ padding: '6px' }}
+            overlayStyle={{
+              padding: '6px',
+              animationDuration: '0s !important',
+              animation: 'none !important',
+            }}
           >
             <div
               className="addressInput-icon"
