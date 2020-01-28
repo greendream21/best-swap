@@ -15,6 +15,7 @@ export default function asyncComponent(importComponent) {
       };
     }
 
+    // eslint-disable-next-line react/sort-comp
     UNSAFE_componentWillMount() {
       Nprogress.start();
     }

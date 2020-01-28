@@ -161,6 +161,12 @@ class PoolStake extends Component {
     }
   };
 
+  isLoading = () => {
+    const { poolLoading, stakerPoolDataLoading } = this.props;
+
+    return poolLoading && stakerPoolDataLoading;
+  };
+
   handleChangePassword = e => {
     this.setState({
       password: e.target.value,
@@ -764,8 +770,8 @@ class PoolStake extends Component {
   renderStakeInfo = poolStats => {
     const { symbol, basePriceAsset } = this.props;
     const source = 'rune';
-
     const target = getTickerFormat(symbol);
+    const loading = this.isLoading();
 
     const {
       depth,
@@ -813,6 +819,7 @@ class PoolStake extends Component {
             value={value}
             label={title}
             trend={getFixedNumber(liqFee)}
+            loading={loading}
           />
         </Col>
       );
@@ -1093,7 +1100,7 @@ class PoolStake extends Component {
     } = this.props;
 
     const stakeInfo = (stakeData && stakeData[symbol]) || {
-      stakeUnits: 0,
+      stakeUnits: -1,
       runeEarned: 0,
       assetEarned: 0,
     };
@@ -1106,6 +1113,7 @@ class PoolStake extends Component {
     const tokenPrice = _get(priceIndex, target.toUpperCase(), 0);
 
     const { stakeUnits } = stakeInfo;
+    const loading = this.isLoading() || poolUnits === undefined;
 
     const poolShare = ((stakeUnits / Number(poolUnits)) * 100).toFixed(2);
     const runeShare = getUserFormat((R * stakeUnits) / poolUnits);
@@ -1145,7 +1153,7 @@ class PoolStake extends Component {
               </Label>
             </div>
           )}
-          {wallet && stakeUnits > 0 && (
+          {((wallet && stakeUnits > 0) || loading) && (
             <>
               <Label className="share-info-title" size="normal">
                 Your total share of the pool
@@ -1156,11 +1164,13 @@ class PoolStake extends Component {
                     <Status
                       title={String(source).toUpperCase()}
                       value={runeShare}
+                      loading={loading}
                     />
                     <Label
                       className="your-share-price-label"
                       size="normal"
                       color="gray"
+                      loading={loading}
                     >
                       {basePriceAsset} {(runeShare * runePrice).toFixed(2)}
                     </Label>
@@ -1169,19 +1179,25 @@ class PoolStake extends Component {
                     <Status
                       title={String(target).toUpperCase()}
                       value={tokensShare}
+                      loading={loading}
                     />
                     <Label
                       className="your-share-price-label"
                       size="normal"
-                      color="gray"
+                      color="grey"
+                      loading={loading}
                     >
                       {basePriceAsset} {(tokensShare * tokenPrice).toFixed(2)}
                     </Label>
                   </div>
                 </div>
                 <div className="share-info-row">
-                  <div className="your-share-info">
-                    <Status title="Pool Share" value={`${poolShare}%`} />
+                  <div className="your-share-info pool-share-info">
+                    <Status
+                      title="Pool Share"
+                      value={`${poolShare}%`}
+                      loading={loading}
+                    />
                   </div>
                 </div>
               </div>
@@ -1197,7 +1213,7 @@ class PoolStake extends Component {
             </>
           )}
         </div>
-        {wallet && stakeUnits > 0 && (
+        {((wallet && stakeUnits > 0) || loading) && (
           <div className="your-share-wrapper">
             <Label className="share-info-title" size="normal">
               Your total earnings from the pool
@@ -1208,11 +1224,13 @@ class PoolStake extends Component {
                   <Status
                     title={String(source).toUpperCase()}
                     value={runeEarned}
+                    loading={loading}
                   />
                   <Label
                     className="your-share-price-label"
                     size="normal"
                     color="gray"
+                    loading={loading}
                   >
                     {basePriceAsset} {(runeEarned * runePrice).toFixed(2)}
                   </Label>
@@ -1221,11 +1239,13 @@ class PoolStake extends Component {
                   <Status
                     title={String(target).toUpperCase()}
                     value={assetEarned}
+                    loading={loading}
                   />
                   <Label
                     className="your-share-price-label"
                     size="normal"
                     color="gray"
+                    loading={loading}
                   >
                     {basePriceAsset} {(assetEarned * tokenPrice).toFixed(2)}
                   </Label>
@@ -1338,10 +1358,10 @@ class PoolStake extends Component {
             <PrivateModal
               title="PASSWORD CONFIRMATION"
               visible={openPrivateModal}
-              onOk={this.handleConfirmPassword}
-              onCancel={
-                !validatingPassword ? this.handleCancelPrivateModal : undefined
+              onOk={
+                !validatingPassword ? this.handleConfirmPassword : undefined
               }
+              onCancel={this.handleCancelPrivateModal}
               maskClosable={false}
               closable={false}
               okText="CONFIRM"
@@ -1409,6 +1429,8 @@ PoolStake.propTypes = {
   getPools: PropTypes.func.isRequired,
   getPoolAddress: PropTypes.func.isRequired,
   refreshStake: PropTypes.func.isRequired,
+  poolLoading: PropTypes.bool.isRequired,
+  stakerPoolDataLoading: PropTypes.bool.isRequired,
 };
 
 export default compose(
@@ -1424,6 +1446,8 @@ export default compose(
       stakerPoolData: state.Midgard.stakerPoolData,
       priceIndex: state.Midgard.priceIndex,
       basePriceAsset: state.Midgard.basePriceAsset,
+      poolLoading: state.Midgard.poolLoading,
+      stakerPoolDataLoading: state.Midgard.stakerPoolDataLoading,
     }),
     {
       getPools,

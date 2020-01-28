@@ -4,6 +4,7 @@ import styled from 'styled-components';
 
 import { StatusWrapper } from './status.style';
 import Label from '../label';
+import StatusLoader from '../../utility/loaders/status';
 
 const NoWrapLabel = styled(Label)`
   white-space: nowrap;
@@ -13,7 +14,14 @@ const NoWrapLabel = styled(Label)`
 
 class Status extends Component {
   render() {
-    const { title, value, direction, className, ...props } = this.props;
+    const {
+      title,
+      value,
+      direction,
+      loading,
+      className,
+      ...props
+    } = this.props;
 
     return (
       <StatusWrapper
@@ -21,12 +29,17 @@ class Status extends Component {
         direction={direction}
         {...props}
       >
-        <NoWrapLabel className="status-title" size="normal" color="gray">
-          {title}
-        </NoWrapLabel>
-        <NoWrapLabel className="status-value" size="normal">
-          {value}
-        </NoWrapLabel>
+        {loading && <StatusLoader />}
+        {!loading && (
+          <>
+            <NoWrapLabel className="status-title" size="normal" color="gray">
+              {title}
+            </NoWrapLabel>
+            <NoWrapLabel className="status-value" size="normal">
+              {value}
+            </NoWrapLabel>
+          </>
+        )}
       </StatusWrapper>
     );
   }
@@ -36,6 +49,7 @@ Status.propTypes = {
   title: PropTypes.string,
   value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   direction: PropTypes.string,
+  loading: PropTypes.bool,
   className: PropTypes.string,
 };
 
@@ -43,6 +57,7 @@ Status.defaultProps = {
   title: '',
   value: '',
   direction: 'vertical',
+  loading: false,
   className: '',
 };
 
