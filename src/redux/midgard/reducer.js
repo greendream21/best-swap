@@ -29,6 +29,7 @@ const initState = {
   },
   error: null,
   poolLoading: false,
+  stakerPoolDataLoading: false,
 };
 
 export default function apiReducer(state = initState, action) {
@@ -153,6 +154,11 @@ export default function apiReducer(state = initState, action) {
         stakerData: null,
         error: payload,
       };
+    case actions.GET_STAKER_POOL_DATA_REQUEST:
+      return {
+        ...state,
+        stakerPoolDataLoading: true,
+      };
     case actions.GET_STAKER_POOL_DATA_SUCCESS:
       if (getAssetSymbolFromPayload(payload)) {
         return {
@@ -161,6 +167,7 @@ export default function apiReducer(state = initState, action) {
             ...state.stakerPoolData,
             [getAssetSymbolFromPayload(payload)]: payload,
           },
+          stakerPoolDataLoading: false,
           error: null,
         };
       }

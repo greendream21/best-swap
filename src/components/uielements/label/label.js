@@ -2,14 +2,16 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import { LabelWrapper } from './label.style';
+import LabelLoader from '../../utility/loaders/label';
 
 class Label extends Component {
   render() {
-    const { children, className = '', ...props } = this.props;
+    const { loading, children, className = '', ...props } = this.props;
 
     return (
       <LabelWrapper className={`label-wrapper ${className}`} {...props}>
-        {children}
+        {loading && <LabelLoader />}
+        {!loading && children}
       </LabelWrapper>
     );
   }
@@ -30,6 +32,7 @@ Label.propTypes = {
     'white',
   ]),
   weight: PropTypes.string,
+  loading: PropTypes.bool,
   className: PropTypes.string,
   children: PropTypes.any,
 };
@@ -38,6 +41,7 @@ Label.defaultProps = {
   size: 'normal',
   color: 'normal',
   weight: 'normal',
+  loading: false,
 };
 
 export default Label;

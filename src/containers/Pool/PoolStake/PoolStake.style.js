@@ -277,6 +277,13 @@ export const ContentWrapper = styled(ContentView)`
           }
 
           .your-share-info {
+            width: 100px;
+            height: 80px;
+
+            &.pool-share-info {
+              height: 50px;
+            }
+
             & > div {
               text-align: center;
             }
