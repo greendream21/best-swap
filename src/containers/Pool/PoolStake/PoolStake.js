@@ -4,7 +4,7 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Row, Col, Icon, Form, notification } from 'antd';
+import { Row, Col, Icon, notification } from 'antd';
 import { crypto } from '@binance-chain/javascript-sdk';
 import { get as _get } from 'lodash';
 
@@ -19,9 +19,9 @@ import Slider from '../../../components/uielements/slider';
 import TxTimer from '../../../components/uielements/txTimer';
 import Drag from '../../../components/uielements/drag';
 import Modal from '../../../components/uielements/modal';
-import Input from '../../../components/uielements/input';
 import Button from '../../../components/uielements/button';
 import WalletButton from '../../../components/uielements/walletButton';
+import PrivateModal from '../../../components/modals/privateModal';
 
 import {
   setTxTimerModal,
@@ -39,7 +39,6 @@ import {
   Tabs,
   ConfirmModal,
   ConfirmModalContent,
-  PrivateModal,
 } from './PoolStake.style';
 import {
   getPoolData,
@@ -1354,40 +1353,15 @@ class PoolStake extends Component {
             >
               {this.renderStakeModalContent(completed)}
             </ConfirmModal>
-
             <PrivateModal
-              title="PASSWORD CONFIRMATION"
               visible={openPrivateModal}
-              onOk={
-                !validatingPassword ? this.handleConfirmPassword : undefined
-              }
+              validatingPassword={validatingPassword}
+              invalidPassword={invalidPassword}
+              password={password}
+              onChangePassword={this.handleChangePassword}
+              onOk={this.handleConfirmPassword}
               onCancel={this.handleCancelPrivateModal}
-              maskClosable={false}
-              closable={false}
-              okText="CONFIRM"
-              cancelText="CANCEL"
-            >
-              <Form onSubmit={this.handleConfirmPassword} autoComplete="off">
-                <Form.Item
-                  className={invalidPassword ? 'has-error' : emptyString}
-                  extra={validatingPassword ? 'Validating password ...' : ''}
-                >
-                  <Input
-                    data-test="password-confirmation-input"
-                    type="password"
-                    typevalue="ghost"
-                    sizevalue="big"
-                    value={password}
-                    onChange={this.handleChangePassword}
-                    prefix={<Icon type="lock" />}
-                    autoComplete="off"
-                  />
-                  {invalidPassword && (
-                    <div className="ant-form-explain">Password is wrong!</div>
-                  )}
-                </Form.Item>
-              </Form>
-            </PrivateModal>
+            />
             <Modal
               title="PLEASE ADD WALLET"
               visible={openWalletAlert}

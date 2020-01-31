@@ -573,11 +573,3 @@ export const Tabs = styled(UnstyledTabs)`
     padding: 0 20px;
   }
 `;
-
-export const PrivateModal = styled(Modal)`
-  .ant-modal-body {
-    .ant-form-item {
-      margin-bottom: 0;
-    }
-  }
-`;
