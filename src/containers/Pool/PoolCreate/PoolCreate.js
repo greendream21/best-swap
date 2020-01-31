@@ -3,7 +3,7 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Row, Col, Form, notification, Icon } from 'antd';
+import { Row, Col, notification, Icon } from 'antd';
 import { crypto } from '@binance-chain/javascript-sdk';
 import { get as _get } from 'lodash';
 
@@ -16,11 +16,11 @@ import CoinIcon from '../../../components/uielements/coins/coinIcon';
 import CoinCard from '../../../components/uielements/coins/coinCard';
 import Slider from '../../../components/uielements/slider';
 import Drag from '../../../components/uielements/drag';
-import Input from '../../../components/uielements/input';
 import { greyArrowIcon } from '../../../components/icons';
 import TxTimer from '../../../components/uielements/txTimer';
 import StepBar from '../../../components/uielements/stepBar';
 import CoinData from '../../../components/uielements/coins/coinData';
+import PrivateModal from '../../../components/modals/privateModal';
 
 import {
   setTxTimerModal,
@@ -33,7 +33,6 @@ import binanceActions from '../../../redux/binance/actions';
 
 import {
   ContentWrapper,
-  PrivateModal,
   ConfirmModal,
   ConfirmModalContent,
 } from './PoolCreate.style';
@@ -517,36 +516,14 @@ class PoolCreate extends Component {
           </div>
         </div>
         <PrivateModal
-          title="PASSWORD CONFIRMATION"
           visible={openPrivateModal}
-          onOk={!validatingPassword ? this.handleConfirmPassword : undefined}
+          validatingPassword={validatingPassword}
+          invalidPassword={invalidPassword}
+          password={password}
+          onChangePassword={this.handleChangePassword}
+          onOk={this.handleConfirmPassword}
           onCancel={this.handleCancelPrivateModal}
-          maskClosable={false}
-          closable={false}
-          okText="CONFIRM"
-          cancelText="CANCEL"
-        >
-          <Form onSubmit={this.handleConfirmPassword} autoComplete="off">
-            <Form.Item
-              className={invalidPassword ? 'has-error' : ''}
-              extra={validatingPassword ? 'Validating password ...' : ''}
-            >
-              <Input
-                data-test="password-confirmation-input"
-                type="password"
-                typevalue="ghost"
-                sizevalue="big"
-                value={password}
-                onChange={this.handleChangePassword}
-                prefix={<Icon type="lock" />}
-                autoComplete="off"
-              />
-              {invalidPassword && (
-                <div className="ant-form-explain">Password is wrong!</div>
-              )}
-            </Form.Item>
-          </Form>
-        </PrivateModal>
+        />
       </div>
     );
   };
