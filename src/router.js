@@ -45,7 +45,7 @@ const PublicRoutes = props => {
 };
 
 PublicRoutes.propTypes = {
-  user: PropTypes.object,
+  user: PropTypes.object, // Maybe<User>
   history: PropTypes.object,
 };
 

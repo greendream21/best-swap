@@ -26,15 +26,13 @@ import {
   countTxTimerValue,
   resetTxStatus,
 } from '../../../redux/app/actions';
-import walletactions from '../../../redux/wallet/actions';
 import midgardActions from '../../../redux/midgard/actions';
 import binanceActions from '../../../redux/binance/actions';
 import { getBepswapValues, getBnbPrice, getPriceDiff } from '../utils';
 import { getTickerFormat, getFixedNumber } from '../../../helpers/stringHelper';
 import { MAX_VALUE } from '../../../redux/app/const';
 
-const { getPools } = midgardActions;
-const { getRunePrice } = walletactions;
+const { getPools, getRunePrice } = midgardActions;
 const { getBinanceTicker } = binanceActions;
 
 class TradeDetail extends Component {

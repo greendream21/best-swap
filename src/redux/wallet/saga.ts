@@ -2,7 +2,7 @@ import { all, takeEvery, put, fork, call } from 'redux-saga/effects';
 import { push } from 'connected-react-router';
 import { get as _get } from 'lodash';
 
-import actions from './actions';
+import { Method } from 'axios';
 import Binance from '../../clients/binance';
 import {
   getHeaders,
@@ -19,9 +19,11 @@ import {
 
 import { getFixedNumber } from '../../helpers/stringHelper';
 import { BASE_NUMBER } from '../../settings/constants';
+import * as actions from './actions';
+import { GetUserStakeDataResult } from './types';
 
 export function* saveWalletSaga() {
-  yield takeEvery(actions.SAVE_WALLET, function*({ payload }) {
+  yield takeEvery(actions.SAVE_WALLET, function*({ payload }: actions.SaveWallet) {
     const { wallet, keystore } = payload;
 
     saveWalletAddress(wallet);
@@ -39,7 +41,7 @@ export function* saveWalletSaga() {
 }
 
 export function* forgetWalletSaga() {
-  yield takeEvery(actions.FORGET_WALLET, function*(/* { payload } */) {
+  yield takeEvery(actions.FORGET_WALLET, function*() {
     clearWalletAddress();
     clearKeystore();
 
@@ -48,17 +50,17 @@ export function* forgetWalletSaga() {
 }
 
 export function* refreshBalance() {
-  yield takeEvery(actions.REFRESH_BALANCE, function*({ payload }) {
+  yield takeEvery(actions.REFRESH_BALANCE, function*({ payload }: actions.RefreshBalance) {
     const address = payload;
 
     try {
       const response = yield call(Binance.getBalances, address);
 
       try {
-        const markets = yield call(Binance.getMarkets);
-        const coins = response.map(coin => {
+        const markets: {result: Market[]} = yield call(Binance.getMarkets);
+        const coins = response.map((coin: Balance) => {
           const market = markets.result.find(
-            market => market.base_asset_symbol === coin.symbol,
+            (market: Market) => market.base_asset_symbol === coin.symbol,
           );
           return {
             asset: coin.symbol,
@@ -77,9 +79,9 @@ export function* refreshBalance() {
   });
 }
 
-const getStakerAssets = async address => {
+const getStakerAssets = async (address: Address) => {
   const params = {
-    method: 'get',
+    // method: 'link',
     url: getMidgardURL(`stakers/${address}`),
     headers: getHeaders(),
   };
@@ -92,9 +94,9 @@ const getStakerAssets = async address => {
   }
 };
 
-const getPoolData = async assetId => {
+const getPoolData = async (assetId: string) => {
   const params = {
-    method: 'get',
+    method: 'get' as Method,
     url: getMidgardURL(`pools/${assetId}`),
     headers: getHeaders(),
   };
@@ -110,13 +112,13 @@ const getPoolData = async assetId => {
 };
 
 export function* getUserStakeData() {
-  yield takeEvery(actions.GET_USER_STAKE_DATA_REQUEST, function*({ payload }) {
+  yield takeEvery(actions.GET_USER_STAKE_DATA_REQUEST, function*({ payload }: actions.GetUserStakeDataRequest) {
     const { address, asset } = payload;
     const { chain, symbol, ticker } = asset;
     const assetId = `${chain}.${symbol}`;
 
     const params = {
-      method: 'get',
+      method: 'get' as Method,
       url: getMidgardURL(`stakers/${address}/${assetId}`),
       headers: getHeaders(),
     };
@@ -133,7 +135,7 @@ export function* getUserStakeData() {
         assetValue: getFixedNumber(userStakerData.runeStaked / BASE_NUMBER),
         asset: 'rune',
         price,
-      };
+      } as GetUserStakeDataResult;
 
       yield put(actions.getUserStakeDataSuccess(data));
     } catch (error) {
@@ -143,20 +145,19 @@ export function* getUserStakeData() {
 }
 
 export function* refreshStakes() {
-  yield takeEvery(actions.REFRESH_STAKES, function*({ payload }) {
+  yield takeEvery(actions.REFRESH_STAKES, function*({ payload }: actions.RefreshStakes) {
     const address = payload;
 
     try {
       const { data: stakerData } = yield call(getStakerAssets, address);
       const stakerPools = _get(stakerData, 'poolsArray');
-
       const stakeData = yield all(
-        stakerPools.map(poolData => {
+        stakerPools.map((poolData: StakePool) => {
           return put(
             actions.getUserStakeData({
               address,
               asset: poolData,
-            }),
+            } as actions.GetUserStakeDataRequestPayload),
           );
         }),
       );

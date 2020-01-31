@@ -7,8 +7,8 @@ const TokenDetailLoader = () => (
     height={240}
     width={240}
     speed={2}
-    primaryColor="#F8F9FA"
-    secondaryColor="#ECEEEF"
+    primarycolor="#F8F9FA"
+    secondarycolor="#ECEEEF"
   >
     <rect x="70" y="20" rx="2" ry="2" width="100" height="20" />
     <rect x="20" y="80" rx="2" ry="2" width="200" height="20" />

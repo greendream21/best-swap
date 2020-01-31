@@ -32,7 +32,7 @@ import {
   setTxHash,
 } from '../../../redux/app/actions';
 import midgardActions from '../../../redux/midgard/actions';
-import walletactions from '../../../redux/wallet/actions';
+import * as walletActions from '../../../redux/wallet/actions';
 
 import {
   ContentWrapper,
@@ -63,7 +63,6 @@ import { delay } from '../../../helpers/asyncHelper';
 const { TabPane } = Tabs;
 
 const { getPools, getPoolAddress, getStakerPoolData } = midgardActions;
-const { refreshStake } = walletactions;
 
 class PoolStake extends Component {
   hash = null;
@@ -102,11 +101,13 @@ class PoolStake extends Component {
   componentDidUpdate(prevProps) {
     const {
       wsTransfers,
-      user: { wallet },
+      user,
       txStatus: { type, hash },
+      refreshStake,
     } = this.props;
     const { txResult } = this.state;
     const length = wsTransfers.length;
+    const wallet = user ? user.wallet : null;
 
     if (
       length !== prevProps.wsTransfers.length &&
@@ -117,27 +118,29 @@ class PoolStake extends Component {
       const lastTx = wsTransfers[length - 1];
       const transferHash = getHashFromTransfer(lastTx);
 
-      // Currently we do a different handling for `stake` + `withdraw`
-      // See https://thorchain.slack.com/archives/CL5B4M4BC/p1579816500171200
-      if (type === 'stake' /* TxTypes.STAKE */) {
-        if (transferHash === hash) {
-          // Just refresh stakes after update
-          refreshStake(wallet);
+      if (wallet) {
+        // Currently we do a different handling for `stake` + `withdraw`
+        // See https://thorchain.slack.com/archives/CL5B4M4BC/p1579816500171200
+        if (type === 'stake' /* TxTypes.STAKE */) {
+          if (transferHash === hash) {
+            // Just refresh stakes after update
+            refreshStake(wallet);
+          }
         }
-      }
 
-      if (type === 'withdraw' /* TxTypes.WITHDRAW */) {
-        const txResult = withdrawResult({
-          tx: lastTx,
-          hash,
-        });
-
-        if (txResult) {
-          this.setState({
-            txResult: true,
+        if (type === 'withdraw' /* TxTypes.WITHDRAW */) {
+          const txResult = withdrawResult({
+            tx: lastTx,
+            hash,
           });
-          // refresh stakes after update
-          refreshStake(wallet);
+
+          if (txResult) {
+            this.setState({
+              txResult: true,
+            });
+            // refresh stakes after update
+            refreshStake(wallet);
+          }
         }
       }
     }
@@ -149,14 +152,9 @@ class PoolStake extends Component {
   }
 
   getStakerInfo = () => {
-    const {
-      getStakerPoolData,
-      symbol,
-      user: { wallet },
-    } = this.props;
-
-    if (wallet) {
-      getStakerPoolData({ asset: symbol, address: wallet });
+    const { getStakerPoolData, symbol, user } = this.props;
+    if (user) {
+      getStakerPoolData({ asset: symbol, address: user.wallet });
     }
   };
 
@@ -337,47 +335,47 @@ class PoolStake extends Component {
   };
 
   handleConfirmStake = async () => {
-    const {
-      user: { wallet },
-      setTxHash,
-    } = this.props;
+    const { user, setTxHash } = this.props;
     const { runeAmount, tokenAmount } = this.state;
 
-    this.handleStartTimer('stake');
+    if (user) {
+      const { wallet } = user;
+      this.handleStartTimer('stake');
 
-    this.setState({
-      txResult: false,
-    });
-
-    const data = this.getData();
-
-    try {
-      const { result } = await confirmStake(
-        Binance,
-        wallet,
-        runeAmount,
-        tokenAmount,
-        data,
-      );
-
-      setTxHash(result[0].hash);
-
-      this.stakeData = {
-        fromAddr: wallet,
-        toAddr: data.poolAddress,
-        toToken: data.symbolTo,
-        runeAmount,
-        tokenAmount,
-      };
-    } catch (error) {
-      notification.error({
-        message: 'Swap Invalid',
-        description: 'Swap information is not valid.',
-      });
       this.setState({
-        dragReset: true,
+        txResult: false,
       });
-      console.error(error); // eslint-disable-line no-console
+
+      const data = this.getData();
+
+      try {
+        const { result } = await confirmStake(
+          Binance,
+          wallet,
+          runeAmount,
+          tokenAmount,
+          data,
+        );
+
+        setTxHash(result[0].hash);
+
+        this.stakeData = {
+          fromAddr: wallet,
+          toAddr: data.poolAddress,
+          toToken: data.symbolTo,
+          runeAmount,
+          tokenAmount,
+        };
+      } catch (error) {
+        notification.error({
+          message: 'Swap Invalid',
+          description: 'Swap information is not valid.',
+        });
+        this.setState({
+          dragReset: true,
+        });
+        console.error(error); // eslint-disable-line no-console
+      }
     }
   };
 
@@ -388,10 +386,10 @@ class PoolStake extends Component {
   };
 
   handleStake = () => {
-    const {
-      user: { keystore, wallet },
-    } = this.props;
+    const { user } = this.props;
     const { runeAmount, tokenAmount } = this.state;
+    const wallet = user ? user.wallet : null;
+    const keystore = user ? user.keystore : null;
 
     if (!wallet) {
       this.setState({
@@ -447,40 +445,42 @@ class PoolStake extends Component {
   handleConfirmPassword = async e => {
     e.preventDefault();
 
-    const {
-      user: { keystore, wallet },
-    } = this.props;
+    const { user } = this.props;
     const { password } = this.state;
 
-    this.setState({ validatingPassword: true });
-    // Short delay to render latest state changes of `validatingPassword`
-    await delay(2000);
+    if (user) {
+      const { keystore, wallet } = user;
 
-    try {
-      const privateKey = crypto.getPrivateKeyFromKeyStore(keystore, password);
-      Binance.setPrivateKey(privateKey);
-      const address = crypto.getAddressFromPrivateKey(
-        privateKey,
-        Binance.getPrefix(),
-      );
-      if (wallet === address) {
-        if (this.type === 'stake') {
-          this.handleConfirmStake();
-        } else if (this.type === 'withdraw') {
-          this.handleConfirmWithdraw();
+      this.setState({ validatingPassword: true });
+      // Short delay to render latest state changes of `validatingPassword`
+      await delay(2000);
+
+      try {
+        const privateKey = crypto.getPrivateKeyFromKeyStore(keystore, password);
+        Binance.setPrivateKey(privateKey);
+        const address = crypto.getAddressFromPrivateKey(
+          privateKey,
+          Binance.getPrefix(),
+        );
+        if (wallet && wallet === address) {
+          if (this.type === 'stake') {
+            this.handleConfirmStake();
+          } else if (this.type === 'withdraw') {
+            this.handleConfirmWithdraw();
+          }
         }
-      }
 
-      this.setState({
-        validatingPassword: false,
-        openPrivateModal: false,
-      });
-    } catch (error) {
-      this.setState({
-        validatingPassword: false,
-        invalidPassword: true,
-      });
-      console.error(error); // eslint-disable-line no-console
+        this.setState({
+          validatingPassword: false,
+          openPrivateModal: false,
+        });
+      } catch (error) {
+        this.setState({
+          validatingPassword: false,
+          invalidPassword: true,
+        });
+        console.error(error); // eslint-disable-line no-console
+      }
     }
   };
 
@@ -512,9 +512,9 @@ class PoolStake extends Component {
   };
 
   handleWithdraw = () => {
-    const {
-      user: { keystore, wallet },
-    } = this.props;
+    const { user } = this.props;
+    const wallet = user ? user.wallet : null;
+    const keystore = user ? user.keystore : null;
 
     if (!wallet) {
       this.setState({
@@ -532,41 +532,40 @@ class PoolStake extends Component {
   };
 
   handleConfirmWithdraw = async () => {
-    const {
-      symbol,
-      poolAddress,
-      user: { wallet },
-      setTxHash,
-    } = this.props;
+    const { symbol, poolAddress, user, setTxHash } = this.props;
     const { widthdrawPercentage } = this.state;
     const withdrawRate = (widthdrawPercentage || 50) / 100;
 
-    this.handleStartTimer('withdraw');
+    if (user) {
+      const { wallet } = user;
 
-    this.setState({
-      txResult: false,
-    });
+      this.handleStartTimer('withdraw');
 
-    try {
-      const percentage = withdrawRate * 100;
-      const { result } = await confirmWithdraw(
-        Binance,
-        wallet,
-        poolAddress,
-        symbol,
-        percentage,
-      );
-
-      setTxHash(result[0].hash);
-    } catch (error) {
-      notification.error({
-        message: 'Withdraw Invalid',
-        description: 'Withdraw information is not valid.',
-      });
       this.setState({
-        dragReset: true,
+        txResult: false,
       });
-      console.error(error); // eslint-disable-line no-console
+
+      try {
+        const percentage = withdrawRate * 100;
+        const { result } = await confirmWithdraw(
+          Binance,
+          wallet,
+          poolAddress,
+          symbol,
+          percentage,
+        );
+
+        setTxHash(result[0].hash);
+      } catch (error) {
+        notification.error({
+          message: 'Withdraw Invalid',
+          description: 'Withdraw information is not valid.',
+        });
+        this.setState({
+          dragReset: true,
+        });
+        console.error(error); // eslint-disable-line no-console
+      }
     }
   };
 
@@ -1091,12 +1090,10 @@ class PoolStake extends Component {
   };
 
   renderYourShare = (calcResult, stakeData) => {
-    const {
-      symbol,
-      user: { wallet },
-      priceIndex,
-      basePriceAsset,
-    } = this.props;
+    const { symbol, user, priceIndex, basePriceAsset } = this.props;
+
+    const wallet = user ? user.wallet : null;
+    const hasWallet = wallet !== null;
 
     const stakeInfo = (stakeData && stakeData[symbol]) || {
       stakeUnits: 0,
@@ -1119,17 +1116,17 @@ class PoolStake extends Component {
     const tokensShare = getUserFormat((T * stakeUnits) / poolUnits);
     const runeEarned = getUserFormat(stakeInfo.runeEarned);
     const assetEarned = getUserFormat(stakeInfo.assetEarned);
-    const connected = !!wallet;
+    const connected = hasWallet;
 
     return (
       <>
         <div className="your-share-wrapper">
-          {!wallet && (
+          {!hasWallet && (
             <Label className="label-title" size="normal">
               YOUR SHARE
             </Label>
           )}
-          {!wallet && (
+          {!hasWallet && (
             <div className="share-placeholder-wrapper">
               <div className="placeholder-icon">
                 <Icon type="switcher" />
@@ -1142,7 +1139,7 @@ class PoolStake extends Component {
               </Link>
             </div>
           )}
-          {wallet && stakeUnits === 0 && (
+          {hasWallet && stakeUnits === 0 && (
             <div className="share-placeholder-wrapper">
               <div className="placeholder-icon">
                 <Icon type="inbox" />
@@ -1152,7 +1149,7 @@ class PoolStake extends Component {
               </Label>
             </div>
           )}
-          {((wallet && stakeUnits > 0) || loading) && (
+          {((hasWallet && stakeUnits > 0) || loading) && (
             <>
               <Label className="share-info-title" size="normal">
                 Your total share of the pool
@@ -1183,7 +1180,7 @@ class PoolStake extends Component {
                     <Label
                       className="your-share-price-label"
                       size="normal"
-                      color="grey"
+                      color="gray"
                       loading={loading}
                     >
                       {basePriceAsset} {(tokensShare * tokenPrice).toFixed(2)}
@@ -1200,7 +1197,7 @@ class PoolStake extends Component {
                   </div>
                 </div>
               </div>
-              {!wallet && (
+              {!hasWallet && (
                 <Label
                   className="label-title earning-label"
                   size="normal"
@@ -1212,7 +1209,7 @@ class PoolStake extends Component {
             </>
           )}
         </div>
-        {((wallet && stakeUnits > 0) || loading) && (
+        {((hasWallet && stakeUnits > 0) || loading) && (
           <div className="your-share-wrapper">
             <Label className="share-info-title" size="normal">
               Your total earnings from the pool
@@ -1265,7 +1262,7 @@ class PoolStake extends Component {
       poolAddress,
       stakerPoolData,
       txStatus,
-      user: { wallet },
+      user,
     } = this.props;
     const {
       runeAmount,
@@ -1277,6 +1274,9 @@ class PoolStake extends Component {
       txResult,
       validatingPassword,
     } = this.state;
+
+    const wallet = user ? user.wallet : null;
+    const hasWallet = wallet !== null;
 
     let { symbol } = this.props;
     symbol = symbol.toUpperCase();
@@ -1299,7 +1299,7 @@ class PoolStake extends Component {
       txStatus.type === 'withdraw' ? txStatus.modal : false;
     const coinCloseIconType = txStatus.status ? 'fullscreen-exit' : 'close';
 
-    const yourShareSpan = wallet ? 8 : 24;
+    const yourShareSpan = hasWallet ? 8 : 24;
 
     // stake confirmation modal
 
@@ -1323,13 +1323,13 @@ class PoolStake extends Component {
           <Col className="your-share-view" span={24} lg={yourShareSpan}>
             {this.renderYourShare(calcResult, stakerPoolData)}
           </Col>
-          {wallet && (
+          {hasWallet && (
             <Col className="share-detail-view" span={24} lg={16}>
               {this.renderShareDetail(poolStats, calcResult, stakerPoolData)}
             </Col>
           )}
         </Row>
-        {wallet && (
+        {hasWallet && (
           <>
             <ConfirmModal
               title={withdrawText}
@@ -1389,7 +1389,7 @@ PoolStake.propTypes = {
   priceIndex: PropTypes.object.isRequired,
   stakerPoolData: PropTypes.object.isRequired,
   assets: PropTypes.object.isRequired,
-  user: PropTypes.object.isRequired,
+  user: PropTypes.object, // Maybe<User>
   wsTransfers: PropTypes.array.isRequired,
   setTxTimerModal: PropTypes.func.isRequired,
   setTxTimerStatus: PropTypes.func.isRequired,
@@ -1433,7 +1433,7 @@ export default compose(
       setTxTimerValue,
       setTxHash,
       resetTxStatus,
-      refreshStake,
+      refreshStake: walletActions.refreshStake,
     },
   ),
   withRouter,

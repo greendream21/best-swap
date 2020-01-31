@@ -139,8 +139,8 @@ class Header extends Component {
   render() {
     const { txStatus, user } = this.props;
     const { status, value, type } = txStatus;
-    const { wallet } = user;
-    const connected = !!wallet;
+    const wallet = user ? user.wallet : null;
+    const connected = wallet !== null;
 
     const intro = (
       <Link to="/introduction">
@@ -200,7 +200,7 @@ Header.propTypes = {
   txStatus: PropTypes.object.isRequired,
   setTxTimerModal: PropTypes.func.isRequired,
   setTxTimerStatus: PropTypes.func.isRequired,
-  user: PropTypes.object.isRequired,
+  user: PropTypes.object, // Maybe<User>
   history: PropTypes.object.isRequired,
 };
 

@@ -8,7 +8,7 @@ import WalletConnectQRCodeModal from '@walletconnect/qrcode-modal';
 
 import { ContentWrapper } from './ConnectView.style';
 
-import walletActions from '../../redux/wallet/actions';
+import * as walletActions from '../../redux/wallet/actions';
 
 const { saveWallet } = walletActions;
 
@@ -122,9 +122,6 @@ WalletConnectPane.propTypes = {
   saveWallet: PropTypes.func.isRequired,
 };
 
-export default connect(
-  null,
-  {
-    saveWallet,
-  },
-)(WalletConnectPane);
+export default connect(null, {
+  saveWallet,
+})(WalletConnectPane);
