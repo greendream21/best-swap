@@ -12,7 +12,7 @@ import Label from '../../components/uielements/label';
 import Button from '../../components/uielements/button';
 import FormGroup from '../../components/uielements/formGroup';
 
-import walletActions from '../../redux/wallet/actions';
+import * as walletActions from '../../redux/wallet/actions';
 
 const { saveWallet } = walletActions;
 
@@ -153,9 +153,6 @@ Keystore.propTypes = {
   saveWallet: PropTypes.func.isRequired,
 };
 
-export default connect(
-  null,
-  {
-    saveWallet,
-  },
-)(Keystore);
+export default connect(null, {
+  saveWallet,
+})(Keystore);

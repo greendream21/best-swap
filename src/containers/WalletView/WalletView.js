@@ -104,7 +104,7 @@ class WalletView extends Component {
   render() {
     const {
       info,
-      user: { wallet },
+      user,
       assetData,
       stakeData,
       priceIndex,
@@ -112,6 +112,7 @@ class WalletView extends Component {
       loadingAssets,
       loadingStakes,
     } = this.props;
+    const hasWallet = user && user.wallet;
     const pair = getPair(info);
     const { source } = pair;
     const selectedAsset = this.getSelectedAsset(pair);
@@ -131,7 +132,7 @@ class WalletView extends Component {
             <Label className="asset-title-label" weight="600">
               {this.renderAssetTitle()}
             </Label>
-            {!wallet && (
+            {!hasWallet && (
               <Link to="/connect">
                 <Button color="success">CONNECT</Button>
               </Link>
@@ -171,7 +172,7 @@ class WalletView extends Component {
 }
 
 WalletView.propTypes = {
-  user: PropTypes.object,
+  user: PropTypes.object, // Maybe<User>
   page: PropTypes.string,
   view: PropTypes.string,
   info: PropTypes.string,
@@ -180,7 +181,6 @@ WalletView.propTypes = {
   stakeData: PropTypes.array.isRequired,
   loadingAssets: PropTypes.bool.isRequired,
   loadingStakes: PropTypes.bool.isRequired,
-  setStakeData: PropTypes.func.isRequired,
   getPools: PropTypes.func.isRequired,
   priceIndex: PropTypes.object.isRequired,
   basePriceAsset: PropTypes.string.isRequired,

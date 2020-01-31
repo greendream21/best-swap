@@ -109,14 +109,10 @@ class PoolCreate extends Component {
   };
 
   getStakerData = () => {
-    const {
-      getStakerPoolData,
-      symbol,
-      user: { wallet },
-    } = this.props;
+    const { getStakerPoolData, symbol, user } = this.props;
 
-    if (wallet) {
-      getStakerPoolData({ asset: symbol, address: wallet });
+    if (user) {
+      getStakerPoolData({ asset: symbol, address: user.wallet });
     }
   };
 
@@ -259,9 +255,9 @@ class PoolCreate extends Component {
   };
 
   handleCreatePool = () => {
-    const {
-      user: { keystore, wallet },
-    } = this.props;
+    const { user } = this.props;
+    const wallet = user ? user.wallet : null;
+    const keystore = user ? user.keystore : null;
     const { runeAmount, tokenAmount } = this.state;
 
     if (!wallet) {
@@ -288,33 +284,33 @@ class PoolCreate extends Component {
   };
 
   handleConfirmCreate = async () => {
-    const {
-      user: { wallet },
-    } = this.props;
+    const { user } = this.props;
     const { runeAmount, tokenAmount } = this.state;
 
-    // start timer modal
-    this.handleStartTimer();
-    this.hash = null;
-    try {
-      const { result } = await confirmCreatePool(
-        Binance,
-        wallet,
-        runeAmount,
-        tokenAmount,
-        this.getData(),
-      );
+    if (user) {
+      // start timer modal
+      this.handleStartTimer();
+      this.hash = null;
+      try {
+        const { result } = await confirmCreatePool(
+          Binance,
+          user.wallet,
+          runeAmount,
+          tokenAmount,
+          this.getData(),
+        );
 
-      this.hash = result[0].hash;
-    } catch (error) {
-      notification.error({
-        message: 'Create Pool Failed',
-        description: 'Create Pool information is not valid.',
-      });
-      console.error(error); // eslint-disable-line no-console
-      this.setState({
-        dragReset: true,
-      });
+        this.hash = result[0].hash;
+      } catch (error) {
+        notification.error({
+          message: 'Create Pool Failed',
+          description: 'Create Pool information is not valid.',
+        });
+        console.error(error); // eslint-disable-line no-console
+        this.setState({
+          dragReset: true,
+        });
+      }
     }
   };
 
@@ -336,36 +332,39 @@ class PoolCreate extends Component {
   handleConfirmPassword = async e => {
     e.preventDefault();
 
-    const {
-      user: { keystore, wallet },
-    } = this.props;
+    const { user } = this.props;
     const { password } = this.state;
 
-    this.setState({ validatingPassword: true });
-    // Short delay to render latest state changes of `validatingPassword`
-    await delay(200);
+    if (user) {
+      this.setState({ validatingPassword: true });
+      // Short delay to render latest state changes of `validatingPassword`
+      await delay(200);
 
-    try {
-      const privateKey = crypto.getPrivateKeyFromKeyStore(keystore, password);
-      Binance.setPrivateKey(privateKey);
-      const address = crypto.getAddressFromPrivateKey(
-        privateKey,
-        Binance.getPrefix(),
-      );
-      if (wallet === address) {
-        this.handleConfirmCreate();
+      try {
+        const privateKey = crypto.getPrivateKeyFromKeyStore(
+          user.keystore,
+          password,
+        );
+        Binance.setPrivateKey(privateKey);
+        const address = crypto.getAddressFromPrivateKey(
+          privateKey,
+          Binance.getPrefix(),
+        );
+        if (user.wallet === address) {
+          this.handleConfirmCreate();
+        }
+
+        this.setState({
+          validatingPassword: false,
+          openPrivateModal: false,
+        });
+      } catch (error) {
+        this.setState({
+          validatingPassword: false,
+          invalidPassword: true,
+        });
+        console.error(error); // eslint-disable-line no-console
       }
-
-      this.setState({
-        validatingPassword: false,
-        openPrivateModal: false,
-      });
-    } catch (error) {
-      this.setState({
-        validatingPassword: false,
-        invalidPassword: true,
-      });
-      console.error(error); // eslint-disable-line no-console
     }
   };
 
@@ -706,7 +705,7 @@ PoolCreate.propTypes = {
   poolData: PropTypes.object.isRequired,
   stakerPoolData: PropTypes.object.isRequired,
   assets: PropTypes.object.isRequired,
-  user: PropTypes.object.isRequired,
+  user: PropTypes.object, // Maybe<User>
   basePriceAsset: PropTypes.string.isRequired,
   priceIndex: PropTypes.object.isRequired,
   getPools: PropTypes.func.isRequired,

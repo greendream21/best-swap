@@ -49,7 +49,7 @@ import {
   setTxHash,
 } from '../../../redux/app/actions';
 import midgardActions from '../../../redux/midgard/actions';
-import walletactions from '../../../redux/wallet/actions';
+import * as walletActions from '../../../redux/wallet/actions';
 import AddressInput from '../../../components/uielements/addressInput';
 import ContentTitle from '../../../components/uielements/contentTitle';
 import Slider from '../../../components/uielements/slider';
@@ -59,7 +59,6 @@ import { MAX_VALUE } from '../../../redux/app/const';
 import { delay } from '../../../helpers/asyncHelper';
 
 const { getPools, getPoolAddress } = midgardActions;
-const { refreshBalance } = walletactions;
 
 class SwapSend extends Component {
   addressRef = React.createRef();
@@ -192,11 +191,9 @@ class SwapSend extends Component {
       return;
     }
 
-    const {
-      info,
-      user: { wallet },
-    } = this.props;
+    const { info, user } = this.props;
     const newValue = value;
+    const wallet = user ? user.wallet : null;
 
     // if wallet is disconnected, just set the value
     if (!wallet) {
@@ -248,36 +245,38 @@ class SwapSend extends Component {
   handleConfirmPassword = async e => {
     e.preventDefault();
 
-    const {
-      user: { keystore, wallet },
-    } = this.props;
+    const { user } = this.props;
     const { password } = this.state;
 
-    this.setState({ validatingPassword: true });
-    // Short delay to render latest state changes of `validatingPassword`
-    await delay(200);
+    if (user) {
+      const { keystore, wallet } = user;
 
-    try {
-      const privateKey = crypto.getPrivateKeyFromKeyStore(keystore, password);
-      Binance.setPrivateKey(privateKey);
-      const address = crypto.getAddressFromPrivateKey(
-        privateKey,
-        Binance.getPrefix(),
-      );
-      if (wallet === address) {
-        this.handleConfirmSwap();
+      this.setState({ validatingPassword: true });
+      // Short delay to render latest state changes of `validatingPassword`
+      await delay(200);
+
+      try {
+        const privateKey = crypto.getPrivateKeyFromKeyStore(keystore, password);
+        Binance.setPrivateKey(privateKey);
+        const address = crypto.getAddressFromPrivateKey(
+          privateKey,
+          Binance.getPrefix(),
+        );
+        if (wallet === address) {
+          this.handleConfirmSwap();
+        }
+
+        this.setState({
+          validatingPassword: false,
+          openPrivateModal: false,
+        });
+      } catch (error) {
+        this.setState({
+          validatingPassword: false,
+          invalidPassword: true,
+        });
+        console.error(error); // eslint-disable-line no-console
       }
-
-      this.setState({
-        validatingPassword: false,
-        openPrivateModal: false,
-      });
-    } catch (error) {
-      this.setState({
-        validatingPassword: false,
-        invalidPassword: true,
-      });
-      console.error(error); // eslint-disable-line no-console
     }
   };
 
@@ -318,11 +317,10 @@ class SwapSend extends Component {
   };
 
   handleEndDrag = () => {
-    const {
-      view,
-      user: { keystore, wallet },
-    } = this.props;
+    const { view, user } = this.props;
     const { xValue } = this.state;
+    const wallet = user ? user.wallet : null;
+    const keystore = user ? user.keystore : null;
 
     // validation
 
@@ -514,43 +512,40 @@ class SwapSend extends Component {
   };
 
   handleConfirmSwap = async () => {
-    const {
-      user: { wallet },
-      info,
-      setTxHash,
-      resetTxStatus,
-    } = this.props;
+    const { user, info, setTxHash, resetTxStatus } = this.props;
     const { xValue, address, slipProtection } = this.state;
     const { source, target } = getPair(info);
 
-    this.setState({
-      txResult: null,
-    });
-
-    this.handleStartTimer();
-    try {
-      const { result } = await confirmSwap(
-        Binance,
-        wallet,
-        source,
-        target,
-        this.calcResult,
-        xValue,
-        slipProtection,
-        address,
-      );
-
-      setTxHash(result[0]?.hash);
-    } catch (error) {
-      notification['error']({
-        message: 'Swap Invalid',
-        description: 'Swap information is not valid.',
-      });
+    if (user) {
       this.setState({
-        dragReset: true,
+        txResult: null,
       });
-      resetTxStatus();
-      console.error(error); // eslint-disable-line no-console
+
+      this.handleStartTimer();
+      try {
+        const { result } = await confirmSwap(
+          Binance,
+          user.wallet,
+          source,
+          target,
+          this.calcResult,
+          xValue,
+          slipProtection,
+          address,
+        );
+
+        setTxHash(result[0]?.hash);
+      } catch (error) {
+        notification['error']({
+          message: 'Swap Invalid',
+          description: 'Swap information is not valid.',
+        });
+        this.setState({
+          dragReset: true,
+        });
+        resetTxStatus();
+        console.error(error); // eslint-disable-line no-console
+      }
     }
   };
 
@@ -997,7 +992,7 @@ SwapSend.propTypes = {
   poolData: PropTypes.object.isRequired,
   basePriceAsset: PropTypes.string.isRequired,
   priceIndex: PropTypes.object.isRequired,
-  user: PropTypes.object.isRequired,
+  user: PropTypes.object, // Maybe<User>
   wsTransfers: PropTypes.array.isRequired,
   setTxTimerModal: PropTypes.func.isRequired,
   setTxTimerStatus: PropTypes.func.isRequired,
@@ -1036,7 +1031,7 @@ export default compose(
       countTxTimerValue,
       setTxHash,
       resetTxStatus,
-      refreshBalance,
+      refreshBalance: walletActions.refreshBalance,
     },
   ),
   withRouter,

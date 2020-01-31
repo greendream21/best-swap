@@ -73,3 +73,24 @@ interface TransferEvent {
    */
   data?: TransferEventData;
 }
+
+//
+// See https://github.com/binance-chain/javascript-sdk/wiki/API#get-balances
+interface Balance {
+  symbol: string;
+  free: string;
+}
+
+interface Market {
+  base_asset_symbol: string;
+  list_price: string;
+  lot_size: string;
+  quote_asset_symbol: string;
+  tick_size: string;
+}
+
+interface StakePool {
+  chain: string;
+  symbol: string;
+  ticker: string;
+}

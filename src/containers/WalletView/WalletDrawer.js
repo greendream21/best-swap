@@ -11,22 +11,17 @@ import WalletButton from '../../components/uielements/walletButton';
 
 import { WalletDrawerWrapper, Drawer } from './WalletDrawer.style';
 
-import walletActions from '../../redux/wallet/actions';
-
-const { forgetWallet, refreshBalance, refreshStake } = walletActions;
+import * as walletActions from '../../redux/wallet/actions';
 
 const WalletDrawer = props => {
   const [visible, setVisible] = useState(false);
   const [refresh, setRefresh] = useState(false);
 
-  const {
-    user: { wallet },
-    refreshBalance,
-    refreshStake,
-  } = props;
+  const { user, refreshBalance, refreshStake } = props;
+  const wallet = user ? user.wallet : null;
 
   const toggleDrawer = () => {
-    if (visible === false) {
+    if (wallet && visible === false) {
       refreshBalance(wallet);
       refreshStake(wallet);
     }
@@ -45,8 +40,10 @@ const WalletDrawer = props => {
   };
 
   const onClickRefresh = () => {
-    refreshBalance(wallet);
-    refreshStake(wallet);
+    if (wallet) {
+      refreshBalance(wallet);
+      refreshStake(wallet);
+    }
 
     setRefresh(true);
     setTimeout(() => {
@@ -100,7 +97,10 @@ const WalletDrawer = props => {
         {wallet && (
           <div className="wallet-address">
             <Label className="wallet-label-wrapper">{wallet}</Label>
-            <div className="copy-btn-wrapper" onClick={onCopyWallet}>
+            <div
+              className="copy-btn-wrapper"
+              onClick={wallet ? onCopyWallet : undefined}
+            >
               COPY
             </div>
           </div>
@@ -111,7 +111,7 @@ const WalletDrawer = props => {
 };
 
 WalletDrawer.propTypes = {
-  user: PropTypes.object.isRequired,
+  user: PropTypes.object, // Maybe<User>
   forgetWallet: PropTypes.func.isRequired,
   refreshBalance: PropTypes.func.isRequired,
   refreshStake: PropTypes.func.isRequired,
@@ -122,8 +122,8 @@ export default connect(
     user: state.Wallet.user,
   }),
   {
-    refreshBalance,
-    refreshStake,
-    forgetWallet,
+    refreshBalance: walletActions.refreshBalance,
+    refreshStake: walletActions.refreshStake,
+    forgetWallet: walletActions.forgetWallet,
   },
 )(WalletDrawer);
