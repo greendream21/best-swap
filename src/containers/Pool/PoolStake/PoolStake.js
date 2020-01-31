@@ -1091,7 +1091,7 @@ class PoolStake extends Component {
     );
   };
 
-  renderYourShare = (poolStats, calcResult, stakeData) => {
+  renderYourShare = (calcResult, stakeData) => {
     const {
       symbol,
       user: { wallet },
@@ -1100,7 +1100,7 @@ class PoolStake extends Component {
     } = this.props;
 
     const stakeInfo = (stakeData && stakeData[symbol]) || {
-      stakeUnits: -1,
+      stakeUnits: 0,
       runeEarned: 0,
       assetEarned: 0,
     };
@@ -1322,7 +1322,7 @@ class PoolStake extends Component {
         <Row className="stake-info-view">{this.renderStakeInfo(poolStats)}</Row>
         <Row className="share-view">
           <Col className="your-share-view" span={24} lg={yourShareSpan}>
-            {this.renderYourShare(poolStats, calcResult, stakerPoolData)}
+            {this.renderYourShare(calcResult, stakerPoolData)}
           </Col>
           {wallet && (
             <Col className="share-detail-view" span={24} lg={16}>
