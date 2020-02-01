@@ -28,7 +28,7 @@ import {
   countTxTimerValue,
   resetTxStatus,
 } from '../../../redux/app/actions';
-import midgardActions from '../../../redux/midgard/actions';
+import * as midgardActions from '../../../redux/midgard/actions';
 import binanceActions from '../../../redux/binance/actions';
 
 import {
@@ -52,7 +52,6 @@ import { MAX_VALUE } from '../../../redux/app/const';
 import { delay } from '../../../helpers/asyncHelper';
 import TokenDetailLoader from '../../../components/utility/loaders/tokenDetail';
 
-const { getPools, getStakerPoolData, getPoolAddress } = midgardActions;
 const { getBinanceTokens, getBinanceMarkets } = binanceActions;
 
 class PoolCreate extends Component {
@@ -737,9 +736,9 @@ export default compose(
       txStatus: state.App.txStatus,
     }),
     {
-      getPools,
-      getPoolAddress,
-      getStakerPoolData,
+      getPools: midgardActions.getPools,
+      getPoolAddress: midgardActions.getStakerPoolData,
+      getStakerPoolData: midgardActions.getPoolAddress,
       getBinanceTokens,
       getBinanceMarkets,
       setTxTimerModal,

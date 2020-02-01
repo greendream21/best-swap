@@ -10,10 +10,9 @@ import Keystore from './Keystore';
 import WalletConnect from './WalletConnect';
 import Ledger from './Ledger';
 
-import midgardActions from '../../redux/midgard/actions';
+import * as midgardActions from '../../redux/midgard/actions';
 
 const { TabPane } = Tabs;
-const { getPools } = midgardActions;
 
 class ConnectView extends Component {
   constructor(props) {
@@ -94,5 +93,5 @@ ConnectView.propTypes = {
 };
 
 export default connect(null, {
-  getPools,
+  getPools: midgardActions.getPools,
 })(ConnectView);

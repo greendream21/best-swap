@@ -9,9 +9,7 @@ import Label from '../uielements/label';
 import { getTickerFormat } from '../../helpers/stringHelper';
 import { BitcoinIcon } from '../icons';
 
-import midgardActions from '../../redux/midgard/actions';
-
-const { setBasePriceAsset } = midgardActions;
+import * as midgardActions from '../../redux/midgard/actions';
 
 const style = {
   fontWeight: 'bold',
@@ -108,7 +106,7 @@ export default compose(
       pools: state.Midgard.pools,
     }),
     {
-      setBasePriceAsset,
+      setBasePriceAsset: midgardActions.setBasePriceAsset,
     },
   ),
 )(BasePriceSelector);

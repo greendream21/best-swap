@@ -1,4 +1,4 @@
-import { FixmeType, Maybe } from '../../types/bepswap';
+import { FixmeType, Maybe, Address } from '../../types/bepswap';
 
 export interface User {
   /**
@@ -10,7 +10,6 @@ export interface User {
 }
 
 export type EmptyUser = {}
-export type Address = string
 
 export interface AssetData {
   asset: string;

@@ -23,7 +23,9 @@ import * as actions from './actions';
 import { GetUserStakeDataResult } from './types';
 
 export function* saveWalletSaga() {
-  yield takeEvery(actions.SAVE_WALLET, function*({ payload }: actions.SaveWallet) {
+  yield takeEvery(actions.SAVE_WALLET, function*({
+    payload,
+  }: actions.SaveWallet) {
     const { wallet, keystore } = payload;
 
     saveWalletAddress(wallet);
@@ -50,14 +52,16 @@ export function* forgetWalletSaga() {
 }
 
 export function* refreshBalance() {
-  yield takeEvery(actions.REFRESH_BALANCE, function*({ payload }: actions.RefreshBalance) {
+  yield takeEvery(actions.REFRESH_BALANCE, function*({
+    payload,
+  }: actions.RefreshBalance) {
     const address = payload;
 
     try {
       const response = yield call(Binance.getBalances, address);
 
       try {
-        const markets: {result: Market[]} = yield call(Binance.getMarkets);
+        const markets: { result: Market[] } = yield call(Binance.getMarkets);
         const coins = response.map((coin: Balance) => {
           const market = markets.result.find(
             (market: Market) => market.base_asset_symbol === coin.symbol,
@@ -112,7 +116,9 @@ const getPoolData = async (assetId: string) => {
 };
 
 export function* getUserStakeData() {
-  yield takeEvery(actions.GET_USER_STAKE_DATA_REQUEST, function*({ payload }: actions.GetUserStakeDataRequest) {
+  yield takeEvery(actions.GET_USER_STAKE_DATA_REQUEST, function*({
+    payload,
+  }: actions.GetUserStakeDataRequest) {
     const { address, asset } = payload;
     const { chain, symbol, ticker } = asset;
     const assetId = `${chain}.${symbol}`;
@@ -145,7 +151,9 @@ export function* getUserStakeData() {
 }
 
 export function* refreshStakes() {
-  yield takeEvery(actions.REFRESH_STAKES, function*({ payload }: actions.RefreshStakes) {
+  yield takeEvery(actions.REFRESH_STAKES, function*({
+    payload,
+  }: actions.RefreshStakes) {
     const address = payload;
 
     try {
