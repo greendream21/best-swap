@@ -10,14 +10,12 @@ import Tabs from '../../components/uielements/tabs';
 import Label from '../../components/uielements/label';
 import Button from '../../components/uielements/button';
 import CoinList from '../../components/uielements/coins/coinList';
-import midgardActions from '../../redux/midgard/actions';
+import * as midgardActions from '../../redux/midgard/actions';
 import { getPair, getTickerFormat } from '../../helpers/stringHelper';
 import {
   AssetLoader,
   StakeLoader,
 } from '../../components/utility/loaders/wallet';
-
-const { getPools } = midgardActions;
 
 const { TabPane } = Tabs;
 
@@ -206,7 +204,7 @@ export default compose(
       basePriceAsset: state.Midgard.basePriceAsset,
     }),
     {
-      getPools,
+      getPools: midgardActions.getPools,
     },
   ),
   withRouter,

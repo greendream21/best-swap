@@ -3,6 +3,9 @@
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type FixmeType = any;
 
+export type Address = string
+export type AssetSymbol = string
+
 
 // Very simple way to provide a `Maybe` thing
 // Again, it's not a Monad or so, just a very simple TS type :)

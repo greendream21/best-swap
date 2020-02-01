@@ -16,10 +16,8 @@ import Trend from '../../../components/uielements/trend';
 import Button from '../../../components/uielements/button';
 import Table from '../../../components/uielements/table';
 
-import midgardActions from '../../../redux/midgard/actions';
+import * as midgardActions from '../../../redux/midgard/actions';
 import { getSwapData } from './data';
-
-const { getPools } = midgardActions;
 
 class SwapView extends Component {
   constructor(props) {
@@ -245,7 +243,7 @@ export default compose(
       loading: state.Midgard.poolLoading,
     }),
     {
-      getPools,
+      getPools: midgardActions.getPools,
     },
   ),
   withRouter,

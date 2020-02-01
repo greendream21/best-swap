@@ -31,7 +31,7 @@ import {
   setTxTimerValue,
   setTxHash,
 } from '../../../redux/app/actions';
-import midgardActions from '../../../redux/midgard/actions';
+import * as midgardActions from '../../../redux/midgard/actions';
 import * as walletActions from '../../../redux/wallet/actions';
 
 import {
@@ -61,8 +61,6 @@ import { getHashFromTransfer } from '../../../helpers/binance';
 import { delay } from '../../../helpers/asyncHelper';
 
 const { TabPane } = Tabs;
-
-const { getPools, getPoolAddress, getStakerPoolData } = midgardActions;
 
 class PoolStake extends Component {
   hash = null;
@@ -1424,9 +1422,9 @@ export default compose(
       stakerPoolDataLoading: state.Midgard.stakerPoolDataLoading,
     }),
     {
-      getPools,
-      getPoolAddress,
-      getStakerPoolData,
+      getPools: midgardActions.getPools,
+      getPoolAddress: midgardActions.getPoolAddress,
+      getStakerPoolData: midgardActions.getStakerPoolData,
       setTxTimerModal,
       setTxTimerStatus,
       countTxTimerValue,

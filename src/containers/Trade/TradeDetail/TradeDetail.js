@@ -26,13 +26,12 @@ import {
   countTxTimerValue,
   resetTxStatus,
 } from '../../../redux/app/actions';
-import midgardActions from '../../../redux/midgard/actions';
+import * as midgardActions from '../../../redux/midgard/actions';
 import binanceActions from '../../../redux/binance/actions';
 import { getBepswapValues, getBnbPrice, getPriceDiff } from '../utils';
 import { getTickerFormat, getFixedNumber } from '../../../helpers/stringHelper';
 import { MAX_VALUE } from '../../../redux/app/const';
 
-const { getPools, getRunePrice } = midgardActions;
 const { getBinanceTicker } = binanceActions;
 
 class TradeDetail extends Component {
@@ -383,8 +382,8 @@ export default compose(
       tickerData: state.Binance.ticker,
     }),
     {
-      getPools,
-      getRunePrice,
+      getPools: midgardActions.getPools,
+      getRunePrice: midgardActions.getRunePrice,
       getBinanceTicker,
       setTxTimerModal,
       setTxTimerStatus,

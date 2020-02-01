@@ -48,7 +48,7 @@ import {
   resetTxStatus,
   setTxHash,
 } from '../../../redux/app/actions';
-import midgardActions from '../../../redux/midgard/actions';
+import * as midgardActions from '../../../redux/midgard/actions';
 import * as walletActions from '../../../redux/wallet/actions';
 import AddressInput from '../../../components/uielements/addressInput';
 import ContentTitle from '../../../components/uielements/contentTitle';
@@ -57,8 +57,6 @@ import StepBar from '../../../components/uielements/stepBar';
 import Trend from '../../../components/uielements/trend';
 import { MAX_VALUE } from '../../../redux/app/const';
 import { delay } from '../../../helpers/asyncHelper';
-
-const { getPools, getPoolAddress } = midgardActions;
 
 class SwapSend extends Component {
   addressRef = React.createRef();
@@ -1023,8 +1021,8 @@ export default compose(
       basePriceAsset: state.Midgard.basePriceAsset,
     }),
     {
-      getPools,
-      getPoolAddress,
+      getPools: midgardActions.getPools,
+      getPoolAddress: midgardActions.getPoolAddress,
       setTxTimerModal,
       setTxTimerStatus,
       setTxTimerValue,
