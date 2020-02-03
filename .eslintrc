@@ -99,6 +99,7 @@
         "custom": "ignore"
       }
     ],
+    "react/static-property-placement": "off", // we do need static props in TS based class components
     "jsx-a11y/anchor-is-valid": [
       "error",
       {

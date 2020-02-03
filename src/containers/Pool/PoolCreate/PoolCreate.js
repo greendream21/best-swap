@@ -115,9 +115,9 @@ class PoolCreate extends Component {
     }
   };
 
-  handleChangePassword = e => {
+  handleChangePassword = password => {
     this.setState({
-      password: e.target.value,
+      password,
       invalidPassword: false,
     });
   };

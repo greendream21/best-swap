@@ -283,14 +283,6 @@ export const SwapModalContent = styled.div`
   }
 `;
 
-export const PrivateModal = styled(Modal)`
-  .ant-modal-body {
-    .ant-form-item {
-      margin-bottom: 0;
-    }
-  }
-`;
-
 export const SwapStatusPanel = styled.div`
   display: flex;
   justify-content: space-between;

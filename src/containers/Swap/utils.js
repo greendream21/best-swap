@@ -61,10 +61,10 @@ export const getCalcResult = (
 
     const calcData = { X, Y, R, Z, Py, Pr: Py };
 
-    const zValue = getZValue(xValue, calcData).toFixed(2);
+    const zValue = Number(getZValue(xValue, calcData).toFixed(2));
     const slip = getFixedNumber(getSlip(xValue, calcData), 0);
     const Px = getPx(xValue, calcData);
-    const Pz = getPz(xValue, calcData).toFixed(2);
+    const Pz = Number(getPz(xValue, calcData).toFixed(2));
     const fee = getFixedNumber(getFee(xValue, calcData));
 
     return {
@@ -112,7 +112,9 @@ export const getCalcResult = (
     const xTimes = xValue ** 2;
     const balanceTimes = X ** 2;
     const outputToken = Number(((xValue * X * Y) / times).toFixed(2));
-    const outputPy = ((Px * (X + xValue)) / (Y - outputToken)).toFixed(2);
+    const outputPy = Number(
+      ((Px * (X + xValue)) / (Y - outputToken)).toFixed(2),
+    );
     // const input = xValue * Px;
     // const output = outputToken * outputPy;
     // const priceSlip = Math.round(
@@ -169,7 +171,9 @@ export const getCalcResult = (
     const xTimes = xValue ** 2;
     const balanceTimes = X ** 2;
     const outputToken = Number(((xValue * X * Y) / times).toFixed(2));
-    const outputPy = ((Px * (X + xValue)) / (Y - outputToken)).toFixed(2);
+    const outputPy = Number(
+      ((Px * (X + xValue)) / (Y - outputToken)).toFixed(2),
+    );
     // const input = xValue * Px;
     // const output = outputToken * outputPy;
 
@@ -192,6 +196,8 @@ export const getCalcResult = (
       fee,
     };
   }
+
+  return null;
 };
 
 export const validateSwap = (wallet, type, data, amount) => {
