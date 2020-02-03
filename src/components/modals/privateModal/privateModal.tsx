@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Form, Icon } from 'antd';
 
 import Input from '../../uielements/input';
@@ -9,7 +9,7 @@ interface Props {
   invalidPassword: boolean;
   validatingPassword: boolean;
   password: string;
-  onChangePassword?: () => void;
+  onChangePassword?: (password: string) => void;
   onOk?: () => void;
   onCancel?: () => void;
 }
@@ -24,6 +24,15 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
     onOk,
     onCancel,
   } = props;
+
+  const onChangePasswordHandler = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (onChangePassword) {
+        onChangePassword(e.target.value);
+      }
+    },
+    [onChangePassword],
+  );
 
   return (
     <StyledModal
@@ -47,7 +56,7 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
             typevalue="ghost"
             sizevalue="big"
             value={password}
-            onChange={onChangePassword}
+            onChange={onChangePasswordHandler}
             prefix={<Icon type="lock" />}
             autoComplete="off"
           />

@@ -15,7 +15,9 @@ import { getAssetDataIndex, getPriceIndex } from './utils';
 import { GetPoolAddressSuccessData, PoolDetail } from './types';
 
 export function* getAssetInfo() {
-  yield takeEvery(actions.GET_ASSET_INFO_REQUEST, function*({ payload }: actions.GetAssetInfo) {
+  yield takeEvery(actions.GET_ASSET_INFO_REQUEST, function*({
+    payload,
+  }: actions.GetAssetInfo) {
     const params = {
       method: 'get' as Method,
       url: getMidgardURL(`assets/${payload}`),
@@ -88,8 +90,6 @@ export function* getPools() {
           return put(actions.getPoolData(assetId));
         }),
       );
-
-      yield put(actions.getPoolsSuccess(data));
     } catch (error) {
       yield put(actions.getPoolsFailed(error));
     }
@@ -97,7 +97,9 @@ export function* getPools() {
 }
 
 export function* getPoolData() {
-  yield takeEvery(actions.GET_POOL_DATA_REQUEST, function*({ payload }: actions.GetPoolData) {
+  yield takeEvery(actions.GET_POOL_DATA_REQUEST, function*({
+    payload,
+  }: actions.GetPoolData) {
     const params = {
       method: 'get' as Method,
       url: getMidgardURL(`pools/${payload}`),
@@ -115,7 +117,9 @@ export function* getPoolData() {
 }
 
 export function* getStakerPoolData() {
-  yield takeEvery(actions.GET_STAKER_POOL_DATA_REQUEST, function*({ payload }: actions.GetStakerPoolData) {
+  yield takeEvery(actions.GET_STAKER_POOL_DATA_REQUEST, function*({
+    payload,
+  }: actions.GetStakerPoolData) {
     const { address, asset } = payload;
 
     // TODO: currently hardcode the Chain as BNB
@@ -148,7 +152,9 @@ export function* getPoolAddress() {
     try {
       const { data } = yield call(axiosRequest, params);
 
-      yield put(actions.getPoolAddressSuccess(data as GetPoolAddressSuccessData));
+      yield put(
+        actions.getPoolAddressSuccess(data as GetPoolAddressSuccessData),
+      );
     } catch (error) {
       yield put(actions.getPoolAddressFailed(error));
     }
@@ -156,7 +162,9 @@ export function* getPoolAddress() {
 }
 
 export function* setBasePriceAsset() {
-  yield takeEvery(actions.SET_BASE_PRICE_ASSET, function*({ payload }: actions.SetBasePriceAsset) {
+  yield takeEvery(actions.SET_BASE_PRICE_ASSET, function*({
+    payload,
+  }: actions.SetBasePriceAsset) {
     yield call(saveBasePriceAsset, payload);
   });
 }

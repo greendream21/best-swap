@@ -12,11 +12,11 @@ export interface AssetDetail {
 }
 
 export interface AssetData {
-  asset: AssetDetail,
-  dateCreated: number,
-  logo: string,
-  name: string,
-  priceRune: number
+  asset: AssetDetail;
+  dateCreated: number;
+  logo: string;
+  name: string;
+  priceRune: number;
 }
 
 export interface AssetDataIndex {
@@ -28,7 +28,44 @@ export interface PoolDataMap {
 }
 
 export interface PoolData {
-  asset?: { symbol?: string };
+  asset: AssetDetail;
+  assetDepth: number;
+  assetROI: number;
+  assetStakedTotal: number;
+  buyAssetCount: number;
+  buyFeeAverage: number;
+  buyFeesTotal: number;
+  buySlipAverage: number;
+  buyTxAverage: number;
+  buyVolume: number;
+  poolDepth: number;
+  poolFeeAverage: number;
+  poolFeesTotal: number;
+  poolROI: number;
+  poolROI12: number;
+  poolSlipAverage: number;
+  poolStakedTotal: number;
+  poolTxAverage: number;
+  poolUnits: number;
+  poolVolume: number;
+  poolVolume24hr: number;
+  price: number;
+  runeDepth: number;
+  runeROI: number;
+  runeStakedTotal: number;
+  sellAssetCount: number;
+  sellFeeAverage: number;
+  sellFeesTotal: number;
+  sellSlipAverage: number;
+  sellTxAverage: number;
+  sellVolume: number;
+  stakeTxCount: number;
+  stakersCount: number;
+  stakingTxCount: number;
+  status: number;
+  swappersCount: number;
+  swappingTxCount: number;
+  withdrawTxCount: number;
 }
 
 export interface GetStakerPoolDataPayload {
@@ -37,12 +74,12 @@ export interface GetStakerPoolDataPayload {
 }
 
 export interface PoolAddressData {
-  chain: string,
-  pub_key: string,
-  address: string
+  chain: string;
+  pub_key: string;
+  address: string;
 }
 export interface GetPoolAddressSuccessData {
-    current: PoolAddressData[]
+  current: PoolAddressData[];
 }
 
 export interface StakerPoolData {

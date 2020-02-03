@@ -10,7 +10,7 @@ interface Props {
   status: boolean;
   value: number;
   maxValue: number;
-  startTime: number;
+  startTime?: number;
   interval?: number;
   onChange?: () => void;
   onEnd?: () => void;
@@ -23,7 +23,7 @@ const TxTimer: React.FC<Props> = (props): JSX.Element => {
     status = false,
     value,
     maxValue,
-    startTime,
+    startTime = Date.now(),
     onChange = () => {},
     interval = 1000,
     refunded = false,

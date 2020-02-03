@@ -162,9 +162,9 @@ class PoolStake extends Component {
     return poolLoading && stakerPoolDataLoading;
   };
 
-  handleChangePassword = e => {
+  handleChangePassword = password => {
     this.setState({
-      password: e.target.value,
+      password,
       invalidPassword: false,
     });
   };
