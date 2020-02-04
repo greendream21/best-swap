@@ -90,6 +90,7 @@ export function* getPools() {
           return put(actions.getPoolData(assetId));
         }),
       );
+      yield put(actions.getPoolsSuccess(data));
     } catch (error) {
       yield put(actions.getPoolsFailed(error));
     }
