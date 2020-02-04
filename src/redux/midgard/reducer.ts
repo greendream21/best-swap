@@ -103,8 +103,8 @@ export default function apiReducer(
     case GET_POOLS_SUCCESS:
       return {
         ...state,
-        pools: action.payload,
         poolLoading: false,
+        pools: action.payload,
       };
     case GET_POOLS_FAILED:
       return {
@@ -115,6 +115,7 @@ export default function apiReducer(
     case GET_POOL_DATA_REQUEST:
       return {
         ...state,
+        poolLoading: true,
         error: Nothing,
       };
     case GET_POOL_DATA_SUCCESS: {
@@ -127,15 +128,18 @@ export default function apiReducer(
             ...state.poolData,
             [symbol]: payload,
           },
+          poolLoading: false,
         };
       }
       return {
         ...state,
+        poolLoading: false,
       };
     }
     case GET_POOL_DATA_FAILED:
       return {
         ...state,
+        poolLoading: false,
         error: action.payload,
       };
     case GET_STAKER_POOL_DATA_REQUEST:
@@ -159,6 +163,7 @@ export default function apiReducer(
       }
       return {
         ...state,
+        stakerPoolDataLoading: false,
       };
     }
     case GET_STAKER_POOL_DATA_FAILED:
