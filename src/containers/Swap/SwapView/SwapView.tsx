@@ -140,7 +140,7 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
         key: 'slip',
         title: 'avg. slip',
         dataIndex: 'slip',
-        render: (slip: string) => <Trend value={slip} />,
+        render: (slip: string) => <Trend value={Number(slip)} />,
         sorter: (a: SwapTableRowType, b: SwapTableRowType) =>
           a.raw.slip - b.raw.slip,
         sortDirections: ['descend', 'ascend'],
