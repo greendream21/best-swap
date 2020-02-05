@@ -13,19 +13,24 @@ import Table from '../../../components/uielements/table';
 import SwapLoader from '../../../components/utility/loaders/swap';
 
 import { getSwapData } from '../utils';
-import { SwapCardType, SwapTableRowType, PoolInfoType, SwapViewType } from './types';
+import {
+  SwapCardType,
+  SwapTableRowType,
+  PoolInfoType,
+  SwapViewType,
+} from './types';
 import * as midgardActions from '../../../redux/midgard/actions';
 import {
-  AssetDetail,
   PriceDataIndex,
   PoolDataMap,
 } from '../../../redux/midgard/types';
-import { FixmeType } from '../../../types/bepswap';
+import { FixmeType, Maybe } from '../../../types/bepswap';
 
 import { ContentWrapper } from './SwapView.style';
+import { Asset } from '../../../types/generated/midgard';
 
 interface Props {
-  pools: AssetDetail[];
+  pools: Asset[];
   poolData: PoolDataMap;
   priceIndex: PriceDataIndex;
   basePriceAsset: string;
@@ -47,10 +52,13 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
 
   useEffect(() => {
     getPools();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const renderSwapTable = (swapViewData: SwapTableRowType[], view: SwapViewType) => {
+  const renderSwapTable = (
+    swapViewData: SwapTableRowType[],
+    view: SwapViewType,
+  ) => {
     const btnCol = {
       key: 'swap',
       title: (
@@ -167,18 +175,17 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
 
   const renderSwapList = (view: SwapViewType) => {
     let key = 0;
-    const swapViewData = pools.reduce((result: FixmeType, pool) => {
-      const { symbol } = pool;
-      const poolInfo = poolData[symbol] || {};
+    const swapViewData = pools.reduce((result: FixmeType[], pool) => {
+      const poolInfo = pool.symbol ? poolData[pool.symbol] : {};
 
-      const swapCardData: SwapCardType = getSwapData(
+      const swapCardData: Maybe<SwapCardType> = getSwapData(
         'rune',
         poolInfo,
         priceIndex,
         basePriceAsset,
       );
 
-      if (swapCardData.pool.target !== activeAsset) {
+      if (swapCardData !== null && swapCardData.pool.target !== activeAsset) {
         result.push({ ...swapCardData, key });
         key += 1;
       }

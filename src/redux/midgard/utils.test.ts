@@ -5,7 +5,10 @@ import {
   getAssetDataIndex,
   getPriceIndex,
 } from './utils';
-import { AddressData, PoolDataPayload } from './types';
+import { AddressData } from './types';
+import { Asset } from '../../types/generated/midgard';
+
+type PoolDataMock = { asset?: Asset };
 
 describe('redux/midgard/utils/', () => {
   describe('getAssetSymbolFromPayload', () => {
@@ -63,20 +66,20 @@ describe('redux/midgard/utils/', () => {
   });
 
   describe('getAssetDataIndex', () => {
-    const emptyAsset: PoolDataPayload = {};
-    const emptyAssetSymbol: PoolDataPayload = { asset: {} };
+    const emptyAsset = {};
+    const emptyAssetSymbol: PoolDataMock = { asset: {} };
 
     it('should return non empty assetDataIndex ', () => {
       const bnbData: AddressData = { chain: 'BNB', address: '0xbnb' };
-      const assetA: PoolDataPayload = { asset: { symbol: 'AAA' } };
-      const assetB: PoolDataPayload = { asset: { symbol: 'BBB' } };
+      const assetA: PoolDataMock = { asset: { symbol: 'AAA' } };
+      const assetB: PoolDataMock = { asset: { symbol: 'BBB' } };
       const data = [
         bnbData,
         assetA,
         assetB,
         emptyAsset,
         emptyAssetSymbol,
-      ] as Array<PoolDataPayload>;
+      ] as Array<PoolDataMock>;
       const result = getAssetDataIndex(data);
       const expected = {
         AAA: assetA,
@@ -91,7 +94,7 @@ describe('redux/midgard/utils/', () => {
         emptyAssetSymbol,
         emptyAssetSymbol,
         emptyAsset,
-      ] as Array<PoolDataPayload>;
+      ] as Array<PoolDataMock>;
       const result = getAssetDataIndex(data);
       expect(result).toBeNothing;
     });
@@ -100,17 +103,21 @@ describe('redux/midgard/utils/', () => {
   describe('getPriceIndex', () => {
     it('should return prices indexes based on RUNE price', () => {
       const result = getPriceIndex(
-       [{ asset: { ticker: 'RUNE' }, priceRune: 10 },
-       { asset: { ticker: 'AAA' }, priceRune: 1 }],
+        [
+          { asset: { ticker: 'RUNE' }, priceRune: 10 },
+          { asset: { ticker: 'AAA' }, priceRune: 1 },
+        ],
         'RUNE',
       );
       expect(result).toEqual({ RUNE: 1, AAA: 0.1 });
     });
     it('should return a prices indexes based on BBB price', () => {
       const result = getPriceIndex(
-       [{ asset: { ticker: 'RUNE' }, priceRune: 1 },
-       { asset: { ticker: 'AAA' }, priceRune: 3 },
-       { asset: { ticker: 'BBB' }, priceRune: 10 }],
+        [
+          { asset: { ticker: 'RUNE' }, priceRune: 1 },
+          { asset: { ticker: 'AAA' }, priceRune: 3 },
+          { asset: { ticker: 'BBB' }, priceRune: 10 },
+        ],
         'BBB',
       );
       expect(result).toEqual({ RUNE: 0.1, AAA: 0.3, BBB: 1 });

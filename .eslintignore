@@ -1,3 +1,4 @@
 /cypress
 /config
 /scripts
+/src/types/generated

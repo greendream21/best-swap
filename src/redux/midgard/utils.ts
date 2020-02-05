@@ -1,9 +1,10 @@
 import { getFixedNumber } from '../../helpers/stringHelper';
 import { Nothing, Maybe } from '../../types/bepswap';
-import { AddressData, PriceDataIndex, AssetDataIndex, PoolData } from './types';
+import { AddressData, PriceDataIndex, AssetDataIndex } from './types';
+import { AssetDetail, Asset } from '../../types/generated/midgard/api';
 
 export const getAssetSymbolFromPayload = (
-  payload: Partial<{ asset?: { symbol?: string } }>,
+  payload: Partial<{asset?: Asset}>,
 ): Maybe<string> => payload.asset?.symbol ?? Nothing;
 
 export const getBNBPoolAddress = (
@@ -16,7 +17,7 @@ export const getPoolAddress = (
 ): Maybe<string> => getBNBPoolAddress(payload)?.address ?? Nothing;
 
 export const getAssetDataIndex = (
-  assets: PoolData[],
+  assets: AssetDetail[],
 ): AssetDataIndex | {} => {
   let assetDataIndex = {};
 
@@ -32,7 +33,7 @@ export const getAssetDataIndex = (
 };
 
 export const getPriceIndex = (
-  assets: { asset: { ticker: string }; priceRune: number }[],
+  assets: AssetDetail[],
   baseTokenTicker: string,
 ): PriceDataIndex => {
   let baseTokenPrice = 1;
@@ -41,9 +42,9 @@ export const getPriceIndex = (
   }
 
   const baseTokenInfo = assets.find(
-    assetInfo => assetInfo.asset.ticker === baseTokenTicker.toUpperCase(),
+    assetInfo => assetInfo.asset?.ticker === baseTokenTicker.toUpperCase(),
   );
-  baseTokenPrice = baseTokenInfo ? baseTokenInfo.priceRune : 1;
+  baseTokenPrice = baseTokenInfo?.priceRune ?? 1;
 
   let priceDataIndex: PriceDataIndex = {
     RUNE: 1 / baseTokenPrice,
@@ -51,15 +52,17 @@ export const getPriceIndex = (
 
   assets.forEach(assetInfo => {
     const {
-      asset: { ticker },
+      asset,
       priceRune,
     } = assetInfo;
+
 
     let price = 0;
     if (priceRune && baseTokenPrice) {
       price = getFixedNumber((1 / baseTokenPrice) * priceRune);
     }
 
+    const ticker = asset?.ticker;
     if (ticker) {
       priceDataIndex = { ...priceDataIndex, [ticker]: price };
     }
