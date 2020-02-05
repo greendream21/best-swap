@@ -814,7 +814,7 @@ class PoolStake extends Component {
             target={target}
             value={value}
             label={title}
-            trend={getFixedNumber(liqFee)}
+            trend={getFixedNumber(getUserFormat(liqFee))}
             loading={loading}
           />
         </Col>

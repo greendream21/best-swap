@@ -5,8 +5,14 @@ import React from 'react';
 import { omit } from 'lodash';
 import { css } from 'styled-components';
 
+import { FixmeType } from '../types/bepswap';
+
+type MediaQueriesType = {
+  [key: string]: string;
+};
+
 // SC Media breakpoints utility
-const mediaQueries = {
+const mediaQueries: MediaQueriesType = {
   xs: '(min-width: 0px)',
   sm: '(min-width: 576px)',
   md: '(min-width: 768px)',
@@ -15,8 +21,12 @@ const mediaQueries = {
   xxl: '(min-width: 1600px)',
 };
 
-export const media = Object.keys(mediaQueries).reduce((acc, segment) => {
-  const styledMediaFunction = (...args) => css`
+type FirstArg = FixmeType;
+type ExtraArgs = string [];
+type ArgType = [FirstArg, ...ExtraArgs];
+
+export const media: FixmeType = Object.keys(mediaQueries).reduce((acc, segment) => {
+  const styledMediaFunction = (...args: ArgType) => css`
     @media ${mediaQueries[segment]} {
       ${css(...args)};
     }
@@ -27,10 +37,10 @@ export const media = Object.keys(mediaQueries).reduce((acc, segment) => {
   };
 }, {});
 
-export const cleanTag = (component, tagList = []) => props =>
+export const cleanTag = (component: FixmeType, tagList = ['']) => (props: FixmeType) =>
   React.createElement(component, omit(props, tagList));
 
-export function provideResponsiveShow({ showFrom }) {
+export function provideResponsiveShow({ showFrom }: { showFrom: string }) {
   return (
     showFrom &&
     css`
@@ -42,7 +52,7 @@ export function provideResponsiveShow({ showFrom }) {
   );
 }
 
-export function provideResponsiveHide({ hideFrom }) {
+export function provideResponsiveHide({ hideFrom }: { hideFrom: string }) {
   return (
     hideFrom &&
     css`
