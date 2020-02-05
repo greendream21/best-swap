@@ -1,10 +1,8 @@
 import { all, takeEvery, put, fork, call } from 'redux-saga/effects';
-import { Method } from 'axios';
+import { AxiosResponse } from 'axios';
 import * as actions from './actions';
 import {
-  getMidgardURL,
-  getHeaders,
-  axiosRequest,
+  MIDGARD_API_URL,
 } from '../../helpers/apiHelper';
 
 import {
@@ -12,79 +10,54 @@ import {
   getBasePriceAsset,
 } from '../../helpers/webStorageHelper';
 import { getAssetDataIndex, getPriceIndex } from './utils';
-import { GetPoolAddressSuccessData, PoolDetail } from './types';
+import { GetPoolAddressSuccessData } from './types';
+import {
+  DefaultApi,
+  Asset,
+  AssetDetail,
+  PoolDetail,
+  StakersAssetData,
+} from '../../types/generated/midgard/api';
 
-export function* getAssetInfo() {
-  yield takeEvery(actions.GET_ASSET_INFO_REQUEST, function*({
-    payload,
-  }: actions.GetAssetInfo) {
-    const params = {
-      method: 'get' as Method,
-      url: getMidgardURL(`assets/${payload}`),
-      headers: getHeaders(),
-    };
-
-    try {
-      const { data } = yield call(axiosRequest, params);
-
-      yield put(actions.getAssetInfoSuccess(data));
-    } catch (error) {
-      yield put(actions.getAssetInfoFailed(error));
-    }
-  });
-}
-
-const getAssetRequest = async (assetId: string) => {
-  const params = {
-    method: 'get' as Method,
-    url: getMidgardURL(`assets/${assetId}`),
-    headers: getHeaders(),
-  };
-
-  try {
-    const { data } = await axiosRequest(params);
-
-    return data;
-  } catch (error) {
-    return {};
-  }
-};
+const midgardApi = new DefaultApi({ basePath: MIDGARD_API_URL });
 
 export function* getPools() {
   yield takeEvery(actions.GET_POOLS_REQUEST, function*() {
-    const params = {
-      method: 'get' as Method,
-      url: getMidgardURL('pools'),
-      headers: getHeaders(),
-    };
-
     try {
-      const { data } = yield call(axiosRequest, params);
-
-      const assetResponse = yield all(
-        data.map((poolData: PoolDetail) => {
-          const { chain, symbol } = poolData;
+      const { data }: AxiosResponse<Asset[]> = yield call([
+        midgardApi,
+        midgardApi.getPools,
+      ]);
+      const assetResponses: AxiosResponse<AssetDetail>[] = yield all(
+        data.map(asset => {
+          const { chain, symbol } = asset;
           const assetId = `${chain}.${symbol}`;
-
-          return call(getAssetRequest, assetId);
+          return call(
+            { context: midgardApi, fn: midgardApi.getAssetInfo },
+            assetId,
+          );
         }),
       );
 
-      const assetDataIndex = getAssetDataIndex(assetResponse);
-      const baseTokenTicker = getBasePriceAsset() || 'RUNE';
-      const priceIndex = getPriceIndex(assetResponse, baseTokenTicker);
+      const assetDetails: AssetDetail[] = assetResponses.map(
+        (response: AxiosResponse<AssetDetail>) => response.data,
+      );
 
-      const assetPayload: actions.GetAssetInfoSuccessPayload = {
-        assetResponse,
+      const assetDataIndex = getAssetDataIndex(assetDetails);
+      const baseTokenTicker = getBasePriceAsset() || 'RUNE';
+      const priceIndex = getPriceIndex(assetDetails, baseTokenTicker);
+
+      const assetsPayload: actions.SetAssetsPayload = {
+        assetDetails,
         assetDataIndex,
       };
 
-      yield put(actions.getAssetInfoSuccess(assetPayload));
+      yield put(actions.setAssets(assetsPayload));
       yield put(actions.setPriceIndex(priceIndex));
 
       yield all(
-        data.map((poolData: PoolDetail) => {
-          const { chain, symbol } = poolData;
+        data.map(asset => {
+          const { chain, symbol } = asset;
           const assetId = `${chain}.${symbol}`;
 
           return put(actions.getPoolData(assetId));
@@ -101,15 +74,11 @@ export function* getPoolData() {
   yield takeEvery(actions.GET_POOL_DATA_REQUEST, function*({
     payload,
   }: actions.GetPoolData) {
-    const params = {
-      method: 'get' as Method,
-      url: getMidgardURL(`pools/${payload}`),
-      headers: getHeaders(),
-    };
-
     try {
-      const { data } = yield call(axiosRequest, params);
-
+      const { data }: AxiosResponse<PoolDetail> = yield call(
+        { context: midgardApi, fn: midgardApi.getPoolsData },
+        payload,
+      );
       yield put(actions.getPoolDataSuccess(data));
     } catch (error) {
       yield put(actions.getPoolDataFailed(error));
@@ -123,17 +92,15 @@ export function* getStakerPoolData() {
   }: actions.GetStakerPoolData) {
     const { address, asset } = payload;
 
-    // TODO: currently hardcode the Chain as BNB
+    // TODO (Chris): currently hardcode the Chain as BNB
     const assetId = `BNB.${asset}`;
 
-    const params = {
-      method: 'get' as Method,
-      url: getMidgardURL(`stakers/${address}/${assetId}`),
-      headers: getHeaders(),
-    };
-
     try {
-      const { data } = yield call(axiosRequest, params);
+      const { data }: AxiosResponse<StakersAssetData> = yield call(
+        { context: midgardApi, fn: midgardApi.getStakersAddressAndAssetData },
+        address,
+        assetId,
+      );
 
       yield put(actions.getStakerPoolDataSuccess(data));
     } catch (error) {
@@ -144,14 +111,14 @@ export function* getStakerPoolData() {
 
 export function* getPoolAddress() {
   yield takeEvery(actions.GET_POOL_ADDRESSES_REQUEST, function*() {
-    const params = {
-      method: 'get' as Method,
-      url: getMidgardURL('thorchain/pool_addresses'),
-      headers: getHeaders(),
-    };
-
     try {
-      const { data } = yield call(axiosRequest, params);
+      // TODO (veado): Midgard endpoint has to be updated
+      // Currently there is no type defined for the response
+      // Seee https://gitlab.com/thorchain/midgard/-/blob/master/api/rest/v1/handlers/handlers.go#L366-370
+      const { data } = yield call({
+        context: midgardApi,
+        fn: midgardApi.getThorchainProxiedEndpoints,
+      });
 
       yield put(
         actions.getPoolAddressSuccess(data as GetPoolAddressSuccessData),
@@ -172,7 +139,6 @@ export function* setBasePriceAsset() {
 
 export default function* rootSaga() {
   yield all([
-    fork(getAssetInfo),
     fork(getPools),
     fork(getPoolData),
     fork(getStakerPoolData),

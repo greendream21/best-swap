@@ -1,8 +1,8 @@
 import {
-  getAssetSymbolFromPayload,
   getBNBPoolAddress,
   getPoolAddress,
   getPriceIndex,
+  getAssetSymbolFromPayload,
 } from './utils';
 import { getBasePriceAsset } from '../../helpers/webStorageHelper';
 import { State } from './types';
@@ -10,15 +10,13 @@ import {
   SET_BASE_PRICE_ASSET,
   SET_PRICE_INDEX,
   GET_RUNE_PRICE_REQUEST,
-  GET_ASSET_INFO_SUCCESS,
-  GET_ASSET_INFO_FAILED,
+  SET_ASSETS,
   GET_POOLS_REQUEST,
   GET_POOLS_SUCCESS,
   GET_POOLS_FAILED,
   GET_POOL_DATA_SUCCESS,
   GET_POOL_DATA_FAILED,
   GET_POOL_DATA_REQUEST,
-  GET_ASSET_INFO_REQUEST,
   MidgardActionTypes,
   GET_STAKER_POOL_DATA_SUCCESS,
   GET_STAKER_POOL_DATA_REQUEST,
@@ -74,26 +72,14 @@ export default function apiReducer(
         runePrice: 0,
         error: Nothing,
       };
-    case GET_ASSET_INFO_REQUEST:
-      return {
-        ...state,
-        error: Nothing,
-      };
-    case GET_ASSET_INFO_SUCCESS: {
+    case SET_ASSETS: {
       const { payload } = action;
       return {
         ...state,
         assets: payload.assetDataIndex,
-        assetArray: payload.assetResponse,
+        assetArray: payload.assetDetails,
       };
     }
-    case GET_ASSET_INFO_FAILED:
-      return {
-        ...state,
-        assets: {},
-        assetArray: [],
-        error: action.payload,
-      };
     case GET_POOLS_REQUEST:
       return {
         ...state,

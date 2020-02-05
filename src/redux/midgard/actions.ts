@@ -1,41 +1,23 @@
 import { AssetSymbol } from '../../types/bepswap';
-import { GetStakerPoolDataPayload, PriceDataIndex, PoolData, AssetDataIndex, GetPoolAddressSuccessData } from './types';
-import { AssetData } from '../wallet/types';
+import {
+  GetStakerPoolDataPayload,
+  PriceDataIndex,
+  AssetDataIndex,
+  GetPoolAddressSuccessData,
+} from './types';
+import { AssetDetail, Asset, PoolDetail, StakersAssetData } from '../../types/generated/midgard/api';
 
-export const GET_ASSET_INFO_REQUEST = 'GET_ASSET_INFO_REQUEST';
-export interface GetAssetInfo {
-  type: typeof GET_ASSET_INFO_REQUEST;
-  payload: AssetSymbol;
-}
-export const getAssetInfo = (payload: AssetSymbol): GetAssetInfo => ({
-  type: GET_ASSET_INFO_REQUEST,
-  payload,
-});
-
-export interface GetAssetInfoSuccessPayload {
+export interface SetAssetsPayload {
   assetDataIndex: AssetDataIndex;
-  assetResponse: AssetData[];
+  assetDetails: AssetDetail[];
 }
-
-export const GET_ASSET_INFO_SUCCESS = 'GET_ASSET_INFO_SUCCESS';
-export interface GetAssetInfoSuccess {
-  type: typeof GET_ASSET_INFO_SUCCESS;
-  payload: GetAssetInfoSuccessPayload;
+export const SET_ASSETS = 'SET_ASSETS';
+export interface SetAssets {
+  type: typeof SET_ASSETS;
+  payload: SetAssetsPayload;
 }
-export const getAssetInfoSuccess = (
-  payload: GetAssetInfoSuccessPayload,
-): GetAssetInfoSuccess => ({
-  type: GET_ASSET_INFO_SUCCESS,
-  payload,
-});
-
-export const GET_ASSET_INFO_FAILED = 'GET_ASSET_INFO_FAILED';
-export interface GetAssetInfoFailed {
-  type: typeof GET_ASSET_INFO_FAILED;
-  payload: Error;
-}
-export const getAssetInfoFailed = (payload: Error): GetAssetInfoFailed => ({
-  type: GET_ASSET_INFO_FAILED,
+export const setAssets = (payload: SetAssetsPayload): SetAssets => ({
+  type: SET_ASSETS,
   payload,
 });
 
@@ -50,9 +32,9 @@ export const getPools = (): GetPools => ({
 export const GET_POOLS_SUCCESS = 'GET_POOLS_SUCCESS';
 export interface GetPoolsSuccess {
   type: typeof GET_POOLS_SUCCESS;
-  payload: PoolData[];
+  payload: Asset[];
 }
-export const getPoolsSuccess = (payload: PoolData[]): GetPoolsSuccess => ({
+export const getPoolsSuccess = (payload: Asset[]): GetPoolsSuccess => ({
   type: GET_POOLS_SUCCESS,
   payload,
 });
@@ -79,9 +61,11 @@ export const getPoolData = (payload: string): GetPoolData => ({
 export const GET_POOL_DATA_SUCCESS = 'GET_POOL_DATA_SUCCESS';
 export interface GetPoolDataSuccess {
   type: typeof GET_POOL_DATA_SUCCESS;
-  payload: PoolData;
+  payload: PoolDetail;
 }
-export const getPoolDataSuccess = (payload: PoolData): GetPoolDataSuccess => ({
+export const getPoolDataSuccess = (
+  payload: PoolDetail,
+): GetPoolDataSuccess => ({
   type: GET_POOL_DATA_SUCCESS,
   payload,
 });
@@ -101,7 +85,9 @@ export interface GetStakerPoolData {
   type: typeof GET_STAKER_POOL_DATA_REQUEST;
   payload: GetStakerPoolDataPayload;
 }
-export const getStakerPoolData = (payload: GetStakerPoolDataPayload): GetStakerPoolData => ({
+export const getStakerPoolData = (
+  payload: GetStakerPoolDataPayload,
+): GetStakerPoolData => ({
   type: GET_STAKER_POOL_DATA_REQUEST,
   payload,
 });
@@ -109,10 +95,10 @@ export const getStakerPoolData = (payload: GetStakerPoolDataPayload): GetStakerP
 export const GET_STAKER_POOL_DATA_SUCCESS = 'GET_STAKER_POOL_DATA_SUCCESS';
 export interface GetStakerPoolDataSuccess {
   type: typeof GET_STAKER_POOL_DATA_SUCCESS;
-  payload: PoolData;
+  payload: StakersAssetData;
 }
 export const getStakerPoolDataSuccess = (
-  payload: PoolData,
+  payload: StakersAssetData,
 ): GetStakerPoolDataSuccess => ({
   type: GET_STAKER_POOL_DATA_SUCCESS,
   payload,
@@ -155,9 +141,7 @@ export interface GetPoolAddressFailed {
   type: typeof GET_POOL_ADDRESSES_FAILED;
   payload: Error;
 }
-export const getPoolAddressFailed = (
-  payload: Error,
-): GetPoolAddressFailed => ({
+export const getPoolAddressFailed = (payload: Error): GetPoolAddressFailed => ({
   type: GET_POOL_ADDRESSES_FAILED,
   payload,
 });
@@ -190,9 +174,6 @@ export const setPriceIndex = (payload: PriceDataIndex): SetPriceIndex => ({
 });
 
 export type MidgardActionTypes =
-  | GetAssetInfo
-  | GetAssetInfoSuccess
-  | GetAssetInfoFailed
   | GetPools
   | GetPoolsSuccess
   | GetPoolsFailed
@@ -206,5 +187,6 @@ export type MidgardActionTypes =
   | GetPoolAddressSuccess
   | GetPoolAddressFailed
   | GetRunePrice
+  | SetAssets
   | SetBasePriceAsset
   | SetPriceIndex;

@@ -1,19 +1,5 @@
 import { Maybe } from '../../types/bepswap';
-
-export type MidgardPriceIndex = {
-  [key: string]: number;
-};
-
-export type PoolDetail = {
-  chain: string;
-  symbol: string;
-};
-
-export type AssetDetail = {
-  chain: string;
-  symbol: string;
-  ticker: string;
-};
+import { AssetDetail, Asset, PoolDetail, StakersAssetData } from '../../types/generated/midgard/api';
 
 export type AssetData = {
   asset: AssetDetail;
@@ -28,48 +14,7 @@ export type AssetDataIndex = {
 };
 
 export type PoolDataMap = {
-  [symbol: string]: PoolData;
-};
-
-export type PoolData = {
-  asset: AssetDetail;
-  assetDepth: number;
-  assetROI: number;
-  assetStakedTotal: number;
-  buyAssetCount: number;
-  buyFeeAverage: number;
-  buyFeesTotal: number;
-  buySlipAverage: number;
-  buyTxAverage: number;
-  buyVolume: number;
-  poolDepth: number;
-  poolFeeAverage: number;
-  poolFeesTotal: number;
-  poolROI: number;
-  poolROI12: number;
-  poolSlipAverage: number;
-  poolStakedTotal: number;
-  poolTxAverage: number;
-  poolUnits: number;
-  poolVolume: number;
-  poolVolume24hr: number;
-  price: number;
-  runeDepth: number;
-  runeROI: number;
-  runeStakedTotal: number;
-  sellAssetCount: number;
-  sellFeeAverage: number;
-  sellFeesTotal: number;
-  sellSlipAverage: number;
-  sellTxAverage: number;
-  sellVolume: number;
-  stakeTxCount: number;
-  stakersCount: number;
-  stakingTxCount: number;
-  status: number;
-  swappersCount: number;
-  swappingTxCount: number;
-  withdrawTxCount: number;
+  [symbol: string]: PoolDetail
 };
 
 export type GetStakerPoolDataPayload = {
@@ -87,7 +32,7 @@ export type GetPoolAddressSuccessData = {
 };
 
 export type StakerPoolData = {
-  [symbol: string]: PoolData;
+  [symbol: string]: StakersAssetData;
 };
 
 export type PriceDataIndex = {
@@ -101,8 +46,8 @@ export type AddressData = {
 
 export type State = {
   assets: AssetDataIndex;
-  assetArray: AssetData[];
-  pools: PoolData[];
+  assetArray: AssetDetail[];
+  pools: Asset[];
   poolAddressData: Maybe<GetPoolAddressSuccessData>;
   bnbPoolAddress: Maybe<AddressData>;
   poolAddress: Maybe<string>;

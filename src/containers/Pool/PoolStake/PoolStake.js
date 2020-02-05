@@ -1381,7 +1381,7 @@ PoolStake.propTypes = {
   txStatus: PropTypes.object.isRequired,
   assetData: PropTypes.array.isRequired,
   pools: PropTypes.array.isRequired,
-  poolAddress: PropTypes.string.isRequired,
+  poolAddress: PropTypes.string,
   poolData: PropTypes.object.isRequired,
   basePriceAsset: PropTypes.string.isRequired,
   priceIndex: PropTypes.object.isRequired,
