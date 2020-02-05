@@ -15,6 +15,7 @@ import CoinData from '../../../components/uielements/coins/coinData';
 import Status from '../../../components/uielements/status';
 import TxTimer from '../../../components/uielements/txTimer';
 import Modal from '../../../components/uielements/modal';
+import PrivateModal from '../../../components/modals/privateModal';
 
 import {
   ContentWrapper,
@@ -50,7 +51,6 @@ import { delay } from '../../../helpers/asyncHelper';
 import { FixmeType, Maybe, Nothing } from '../../../types/bepswap';
 import { SwapSendView } from './types';
 import { User, AssetData } from '../../../redux/wallet/types';
-import PrivateModal from '../../../components/modals/privateModal';
 import { TxStatus, TxTypes } from '../../../redux/app/types';
 import {
   AssetDetail,

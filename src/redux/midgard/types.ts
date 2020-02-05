@@ -1,33 +1,37 @@
 import { Maybe } from '../../types/bepswap';
 
-export interface PoolDetail {
+export type MidgardPriceIndex = {
+  [key: string]: number;
+};
+
+export type PoolDetail = {
   chain: string;
   symbol: string;
-}
+};
 
-export interface AssetDetail {
+export type AssetDetail = {
   chain: string;
   symbol: string;
   ticker: string;
-}
+};
 
-export interface AssetData {
+export type AssetData = {
   asset: AssetDetail;
   dateCreated: number;
   logo: string;
   name: string;
   priceRune: number;
-}
+};
 
-export interface AssetDataIndex {
+export type AssetDataIndex = {
   [asset: string]: AssetData;
-}
+};
 
-export interface PoolDataMap {
+export type PoolDataMap = {
   [symbol: string]: PoolData;
-}
+};
 
-export interface PoolData {
+export type PoolData = {
   asset: AssetDetail;
   assetDepth: number;
   assetROI: number;
@@ -66,36 +70,36 @@ export interface PoolData {
   swappersCount: number;
   swappingTxCount: number;
   withdrawTxCount: number;
-}
+};
 
-export interface GetStakerPoolDataPayload {
+export type GetStakerPoolDataPayload = {
   asset: string;
   address: string;
-}
+};
 
-export interface PoolAddressData {
+export type PoolAddressData = {
   chain: string;
   pub_key: string;
   address: string;
-}
-export interface GetPoolAddressSuccessData {
+};
+export type GetPoolAddressSuccessData = {
   current: PoolAddressData[];
-}
+};
 
-export interface StakerPoolData {
+export type StakerPoolData = {
   [symbol: string]: PoolData;
-}
+};
 
-export interface PriceDataIndex {
+export type PriceDataIndex = {
   [symbol: string]: number;
-}
+};
 
-export interface AddressData {
+export type AddressData = {
   chain: string;
   address: string;
-}
+};
 
-export interface State {
+export type State = {
   assets: AssetDataIndex;
   assetArray: AssetData[];
   pools: PoolData[];
@@ -110,4 +114,4 @@ export interface State {
   error: Maybe<Error>;
   poolLoading: boolean;
   stakerPoolDataLoading: boolean;
-}
+};
