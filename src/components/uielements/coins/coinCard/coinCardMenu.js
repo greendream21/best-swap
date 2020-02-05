@@ -72,7 +72,7 @@ export default function CoinCardMenu({
 CoinCardMenu.propTypes = {
   asset: PropTypes.string,
   assetData: PropTypes.array,
-  priceIndex: PropTypes.object.isRequired,
+  priceIndex: PropTypes.object,
   unit: PropTypes.string.isRequired,
   searchDisable: PropTypes.arrayOf(PropTypes.string),
   withSearch: PropTypes.bool,
