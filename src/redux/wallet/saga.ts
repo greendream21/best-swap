@@ -15,7 +15,7 @@ import {
 import { getFixedNumber } from '../../helpers/stringHelper';
 import { BASE_NUMBER } from '../../settings/constants';
 import * as actions from './actions';
-import { GetUserStakeDataResult } from './types';
+import { GetUserStakeDataResult, AssetData } from './types';
 import {
   DefaultApi,
   StakersAddressData,
@@ -63,11 +63,11 @@ export function* refreshBalance() {
     const address = payload;
 
     try {
-      const response = yield call(Binance.getBalances, address);
+      const balances: Balance[] = yield call(Binance.getBalances, address);
 
       try {
         const markets: { result: Market[] } = yield call(Binance.getMarkets);
-        const coins = response.map((coin: Balance) => {
+        const coins = balances.map((coin: Balance) => {
           const market = markets.result.find(
             (market: Market) => market.base_asset_symbol === coin.symbol,
           );
@@ -75,7 +75,7 @@ export function* refreshBalance() {
             asset: coin.symbol,
             assetValue: parseFloat(coin.free),
             price: market ? parseFloat(market.list_price) : 0,
-          };
+          } as AssetData;
         });
 
         yield put(actions.refreshBalanceSuccess(coins));

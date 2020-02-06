@@ -1,3 +1,4 @@
+import { Reducer } from 'redux';
 import { getWalletAddress, getKeystore } from '../../helpers/webStorageHelper';
 import { State, User } from './types';
 import {
@@ -11,8 +12,6 @@ import {
   REFRESH_STAKES_SUCCESS,
   REFRESH_STAKES_FAILED,
   GET_USER_STAKE_DATA_SUCCESS,
-  SET_ASSET_DATA,
-  SET_STAKE_DATA,
   GET_USER_STAKE_DATA_REQUEST,
   GET_USER_STAKE_DATA_FAILED,
 } from './actions';
@@ -38,10 +37,10 @@ const initState: State = {
   error: Nothing,
 };
 
-export default function apiReducer(
+const reducer: Reducer<State, WalletActionsTypes> = (
   state = initState,
-  action: WalletActionsTypes,
-) {
+  action,
+) => {
   switch (action.type) {
     case SAVE_WALLET:
       return {
@@ -107,17 +106,9 @@ export default function apiReducer(
         loadingStakes: false,
         error: action.payload,
       };
-    case SET_ASSET_DATA:
-      return {
-        ...state,
-        assetData: action.payload,
-      };
-    case SET_STAKE_DATA:
-      return {
-        ...state,
-        stakeData: action.payload,
-      };
     default:
       return state;
   }
-}
+};
+
+export default reducer;

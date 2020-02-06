@@ -1,3 +1,4 @@
+import { Reducer } from 'redux';
 import {
   getBNBPoolAddress,
   getPoolAddress,
@@ -48,10 +49,10 @@ const initState: State = {
   stakerPoolDataLoading: false,
 };
 
-export default function apiReducer(
-  state: State = initState,
-  action: MidgardActionTypes,
-) {
+const reducer: Reducer<State, MidgardActionTypes> = (
+  state = initState,
+  action,
+) => {
   switch (action.type) {
     case SET_BASE_PRICE_ASSET: {
       const { payload } = action;
@@ -184,4 +185,5 @@ export default function apiReducer(
     default:
       return state;
   }
-}
+};
+export default reducer;

@@ -1,5 +1,5 @@
 import { Maybe } from '../../types/bepswap';
-import { Token, Market, TickerStatistics, TxPage, OrderList } from '../../types/binance';
+import { Token, Market, TickerStatistics, TxPage, OrderList, Account } from '../../types/binance';
 
 export type State = {
   tokenList: Token[];

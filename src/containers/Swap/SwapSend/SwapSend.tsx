@@ -52,6 +52,7 @@ import { FixmeType, Maybe, Nothing } from '../../../types/bepswap';
 import { SwapSendView } from './types';
 import { User, AssetData } from '../../../redux/wallet/types';
 import { TxStatus, TxTypes } from '../../../redux/app/types';
+
 import {
   AssetDataIndex,
   PriceDataIndex,
@@ -59,6 +60,7 @@ import {
 } from '../../../redux/midgard/types';
 import { validatePair } from '../utils-next';
 import { AssetDetail } from '../../../types/generated/midgard';
+import { RootState } from '../../../redux/store';
 
 const { crypto } = require('@binance-chain/javascript-sdk');
 
@@ -1020,7 +1022,7 @@ class SwapSend extends React.Component<Props, State> {
 
 export default compose(
   connect(
-    (state: FixmeType) => ({
+    (state: RootState) => ({
       txStatus: state.App.txStatus,
       user: state.Wallet.user,
       assetData: state.Wallet.assetData,

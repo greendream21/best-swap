@@ -1,3 +1,4 @@
+import { Reducer } from 'redux';
 import {
   AppActionsTypes,
   SET_TX_TIMER_TYPE,
@@ -22,7 +23,10 @@ const initState: State = {
   },
 };
 
-const appReducer = (state = initState, action: AppActionsTypes): State => {
+const reducer: Reducer<State, AppActionsTypes> = (
+  state = initState,
+  action,
+) => {
   switch (action.type) {
     case SET_TX_TIMER_TYPE:
       return {
@@ -108,4 +112,4 @@ const appReducer = (state = initState, action: AppActionsTypes): State => {
   }
 };
 
-export default appReducer;
+export default reducer;
