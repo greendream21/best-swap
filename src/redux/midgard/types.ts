@@ -1,5 +1,5 @@
 import { Maybe } from '../../types/bepswap';
-import { AssetDetail, Asset, PoolDetail, StakersAssetData } from '../../types/generated/midgard/api';
+import { AssetDetail, Asset, PoolDetail, StakersAssetData, ThorchainEndpoints, ThorchainEndpoint } from '../../types/generated/midgard';
 
 export type AssetData = {
   asset: AssetDetail;
@@ -22,15 +22,6 @@ export type GetStakerPoolDataPayload = {
   address: string;
 };
 
-export type PoolAddressData = {
-  chain: string;
-  pub_key: string;
-  address: string;
-};
-export type GetPoolAddressSuccessData = {
-  current: PoolAddressData[];
-};
-
 export type StakerPoolData = {
   [symbol: string]: StakersAssetData;
 };
@@ -39,17 +30,12 @@ export type PriceDataIndex = {
   [symbol: string]: number;
 };
 
-export type AddressData = {
-  chain: string;
-  address: string;
-};
-
 export type State = {
   assets: AssetDataIndex;
   assetArray: AssetDetail[];
   pools: Asset[];
-  poolAddressData: Maybe<GetPoolAddressSuccessData>;
-  bnbPoolAddress: Maybe<AddressData>;
+  poolAddressData: Maybe<ThorchainEndpoints>;
+  bnbPoolAddress: Maybe<ThorchainEndpoint>;
   poolAddress: Maybe<string>;
   poolData: PoolDataMap;
   stakerPoolData: StakerPoolData;

@@ -644,6 +644,44 @@ export interface StatsData {
 /**
  * 
  * @export
+ * @interface ThorchainEndpoint
+ */
+export interface ThorchainEndpoint {
+    /**
+     * 
+     * @type {string}
+     * @memberof ThorchainEndpoint
+     */
+    address?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ThorchainEndpoint
+     */
+    chain?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ThorchainEndpoint
+     */
+    pubKey?: string;
+}
+/**
+ * 
+ * @export
+ * @interface ThorchainEndpoints
+ */
+export interface ThorchainEndpoints {
+    /**
+     * 
+     * @type {Array<ThorchainEndpoint>}
+     * @memberof ThorchainEndpoints
+     */
+    current?: Array<ThorchainEndpoint>;
+}
+/**
+ * 
+ * @export
  * @interface Tx
  */
 export interface Tx {
@@ -1335,7 +1373,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getThorchainProxiedEndpoints(options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<object> {
+        getThorchainProxiedEndpoints(options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<ThorchainEndpoints> {
             const localVarAxiosArgs = DefaultApiAxiosParamCreator(configuration).getThorchainProxiedEndpoints(options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
@@ -1492,7 +1530,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getThorchainProxiedEndpoints(options?: any): AxiosPromise<object> {
+        getThorchainProxiedEndpoints(options?: any): AxiosPromise<ThorchainEndpoints> {
             return DefaultApiFp(configuration).getThorchainProxiedEndpoints(options)(axios, basePath);
         },
         /**

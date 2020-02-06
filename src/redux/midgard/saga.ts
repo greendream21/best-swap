@@ -10,14 +10,14 @@ import {
   getBasePriceAsset,
 } from '../../helpers/webStorageHelper';
 import { getAssetDataIndex, getPriceIndex } from './utils';
-import { GetPoolAddressSuccessData } from './types';
 import {
   DefaultApi,
   Asset,
   AssetDetail,
   PoolDetail,
   StakersAssetData,
-} from '../../types/generated/midgard/api';
+  ThorchainEndpoints,
+} from '../../types/generated/midgard';
 
 const midgardApi = new DefaultApi({ basePath: MIDGARD_API_URL });
 
@@ -112,16 +112,13 @@ export function* getStakerPoolData() {
 export function* getPoolAddress() {
   yield takeEvery(actions.GET_POOL_ADDRESSES_REQUEST, function*() {
     try {
-      // TODO (veado): Midgard endpoint has to be updated
-      // Currently there is no type defined for the response
-      // Seee https://gitlab.com/thorchain/midgard/-/blob/master/api/rest/v1/handlers/handlers.go#L366-370
-      const { data } = yield call({
+      const { data }: AxiosResponse<ThorchainEndpoints> = yield call({
         context: midgardApi,
         fn: midgardApi.getThorchainProxiedEndpoints,
       });
 
       yield put(
-        actions.getPoolAddressSuccess(data as GetPoolAddressSuccessData),
+        actions.getPoolAddressSuccess(data),
       );
     } catch (error) {
       yield put(actions.getPoolAddressFailed(error));

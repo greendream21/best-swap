@@ -58,7 +58,7 @@ import {
   PoolDataMap,
 } from '../../../redux/midgard/types';
 import { validatePair } from '../utils-next';
-import { AssetDetail } from '../../../types/generated/midgard/api';
+import { AssetDetail } from '../../../types/generated/midgard';
 
 const { crypto } = require('@binance-chain/javascript-sdk');
 

@@ -1,20 +1,20 @@
 import { getFixedNumber } from '../../helpers/stringHelper';
 import { Nothing, Maybe } from '../../types/bepswap';
-import { AddressData, PriceDataIndex, AssetDataIndex } from './types';
-import { AssetDetail, Asset } from '../../types/generated/midgard/api';
+import { PriceDataIndex, AssetDataIndex } from './types';
+import { AssetDetail, Asset, ThorchainEndpoints, ThorchainEndpoint } from '../../types/generated/midgard';
 
 export const getAssetSymbolFromPayload = (
   payload: Partial<{asset?: Asset}>,
 ): Maybe<string> => payload.asset?.symbol ?? Nothing;
 
 export const getBNBPoolAddress = (
-  payload: Partial<{ current?: Array<AddressData> }>,
-): Maybe<AddressData> =>
-  payload.current?.find(data => data.chain === 'BNB') ?? Nothing;
+  endpoints: ThorchainEndpoints,
+): Maybe<ThorchainEndpoint> =>
+  endpoints.current?.find((endpoint: ThorchainEndpoint) => endpoint.chain === 'BNB') ?? Nothing;
 
 export const getPoolAddress = (
-  payload: Partial<{ current?: Array<AddressData> }>,
-): Maybe<string> => getBNBPoolAddress(payload)?.address ?? Nothing;
+  endpoints: ThorchainEndpoints,
+): Maybe<string> => getBNBPoolAddress(endpoints)?.address ?? Nothing;
 
 export const getAssetDataIndex = (
   assets: AssetDetail[],

@@ -1,1 +1,4 @@
-git_push.sh
+wwwroot/*.js
+node_modules
+typings
+dist
