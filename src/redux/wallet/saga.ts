@@ -21,6 +21,7 @@ import { getFixedNumber } from '../../helpers/stringHelper';
 import { BASE_NUMBER } from '../../settings/constants';
 import * as actions from './actions';
 import { GetUserStakeDataResult } from './types';
+import { Market, Balance, Address, StakePool } from '../../types/binance';
 
 export function* saveWalletSaga() {
   yield takeEvery(actions.SAVE_WALLET, function*({

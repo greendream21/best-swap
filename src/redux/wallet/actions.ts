@@ -1,5 +1,6 @@
 import { User, AssetData, StakeData, GetUserStakeDataResult } from './types';
 import { FixmeType } from '../../types/bepswap';
+import { Address } from '../../types/binance';
 
 export interface SaveWallet {
   type: typeof SAVE_WALLET;
