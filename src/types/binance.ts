@@ -468,9 +468,3 @@ export type Balance = {
    */
   frozen: string;
 };
-
-export type StakePool = {
-  chain: string;
-  symbol: string;
-  ticker: string;
-};
