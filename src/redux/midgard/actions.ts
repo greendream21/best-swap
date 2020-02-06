@@ -3,9 +3,8 @@ import {
   GetStakerPoolDataPayload,
   PriceDataIndex,
   AssetDataIndex,
-  GetPoolAddressSuccessData,
 } from './types';
-import { AssetDetail, Asset, PoolDetail, StakersAssetData } from '../../types/generated/midgard/api';
+import { AssetDetail, Asset, PoolDetail, StakersAssetData, ThorchainEndpoints } from '../../types/generated/midgard';
 
 export interface SetAssetsPayload {
   assetDataIndex: AssetDataIndex;
@@ -127,10 +126,10 @@ export const getPoolAddress = (): GetPoolAddress => ({
 export const GET_POOL_ADDRESSES_SUCCESS = 'GET_POOL_ADDRESSES_SUCCESS';
 export interface GetPoolAddressSuccess {
   type: typeof GET_POOL_ADDRESSES_SUCCESS;
-  payload: GetPoolAddressSuccessData;
+  payload: ThorchainEndpoints;
 }
 export const getPoolAddressSuccess = (
-  payload: GetPoolAddressSuccessData,
+  payload: ThorchainEndpoints,
 ): GetPoolAddressSuccess => ({
   type: GET_POOL_ADDRESSES_SUCCESS,
   payload,

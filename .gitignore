@@ -207,3 +207,5 @@ $RECYCLE.BIN/
 /.VSCodeCounter
 
 keystore
+
+src/types/generated/midgard/git_push.sh
