@@ -1,14 +1,9 @@
 import { all, takeEvery, put, fork, call } from 'redux-saga/effects';
 import { push } from 'connected-react-router';
-import { get as _get } from 'lodash';
 
-import { Method } from 'axios';
+import { AxiosResponse } from 'axios';
 import Binance from '../../clients/binance';
-import {
-  getHeaders,
-  axiosRequest,
-  getMidgardURL,
-} from '../../helpers/apiHelper';
+import { MIDGARD_API_URL } from '../../helpers/apiHelper';
 
 import {
   saveWalletAddress,
@@ -21,7 +16,16 @@ import { getFixedNumber } from '../../helpers/stringHelper';
 import { BASE_NUMBER } from '../../settings/constants';
 import * as actions from './actions';
 import { GetUserStakeDataResult } from './types';
-import { Market, Balance, Address, StakePool } from '../../types/binance';
+import {
+  DefaultApi,
+  StakersAddressData,
+  Asset,
+  PoolDetail,
+  StakersAssetData,
+} from '../../types/generated/midgard';
+import { Market, Balance } from '../../types/binance';
+
+const midgardApi = new DefaultApi({ basePath: MIDGARD_API_URL });
 
 export function* saveWalletSaga() {
   yield takeEvery(actions.SAVE_WALLET, function*({
@@ -84,38 +88,6 @@ export function* refreshBalance() {
   });
 }
 
-const getStakerAssets = async (address: Address) => {
-  const params = {
-    // method: 'link',
-    url: getMidgardURL(`stakers/${address}`),
-    headers: getHeaders(),
-  };
-
-  try {
-    const data = await axiosRequest(params);
-    return data || [];
-  } catch (error) {
-    return null;
-  }
-};
-
-const getPoolData = async (assetId: string) => {
-  const params = {
-    method: 'get' as Method,
-    url: getMidgardURL(`pools/${assetId}`),
-    headers: getHeaders(),
-  };
-
-  try {
-    const { data } = await axiosRequest(params);
-
-    return data;
-  } catch (error) {
-    console.error('get pool data from midgard error');
-    return null;
-  }
-};
-
 export function* getUserStakeData() {
   yield takeEvery(actions.GET_USER_STAKE_DATA_REQUEST, function*({
     payload,
@@ -124,27 +96,34 @@ export function* getUserStakeData() {
     const { chain, symbol, ticker } = asset;
     const assetId = `${chain}.${symbol}`;
 
-    const params = {
-      method: 'get' as Method,
-      url: getMidgardURL(`stakers/${address}/${assetId}`),
-      headers: getHeaders(),
-    };
-
     try {
-      const { data: userStakerData } = yield call(axiosRequest, params);
-      const poolData = yield call(getPoolData, assetId);
-      const price = _get(poolData, 'price', 0);
+      const {
+        data: userStakerData,
+      }: AxiosResponse<StakersAssetData> = yield call(
+        { context: midgardApi, fn: midgardApi.getStakersAddressAndAssetData },
+        address,
+        assetId,
+      );
+      const { data: poolData }: AxiosResponse<PoolDetail> = yield call(
+        { context: midgardApi, fn: midgardApi.getPoolsData },
+        assetId,
+      );
+      const price = poolData?.price ?? 0;
 
-      const data = {
+      const result = {
         targetSymbol: symbol,
         target: ticker.toLowerCase(),
-        targetValue: getFixedNumber(userStakerData.assetStaked / BASE_NUMBER),
-        assetValue: getFixedNumber(userStakerData.runeStaked / BASE_NUMBER),
+        targetValue: userStakerData.assetStaked
+          ? getFixedNumber(userStakerData.assetStaked / BASE_NUMBER)
+          : 0,
+        assetValue: userStakerData.runeStaked
+          ? getFixedNumber(userStakerData.runeStaked / BASE_NUMBER)
+          : 0,
         asset: 'rune',
         price,
       } as GetUserStakeDataResult;
 
-      yield put(actions.getUserStakeDataSuccess(data));
+      yield put(actions.getUserStakeDataSuccess(result));
     } catch (error) {
       yield put(actions.getUserStakeDataFailed(error));
     }
@@ -158,10 +137,13 @@ export function* refreshStakes() {
     const address = payload;
 
     try {
-      const { data: stakerData } = yield call(getStakerAssets, address);
-      const stakerPools = _get(stakerData, 'poolsArray');
+      const { data }: AxiosResponse<StakersAddressData> = yield call(
+        { context: midgardApi, fn: midgardApi.getStakersAddressData },
+        address,
+      );
+      const stakerPools = data.poolsArray || [];
       const stakeData = yield all(
-        stakerPools.map((poolData: StakePool) => {
+        stakerPools.map((poolData: Asset) => {
           return put(
             actions.getUserStakeData({
               address,

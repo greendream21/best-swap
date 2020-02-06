@@ -1,9 +1,7 @@
 import { all, takeEvery, put, fork, call } from 'redux-saga/effects';
 import { AxiosResponse } from 'axios';
 import * as actions from './actions';
-import {
-  MIDGARD_API_URL,
-} from '../../helpers/apiHelper';
+import { MIDGARD_API_URL } from '../../helpers/apiHelper';
 
 import {
   saveBasePriceAsset,
@@ -24,10 +22,10 @@ const midgardApi = new DefaultApi({ basePath: MIDGARD_API_URL });
 export function* getPools() {
   yield takeEvery(actions.GET_POOLS_REQUEST, function*() {
     try {
-      const { data }: AxiosResponse<Asset[]> = yield call([
-        midgardApi,
-        midgardApi.getPools,
-      ]);
+      const { data }: AxiosResponse<Asset[]> = yield call({
+        context: midgardApi,
+        fn: midgardApi.getPools,
+      });
       const assetResponses: AxiosResponse<AssetDetail>[] = yield all(
         data.map(asset => {
           const { chain, symbol } = asset;
@@ -117,9 +115,7 @@ export function* getPoolAddress() {
         fn: midgardApi.getThorchainProxiedEndpoints,
       });
 
-      yield put(
-        actions.getPoolAddressSuccess(data),
-      );
+      yield put(actions.getPoolAddressSuccess(data));
     } catch (error) {
       yield put(actions.getPoolAddressFailed(error));
     }
