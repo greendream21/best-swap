@@ -1,3 +1,4 @@
+import { TransferEventData, TxHash } from '../types/binance';
 
 /**
  * Get `hash` from transfer event sent by Binance chain
