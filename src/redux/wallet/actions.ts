@@ -1,4 +1,4 @@
-import { User, AssetData, StakeData, GetUserStakeDataResult } from './types';
+import { AssetData, User, GetUserStakeDataResult } from './types';
 import { FixmeType } from '../../types/bepswap';
 import { Address } from '../../types/binance';
 
@@ -18,7 +18,7 @@ export interface RefreshBalance {
 
 export interface RefreshBalanceSuccess {
   type: typeof REFRESH_BALANCE_SUCCESS;
-  payload: AssetData;
+  payload: AssetData[];
 }
 export interface RefreshBalanceFailed {
   type: typeof REFRESH_BALANCE_FAILED;
@@ -53,14 +53,6 @@ export interface GetUserStakeDataFailed {
   type: typeof GET_USER_STAKE_DATA_FAILED;
   payload: Error;
 }
-export interface SetAssetData {
-  type: typeof SET_ASSET_DATA;
-  payload: AssetData;
-}
-export interface SetStakeData {
-  type: typeof SET_STAKE_DATA;
-  payload: StakeData[];
-}
 
 export type WalletActionsTypes =
   | SaveWallet
@@ -74,8 +66,6 @@ export type WalletActionsTypes =
   | GetUserStakeDataRequest
   | GetUserStakeDataSuccess
   | GetUserStakeDataFailed
-  | SetAssetData
-  | SetStakeData;
 
 export const SAVE_WALLET = 'SAVE_WALLET';
 export const FORGET_WALLET = 'FORGET_WALLET';
@@ -87,9 +77,6 @@ export const REFRESH_BALANCE_FAILED = 'REFRESH_BALANCE_FAILED';
 export const REFRESH_STAKES = 'REFRESH_STAKES';
 export const REFRESH_STAKES_SUCCESS = 'REFRESH_STAKES_SUCCESS';
 export const REFRESH_STAKES_FAILED = 'REFRESH_STAKES_FAILED';
-
-export const SET_ASSET_DATA = 'SET_ASSET_DATA';
-export const SET_STAKE_DATA = 'SET_STAKE_DATA';
 
 export const GET_USER_STAKE_DATA_REQUEST = 'GET_USER_STAKE_DATA_REQUEST';
 export const GET_USER_STAKE_DATA_SUCCESS = 'GET_USER_STAKE_DATA_SUCCESS';
@@ -110,7 +97,7 @@ export const refreshBalance = (payload: Address): RefreshBalance => ({
 });
 
 export const refreshBalanceSuccess = (
-  payload: AssetData,
+  payload: AssetData[],
 ): RefreshBalanceSuccess => ({
   type: REFRESH_BALANCE_SUCCESS,
   payload,
@@ -156,14 +143,5 @@ export const getUserStakeDataFailed = (
   payload: Error,
 ): GetUserStakeDataFailed => ({
   type: GET_USER_STAKE_DATA_FAILED,
-  payload,
-});
-
-export const setAssetData = (payload: AssetData): SetAssetData => ({
-  type: SET_ASSET_DATA,
-  payload,
-});
-export const setStakeData = (payload: StakeData[]): SetStakeData => ({
-  type: SET_STAKE_DATA,
   payload,
 });

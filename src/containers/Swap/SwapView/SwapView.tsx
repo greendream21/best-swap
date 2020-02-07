@@ -28,6 +28,7 @@ import { FixmeType, Maybe } from '../../../types/bepswap';
 
 import { ContentWrapper } from './SwapView.style';
 import { Asset } from '../../../types/generated/midgard';
+import { RootState } from '../../../redux/store';
 
 interface Props {
   pools: Asset[];
@@ -240,7 +241,7 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
 
 export default compose(
   connect(
-    (state: FixmeType) => ({
+    (state: RootState) => ({
       pools: state.Midgard.pools,
       poolData: state.Midgard.poolData,
       priceIndex: state.Midgard.priceIndex,

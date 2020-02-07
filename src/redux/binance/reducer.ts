@@ -1,3 +1,4 @@
+import { Reducer } from 'redux';
 import { State } from './types';
 import {
   BinanceActionTypes,
@@ -30,10 +31,10 @@ const initState: State = {
   loadingTicker: false,
 };
 
-export default function apiReducer(
-  state: State = initState,
-  action: BinanceActionTypes,
-) {
+const reducer: Reducer<State, BinanceActionTypes> = (
+  state = initState,
+  action,
+) => {
   switch (action.type) {
     case GET_BINANCE_TOKENS:
       return {
@@ -111,4 +112,6 @@ export default function apiReducer(
     default:
       return state;
   }
-}
+};
+
+export default reducer;

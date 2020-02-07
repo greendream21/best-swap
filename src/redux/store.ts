@@ -19,11 +19,15 @@ if (process.env.NODE_ENV === 'development') {
   middlewares.push(logger);
 }
 
+const rootReducer = combineReducers({
+  ...reducers,
+  router: connectRouter(history),
+});
+
+export type RootState = ReturnType<typeof rootReducer>;
+
 const store = createStore(
-  combineReducers({
-    ...reducers,
-    router: connectRouter(history),
-  }),
+  rootReducer,
   composeWithDevTools(applyMiddleware(...middlewares)),
 );
 
