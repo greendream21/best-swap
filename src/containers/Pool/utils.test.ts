@@ -4,6 +4,7 @@ import {
   stakedResult,
   withdrawResult,
 } from './utils';
+import { TransferEvent } from '../../types/binance';
 
 describe('pool/utils/', () => {
   describe('parseTransfer', () => {

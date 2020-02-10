@@ -73,64 +73,6 @@ export const getPoolData = (from, poolInfo, priceIndex, basePriceAsset) => {
   };
 };
 
-export const getCalcResult = (
-  tokenName,
-  pools,
-  poolAddress,
-  rValue,
-  runePrice,
-  tValue,
-) => {
-  let R = 10000;
-  let T = 10;
-  const Pr = runePrice;
-  const result = {};
-
-  // CHANGELOG:
-  /*
-    balance_rune => runeStakedTotal
-    balance_token => assetStakedTotal
-    pool_units => poolUnits
-  */
-  Object.keys(pools).forEach(key => {
-    const poolData = pools[key];
-    const {
-      runeStakedTotal,
-      assetStakedTotal,
-      poolUnits,
-      asset: { symbol },
-    } = poolData;
-
-    if (symbol.toLowerCase() === tokenName.toLowerCase()) {
-      R = Number(runeStakedTotal);
-      T = Number(assetStakedTotal);
-      result.ratio = 1 / (R / T);
-      result.poolAddress = poolAddress;
-      result.symbolTo = symbol;
-      result.poolUnits = poolUnits;
-    }
-  });
-
-  const r = getBaseNumberFormat(rValue);
-  const t = getBaseNumberFormat(tValue);
-
-  const poolPrice = getFixedNumber((R / T) * runePrice);
-  const newPrice = getFixedNumber((runePrice * (r + R)) / (t + T));
-  const newDepth = getFixedNumber(runePrice * (1 + (r / R + t / T) / 2) * R);
-  const share = getFixedNumber(((r / (r + R) + t / (t + T)) / 2) * 100);
-
-  return {
-    ...result,
-    poolPrice,
-    newPrice,
-    newDepth,
-    share,
-    Pr,
-    R,
-    T,
-  };
-};
-
 export const validateStake = (wallet, tokenAmount, data) => {
   const { poolAddress } = data;
   if (!wallet || !poolAddress || !tokenAmount) {
