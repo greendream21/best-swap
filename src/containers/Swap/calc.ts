@@ -1,5 +1,23 @@
+export type DoubleSwapCalcData = {
+  X: number;
+  Y: number;
+  R: number;
+  Z: number;
+  Py: number;
+  Pr: number;
+};
+
+export type SingleSwapCalcData = {
+  X: number;
+  Y: number;
+  Py: number;
+};
+
 // Calculations
-export const getYValue = (xValue, data) => {
+export const getYValue = (
+  xValue: number,
+  data: DoubleSwapCalcData | SingleSwapCalcData,
+) => {
   const { X, Y } = data;
   const times = (xValue + X) ** 2;
   const yValue = (xValue * X * Y) / times;
@@ -7,7 +25,7 @@ export const getYValue = (xValue, data) => {
   return yValue;
 };
 
-export const getZValue = (xValue, data) => {
+export const getZValue = (xValue: number, data: DoubleSwapCalcData) => {
   const { R, Z } = data;
   const yValue = getYValue(xValue, data);
   const times = (yValue + R) ** 2;
@@ -15,7 +33,7 @@ export const getZValue = (xValue, data) => {
   return (yValue * R * Z) / times;
 };
 
-export const getFee = (xValue, data) => {
+export const getFee = (xValue: number, data: DoubleSwapCalcData) => {
   const { R, Z } = data;
   const yValue = getYValue(xValue, data);
   const times = (yValue + R) ** 2;
@@ -24,7 +42,7 @@ export const getFee = (xValue, data) => {
   return (yTimes * Z) / times;
 };
 
-export const getPx = (xValue, data) => {
+export const getPx = (xValue: number, data: SingleSwapCalcData) => {
   const { X, Y, Py } = data;
 
   if (xValue) {
@@ -35,7 +53,7 @@ export const getPx = (xValue, data) => {
   return (Py * Y) / X;
 };
 
-export const getPz = (xValue, data) => {
+export const getPz = (xValue: number, data: DoubleSwapCalcData) => {
   const { Z, R, Pr } = data;
 
   if (xValue) {
@@ -48,30 +66,10 @@ export const getPz = (xValue, data) => {
   return (Pr * R) / Z;
 };
 
-export const getVx = (xValue, data) => {
-  return xValue * getPx(xValue, data);
-};
-
-export const getVz = (xValue, data) => {
-  return getZValue(xValue, data) * getPz(xValue, data);
-};
-
-export const getSlip = (xValue, data) => {
+export const getSlip = (xValue: number, data: DoubleSwapCalcData) => {
   const { R } = data;
   const yValue = getYValue(xValue, data);
   const times = (yValue + R) ** 2;
 
   return ((yValue * (2 * R + yValue)) / times) * 100;
-};
-
-export const getBalanceA = (yValue, data) => {
-  const { Y, Py } = data;
-
-  return (Y - yValue) * Py;
-};
-
-export const getBalanceB = (yValue, data) => {
-  const { R, Pr } = data;
-
-  return (R + yValue) * Pr;
 };
