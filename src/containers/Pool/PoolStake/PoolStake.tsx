@@ -66,11 +66,15 @@ import { Asset, StakersAssetData } from '../../../types/generated/midgard';
 
 const { TabPane } = Tabs;
 
-type Props = {
+type ComponentProps = {
   symbol: string;
   info: FixmeType; // PropTypes.object,
   history: H.History;
   wsTransfers: FixmeType[]; // PropTypes.array.isRequired,
+};
+
+type ConnectedProps = {
+  history: H.History;
   txStatus: TxStatus;
   user: Maybe<User>;
   assetData: AssetData[];
@@ -94,6 +98,8 @@ type Props = {
   resetTxStatus: typeof appActions.resetTxStatus;
   refreshStake: typeof walletActions.refreshStake;
 };
+
+type Props = ComponentProps & ConnectedProps;
 
 type State = {
   advancedMode: boolean;
@@ -1513,4 +1519,4 @@ export default compose(
   ),
   withRouter,
   withBinanceTransferWS,
-)(PoolStake);
+)(PoolStake) as React.ComponentClass<ComponentProps, State>;

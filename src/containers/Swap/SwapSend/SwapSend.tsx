@@ -63,9 +63,14 @@ import { validatePair } from '../utils-next';
 import { AssetDetail } from '../../../types/generated/midgard';
 import { RootState } from '../../../redux/store';
 
-interface Props {
+type ComponentProps = {
   info?: string;
   view: SwapSendView;
+  // TÓDO(veado): Add type for WSTransfer based on Binance WS Api
+  wsTransfers: FixmeType[];
+};
+
+type ConnectedProps = {
   history: H.History;
   txStatus: TxStatus;
   assetData: AssetData[];
@@ -76,8 +81,6 @@ interface Props {
   basePriceAsset: string;
   priceIndex: PriceDataIndex;
   user: Maybe<User>;
-  // TÓDO(veado): Add type for WSTransfer based on Binance WS Api
-  wsTransfers: FixmeType[];
   setTxTimerModal: typeof appActions.setTxTimerModal;
   setTxTimerStatus: typeof appActions.setTxTimerStatus;
   setTxTimerValue: typeof appActions.setTxTimerValue;
@@ -87,7 +90,9 @@ interface Props {
   getPools: typeof midgardActions.getPools;
   getPoolAddress: typeof midgardActions.getPoolAddress;
   refreshBalance: typeof walletActions.refreshBalance;
-}
+};
+
+type Props = ComponentProps & ConnectedProps;
 
 interface State {
   address: string;
@@ -1044,4 +1049,4 @@ export default compose(
   ),
   withRouter,
   withBinanceTransferWS,
-)(SwapSend);
+)(SwapSend) as React.ComponentClass<ComponentProps, State>;
