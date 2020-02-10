@@ -1,10 +1,11 @@
-import React, { Component } from 'react';
+import React from 'react';
+import * as H from 'history';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter, Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
 import { sortBy as _sortBy } from 'lodash';
 
+import * as RD from '@devexperts/remote-data-ts';
 import { WalletViewWrapper } from './WalletView.style';
 import Tabs from '../../components/uielements/tabs';
 import Label from '../../components/uielements/label';
@@ -16,30 +17,66 @@ import {
   AssetLoader,
   StakeLoader,
 } from '../../components/utility/loaders/wallet';
+import { Maybe } from '../../types/bepswap';
+import { User, AssetData, StakeData, StakeDataListLoadingState } from '../../redux/wallet/types';
+import { RootState } from '../../redux/store';
+import { PriceDataIndex } from '../../redux/midgard/types';
 
 const { TabPane } = Tabs;
 
-class WalletView extends Component {
+type ComponentProps = {
+  status?: string;
+  page?: string;
+  view?: string;
+  info?: string;
+};
+
+type ConnectedProps = {
+  user: Maybe<User>;
+  assetData: AssetData[];
+  stakeData: StakeDataListLoadingState;
+  loadingAssets: boolean;
+  getPools: typeof midgardActions.getPools;
+  priceIndex: PriceDataIndex;
+  basePriceAsset: string;
+  history: H.History;
+};
+
+type Props = ComponentProps & ConnectedProps;
+
+type State = {};
+
+// TODO(Veado): Pair type should go into `stringHelper` (<- needs to be migrated to TS before)
+type Pair = { source?: string; target?: string };
+
+class WalletView extends React.Component<Props, State> {
+  static readonly defaultProps: Partial<Props> = {
+    page: '',
+    view: '',
+    info: '',
+    status: '',
+  };
+
   componentDidMount() {
     const { getPools } = this.props;
 
     getPools();
   }
 
-  getAssetNameByIndex = index => {
+  getAssetNameByIndex = (index: number): string => {
     const { assetData } = this.props;
     const sortedAssets = _sortBy(assetData, ['asset']);
 
     return sortedAssets[index].asset || '';
   };
 
-  getAssetIndexByName = asset => {
+  getAssetIndexByName = (asset: string) => {
     const { assetData } = this.props;
 
     return assetData.find(data => data.asset === asset);
   };
 
-  handleSelectAsset = key => {
+  handleSelectAsset = (key: number) => {
     const newAssetName = this.getAssetNameByIndex(key);
     const ticker = getTickerFormat(newAssetName);
 
@@ -47,10 +84,8 @@ class WalletView extends Component {
     this.props.history.push(URL);
   };
 
-  handleSelectStake = key => {
-    const { stakeData } = this.props;
-
-    const selected = stakeData[key];
+  handleSelectStake = (index: number, stakeData: StakeData[]) => {
+    const selected = stakeData[index];
     const target = selected.targetSymbol;
 
     const URL = `/pool/${target}`;
@@ -65,7 +100,7 @@ class WalletView extends Component {
     }
 
     if (status === 'connected' && assetData.length === 0) {
-      return "Looks like you don't have anything in your wallet"; // eslint-disable-line quotes
+      return 'Looks like you don\'t have anything in your wallet';
     }
 
     if (status === 'connected') {
@@ -74,24 +109,24 @@ class WalletView extends Component {
     return 'Connect your wallet';
   };
 
-  renderStakeTitle = () => {
-    const { stakeData, loadingStakes } = this.props;
+  renderStakeTitle = (stakeData: StakeDataListLoadingState) =>
+    RD.fold(
+      () => null, // initial data
+      () => <StakeLoader />, // loading
+      () => <></>, // error
+      (data: StakeData[]): JSX.Element =>
+        data.length > 0 ? (
+          <>Your current stakes are:</>
+        ) : (
+          <>You are currently not staked in any pool</>
+        ),
+    )(stakeData);
 
-    if (loadingStakes) {
-      return <StakeLoader />;
-    }
-
-    if (stakeData.length > 0) {
-      return 'Your current stakes are:';
-    }
-    return 'You are currently not staked in any pool';
-  };
-
-  getSelectedAsset = pair => {
+  getSelectedAsset = (pair: Pair) => {
     const { page } = this.props;
 
     if (page === 'pool' || page === 'trade') {
-      const { target } = pair;
+      const { target = '' } = pair;
       const targetIndex = this.getAssetIndexByName(target);
 
       return [targetIndex];
@@ -108,24 +143,19 @@ class WalletView extends Component {
       priceIndex,
       basePriceAsset,
       loadingAssets,
-      loadingStakes,
     } = this.props;
     const hasWallet = user && user.wallet;
-    const pair = getPair(info);
-    const { source } = pair;
+    const pair: Pair = getPair(info);
+    const { source = '' } = pair;
     const selectedAsset = this.getSelectedAsset(pair);
     const sourceIndex = this.getAssetIndexByName(source);
     const sortedAssets = _sortBy(assetData, ['asset']);
-    const sortedStakerData = _sortBy(stakeData, ['target']);
+    const stakeDataForSorting = RD.toNullable(stakeData);
+    const sortedStakerData = _sortBy(stakeDataForSorting, ['target']);
 
     return (
       <WalletViewWrapper data-test="wallet-view">
-        <Tabs
-          data-test="wallet-view-tabs"
-          defaultActiveKey="assets"
-          onChange={this.handleChangeTab}
-          withBorder
-        >
+        <Tabs data-test="wallet-view-tabs" defaultActiveKey="assets" withBorder>
           <TabPane tab="assets" key="assets">
             <Label className="asset-title-label" weight="600">
               {this.renderAssetTitle()}
@@ -150,14 +180,15 @@ class WalletView extends Component {
           </TabPane>
           <TabPane tab="stakes" key="stakes">
             <Label className="asset-title-label">
-              {this.renderStakeTitle()}
+              {this.renderStakeTitle(stakeData)}
             </Label>
-            {!loadingStakes && (
+            {sortedStakerData && (
               <CoinList
                 data-test="wallet-stakes-list"
                 data={sortedStakerData}
                 priceIndex={priceIndex}
-                onSelect={this.handleSelectStake}
+                onSelect={(key: number) =>
+                  this.handleSelectStake(key, sortedStakerData)}
                 unit={basePriceAsset}
                 isStakeData
               />
@@ -169,37 +200,13 @@ class WalletView extends Component {
   }
 }
 
-WalletView.propTypes = {
-  user: PropTypes.object, // Maybe<User>
-  page: PropTypes.string,
-  view: PropTypes.string,
-  info: PropTypes.string,
-  status: PropTypes.string,
-  assetData: PropTypes.array.isRequired,
-  stakeData: PropTypes.array.isRequired,
-  loadingAssets: PropTypes.bool.isRequired,
-  loadingStakes: PropTypes.bool.isRequired,
-  getPools: PropTypes.func.isRequired,
-  priceIndex: PropTypes.object.isRequired,
-  basePriceAsset: PropTypes.string.isRequired,
-  history: PropTypes.object.isRequired,
-};
-
-WalletView.defaultProps = {
-  page: '',
-  view: '',
-  info: '',
-  status: '',
-};
-
 export default compose(
   connect(
-    state => ({
+    (state: RootState) => ({
       user: state.Wallet.user,
       assetData: state.Wallet.assetData,
       stakeData: state.Wallet.stakeData,
       loadingAssets: state.Wallet.loadingAssets,
-      loadingStakes: state.Wallet.loadingStakes,
       priceIndex: state.Midgard.priceIndex,
       basePriceAsset: state.Midgard.basePriceAsset,
     }),
@@ -208,4 +215,4 @@ export default compose(
     },
   ),
   withRouter,
-)(WalletView);
+)(WalletView) as React.ComponentClass<ComponentProps, State>;

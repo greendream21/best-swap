@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "@binance-chain/javascript-sdk": "^2.16.2",
+    "@devexperts/remote-data-ts": "^2.0.3",
     "@ledgerhq/hw-transport-u2f": "^5.7.0",
     "@svgr/webpack": "5.1.0",
     "@trustwallet/walletconnect": "^0.1.37",

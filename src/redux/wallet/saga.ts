@@ -15,7 +15,7 @@ import {
 import { getFixedNumber } from '../../helpers/stringHelper';
 import { BASE_NUMBER } from '../../settings/constants';
 import * as actions from './actions';
-import { GetUserStakeDataResult, AssetData } from './types';
+import { AssetData, StakeData } from './types';
 import {
   DefaultApi,
   StakersAddressData,
@@ -110,7 +110,7 @@ export function* getUserStakeData() {
       );
       const price = poolData?.price ?? 0;
 
-      const result = {
+      const stakeData: StakeData = {
         targetSymbol: symbol,
         target: ticker.toLowerCase(),
         targetValue: userStakerData.assetStaked
@@ -121,9 +121,9 @@ export function* getUserStakeData() {
           : 0,
         asset: 'rune',
         price,
-      } as GetUserStakeDataResult;
+      };
 
-      yield put(actions.getUserStakeDataSuccess(result));
+      yield put(actions.getUserStakeDataSuccess(stakeData));
     } catch (error) {
       yield put(actions.getUserStakeDataFailed(error));
     }
@@ -142,7 +142,7 @@ export function* refreshStakes() {
         address,
       );
       const stakerPools = data.poolsArray || [];
-      const stakeData = yield all(
+      yield all(
         stakerPools.map((poolData: Asset) => {
           return put(
             actions.getUserStakeData({
@@ -153,7 +153,7 @@ export function* refreshStakes() {
         }),
       );
 
-      yield put(actions.refreshStakeSuccess(stakeData));
+      yield put(actions.refreshStakeSuccess());
     } catch (error) {
       yield put(actions.refreshStakeFailed(error));
     }

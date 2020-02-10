@@ -1,4 +1,5 @@
 import { Reducer } from 'redux';
+import { initial, success, pending, failure } from '@devexperts/remote-data-ts';
 import { getWalletAddress, getKeystore } from '../../helpers/webStorageHelper';
 import { State, User } from './types';
 import {
@@ -31,9 +32,9 @@ const initState: State = {
       price: 0,
     },
   ],
-  stakeData: [],
+  stakeData: initial,
+  previousStakeData: [],
   loadingAssets: false,
-  loadingStakes: false,
   error: Nothing,
 };
 
@@ -73,38 +74,38 @@ const reducer: Reducer<State, WalletActionsTypes> = (
     case REFRESH_STAKES:
       return {
         ...state,
-        stakeData: [],
-        loadingStakes: true,
+        stakeData: pending,
         error: null,
       };
     case REFRESH_STAKES_SUCCESS:
+      // nothing to update here,
+      // as we store all results of refreshing data
+      // by handling `GET_USER_STAKE_DATA_SUCCESS`
       return {
         ...state,
-        loadingStakes: false,
       };
     case REFRESH_STAKES_FAILED:
       return {
         ...state,
-        loadingStakes: false,
-        error: action.payload,
+        stakeData: failure(action.payload),
       };
     case GET_USER_STAKE_DATA_REQUEST:
       return {
         ...state,
-        loadingStakes: true,
+        stakeData: pending,
         error: null,
       };
     case GET_USER_STAKE_DATA_SUCCESS:
-      return {
+      {
+        const stakeData = [...state.previousStakeData, action.payload];
+        return {
         ...state,
-        stakeData: [...state.stakeData, action.payload],
-        error: null,
-      };
+        stakeData: success(stakeData),
+      }; }
     case GET_USER_STAKE_DATA_FAILED:
       return {
         ...state,
-        loadingStakes: false,
-        error: action.payload,
+        stakeData: failure(action.payload),
       };
     default:
       return state;
