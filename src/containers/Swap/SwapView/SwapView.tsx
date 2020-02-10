@@ -20,24 +20,25 @@ import {
   SwapViewType,
 } from './types';
 import * as midgardActions from '../../../redux/midgard/actions';
-import {
-  PriceDataIndex,
-  PoolDataMap,
-} from '../../../redux/midgard/types';
+import { PriceDataIndex, PoolDataMap } from '../../../redux/midgard/types';
 import { FixmeType, Maybe } from '../../../types/bepswap';
 
 import { ContentWrapper } from './SwapView.style';
 import { Asset } from '../../../types/generated/midgard';
 import { RootState } from '../../../redux/store';
 
-interface Props {
+type ComponentProps = {};
+
+type ConnectedProps = {
   pools: Asset[];
   poolData: PoolDataMap;
   priceIndex: PriceDataIndex;
   basePriceAsset: string;
   loading: boolean;
   getPools: typeof midgardActions.getPools;
-}
+};
+
+type Props = ComponentProps & ConnectedProps;
 
 const SwapView: React.FC<Props> = (props): JSX.Element => {
   const {
@@ -253,4 +254,4 @@ export default compose(
     },
   ),
   withRouter,
-)(SwapView);
+)(SwapView) as React.FC<ComponentProps>;
