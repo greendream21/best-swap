@@ -6,6 +6,7 @@ import { withRouter } from 'react-router-dom';
 import { Row, Col, Icon, notification, Popover } from 'antd';
 import { get as _get } from 'lodash';
 
+import { crypto } from '@binance-chain/javascript-sdk';
 import Binance from '../../../clients/binance';
 
 import Button from '../../../components/uielements/button';
@@ -61,8 +62,6 @@ import {
 import { validatePair } from '../utils-next';
 import { AssetDetail } from '../../../types/generated/midgard';
 import { RootState } from '../../../redux/store';
-
-const { crypto } = require('@binance-chain/javascript-sdk');
 
 interface Props {
   info?: string;
@@ -650,9 +649,7 @@ class SwapSend extends React.Component<Props, State> {
     if (refunded) {
       priceValue = priceFrom;
     } else {
-      priceValue = !completed
-        ? priceTo
-        : Number(txResult?.amount) * tokenPrice;
+      priceValue = !completed ? priceTo : Number(txResult?.amount) * tokenPrice;
     }
 
     const txURL = TESTNET_TX_BASE_URL + hash;
