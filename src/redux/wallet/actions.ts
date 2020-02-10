@@ -1,4 +1,4 @@
-import { AssetData, User, GetUserStakeDataResult } from './types';
+import { AssetData, User, StakeData } from './types';
 import { FixmeType } from '../../types/bepswap';
 import { Address } from '../../types/binance';
 
@@ -30,7 +30,6 @@ export interface RefreshStakes {
 }
 export interface RefreshStakesSuccess {
   type: typeof REFRESH_STAKES_SUCCESS;
-  payload: FixmeType;
 }
 export interface RefreshStakesFailed {
   type: typeof REFRESH_STAKES_FAILED;
@@ -47,7 +46,7 @@ export interface GetUserStakeDataRequest {
 }
 export interface GetUserStakeDataSuccess {
   type: typeof GET_USER_STAKE_DATA_SUCCESS;
-  payload: GetUserStakeDataResult;
+  payload: StakeData;
 }
 export interface GetUserStakeDataFailed {
   type: typeof GET_USER_STAKE_DATA_FAILED;
@@ -113,11 +112,8 @@ export const refreshStake = (payload: Address): RefreshStakes => ({
   payload,
 });
 
-export const refreshStakeSuccess = (
-  payload: FixmeType,
-): RefreshStakesSuccess => ({
+export const refreshStakeSuccess = (): RefreshStakesSuccess => ({
   type: REFRESH_STAKES_SUCCESS,
-  payload,
 });
 
 export const refreshStakeFailed = (payload: Error): RefreshStakesFailed => ({
@@ -133,7 +129,7 @@ export const getUserStakeData = (
 });
 
 export const getUserStakeDataSuccess = (
-  payload: GetUserStakeDataResult,
+  payload: StakeData,
 ): GetUserStakeDataSuccess => ({
   type: GET_USER_STAKE_DATA_SUCCESS,
   payload,

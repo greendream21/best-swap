@@ -1,3 +1,4 @@
+import { RemoteData } from '@devexperts/remote-data-ts';
 import { FixmeType, Maybe, Address } from '../../types/bepswap';
 
 export interface User {
@@ -9,7 +10,7 @@ export interface User {
   keystore: FixmeType;
 }
 
-export type EmptyUser = {}
+export type EmptyUser = {};
 
 export interface AssetData {
   asset: string;
@@ -17,22 +18,26 @@ export interface AssetData {
   price: number;
 }
 
-export type StakeData = FixmeType;
-
-export interface State {
-  user: Maybe<User>;
-  assetData: AssetData[];
-  stakeData: StakeData[];
-  loadingAssets: boolean;
-  loadingStakes: boolean;
-  error: Maybe<Error>;
-}
-
-export interface GetUserStakeDataResult {
+export type StakeData = {
   targetSymbol: string;
   target: string;
   targetValue: number;
   assetValue: number;
   asset: string;
   price: number;
+};
+
+export type StakeDataListLoadingState = RemoteData<Error, StakeData[]>
+
+export interface State {
+  readonly user: Maybe<User>;
+  readonly assetData: AssetData[];
+  readonly stakeData: StakeDataListLoadingState;
+  /**
+   * Private state for internal use only
+   * Never use this in a component
+   * */
+  readonly previousStakeData: StakeData[];
+  readonly loadingAssets: boolean;
+  readonly error: Maybe<Error>;
 }
