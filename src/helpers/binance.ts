@@ -1,4 +1,4 @@
-import { TransferEventData, TxHash } from '../types/binance';
+import { TransferEventData, TxHash, TransferEvent } from '../types/binance';
 
 /**
  * Get `hash` from transfer event sent by Binance chain
@@ -9,4 +9,4 @@ export const getHashFromTransfer = (transfer?: {data: Pick<TransferEventData, 'H
 /**
  * Get `hash` from memo
 */
-export const getTxHashFromMemo = (transfer?: {data: Pick<TransferEventData, 'M'>}) => transfer?.data?.M.split(':')[1];
+export const getTxHashFromMemo = (transfer?: TransferEvent) => transfer?.data?.M.split(':')[1];

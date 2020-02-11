@@ -36,7 +36,12 @@ import {
   emptyString,
 } from '../../../helpers/stringHelper';
 import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
-import { getCalcResult, confirmSwap, getTxResult } from '../utils';
+import {
+  getCalcResult,
+  confirmSwap,
+  getTxResult,
+  validatePair,
+} from '../utils';
 import { withBinanceTransferWS } from '../../../HOC/websocket/WSBinance';
 
 import * as appActions from '../../../redux/app/actions';
@@ -50,7 +55,7 @@ import Trend from '../../../components/uielements/trend';
 import { MAX_VALUE } from '../../../redux/app/const';
 import { delay } from '../../../helpers/asyncHelper';
 import { FixmeType, Maybe, Nothing } from '../../../types/bepswap';
-import { SwapSendView } from './types';
+import { SwapSendView, CalcResult } from './types';
 import { User, AssetData } from '../../../redux/wallet/types';
 import { TxStatus, TxTypes } from '../../../redux/app/types';
 
@@ -59,8 +64,7 @@ import {
   PriceDataIndex,
   PoolDataMap,
 } from '../../../redux/midgard/types';
-import { validatePair } from '../utils-next';
-import { AssetDetail } from '../../../types/generated/midgard';
+import { AssetDetail } from '../../../types/generated/midgard/api';
 import { RootState } from '../../../redux/store';
 
 type ComponentProps = {
@@ -108,15 +112,6 @@ interface State {
   slipProtection: boolean;
   maxSlip: number;
   txResult: Maybe<TxResult>;
-}
-
-interface CalcResult {
-  Px: number;
-  slip: number;
-  outputAmount: number;
-  outputPrice: number;
-  fee: number;
-  lim?: number;
 }
 
 interface TxResult {
@@ -550,14 +545,14 @@ class SwapSend extends React.Component<Props, State> {
     const { xValue, address, slipProtection } = this.state;
     const { source, target } = getPair(info);
 
-    if (user) {
+    if (user && this.calcResult) {
       this.setState({
         txResult: null,
       });
 
       this.handleStartTimer();
       try {
-        const { result } = await confirmSwap(
+        const data = await confirmSwap(
           Binance,
           user.wallet,
           source,
@@ -568,7 +563,11 @@ class SwapSend extends React.Component<Props, State> {
           address,
         );
 
-        setTxHash(result[0]?.hash);
+        const result = data?.result ?? [];
+        const hash = result[0]?.hash;
+        if (hash) {
+          setTxHash(hash);
+        }
       } catch (error) {
         notification['error']({
           message: 'Swap Invalid',
