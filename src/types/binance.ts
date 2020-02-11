@@ -468,3 +468,17 @@ export type Balance = {
    */
   frozen: string;
 };
+
+/**
+ * Result of  `bncClient.transfer(...)`
+ * to transfer tokens from one address to another.
+ * See https://github.com/binance-chain/javascript-sdk/wiki/API-Documentation#bncclienttransferfromaddress-toaddress-amount-asset-memo-sequence--promise
+ * */
+export type TransferResult = { result?: Transfer[] };
+
+export type Transfer = {
+  code: number;
+  hash: string;
+  log: string;
+  ok: boolean;
+};

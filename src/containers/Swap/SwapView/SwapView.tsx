@@ -21,7 +21,7 @@ import {
 } from './types';
 import * as midgardActions from '../../../redux/midgard/actions';
 import { PriceDataIndex, PoolDataMap } from '../../../redux/midgard/types';
-import { FixmeType, Maybe } from '../../../types/bepswap';
+import { FixmeType, Maybe, Nothing } from '../../../types/bepswap';
 
 import { ContentWrapper } from './SwapView.style';
 import { Asset } from '../../../types/generated/midgard';
@@ -178,7 +178,7 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
   const renderSwapList = (view: SwapViewType) => {
     let key = 0;
     const swapViewData = pools.reduce((result: FixmeType[], pool) => {
-      const poolInfo = pool.symbol ? poolData[pool.symbol] : {};
+      const poolInfo = pool.symbol ? poolData[pool.symbol] : Nothing;
 
       const swapCardData: Maybe<SwapCardType> = getSwapData(
         'rune',

@@ -1,5 +1,3 @@
-import { get as _get } from 'lodash';
-
 import { getSwapMemo } from '../../helpers/memoHelper';
 import {
   getTickerFormat,
@@ -9,26 +7,56 @@ import {
 import { getZValue, getPx, getPz, getSlip, getFee } from './calc';
 import { BASE_NUMBER } from '../../settings/constants';
 import { getTxHashFromMemo } from '../../helpers/binance';
+import { PriceDataIndex, PoolDataMap } from '../../redux/midgard/types';
+import { PoolDetail } from '../../types/generated/midgard';
+import { FixmeType, Nothing, Maybe } from '../../types/bepswap';
+import { TransferResult, TransferEvent, TransferEventData } from '../../types/binance';
+import { CalcResult } from './SwapSend/types';
 
-export const getSwapType = (from, to) => {
+export const validatePair = (
+  pair: { source?: string; target?: string },
+  sourceInfo: { asset: string }[],
+  targetInfo: { asset: string }[],
+) => {
+  const { target = '', source = '' } = pair;
+  const targetData = targetInfo.filter(
+    (data: { asset: string }) =>
+      getTickerFormat(data.asset) !== target.toLowerCase(),
+  );
+  const sourceData = sourceInfo.filter(
+    (data: { asset: string }) =>
+      getTickerFormat(data.asset) !== source.toLowerCase(),
+  );
+  return {
+    sourceData,
+    targetData,
+  };
+};
+
+export const getSwapType = (from: string, to: string) => {
   if (from.toLowerCase() === 'rune' || to.toLowerCase() === 'rune') {
     return 'single_swap';
   }
   return 'double_swap';
 };
 
-export const getSwapData = (from, poolInfo, priceIndex, basePriceAsset) => {
+export const getSwapData = (
+  from: string,
+  poolInfo: Maybe<PoolDetail>,
+  priceIndex: PriceDataIndex,
+  basePriceAsset: string,
+) => {
   const asset = from;
 
   if (poolInfo) {
-    const target = _get(poolInfo, 'asset.ticker', '');
+    const target = poolInfo?.asset?.ticker ?? '';
 
     const runePrice = priceIndex.RUNE;
     const depth = Number(poolInfo.runeDepth) * runePrice;
-    const volume = poolInfo.poolVolume24hr * runePrice;
-    const transaction = Number(poolInfo.poolTxAverage * runePrice);
-    const slip = Number(poolInfo.poolSlipAverage * runePrice);
-    const trade = Number(poolInfo.swappingTxCount);
+    const volume = (poolInfo?.poolVolume24hr ?? 0) * runePrice;
+    const transaction = (poolInfo?.poolTxAverage ?? 0) * runePrice;
+    const slip = (poolInfo.poolSlipAverage ?? 0) * runePrice;
+    const trade = poolInfo?.swappingTxCount ?? 0;
 
     const depthValue = `${basePriceAsset} ${getUserFormat(
       depth,
@@ -62,14 +90,22 @@ export const getSwapData = (from, poolInfo, priceIndex, basePriceAsset) => {
 };
 
 export const getCalcResult = (
-  from,
-  to,
-  pools,
-  poolAddress,
-  xValue,
-  runePrice,
-) => {
+  from: string,
+  to: string,
+  pools: PoolDataMap,
+  poolAddress: string,
+  xValue: number,
+  runePrice: number,
+): Maybe<CalcResult> => {
   const type = getSwapType(from, to);
+
+  const result: {
+    poolAddressFrom?: string;
+    poolAddressTo?: string;
+    symbolFrom?: string;
+    symbolTo?: string;
+    poolRatio?: number;
+  } = {};
 
   if (type === 'double_swap') {
     let X = 10000;
@@ -77,7 +113,6 @@ export const getCalcResult = (
     let R = 10000;
     let Z = 10;
     const Py = runePrice;
-    const result = {};
 
     // CHANGELOG:
     /*
@@ -86,11 +121,9 @@ export const getCalcResult = (
     */
     Object.keys(pools).forEach(key => {
       const poolData = pools[key];
-      const {
-        runeStakedTotal,
-        assetStakedTotal,
-        asset: { symbol },
-      } = poolData;
+      const runeStakedTotal = poolData?.runeStakedTotal ?? 0;
+      const assetStakedTotal = poolData?.assetStakedTotal ?? 0;
+      const symbol = poolData?.asset?.symbol ?? '';
 
       const token = getTickerFormat(symbol);
       if (token.toLowerCase() === from.toLowerCase()) {
@@ -133,15 +166,11 @@ export const getCalcResult = (
     const Py = runePrice;
     const rune = 'RUNE-A1F';
 
-    const result = {};
-
     Object.keys(pools).forEach(key => {
       const poolData = pools[key];
-      const {
-        runeStakedTotal,
-        assetStakedTotal,
-        asset: { symbol },
-      } = poolData;
+      const runeStakedTotal = poolData?.runeStakedTotal ?? 0;
+      const assetStakedTotal = poolData?.assetStakedTotal ?? 0;
+      const symbol = poolData?.asset?.symbol ?? '';
 
       const token = getTickerFormat(symbol);
       if (token.toLowerCase() === from.toLowerCase()) {
@@ -193,15 +222,11 @@ export const getCalcResult = (
     const Px = runePrice;
     const rune = 'RUNE-A1F';
 
-    const result = {};
-
     Object.keys(pools).forEach(key => {
       const poolData = pools[key];
-      const {
-        runeStakedTotal,
-        assetStakedTotal,
-        asset: { symbol },
-      } = poolData;
+      const runeStakedTotal = poolData?.runeStakedTotal ?? 0;
+      const assetStakedTotal = poolData?.assetStakedTotal ?? 0;
+      const symbol = poolData?.asset?.symbol ?? '';
 
       const token = getTickerFormat(symbol);
       if (token.toLowerCase() === to.toLowerCase()) {
@@ -247,18 +272,27 @@ export const getCalcResult = (
     };
   }
 
-  return null;
+  return Nothing;
 };
 
-export const validateSwap = (wallet, type, data, amount) => {
+export const validateSwap = (
+  wallet: string,
+  type: string,
+  data: Partial<CalcResult>,
+  amount: number,
+) => {
   if (type === 'single_swap') {
-    const { symbolTo } = data;
+    const symbolTo = data?.symbolTo;
     if (!wallet || !symbolTo || !amount) {
       return false;
     }
   }
   if (type === 'double_swap') {
-    const { poolAddressFrom, symbolFrom, poolAddressTo, symbolTo } = data;
+    const poolAddressFrom = data?.poolAddressFrom;
+    const symbolFrom = data?.symbolFrom;
+    const poolAddressTo = data?.poolAddressTo;
+    const symbolTo = data?.symbolTo;
+
     if (
       !wallet ||
       !poolAddressFrom ||
@@ -274,15 +308,15 @@ export const validateSwap = (wallet, type, data, amount) => {
 };
 
 export const confirmSwap = (
-  Binance,
-  wallet,
-  from,
-  to,
-  data,
-  amount,
-  protectSlip,
+  Binance: FixmeType,
+  wallet: string,
+  from: string,
+  to: string,
+  data: CalcResult,
+  amount: number,
+  protectSlip: boolean,
   destAddr = '',
-) => {
+): Promise<TransferResult> => {
   return new Promise((resolve, reject) => {
     const type = getSwapType(from, to);
 
@@ -292,20 +326,19 @@ export const confirmSwap = (
 
     const { poolAddressTo, symbolTo, symbolFrom, lim } = data;
 
-    const limit = protectSlip ? lim : '';
+    const limit = protectSlip && lim ? lim.toString() : '';
     const memo = getSwapMemo(symbolTo, destAddr, limit);
     Binance.transfer(wallet, poolAddressTo, amount, symbolFrom, memo)
-      .then(response => resolve(response))
-      .catch(error => reject(error));
+      .then((response: TransferResult) => resolve(response))
+      .catch((error: Error) => reject(error));
   });
 };
 
-export const parseTransfer = tx => {
-  const data = tx?.data ?? {};
-  const txHash = data?.H;
-  const txMemo = data?.M;
-  const txFrom = data?.f;
-  const t = data?.t ?? [];
+export const parseTransfer = (tx?: Pick<TransferEvent, 'data'>) => {
+  const txHash = tx?.data?.H;
+  const txMemo = tx?.data?.M;
+  const txFrom = tx?.data?.f;
+  const t = tx?.data?.t ?? [];
   const txTo = t[0]?.o;
   const c = t[0]?.c ?? [];
   const txAmount = c[0]?.A;
@@ -321,13 +354,19 @@ export const parseTransfer = tx => {
   };
 };
 
-export const isOutboundTx = tx =>
+export const isOutboundTx = (tx?: { data?: Pick<TransferEventData, 'M'> }) =>
   tx?.data?.M?.toUpperCase().includes('OUTBOUND') ?? false;
 
-export const isRefundTx = tx =>
+export const isRefundTx = (tx?: { data?: Pick<TransferEventData, 'M'> }) =>
   tx?.data?.M?.toUpperCase().includes('REFUND') ?? false;
 
-export const getTxResult = ({ tx, hash }) => {
+export const getTxResult = ({
+  tx,
+  hash,
+}: {
+  tx: TransferEvent;
+  hash: string;
+}) => {
   const { txToken, txAmount } = parseTransfer(tx);
 
   if (isRefundTx(tx) && getTxHashFromMemo(tx) === hash) {
