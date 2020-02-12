@@ -5,6 +5,9 @@ import {
   withdrawResult,
 } from './utils';
 import { TransferEvent } from '../../types/binance';
+import { getCreatePoolTokens } from './utils-next';
+import { AssetData } from '../../redux/wallet/types';
+import { Asset } from '../../types/generated/midgard';
 
 describe('pool/utils/', () => {
   describe('parseTransfer', () => {
@@ -110,8 +113,10 @@ describe('pool/utils/', () => {
           data: {
             e: 'outboundTransferInfo',
             E: 62498151,
-            H: '1A4C9EB6438CC87B9DD67707770DE662F6212B68A93A5ABCE2DA0AC09B3FDCE1',
-            M: 'OUTBOUND:0C48D82F045B5AABD02663551D19CE18D2266E966ABD3A4D5ACBD3762C8EC692',
+            H:
+              '1A4C9EB6438CC87B9DD67707770DE662F6212B68A93A5ABCE2DA0AC09B3FDCE1',
+            M:
+              'OUTBOUND:0C48D82F045B5AABD02663551D19CE18D2266E966ABD3A4D5ACBD3762C8EC692',
             f: 'tbnb1nhftlnunw3h6c9wsamfyf8dzmmwm8c9xfjaxmp',
             t: [
               {
@@ -128,7 +133,8 @@ describe('pool/utils/', () => {
         };
         const result = withdrawResult({
           tx,
-          hash: '0C48D82F045B5AABD02663551D19CE18D2266E966ABD3A4D5ACBD3762C8EC692',
+          hash:
+            '0C48D82F045B5AABD02663551D19CE18D2266E966ABD3A4D5ACBD3762C8EC692',
         });
         expect(result).toBeTruthy();
       });
@@ -156,6 +162,56 @@ describe('pool/utils/', () => {
       it('should be unknown by a missing memo', () => {
         const result = getTxType(undefined);
         expect(result).toEqual('unknown');
+      });
+    });
+
+    describe('getCreatePoolTokens', () => {
+      it('should filter pool assets ', () => {
+        const assetA: AssetData = {
+          asset: 'A',
+          assetValue: 1,
+          price: 2,
+        };
+        const assetB: AssetData = {
+          asset: 'B',
+          assetValue: 1,
+          price: 2,
+        };
+        const assets: AssetData[] = [assetA, assetB];
+        const pools: Asset[] = [
+          {
+            symbol: 'A',
+          },
+        ];
+        const result = getCreatePoolTokens(assets, pools);
+        const expected = [assetB];
+        expect(result).toEqual(expected);
+      });
+      it('should filter `RUNE` assets ', () => {
+        const assetA: AssetData = {
+          asset: 'RUNE',
+          assetValue: 1,
+          price: 2,
+        };
+        const assetB: AssetData = {
+          asset: 'RUNE',
+          assetValue: 1,
+          price: 2,
+        };
+        const assetC: AssetData = {
+          asset: 'C',
+          assetValue: 1,
+          price: 2,
+        };
+        const assets: AssetData[] = [assetA, assetB, assetC];
+        const pools: Asset[] = [
+          {
+            symbol: 'A',
+          },
+        ];
+        const result = getCreatePoolTokens(assets, pools);
+        const expected = [assetC];
+        expect(result).toEqual(expected);
       });
     });
   });

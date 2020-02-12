@@ -41,11 +41,8 @@ import {
   getTickerFormat,
   emptyString,
 } from '../../../helpers/stringHelper';
-import {
-  getCreatePoolTokens,
-  confirmCreatePool,
-  getCreatePoolCalc,
-} from '../utils';
+import { confirmCreatePool, getCreatePoolCalc } from '../utils';
+import { getCreatePoolTokens } from '../utils-next';
 
 import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
 import { MAX_VALUE } from '../../../redux/app/const';

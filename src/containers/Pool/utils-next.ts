@@ -7,14 +7,14 @@
  * all sources here has to moved into it, as well.
  */
 
-import { get as _get } from 'lodash';
-
 import {
   getFixedNumber,
   getBaseNumberFormat,
+  getTickerFormat,
 } from '../../helpers/stringHelper';
+import { AssetData } from '../../redux/wallet/types';
 import { PoolDataMap } from '../../redux/midgard/types';
-import { PoolDetail } from '../../types/generated/midgard';
+import { PoolDetail, Asset } from '../../types/generated/midgard';
 import { Maybe } from '../../types/bepswap';
 
 export type CalcResult = {
@@ -93,4 +93,25 @@ export const getCalcResult = (
     R,
     T,
   };
+};
+
+export const getCreatePoolTokens = (
+  assetData: AssetData[],
+  pools: Asset[],
+): AssetData[] => {
+  return assetData.filter(data => {
+    let unique = true;
+
+    if (getTickerFormat(data.asset) === 'rune') {
+      return false;
+    }
+
+    pools.forEach((pool: Asset) => {
+      if (pool.symbol === data.asset) {
+        unique = false;
+      }
+    });
+
+    return unique;
+  });
 };
