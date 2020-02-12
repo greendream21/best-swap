@@ -15,12 +15,8 @@ import { Nothing } from '../../types/bepswap';
 import { PoolDataMap } from '../../redux/midgard/types';
 import { CalcResult } from './SwapSend/types';
 
-const bnbPoolInfo = {
-  asset: {
-    chain: 'BNB',
-    symbol: 'BNB',
-    ticker: 'BNB',
-  },
+const bnbPoolInfo: PoolDetail = {
+  asset: 'BNB.BNB',
   assetDepth: -12500,
   assetROI: 184467440737094.38,
   assetStakedTotal: 100000,
@@ -54,18 +50,14 @@ const bnbPoolInfo = {
   stakeTxCount: 1,
   stakersCount: 1,
   stakingTxCount: 1,
-  status: 'enabled',
+  status: PoolDetailStatusEnum.Enabled,
   swappersCount: 0,
   swappingTxCount: 0,
   withdrawTxCount: 0,
 };
 
 const lokPoolInfo: PoolDetail = {
-  asset: {
-    chain: 'BNB',
-    symbol: 'LOK-3C0',
-    ticker: 'LOK',
-  },
+  asset: 'BNB.LOK-3C0',
   assetDepth: 4283400000,
   assetROI: 0,
   assetStakedTotal: 4283400000,

@@ -22,13 +22,12 @@ import {
 import * as appActions from '../../../redux/app/actions';
 import * as midgardActions from '../../../redux/midgard/actions';
 import * as binanceActions from '../../../redux/binance/actions';
-import { getBepswapValues, getBnbPrice, getPriceDiff } from '../utils';
+import { getBepswapValues, getPriceDiff } from '../utils';
 import { getTickerFormat, getFixedNumber } from '../../../helpers/stringHelper';
 import { MAX_VALUE } from '../../../redux/app/const';
 import { RootState } from '../../../redux/store';
 import { AssetData } from '../../../redux/wallet/types';
 import { FixmeType, Maybe } from '../../../types/bepswap';
-import { Asset } from '../../../types/generated/midgard';
 import { PoolDataMap, PriceDataIndex } from '../../../redux/midgard/types';
 import { TickerStatistics } from '../../../types/binance';
 import { TxStatus, TxTypes } from '../../../redux/app/types';
@@ -51,7 +50,7 @@ type ComponentProps = {
 
 type ConnectedProps = {
   assetData: AssetData[];
-  pools: Asset[];
+  pools: string[];
   poolData: PoolDataMap;
   priceIndex: PriceDataIndex;
   tickerData: Maybe<TickerStatistics>;
@@ -291,8 +290,9 @@ class TradeDetail extends React.Component<Props, State> {
         price,
       };
     });
-
-    const bnbPrice = getBnbPrice(pools);
+    // FIXME (luxtardev): https://gitlab.com/thorchain/bepswap/bepswap-react-app/issues/347
+    // const bnbPrice = getBnbPrice(pools);
+    const bnbPrice = 0;
     const bepswapValues = getBepswapValues(
       symbol,
       pools,

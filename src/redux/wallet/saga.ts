@@ -19,11 +19,11 @@ import { AssetData, StakeData } from './types';
 import {
   DefaultApi,
   StakersAddressData,
-  Asset,
   PoolDetail,
   StakersAssetData,
 } from '../../types/generated/midgard';
 import { Market, Balance } from '../../types/binance';
+import { getAssetFromString } from '../midgard/utils';
 
 const midgardApi = new DefaultApi({ basePath: MIDGARD_API_URL });
 
@@ -93,8 +93,7 @@ export function* getUserStakeData() {
     payload,
   }: actions.GetUserStakeDataRequest) {
     const { address, asset } = payload;
-    const { chain, symbol, ticker } = asset;
-    const assetId = `${chain}.${symbol}`;
+    const { symbol = '', ticker = '' } = getAssetFromString(asset);
 
     try {
       const {
@@ -102,11 +101,11 @@ export function* getUserStakeData() {
       }: AxiosResponse<StakersAssetData> = yield call(
         { context: midgardApi, fn: midgardApi.getStakersAddressAndAssetData },
         address,
-        assetId,
+        asset,
       );
       const { data: poolData }: AxiosResponse<PoolDetail> = yield call(
         { context: midgardApi, fn: midgardApi.getPoolsData },
-        assetId,
+        asset,
       );
       const price = poolData?.price ?? 0;
 
@@ -143,11 +142,11 @@ export function* refreshStakes() {
       );
       const stakerPools = data.poolsArray || [];
       yield all(
-        stakerPools.map((poolData: Asset) => {
+        stakerPools.map((pool: string) => {
           return put(
             actions.getUserStakeData({
               address,
-              asset: poolData,
+              asset: pool,
             } as actions.GetUserStakeDataRequestPayload),
           );
         }),

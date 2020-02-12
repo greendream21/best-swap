@@ -4,7 +4,6 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { Row, Col, Icon, notification, Popover } from 'antd';
-import { get as _get } from 'lodash';
 
 import { crypto } from '@binance-chain/javascript-sdk';
 import Binance from '../../../clients/binance';
@@ -55,7 +54,7 @@ import StepBar from '../../../components/uielements/stepBar';
 import Trend from '../../../components/uielements/trend';
 import { MAX_VALUE } from '../../../redux/app/const';
 import { delay } from '../../../helpers/asyncHelper';
-import { FixmeType, Maybe, Nothing } from '../../../types/bepswap';
+import { FixmeType, Maybe, Nothing, TokenData } from '../../../types/bepswap';
 import { SwapSendView, CalcResult } from './types';
 import { User, AssetData } from '../../../redux/wallet/types';
 import { TxStatus, TxTypes } from '../../../redux/app/types';
@@ -65,8 +64,8 @@ import {
   PriceDataIndex,
   PoolDataMap,
 } from '../../../redux/midgard/types';
-import { AssetDetail } from '../../../types/generated/midgard/api';
 import { RootState } from '../../../redux/store';
+import { getAssetFromString } from '../../../redux/midgard/utils';
 
 type ComponentProps = {
   info: string;
@@ -79,7 +78,6 @@ type ConnectedProps = {
   history: H.History;
   txStatus: TxStatus;
   assetData: AssetData[];
-  pools: AssetDetail[];
   poolAddress: string;
   assets: AssetDataIndex;
   poolData: PoolDataMap;
@@ -115,15 +113,10 @@ interface State {
   txResult: Maybe<TxResult>;
 }
 
-interface TxResult {
+type TxResult = {
   type: string;
   amount: string;
   token: string;
-}
-
-interface TokenData {
-  asset: string;
-  price: number;
 }
 
 class SwapSend extends React.Component<Props, State> {
@@ -627,7 +620,7 @@ class SwapSend extends React.Component<Props, State> {
     const { slip, outputAmount } = info;
 
     const Px = priceIndex.RUNE;
-    const tokenPrice = _get(priceIndex, swapTarget.toUpperCase(), 0);
+    const tokenPrice = priceIndex[swapTarget.toUpperCase()] || 0;
 
     const priceFrom = Number(Px * xValue);
     const priceTo = outputAmount * Number(tokenPrice);
@@ -789,11 +782,12 @@ class SwapSend extends React.Component<Props, State> {
 
     const tokensData: TokenData[] = Object.keys(tokenInfo).map(tokenName => {
       const tokenData = tokenInfo[tokenName];
-      const symbol = _get(tokenData, 'asset.symbol', null);
-      const price = _get(tokenData, 'priceRune', 0);
+      const assetStr = tokenData?.asset?.asset;
+      const asset = assetStr ? getAssetFromString(assetStr) : null;
+      const price = tokenData?.priceRune ?? 0;
 
       return {
-        asset: symbol,
+        asset: asset?.symbol ?? '',
         price,
       };
     });
@@ -833,16 +827,8 @@ class SwapSend extends React.Component<Props, State> {
       return <></>;
     } else {
       const { slip, outputAmount, outputPrice } = this.calcResult;
-      const sourcePrice = _get(
-        priceIndex,
-        swapSource.toUpperCase(),
-        outputPrice,
-      );
-      const targetPrice = _get(
-        priceIndex,
-        swapTarget.toUpperCase(),
-        outputPrice,
-      );
+      const sourcePrice = priceIndex[swapSource.toUpperCase()] || outputPrice;
+      const targetPrice = priceIndex[swapTarget.toUpperCase()] || outputPrice;
 
       const ratio = targetPrice !== 0 ? sourcePrice / targetPrice : 0;
 
@@ -1028,7 +1014,6 @@ export default compose(
       txStatus: state.App.txStatus,
       user: state.Wallet.user,
       assetData: state.Wallet.assetData,
-      pools: state.Midgard.pools,
       poolAddress: state.Midgard.poolAddress,
       assets: state.Midgard.assets,
       poolData: state.Midgard.poolData,

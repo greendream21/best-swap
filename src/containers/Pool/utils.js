@@ -1,5 +1,3 @@
-import { get as _get } from 'lodash';
-
 import {
   getStakeMemo,
   getCreateMemo,
@@ -13,11 +11,18 @@ import {
   getUserFormat,
 } from '../../helpers/stringHelper';
 import { getTxHashFromMemo } from '../../helpers/binance';
+import { getAssetFromString } from '../../redux/midgard/utils';
 
-export const getPoolData = (from, poolInfo, priceIndex, basePriceAsset) => {
+export const getPoolData = (
+  from /* string */,
+  poolInfo /* PoolDetail */,
+  priceIndex /* PriceDataIndex */,
+  basePriceAsset /* string */,
+) => {
   const asset = from;
-  const target = _get(poolInfo, 'asset.ticker', '');
-  const symbol = _get(poolInfo, 'asset.symbol', '');
+  const { symbol = '', ticker: target = '' } = getAssetFromString(
+    poolInfo?.asset,
+  );
 
   const runePrice = priceIndex.RUNE;
   const depth = Number(poolInfo.runeDepth) * runePrice;

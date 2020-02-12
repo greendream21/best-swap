@@ -1,5 +1,4 @@
 import { AssetData, User, StakeData } from './types';
-import { FixmeType } from '../../types/bepswap';
 import { Address } from '../../types/binance';
 
 export interface SaveWallet {
@@ -38,7 +37,7 @@ export interface RefreshStakesFailed {
 
 export interface GetUserStakeDataRequestPayload {
   address: Address;
-  asset: FixmeType;
+  asset: string;
 }
 export interface GetUserStakeDataRequest {
   type: typeof GET_USER_STAKE_DATA_REQUEST;

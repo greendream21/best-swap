@@ -54,7 +54,7 @@ import { getHashFromTransfer } from '../../../helpers/binance';
 import { delay } from '../../../helpers/asyncHelper';
 import { RootState } from '../../../redux/store';
 import { User, AssetData } from '../../../redux/wallet/types';
-import { FixmeType, Maybe, Nothing } from '../../../types/bepswap';
+import { FixmeType, Maybe, Nothing, TokenData } from '../../../types/bepswap';
 import { TxStatus, TxTypes } from '../../../redux/app/types';
 import {
   AssetDataIndex,
@@ -62,7 +62,8 @@ import {
   PoolDataMap,
   PriceDataIndex,
 } from '../../../redux/midgard/types';
-import { Asset, StakersAssetData } from '../../../types/generated/midgard';
+import { StakersAssetData } from '../../../types/generated/midgard';
+import { getAssetFromString } from '../../../redux/midgard/utils';
 
 const { TabPane } = Tabs;
 
@@ -78,7 +79,6 @@ type ConnectedProps = {
   txStatus: TxStatus;
   user: Maybe<User>;
   assetData: AssetData[];
-  pools: Asset[];
   poolAddress: Maybe<string>;
   poolData: PoolDataMap;
   assets: AssetDataIndex;
@@ -932,13 +932,14 @@ class PoolStake extends React.Component<Props, State> {
     const runePrice = priceIndex.RUNE;
     const tokenPrice = _get(priceIndex, target.toUpperCase(), 0);
 
-    const tokensData = Object.keys(assets).map(tokenName => {
+    const tokensData: TokenData[] = Object.keys(assets).map(tokenName => {
       const tokenData = assets[tokenName];
-      const symbol = _get(tokenData, 'asset.symbol', null);
-      const price = _get(tokenData, 'priceRune', 0);
+      const assetStr = tokenData?.asset?.asset;
+      const asset = assetStr ? getAssetFromString(assetStr) : null;
+      const price = tokenData?.priceRune ?? 0;
 
       return {
-        asset: symbol,
+        asset: asset?.symbol ?? '',
         price,
       };
     });
@@ -1494,7 +1495,6 @@ export default compose(
       txStatus: state.App.txStatus,
       user: state.Wallet.user,
       assetData: state.Wallet.assetData,
-      pools: state.Midgard.pools,
       poolAddress: state.Midgard.poolAddress,
       poolData: state.Midgard.poolData,
       assets: state.Midgard.assets,

@@ -13,24 +13,19 @@ import Table from '../../../components/uielements/table';
 import SwapLoader from '../../../components/utility/loaders/swap';
 
 import { getSwapData } from '../utils';
-import {
-  SwapCardType,
-  SwapTableRowType,
-  PoolInfoType,
-  SwapViewType,
-} from './types';
+import { SwapCardType, SwapTableRowType, PoolInfoType } from './types';
 import * as midgardActions from '../../../redux/midgard/actions';
 import { PriceDataIndex, PoolDataMap } from '../../../redux/midgard/types';
-import { FixmeType, Maybe, Nothing } from '../../../types/bepswap';
+import { FixmeType, Maybe, ViewType, Nothing } from '../../../types/bepswap';
 
 import { ContentWrapper } from './SwapView.style';
-import { Asset } from '../../../types/generated/midgard';
 import { RootState } from '../../../redux/store';
+import { getAssetFromString } from '../../../redux/midgard/utils';
 
 type ComponentProps = {};
 
 type ConnectedProps = {
-  pools: Asset[];
+  pools: string[];
   poolData: PoolDataMap;
   priceIndex: PriceDataIndex;
   basePriceAsset: string;
@@ -59,7 +54,7 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
 
   const renderSwapTable = (
     swapViewData: SwapTableRowType[],
-    view: SwapViewType,
+    view: ViewType,
   ) => {
     const btnCol = {
       key: 'swap',
@@ -175,10 +170,11 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
     return <Table columns={columns} dataSource={swapViewData} rowKey="key" />;
   };
 
-  const renderSwapList = (view: SwapViewType) => {
+  const renderSwapList = (view: ViewType) => {
     let key = 0;
     const swapViewData = pools.reduce((result: FixmeType[], pool) => {
-      const poolInfo = pool.symbol ? poolData[pool.symbol] : Nothing;
+      const { symbol } = getAssetFromString(pool);
+      const poolInfo = symbol ? poolData[symbol] : Nothing;
 
       const swapCardData: Maybe<SwapCardType> = getSwapData(
         'rune',
@@ -229,10 +225,10 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
           </div>
           <div className="asset-button-group">{renderAssets()}</div>
           <div className="swap-list-view desktop-view">
-            {renderSwapList(SwapViewType.DESKTOP)}
+            {renderSwapList(ViewType.DESKTOP)}
           </div>
           <div className="swap-list-view mobile-view">
-            {renderSwapList(SwapViewType.MOBILE)}
+            {renderSwapList(ViewType.MOBILE)}
           </div>
         </>
       )}

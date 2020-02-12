@@ -7,7 +7,6 @@ import {
 import { TransferEvent } from '../../types/binance';
 import { getCreatePoolTokens } from './utils-next';
 import { AssetData } from '../../redux/wallet/types';
-import { Asset } from '../../types/generated/midgard';
 
 describe('pool/utils/', () => {
   describe('parseTransfer', () => {
@@ -178,11 +177,7 @@ describe('pool/utils/', () => {
           price: 2,
         };
         const assets: AssetData[] = [assetA, assetB];
-        const pools: Asset[] = [
-          {
-            symbol: 'A',
-          },
-        ];
+        const pools: string[] = ['A.A'];
         const result = getCreatePoolTokens(assets, pools);
         const expected = [assetB];
         expect(result).toEqual(expected);
@@ -204,11 +199,7 @@ describe('pool/utils/', () => {
           price: 2,
         };
         const assets: AssetData[] = [assetA, assetB, assetC];
-        const pools: Asset[] = [
-          {
-            symbol: 'A',
-          },
-        ];
+        const pools: string[] = ['A.A'];
         const result = getCreatePoolTokens(assets, pools);
         const expected = [assetC];
         expect(result).toEqual(expected);
