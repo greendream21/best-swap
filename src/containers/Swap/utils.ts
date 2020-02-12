@@ -10,8 +10,13 @@ import { getTxHashFromMemo } from '../../helpers/binance';
 import { PriceDataIndex, PoolDataMap } from '../../redux/midgard/types';
 import { PoolDetail } from '../../types/generated/midgard';
 import { FixmeType, Nothing, Maybe } from '../../types/bepswap';
-import { TransferResult, TransferEvent, TransferEventData } from '../../types/binance';
+import {
+  TransferResult,
+  TransferEvent,
+  TransferEventData,
+} from '../../types/binance';
 import { CalcResult } from './SwapSend/types';
+import { getAssetFromString } from '../../redux/midgard/utils';
 
 export const validatePair = (
   pair: { source?: string; target?: string },
@@ -49,7 +54,7 @@ export const getSwapData = (
   const asset = from;
 
   if (poolInfo) {
-    const target = poolInfo?.asset?.ticker ?? '';
+    const { ticker: target = '' } = getAssetFromString(poolInfo?.asset);
 
     const runePrice = priceIndex.RUNE;
     const depth = Number(poolInfo.runeDepth) * runePrice;
@@ -123,7 +128,7 @@ export const getCalcResult = (
       const poolData = pools[key];
       const runeStakedTotal = poolData?.runeStakedTotal ?? 0;
       const assetStakedTotal = poolData?.assetStakedTotal ?? 0;
-      const symbol = poolData?.asset?.symbol ?? '';
+      const { symbol = '' } = getAssetFromString(poolData?.asset);
 
       const token = getTickerFormat(symbol);
       if (token.toLowerCase() === from.toLowerCase()) {
@@ -170,7 +175,7 @@ export const getCalcResult = (
       const poolData = pools[key];
       const runeStakedTotal = poolData?.runeStakedTotal ?? 0;
       const assetStakedTotal = poolData?.assetStakedTotal ?? 0;
-      const symbol = poolData?.asset?.symbol ?? '';
+      const { symbol = '' } = getAssetFromString(poolData?.asset);
 
       const token = getTickerFormat(symbol);
       if (token.toLowerCase() === from.toLowerCase()) {
@@ -226,7 +231,7 @@ export const getCalcResult = (
       const poolData = pools[key];
       const runeStakedTotal = poolData?.runeStakedTotal ?? 0;
       const assetStakedTotal = poolData?.assetStakedTotal ?? 0;
-      const symbol = poolData?.asset?.symbol ?? '';
+      const { symbol = '' } = getAssetFromString(poolData?.asset);
 
       const token = getTickerFormat(symbol);
       if (token.toLowerCase() === to.toLowerCase()) {

@@ -4,7 +4,7 @@ import {
   PriceDataIndex,
   AssetDataIndex,
 } from './types';
-import { AssetDetail, Asset, PoolDetail, StakersAssetData, ThorchainEndpoints } from '../../types/generated/midgard';
+import { AssetDetail, PoolDetail, StakersAssetData, ThorchainEndpoints } from '../../types/generated/midgard';
 
 export interface SetAssetsPayload {
   assetDataIndex: AssetDataIndex;
@@ -31,9 +31,9 @@ export const getPools = (): GetPools => ({
 export const GET_POOLS_SUCCESS = 'GET_POOLS_SUCCESS';
 export interface GetPoolsSuccess {
   type: typeof GET_POOLS_SUCCESS;
-  payload: Asset[];
+  payload: string[];
 }
-export const getPoolsSuccess = (payload: Asset[]): GetPoolsSuccess => ({
+export const getPoolsSuccess = (payload: string[]): GetPoolsSuccess => ({
   type: GET_POOLS_SUCCESS,
   payload,
 });

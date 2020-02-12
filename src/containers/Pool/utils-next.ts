@@ -14,8 +14,9 @@ import {
 } from '../../helpers/stringHelper';
 import { AssetData } from '../../redux/wallet/types';
 import { PoolDataMap } from '../../redux/midgard/types';
-import { PoolDetail, Asset } from '../../types/generated/midgard';
+import { PoolDetail } from '../../types/generated/midgard';
 import { Maybe } from '../../types/bepswap';
+import { getAssetFromString } from '../../redux/midgard/utils';
 
 export type CalcResult = {
   poolAddress: Maybe<string>;
@@ -58,10 +59,10 @@ export const getCalcResult = (
       runeStakedTotal,
       assetStakedTotal,
       poolUnits: poolDataUnits,
-      asset,
+      asset = '',
     } = poolDetail;
 
-    const symbol = asset?.symbol;
+    const { symbol } = getAssetFromString(asset);
 
     if (symbol && symbol.toLowerCase() === tokenName.toLowerCase()) {
       R = Number(runeStakedTotal);
@@ -97,7 +98,7 @@ export const getCalcResult = (
 
 export const getCreatePoolTokens = (
   assetData: AssetData[],
-  pools: Asset[],
+  pools: string[],
 ): AssetData[] => {
   return assetData.filter(data => {
     let unique = true;
@@ -106,8 +107,9 @@ export const getCreatePoolTokens = (
       return false;
     }
 
-    pools.forEach((pool: Asset) => {
-      if (pool.symbol === data.asset) {
+    pools.forEach((pool: string) => {
+      const { symbol } = getAssetFromString(pool);
+      if (symbol && symbol === data.asset) {
         unique = false;
       }
     });

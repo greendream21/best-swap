@@ -31,8 +31,3 @@ export type SwapTableRowType = {
   key: number;
   raw: RawSwapCardDataType;
 };
-
-export enum SwapViewType {
-  DESKTOP = 'desktop',
-  MOBILE = 'mobile',
-}

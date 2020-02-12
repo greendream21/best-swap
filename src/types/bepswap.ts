@@ -12,3 +12,13 @@ export type AssetSymbol = string
 export type Nothing = null | undefined;
 export const Nothing = null as Nothing;
 export type Maybe<T> = T | Nothing;
+
+export enum ViewType {
+  DESKTOP = 'desktop',
+  MOBILE = 'mobile',
+}
+
+export type TokenData = {
+  asset: string;
+  price: number;
+}

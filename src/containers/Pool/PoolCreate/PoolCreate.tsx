@@ -53,7 +53,6 @@ import {
 } from '../../../redux/midgard/types';
 import { Maybe, FixmeType } from '../../../types/bepswap';
 import { User, AssetData } from '../../../redux/wallet/types';
-import { Asset } from '../../../types/generated/midgard';
 
 type ComponentProps = {
   symbol: string;
@@ -62,7 +61,7 @@ type ComponentProps = {
 
 type ConnectedProps = {
   assetData: AssetData[];
-  pools: Asset[];
+  pools: string[];
   poolAddress: string;
   poolData: PoolDataMap;
   stakerPoolData: StakerPoolData;

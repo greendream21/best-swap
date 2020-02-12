@@ -10,8 +10,8 @@ import { getTickerFormat } from '../../helpers/stringHelper';
 import { BitcoinIcon } from '../icons';
 
 import * as midgardActions from '../../redux/midgard/actions';
+import { getAssetFromString } from '../../redux/midgard/utils';
 import { RootState } from '../../redux/store';
-import { Asset } from '../../types/generated/midgard';
 
 const style: React.CSSProperties = {
   fontWeight: 'bold',
@@ -25,10 +25,12 @@ const itemStyle = {
   padding: '8px 10px',
 };
 
+const UNKNOWN_ASSET = 'UNKNOWN-ASSET';
+
 type ComponentProps = {};
 type ConnectedProps = {
   basePriceAsset: string;
-  pools: Asset[];
+  pools: string[];
   setBasePriceAsset: typeof midgardActions.setBasePriceAsset;
 };
 
@@ -48,8 +50,8 @@ class BasePriceSelector extends React.Component<Props, State> {
     const baseAsset = getTickerFormat(basePriceAsset).toUpperCase();
     const selectedKeys = [baseAsset];
     const menuItems = pools.map(data => {
-      const { symbol } = data;
-      const asset = getTickerFormat(symbol).toUpperCase();
+      const { symbol } = getAssetFromString(data);
+      const asset = getTickerFormat(symbol)?.toUpperCase() ?? UNKNOWN_ASSET;
 
       return {
         asset,
@@ -69,15 +71,15 @@ class BasePriceSelector extends React.Component<Props, State> {
         style={style}
         selectedKeys={selectedKeys}
       >
-        {menuItems.map(item => {
-          const { asset, key } = item;
-
-          return (
+        {menuItems.map(({ asset, key }) =>
+          asset !== UNKNOWN_ASSET ? (
             <Menu.Item style={itemStyle} key={key}>
               <AssetInfo asset={asset} />
             </Menu.Item>
-          );
-        })}
+          ) : (
+            <></>
+          ),
+        )}
       </Menu>
     );
 

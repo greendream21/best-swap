@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
+import React from 'react';
+import * as H from 'history';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import PropTypes from 'prop-types';
 
 import TradeCard from '../../../components/trade/tradeCard';
 import TradeLoader from '../../../components/utility/loaders/trade';
@@ -12,13 +12,34 @@ import { getFixedNumber } from '../../../helpers/stringHelper';
 
 import * as midgardActions from '../../../redux/midgard/actions';
 import * as binanceActions from '../../../redux/binance/actions';
+import { State as BinanceState } from '../../../redux/binance/types';
+import { getAssetFromString } from '../../../redux/midgard/utils';
+import { PoolDataMap, PriceDataIndex } from '../../../redux/midgard/types';
+import { AssetData } from '../../../redux/wallet/types';
+import { RootState } from '../../../redux/store';
 
-class TradeView extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
+type ComponentProps = {
+  runePrice: number;
+  loading: boolean;
+};
 
+type ConnectedProps = {
+  history: H.History;
+  pools: string[];
+  poolData: PoolDataMap;
+  assetData: AssetData[];
+  getPools: typeof midgardActions.getPools;
+  getRunePrice: typeof midgardActions.getRunePrice;
+  getBinanceMarkets: typeof binanceActions.getBinanceMarkets;
+  binanceData: BinanceState;
+  priceIndex: PriceDataIndex;
+};
+
+type Props = ComponentProps & ConnectedProps;
+
+type State = {}
+
+class TradeView extends React.Component<Props, State> {
   componentDidMount() {
     const { getPools, getRunePrice, getBinanceMarkets } = this.props;
 
@@ -27,7 +48,7 @@ class TradeView extends Component {
     getBinanceMarkets();
   }
 
-  handleTrade = asset => () => {
+  handleTrade = (asset: string) => () => {
     const URL = `/trade/${asset}`;
 
     this.props.history.push(URL);
@@ -37,10 +58,12 @@ class TradeView extends Component {
     const {
       pools,
       poolData,
-      runePrice,
       assetData,
+      priceIndex,
       binanceData: { marketList },
     } = this.props;
+
+    const runePrice = priceIndex.RUNE;
 
     const bnbMarket = marketList.find(
       market => market.base_asset_symbol === 'BNB',
@@ -48,7 +71,7 @@ class TradeView extends Component {
     const bnbPrice = Number((bnbMarket && bnbMarket.list_price) || 0);
 
     return pools.map((pool, index) => {
-      const { symbol } = pool;
+      const { symbol = '' } = getAssetFromString(pool);
       const poolInfo = poolData[symbol] || {};
 
       const binanceMarket = marketList.find(
@@ -133,26 +156,13 @@ class TradeView extends Component {
   }
 }
 
-TradeView.propTypes = {
-  history: PropTypes.object.isRequired,
-  getPools: PropTypes.func.isRequired,
-  pools: PropTypes.array.isRequired,
-  poolData: PropTypes.object.isRequired,
-  assetData: PropTypes.array.isRequired,
-  getRunePrice: PropTypes.func.isRequired,
-  getBinanceMarkets: PropTypes.func.isRequired,
-  runePrice: PropTypes.number.isRequired,
-  binanceData: PropTypes.object.isRequired,
-  loading: PropTypes.bool.isRequired,
-};
-
 export default compose(
   connect(
-    state => ({
+    (state: RootState) => ({
       pools: state.Midgard.pools,
       poolData: state.Midgard.poolData,
       loading: state.Midgard.poolLoading,
-      runePrice: state.Wallet.runePrice,
+      priceIndex: state.Midgard.priceIndex,
       assetData: state.Wallet.assetData,
       binanceData: state.Binance,
     }),
@@ -163,4 +173,4 @@ export default compose(
     },
   ),
   withRouter,
-)(TradeView);
+)(TradeView) as React.ComponentClass<ComponentProps, State>;

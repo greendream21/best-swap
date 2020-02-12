@@ -22,40 +22,15 @@ import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } fr
 /**
  * 
  * @export
- * @interface Asset
- */
-export interface Asset {
-    /**
-     * 
-     * @type {string}
-     * @memberof Asset
-     */
-    chain?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof Asset
-     */
-    symbol?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof Asset
-     */
-    ticker?: string;
-}
-/**
- * 
- * @export
  * @interface AssetDetail
  */
 export interface AssetDetail {
     /**
      * 
-     * @type {Asset}
+     * @type {string}
      * @memberof AssetDetail
      */
-    asset?: Asset;
+    asset?: string;
     /**
      * 
      * @type {number}
@@ -95,10 +70,10 @@ export interface Coin {
     amount?: number;
     /**
      * 
-     * @type {Asset}
+     * @type {string}
      * @memberof Coin
      */
-    asset?: Asset;
+    asset?: string;
 }
 /**
  * 
@@ -139,10 +114,10 @@ export interface Gas {
     amount?: number;
     /**
      * 
-     * @type {Asset}
+     * @type {string}
      * @memberof Gas
      */
-    asset?: Asset;
+    asset?: string;
 }
 /**
  * 
@@ -190,10 +165,10 @@ export interface Option {
 export interface PoolDetail {
     /**
      * 
-     * @type {Asset}
+     * @type {string}
      * @memberof PoolDetail
      */
-    asset?: Asset;
+    asset?: string;
     /**
      * Total current Asset balance
      * @type {number}
@@ -436,10 +411,10 @@ export enum PoolDetailStatusEnum {
 export interface StakersAddressData {
     /**
      * 
-     * @type {Array<Asset>}
+     * @type {Array<string>}
      * @memberof StakersAddressData
      */
-    poolsArray?: Array<Asset>;
+    poolsArray?: Array<string>;
     /**
      * Total value of earnings (in RUNE) across all pools.
      * @type {number}
@@ -467,10 +442,10 @@ export interface StakersAddressData {
 export interface StakersAssetData {
     /**
      * 
-     * @type {Asset}
+     * @type {string}
      * @memberof StakersAssetData
      */
-    asset?: Asset;
+    asset?: string;
     /**
      * Value of Assets earned from the pool.
      * @type {number}
@@ -760,10 +735,10 @@ export interface TxDetails {
     out?: Tx;
     /**
      * 
-     * @type {Asset}
+     * @type {string}
      * @memberof TxDetails
      */
-    pool?: Asset;
+    pool?: string;
     /**
      * 
      * @type {string}
@@ -1291,7 +1266,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPools(options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Asset>> {
+        getPools(options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<string>> {
             const localVarAxiosArgs = DefaultApiAxiosParamCreator(configuration).getPools(options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
@@ -1472,7 +1447,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPools(options?: any): AxiosPromise<Array<Asset>> {
+        getPools(options?: any): AxiosPromise<Array<string>> {
             return DefaultApiFp(configuration).getPools(options)(axios, basePath);
         },
         /**

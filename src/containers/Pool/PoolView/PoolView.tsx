@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
+import React from 'react';
+import * as H from 'history';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter, Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
 import { notification, Icon } from 'antd';
 
 import Label from '../../../components/uielements/label';
@@ -17,9 +17,33 @@ import { getPoolData } from '../utils';
 import { getCreatePoolTokens } from '../utils-next';
 import { getTickerFormat } from '../../../helpers/stringHelper';
 import * as midgardActions from '../../../redux/midgard/actions';
+import { RootState } from '../../../redux/store';
+import { AssetData } from '../../../redux/wallet/types';
+import { PoolDataMap, PriceDataIndex } from '../../../redux/midgard/types';
+import { getAssetFromString } from '../../../redux/midgard/utils';
+import { ViewType, FixmeType } from '../../../types/bepswap';
 
-class PoolView extends Component {
-  constructor(props) {
+type ComponentProps = {
+  loading: boolean;
+};
+type ConnectedProps = {
+  history: H.History;
+  getPools: typeof midgardActions.getPools;
+  pools: string[];
+  poolData: PoolDataMap;
+  basePriceAsset: string;
+  priceIndex: PriceDataIndex;
+  assetData: AssetData[];
+};
+
+type State = {
+  activeAsset: string;
+};
+
+type Props = ComponentProps & ConnectedProps;
+
+class PoolView extends React.Component<Props, State> {
+  constructor(props: Props) {
     super(props);
     this.state = {
       activeAsset: 'rune',
@@ -28,7 +52,6 @@ class PoolView extends Component {
 
   componentDidMount() {
     const { getPools } = this.props;
-
     getPools();
   }
 
@@ -50,7 +73,7 @@ class PoolView extends Component {
     }
   };
 
-  renderPoolTable = (swapViewData, view) => {
+  renderPoolTable = (swapViewData: FixmeType, view: ViewType) => {
     const { getPools } = this.props;
 
     const buttonCol = {
@@ -66,23 +89,25 @@ class PoolView extends Component {
           refresh
         </Button>
       ),
-      render: (text, record) => {
+      render: (text: string, record: { symbol?: string }) => {
         const { symbol } = record;
-        const URL = `/pool/${symbol.toUpperCase()}`;
-        const dataTest = `stake-button-${symbol.toLowerCase()}`;
+        if (symbol) {
+          const URL = `/pool/${symbol.toUpperCase()}`;
+          const dataTest = `stake-button-${symbol.toLowerCase()}`;
 
-        return (
-          <Link to={URL}>
-            <Button
-              style={{ margin: 'auto' }}
-              round="true"
-              data-test={dataTest}
-            >
-              <Icon type="database" />
-              stake
-            </Button>
-          </Link>
-        );
+          return (
+            <Link to={URL}>
+              <Button
+                style={{ margin: 'auto' }}
+                round="true"
+                data-test={dataTest}
+              >
+                <Icon type="database" />
+                stake
+              </Button>
+            </Link>
+          );
+        }
       },
     };
 
@@ -91,7 +116,9 @@ class PoolView extends Component {
         key: 'pool',
         title: 'pool',
         dataIndex: 'pool',
-        render: ({ asset, target }) => <CoinPair from={asset} to={target} />,
+        render: ({ asset, target }: { asset: string; target: string }) => (
+          <CoinPair from={asset} to={target} />
+        ),
       },
       buttonCol,
     ];
@@ -100,21 +127,24 @@ class PoolView extends Component {
         key: 'pool',
         title: 'pool',
         dataIndex: 'pool',
-        render: ({ asset, target }) => <CoinPair from={asset} to={target} />,
+        render: ({ asset, target }: { asset: string; target: string }) => (
+          <CoinPair from={asset} to={target} />
+        ),
       },
       {
         key: 'asset',
         title: 'asset',
         dataIndex: 'pool',
-        render: ({ target }) => <p>{target}</p>,
-        sorter: (a, b) => a.pool.target.localeCompare(b.pool.target),
+        render: ({ target }: { target: string }) => <p>{target}</p>,
+        sorter: (a: FixmeType, b: FixmeType) =>
+          a.pool.target.localeCompare(b.pool.target),
         sortDirections: ['descend', 'ascend'],
       },
       {
         key: 'depth',
         title: 'depth',
         dataIndex: 'depth',
-        sorter: (a, b) => a.raw.depth - b.raw.depth,
+        sorter: (a: FixmeType, b: FixmeType) => a.raw.depth - b.raw.depth,
         sortDirections: ['descend', 'ascend'],
         defaultSortOrder: 'descend',
       },
@@ -122,28 +152,29 @@ class PoolView extends Component {
         key: 'volume24',
         title: '24h vol',
         dataIndex: 'volume24',
-        sorter: (a, b) => a.raw.volume24 - b.raw.volume24,
+        sorter: (a: FixmeType, b: FixmeType) => a.raw.volume24 - b.raw.volume24,
         sortDirections: ['descend', 'ascend'],
       },
       {
         key: 'transaction',
         title: 'avg. transaction',
         dataIndex: 'transaction',
-        sorter: (a, b) => a.raw.transaction - b.raw.transaction,
+        sorter: (a: FixmeType, b: FixmeType) =>
+          a.raw.transaction - b.raw.transaction,
         sortDirections: ['descend', 'ascend'],
       },
       {
         key: 'liqFee',
         title: 'avg. liq fee',
         dataIndex: 'liqFee',
-        sorter: (a, b) => a.raw.liqFee - b.raw.liqFee,
+        sorter: (a: FixmeType, b: FixmeType) => a.raw.liqFee - b.raw.liqFee,
         sortDirections: ['descend', 'ascend'],
       },
       {
         key: 'roiAT',
         title: 'historical roi',
         dataIndex: 'roiAT',
-        sorter: (a, b) => a.raw.roiAT - b.raw.roiAT,
+        sorter: (a: FixmeType, b: FixmeType) => a.raw.roiAT - b.raw.roiAT,
         sortDirections: ['descend', 'ascend'],
       },
       buttonCol,
@@ -158,13 +189,13 @@ class PoolView extends Component {
     return <Table columns={columns} dataSource={swapViewData} rowKey="key" />;
   };
 
-  renderPoolList = view => {
+  renderPoolList = (view: ViewType) => {
     const { pools, poolData, priceIndex, basePriceAsset } = this.props;
     const { activeAsset } = this.state;
 
     let key = 0;
     const stakeViewData = pools.reduce((result, pool) => {
-      const { symbol } = pool;
+      const { symbol = '' } = getAssetFromString(pool);
       const poolInfo = poolData[symbol] || {};
 
       const { values: stakeCardData, raw } = getPoolData(
@@ -180,7 +211,7 @@ class PoolView extends Component {
       }
 
       return result;
-    }, []);
+    }, [] as FixmeType[]);
 
     return this.renderPoolTable(stakeViewData, view);
   };
@@ -194,10 +225,10 @@ class PoolView extends Component {
         {!loading && (
           <>
             <div className="pool-list-view desktop-view">
-              {this.renderPoolList('desktop')}
+              {this.renderPoolList(ViewType.DESKTOP)}
             </div>
             <div className="pool-list-view mobile-view">
-              {this.renderPoolList('mobile')}
+              {this.renderPoolList(ViewType.MOBILE)}
             </div>
             <div className="add-new-pool" onClick={this.handleNewPool}>
               <AddIcon />
@@ -212,20 +243,9 @@ class PoolView extends Component {
   }
 }
 
-PoolView.propTypes = {
-  getPools: PropTypes.func.isRequired,
-  pools: PropTypes.array.isRequired,
-  poolData: PropTypes.object.isRequired,
-  basePriceAsset: PropTypes.string.isRequired,
-  priceIndex: PropTypes.object.isRequired,
-  assetData: PropTypes.array.isRequired,
-  loading: PropTypes.bool.isRequired,
-  history: PropTypes.object.isRequired,
-};
-
 export default compose(
   connect(
-    state => ({
+    (state: RootState) => ({
       pools: state.Midgard.pools,
       poolData: state.Midgard.poolData,
       loading: state.Midgard.poolLoading,
@@ -238,4 +258,4 @@ export default compose(
     },
   ),
   withRouter,
-)(PoolView);
+)(PoolView) as React.ComponentClass<ComponentProps, State>;

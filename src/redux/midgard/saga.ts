@@ -10,7 +10,6 @@ import {
 import { getAssetDataIndex, getPriceIndex } from './utils';
 import {
   DefaultApi,
-  Asset,
   AssetDetail,
   PoolDetail,
   StakersAssetData,
@@ -22,17 +21,15 @@ const midgardApi = new DefaultApi({ basePath: MIDGARD_API_URL });
 export function* getPools() {
   yield takeEvery(actions.GET_POOLS_REQUEST, function*() {
     try {
-      const { data }: AxiosResponse<Asset[]> = yield call({
+      const { data }: AxiosResponse<string[]> = yield call({
         context: midgardApi,
         fn: midgardApi.getPools,
       });
       const assetResponses: AxiosResponse<AssetDetail>[] = yield all(
         data.map(asset => {
-          const { chain, symbol } = asset;
-          const assetId = `${chain}.${symbol}`;
           return call(
             { context: midgardApi, fn: midgardApi.getAssetInfo },
-            assetId,
+            asset,
           );
         }),
       );
@@ -55,10 +52,7 @@ export function* getPools() {
 
       yield all(
         data.map(asset => {
-          const { chain, symbol } = asset;
-          const assetId = `${chain}.${symbol}`;
-
-          return put(actions.getPoolData(assetId));
+          return put(actions.getPoolData(asset));
         }),
       );
       yield put(actions.getPoolsSuccess(data));
