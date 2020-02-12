@@ -3,6 +3,7 @@ import {
   getTickerFormat,
   getFixedNumber,
   getUserFormat,
+  Pair,
 } from '../../helpers/stringHelper';
 import { getZValue, getPx, getPz, getSlip, getFee } from './calc';
 import { BASE_NUMBER } from '../../settings/constants';
@@ -14,11 +15,11 @@ import { TransferResult, TransferEvent, TransferEventData } from '../../types/bi
 import { CalcResult } from './SwapSend/types';
 
 export const validatePair = (
-  pair: { source?: string; target?: string },
+  pair: Pair,
   sourceInfo: { asset: string }[],
   targetInfo: { asset: string }[],
 ) => {
-  const { target = '', source = '' } = pair;
+  const { target = '', source = '' }: Pair = pair;
   const targetData = targetInfo.filter(
     (data: { asset: string }) =>
       getTickerFormat(data.asset) !== target.toLowerCase(),

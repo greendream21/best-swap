@@ -12,7 +12,7 @@ import Label from '../../components/uielements/label';
 import Button from '../../components/uielements/button';
 import CoinList from '../../components/uielements/coins/coinList';
 import * as midgardActions from '../../redux/midgard/actions';
-import { getPair, getTickerFormat } from '../../helpers/stringHelper';
+import { getPair, Pair, getTickerFormat } from '../../helpers/stringHelper';
 import {
   AssetLoader,
   StakeLoader,
@@ -45,9 +45,6 @@ type ConnectedProps = {
 type Props = ComponentProps & ConnectedProps;
 
 type State = {};
-
-// TODO(Veado): Pair type should go into `stringHelper` (<- needs to be migrated to TS before)
-type Pair = { source?: string; target?: string };
 
 class WalletView extends React.Component<Props, State> {
   static readonly defaultProps: Partial<Props> = {
