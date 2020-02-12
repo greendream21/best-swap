@@ -1,8 +1,7 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import PropTypes from 'prop-types';
 import { Row, Col, Icon } from 'antd';
 
 import CoinCard from '../../../components/uielements/coins/coinCard';
@@ -20,24 +19,57 @@ import {
   TradeModal,
 } from './TradeDetail.style';
 
-import {
-  setTxTimerModal,
-  setTxTimerStatus,
-  countTxTimerValue,
-  resetTxStatus,
-} from '../../../redux/app/actions';
+import * as appActions from '../../../redux/app/actions';
 import * as midgardActions from '../../../redux/midgard/actions';
 import * as binanceActions from '../../../redux/binance/actions';
 import { getBepswapValues, getBnbPrice, getPriceDiff } from '../utils';
 import { getTickerFormat, getFixedNumber } from '../../../helpers/stringHelper';
 import { MAX_VALUE } from '../../../redux/app/const';
+import { RootState } from '../../../redux/store';
+import { AssetData } from '../../../redux/wallet/types';
+import { FixmeType, Maybe } from '../../../types/bepswap';
+import { Asset } from '../../../types/generated/midgard';
+import { PoolDataMap, PriceDataIndex } from '../../../redux/midgard/types';
+import { TickerStatistics } from '../../../types/binance';
+import { TxStatus, TxTypes } from '../../../redux/app/types';
 
-class TradeDetail extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
+type BEPSwapValues = {
+  poolPriceBNB: number;
+  poolBuyDepth: number;
+  poolSellDepth: number;
+  X: number;
+  Y: number;
+  R: number;
+  Z: number;
+};
 
+type ComponentProps = {
+  symbol: string;
+  chainData: FixmeType; // PropTypes.object.isRequired,
+  swapData: FixmeType; // PropTypes.object.isRequired,
+};
+
+type ConnectedProps = {
+  assetData: AssetData[];
+  pools: Asset[];
+  poolData: PoolDataMap;
+  priceIndex: PriceDataIndex;
+  tickerData: Maybe<TickerStatistics>;
+  txStatus: TxStatus;
+  setTxTimerModal: typeof appActions.setTxTimerModal;
+  setTxTimerStatus: typeof appActions.setTxTimerStatus;
+  countTxTimerValue: typeof appActions.countTxTimerValue;
+  resetTxStatus: typeof appActions.resetTxStatus;
+  getPools: typeof midgardActions.getPools;
+  getRunePrice: typeof midgardActions.getRunePrice;
+  getBinanceTicker: typeof binanceActions.getBinanceTicker;
+};
+
+type Props = ConnectedProps & ComponentProps;
+
+type State = {};
+
+class TradeDetail extends React.Component<Props, State> {
   componentDidMount() {
     const { symbol, getPools, getRunePrice, getBinanceTicker } = this.props;
 
@@ -54,11 +86,11 @@ class TradeDetail extends Component {
   handleStartTimer = () => {
     const { resetTxStatus } = this.props;
     resetTxStatus({
-      type: 'trade', // TxTypes.TRADE
+      type: TxTypes.TRADE,
       modal: true,
       status: true,
       startTime: Date.now(),
-    });
+    } as TxStatus);
   };
 
   handleConfirm = () => {
@@ -148,7 +180,7 @@ class TradeDetail extends Component {
     );
   };
 
-  renderBepswapPrice = bepswapPrices => {
+  renderBepswapPrice = (bepswapPrices: BEPSwapValues) => {
     const { symbol } = this.props;
     const { poolPriceBNB, poolBuyDepth, poolSellDepth } = bepswapPrices;
 
@@ -200,10 +232,9 @@ class TradeDetail extends Component {
     );
   };
 
-  renderPriceAnalysis = (priceDiff, reward) => {
+  renderPriceAnalysis = (priceDiff: number, reward?: number) => {
     const prefix = priceDiff > 0 ? '+' : '';
     const differential = `${prefix}${Math.round(priceDiff * 100)}%`;
-    const rewardVal = `${getFixedNumber(reward)} BNB`;
     const bepswapDirection = priceDiff > 0 ? 'Buy' : 'Sell';
     const binanceDirection = priceDiff > 0 ? 'Sell' : 'Buy';
 
@@ -213,9 +244,14 @@ class TradeDetail extends Component {
           <Col lg={12} xs={12}>
             <Status title="Pool Differential" value={differential} />
           </Col>
-          <Col lg={12} xs={12}>
-            <Status title="Potential Reward" value={rewardVal} />
-          </Col>
+          {reward && (
+            <Col lg={12} xs={12}>
+              <Status
+                title="Potential Reward"
+                value={`${getFixedNumber(reward)} BNB`}
+              />
+            </Col>
+          )}
         </Row>
         <Row>
           <Col lg={24}>
@@ -257,9 +293,14 @@ class TradeDetail extends Component {
     });
 
     const bnbPrice = getBnbPrice(pools);
-    const bepswapValues = getBepswapValues(symbol, pools, bnbPrice);
+    const bepswapValues = getBepswapValues(
+      symbol,
+      pools,
+      bnbPrice,
+    ) as BEPSwapValues;
 
-    const marketPrice = tickerData?.lastPrice || 0;
+    const lastPrice = tickerData ? Number(tickerData.lastPrice) : 0;
+    const marketPrice = !Number.isNaN(lastPrice) ? lastPrice : 0;
     const priceDiff = getPriceDiff(marketPrice, bepswapValues.poolPriceBNB);
 
     return (
@@ -350,31 +391,13 @@ class TradeDetail extends Component {
   }
 }
 
-TradeDetail.propTypes = {
-  symbol: PropTypes.string.isRequired,
-  assetData: PropTypes.array.isRequired,
-  chainData: PropTypes.object.isRequired,
-  pools: PropTypes.array.isRequired,
-  poolData: PropTypes.object.isRequired,
-  swapData: PropTypes.object.isRequired,
-  tickerData: PropTypes.object.isRequired,
-  txStatus: PropTypes.object.isRequired,
-  setTxTimerModal: PropTypes.func.isRequired,
-  setTxTimerStatus: PropTypes.func.isRequired,
-  countTxTimerValue: PropTypes.func.isRequired,
-  resetTxStatus: PropTypes.func.isRequired,
-  getPools: PropTypes.func.isRequired,
-  getRunePrice: PropTypes.func.isRequired,
-  getBinanceTicker: PropTypes.func.isRequired,
-};
-
 export default compose(
   connect(
-    state => ({
+    (state: RootState) => ({
       txStatus: state.App.txStatus,
       user: state.Wallet.user,
       assetData: state.Wallet.assetData,
-      runePrice: state.Wallet.runePrice,
+      priceIndex: state.Midgard.priceIndex,
       pools: state.Midgard.pools,
       poolData: state.Midgard.poolData,
       tickerData: state.Binance.ticker,
@@ -383,11 +406,11 @@ export default compose(
       getPools: midgardActions.getPools,
       getRunePrice: midgardActions.getRunePrice,
       getBinanceTicker: binanceActions.getBinanceTicker,
-      setTxTimerModal,
-      setTxTimerStatus,
-      countTxTimerValue,
-      resetTxStatus,
+      setTxTimerModal: appActions.setTxTimerModal,
+      setTxTimerStatus: appActions.setTxTimerStatus,
+      countTxTimerValue: appActions.countTxTimerValue,
+      resetTxStatus: appActions.resetTxStatus,
     },
   ),
   withRouter,
-)(TradeDetail);
+)(TradeDetail) as React.ComponentClass<ComponentProps, State>;
