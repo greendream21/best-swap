@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import { Menu, Dropdown, Icon } from 'antd';
+import { ClickParam } from 'antd/lib/menu';
 
 import AssetInfo from '../uielements/tokens/assetInfo';
 import Label from '../uielements/label';
@@ -10,8 +10,10 @@ import { getTickerFormat } from '../../helpers/stringHelper';
 import { BitcoinIcon } from '../icons';
 
 import * as midgardActions from '../../redux/midgard/actions';
+import { RootState } from '../../redux/store';
+import { Asset } from '../../types/generated/midgard';
 
-const style = {
+const style: React.CSSProperties = {
   fontWeight: 'bold',
   textTransform: 'uppercase',
   letterSpacing: '1px',
@@ -23,8 +25,19 @@ const itemStyle = {
   padding: '8px 10px',
 };
 
-class BasePriceSelector extends Component {
-  handleClickItem = ({ key }) => {
+type ComponentProps = {};
+type ConnectedProps = {
+  basePriceAsset: string;
+  pools: Asset[];
+  setBasePriceAsset: typeof midgardActions.setBasePriceAsset;
+};
+
+type Props = ComponentProps & ConnectedProps;
+
+type State = {};
+
+class BasePriceSelector extends React.Component<Props, State> {
+  handleClickItem = ({ key }: ClickParam) => {
     const { setBasePriceAsset } = this.props;
 
     setBasePriceAsset(key);
@@ -93,15 +106,9 @@ class BasePriceSelector extends Component {
   }
 }
 
-BasePriceSelector.propTypes = {
-  basePriceAsset: PropTypes.string.isRequired,
-  setBasePriceAsset: PropTypes.func.isRequired,
-  pools: PropTypes.array.isRequired,
-};
-
 export default compose(
   connect(
-    state => ({
+    (state: RootState) => ({
       basePriceAsset: state.Midgard.basePriceAsset,
       pools: state.Midgard.pools,
     }),
