@@ -59,10 +59,6 @@ class Header extends Component {
         type: 'pool',
         key: 'pools',
       },
-      {
-        type: 'trade',
-        key: 'trade',
-      },
     ];
     let pageType = '';
 
@@ -112,14 +108,6 @@ class Header extends Component {
       </Link>
     );
 
-    // TODO (Chris): Hide trade tab
-    // const tradeTab = (
-    //   <span>
-    //     <Icon type="area-chart" />
-    //     trade
-    //   </span>
-    // );
-
     return (
       <div className="header-tab-container">
         <Tabs
@@ -130,7 +118,6 @@ class Header extends Component {
         >
           <TabPane tab={swapTab} key="swap" />
           <TabPane tab={poolsTab} key="pools" />
-          {/* <TabPane tab={tradeTab} key="trade" /> */}
         </Tabs>
       </div>
     );
