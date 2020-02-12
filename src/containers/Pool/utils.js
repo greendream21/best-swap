@@ -133,24 +133,6 @@ export const confirmStake = (
   });
 };
 
-export const getCreatePoolTokens = (assetData, pools) => {
-  return assetData.filter(data => {
-    let unique = true;
-
-    if (getTickerFormat(data.asset) === 'rune') {
-      return false;
-    }
-
-    pools.forEach(pool => {
-      if (pool.symbol === data.asset) {
-        unique = false;
-      }
-    });
-
-    return unique;
-  });
-};
-
 export const getCreatePoolCalc = (
   tokenName,
   poolAddress,
