@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
+import React from 'react';
+import * as H from 'history';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter, Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
 import { Row, Col, notification, Icon } from 'antd';
 import { crypto } from '@binance-chain/javascript-sdk';
 import { get as _get } from 'lodash';
@@ -22,12 +22,7 @@ import StepBar from '../../../components/uielements/stepBar';
 import CoinData from '../../../components/uielements/coins/coinData';
 import PrivateModal from '../../../components/modals/privateModal';
 
-import {
-  setTxTimerModal,
-  setTxTimerStatus,
-  countTxTimerValue,
-  resetTxStatus,
-} from '../../../redux/app/actions';
+import * as appActions from '../../../redux/app/actions';
 import * as midgardActions from '../../../redux/midgard/actions';
 import * as binanceActions from '../../../redux/binance/actions';
 
@@ -48,9 +43,68 @@ import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
 import { MAX_VALUE } from '../../../redux/app/const';
 import { delay } from '../../../helpers/asyncHelper';
 import TokenDetailLoader from '../../../components/utility/loaders/tokenDetail';
+import { RootState } from '../../../redux/store';
+import { TxStatus, TxTypes } from '../../../redux/app/types';
+import { State as BinanceState } from '../../../redux/binance/types';
+import {
+  PriceDataIndex,
+  PoolDataMap,
+  StakerPoolData,
+} from '../../../redux/midgard/types';
+import { Maybe, FixmeType } from '../../../types/bepswap';
+import { User, AssetData } from '../../../redux/wallet/types';
+import { Asset } from '../../../types/generated/midgard';
 
-class PoolCreate extends Component {
-  constructor(props) {
+type ComponentProps = {
+  symbol: string;
+  assets: FixmeType; // PropTypes.object
+};
+
+type ConnectedProps = {
+  assetData: AssetData[];
+  pools: Asset[];
+  poolAddress: string;
+  poolData: PoolDataMap;
+  stakerPoolData: StakerPoolData;
+  user: Maybe<User>;
+  basePriceAsset: string;
+  priceIndex: PriceDataIndex;
+  getPools: typeof midgardActions.getPools;
+  getPoolAddress: typeof midgardActions.getPoolAddress;
+  getStakerPoolData: typeof midgardActions.getStakerPoolData;
+  getBinanceTokens: typeof binanceActions.getBinanceTokens;
+  getBinanceMarkets: typeof binanceActions.getBinanceMarkets;
+  binanceData: BinanceState;
+  history: H.History;
+  txStatus: TxStatus;
+  setTxTimerModal: typeof appActions.setTxTimerModal;
+  setTxTimerStatus: typeof appActions.setTxTimerStatus;
+  countTxTimerValue: typeof appActions.countTxTimerValue;
+  resetTxStatus: typeof appActions.resetTxStatus;
+  setTxHash: typeof appActions.setTxHash;
+};
+
+type Props = ComponentProps & ConnectedProps;
+
+type State = {
+  dragReset: boolean;
+  openPrivateModal: boolean;
+  password: string;
+  invalidPassword: boolean;
+  validatingPassword: boolean;
+  runeAmount: number;
+  tokenAmount: number;
+  balance: number;
+  fR: number;
+  fT: number;
+  selectedRune: number;
+  selectedToken: number;
+  runeTotal: number;
+  tokenTotal: number;
+};
+
+class PoolCreate extends React.Component<Props, State> {
+  constructor(props: Props) {
     super(props);
     this.state = {
       dragReset: true,
@@ -91,8 +145,11 @@ class PoolCreate extends Component {
   }
 
   getData = () => {
-    const { symbol, poolAddress } = this.props;
-    const { runeAmount, tokenAmount, runePrice } = this.state;
+    const { symbol, poolAddress, priceIndex } = this.props;
+    const { runeAmount, tokenAmount } = this.state;
+
+    const runePrice = priceIndex.runePrice;
+
     return getCreatePoolCalc(
       symbol,
       poolAddress,
@@ -110,14 +167,14 @@ class PoolCreate extends Component {
     }
   };
 
-  handleChangePassword = password => {
+  handleChangePassword = (password: string) => {
     this.setState({
       password,
       invalidPassword: false,
     });
   };
 
-  handleChangeTokenAmount = tokenName => amount => {
+  handleChangeTokenAmount = (tokenName: string) => (amount: number) => {
     const { assetData, symbol } = this.props;
     const { fR, fT } = this.state;
 
@@ -180,7 +237,7 @@ class PoolCreate extends Component {
     }
   };
 
-  handleSelectTokenAmount = token => amount => {
+  handleSelectTokenAmount = (token: string) => (amount: number) => {
     const { assetData, symbol } = this.props;
     const { fR, fT } = this.state;
 
@@ -224,7 +281,7 @@ class PoolCreate extends Component {
     }
   };
 
-  handleChangeBalance = balance => {
+  handleChangeBalance = (balance: number) => {
     const { selectedRune, selectedToken, runeTotal, tokenTotal } = this.state;
     const fR = balance < 100 ? 1 : (201 - balance) / 100;
     const fT = balance > 100 ? 1 : balance / 100;
@@ -270,7 +327,6 @@ class PoolCreate extends Component {
     }
 
     if (keystore) {
-      this.type = 'create';
       this.handleOpenPrivateModal();
     } else if (wallet) {
       this.handleConfirmCreate();
@@ -278,13 +334,12 @@ class PoolCreate extends Component {
   };
 
   handleConfirmCreate = async () => {
-    const { user } = this.props;
+    const { user, setTxHash } = this.props;
     const { runeAmount, tokenAmount } = this.state;
 
     if (user) {
       // start timer modal
       this.handleStartTimer();
-      this.hash = null;
       try {
         const { result } = await confirmCreatePool(
           Binance,
@@ -294,7 +349,10 @@ class PoolCreate extends Component {
           this.getData(),
         );
 
-        this.hash = result[0].hash;
+        const hash = result && result.length ? result[0].hash : null;
+        if (hash) {
+          setTxHash(hash);
+        }
       } catch (error) {
         notification.error({
           message: 'Create Pool Failed',
@@ -323,9 +381,7 @@ class PoolCreate extends Component {
     });
   };
 
-  handleConfirmPassword = async e => {
-    e.preventDefault();
-
+  handleConfirmPassword = async () => {
     const { user } = this.props;
     const { password } = this.state;
 
@@ -368,7 +424,7 @@ class PoolCreate extends Component {
     });
   };
 
-  handleSelectTraget = asset => {
+  handleSelectTraget = (asset: string) => {
     const URL = `/pool/${asset}/new`;
 
     this.props.history.push(URL);
@@ -377,7 +433,7 @@ class PoolCreate extends Component {
   handleStartTimer = () => {
     const { resetTxStatus } = this.props;
     resetTxStatus({
-      type: 'create', // TxTypes.CREATE
+      type: TxTypes.CREATE,
       modal: true,
       status: true,
       startTime: Date.now(),
@@ -590,7 +646,7 @@ class PoolCreate extends Component {
 
   renderStakeModalContent = () => {
     const {
-      txStatus: { status, value, startTime },
+      txStatus: { status, value, startTime, hash },
       symbol,
       priceIndex,
       basePriceAsset,
@@ -601,8 +657,8 @@ class PoolCreate extends Component {
     const target = getTickerFormat(symbol);
     const runePrice = priceIndex.RUNE;
 
-    const completed = this.hash && !status;
-    const txURL = TESTNET_TX_BASE_URL + this.hash;
+    const completed = hash && !status;
+    const txURL = TESTNET_TX_BASE_URL + hash;
 
     return (
       <ConfirmModalContent>
@@ -691,34 +747,9 @@ class PoolCreate extends Component {
   }
 }
 
-PoolCreate.propTypes = {
-  symbol: PropTypes.string.isRequired,
-  assetData: PropTypes.array.isRequired,
-  pools: PropTypes.array.isRequired,
-  poolAddress: PropTypes.string,
-  poolData: PropTypes.object.isRequired,
-  stakerPoolData: PropTypes.object.isRequired,
-  assets: PropTypes.object,
-  user: PropTypes.object, // Maybe<User>
-  basePriceAsset: PropTypes.string.isRequired,
-  priceIndex: PropTypes.object,
-  getPools: PropTypes.func.isRequired,
-  getPoolAddress: PropTypes.func.isRequired,
-  getStakerPoolData: PropTypes.func.isRequired,
-  getBinanceTokens: PropTypes.func.isRequired,
-  getBinanceMarkets: PropTypes.func.isRequired,
-  binanceData: PropTypes.object.isRequired,
-  history: PropTypes.object,
-  txStatus: PropTypes.object.isRequired,
-  setTxTimerModal: PropTypes.func.isRequired,
-  setTxTimerStatus: PropTypes.func.isRequired,
-  countTxTimerValue: PropTypes.func.isRequired,
-  resetTxStatus: PropTypes.func.isRequired,
-};
-
 export default compose(
   connect(
-    state => ({
+    (state: RootState) => ({
       user: state.Wallet.user,
       assetData: state.Wallet.assetData,
       pools: state.Midgard.pools,
@@ -736,11 +767,12 @@ export default compose(
       getStakerPoolData: midgardActions.getStakerPoolData,
       getBinanceTokens: binanceActions.getBinanceTokens,
       getBinanceMarkets: binanceActions.getBinanceMarkets,
-      setTxTimerModal,
-      setTxTimerStatus,
-      countTxTimerValue,
-      resetTxStatus,
+      setTxTimerModal: appActions.setTxTimerModal,
+      setTxTimerStatus: appActions.setTxTimerStatus,
+      countTxTimerValue: appActions.countTxTimerValue,
+      resetTxStatus: appActions.resetTxStatus,
+      setTxHash: appActions.setTxHash,
     },
   ),
   withRouter,
-)(PoolCreate);
+)(PoolCreate) as React.ComponentClass<ComponentProps, State>;
