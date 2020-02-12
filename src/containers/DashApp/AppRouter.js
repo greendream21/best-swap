@@ -45,10 +45,6 @@ const routes = [
     path: 'pool/:symbol/:action?',
     component: asyncComponent(() => import('../pages/Pool')),
   },
-  {
-    path: 'trade/:symbol?',
-    component: asyncComponent(() => import('../pages/Trade')),
-  },
 ];
 
 class AppRouter extends Component {

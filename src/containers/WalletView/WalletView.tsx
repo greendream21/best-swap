@@ -122,7 +122,7 @@ class WalletView extends React.Component<Props, State> {
   getSelectedAsset = (pair: Pair) => {
     const { page } = this.props;
 
-    if (page === 'pool' || page === 'trade') {
+    if (page === 'pool') {
       const { target = '' } = pair;
       const targetIndex = this.getAssetIndexByName(target);
 

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { withRouter, Link } from 'react-router-dom';
-import { Row, Col, Icon } from 'antd';
+import { Row, Col } from 'antd';
 import PropTypes from 'prop-types';
 
 import { ContentWrapper } from './Earning.style';
@@ -162,14 +162,6 @@ class Earning extends Component {
             back
           </Button>
         </Link>
-        {view === 'earningplay' && (
-          <Link to="/tutorial/trade/intro">
-            <Button color="primary" typevalue="outline">
-              Trading
-              <Icon type="arrow-right" />
-            </Button>
-          </Link>
-        )}
       </Row>
     );
   };

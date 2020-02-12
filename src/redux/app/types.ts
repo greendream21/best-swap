@@ -6,7 +6,6 @@ export enum TxTypes {
   SWAP = 'swap',
   WITHDRAW = 'withdraw',
   CREATE = 'create',
-  TRADE = 'trade',
 }
 
 export type TxStatus = {
