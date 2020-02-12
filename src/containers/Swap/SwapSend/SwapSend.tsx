@@ -34,6 +34,7 @@ import {
   getPair,
   getFixedNumber,
   emptyString,
+  Pair,
 } from '../../../helpers/stringHelper';
 import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
 import {
@@ -68,7 +69,7 @@ import { AssetDetail } from '../../../types/generated/midgard/api';
 import { RootState } from '../../../redux/store';
 
 type ComponentProps = {
-  info?: string;
+  info: string;
   view: SwapSendView;
   // TÓDO(veado): Add type for WSTransfer based on Binance WS Api
   wsTransfers: FixmeType[];
@@ -221,7 +222,7 @@ class SwapSend extends React.Component<Props, State> {
     const { info } = this.props;
 
     const { assetData } = this.props;
-    const { source } = getPair(info);
+    const { source }: Pair = getPair(info);
 
     const sourceAsset = assetData.find(data => {
       const { asset } = data;
@@ -268,7 +269,7 @@ class SwapSend extends React.Component<Props, State> {
     }
 
     const { assetData } = this.props;
-    const { source } = getPair(info);
+    const { source }: Pair = getPair(info);
 
     const sourceAsset = assetData.find(data => {
       const { asset } = data;
@@ -459,7 +460,7 @@ class SwapSend extends React.Component<Props, State> {
 
   handleChangeSource = (asset: string) => {
     const { view, info } = this.props;
-    const { source, target } = getPair(info);
+    const { source, target }: Pair = getPair(info);
     const selectedToken = getTickerFormat(asset);
 
     const URL =
@@ -471,7 +472,7 @@ class SwapSend extends React.Component<Props, State> {
 
   handleSelectTraget = (asset: string) => {
     const { view, info } = this.props;
-    const { source, target } = getPair(info);
+    const { source, target }: Pair = getPair(info);
     const selectedToken = getTickerFormat(asset);
 
     const URL =
@@ -483,7 +484,7 @@ class SwapSend extends React.Component<Props, State> {
 
   handleReversePair = () => {
     const { view, info, assetData } = this.props;
-    const { source, target } = getPair(info);
+    const { source, target }: Pair = getPair(info);
 
     if (!assetData.find(data => getTickerFormat(data.asset) === target)) {
       notification.warning({
@@ -501,7 +502,7 @@ class SwapSend extends React.Component<Props, State> {
   validatePair = (
     sourceInfo: AssetData[],
     targetInfo: { asset: string }[],
-    pair: { source?: string; target?: string },
+    pair: Pair,
   ) => {
     if (!targetInfo.length) {
       this.props.history.push('/swap');
@@ -543,7 +544,7 @@ class SwapSend extends React.Component<Props, State> {
   handleConfirmSwap = async () => {
     const { user, info, setTxHash, resetTxStatus } = this.props;
     const { xValue, address, slipProtection } = this.state;
-    const { source, target } = getPair(info);
+    const { source, target }: Pair = getPair(info);
 
     if (user && this.calcResult) {
       this.setState({
@@ -774,17 +775,17 @@ class SwapSend extends React.Component<Props, State> {
       txResult,
     } = this.state;
 
-    const swapData = getPair(info);
+    const swapPair: Pair = getPair(info);
 
     if (
-      !swapData.source ||
-      !swapData.target ||
+      !swapPair.source ||
+      !swapPair.target ||
       !Object.keys(tokenInfo).length
     ) {
       return '';
     }
 
-    const { source: swapSource, target: swapTarget } = swapData;
+    const { source: swapSource, target: swapTarget } = swapPair;
 
     const tokensData: TokenData[] = Object.keys(tokenInfo).map(tokenName => {
       const tokenData = tokenInfo[tokenName];
@@ -805,7 +806,7 @@ class SwapSend extends React.Component<Props, State> {
       price: runePrice,
     });
 
-    const pair = getPair(info);
+    const pair: Pair = getPair(info);
     const { sourceData, targetData } = this.validatePair(
       assetData,
       tokensData,

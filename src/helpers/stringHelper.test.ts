@@ -1,4 +1,12 @@
-import { getTickerFormat, getBaseNumberFormat, getUserFormat, getPair, getFixedNumber, compareShallowStr } from './stringHelper';
+import {
+  getTickerFormat,
+  getBaseNumberFormat,
+  getUserFormat,
+  getPair,
+  getFixedNumber,
+  compareShallowStr,
+  Pair,
+} from './stringHelper';
 
 describe('helpers/stringHelper/', () => {
   // getTickerFormat
@@ -56,12 +64,12 @@ describe('helpers/stringHelper/', () => {
 
   describe('getPair', () => {
     it('returns a valid value pair ', () => {
-      const result = getPair('HELLO-WORLD');
-      expect(result).toEqual({ source:'hello', target:'world' });
+      const result: Pair = getPair('HELLO-WORLD');
+      expect(result).toEqual({ source: 'hello', target: 'world' });
     });
     it('returns an empty array if no value entered', () => {
-      const result = getPair();
-      expect(result).toEqual({});
+      const result: Pair = getPair();
+      expect(result).toEqual({ source: '', target: '' });
     });
   });
 
@@ -96,10 +104,6 @@ describe('helpers/stringHelper/', () => {
     it('returns true if numerical strings are input to function', () => {
       const result = compareShallowStr('123', '123');
       expect(result).toEqual(true);
-    });
-    it('returns false if numbers are input to function', () => {
-      const result = compareShallowStr(123, 123);
-      expect(result).toEqual(false);
     });
   });
 });
