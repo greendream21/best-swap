@@ -12,9 +12,6 @@ import {
   REFRESH_STAKES,
   REFRESH_STAKES_SUCCESS,
   REFRESH_STAKES_FAILED,
-  GET_USER_STAKE_DATA_SUCCESS,
-  GET_USER_STAKE_DATA_REQUEST,
-  GET_USER_STAKE_DATA_FAILED,
 } from './actions';
 import { Nothing } from '../../types/bepswap';
 
@@ -33,7 +30,6 @@ const initState: State = {
     },
   ],
   stakeData: initial,
-  previousStakeData: [],
   loadingAssets: false,
   error: Nothing,
 };
@@ -78,31 +74,11 @@ const reducer: Reducer<State, WalletActionsTypes> = (
         error: null,
       };
     case REFRESH_STAKES_SUCCESS:
-      // nothing to update here,
-      // as we store all results of refreshing data
-      // by handling `GET_USER_STAKE_DATA_SUCCESS`
       return {
         ...state,
+        stakeData: success(action.payload),
       };
     case REFRESH_STAKES_FAILED:
-      return {
-        ...state,
-        stakeData: failure(action.payload),
-      };
-    case GET_USER_STAKE_DATA_REQUEST:
-      return {
-        ...state,
-        stakeData: pending,
-        error: null,
-      };
-    case GET_USER_STAKE_DATA_SUCCESS:
-      {
-        const stakeData = [...state.previousStakeData, action.payload];
-        return {
-        ...state,
-        stakeData: success(stakeData),
-      }; }
-    case GET_USER_STAKE_DATA_FAILED:
       return {
         ...state,
         stakeData: failure(action.payload),

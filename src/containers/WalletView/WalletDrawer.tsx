@@ -14,6 +14,7 @@ import { RootState } from '../../redux/store';
 import { User } from '../../redux/wallet/types';
 import { Maybe } from '../../types/bepswap';
 import WalletView from './WalletView';
+import { delay } from '../../helpers/asyncHelper';
 
 type Props = {
   user: Maybe<User>;
@@ -50,16 +51,15 @@ const WalletDrawer: React.FC<Props> = props => {
     }
   }, [wallet]);
 
-  const onClickRefresh = useCallback(() => {
+  const onClickRefresh = useCallback(async () => {
     if (wallet) {
       refreshBalance(wallet);
       refreshStake(wallet);
     }
 
     setRefresh(true);
-    setTimeout(() => {
-      setRefresh(false);
-    }, 1000);
+    await delay(1000);
+    setRefresh(false);
   }, [refreshBalance, refreshStake, wallet]);
 
   const status = wallet ? 'connected' : 'disconnected';
