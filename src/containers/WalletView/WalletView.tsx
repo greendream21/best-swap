@@ -18,7 +18,12 @@ import {
   StakeLoader,
 } from '../../components/utility/loaders/wallet';
 import { Maybe } from '../../types/bepswap';
-import { User, AssetData, StakeData, StakeDataListLoadingState } from '../../redux/wallet/types';
+import {
+  User,
+  AssetData,
+  StakeData,
+  StakeDataListLoadingState,
+} from '../../redux/wallet/types';
 import { RootState } from '../../redux/store';
 import { PriceDataIndex } from '../../redux/midgard/types';
 
@@ -110,7 +115,7 @@ class WalletView extends React.Component<Props, State> {
     RD.fold(
       () => null, // initial data
       () => <StakeLoader />, // loading
-      () => <></>, // error
+      (error: Error) => <>Error while refreshing stake data: {error}</>, // error
       (data: StakeData[]): JSX.Element =>
         data.length > 0 ? (
           <>Your current stakes are:</>

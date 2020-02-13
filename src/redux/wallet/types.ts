@@ -33,11 +33,6 @@ export interface State {
   readonly user: Maybe<User>;
   readonly assetData: AssetData[];
   readonly stakeData: StakeDataListLoadingState;
-  /**
-   * Private state for internal use only
-   * Never use this in a component
-   * */
-  readonly previousStakeData: StakeData[];
   readonly loadingAssets: boolean;
   readonly error: Maybe<Error>;
 }

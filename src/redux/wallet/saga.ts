@@ -22,7 +22,7 @@ import {
   PoolDetail,
   StakersAssetData,
 } from '../../types/generated/midgard';
-import { Market, Balance } from '../../types/binance';
+import { Market, Balance, Address } from '../../types/binance';
 import { getAssetFromString } from '../midgard/utils';
 
 const midgardApi = new DefaultApi({ basePath: MIDGARD_API_URL });
@@ -88,45 +88,37 @@ export function* refreshBalance() {
   });
 }
 
-export function* getUserStakeData() {
-  yield takeEvery(actions.GET_USER_STAKE_DATA_REQUEST, function*({
-    payload,
-  }: actions.GetUserStakeDataRequest) {
-    const { address, asset } = payload;
-    const { symbol = '', ticker = '' } = getAssetFromString(asset);
+export function* getUserStakeData(payload: {
+  address: Address;
+  asset: string;
+}) {
+  const { address, asset } = payload;
+  const { symbol = '', ticker = '' } = getAssetFromString(asset);
+  const { data: userStakerData }: AxiosResponse<StakersAssetData> = yield call(
+    { context: midgardApi, fn: midgardApi.getStakersAddressAndAssetData },
+    address,
+    asset,
+  );
+  const { data: poolData }: AxiosResponse<PoolDetail> = yield call(
+    { context: midgardApi, fn: midgardApi.getPoolsData },
+    asset,
+  );
+  const price = poolData?.price ?? 0;
 
-    try {
-      const {
-        data: userStakerData,
-      }: AxiosResponse<StakersAssetData> = yield call(
-        { context: midgardApi, fn: midgardApi.getStakersAddressAndAssetData },
-        address,
-        asset,
-      );
-      const { data: poolData }: AxiosResponse<PoolDetail> = yield call(
-        { context: midgardApi, fn: midgardApi.getPoolsData },
-        asset,
-      );
-      const price = poolData?.price ?? 0;
+  const stakeData: StakeData = {
+    targetSymbol: symbol,
+    target: ticker.toLowerCase(),
+    targetValue: userStakerData.assetStaked
+      ? getFixedNumber(userStakerData.assetStaked / BASE_NUMBER)
+      : 0,
+    assetValue: userStakerData.runeStaked
+      ? getFixedNumber(userStakerData.runeStaked / BASE_NUMBER)
+      : 0,
+    asset: 'rune',
+    price,
+  };
 
-      const stakeData: StakeData = {
-        targetSymbol: symbol,
-        target: ticker.toLowerCase(),
-        targetValue: userStakerData.assetStaked
-          ? getFixedNumber(userStakerData.assetStaked / BASE_NUMBER)
-          : 0,
-        assetValue: userStakerData.runeStaked
-          ? getFixedNumber(userStakerData.runeStaked / BASE_NUMBER)
-          : 0,
-        asset: 'rune',
-        price,
-      };
-
-      yield put(actions.getUserStakeDataSuccess(stakeData));
-    } catch (error) {
-      yield put(actions.getUserStakeDataFailed(error));
-    }
-  });
+  return stakeData;
 }
 
 export function* refreshStakes() {
@@ -140,19 +132,19 @@ export function* refreshStakes() {
         { context: midgardApi, fn: midgardApi.getStakersAddressData },
         address,
       );
+
       const stakerPools = data.poolsArray || [];
-      yield all(
+      const result: StakeData[] = yield all(
         stakerPools.map((pool: string) => {
-          return put(
-            actions.getUserStakeData({
-              address,
-              asset: pool,
-            } as actions.GetUserStakeDataRequestPayload),
-          );
+          const payload = {
+            address,
+            asset: pool,
+          };
+          return call(getUserStakeData, payload);
         }),
       );
 
-      yield put(actions.refreshStakeSuccess());
+      yield put(actions.refreshStakeSuccess(result));
     } catch (error) {
       yield put(actions.refreshStakeFailed(error));
     }
@@ -165,6 +157,5 @@ export default function* rootSaga() {
     fork(forgetWalletSaga),
     fork(refreshBalance),
     fork(refreshStakes),
-    fork(getUserStakeData),
   ]);
 }

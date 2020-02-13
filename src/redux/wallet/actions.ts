@@ -29,26 +29,10 @@ export interface RefreshStakes {
 }
 export interface RefreshStakesSuccess {
   type: typeof REFRESH_STAKES_SUCCESS;
+  payload: StakeData[];
 }
 export interface RefreshStakesFailed {
   type: typeof REFRESH_STAKES_FAILED;
-  payload: Error;
-}
-
-export interface GetUserStakeDataRequestPayload {
-  address: Address;
-  asset: string;
-}
-export interface GetUserStakeDataRequest {
-  type: typeof GET_USER_STAKE_DATA_REQUEST;
-  payload: GetUserStakeDataRequestPayload;
-}
-export interface GetUserStakeDataSuccess {
-  type: typeof GET_USER_STAKE_DATA_SUCCESS;
-  payload: StakeData;
-}
-export interface GetUserStakeDataFailed {
-  type: typeof GET_USER_STAKE_DATA_FAILED;
   payload: Error;
 }
 
@@ -61,9 +45,6 @@ export type WalletActionsTypes =
   | RefreshStakes
   | RefreshStakesSuccess
   | RefreshStakesFailed
-  | GetUserStakeDataRequest
-  | GetUserStakeDataSuccess
-  | GetUserStakeDataFailed
 
 export const SAVE_WALLET = 'SAVE_WALLET';
 export const FORGET_WALLET = 'FORGET_WALLET';
@@ -75,10 +56,6 @@ export const REFRESH_BALANCE_FAILED = 'REFRESH_BALANCE_FAILED';
 export const REFRESH_STAKES = 'REFRESH_STAKES';
 export const REFRESH_STAKES_SUCCESS = 'REFRESH_STAKES_SUCCESS';
 export const REFRESH_STAKES_FAILED = 'REFRESH_STAKES_FAILED';
-
-export const GET_USER_STAKE_DATA_REQUEST = 'GET_USER_STAKE_DATA_REQUEST';
-export const GET_USER_STAKE_DATA_SUCCESS = 'GET_USER_STAKE_DATA_SUCCESS';
-export const GET_USER_STAKE_DATA_FAILED = 'GET_USER_STAKE_DATA_FAILED';
 
 export const saveWallet = (payload: User): SaveWallet => ({
   type: SAVE_WALLET,
@@ -111,32 +88,12 @@ export const refreshStake = (payload: Address): RefreshStakes => ({
   payload,
 });
 
-export const refreshStakeSuccess = (): RefreshStakesSuccess => ({
+export const refreshStakeSuccess = (payload: StakeData[]): RefreshStakesSuccess => ({
   type: REFRESH_STAKES_SUCCESS,
+  payload,
 });
 
 export const refreshStakeFailed = (payload: Error): RefreshStakesFailed => ({
   type: REFRESH_STAKES_FAILED,
-  payload,
-});
-
-export const getUserStakeData = (
-  payload: GetUserStakeDataRequestPayload,
-): GetUserStakeDataRequest => ({
-  type: GET_USER_STAKE_DATA_REQUEST,
-  payload,
-});
-
-export const getUserStakeDataSuccess = (
-  payload: StakeData,
-): GetUserStakeDataSuccess => ({
-  type: GET_USER_STAKE_DATA_SUCCESS,
-  payload,
-});
-
-export const getUserStakeDataFailed = (
-  payload: Error,
-): GetUserStakeDataFailed => ({
-  type: GET_USER_STAKE_DATA_FAILED,
   payload,
 });
