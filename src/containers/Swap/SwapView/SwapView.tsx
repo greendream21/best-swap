@@ -13,7 +13,7 @@ import Table from '../../../components/uielements/table';
 import SwapLoader from '../../../components/utility/loaders/swap';
 
 import { getSwapData } from '../utils';
-import { SwapCardType, SwapTableRowType, PoolInfoType } from './types';
+import { SwapTableRowType, SwapCardType } from './types';
 import * as midgardActions from '../../../redux/midgard/actions';
 import { PriceDataIndex, PoolDataMap } from '../../../redux/midgard/types';
 import { FixmeType, Maybe, ViewType, Nothing } from '../../../types/bepswap';
@@ -21,6 +21,7 @@ import { FixmeType, Maybe, ViewType, Nothing } from '../../../types/bepswap';
 import { ContentWrapper } from './SwapView.style';
 import { RootState } from '../../../redux/store';
 import { getAssetFromString } from '../../../redux/midgard/utils';
+import { PoolInfoType } from '../../Pool/types';
 
 type ComponentProps = {};
 
@@ -183,7 +184,7 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
         basePriceAsset,
       );
 
-      if (swapCardData !== null && swapCardData.pool.target !== activeAsset) {
+      if (swapCardData && swapCardData.pool.target !== activeAsset) {
         result.push({ ...swapCardData, key });
         key += 1;
       }

@@ -18,6 +18,7 @@ import {
 } from '../../types/binance';
 import { CalcResult } from './SwapSend/types';
 import { getAssetFromString } from '../../redux/midgard/utils';
+import { SwapCardType } from './SwapView/types';
 
 export const validatePair = (
   pair: Pair,
@@ -51,11 +52,11 @@ export const getSwapData = (
   poolInfo: Maybe<PoolDetail>,
   priceIndex: PriceDataIndex,
   basePriceAsset: string,
-) => {
+): Maybe<SwapCardType> => {
   const asset = from;
 
   if (poolInfo) {
-    const { ticker: target = '' } = getAssetFromString(poolInfo?.asset);
+    const { symbol = '', ticker } = getAssetFromString(poolInfo?.asset);
 
     const runePrice = priceIndex.RUNE;
     const depth = Number(poolInfo.runeDepth) * runePrice;
@@ -71,6 +72,8 @@ export const getSwapData = (
     const transactionValue = `${basePriceAsset} ${getUserFormat(transaction)}`;
     const slipValue = `${slip}`;
     const tradeValue = `${trade}`;
+
+    const target = ticker || symbol;
 
     return {
       pool: {

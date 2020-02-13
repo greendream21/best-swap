@@ -8,75 +8,8 @@ import {
   getFixedNumber,
   getBaseNumberFormat,
   getTickerFormat,
-  getUserFormat,
 } from '../../helpers/stringHelper';
 import { getTxHashFromMemo } from '../../helpers/binance';
-import { getAssetFromString } from '../../redux/midgard/utils';
-
-export const getPoolData = (
-  from /* string */,
-  poolInfo /* PoolDetail */,
-  priceIndex /* PriceDataIndex */,
-  basePriceAsset /* string */,
-) => {
-  const asset = from;
-  const { symbol = '', ticker: target = '' } = getAssetFromString(
-    poolInfo?.asset,
-  );
-
-  const runePrice = priceIndex.RUNE;
-  const depth = Number(poolInfo.runeDepth) * runePrice;
-  const volume24 = poolInfo.poolVolume24hr * runePrice;
-  const volumeAT = poolInfo.poolVolume * runePrice;
-  const transaction = Number(poolInfo.poolTxAverage * runePrice);
-
-  const { poolROI: roiAT } = poolInfo;
-  const liqFee = Number(poolInfo.poolFeeAverage);
-
-  const totalSwaps = poolInfo.swappersCount;
-  const totalStakers = poolInfo.stakersCount;
-
-  const depthValue = `${basePriceAsset} ${getUserFormat(
-    depth,
-  ).toLocaleString()}`;
-  const volume24Value = `${basePriceAsset} ${getUserFormat(volume24)}`;
-  const transactionValue = `${basePriceAsset} ${getUserFormat(transaction)}`;
-  const liqFeeValue = `${getUserFormat(liqFee)}%`;
-  const roiAtValue = `${getUserFormat(roiAT)}% pa`;
-
-  return {
-    asset,
-    target,
-    depth,
-    volume24,
-    volumeAT,
-    transaction,
-    liqFee,
-    roiAT,
-    totalSwaps,
-    totalStakers,
-    values: {
-      pool: {
-        asset,
-        target,
-      },
-      target,
-      symbol,
-      depth: depthValue,
-      volume24: volume24Value,
-      transaction: transactionValue,
-      liqFee: liqFeeValue,
-      roiAT: roiAtValue,
-    },
-    raw: {
-      depth: getUserFormat(depth),
-      volume24: getUserFormat(volume24),
-      transaction: getUserFormat(transaction),
-      liqFee: getUserFormat(liqFee),
-      roiAT: getUserFormat(roiAT),
-    },
-  };
-};
 
 export const validateStake = (wallet, tokenAmount, data) => {
   const { poolAddress } = data;
