@@ -13,8 +13,7 @@ import Table from '../../../components/uielements/table';
 import Button from '../../../components/uielements/button';
 
 import { ContentWrapper } from './PoolView.style';
-import { getPoolData } from '../utils';
-import { getCreatePoolTokens } from '../utils-next';
+import { getCreatePoolTokens, getPoolData, PoolData } from '../utils-next';
 import { getTickerFormat } from '../../../helpers/stringHelper';
 import * as midgardActions from '../../../redux/midgard/actions';
 import { RootState } from '../../../redux/store';
@@ -198,7 +197,7 @@ class PoolView extends React.Component<Props, State> {
       const { symbol = '' } = getAssetFromString(pool);
       const poolInfo = poolData[symbol] || {};
 
-      const { values: stakeCardData, raw } = getPoolData(
+      const { values: stakeCardData, raw }: PoolData = getPoolData(
         'rune',
         poolInfo,
         priceIndex,

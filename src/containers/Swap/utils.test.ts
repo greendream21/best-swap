@@ -331,7 +331,7 @@ describe('swap/utils/', () => {
     const from = 'rune';
     const basePriceAsset = 'RUNE';
 
-    it('returns swap data', () => {
+    it('returns swap data for a `LOK-3C0` pool', () => {
       const expected = {
         depth: 'RUNE 38.22',
         pool: { asset: 'rune', target: 'LOK' },
@@ -344,6 +344,22 @@ describe('swap/utils/', () => {
 
       expect(
         getSwapData(from, lokPoolInfo, priceIndex, basePriceAsset),
+      ).toEqual(expected);
+    });
+
+   it('returns swap data for a `BNB` pool', () => {
+      const expected = {
+        depth: 'RUNE 0',
+        pool: { asset: 'rune', target: 'BNB' },
+        raw: { depth: 0, slip: 0, trade: 0, transaction: 0, volume: 0 },
+        slip: '0',
+        trade: '0',
+        transaction: 'RUNE 0',
+        volume: 'RUNE 0',
+      };
+
+      expect(
+        getSwapData(from, bnbPoolInfo, priceIndex, basePriceAsset),
       ).toEqual(expected);
     });
 

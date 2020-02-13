@@ -11,12 +11,14 @@ import {
   getFixedNumber,
   getBaseNumberFormat,
   getTickerFormat,
+  getUserFormat,
 } from '../../helpers/stringHelper';
 import { AssetData } from '../../redux/wallet/types';
-import { PoolDataMap } from '../../redux/midgard/types';
+import { PoolDataMap, PriceDataIndex } from '../../redux/midgard/types';
 import { PoolDetail } from '../../types/generated/midgard';
 import { Maybe } from '../../types/bepswap';
 import { getAssetFromString } from '../../redux/midgard/utils';
+import { PoolInfoType } from './types';
 
 export type CalcResult = {
   poolAddress: Maybe<string>;
@@ -96,6 +98,40 @@ export const getCalcResult = (
   };
 };
 
+export type PoolData = {
+  asset: string;
+  target: string;
+  depth: number;
+  volume24: number;
+  volumeAT: number;
+  transaction: number;
+  liqFee: number;
+  roiAT: number;
+  totalSwaps: number;
+  totalStakers: number;
+  values: PoolDataValues;
+  raw: PoolDataRaw;
+};
+
+export type PoolDataValues = {
+  pool: PoolInfoType;
+  target: string;
+  symbol: string;
+  depth: string;
+  volume24: string;
+  transaction: string;
+  liqFee: string;
+  roiAT: string;
+};
+
+export type PoolDataRaw = {
+  depth: number;
+  volume24: number;
+  transaction: number;
+  liqFee: number;
+  roiAT: number;
+};
+
 export const getCreatePoolTokens = (
   assetData: AssetData[],
   pools: string[],
@@ -116,4 +152,68 @@ export const getCreatePoolTokens = (
 
     return unique;
   });
+};
+
+export const getPoolData = (
+  from: string,
+  poolDetail: PoolDetail,
+  priceIndex: PriceDataIndex,
+  basePriceAsset: string,
+): PoolData => {
+  const asset = from;
+  const { symbol = '', ticker } = getAssetFromString(poolDetail?.asset);
+
+  const runePrice = priceIndex.RUNE || 0;
+  const depth = (poolDetail?.runeDepth ?? 0) * runePrice;
+  const volume24 = (poolDetail?.poolVolume24hr ?? 0) * runePrice;
+  const volumeAT = (poolDetail?.poolVolume ?? 0) * runePrice;
+  const transaction = (poolDetail?.poolTxAverage ?? 0) * runePrice;
+
+  const roiAT = poolDetail?.poolROI ?? 0;
+  const liqFee = poolDetail?.poolFeeAverage ?? 0;
+
+  const totalSwaps = poolDetail?.swappersCount ?? 0;
+  const totalStakers = poolDetail?.stakersCount ?? 0;
+
+  const depthValue = `${basePriceAsset} ${getUserFormat(
+    depth,
+  ).toLocaleString()}`;
+  const volume24Value = `${basePriceAsset} ${getUserFormat(volume24)}`;
+  const transactionValue = `${basePriceAsset} ${getUserFormat(transaction)}`;
+  const liqFeeValue = `${getUserFormat(liqFee)}%`;
+  const roiAtValue = `${getUserFormat(roiAT)}% pa`;
+
+  const target = ticker || symbol;
+  return {
+    asset,
+    target,
+    depth,
+    volume24,
+    volumeAT,
+    transaction,
+    liqFee,
+    roiAT,
+    totalSwaps,
+    totalStakers,
+    values: {
+      pool: {
+        asset,
+        target,
+      },
+      target,
+      symbol,
+      depth: depthValue,
+      volume24: volume24Value,
+      transaction: transactionValue,
+      liqFee: liqFeeValue,
+      roiAT: roiAtValue,
+    },
+    raw: {
+      depth: getUserFormat(depth),
+      volume24: getUserFormat(volume24),
+      transaction: getUserFormat(transaction),
+      liqFee: getUserFormat(liqFee),
+      roiAT: getUserFormat(roiAT),
+    },
+  };
 };

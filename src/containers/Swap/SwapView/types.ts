@@ -1,7 +1,4 @@
-export type PoolInfoType = {
-  asset: string;
-  target: string;
-};
+import { PoolInfoType } from '../../Pool/types';
 
 type RawSwapCardDataType = {
   depth: number;

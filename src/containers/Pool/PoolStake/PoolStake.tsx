@@ -34,12 +34,11 @@ import {
   ConfirmModalContent,
 } from './PoolStake.style';
 import {
-  getPoolData,
   confirmStake,
   confirmWithdraw,
   withdrawResult,
 } from '../utils';
-import { getCalcResult, CalcResult } from '../utils-next';
+import { getCalcResult, CalcResult, getPoolData, PoolData } from '../utils-next';
 import {
   getUserFormat,
   getTickerFormat,
@@ -136,10 +135,6 @@ type WithdrawData = {
   tokenPrice: number;
   percentage: number;
 };
-
-// TODO (Veado): As long as we don't `pool/utils` have converted into TypeScript,
-// use this type here
-type PoolStats = ReturnType<typeof getPoolData>;
 
 class PoolStake extends React.Component<Props, State> {
   hash: Maybe<string> = Nothing;
@@ -850,7 +845,7 @@ class PoolStake extends React.Component<Props, State> {
     }
   };
 
-  renderStakeInfo = (poolStats: PoolStats) => {
+  renderStakeInfo = (poolStats: PoolData) => {
     const { symbol, basePriceAsset } = this.props;
     const source = 'rune';
     const target = getTickerFormat(symbol);
@@ -910,7 +905,7 @@ class PoolStake extends React.Component<Props, State> {
   };
 
   renderShareDetail = (
-    poolStats: PoolStats,
+    poolStats: PoolData,
     calcResult: CalcResult,
     stakeData: StakerPoolData,
   ) => {
