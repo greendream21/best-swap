@@ -100,7 +100,7 @@ class Header extends Component {
       </Link>
     );
     const poolsTab = (
-      <Link to="/stake">
+      <Link to="/pools">
         <span>
           <Icon type="database" theme="filled" />
           stake
