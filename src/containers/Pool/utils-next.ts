@@ -161,7 +161,7 @@ export const getPoolData = (
   basePriceAsset: string,
 ): PoolData => {
   const asset = from;
-  const { symbol = '', ticker } = getAssetFromString(poolDetail?.asset);
+  const { symbol = '', ticker: target = '' } = getAssetFromString(poolDetail?.asset);
 
   const runePrice = priceIndex.RUNE || 0;
   const depth = (poolDetail?.runeDepth ?? 0) * runePrice;
@@ -183,7 +183,6 @@ export const getPoolData = (
   const liqFeeValue = `${getUserFormat(liqFee)}%`;
   const roiAtValue = `${getUserFormat(roiAT)}% pa`;
 
-  const target = ticker || symbol;
   return {
     asset,
     target,
