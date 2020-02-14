@@ -105,9 +105,8 @@ export const getAssetFromString = (s?: string): Asset => {
     const ss = data[1];
     if (ss) {
       symbol = ss;
-      if (ss.includes('-')) {
-        ticker = ss.split('-')[0];
-      }
+      // grab `ticker` from string or reference to `symbol` as `ticker`
+      ticker = ss.split('-')[0];
     }
   }
   return { chain, symbol, ticker };
