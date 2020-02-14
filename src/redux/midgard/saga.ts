@@ -41,12 +41,12 @@ export function* getPools() {
       const assetDataIndex = getAssetDataIndex(assetDetails);
       const baseTokenTicker = getBasePriceAsset() || 'RUNE';
       const priceIndex = getPriceIndex(assetDetails, baseTokenTicker);
-
       const assetsPayload: actions.SetAssetsPayload = {
         assetDetails,
         assetDataIndex,
       };
 
+      console.log('assetsPayload', assetsPayload);
       yield put(actions.setAssets(assetsPayload));
       yield put(actions.setPriceIndex(priceIndex));
 

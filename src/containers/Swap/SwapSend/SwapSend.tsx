@@ -117,7 +117,7 @@ type TxResult = {
   type: string;
   amount: string;
   token: string;
-}
+};
 
 class SwapSend extends React.Component<Props, State> {
   addressRef = React.createRef();
@@ -832,7 +832,7 @@ class SwapSend extends React.Component<Props, State> {
 
       const ratio = targetPrice !== 0 ? sourcePrice / targetPrice : 0;
 
-      const ratioLabel = `1 ${swapTarget.toUpperCase()} = ${getFixedNumber(
+      const ratioLabel = `1 ${swapSource.toUpperCase()} = ${getFixedNumber(
         ratio,
         2,
       )} ${swapTarget.toUpperCase()}`;
@@ -992,7 +992,6 @@ class SwapSend extends React.Component<Props, State> {
             onOk={this.handleConfirmPassword}
             onCancel={this.handleCancelPrivateModal}
           />
-          )
           <Modal
             title="PLEASE ADD WALLET"
             visible={openWalletAlert}

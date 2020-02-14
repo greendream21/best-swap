@@ -133,9 +133,9 @@ describe('redux/midgard/utils/', () => {
       const result = getAssetFromString('BNB.RUNE-B1A');
       expect(result).toEqual({ chain: 'BNB', symbol: 'RUNE-B1A', ticker: 'RUNE' });
     });
-    it('should return an asset with values for chain and symbol only', () => {
+    it('should return an asset with all values, even if chain and symbol are provided only', () => {
       const result = getAssetFromString('BNB.RUNE');
-      expect(result).toEqual({ chain: 'BNB', symbol: 'RUNE' });
+      expect(result).toEqual({ chain: 'BNB', symbol: 'RUNE', ticker: 'RUNE' });
     });
     it('should return an asset with a value for chain only', () => {
       const result = getAssetFromString('BNB');
@@ -146,7 +146,7 @@ describe('redux/midgard/utils/', () => {
       expect(result).toEqual({});
     });
     it('returns an asset without any values if the passing value is undefined', () => {
-      const result = getAssetFromString();
+      const result = getAssetFromString(undefined);
       expect(result).toEqual({});
     });
   });
