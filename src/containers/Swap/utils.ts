@@ -56,7 +56,7 @@ export const getSwapData = (
   const asset = from;
 
   if (poolInfo) {
-    const { symbol = '', ticker } = getAssetFromString(poolInfo?.asset);
+    const { ticker: target = '' } = getAssetFromString(poolInfo?.asset);
 
     const runePrice = priceIndex.RUNE;
     const depth = Number(poolInfo.runeDepth) * runePrice;
@@ -72,8 +72,6 @@ export const getSwapData = (
     const transactionValue = `${basePriceAsset} ${getUserFormat(transaction)}`;
     const slipValue = `${slip}`;
     const tradeValue = `${trade}`;
-
-    const target = ticker || symbol;
 
     return {
       pool: {
