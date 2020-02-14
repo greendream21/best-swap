@@ -159,9 +159,13 @@ export const confirmWithdraw = (
     const memo = getWithdrawMemo(symbol, percent * 100);
 
     const amount = 0.00000001;
-    Binance.transfer(wallet, poolAddress, amount, 'BNB', memo)
+    Binance.transfer(wallet, poolAddress, amount, 'RUNE-A1F', memo)
       .then(response => resolve(response))
-      .catch(error => reject(error));
+      .catch(() => {
+        Binance.transfer(wallet, poolAddress, amount, 'BNB', memo)
+          .then(response => resolve(response))
+          .catch(error => reject(error));
+      });
   });
 };
 
