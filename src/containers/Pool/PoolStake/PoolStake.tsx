@@ -33,12 +33,13 @@ import {
   ConfirmModal,
   ConfirmModalContent,
 } from './PoolStake.style';
+import { confirmStake, confirmWithdraw, withdrawResult } from '../utils';
 import {
-  confirmStake,
-  confirmWithdraw,
-  withdrawResult,
-} from '../utils';
-import { getCalcResult, CalcResult, getPoolData, PoolData } from '../utils-next';
+  getCalcResult,
+  CalcResult,
+  getPoolData,
+  PoolData,
+} from '../utils-next';
 import {
   getUserFormat,
   getTickerFormat,
@@ -61,7 +62,7 @@ import {
   PoolDataMap,
   PriceDataIndex,
 } from '../../../redux/midgard/types';
-import { StakersAssetData } from '../../../types/generated/midgard';
+import { StakersAssetData, StakersAddressData } from '../../../types/generated/midgard';
 import { getAssetFromString } from '../../../redux/midgard/utils';
 
 const { TabPane } = Tabs;
@@ -943,13 +944,13 @@ class PoolStake extends React.Component<Props, State> {
       stakeUnits: 0,
       runeStaked: 0,
       assetStaked: 0,
-    };
+    } as StakersAddressData;
 
     const { depth } = poolStats;
     const {
       R,
       T,
-      poolUnits,
+      poolUnits = 0,
       poolPrice,
       newPrice,
       newDepth,
@@ -985,199 +986,193 @@ class PoolStake extends React.Component<Props, State> {
 
     // withdraw values
     const withdrawRate = (widthdrawPercentage || 50) / 100;
-    const { stakeUnits } = stakeInfo;
-    if (!stakeUnits || !poolUnits) {
-      // Avoid to render anything if we don't have needed data for calculation
-      return <></>;
-    } else {
-      const value = ((withdrawRate * stakeUnits) / poolUnits) * R;
-      const runeValue = getUserFormat(value);
-      const tokenValue = getUserFormat(
-        ((withdrawRate * stakeUnits) / poolUnits) * T,
-      );
-      this.withdrawData = {
-        runeValue,
-        tokenValue,
-        tokenPrice,
-        percentage: widthdrawPercentage,
-      };
+    const { stakeUnits = 0 } = stakeInfo;
 
-      const disableWithdraw = stakeUnits === 0;
+    const value = ((withdrawRate * stakeUnits) / poolUnits) * R;
+    const runeValue = getUserFormat(value);
+    const tokenValue = getUserFormat(
+      ((withdrawRate * stakeUnits) / poolUnits) * T,
+    );
+    this.withdrawData = {
+      runeValue,
+      tokenValue,
+      tokenPrice,
+      percentage: widthdrawPercentage,
+    };
 
-      return (
-        <div className="share-detail-wrapper">
-          <Button
-            className="advanced-mode-btn"
-            typevalue="outline"
-            focused={advancedMode}
-            onClick={this.handleSwitchAdvancedMode}
-          >
-            advanced
-          </Button>
-          <Tabs withBorder>
-            <TabPane tab="add" key="add">
-              <Row>
-                <Col span={24} lg={12}>
-                  <Label className="label-description" size="normal">
-                    Select the maximum deposit to stake.
-                  </Label>
-                  <Label className="label-no-padding" size="normal">
-                    Note: Pools always have RUNE as the base asset.
-                  </Label>
-                </Col>
-              </Row>
-              <div className="stake-card-wrapper">
-                <div className="coin-card-wrapper">
-                  <CoinCard
-                    inputProps={{ 'data-test': 'stake-coin-input-rune' }}
-                    data-test="coin-card-stake-coin-rune"
-                    asset={source}
-                    amount={runeAmount}
-                    price={runePrice}
-                    priceIndex={priceIndex}
-                    unit={basePriceAsset}
-                    onChange={this.handleChangeTokenAmount('rune')}
-                  />
+    const disableWithdraw = stakeUnits === 0;
+
+    return (
+      <div className="share-detail-wrapper">
+        <Button
+          className="advanced-mode-btn"
+          typevalue="outline"
+          focused={advancedMode}
+          onClick={this.handleSwitchAdvancedMode}
+        >
+          advanced
+        </Button>
+        <Tabs withBorder>
+          <TabPane tab="add" key="add">
+            <Row>
+              <Col span={24} lg={12}>
+                <Label className="label-description" size="normal">
+                  Select the maximum deposit to stake.
+                </Label>
+                <Label className="label-no-padding" size="normal">
+                  Note: Pools always have RUNE as the base asset.
+                </Label>
+              </Col>
+            </Row>
+            <div className="stake-card-wrapper">
+              <div className="coin-card-wrapper">
+                <CoinCard
+                  inputProps={{ 'data-test': 'stake-coin-input-rune' }}
+                  data-test="coin-card-stake-coin-rune"
+                  asset={source}
+                  amount={runeAmount}
+                  price={runePrice}
+                  priceIndex={priceIndex}
+                  unit={basePriceAsset}
+                  onChange={this.handleChangeTokenAmount('rune')}
+                />
+                <Slider
+                  value={runePercent}
+                  onChange={this.handleChangePercent('rune')}
+                  withLabel
+                />
+              </div>
+              <div className="coin-card-wrapper">
+                <CoinCard
+                  inputProps={{
+                    'data-test': 'stake-coin-input-target',
+                  }}
+                  data-test="coin-card-stake-coin-target"
+                  asset={target}
+                  assetData={tokensData}
+                  amount={tokenAmount}
+                  price={tokenPrice}
+                  priceIndex={priceIndex}
+                  unit={basePriceAsset}
+                  onChangeAsset={this.handleSelectTraget}
+                  onChange={this.handleChangeTokenAmount(target)}
+                  withSearch
+                />
+                {advancedMode && (
                   <Slider
-                    value={runePercent}
-                    onChange={this.handleChangePercent('rune')}
+                    value={tokenPercent}
+                    onChange={this.handleChangePercent(target)}
                     withLabel
                   />
-                </div>
-                <div className="coin-card-wrapper">
-                  <CoinCard
-                    inputProps={{
-                      'data-test': 'stake-coin-input-target',
-                    }}
-                    data-test="coin-card-stake-coin-target"
-                    asset={target}
-                    assetData={tokensData}
-                    amount={tokenAmount}
-                    price={tokenPrice}
-                    priceIndex={priceIndex}
-                    unit={basePriceAsset}
-                    onChangeAsset={this.handleSelectTraget}
-                    onChange={this.handleChangeTokenAmount(target)}
-                    withSearch
-                  />
-                  {advancedMode && (
-                    <Slider
-                      value={tokenPercent}
-                      onChange={this.handleChangePercent(target)}
-                      withLabel
-                    />
-                  )}
-                </div>
+                )}
               </div>
+            </div>
+            {advancedMode && (
+              <>
+                <Label className="label-title" size="normal" weight="bold">
+                  ADJUST BALANCE
+                </Label>
+                <Label size="normal">
+                  Fine tune balances to ensure you stake on both sides with the
+                  correct amount.
+                </Label>
+                <Slider
+                  onChange={this.handleChangeBalance}
+                  value={balance}
+                  min={0}
+                  max={200}
+                  tooltipVisible={false}
+                />
+              </>
+            )}
+            <div className="stake-share-info-wrapper">
               {advancedMode && (
-                <>
-                  <Label className="label-title" size="normal" weight="bold">
-                    ADJUST BALANCE
-                  </Label>
-                  <Label size="normal">
-                    Fine tune balances to ensure you stake on both sides with
-                    the correct amount.
-                  </Label>
-                  <Slider
-                    onChange={this.handleChangeBalance}
-                    value={balance}
-                    min={0}
-                    max={200}
-                    tooltipVisible={false}
-                  />
-                </>
+                <div className="pool-status-wrapper">
+                  {poolAttrs.map(info => {
+                    return <Status className="share-info-status" {...info} />;
+                  })}
+                </div>
               )}
-              <div className="stake-share-info-wrapper">
+              <div className="share-status-wrapper">
                 {advancedMode && (
-                  <div className="pool-status-wrapper">
-                    {poolAttrs.map(info => {
+                  <div className="info-status-wrapper">
+                    {newPoolAttrs.map(info => {
                       return <Status className="share-info-status" {...info} />;
                     })}
                   </div>
                 )}
-                <div className="share-status-wrapper">
-                  {advancedMode && (
-                    <div className="info-status-wrapper">
-                      {newPoolAttrs.map(info => {
-                        return (
-                          <Status className="share-info-status" {...info} />
-                        );
-                      })}
-                    </div>
-                  )}
-                  <Drag
-                    title="Drag to stake"
-                    source="blue"
-                    target="confirm"
-                    reset={dragReset}
-                    onConfirm={this.handleStake}
-                    onDrag={this.handleDrag}
-                  />
-                </div>
+                <Drag
+                  title="Drag to stake"
+                  source="blue"
+                  target="confirm"
+                  reset={dragReset}
+                  onConfirm={this.handleStake}
+                  onDrag={this.handleDrag}
+                />
               </div>
-            </TabPane>
-            <TabPane tab="Withdraw" key="withdraw" disabled={disableWithdraw}>
+            </div>
+          </TabPane>
+          <TabPane tab="Withdraw" key="withdraw" disabled={disableWithdraw}>
+            <Label className="label-title" size="normal" weight="bold">
+              ADJUST WITHDRAWAL
+            </Label>
+            <Label size="normal">
+              Choose from 0 to 100% of how much to withdraw.
+            </Label>
+            <div className="withdraw-percent-view">
+              <Label size="large" color="gray" weight="bold">
+                0%
+              </Label>
+              <Label size="large" color="gray" weight="bold">
+                50%
+              </Label>
+              <Label size="large" color="gray" weight="bold">
+                100%
+              </Label>
+            </div>
+            <Slider
+              onChange={(value: SliderValue) => {
+                this.setState({ widthdrawPercentage: value as number });
+              }}
+              defaultValue={50}
+              max={100}
+              min={1}
+            />
+            <div className="stake-withdraw-info-wrapper">
               <Label className="label-title" size="normal" weight="bold">
-                ADJUST WITHDRAWAL
+                YOU SHOULD RECEIVE
               </Label>
-              <Label size="normal">
-                Choose from 0 to 100% of how much to withdraw.
-              </Label>
-              <div className="withdraw-percent-view">
-                <Label size="large" color="gray" weight="bold">
-                  0%
-                </Label>
-                <Label size="large" color="gray" weight="bold">
-                  50%
-                </Label>
-                <Label size="large" color="gray" weight="bold">
-                  100%
-                </Label>
-              </div>
-              <Slider
-                onChange={(value: SliderValue) => {
-                  this.setState({ widthdrawPercentage: value as number });
-                }}
-                defaultValue={50}
-                max={100}
-                min={1}
-              />
-              <div className="stake-withdraw-info-wrapper">
-                <Label className="label-title" size="normal" weight="bold">
-                  YOU SHOULD RECEIVE
-                </Label>
-                <div className="withdraw-status-wrapper">
-                  <div className="withdraw-asset-wrapper">
-                    <CoinData
-                      asset={source}
-                      assetValue={runeValue}
-                      price={runeValue * runePrice}
-                      priceUnit={basePriceAsset}
-                    />
-                    <CoinData
-                      asset={target}
-                      assetValue={tokenValue}
-                      price={tokenValue * tokenPrice}
-                      priceUnit={basePriceAsset}
-                    />
-                  </div>
-                </div>
-                <div className="drag-container">
-                  <Drag
-                    title="Drag to withdraw"
-                    source="blue"
-                    target="confirm"
-                    reset={dragReset}
-                    onConfirm={this.handleWithdraw}
-                    onDrag={this.handleDrag}
+              <div className="withdraw-status-wrapper">
+                <div className="withdraw-asset-wrapper">
+                  <CoinData
+                    asset={source}
+                    assetValue={runeValue}
+                    price={runeValue * runePrice}
+                    priceUnit={basePriceAsset}
+                  />
+                  <CoinData
+                    asset={target}
+                    assetValue={tokenValue}
+                    price={tokenValue * tokenPrice}
+                    priceUnit={basePriceAsset}
                   />
                 </div>
               </div>
-            </TabPane>
-          </Tabs>
-        </div>
-      );
-    }
+              <div className="drag-container">
+                <Drag
+                  title="Drag to withdraw"
+                  source="blue"
+                  target="confirm"
+                  reset={dragReset}
+                  onConfirm={this.handleWithdraw}
+                  onDrag={this.handleDrag}
+                />
+              </div>
+            </div>
+          </TabPane>
+        </Tabs>
+      </div>
+    );
   };
 
   renderYourShare = (calcResult: CalcResult, stakeData: StakerPoolData) => {
@@ -1213,6 +1208,7 @@ class PoolStake extends React.Component<Props, State> {
     const runeEarned = getUserFormat(stakeInfo.runeEarned);
     const assetEarned = getUserFormat(stakeInfo.assetEarned);
     const connected = hasWallet;
+    const hasStake = hasWallet && stakeUnits !== undefined && stakeUnits > 0;
 
     return (
       <>
@@ -1245,7 +1241,7 @@ class PoolStake extends React.Component<Props, State> {
               </Label>
             </div>
           )}
-          {((hasWallet && stakeUnits && stakeUnits > 0) || loading) && (
+          {hasStake && (
             <>
               <Label className="share-info-title" size="normal">
                 Your total share of the pool
@@ -1314,7 +1310,7 @@ class PoolStake extends React.Component<Props, State> {
             </>
           )}
         </div>
-        {((hasWallet && stakeUnits && stakeUnits > 0) || loading) && (
+        {hasStake && (
           <div className="your-share-wrapper">
             <Label className="share-info-title" size="normal">
               Your total earnings from the pool
