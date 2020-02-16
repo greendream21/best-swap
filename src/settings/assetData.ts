@@ -1,4 +1,9 @@
-export const tokenNames = {
+type tokenData = {
+  mainnet: string;
+  testnet: string;
+};
+
+export const tokenNames: { [key: string]: tokenData } = {
   BNB: {
     mainnet: 'BNB',
     testnet: 'BNB',

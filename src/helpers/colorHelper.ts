@@ -1,20 +1,20 @@
-export const rainbowStop = h => {
-  const f = (n, k = (n + h * 12) % 12) =>
+export const rainbowStop = (h: number) => {
+  const f = (n: number, k = (n + h * 12) % 12) =>
     0.5 - 0.5 * Math.max(Math.min(k - 3, 9 - k, 1), -1);
-  const rgb2hex = (r, g, b) =>
+  const rgb2hex = (r: number, g: number, b: number) =>
     '#' +
     [r, g, b]
       .map(x =>
         Math.round(x * 255)
           .toString(16)
-          .padStart(2, 0),
+          .padStart(2, '0'),
       )
       .join('');
 
   return rgb2hex(f(0), f(8), f(4));
 };
 
-export const getIntFromName = str => {
+export const getIntFromName = (str: string) => {
   const inputStr = String(str).toUpperCase();
 
   const div = 22;
