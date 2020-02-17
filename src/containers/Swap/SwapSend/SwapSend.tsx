@@ -834,7 +834,7 @@ class SwapSend extends React.Component<Props, State> {
 
       const ratioLabel = `1 ${swapSource.toUpperCase()} = ${getFixedNumber(
         ratio,
-        2,
+        4,
       )} ${swapTarget.toUpperCase()}`;
 
       // swap modal
