@@ -14,7 +14,6 @@ import Label from '../../../components/uielements/label';
 import Status from '../../../components/uielements/status';
 import CoinIcon from '../../../components/uielements/coins/coinIcon';
 import CoinCard from '../../../components/uielements/coins/coinCard';
-import Slider from '../../../components/uielements/slider';
 import Drag from '../../../components/uielements/drag';
 import { greyArrowIcon } from '../../../components/icons';
 import TxTimer from '../../../components/uielements/txTimer';
@@ -32,12 +31,15 @@ import {
   ConfirmModalContent,
 } from './PoolCreate.style';
 import {
-  getUserFormat,
   getTickerFormat,
   emptyString,
 } from '../../../helpers/stringHelper';
-import { confirmCreatePool, getCreatePoolCalc } from '../utils';
-import { getCreatePoolTokens } from '../utils-next';
+import { confirmCreatePool } from '../utils';
+import {
+  getCreatePoolTokens,
+  getCreatePoolCalc,
+  CreatePoolCalc,
+} from '../utils-next';
 
 import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
 import { MAX_VALUE } from '../../../redux/app/const';
@@ -93,13 +95,8 @@ type State = {
   validatingPassword: boolean;
   runeAmount: number;
   tokenAmount: number;
-  balance: number;
   fR: number;
   fT: number;
-  selectedRune: number;
-  selectedToken: number;
-  runeTotal: number;
-  tokenTotal: number;
 };
 
 class PoolCreate extends React.Component<Props, State> {
@@ -113,13 +110,8 @@ class PoolCreate extends React.Component<Props, State> {
       validatingPassword: false,
       runeAmount: 0,
       tokenAmount: 0,
-      balance: 100,
       fR: 1,
       fT: 1,
-      selectedRune: 0,
-      selectedToken: 0,
-      runeTotal: 0,
-      tokenTotal: 0,
     };
   }
 
@@ -143,19 +135,19 @@ class PoolCreate extends React.Component<Props, State> {
     resetTxStatus();
   }
 
-  getData = () => {
+  getData = (): CreatePoolCalc => {
     const { symbol, poolAddress, priceIndex } = this.props;
     const { runeAmount, tokenAmount } = this.state;
 
-    const runePrice = priceIndex.runePrice;
+    const runePrice = priceIndex.RUNE;
 
-    return getCreatePoolCalc(
-      symbol,
+    return getCreatePoolCalc({
+      tokenSymbol: symbol,
       poolAddress,
       runeAmount,
       runePrice,
       tokenAmount,
-    );
+    });
   };
 
   getStakerData = () => {
@@ -211,12 +203,10 @@ class PoolCreate extends React.Component<Props, State> {
       if (totalAmount < newValue) {
         this.setState({
           runeAmount: totalAmount,
-          selectedRune: 0,
         });
       } else {
         this.setState({
           runeAmount: newValue,
-          selectedRune: 0,
         });
       }
     } else {
@@ -225,12 +215,10 @@ class PoolCreate extends React.Component<Props, State> {
       if (totalAmount < newValue) {
         this.setState({
           tokenAmount: totalAmount,
-          selectedToken: 0,
         });
       } else {
         this.setState({
           tokenAmount: newValue,
-          selectedToken: 0,
         });
       }
     }
@@ -268,40 +256,12 @@ class PoolCreate extends React.Component<Props, State> {
     if (token === 'rune') {
       this.setState({
         runeAmount: newValue,
-        selectedRune: amount,
-        runeTotal: totalAmount,
       });
     } else {
       this.setState({
         tokenAmount: newValue,
-        selectedToken: amount,
-        tokenTotal: totalAmount,
       });
     }
-  };
-
-  handleChangeBalance = (balance: number) => {
-    const { selectedRune, selectedToken, runeTotal, tokenTotal } = this.state;
-    const fR = balance < 100 ? 1 : (201 - balance) / 100;
-    const fT = balance > 100 ? 1 : balance / 100;
-
-    if (selectedRune > 0) {
-      const runeAmount = ((runeTotal * selectedRune) / 100) * fR;
-      this.setState({
-        runeAmount,
-      });
-    }
-    if (selectedToken > 0) {
-      const tokenAmount = ((tokenTotal * selectedToken) / 100) * fT;
-      this.setState({
-        tokenAmount,
-      });
-    }
-    this.setState({
-      balance,
-      fR,
-      fT,
-    });
   };
 
   handleCreatePool = () => {
@@ -466,7 +426,6 @@ class PoolCreate extends React.Component<Props, State> {
     const {
       runeAmount,
       tokenAmount,
-      balance,
       dragReset,
       openPrivateModal,
       invalidPassword,
@@ -493,7 +452,7 @@ class PoolCreate extends React.Component<Props, State> {
       {
         key: 'depth',
         title: 'Pool Depth',
-        value: `${basePriceAsset} ${getUserFormat(depth)}`,
+        value: `${basePriceAsset} ${depth}`,
       },
       { key: 'share', title: 'Your Share', value: `${share}%` },
     ];
@@ -532,20 +491,6 @@ class PoolCreate extends React.Component<Props, State> {
             withSearch
           />
         </div>
-        <Label className="label-title" size="normal" weight="bold">
-          ADJUST PRICE
-        </Label>
-        <Label size="normal">
-          Fine tune balances to ensure you starting pool price matches the
-          market price.
-        </Label>
-        <Slider
-          onChange={this.handleChangeBalance}
-          value={balance}
-          min={1}
-          max={200}
-          tooltipVisible={false}
-        />
         <div className="create-pool-info-wrapper">
           <div className="create-token-detail">
             <div className="info-status-wrapper">
