@@ -161,7 +161,9 @@ export const getPoolData = (
   basePriceAsset: string,
 ): PoolData => {
   const asset = from;
-  const { symbol = '', ticker: target = '' } = getAssetFromString(poolDetail?.asset);
+  const { symbol = '', ticker: target = '' } = getAssetFromString(
+    poolDetail?.asset,
+  );
 
   const runePrice = priceIndex.RUNE || 0;
   const depth = (poolDetail?.runeDepth ?? 0) * runePrice;
@@ -214,5 +216,52 @@ export const getPoolData = (
       liqFee: getUserFormat(liqFee),
       roiAT: getUserFormat(roiAT),
     },
+  };
+};
+
+export type CreatePoolCalc = {
+  poolPrice: number;
+  depth: number;
+  share: number;
+  poolAddress?: string;
+  tokenSymbol?: string;
+  Pr?: number;
+};
+
+type GetCreatePoolCalcParams = {
+  tokenSymbol: string;
+  poolAddress: string;
+  runeAmount: number;
+  runePrice: number;
+  tokenAmount: number;
+};
+
+export const getCreatePoolCalc = ({
+  tokenSymbol,
+  poolAddress,
+  runeAmount,
+  runePrice,
+  tokenAmount,
+}: GetCreatePoolCalcParams): CreatePoolCalc => {
+  const share = 100;
+
+  if (!poolAddress) {
+    return {
+      poolPrice: 0,
+      depth: 0,
+      share: 100,
+    };
+  }
+
+  const poolPrice = (tokenAmount > 0 && getFixedNumber((runeAmount / tokenAmount) * runePrice)) || 0;
+  const depth = getFixedNumber(runePrice * runeAmount);
+
+  return {
+    poolAddress,
+    tokenSymbol,
+    poolPrice,
+    depth,
+    share,
+    Pr: runePrice,
   };
 };

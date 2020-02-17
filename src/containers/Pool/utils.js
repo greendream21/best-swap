@@ -4,15 +4,10 @@ import {
   getWithdrawMemo,
 } from '../../helpers/memoHelper';
 
-import {
-  getFixedNumber,
-  getBaseNumberFormat,
-  getTickerFormat,
-} from '../../helpers/stringHelper';
+import { getTickerFormat } from '../../helpers/stringHelper';
 import { getTxHashFromMemo } from '../../helpers/binance';
 
-export const validateStake = (wallet, tokenAmount, data) => {
-  const { poolAddress } = data;
+export const validateStake = (wallet, tokenAmount, poolAddress) => {
   if (!wallet || !poolAddress || !tokenAmount) {
     return false;
   }
@@ -27,7 +22,7 @@ export const confirmStake = (
   data,
 ) => {
   return new Promise((resolve, reject) => {
-    if (!validateStake(wallet, tokenAmount, data)) {
+    if (!validateStake(wallet, tokenAmount, data.poolAddress)) {
       return reject();
     }
 
@@ -71,50 +66,15 @@ export const confirmStake = (
   });
 };
 
-export const getCreatePoolCalc = (
-  tokenName,
-  poolAddress,
-  rValue,
-  runePrice,
-  tValue,
-) => {
-  const Pr = runePrice;
-
-  if (!poolAddress) {
-    return {
-      poolPrice: 0,
-      depth: 0,
-      share: 100,
-    };
-  }
-
-  const r = rValue && getBaseNumberFormat(rValue);
-  const t = getBaseNumberFormat(tValue);
-
-  const poolPrice = tValue && getFixedNumber((r / t) * runePrice);
-  const depth = getFixedNumber(runePrice * r);
-  const share = 100;
-  const tokenSymbol = tokenName;
-
-  return {
-    poolAddress,
-    tokenSymbol,
-    poolPrice,
-    depth,
-    share,
-    Pr,
-  };
-};
-
 export const confirmCreatePool = (
   Binance,
   wallet,
   runeAmount,
   tokenAmount,
-  data,
+  data, // CreatePoolCalc
 ) => {
   return new Promise((resolve, reject) => {
-    if (!validateStake(wallet, tokenAmount, data)) {
+    if (!validateStake(wallet, tokenAmount, data.poolAddress)) {
       return reject();
     }
 
