@@ -17,10 +17,10 @@ import { getCreatePoolTokens, getPoolData, PoolData } from '../utils-next';
 import { getTickerFormat } from '../../../helpers/stringHelper';
 import * as midgardActions from '../../../redux/midgard/actions';
 import { RootState } from '../../../redux/store';
-import { AssetData } from '../../../redux/wallet/types';
+import { AssetData, User } from '../../../redux/wallet/types';
 import { PoolDataMap, PriceDataIndex } from '../../../redux/midgard/types';
 import { getAssetFromString } from '../../../redux/midgard/utils';
-import { ViewType, FixmeType } from '../../../types/bepswap';
+import { ViewType, FixmeType, Maybe } from '../../../types/bepswap';
 
 type ComponentProps = {
   loading: boolean;
@@ -33,6 +33,7 @@ type ConnectedProps = {
   basePriceAsset: string;
   priceIndex: PriceDataIndex;
   assetData: AssetData[];
+  user: Maybe<User>;
 };
 
 type State = {
@@ -55,20 +56,29 @@ class PoolView extends React.Component<Props, State> {
   }
 
   handleNewPool = () => {
-    const { assetData, pools } = this.props;
-    const possibleTokens = getCreatePoolTokens(assetData, pools);
+    const { assetData, pools, user } = this.props;
 
-    if (possibleTokens.length) {
-      const symbol = possibleTokens[0].asset;
-      if (getTickerFormat(symbol) !== 'rune') {
-        const URL = `/pool/${symbol}/new`;
-        this.props.history.push(URL);
-      }
-    } else {
+    const wallet = user ? user.wallet : null;
+
+    if (!wallet) {
       notification.warning({
         message: 'Create Pool Failed',
-        description: 'You cannot create a new pool.',
+        description: 'Please connect your wallet to add a new pool.',
       });
+    } else {
+      const possibleTokens = getCreatePoolTokens(assetData, pools);
+      if (possibleTokens.length) {
+        const symbol = possibleTokens[0].asset;
+        if (getTickerFormat(symbol) !== 'rune') {
+          const URL = `/pool/${symbol}/new`;
+          this.props.history.push(URL);
+        }
+      } else {
+        notification.warning({
+          message: 'Create Pool Failed',
+          description: 'You cannot create a new pool.',
+        });
+      }
     }
   };
 
@@ -251,6 +261,7 @@ export default compose(
       priceIndex: state.Midgard.priceIndex,
       basePriceAsset: state.Midgard.basePriceAsset,
       assetData: state.Wallet.assetData,
+      user: state.Wallet.user,
     }),
     {
       getPools: midgardActions.getPools,
