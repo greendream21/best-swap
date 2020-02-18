@@ -102,7 +102,6 @@ type ConnectedProps = {
 type Props = ComponentProps & ConnectedProps;
 
 type State = {
-  advancedMode: boolean;
   dragReset: boolean;
   openWalletAlert: boolean;
   openPrivateModal: boolean;
@@ -111,7 +110,6 @@ type State = {
   validatingPassword: boolean;
   runeAmount: number;
   tokenAmount: number;
-  balance: number;
   fR: number;
   fT: number;
   runeTotal: number;
@@ -149,7 +147,6 @@ class PoolStake extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      advancedMode: false,
       dragReset: true,
       openWalletAlert: false,
       openPrivateModal: false,
@@ -158,7 +155,6 @@ class PoolStake extends React.Component<Props, State> {
       validatingPassword: false,
       runeAmount: 0,
       tokenAmount: 0,
-      balance: 100,
       fR: 1,
       fT: 1,
       runeTotal: 0,
@@ -390,7 +386,6 @@ class PoolStake extends React.Component<Props, State> {
       });
     }
     this.setState({
-      balance,
       fR,
       fT,
     });
@@ -454,12 +449,6 @@ class PoolStake extends React.Component<Props, State> {
         console.error(error); // eslint-disable-line no-console
       }
     }
-  };
-
-  handleSwitchAdvancedMode = () => {
-    this.setState(prevState => ({
-      advancedMode: !prevState.advancedMode,
-    }));
   };
 
   handleStake = () => {
@@ -915,11 +904,8 @@ class PoolStake extends React.Component<Props, State> {
       runeAmount,
       tokenAmount,
       runePercent,
-      tokenPercent,
-      balance,
       widthdrawPercentage,
       dragReset,
-      advancedMode,
     } = this.state;
 
     const source = 'rune';
@@ -946,43 +932,11 @@ class PoolStake extends React.Component<Props, State> {
       assetStaked: 0,
     } as StakersAddressData;
 
-    const { depth } = poolStats;
     const {
       R,
       T,
       poolUnits = 0,
-      poolPrice,
-      newPrice,
-      newDepth,
-      share,
     } = calcResult;
-
-    const poolAttrs = [
-      {
-        key: 'price',
-        title: 'Pool Price',
-        value: `${basePriceAsset} ${poolPrice}`,
-      },
-      {
-        key: 'depth',
-        title: 'Pool Depth',
-        value: `${basePriceAsset} ${getUserFormat(depth * runePrice)}`,
-      },
-    ];
-
-    const newPoolAttrs = [
-      {
-        key: 'price',
-        title: 'New Price',
-        value: `${basePriceAsset} ${newPrice}`,
-      },
-      {
-        key: 'depth',
-        title: 'New Depth',
-        value: `${basePriceAsset} ${getUserFormat(newDepth)}`,
-      },
-      { key: 'share', title: 'Your Share', value: `${share}%` },
-    ];
 
     // withdraw values
     const withdrawRate = (widthdrawPercentage || 50) / 100;
@@ -1004,14 +958,6 @@ class PoolStake extends React.Component<Props, State> {
 
     return (
       <div className="share-detail-wrapper">
-        <Button
-          className="advanced-mode-btn"
-          typevalue="outline"
-          focused={advancedMode}
-          onClick={this.handleSwitchAdvancedMode}
-        >
-          advanced
-        </Button>
         <Tabs withBorder>
           <TabPane tab="add" key="add">
             <Row>
@@ -1058,49 +1004,10 @@ class PoolStake extends React.Component<Props, State> {
                   onChange={this.handleChangeTokenAmount(target)}
                   withSearch
                 />
-                {advancedMode && (
-                  <Slider
-                    value={tokenPercent}
-                    onChange={this.handleChangePercent(target)}
-                    withLabel
-                  />
-                )}
               </div>
             </div>
-            {advancedMode && (
-              <>
-                <Label className="label-title" size="normal" weight="bold">
-                  ADJUST BALANCE
-                </Label>
-                <Label size="normal">
-                  Fine tune balances to ensure you stake on both sides with the
-                  correct amount.
-                </Label>
-                <Slider
-                  onChange={this.handleChangeBalance}
-                  value={balance}
-                  min={0}
-                  max={200}
-                  tooltipVisible={false}
-                />
-              </>
-            )}
             <div className="stake-share-info-wrapper">
-              {advancedMode && (
-                <div className="pool-status-wrapper">
-                  {poolAttrs.map(info => {
-                    return <Status className="share-info-status" {...info} />;
-                  })}
-                </div>
-              )}
               <div className="share-status-wrapper">
-                {advancedMode && (
-                  <div className="info-status-wrapper">
-                    {newPoolAttrs.map(info => {
-                      return <Status className="share-info-status" {...info} />;
-                    })}
-                  </div>
-                )}
                 <Drag
                   title="Drag to stake"
                   source="blue"
