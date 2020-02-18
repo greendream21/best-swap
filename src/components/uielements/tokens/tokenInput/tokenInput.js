@@ -7,8 +7,8 @@ import CoinInputAdvanced from '../../coins/coinInputAdvanced';
 class TokenInput extends Component {
   inputRef = React.createRef();
 
-  onChange = e => {
-    this.props.onChange(e.target.value);
+  onChange = value => {
+    this.props.onChange(value);
   };
 
   handleClickWrapper = () => {

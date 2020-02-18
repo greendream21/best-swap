@@ -11,18 +11,24 @@ function CoinCardInputStory() {
 
   const handleChange = React.useCallback(
     newVal => {
-      setValue(newVal.target.value);
+      setValue(newVal);
     },
     [setValue],
   );
-  const setExternalVal = React.useCallback(() => {
-    setValue(40000);
-  }, [setValue]);
+  const setExternalVal = React.useCallback(
+    v => {
+      setValue(v);
+    },
+    [setValue],
+  );
   return (
     <div>
-      <CoinInputAdvanced value={value} onChange={handleChange} />;
-      <button type="button" onClick={setExternalVal}>
+      <CoinInputAdvanced value={value} onChange={handleChange} />
+      <button type="button" onClick={() => setExternalVal(40000)}>
         Send external 40k
+      </button>
+      <button type="button" onClick={() => setExternalVal(2000)}>
+        Send external 2k
       </button>
     </div>
   );
