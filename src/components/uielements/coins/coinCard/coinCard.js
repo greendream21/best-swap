@@ -90,8 +90,8 @@ class CoinCard extends Component {
     }
   };
 
-  onChange = e => {
-    this.props.onChange(e.target.value);
+  onChange = value => {
+    this.props.onChange(value);
   };
 
   onKeyDown = () => {
