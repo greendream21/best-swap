@@ -278,10 +278,12 @@ class SwapSend extends React.Component<Props, State> {
     if (totalAmount < newValue) {
       this.setState({
         xValue: totalAmount,
+        percent: 100,
       });
     } else {
       this.setState({
         xValue: newValue,
+        percent: (100 * newValue) / totalAmount,
       });
     }
   };
@@ -834,7 +836,7 @@ class SwapSend extends React.Component<Props, State> {
 
       const ratioLabel = `1 ${swapSource.toUpperCase()} = ${getFixedNumber(
         ratio,
-        4,
+        2,
       )} ${swapTarget.toUpperCase()}`;
 
       // swap modal
