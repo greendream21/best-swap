@@ -19,7 +19,7 @@ test('isBroadcastable', () => {
 
 function getLastCallValue(mockFn) {
   const lastCall = mockFn.mock.calls.slice(-1)[0];
-  return lastCall && lastCall[0].target.value;
+  return lastCall && lastCall[0];
 }
 
 const simulateControlledBlur = ({ hook, mockEvent, onChange }) => () => {
@@ -179,10 +179,10 @@ describe('useCoinCardInputBehaviour', () => {
     expect(result.current.value).toBe('1,234.56');
     simulateFocus();
     simulateTypingInInput('12345678.90');
-    expect(onChange).lastCalledWith({ target: { value: 12345678.9 } });
+    expect(onChange).lastCalledWith(12345678.9);
     expect(result.current.value).toBe('12345678.90');
     simulateBlur();
-    expect(onChange).lastCalledWith({ target: { value: 12345678.9 } });
+    expect(onChange).lastCalledWith(12345678.9);
     expect(result.current.value).toBe('12,345,678.90');
   });
 

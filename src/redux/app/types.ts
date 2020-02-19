@@ -1,4 +1,3 @@
-
 /**
  * Tx types
  */
@@ -7,10 +6,9 @@ export enum TxTypes {
   SWAP = 'swap',
   WITHDRAW = 'withdraw',
   CREATE = 'create',
-  TRADE = 'trade',
 }
 
-export interface TxStatus {
+export type TxStatus = {
   /**
    * Type of tx's - optional
    */
@@ -39,11 +37,11 @@ export interface TxStatus {
    * Transaction hash - optional
    */
   readonly hash?: string;
-}
+};
 
 /**
  * State of reducer
  */
-export interface State {
+export type State = {
   readonly txStatus: TxStatus;
-}
+};

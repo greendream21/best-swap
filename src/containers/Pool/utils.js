@@ -1,138 +1,13 @@
-import { get as _get } from 'lodash';
-
 import {
   getStakeMemo,
   getCreateMemo,
   getWithdrawMemo,
 } from '../../helpers/memoHelper';
 
-import {
-  getFixedNumber,
-  getBaseNumberFormat,
-  getTickerFormat,
-  getUserFormat,
-} from '../../helpers/stringHelper';
+import { getTickerFormat } from '../../helpers/stringHelper';
 import { getTxHashFromMemo } from '../../helpers/binance';
 
-export const getPoolData = (from, poolInfo, priceIndex, basePriceAsset) => {
-  const asset = from;
-  const target = _get(poolInfo, 'asset.ticker', '');
-  const symbol = _get(poolInfo, 'asset.symbol', '');
-
-  const runePrice = priceIndex.RUNE;
-  const depth = Number(poolInfo.runeDepth) * runePrice;
-  const volume24 = poolInfo.poolVolume24hr * runePrice;
-  const volumeAT = poolInfo.poolVolume * runePrice;
-  const transaction = Number(poolInfo.poolTxAverage * runePrice);
-
-  const { poolROI: roiAT } = poolInfo;
-  const liqFee = Number(poolInfo.poolFeeAverage);
-
-  const totalSwaps = poolInfo.swappersCount;
-  const totalStakers = poolInfo.stakersCount;
-
-  const depthValue = `${basePriceAsset} ${getUserFormat(
-    depth,
-  ).toLocaleString()}`;
-  const volume24Value = `${basePriceAsset} ${getUserFormat(volume24)}`;
-  const transactionValue = `${basePriceAsset} ${getUserFormat(transaction)}`;
-  const liqFeeValue = `${getUserFormat(liqFee)}%`;
-  const roiAtValue = `${getUserFormat(roiAT)}% pa`;
-
-  return {
-    asset,
-    target,
-    depth,
-    volume24,
-    volumeAT,
-    transaction,
-    liqFee,
-    roiAT,
-    totalSwaps,
-    totalStakers,
-    values: {
-      pool: {
-        asset,
-        target,
-      },
-      target,
-      symbol,
-      depth: depthValue,
-      volume24: volume24Value,
-      transaction: transactionValue,
-      liqFee: liqFeeValue,
-      roiAT: roiAtValue,
-    },
-    raw: {
-      depth: getUserFormat(depth),
-      volume24: getUserFormat(volume24),
-      transaction: getUserFormat(transaction),
-      liqFee: getUserFormat(liqFee),
-      roiAT: getUserFormat(roiAT),
-    },
-  };
-};
-
-export const getCalcResult = (
-  tokenName,
-  pools,
-  poolAddress,
-  rValue,
-  runePrice,
-  tValue,
-) => {
-  let R = 10000;
-  let T = 10;
-  const Pr = runePrice;
-  const result = {};
-
-  // CHANGELOG:
-  /*
-    balance_rune => runeStakedTotal
-    balance_token => assetStakedTotal
-    pool_units => poolUnits
-  */
-  Object.keys(pools).forEach(key => {
-    const poolData = pools[key];
-    const {
-      runeStakedTotal,
-      assetStakedTotal,
-      poolUnits,
-      asset: { symbol },
-    } = poolData;
-
-    if (symbol.toLowerCase() === tokenName.toLowerCase()) {
-      R = Number(runeStakedTotal);
-      T = Number(assetStakedTotal);
-      result.ratio = 1 / (R / T);
-      result.poolAddress = poolAddress;
-      result.symbolTo = symbol;
-      result.poolUnits = poolUnits;
-    }
-  });
-
-  const r = getBaseNumberFormat(rValue);
-  const t = getBaseNumberFormat(tValue);
-
-  const poolPrice = getFixedNumber((R / T) * runePrice);
-  const newPrice = getFixedNumber((runePrice * (r + R)) / (t + T));
-  const newDepth = getFixedNumber(runePrice * (1 + (r / R + t / T) / 2) * R);
-  const share = getFixedNumber(((r / (r + R) + t / (t + T)) / 2) * 100);
-
-  return {
-    ...result,
-    poolPrice,
-    newPrice,
-    newDepth,
-    share,
-    Pr,
-    R,
-    T,
-  };
-};
-
-export const validateStake = (wallet, tokenAmount, data) => {
-  const { poolAddress } = data;
+export const validateStake = (wallet, tokenAmount, poolAddress) => {
   if (!wallet || !poolAddress || !tokenAmount) {
     return false;
   }
@@ -147,7 +22,7 @@ export const confirmStake = (
   data,
 ) => {
   return new Promise((resolve, reject) => {
-    if (!validateStake(wallet, tokenAmount, data)) {
+    if (!validateStake(wallet, tokenAmount, data.poolAddress)) {
       return reject();
     }
 
@@ -191,68 +66,15 @@ export const confirmStake = (
   });
 };
 
-export const getCreatePoolTokens = (assetData, pools) => {
-  return assetData.filter(data => {
-    let unique = true;
-
-    if (getTickerFormat(data.asset) === 'rune') {
-      return false;
-    }
-
-    pools.forEach(pool => {
-      if (pool.symbol === data.asset) {
-        unique = false;
-      }
-    });
-
-    return unique;
-  });
-};
-
-export const getCreatePoolCalc = (
-  tokenName,
-  poolAddress,
-  rValue,
-  runePrice,
-  tValue,
-) => {
-  const Pr = runePrice;
-
-  if (!poolAddress) {
-    return {
-      poolPrice: 0,
-      depth: 0,
-      share: 100,
-    };
-  }
-
-  const r = rValue && getBaseNumberFormat(rValue);
-  const t = getBaseNumberFormat(tValue);
-
-  const poolPrice = tValue && getFixedNumber((r / t) * runePrice);
-  const depth = getFixedNumber(runePrice * r);
-  const share = 100;
-  const tokenSymbol = tokenName;
-
-  return {
-    poolAddress,
-    tokenSymbol,
-    poolPrice,
-    depth,
-    share,
-    Pr,
-  };
-};
-
 export const confirmCreatePool = (
   Binance,
   wallet,
   runeAmount,
   tokenAmount,
-  data,
+  data, // CreatePoolCalc
 ) => {
   return new Promise((resolve, reject) => {
-    if (!validateStake(wallet, tokenAmount, data)) {
+    if (!validateStake(wallet, tokenAmount, data.poolAddress)) {
       return reject();
     }
 
@@ -297,9 +119,13 @@ export const confirmWithdraw = (
     const memo = getWithdrawMemo(symbol, percent * 100);
 
     const amount = 0.00000001;
-    Binance.transfer(wallet, poolAddress, amount, 'BNB', memo)
+    Binance.transfer(wallet, poolAddress, amount, 'RUNE-A1F', memo)
       .then(response => resolve(response))
-      .catch(error => reject(error));
+      .catch(() => {
+        Binance.transfer(wallet, poolAddress, amount, 'BNB', memo)
+          .then(response => resolve(response))
+          .catch(error => reject(error));
+      });
   });
 };
 

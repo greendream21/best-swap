@@ -21,9 +21,4 @@ export const faqs = [
     answer:
       'Once staking is enabled you will be able to stake to existing pools and withdraw with just a click! Check back for updates!',
   },
-  {
-    question: 'How do I Trade?',
-    answer:
-      'Trading will be enabled shortly. Keep checking back for progress updates!',
-  },
 ];

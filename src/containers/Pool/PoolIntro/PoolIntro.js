@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unescaped-entities */
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Row, Col, Icon } from 'antd';
+import { Row, Col } from 'antd';
 
 import { ContentWrapper } from './PoolIntro.style';
 import Label from '../../../components/uielements/label';
@@ -82,12 +82,6 @@ class Pool extends Component {
           <Link to="/introduction/swap">
             <Button color="primary" typevalue="ghost">
               back
-            </Button>
-          </Link>
-          <Link to="/introduction/trade">
-            <Button color="primary" typevalue="outline">
-              trade
-              <Icon type="arrow-right" />
             </Button>
           </Link>
         </Row>

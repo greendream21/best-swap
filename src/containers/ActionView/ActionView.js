@@ -8,14 +8,13 @@ import { Icon } from 'antd';
 import { ActionViewWrapper, BackLink } from './ActionView.style';
 import { SwapIntro, SwapView, SwapSend } from '../Swap';
 import { PoolIntro, PoolView, PoolStake, PoolCreate } from '../Pool';
-import { TradeIntro, TradeView, TradeDetail } from '../Trade';
 import ConnectView from '../ConnectView';
 import StatsView from '../StatsView';
 import FaqsView from '../FaqsView';
 import NetworkView from '../NetworkView';
 import TutorialView from '../TutorialView';
 
-import walletActions from '../../redux/wallet/actions';
+import * as walletActions from '../../redux/wallet/actions';
 
 const { refreshBalance } = walletActions;
 
@@ -61,9 +60,6 @@ class ActionView extends Component {
     if (pageView.includes('pools-')) {
       routing = '/pools';
     }
-    if (pageView.includes('trade-')) {
-      routing = '/trade';
-    }
 
     const backTitle = pageView === 'swap-landing' ? 'See all pools' : 'Back';
 
@@ -87,7 +83,6 @@ class ActionView extends Component {
         <ActionViewWrapper>
           {view === 'intro-swap' && <SwapIntro />}
           {view === 'intro-pools' && <PoolIntro />}
-          {view === 'intro-trade' && <TradeIntro />}
           {view === 'tutorial' && <TutorialView />}
           {view === 'connect-view' && <ConnectView />}
           {view === 'stats-view' && <StatsView />}
@@ -100,8 +95,6 @@ class ActionView extends Component {
           {view === 'pools-view' && <PoolView />}
           {view === 'pools-pool' && <PoolStake symbol={symbol} />}
           {view === 'pools-new' && <PoolCreate symbol={symbol} />}
-          {view === 'trade-view' && <TradeView />}
-          {view === 'trade-detail' && <TradeDetail symbol={symbol} />}
         </ActionViewWrapper>
       </>
     );
@@ -112,7 +105,7 @@ ActionView.propTypes = {
   type: PropTypes.string,
   view: PropTypes.string,
   info: PropTypes.string,
-  user: PropTypes.object.isRequired,
+  user: PropTypes.object, // Maybe<User>
   refreshBalance: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
   symbol: PropTypes.string,

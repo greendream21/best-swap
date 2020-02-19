@@ -19,8 +19,4 @@ export const faqs = [
     question: 'How do I withdraw?',
     answer,
   },
-  {
-    question: 'How do I Trade?',
-    answer,
-  },
 ];

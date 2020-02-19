@@ -22,6 +22,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# we just keep yarn.lock
+package-lock.json
+
 # Firebase cache
 /.firebase
 firebase-debug.log
@@ -207,3 +210,5 @@ $RECYCLE.BIN/
 /.VSCodeCounter
 
 keystore
+
+src/types/generated/midgard/git_push.sh

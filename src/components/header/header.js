@@ -59,10 +59,6 @@ class Header extends Component {
         type: 'pool',
         key: 'pools',
       },
-      {
-        type: 'trade',
-        key: 'trade',
-      },
     ];
     let pageType = '';
 
@@ -104,21 +100,13 @@ class Header extends Component {
       </Link>
     );
     const poolsTab = (
-      <Link to="/stake">
+      <Link to="/pools">
         <span>
           <Icon type="database" theme="filled" />
           stake
         </span>
       </Link>
     );
-
-    // TODO (Chris): Hide trade tab
-    // const tradeTab = (
-    //   <span>
-    //     <Icon type="area-chart" />
-    //     trade
-    //   </span>
-    // );
 
     return (
       <div className="header-tab-container">
@@ -130,7 +118,6 @@ class Header extends Component {
         >
           <TabPane tab={swapTab} key="swap" />
           <TabPane tab={poolsTab} key="pools" />
-          {/* <TabPane tab={tradeTab} key="trade" /> */}
         </Tabs>
       </div>
     );
@@ -139,8 +126,8 @@ class Header extends Component {
   render() {
     const { txStatus, user } = this.props;
     const { status, value, type } = txStatus;
-    const { wallet } = user;
-    const connected = !!wallet;
+    const wallet = user ? user.wallet : null;
+    const connected = wallet !== null;
 
     const intro = (
       <Link to="/introduction">
@@ -200,7 +187,7 @@ Header.propTypes = {
   txStatus: PropTypes.object.isRequired,
   setTxTimerModal: PropTypes.func.isRequired,
   setTxTimerStatus: PropTypes.func.isRequired,
-  user: PropTypes.object.isRequired,
+  user: PropTypes.object, // Maybe<User>
   history: PropTypes.object.isRequired,
 };
 

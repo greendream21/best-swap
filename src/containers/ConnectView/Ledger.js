@@ -9,7 +9,7 @@ import Binance from '../../clients/binance';
 import Label from '../../components/uielements/label';
 import Button from '../../components/uielements/button';
 
-import walletActions from '../../redux/wallet/actions';
+import * as walletActions from '../../redux/wallet/actions';
 
 const { saveWallet } = walletActions;
 
@@ -168,9 +168,6 @@ Connector.propTypes = {
   saveWallet: PropTypes.func.isRequired,
 };
 
-export default connect(
-  null,
-  {
-    saveWallet,
-  },
-)(Connector);
+export default connect(null, {
+  saveWallet,
+})(Connector);

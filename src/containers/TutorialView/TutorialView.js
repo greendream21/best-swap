@@ -10,7 +10,6 @@ import Swap from './tutorials/Swap';
 import DoubleSwap from './tutorials/DoubleSwap';
 import Stake from './tutorials/Stake';
 import Earning from './tutorials/Earning';
-import Trade from './tutorials/Trade';
 
 const { TabPane } = Tabs;
 
@@ -50,12 +49,6 @@ class TutorialView extends Component {
       }
       this.props.history.push('/tutorial/pool/stakingintro');
     }
-    if (type === 'trade') {
-      if (view === 'tradingintro' || view === 'tradingplay') {
-        return 'trade';
-      }
-      this.props.history.push('/tutorial/trade/tradingintro');
-    }
   };
 
   render() {
@@ -69,7 +62,6 @@ class TutorialView extends Component {
             <Tabs activeKey={type} onChange={this.handleChangeTab} action>
               <TabPane tab="swap" key="swap" />
               <TabPane tab="pool" key="pool" />
-              <TabPane tab="trade" key="trade" />
             </Tabs>
           </>
         </PanelHeader>
@@ -77,7 +69,6 @@ class TutorialView extends Component {
         {currentView === 'double-swap' && <DoubleSwap view={view} />}
         {currentView === 'pool-staking' && <Stake view={view} />}
         {currentView === 'pool-earning' && <Earning view={view} />}
-        {currentView === 'trade' && <Trade view={view} />}
       </TutorialViewWrapper>
     );
   }
