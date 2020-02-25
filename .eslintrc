@@ -16,7 +16,8 @@
     "PROD": true,
     "DEBUG": true,
     "COVERAGE": true,
-    "BASENAME": true
+    "BASENAME": true,
+    "$COMMIT_HASH": true
   },
   "settings": {
     "import/resolver": {

@@ -155,6 +155,7 @@
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-react": "^7.18.0",
     "eslint-watch": "^6.0.1",
+    "git-revision-webpack-plugin": "^3.0.4",
     "glob-promise": "^3.4.0",
     "http-server": "^0.12.1",
     "husky": "^4.2.1",

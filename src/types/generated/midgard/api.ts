@@ -729,10 +729,10 @@ export interface TxDetails {
     options?: Option;
     /**
      * 
-     * @type {Tx}
+     * @type {Array<Tx>}
      * @memberof TxDetails
      */
-    out?: Tx;
+    out?: Array<Tx>;
     /**
      * 
      * @type {string}
@@ -784,7 +784,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * Detailed information about a specific asset. Returns enough information to display a unique asset in various user interfaces, including latest price. The logo is sourced from an internal database.
          * @summary Get Asset Information
-         * @param {string} asset Unique asset (CHAIN.SYMBOL)
+         * @param {string} asset One or more comma separated unique asset (CHAIN.SYMBOL)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -793,8 +793,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             if (asset === null || asset === undefined) {
                 throw new RequiredError('asset','Required parameter asset was null or undefined when calling getAssetInfo.');
             }
-            const localVarPath = `/v1/assets/{asset}`
-                .replace(`{${"asset"}}`, encodeURIComponent(String(asset)));
+            const localVarPath = `/v1/assets`;
             const localVarUrlObj = globalImportUrl.parse(localVarPath, true);
             let baseOptions;
             if (configuration) {
@@ -803,6 +802,10 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            if (asset !== undefined) {
+                localVarQueryParameter['asset'] = asset;
+            }
 
 
     
@@ -877,7 +880,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * Returns an object containing all the pool data for that asset. All assets on BEPSwap have associated pools.
          * @summary Get Pools Data
-         * @param {string} asset Unique asset (CHAIN.SYMBOL)
+         * @param {string} asset One or more comma separated unique asset (CHAIN.SYMBOL)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -886,8 +889,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             if (asset === null || asset === undefined) {
                 throw new RequiredError('asset','Required parameter asset was null or undefined when calling getPoolsData.');
             }
-            const localVarPath = `/v1/pools/{asset}`
-                .replace(`{${"asset"}}`, encodeURIComponent(String(asset)));
+            const localVarPath = `/v1/pools/detail`;
             const localVarUrlObj = globalImportUrl.parse(localVarPath, true);
             let baseOptions;
             if (configuration) {
@@ -896,6 +898,10 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            if (asset !== undefined) {
+                localVarQueryParameter['asset'] = asset;
+            }
 
 
     
@@ -913,7 +919,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * Returns an object containing staking data for the specified staker and pool.
          * @summary Get Staker Pool Data
          * @param {string} address Unique staker address
-         * @param {string} asset Unique asset
+         * @param {string} asset One or more comma separated unique asset (CHAIN.SYMBOL)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -926,9 +932,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             if (asset === null || asset === undefined) {
                 throw new RequiredError('asset','Required parameter asset was null or undefined when calling getStakersAddressAndAssetData.');
             }
-            const localVarPath = `/v1/stakers/{address}/{asset}`
-                .replace(`{${"address"}}`, encodeURIComponent(String(address)))
-                .replace(`{${"asset"}}`, encodeURIComponent(String(asset)));
+            const localVarPath = `/v1/stakers/{address}/pools`
+                .replace(`{${"address"}}`, encodeURIComponent(String(address)));
             const localVarUrlObj = globalImportUrl.parse(localVarPath, true);
             let baseOptions;
             if (configuration) {
@@ -937,6 +942,10 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            if (asset !== undefined) {
+                localVarQueryParameter['asset'] = asset;
+            }
 
 
     
@@ -1111,7 +1120,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * Return an object containing the tx details
          * @summary Get transaction
          * @param {string} address An address
-         * @param {string} asset An Asset
+         * @param {string} asset An asset (CHAIN.SYMBOL)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -1192,7 +1201,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * Return an object containing the tx details
          * @summary Get transaction
-         * @param {string} asset An Asset
+         * @param {string} asset An asset (CHAIN.SYMBOL)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -1236,11 +1245,11 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         /**
          * Detailed information about a specific asset. Returns enough information to display a unique asset in various user interfaces, including latest price. The logo is sourced from an internal database.
          * @summary Get Asset Information
-         * @param {string} asset Unique asset (CHAIN.SYMBOL)
+         * @param {string} asset One or more comma separated unique asset (CHAIN.SYMBOL)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAssetInfo(asset: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<AssetDetail> {
+        getAssetInfo(asset: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<AssetDetail>> {
             const localVarAxiosArgs = DefaultApiAxiosParamCreator(configuration).getAssetInfo(asset, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
@@ -1276,11 +1285,11 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         /**
          * Returns an object containing all the pool data for that asset. All assets on BEPSwap have associated pools.
          * @summary Get Pools Data
-         * @param {string} asset Unique asset (CHAIN.SYMBOL)
+         * @param {string} asset One or more comma separated unique asset (CHAIN.SYMBOL)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPoolsData(asset: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<PoolDetail> {
+        getPoolsData(asset: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<PoolDetail>> {
             const localVarAxiosArgs = DefaultApiAxiosParamCreator(configuration).getPoolsData(asset, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
@@ -1291,11 +1300,11 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * Returns an object containing staking data for the specified staker and pool.
          * @summary Get Staker Pool Data
          * @param {string} address Unique staker address
-         * @param {string} asset Unique asset
+         * @param {string} asset One or more comma separated unique asset (CHAIN.SYMBOL)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getStakersAddressAndAssetData(address: string, asset: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<StakersAssetData> {
+        getStakersAddressAndAssetData(address: string, asset: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<StakersAssetData>> {
             const localVarAxiosArgs = DefaultApiAxiosParamCreator(configuration).getStakersAddressAndAssetData(address, asset, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
@@ -1373,7 +1382,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * Return an object containing the tx details
          * @summary Get transaction
          * @param {string} address An address
-         * @param {string} asset An Asset
+         * @param {string} asset An asset (CHAIN.SYMBOL)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -1402,7 +1411,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         /**
          * Return an object containing the tx details
          * @summary Get transaction
-         * @param {string} asset An Asset
+         * @param {string} asset An asset (CHAIN.SYMBOL)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -1425,11 +1434,11 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * Detailed information about a specific asset. Returns enough information to display a unique asset in various user interfaces, including latest price. The logo is sourced from an internal database.
          * @summary Get Asset Information
-         * @param {string} asset Unique asset (CHAIN.SYMBOL)
+         * @param {string} asset One or more comma separated unique asset (CHAIN.SYMBOL)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAssetInfo(asset: string, options?: any): AxiosPromise<AssetDetail> {
+        getAssetInfo(asset: string, options?: any): AxiosPromise<Array<AssetDetail>> {
             return DefaultApiFp(configuration).getAssetInfo(asset, options)(axios, basePath);
         },
         /**
@@ -1453,22 +1462,22 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * Returns an object containing all the pool data for that asset. All assets on BEPSwap have associated pools.
          * @summary Get Pools Data
-         * @param {string} asset Unique asset (CHAIN.SYMBOL)
+         * @param {string} asset One or more comma separated unique asset (CHAIN.SYMBOL)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPoolsData(asset: string, options?: any): AxiosPromise<PoolDetail> {
+        getPoolsData(asset: string, options?: any): AxiosPromise<Array<PoolDetail>> {
             return DefaultApiFp(configuration).getPoolsData(asset, options)(axios, basePath);
         },
         /**
          * Returns an object containing staking data for the specified staker and pool.
          * @summary Get Staker Pool Data
          * @param {string} address Unique staker address
-         * @param {string} asset Unique asset
+         * @param {string} asset One or more comma separated unique asset (CHAIN.SYMBOL)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getStakersAddressAndAssetData(address: string, asset: string, options?: any): AxiosPromise<StakersAssetData> {
+        getStakersAddressAndAssetData(address: string, asset: string, options?: any): AxiosPromise<Array<StakersAssetData>> {
             return DefaultApiFp(configuration).getStakersAddressAndAssetData(address, asset, options)(axios, basePath);
         },
         /**
@@ -1522,7 +1531,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * Return an object containing the tx details
          * @summary Get transaction
          * @param {string} address An address
-         * @param {string} asset An Asset
+         * @param {string} asset An asset (CHAIN.SYMBOL)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -1543,7 +1552,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * Return an object containing the tx details
          * @summary Get transaction
-         * @param {string} asset An Asset
+         * @param {string} asset An asset (CHAIN.SYMBOL)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -1563,7 +1572,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * Detailed information about a specific asset. Returns enough information to display a unique asset in various user interfaces, including latest price. The logo is sourced from an internal database.
      * @summary Get Asset Information
-     * @param {string} asset Unique asset (CHAIN.SYMBOL)
+     * @param {string} asset One or more comma separated unique asset (CHAIN.SYMBOL)
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -1597,7 +1606,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * Returns an object containing all the pool data for that asset. All assets on BEPSwap have associated pools.
      * @summary Get Pools Data
-     * @param {string} asset Unique asset (CHAIN.SYMBOL)
+     * @param {string} asset One or more comma separated unique asset (CHAIN.SYMBOL)
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -1610,7 +1619,7 @@ export class DefaultApi extends BaseAPI {
      * Returns an object containing staking data for the specified staker and pool.
      * @summary Get Staker Pool Data
      * @param {string} address Unique staker address
-     * @param {string} asset Unique asset
+     * @param {string} asset One or more comma separated unique asset (CHAIN.SYMBOL)
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -1680,7 +1689,7 @@ export class DefaultApi extends BaseAPI {
      * Return an object containing the tx details
      * @summary Get transaction
      * @param {string} address An address
-     * @param {string} asset An Asset
+     * @param {string} asset An asset (CHAIN.SYMBOL)
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
@@ -1705,7 +1714,7 @@ export class DefaultApi extends BaseAPI {
     /**
      * Return an object containing the tx details
      * @summary Get transaction
-     * @param {string} asset An Asset
+     * @param {string} asset An asset (CHAIN.SYMBOL)
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
