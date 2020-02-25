@@ -1,5 +1,6 @@
 import { all, takeEvery, put, fork, call } from 'redux-saga/effects';
 import { AxiosResponse } from 'axios';
+import { isEmpty as _isEmpty } from 'lodash';
 import * as actions from './actions';
 import { MIDGARD_API_URL } from '../../helpers/apiHelper';
 
@@ -25,37 +26,36 @@ export function* getPools() {
         context: midgardApi,
         fn: midgardApi.getPools,
       });
-      const assetResponses: AxiosResponse<AssetDetail>[] = yield all(
-        data.map(asset => {
-          return call(
-            { context: midgardApi, fn: midgardApi.getAssetInfo },
-            asset,
-          );
-        }),
-      );
 
-      const assetDetails: AssetDetail[] = assetResponses.map(
-        (response: AxiosResponse<AssetDetail>) => response.data,
-      );
+      if (data && !_isEmpty(data)) {
+        const { data: assetDetails }: AxiosResponse<AssetDetail[]> = yield call(
+          {
+            context: midgardApi,
+            fn: midgardApi.getAssetInfo,
+          },
+          data.join(),
+        );
 
-      const assetDataIndex = getAssetDataIndex(assetDetails);
-      const baseTokenTicker = getBasePriceAsset() || 'RUNE';
-      const priceIndex = getPriceIndex(assetDetails, baseTokenTicker);
-      const assetsPayload: actions.SetAssetsPayload = {
-        assetDetails,
-        assetDataIndex,
-      };
+        const assetDataIndex = getAssetDataIndex(assetDetails);
+        const baseTokenTicker = getBasePriceAsset() || 'RUNE';
+        const priceIndex = getPriceIndex(assetDetails, baseTokenTicker);
+        const assetsPayload: actions.SetAssetsPayload = {
+          assetDetails,
+          assetDataIndex,
+        };
 
-      console.log('assetsPayload', assetsPayload);
-      yield put(actions.setAssets(assetsPayload));
-      yield put(actions.setPriceIndex(priceIndex));
+        yield put(actions.setAssets(assetsPayload));
+        yield put(actions.setPriceIndex(priceIndex));
 
-      yield all(
-        data.map(asset => {
-          return put(actions.getPoolData(asset));
-        }),
-      );
-      yield put(actions.getPoolsSuccess(data));
+        yield put(
+          actions.getPoolData({ assets: data, overrideAllPoolData: true }),
+        );
+
+        yield put(actions.getPoolsSuccess(data));
+      } else {
+        const error = new Error('No pools available');
+        yield put(actions.getPoolsFailed(error));
+      }
     } catch (error) {
       yield put(actions.getPoolsFailed(error));
     }
@@ -66,12 +66,15 @@ export function* getPoolData() {
   yield takeEvery(actions.GET_POOL_DATA_REQUEST, function*({
     payload,
   }: actions.GetPoolData) {
+    const { assets, overrideAllPoolData } = payload;
     try {
-      const { data }: AxiosResponse<PoolDetail> = yield call(
+      const { data }: AxiosResponse<PoolDetail[]> = yield call(
         { context: midgardApi, fn: midgardApi.getPoolsData },
-        payload,
+        assets.join(),
       );
-      yield put(actions.getPoolDataSuccess(data));
+      yield put(
+        actions.getPoolDataSuccess({ poolDetails: data, overrideAllPoolData }),
+      );
     } catch (error) {
       yield put(actions.getPoolDataFailed(error));
     }
