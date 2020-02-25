@@ -78,7 +78,7 @@ const reducer: Reducer<State, MidgardActionTypes> = (
       const { payload } = action;
       return {
         ...state,
-        assets: payload.assetDataIndex,
+        assets: payload.assetDetailIndex,
         assetArray: payload.assetDetails,
       };
     }

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useMemo } from 'react';
 import { Icon } from 'antd';
 import PropTypes from 'prop-types';
 import { Menu, MenuItem } from './filterMenu.style';
@@ -43,10 +43,13 @@ export default function FilterMenu({
     [onBlurDropdown],
   );
 
-  const filteredData =
-    searchTerm === ''
-      ? data
-      : data.filter(item => filterFunction(item, searchTerm));
+  const filteredData = useMemo(
+    () =>
+      searchTerm === ''
+        ? data
+        : data.filter(item => filterFunction(item, searchTerm)),
+    [data, filterFunction, searchTerm],
+  );
 
   return (
     <Menu {...props} onClick={handleClick} onBlur={handleBlur}>

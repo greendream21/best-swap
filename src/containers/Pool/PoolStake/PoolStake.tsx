@@ -57,7 +57,7 @@ import { User, AssetData } from '../../../redux/wallet/types';
 import { FixmeType, Maybe, Nothing, TokenData } from '../../../types/bepswap';
 import { TxStatus, TxTypes } from '../../../redux/app/types';
 import {
-  AssetDataIndex,
+  AssetDetailMap,
   StakerPoolData,
   PoolDataMap,
   PriceDataIndex,
@@ -81,7 +81,7 @@ type ConnectedProps = {
   assetData: AssetData[];
   poolAddress: Maybe<string>;
   poolData: PoolDataMap;
-  assets: AssetDataIndex;
+  assets: AssetDetailMap;
   stakerPoolData: StakerPoolData;
   priceIndex: PriceDataIndex;
   basePriceAsset: string;
@@ -916,7 +916,7 @@ class PoolStake extends React.Component<Props, State> {
 
     const tokensData: TokenData[] = Object.keys(assets).map(tokenName => {
       const tokenData = assets[tokenName];
-      const assetStr = tokenData?.asset?.asset;
+      const assetStr = tokenData?.asset;
       const asset = assetStr ? getAssetFromString(assetStr) : null;
       const price = tokenData?.priceRune ?? 0;
 

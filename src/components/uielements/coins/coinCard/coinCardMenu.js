@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { get as _get } from 'lodash';
 
@@ -23,33 +23,40 @@ export default function CoinCardMenu({
   withSearch,
   searchDisable,
   onSelect,
-  ...props // need to pass props for antd to provide box shadow
+  ...props // (Rudi) need to pass props for antd to provide box shadow
 }) {
-  const filteredData = assetData.filter(item => {
-    const tokenName = getTokenName(item.asset);
-    return tokenName.toLowerCase() !== asset.toLowerCase();
-  });
+  const filteredData = useMemo(
+    () =>
+      assetData.filter(item => {
+        const tokenName = getTokenName(item.asset);
+        return tokenName.toLowerCase() !== asset.toLowerCase();
+      }),
+    [asset, assetData],
+  );
   const dataTest = props['data-test']; // eslint-disable-line
 
-  const cellRenderer = data => {
-    const { asset: key } = data;
-    const tokenName = getTokenName(key);
+  const cellRenderer = useCallback(
+    data => {
+      const { asset: key } = data;
+      const tokenName = getTokenName(key);
 
-    let price = 0;
-    const ticker = getTickerFormat(data.asset).toUpperCase();
-    if (ticker === 'RUNE') price = priceIndex.RUNE;
-    else price = _get(priceIndex, ticker, 0);
+      let price = 0;
+      const ticker = getTickerFormat(data.asset).toUpperCase();
+      if (ticker === 'RUNE') price = priceIndex.RUNE;
+      else price = _get(priceIndex, ticker, 0);
 
-    const node = (
-      <CoinData
-        data-test={`coincard-menu-item-${tokenName}`}
-        asset={tokenName}
-        price={price}
-        priceUnit={unit}
-      />
-    );
-    return { key, node };
-  };
+      const node = (
+        <CoinData
+          data-test={`coincard-menu-item-${tokenName}`}
+          asset={tokenName}
+          price={price}
+          priceUnit={unit}
+        />
+      );
+      return { key, node };
+    },
+    [priceIndex, unit],
+  );
 
   return (
     <FilterMenu
