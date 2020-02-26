@@ -473,6 +473,7 @@ class PoolCreate extends React.Component<Props, State> {
             asset={source}
             amount={runeAmount}
             price={runePrice}
+            priceIndex={priceIndex}
             unit={basePriceAsset}
             onChange={this.handleChangeTokenAmount('rune')}
             onSelect={this.handleSelectTokenAmount('rune')}
@@ -483,6 +484,7 @@ class PoolCreate extends React.Component<Props, State> {
             assetData={tokensData}
             amount={tokenAmount}
             price={tokenPrice}
+            priceIndex={priceIndex}
             unit={basePriceAsset}
             onChangeAsset={this.handleSelectTraget}
             onChange={this.handleChangeTokenAmount(target)}

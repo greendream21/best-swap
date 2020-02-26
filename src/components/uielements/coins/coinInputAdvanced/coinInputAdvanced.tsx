@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { InputSizes } from 'antd/lib/input/Input';
 import { CoinInputAdvancedView } from './coinInputAdvanced.view';
 import { emptyString } from '../../../../helpers/stringHelper';
 
@@ -27,7 +28,7 @@ const DEFAULT_FIELD_VALUE = undefined;
 
 type BehaviorProps = {
   value: number;
-  onChange: (value: number) => void;
+  onChangeValue: (value: number) => void;
   onFocus: (() => void) | undefined;
   minimumFractionDigits?: number;
 };
@@ -37,7 +38,7 @@ type BehaviorProps = {
 // switching between them. No time right now however.
 export function useCoinCardInputBehaviour({
   value,
-  onChange,
+  onChangeValue,
   onFocus,
   minimumFractionDigits = 2,
 }: BehaviorProps) {
@@ -103,10 +104,10 @@ export function useCoinCardInputBehaviour({
       // (Rudi) only broadcast when we are broadcasting a new value
       if (broadcastRef.current !== valToSend) {
         broadcastRef.current = valToSend;
-        onChange(valToSend);
+        onChangeValue(valToSend);
       }
     }
-  }, [focus, getOutval, onChange, setTextFieldValue, textFieldValue]);
+  }, [focus, getOutval, onChangeValue, setTextFieldValue, textFieldValue]);
 
   const handleBlur = useCallback(
     event => {
@@ -134,24 +135,30 @@ export function useCoinCardInputBehaviour({
 
 type Props = {
   value: number;
-  onChange: () => void;
+  onChangeValue: (value: number) => void;
   onFocus?: () => void;
-  minimumFractionDigits: number;
+  className?: string;
+  size?: typeof InputSizes[number];
+  minimumFractionDigits?: number;
 };
 
 export const CoinInputAdvanced: React.FC<Props> = ({
   value,
-  onChange,
+  onChangeValue,
   onFocus,
-  minimumFractionDigits,
-  ...props
-}): JSX.Element => {
+  className = '',
+  minimumFractionDigits = 2,
+  size = 'default',
+  ...otherProps
+}: Props): JSX.Element => {
   return (
     <CoinInputAdvancedView
-      {...props}
+      className={className}
+      size={size}
+      {...otherProps}
       {...useCoinCardInputBehaviour({
         value,
-        onChange,
+        onChangeValue,
         onFocus,
         minimumFractionDigits,
       })}

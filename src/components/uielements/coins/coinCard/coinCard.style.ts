@@ -1,8 +1,8 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
-import PropTypes from 'prop-types';
 import { palette } from 'styled-theme';
-import { Icon, Input, Divider } from 'antd';
+import { Icon, Divider } from 'antd';
+import { DividerProps } from 'antd/lib/divider';
 import Label from '../../label';
 import { cleanTag } from '../../../../helpers/styleHelper';
 import Coin from '../coin';
@@ -141,12 +141,16 @@ export const VerticalDivider = styled(Divider).attrs({
   }
 `;
 
-export const HorizontalDivider = styled(Divider)`
+type HorizontalDividerProps = {
+  color?: string
+}
+
+export const HorizontalDivider = styled<React.SFC<DividerProps & HorizontalDividerProps>>(Divider)`
   &.ant-divider {
-    margin: ${props => (props.color === 'primary' ? '4px 0' : '2px 0')};
+    margin: ${props => (props?.color === 'primary' ? '4px 0' : '2px 0')};
 
     background: ${props =>
-      props.color === 'primary' ? palette('success', 0) : palette('border', 0)};
+      props?.color === 'primary' ? palette('success', 0) : palette('border', 0)};
   }
 `;
 
@@ -158,19 +162,3 @@ export const FooterLabel = styled(Label).attrs({
   letter-spacing: 0.416667px;
   padding: 0;
 `;
-
-function AutofocusInput(props) {
-  const handleFocus = React.useCallback(
-    event => {
-      event.target.select();
-      if (props.onFocus) props.onFocus(event);
-    },
-    [props],
-  );
-
-  return <Input {...props} onFocus={handleFocus} />;
-}
-
-AutofocusInput.propTypes = {
-  onFocus: PropTypes.func,
-};

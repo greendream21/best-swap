@@ -1,10 +1,8 @@
-/* eslint-disable react/jsx-one-expression-per-line */
-
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { useCallback } from 'react';
 import { Dropdown } from 'antd';
 import { sortBy as _sortBy } from 'lodash';
 
+import { ClickParam } from 'antd/lib/menu';
 import Label from '../../label';
 import Selection from '../../selection';
 import CoinInputAdvanced from '../coinInputAdvanced';
@@ -27,30 +25,94 @@ import {
 
 import Ref from '../../../../helpers/event/ref';
 import clickedInNode from '../../../../helpers/event/clickedInNode';
+import { PriceDataIndex } from '../../../../redux/midgard/types';
+import { FixmeType } from '../../../../types/bepswap';
+import { CoinCardAssetData } from './types';
 
-function DropdownCarret({ open, onClick, className }) {
+type DropdownCarretProps = {
+  open: boolean;
+  onClick?: () => void;
+  className?: string;
+};
+const DropdownCarret: React.FC<DropdownCarretProps> = ({
+  open,
+  onClick = () => {},
+  className = '',
+}): JSX.Element => {
+  const onClickHandler = useCallback(() => {
+    onClick();
+  }, [onClick]);
+
   return (
     <DropdownIconHolder>
       <DropdownIcon
         open={open}
         className={className}
         type="caret-down"
-        onClick={onClick}
+        onClick={onClickHandler}
       />
     </DropdownIconHolder>
   );
-}
-
-DropdownCarret.propTypes = {
-  className: PropTypes.string,
-  open: PropTypes.bool.isRequired,
-  onClick: PropTypes.func,
 };
 
-class CoinCard extends Component {
+type Props = {
+  asset: string;
+  assetData: CoinCardAssetData[];
+  amount: number;
+  price: string | number;
+  priceIndex: PriceDataIndex;
+  unit: string;
+  slip?: number;
+  title: string;
+  searchDisable: string[];
+  withSelection: boolean;
+  withSearch: boolean;
+  onSelect: (value: number) => void;
+  onChange: (value: number) => void;
+  onChangeAsset: (asset: string) => void;
+  className: string;
+  max: number;
+  disabled: boolean;
+  dataTestWrapper: string;
+  dataTestInput: string;
+  children: React.ReactNode;
+  inputProps: {
+    'data-test': string;
+  };
+  'data-test': string;
+};
+
+type State = {
+  openDropdown: boolean;
+  percentButtonSelected: number;
+};
+
+class CoinCard extends React.Component<Props, State> {
   ref = React.createRef();
 
-  constructor(props) {
+  menuRef = React.createRef();
+
+  static readonly defaultProps: Partial<Props> = {
+    asset: 'bnb',
+    assetData: [],
+    amount: 0,
+    price: 0,
+    unit: 'RUNE',
+    title: '',
+    withSelection: false,
+    withSearch: false,
+    searchDisable: [],
+    onSelect: (_: number) => {},
+    onChange: (_: number) => {},
+    onChangeAsset: (_: string) => {},
+    className: '',
+    max: 1000000,
+    disabled: false,
+    children: null,
+    inputProps: { 'data-test': '' },
+  };
+
+  constructor(props: Props) {
     super(props);
     this.state = {
       openDropdown: false,
@@ -66,19 +128,19 @@ class CoinCard extends Component {
     document.removeEventListener('click', this.handleDocumentClick);
   }
 
-  handleRef = ref => {
+  handleRef = (ref: FixmeType) => {
     if (ref) {
       this.ref = ref;
     }
   };
 
-  handleMenuRef = menuRef => {
+  handleMenuRef = (menuRef: FixmeType) => {
     if (menuRef) {
       this.menuRef = menuRef;
     }
   };
 
-  handleDocumentClick = e => {
+  handleDocumentClick = (e: MouseEvent) => {
     if (
       this.ref &&
       !clickedInNode(this.ref, e) &&
@@ -90,15 +152,11 @@ class CoinCard extends Component {
     }
   };
 
-  onChange = value => {
+  onChange = (value: number) => {
     this.props.onChange(value);
   };
 
-  onKeyDown = () => {
-    this.handleResetPercentButtons();
-  };
-
-  handleVisibleChange = openDropdown => {
+  handleVisibleChange = (openDropdown: boolean) => {
     this.setState({
       openDropdown,
     });
@@ -113,21 +171,21 @@ class CoinCard extends Component {
     this.handleVisibleChange(!openDropdown);
   };
 
-  handlePercentSelected = percentButtonSelected => {
+  handlePercentSelected = (percentButtonSelected: number) => {
     const { onSelect } = this.props;
     this.setState({ percentButtonSelected });
     onSelect(percentButtonSelected);
   };
 
-  handleChangeAsset = asset => {
+  handleChangeAsset = (clickParam: ClickParam) => {
     const { onChangeAsset } = this.props;
 
     this.setState({ openDropdown: false });
 
-    // HACK: Wait for the dropdown to close
+    // HACK (Rudi): Wait for the dropdown to close
     setTimeout(() => {
       this.handleResetPercentButtons();
-      onChangeAsset(asset.key);
+      onChangeAsset(clickParam.key);
     }, 500);
   };
 
@@ -139,8 +197,8 @@ class CoinCard extends Component {
       unit,
       withSearch,
       searchDisable,
+      'data-test': dataTest,
     } = this.props;
-    const dataTest = this.props['data-test']; // eslint-disable-line
     const sortedAssetData = _sortBy(assetData, ['asset']);
 
     return (
@@ -182,7 +240,6 @@ class CoinCard extends Component {
   render() {
     const {
       asset,
-      assetData,
       amount,
       price,
       priceIndex,
@@ -203,14 +260,10 @@ class CoinCard extends Component {
     } = this.props;
     const { openDropdown, percentButtonSelected } = this.state;
 
-    // TODO: render dropown menu as bottom fixed sheet for mobile
+    // TODO (Rudi): render dropown menu as bottom fixed sheet for mobile
     return (
       <Ref innerRef={this.handleRef}>
-        <CoinCardWrapper
-          className={`coinCard-wrapper ${className}`}
-          onBlur={this.handleBlurCard}
-          {...props}
-        >
+        <CoinCardWrapper className={`coinCard-wrapper ${className}`} {...props}>
           {title && <Label className="title-label">{title}</Label>}
 
           <Dropdown
@@ -227,15 +280,14 @@ class CoinCard extends Component {
                     className="asset-amount-label"
                     size="large"
                     value={amount}
-                    onChange={this.onChange}
-                    onKeyDown={this.onKeyDown}
+                    onChangeValue={this.onChange}
                     {...inputProps}
                   />
                   <HorizontalDivider color="primary" />
                   <AssetCardFooter>
                     <FooterLabel>
                       {`${unit} ${Number(
-                        (amount * price).toFixed(2),
+                        (amount * Number(price)).toFixed(2),
                       ).toLocaleString()}`}
                     </FooterLabel>
                     {slip !== undefined && (
@@ -266,53 +318,5 @@ class CoinCard extends Component {
     );
   }
 }
-
-CoinCard.propTypes = {
-  asset: PropTypes.string,
-  assetData: PropTypes.array,
-  amount: PropTypes.number,
-  price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  priceIndex: PropTypes.object,
-  unit: PropTypes.string,
-  slip: PropTypes.number,
-  title: PropTypes.string,
-  searchDisable: PropTypes.arrayOf(PropTypes.string),
-  withSelection: PropTypes.bool,
-  withSearch: PropTypes.bool,
-  onSelect: PropTypes.func,
-  onChange: PropTypes.func,
-  onChangeAsset: PropTypes.func,
-  className: PropTypes.string,
-  max: PropTypes.number,
-  disabled: PropTypes.bool,
-  dataTestWrapper: PropTypes.string,
-  dataTestInput: PropTypes.string,
-  children: PropTypes.node,
-  inputProps: PropTypes.shape({
-    disabled: PropTypes.bool,
-    'data-test': PropTypes.string,
-  }),
-};
-
-CoinCard.defaultProps = {
-  asset: 'bnb',
-  assetData: [],
-  amount: 0,
-  price: 0,
-  unit: 'RUNE',
-  slip: undefined,
-  title: '',
-  withSelection: false,
-  withSearch: false,
-  searchDisable: [],
-  onSelect: () => {},
-  onChange: () => {},
-  onChangeAsset: () => {},
-  className: '',
-  max: 1000000,
-  disabled: false,
-  children: null,
-  inputProps: {},
-};
 
 export default CoinCard;
