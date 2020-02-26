@@ -6,6 +6,7 @@ import Header from '../../components/header';
 import Footer from '../../components/footer';
 import AppRouter from './AppRouter';
 import { ContentWrapper } from './App.style';
+import { COMMIT_HASH } from '../../helpers/envHelper';
 
 class App extends Component {
   render() {
@@ -17,7 +18,7 @@ class App extends Component {
         <ContentWrapper>
           <AppRouter url={url} />
         </ContentWrapper>
-        <Footer />
+        <Footer commitHash={COMMIT_HASH} />
       </Layout>
     );
   }
