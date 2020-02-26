@@ -1,6 +1,6 @@
 import { getFixedNumber } from '../../helpers/stringHelper';
 import { Nothing, Maybe } from '../../types/bepswap';
-import { PriceDataIndex, AssetDataIndex } from './types';
+import { PriceDataIndex, AssetDetailMap } from './types';
 import {
   AssetDetail,
   ThorchainEndpoints,
@@ -27,9 +27,9 @@ export const getBNBPoolAddress = (
 export const getPoolAddress = (endpoints: ThorchainEndpoints): Maybe<string> =>
   getBNBPoolAddress(endpoints)?.address ?? Nothing;
 
-export const getAssetDataIndex = (
+export const getAssetDetailIndex = (
   assets: AssetDetail[],
-): AssetDataIndex | {} => {
+): AssetDetailMap | {} => {
   let assetDataIndex = {};
 
   assets.forEach(assetInfo => {

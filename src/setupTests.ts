@@ -1,6 +1,7 @@
 import Enzyme from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import { Maybe, Nothing } from './types/bepswap';
+import 'jest-localstorage-mock';
 
 declare global {
   // eslint-disable-next-line no-redeclare, @typescript-eslint/no-namespace

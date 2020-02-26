@@ -2,12 +2,12 @@ import { AssetSymbol } from '../../types/bepswap';
 import {
   GetStakerPoolDataPayload,
   PriceDataIndex,
-  AssetDataIndex,
+  AssetDetailMap,
 } from './types';
 import { AssetDetail, PoolDetail, StakersAssetData, ThorchainEndpoints } from '../../types/generated/midgard';
 
 export interface SetAssetsPayload {
-  assetDataIndex: AssetDataIndex;
+  assetDetailIndex: AssetDetailMap;
   assetDetails: AssetDetail[];
 }
 export const SET_ASSETS = 'SET_ASSETS';
@@ -47,23 +47,32 @@ export const getPoolsFailed = (payload: Error): GetPoolsFailed => ({
   payload,
 });
 
+type GetPoolDataPayload = {
+  assets: string[];
+  overrideAllPoolData: boolean;
+}
+
 export const GET_POOL_DATA_REQUEST = 'GET_POOL_DATA_REQUEST';
 export interface GetPoolData {
   type: typeof GET_POOL_DATA_REQUEST;
-  payload: string;
+  payload: GetPoolDataPayload;
 }
-export const getPoolData = (payload: string): GetPoolData => ({
+export const getPoolData = (payload: GetPoolDataPayload): GetPoolData => ({
   type: GET_POOL_DATA_REQUEST,
   payload,
 });
 
+type GetPoolDataSuccessPayload = {
+  poolDetails: PoolDetail[];
+  overrideAllPoolData: boolean;
+}
 export const GET_POOL_DATA_SUCCESS = 'GET_POOL_DATA_SUCCESS';
 export interface GetPoolDataSuccess {
   type: typeof GET_POOL_DATA_SUCCESS;
-  payload: PoolDetail;
+  payload: GetPoolDataSuccessPayload;
 }
 export const getPoolDataSuccess = (
-  payload: PoolDetail,
+  payload: GetPoolDataSuccessPayload,
 ): GetPoolDataSuccess => ({
   type: GET_POOL_DATA_SUCCESS,
   payload,

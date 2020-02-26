@@ -115,7 +115,7 @@ class WalletView extends React.Component<Props, State> {
     RD.fold(
       () => null, // initial data
       () => <StakeLoader />, // loading
-      (error: Error) => <>Error while refreshing stake data: {error}</>, // error
+      (error: Error) => <>{error.toString()}</>, // error
       (data: StakeData[]): JSX.Element =>
         data.length > 0 ? (
           <>Your current stakes are:</>
@@ -153,7 +153,7 @@ class WalletView extends React.Component<Props, State> {
     const sourceIndex = this.getAssetIndexByName(source);
     const sortedAssets = _sortBy(assetData, ['asset']);
     const stakeDataForSorting = RD.toNullable(stakeData);
-    const sortedStakerData = _sortBy(stakeDataForSorting, ['target']);
+    const sortedStakerData = stakeDataForSorting ? _sortBy(stakeDataForSorting, ['target']) : null;
 
     return (
       <WalletViewWrapper data-test="wallet-view">

@@ -1,5 +1,6 @@
 import { all, takeEvery, put, fork, call } from 'redux-saga/effects';
 import { push } from 'connected-react-router';
+import { isEmpty as _isEmpty } from 'lodash';
 
 import { AxiosResponse } from 'axios';
 import Binance from '../../clients/binance';
@@ -88,35 +89,71 @@ export function* refreshBalance() {
   });
 }
 
+type StakersAssetDataMap = {
+  [symbol: string]: StakersAssetData;
+};
+
 export function* getUserStakeData(payload: {
   address: Address;
-  asset: string;
+  assets: string[];
 }) {
-  const { address, asset } = payload;
-  const { symbol = '', ticker = '' } = getAssetFromString(asset);
-  const { data: userStakerData }: AxiosResponse<StakersAssetData> = yield call(
+  const { address, assets } = payload;
+
+  // (Request 1) Load list of possible `StakersAssetData`
+  const { data }: AxiosResponse<StakersAssetData[]> = yield call(
     { context: midgardApi, fn: midgardApi.getStakersAddressAndAssetData },
     address,
-    asset,
+    assets.join(),
   );
-  const { data: poolData }: AxiosResponse<PoolDetail> = yield call(
-    { context: midgardApi, fn: midgardApi.getPoolsData },
-    asset,
-  );
-  const price = poolData?.price ?? 0;
 
-  const stakeData: StakeData = {
-    targetSymbol: symbol,
-    target: ticker.toLowerCase(),
-    targetValue: userStakerData.assetStaked
-      ? getFixedNumber(userStakerData.assetStaked / BASE_NUMBER)
-      : 0,
-    assetValue: userStakerData.runeStaked
-      ? getFixedNumber(userStakerData.runeStaked / BASE_NUMBER)
-      : 0,
-    asset: 'rune',
-    price,
-  };
+  // Transform `StakersAssetData[]` into a map of `{[symbol]: StakersAssetData}` to access data it more easily
+  const poolDetailMap: StakersAssetDataMap =
+    data && !_isEmpty(data)
+      ? data.reduce((acc: StakersAssetDataMap, assetData: StakersAssetData) => {
+          const asset = assetData.asset;
+          return asset
+            ? {
+                ...acc,
+                [asset]: assetData,
+              }
+            : acc;
+        }, {})
+      : {};
+
+  // (Request 2) Load list of possible `PoolDetail`
+  const { data: poolDataList }: AxiosResponse<PoolDetail[]> = yield call(
+    { context: midgardApi, fn: midgardApi.getPoolsData },
+    assets.join(),
+  );
+
+  // Transform results of requests 1 + 2 into `StakeData[]`
+  const stakeData: StakeData[] = poolDataList.reduce(
+    (acc: StakeData[], poolData: PoolDetail) => {
+      const userStakerData = poolData.asset
+        ? poolDetailMap[poolData.asset]
+        : null;
+      if (userStakerData && poolData.asset) {
+        const price = poolData?.price ?? 0;
+        const { symbol = '', ticker = '' } = getAssetFromString(poolData.asset);
+        const stakeData = {
+          targetSymbol: symbol,
+          target: ticker.toLowerCase(),
+          targetValue: userStakerData.assetStaked
+            ? getFixedNumber(userStakerData.assetStaked / BASE_NUMBER)
+            : 0,
+          assetValue: userStakerData.runeStaked
+            ? getFixedNumber(userStakerData.runeStaked / BASE_NUMBER)
+            : 0,
+          asset: 'rune',
+          price,
+        } as StakeData;
+        return [...acc, stakeData];
+      } else {
+        return acc;
+      }
+    },
+    [],
+  );
 
   return stakeData;
 }
@@ -133,18 +170,15 @@ export function* refreshStakes() {
         address,
       );
 
-      const stakerPools = data.poolsArray || [];
-      const result: StakeData[] = yield all(
-        stakerPools.map((pool: string) => {
-          const payload = {
-            address,
-            asset: pool,
-          };
-          return call(getUserStakeData, payload);
-        }),
-      );
-
-      yield put(actions.refreshStakeSuccess(result));
+      if (data.poolsArray && !_isEmpty(data?.poolsArray)) {
+        const result: StakeData[] = yield call(getUserStakeData, {
+          address,
+          assets: data?.poolsArray,
+        });
+        yield put(actions.refreshStakeSuccess(result));
+      } else {
+        yield put(actions.refreshStakeSuccess([]));
+      }
     } catch (error) {
       yield put(actions.refreshStakeFailed(error));
     }

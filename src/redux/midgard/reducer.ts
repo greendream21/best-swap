@@ -6,7 +6,7 @@ import {
   getAssetSymbolFromPayload,
 } from './utils';
 import { getBasePriceAsset } from '../../helpers/webStorageHelper';
-import { State } from './types';
+import { State, PoolDataMap } from './types';
 import {
   SET_BASE_PRICE_ASSET,
   SET_PRICE_INDEX,
@@ -27,6 +27,7 @@ import {
   GET_POOL_ADDRESSES_FAILED,
 } from './actions';
 import { Nothing } from '../../types/bepswap';
+import { PoolDetail } from '../../types/generated/midgard';
 
 const basePriceAsset = getBasePriceAsset() || 'RUNE';
 
@@ -77,7 +78,7 @@ const reducer: Reducer<State, MidgardActionTypes> = (
       const { payload } = action;
       return {
         ...state,
-        assets: payload.assetDataIndex,
+        assets: payload.assetDetailIndex,
         assetArray: payload.assetDetails,
       };
     }
@@ -107,19 +108,30 @@ const reducer: Reducer<State, MidgardActionTypes> = (
       };
     case GET_POOL_DATA_SUCCESS: {
       const { payload } = action;
-      const symbol = getAssetSymbolFromPayload(payload);
-      if (symbol) {
-        return {
-          ...state,
-          poolData: {
+      const { poolDetails = [], overrideAllPoolData = true } = payload;
+      // Transform `PoolDetail[]` into `PoolDataMap` before storing data into state
+      const newPoolData = poolDetails.reduce(
+        (acc: PoolDataMap, poolDetail: PoolDetail) => {
+          const symbol = getAssetSymbolFromPayload(poolDetail);
+          return symbol
+            ? {
+                ...acc,
+                [symbol]: poolDetail,
+              }
+            : acc;
+        },
+        {} as PoolDataMap,
+      );
+      // Check whether to override all state.poolData or just with latest result
+      const poolData = overrideAllPoolData
+        ? newPoolData
+        : {
             ...state.poolData,
-            [symbol]: payload,
-          },
-          poolLoading: false,
-        };
-      }
+            newPoolData,
+          };
       return {
         ...state,
+        poolData,
         poolLoading: false,
       };
     }
