@@ -22,23 +22,27 @@ const mediaQueries: MediaQueriesType = {
 };
 
 type FirstArg = FixmeType;
-type ExtraArgs = string [];
+type ExtraArgs = string[];
 type ArgType = [FirstArg, ...ExtraArgs];
 
-export const media: FixmeType = Object.keys(mediaQueries).reduce((acc, segment) => {
-  const styledMediaFunction = (...args: ArgType) => css`
-    @media ${mediaQueries[segment]} {
-      ${css(...args)};
-    }
-  `;
-  return {
-    ...acc,
-    [segment]: styledMediaFunction,
-  };
-}, {});
+export const media: FixmeType = Object.keys(mediaQueries).reduce(
+  (acc, segment) => {
+    const styledMediaFunction = (...args: ArgType) => css`
+      @media ${mediaQueries[segment]} {
+        ${css(...args)};
+      }
+    `;
+    return {
+      ...acc,
+      [segment]: styledMediaFunction,
+    };
+  },
+  {},
+);
 
-export const cleanTag = (component: FixmeType, tagList = ['']) => (props: FixmeType) =>
-  React.createElement(component, omit(props, tagList));
+export const cleanTag = (component: FixmeType, tagList = ['']) => (
+  props: FixmeType,
+) => React.createElement(component, omit(props, tagList));
 
 export function provideResponsiveShow({ showFrom }: { showFrom: string }) {
   return (
