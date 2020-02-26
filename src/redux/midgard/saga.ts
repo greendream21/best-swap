@@ -8,7 +8,7 @@ import {
   saveBasePriceAsset,
   getBasePriceAsset,
 } from '../../helpers/webStorageHelper';
-import { getAssetDataIndex, getPriceIndex } from './utils';
+import { getAssetDetailIndex, getPriceIndex } from './utils';
 import {
   DefaultApi,
   AssetDetail,
@@ -36,12 +36,12 @@ export function* getPools() {
           data.join(),
         );
 
-        const assetDataIndex = getAssetDataIndex(assetDetails);
+        const assetDetailIndex = getAssetDetailIndex(assetDetails);
         const baseTokenTicker = getBasePriceAsset() || 'RUNE';
         const priceIndex = getPriceIndex(assetDetails, baseTokenTicker);
         const assetsPayload: actions.SetAssetsPayload = {
           assetDetails,
-          assetDataIndex,
+          assetDetailIndex,
         };
 
         yield put(actions.setAssets(assetsPayload));

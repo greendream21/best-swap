@@ -13,9 +13,8 @@ import {
   getTickerFormat,
   getUserFormat,
 } from '../../helpers/stringHelper';
-import { AssetData } from '../../redux/wallet/types';
 import { PoolDataMap, PriceDataIndex } from '../../redux/midgard/types';
-import { PoolDetail } from '../../types/generated/midgard';
+import { PoolDetail, AssetDetail } from '../../types/generated/midgard';
 import { Maybe } from '../../types/bepswap';
 import { getAssetFromString } from '../../redux/midgard/utils';
 import { PoolInfoType } from './types';
@@ -133,9 +132,9 @@ export type PoolDataRaw = {
 };
 
 export const getCreatePoolTokens = (
-  assetData: AssetData[],
+  assetData: AssetDetail[],
   pools: string[],
-): AssetData[] => {
+): AssetDetail[] => {
   return assetData.filter(data => {
     let unique = true;
 

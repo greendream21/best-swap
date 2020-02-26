@@ -2,7 +2,7 @@ import {
   getAssetSymbolFromPayload,
   getBNBPoolAddress,
   getPoolAddress,
-  getAssetDataIndex,
+  getAssetDetailIndex,
   getPriceIndex,
   getAssetFromString,
 } from './utils';
@@ -79,7 +79,7 @@ describe('redux/midgard/utils/', () => {
         emptyAsset,
         emptyAssetSymbol,
       ] as Array<PoolDataMock>;
-      const result = getAssetDataIndex(data);
+      const result = getAssetDetailIndex(data);
       result;
       const expected = {
         'B-C': asset1,
@@ -96,7 +96,7 @@ describe('redux/midgard/utils/', () => {
         emptyAssetSymbol,
         emptyAsset,
       ] as Array<PoolDataMock>;
-      const result = getAssetDataIndex(data);
+      const result = getAssetDetailIndex(data);
       result;
       expect(result).toStrictEqual({});
     });

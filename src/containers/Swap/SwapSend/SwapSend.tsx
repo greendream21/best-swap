@@ -60,7 +60,7 @@ import { User, AssetData } from '../../../redux/wallet/types';
 import { TxStatus, TxTypes } from '../../../redux/app/types';
 
 import {
-  AssetDataIndex,
+  AssetDetailMap,
   PriceDataIndex,
   PoolDataMap,
 } from '../../../redux/midgard/types';
@@ -79,7 +79,7 @@ type ConnectedProps = {
   txStatus: TxStatus;
   assetData: AssetData[];
   poolAddress: string;
-  assets: AssetDataIndex;
+  assets: AssetDetailMap;
   poolData: PoolDataMap;
   basePriceAsset: string;
   priceIndex: PriceDataIndex;
@@ -784,7 +784,7 @@ class SwapSend extends React.Component<Props, State> {
 
     const tokensData: TokenData[] = Object.keys(tokenInfo).map(tokenName => {
       const tokenData = tokenInfo[tokenName];
-      const assetStr = tokenData?.asset?.asset;
+      const assetStr = tokenData?.asset;
       const asset = assetStr ? getAssetFromString(assetStr) : null;
       const price = tokenData?.priceRune ?? 0;
 
