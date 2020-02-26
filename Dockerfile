@@ -3,6 +3,7 @@ FROM node:12.2.0-alpine as build
 WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
 
+RUN apk update && apk add git
 COPY package.json /app/package.json
 RUN npm config set unsafe-perm true
 RUN npm install --silent
