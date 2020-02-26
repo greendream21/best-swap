@@ -41,7 +41,7 @@ class TokenInput extends Component {
             className="token-amount-input"
             size="default"
             value={value}
-            onChange={this.onChange}
+            onChangeValue={this.onChange}
             {...inputProps}
           />
           <p className="token-amount-label">{label}</p>

@@ -22,7 +22,7 @@ function getLastCallValue(mockFn) {
   return lastCall && lastCall[0];
 }
 
-const simulateControlledBlur = ({ hook, mockEvent, onChange }) => () => {
+const simulateControlledBlur = ({ hook, mockEvent, onChangeValue }) => () => {
   const value = hook.result.current.value;
   act(() => {
     hook.result.current.onBlur({
@@ -34,7 +34,7 @@ const simulateControlledBlur = ({ hook, mockEvent, onChange }) => () => {
     });
     // need to rerender so blur useEffects get broadcast
   });
-  hook.rerender({ value, onChange });
+  hook.rerender({ value, onChangeValue });
 };
 
 const simulateControlledFocus = ({ hook, mockEvent }) => () => {
@@ -51,8 +51,8 @@ const simulateControlledFocus = ({ hook, mockEvent }) => () => {
 };
 
 // This function simulates a controlled component.
-const simulateControlledChange = ({ onChange, hook }) => value => {
-  const oldCallCount = onChange.mock.calls.length;
+const simulateControlledChange = ({ onChangeValue, hook }) => value => {
+  const oldCallCount = onChangeValue.mock.calls.length;
 
   // hook.onChange is sent to the raw input so calling it like
   // this is similar to typing in the input
@@ -60,19 +60,22 @@ const simulateControlledChange = ({ onChange, hook }) => value => {
     hook.result.current.onChange({ target: { value } });
   });
 
-  const newCallCount = onChange.mock.calls.length;
+  const newCallCount = onChangeValue.mock.calls.length;
 
   const handlerHasBeenCalled = newCallCount === oldCallCount + 1;
 
-  if (handlerHasBeenCalled && getLastCallValue(onChange) === Number(value)) {
+  if (
+    handlerHasBeenCalled &&
+    getLastCallValue(onChangeValue) === Number(value)
+  ) {
     // pass in a new value from outslide the component
     // as if the component was a controlled one
-    hook.rerender({ value, onChange });
+    hook.rerender({ value, onChangeValue });
   }
 };
 
 function setup(initValue) {
-  const onChange = jest.fn();
+  const onChangeValue = jest.fn();
   const eventSelect = jest.fn();
   const eventBlur = jest.fn();
   const mockEvent = {
@@ -83,23 +86,27 @@ function setup(initValue) {
   };
 
   const hook = renderHook(
-    ({ value, onChange }) => {
-      return useCoinCardInputBehaviour({ value, onChange });
+    ({ value, onChangeValue }) => {
+      return useCoinCardInputBehaviour({ value, onChangeValue });
     },
     {
-      initialProps: { value: initValue, onChange },
+      initialProps: { value: initValue, onChangeValue },
     },
   );
 
   const simulateTypingInInput = simulateControlledChange({
     hook,
-    onChange,
+    onChangeValue,
   });
-  const simulateBlur = simulateControlledBlur({ hook, mockEvent, onChange });
+  const simulateBlur = simulateControlledBlur({
+    hook,
+    mockEvent,
+    onChangeValue,
+  });
   const simulateFocus = simulateControlledFocus({ hook, mockEvent });
   return {
     hook,
-    onChange,
+    onChangeValue,
     mockEvent,
     simulateBlur,
     simulateFocus,
@@ -109,11 +116,11 @@ function setup(initValue) {
 
 describe('useCoinCardInputBehaviour', () => {
   it('should render values passed in with formatting', () => {
-    const { hook, onChange } = setup(0);
+    const { hook, onChangeValue } = setup(0);
     expect(hook.result.current.value).toBe('0.00');
-    hook.rerender({ value: '1234.56', onChange });
+    hook.rerender({ value: '1234.56', onChangeValue });
     expect(hook.result.current.value).toBe('1,234.56');
-    hook.rerender({ value: '12345678', onChange });
+    hook.rerender({ value: '12345678', onChangeValue });
     expect(hook.result.current.value).toBe('12,345,678.00');
   });
 
@@ -170,7 +177,7 @@ describe('useCoinCardInputBehaviour', () => {
   it('should broadcast numeric values only', () => {
     const {
       hook: { result },
-      onChange,
+      onChangeValue,
       simulateFocus,
       simulateBlur,
       simulateTypingInInput,
@@ -179,17 +186,17 @@ describe('useCoinCardInputBehaviour', () => {
     expect(result.current.value).toBe('1,234.56');
     simulateFocus();
     simulateTypingInInput('12345678.90');
-    expect(onChange).lastCalledWith(12345678.9);
+    expect(onChangeValue).lastCalledWith(12345678.9);
     expect(result.current.value).toBe('12345678.90');
     simulateBlur();
-    expect(onChange).lastCalledWith(12345678.9);
+    expect(onChangeValue).lastCalledWith(12345678.9);
     expect(result.current.value).toBe('12,345,678.90');
   });
 
   it('should broadcast when its internal representation is broadcastable', () => {
     const {
       hook,
-      onChange,
+      onChangeValue,
       simulateBlur,
       simulateFocus,
       simulateTypingInInput,
@@ -197,20 +204,20 @@ describe('useCoinCardInputBehaviour', () => {
     expect(hook.result.current.value).toBe('0.00');
 
     simulateFocus();
-    expect(onChange.mock.calls.length).toBe(1);
+    expect(onChangeValue.mock.calls.length).toBe(1);
     simulateTypingInInput('1.');
     expect(hook.result.current.value).toBe('1.');
-    expect(onChange.mock.calls.length).toBe(1);
+    expect(onChangeValue.mock.calls.length).toBe(1);
     simulateTypingInInput('1.0');
     expect(hook.result.current.value).toBe('1.0');
-    expect(onChange.mock.calls.length).toBe(2);
+    expect(onChangeValue.mock.calls.length).toBe(2);
 
     simulateBlur();
-    expect(onChange.mock.calls.length).toBe(2);
+    expect(onChangeValue.mock.calls.length).toBe(2);
     expect(hook.result.current.value).toBe('1.00');
-    hook.rerender({ value: 123, onChange });
+    hook.rerender({ value: 123, onChangeValue });
     expect(hook.result.current.value).toBe('123.00');
-    expect(onChange.mock.calls.length).toBe(3);
+    expect(onChangeValue.mock.calls.length).toBe(3);
   });
 
   it('should be able to send an empty string', () => {
@@ -229,7 +236,7 @@ describe('useCoinCardInputBehaviour', () => {
     const {
       simulateFocus,
       hook,
-      onChange,
+      onChangeValue,
       simulateBlur,
       simulateTypingInInput,
     } = setup(1000);
@@ -237,7 +244,7 @@ describe('useCoinCardInputBehaviour', () => {
     simulateTypingInInput('12345678912345678');
     simulateBlur();
     expect(hook.result.current.value).toBe('12,345,678,912,345,678.00');
-    hook.rerender({ value: 40000, onChange });
+    hook.rerender({ value: 40000, onChangeValue });
     expect(hook.result.current.value).toBe('40,000.00');
   });
 });

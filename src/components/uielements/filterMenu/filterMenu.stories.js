@@ -28,8 +28,6 @@ storiesOf('Components/FilterMenu', module).add('coins example', () => {
           searchEnabled
           filterFunction={filterFunction}
           cellRenderer={cellRenderer}
-          onChangeAsset={() => {}}
-          onBlurDropdown={() => {}}
           asset="TOMOB-1E1"
           data={[
             { asset: 'FSN-F1B', assetValue: 99, price: 1 },
@@ -38,7 +36,7 @@ storiesOf('Components/FilterMenu', module).add('coins example', () => {
             { asset: 'TCAN-014', assetValue: 8935, price: 1 },
             { asset: 'TOMOB-1E1', assetValue: 198, price: 1 },
             { asset: 'BNB', assetValue: 200.01, price: 0.00387 },
-          ]}
+          ]} // CoinCardAssetData[]
         />
       </AppHolder>
     </ThemeProvider>
@@ -51,19 +49,17 @@ storiesOf('Components/FilterMenu', module).add('general use', () => {
         <FilterMenu
           searchEnabled
           filterFunction={filterFunction}
-          cellRenderer={({ key, name }) => ({
-            key,
+          cellRenderer={({ name }) => ({
+            key: `${Math.random()}-name`,
             node: <div>Hello {name}</div>,
           })}
-          onChangeAsset={() => {}}
-          onBlurDropdown={() => {}}
           asset="paul"
           data={[
-            { asset: 'John', name: 'John' },
-            { asset: 'Paul', name: 'Paul' },
-            { asset: 'George', name: 'George' },
-            { asset: 'Ringo', name: 'Ringo' },
-          ]}
+            { asset: 'John', name: 'John', price: 1 },
+            { asset: 'Paul', name: 'Paul', price: 2 },
+            { asset: 'George', name: 'George', price: 3 },
+            { asset: 'Ringo', name: 'Ringo', price: 4 },
+          ]} // CoinCardAssetData[]
         />
       </AppHolder>
     </ThemeProvider>

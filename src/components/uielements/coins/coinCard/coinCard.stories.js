@@ -27,6 +27,9 @@ storiesOf('Components/Coins/CoinCard', module).add('default', () => {
             ]}
             amount={1.354}
             price={600}
+            priceIndex={{
+              RUNE: 1,
+            }}
             withSelection
           />
           <CoinCard

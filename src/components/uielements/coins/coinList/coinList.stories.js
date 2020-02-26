@@ -14,10 +14,24 @@ storiesOf('Components/Coins/CoinList', module).add('default', () => {
       <AppHolder>
         <div style={{ display: 'flex', flexDirection: 'row', width: '800px' }}>
           <div style={{ display: 'inline-block', width: '300px' }}>
-            <CoinList data={assetsData} value={2} />
+            <CoinList
+              data={assetsData}
+              value={2}
+              priceIndex={{
+                RUNE: 1,
+              }}
+              onSelect={() => {}}
+            />
           </div>
           <div style={{ display: 'block', width: '300px' }}>
-            <CoinList data={stakeData} selected={[1]} />
+            <CoinList
+              data={stakeData}
+              selected={[1]}
+              priceIndex={{
+                RUNE: 1,
+              }}
+              onSelect={() => {}}
+            />
           </div>
         </div>
         <div
@@ -29,10 +43,24 @@ storiesOf('Components/Coins/CoinList', module).add('default', () => {
           }}
         >
           <div style={{ display: 'inline-block', width: '300px' }}>
-            <CoinList data={assetsData} size="big" />
+            <CoinList
+              data={assetsData}
+              size="big"
+              priceIndex={{
+                RUNE: 1,
+              }}
+              onSelect={() => {}}
+            />
           </div>
           <div style={{ display: 'block', width: '300px' }}>
-            <CoinList data={stakeData} size="big" />
+            <CoinList
+              data={stakeData}
+              size="big"
+              priceIndex={{
+                RUNE: 1,
+              }}
+              onSelect={() => {}}
+            />
           </div>
         </div>
       </AppHolder>
