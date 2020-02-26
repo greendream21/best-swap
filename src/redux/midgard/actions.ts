@@ -2,12 +2,12 @@ import { AssetSymbol } from '../../types/bepswap';
 import {
   GetStakerPoolDataPayload,
   PriceDataIndex,
-  AssetDataIndex,
+  AssetDetailMap,
 } from './types';
 import { AssetDetail, PoolDetail, StakersAssetData, ThorchainEndpoints } from '../../types/generated/midgard';
 
 export interface SetAssetsPayload {
-  assetDataIndex: AssetDataIndex;
+  assetDetailIndex: AssetDetailMap;
   assetDetails: AssetDetail[];
 }
 export const SET_ASSETS = 'SET_ASSETS';

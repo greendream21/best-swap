@@ -1,16 +1,8 @@
 import { Maybe } from '../../types/bepswap';
 import { AssetDetail, PoolDetail, StakersAssetData, ThorchainEndpoints, ThorchainEndpoint } from '../../types/generated/midgard';
 
-export type AssetData = {
-  asset: AssetDetail;
-  dateCreated: number;
-  logo: string;
-  name: string;
-  priceRune: number;
-};
-
-export type AssetDataIndex = {
-  [asset: string]: AssetData;
+export type AssetDetailMap = {
+  [asset: string]: AssetDetail;
 };
 
 export type PoolDataMap = {
@@ -31,7 +23,7 @@ export type PriceDataIndex = {
 };
 
 export type State = {
-  assets: AssetDataIndex;
+  assets: AssetDetailMap;
   assetArray: AssetDetail[];
   pools: string[];
   poolAddressData: Maybe<ThorchainEndpoints>;

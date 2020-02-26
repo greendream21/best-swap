@@ -5,12 +5,12 @@ import { TelegramIcon } from '../icons/telegramicon';
 
 import Logo from '../uielements/logo';
 import { StyledFooter, FooterContainer, FooterItem } from './footer.style';
-import { COMMIT_HASH } from '../../helpers/envHelper';
 
-type Props = {};
+type Props = {
+  commitHash?: string
+};
 
-const Footer: React.FC<Props> = (): JSX.Element => {
-  const commitHash = COMMIT_HASH;
+const Footer: React.FC<Props> = ({ commitHash }): JSX.Element => {
   return (
     <FooterContainer>
       <StyledFooter>
