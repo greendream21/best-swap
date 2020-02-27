@@ -8,6 +8,7 @@ import { Icon } from 'antd';
 import { ActionViewWrapper, BackLink } from './ActionView.style';
 import { SwapIntro, SwapView, SwapSend } from '../Swap';
 import { PoolIntro, PoolView, PoolStake, PoolCreate } from '../Pool';
+import TransactionView from '../TransactionView';
 import ConnectView from '../ConnectView';
 import StatsView from '../StatsView';
 import FaqsView from '../FaqsView';
@@ -95,6 +96,7 @@ class ActionView extends Component {
           {view === 'pools-view' && <PoolView />}
           {view === 'pools-pool' && <PoolStake symbol={symbol} />}
           {view === 'pools-new' && <PoolCreate symbol={symbol} />}
+          {view === 'transaction-history' && <TransactionView />}
         </ActionViewWrapper>
       </>
     );
