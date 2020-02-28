@@ -17,7 +17,7 @@ import {
   AssetLoader,
   StakeLoader,
 } from '../../components/utility/loaders/wallet';
-import { Maybe } from '../../types/bepswap';
+import { Maybe, Nothing } from '../../types/bepswap';
 import {
   User,
   AssetData,
@@ -72,10 +72,11 @@ class WalletView extends React.Component<Props, State> {
     return sortedAssets[index].asset || '';
   };
 
-  getAssetIndexByName = (asset: string) => {
+  getAssetIndexByName = (asset: string): Maybe<AssetData> => {
     const { assetData } = this.props;
 
-    return assetData.find(data => data.asset === asset);
+    const result = assetData.find(data => data.asset === asset);
+    return result || Nothing;
   };
 
   handleSelectAsset = (key: number) => {
@@ -124,14 +125,14 @@ class WalletView extends React.Component<Props, State> {
         ),
     )(stakeData);
 
-  getSelectedAsset = (pair: Pair) => {
+  getSelectedAsset = (pair: Pair): AssetData[] => {
     const { page } = this.props;
 
     if (page === 'pool') {
       const { target = '' } = pair;
       const targetIndex = this.getAssetIndexByName(target);
 
-      return [targetIndex];
+      return targetIndex ? [targetIndex] : [];
     }
     return [];
   };
@@ -192,7 +193,6 @@ class WalletView extends React.Component<Props, State> {
                 onSelect={(key: number) =>
                   this.handleSelectStake(key, sortedStakerData)}
                 unit={basePriceAsset}
-                isStakeData
               />
             )}
           </TabPane>
