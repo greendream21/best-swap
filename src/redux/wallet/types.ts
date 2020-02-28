@@ -27,7 +27,17 @@ export type StakeData = {
   price: number;
 };
 
-export type StakeDataListLoadingState = RemoteData<Error, StakeData[]>
+export type StakeOrAssetData = AssetData | StakeData;
+
+/**
+ * Custom type guard to check StakeData
+ */
+export const isStakeData = (v: StakeOrAssetData): v is StakeData =>
+  (v as StakeData).targetSymbol !== undefined &&
+  (v as StakeData).targetValue !== undefined &&
+  (v as StakeData).target !== undefined;
+
+export type StakeDataListLoadingState = RemoteData<Error, StakeData[]>;
 
 export interface State {
   readonly user: Maybe<User>;

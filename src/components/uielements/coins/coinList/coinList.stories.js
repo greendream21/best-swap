@@ -13,7 +13,7 @@ storiesOf('Components/Coins/CoinList', module).add('default', () => {
     <ThemeProvider theme={defaultTheme}>
       <AppHolder>
         <div style={{ display: 'flex', flexDirection: 'row', width: '800px' }}>
-          <div style={{ display: 'inline-block', width: '300px' }}>
+          <div style={{ display: 'inline-block', width: '400px' }}>
             <CoinList
               data={assetsData}
               value={2}
@@ -21,9 +21,10 @@ storiesOf('Components/Coins/CoinList', module).add('default', () => {
                 RUNE: 1,
               }}
               onSelect={() => {}}
+              style={{ height: '200px' }}
             />
           </div>
-          <div style={{ display: 'block', width: '300px' }}>
+          <div style={{ display: 'block', width: '400px' }}>
             <CoinList
               data={stakeData}
               selected={[1]}
@@ -31,6 +32,7 @@ storiesOf('Components/Coins/CoinList', module).add('default', () => {
                 RUNE: 1,
               }}
               onSelect={() => {}}
+              style={{ height: '200px' }}
             />
           </div>
         </div>
@@ -42,7 +44,7 @@ storiesOf('Components/Coins/CoinList', module).add('default', () => {
             marginTop: '20px',
           }}
         >
-          <div style={{ display: 'inline-block', width: '300px' }}>
+          <div style={{ display: 'inline-block', width: '400px' }}>
             <CoinList
               data={assetsData}
               size="big"
@@ -50,9 +52,10 @@ storiesOf('Components/Coins/CoinList', module).add('default', () => {
                 RUNE: 1,
               }}
               onSelect={() => {}}
+              style={{ height: '200px' }}
             />
           </div>
-          <div style={{ display: 'block', width: '300px' }}>
+          <div style={{ display: 'block', width: '400px' }}>
             <CoinList
               data={stakeData}
               size="big"
@@ -60,6 +63,7 @@ storiesOf('Components/Coins/CoinList', module).add('default', () => {
                 RUNE: 1,
               }}
               onSelect={() => {}}
+              style={{ height: '200px' }}
             />
           </div>
         </div>
