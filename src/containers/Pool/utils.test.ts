@@ -5,14 +5,102 @@ import {
   withdrawResult,
 } from './utils';
 import { TransferEvent } from '../../types/binance';
-import { getCreatePoolTokens, getPoolData } from './utils-next';
-import { PoolData } from './types';
+import {
+  getCreatePoolTokens,
+  getPoolData,
+  getCalcResult,
+  CalcResult,
+  PoolData,
+} from './utils-next';
 import { AssetData } from '../../redux/wallet/types';
 import {
   PoolDetail,
   PoolDetailStatusEnum,
 } from '../../types/generated/midgard';
-import { PriceDataIndex } from '../../redux/midgard/types';
+import { PriceDataIndex, PoolDataMap } from '../../redux/midgard/types';
+
+const poolData: PoolDataMap = {
+  BNB: {
+    asset: 'BNB.BNB',
+    assetDepth: 119316,
+    assetROI: -0.40342,
+    assetStakedTotal: 200000,
+    buyAssetCount: 1,
+    buyFeeAverage: 17392308,
+    buyFeesTotal: 17392308,
+    buySlipAverage: 0.11079999804496765,
+    buyTxAverage: 328165298,
+    buyVolume: 328165298,
+    poolDepth: 13777400000,
+    poolFeeAverage: 8696154,
+    poolFeesTotal: 17392308,
+    poolROI: -0.1742444563552833,
+    poolROI12: -0.1742444563552833,
+    poolSlipAverage: 0.055399999022483826,
+    poolStakedTotal: 18076984478,
+    poolTxAverage: 164082649,
+    poolUnits: 2705690593,
+    poolVolume: 328165298,
+    poolVolume24hr: 0,
+    price: 57734.922390961816,
+    runeDepth: 6888700000,
+    runeROI: 0.054931087289433383,
+    runeStakedTotal: 6530000000,
+    sellAssetCount: 0,
+    sellFeeAverage: 0,
+    sellFeesTotal: 0,
+    sellSlipAverage: 0,
+    sellTxAverage: 0,
+    sellVolume: 0,
+    stakeTxCount: 2,
+    stakersCount: 1,
+    stakingTxCount: 2,
+    status: 'enabled',
+    swappersCount: 1,
+    swappingTxCount: 1,
+    withdrawTxCount: 0,
+  } as PoolDetail,
+  'TCAN-014': {
+    asset: 'BNB.TCAN-014',
+    assetDepth: 5654700000,
+    assetROI: 0,
+    assetStakedTotal: 5654700000,
+    buyAssetCount: 0,
+    buyFeeAverage: 0,
+    buyFeesTotal: 0,
+    buySlipAverage: 0,
+    buyTxAverage: 0,
+    buyVolume: 0,
+    poolDepth: 216408800000,
+    poolFeeAverage: 0,
+    poolFeesTotal: 0,
+    poolROI: 0,
+    poolROI12: 0,
+    poolSlipAverage: 0,
+    poolStakedTotal: 216408800000,
+    poolTxAverage: 0,
+    poolUnits: 56929542778,
+    poolVolume: 0,
+    poolVolume24hr: 0,
+    price: 19.13530337595275,
+    runeDepth: 108204400000,
+    runeROI: 0,
+    runeStakedTotal: 108204400000,
+    sellAssetCount: 0,
+    sellFeeAverage: 0,
+    sellFeesTotal: 0,
+    sellSlipAverage: 0,
+    sellTxAverage: 0,
+    sellVolume: 0,
+    stakeTxCount: 2,
+    stakersCount: 1,
+    stakingTxCount: 2,
+    status: 'enabled',
+    swappersCount: 0,
+    swappingTxCount: 0,
+    withdrawTxCount: 0,
+  } as PoolDetail,
+};
 
 describe('pool/utils/', () => {
   describe('parseTransfer', () => {
@@ -367,6 +455,94 @@ describe('pool/utils/', () => {
           },
         };
         const result = getPoolData('RUNE', bnbPoolDetail, priceIndex, 'RUNE');
+        expect(result).toEqual(expected);
+      });
+    });
+
+    describe('getCalcResult', () => {
+      it('calculates result of staking into RUNE - BNB pool ', () => {
+        const poolAddress = 'tbnabc123';
+        const runeAmount = 744.568;
+        const runePrice = 1;
+        const tokenAmount = 0.023;
+        const expected: CalcResult = {
+          poolAddress: 'tbnabc123',
+          ratio: 0.000030627871362940275,
+          symbolTo: 'BNB',
+          poolUnits: 2705690593,
+          poolPrice: 32650,
+          newPrice: 32394.72,
+          newDepth: 81305900000,
+          share: 91.97,
+          Pr: 1,
+          R: 6530000000,
+          T: 200000,
+        };
+
+        const result: CalcResult = getCalcResult(
+          'BNB',
+          poolData,
+          poolAddress,
+          runeAmount,
+          runePrice,
+          tokenAmount,
+        );
+
+        expect(result.poolAddress).toEqual(expected.poolAddress);
+        expect(result.ratio).toEqual(expected.ratio);
+        expect(result.symbolTo).toEqual(expected.symbolTo);
+        expect(result.poolUnits).toEqual(expected.poolUnits);
+        expect(result.poolPrice).toEqual(expected.poolPrice);
+        expect(result.newPrice).toEqual(expected.newPrice);
+        expect(result.newDepth).toEqual(expected.newDepth);
+        expect(result.share).toEqual(expected.share);
+        expect(result.Pr).toEqual(expected.Pr);
+        expect(result.R).toEqual(expected.R);
+        expect(result.T).toEqual(expected.T);
+        // Test all again just in case we will forget to test a new property in the future
+        expect(result).toEqual(expected);
+      });
+
+      it('calculates result of staking into RUNE - TCAN pool ', () => {
+        const poolAddress = 'tbnabc123';
+        const runeAmount = 938.803;
+        const runePrice = 1;
+        const tokenAmount = 49.061;
+        const expected = {
+          poolAddress: 'tbnabc123',
+          ratio: 0.052259427527900894,
+          symbolTo: 'TCAN-014',
+          poolUnits: 56929542778,
+          poolPrice: 19.14,
+          newPrice: 19.14,
+          newDepth: 202084405946.38,
+          share: 46.46,
+          Pr: 1,
+          R: 108204400000,
+          T: 5654700000,
+        };
+
+        const result: CalcResult = getCalcResult(
+          'TCAN-014',
+          poolData,
+          poolAddress,
+          runeAmount,
+          runePrice,
+          tokenAmount,
+        );
+
+        expect(result.poolAddress).toEqual(expected.poolAddress);
+        expect(result.ratio).toEqual(expected.ratio);
+        expect(result.symbolTo).toEqual(expected.symbolTo);
+        expect(result.poolUnits).toEqual(expected.poolUnits);
+        expect(result.poolPrice).toEqual(expected.poolPrice);
+        expect(result.newPrice).toEqual(expected.newPrice);
+        expect(result.newDepth).toEqual(expected.newDepth);
+        expect(result.share).toEqual(expected.share);
+        expect(result.Pr).toEqual(expected.Pr);
+        expect(result.R).toEqual(expected.R);
+        expect(result.T).toEqual(expected.T);
+        // Test all again just in case we will forget to test a new property in the future
         expect(result).toEqual(expected);
       });
     });
