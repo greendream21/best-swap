@@ -1272,8 +1272,6 @@ class PoolStake extends React.Component<Props, State> {
       user,
     } = this.props;
     const {
-      runeAmount,
-      tokenAmount,
       openPrivateModal,
       openWalletAlert,
       password,
@@ -1286,21 +1284,12 @@ class PoolStake extends React.Component<Props, State> {
     const hasWallet = wallet !== null;
 
     let { symbol } = this.props;
-    const { poolAddress } = this.props;
     symbol = symbol.toUpperCase();
-    const runePrice = priceIndex.RUNE;
     const poolInfo = poolData[symbol] || {};
 
     const poolStats = getPoolData('rune', poolInfo, priceIndex, basePriceAsset);
 
-    const calcResult = getCalcResult(
-      symbol,
-      poolData,
-      poolAddress,
-      runeAmount,
-      runePrice,
-      tokenAmount,
-    );
+    const calcResult = this.getData();
 
     const openStakeModal =
       txStatus.type === TxTypes.STAKE ? txStatus.modal : false;
