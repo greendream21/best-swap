@@ -120,8 +120,6 @@ type TxResult = {
 };
 
 class SwapSend extends React.Component<Props, State> {
-  addressRef = React.createRef();
-
   /**
    * Calculated result
    */
