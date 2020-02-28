@@ -2,6 +2,10 @@ import { some, invoke, inRange, isNil, first } from 'lodash';
 
 const clickedInNode = (node, e) => {
   if (some([e, node], isNil)) return false;
+  // React.FCs returns a node (or reference), which has a property ' current'
+  // and might be `null`. This kind of "node" should be ignored here.
+  // eslint-disable-next-line no-prototype-builtins
+  if (node.hasOwnProperty('current') && !node.current) return false;
 
   if (e.target) {
     invoke(e.target, 'setAttribute', 'data-suir-click-target', true);
