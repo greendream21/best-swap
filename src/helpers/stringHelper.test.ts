@@ -63,9 +63,13 @@ describe('helpers/stringHelper/', () => {
   // getPair
 
   describe('getPair', () => {
-    it('returns a valid value pair ', () => {
+    it('returns a valid value pair for "-" separated strings', () => {
       const result: Pair = getPair('HELLO-WORLD');
       expect(result).toEqual({ source: 'hello', target: 'world' });
+    });
+    it('returns a valid value pair for non "-" separated strings', () => {
+      const result: Pair = getPair('HELLO');
+      expect(result).toEqual({ source: 'hello', target: '' });
     });
     it('returns an empty array if no value entered', () => {
       const result: Pair = getPair();

@@ -16,7 +16,6 @@ storiesOf('Components/Coins/CoinList', module).add('default', () => {
           <div style={{ display: 'inline-block', width: '400px' }}>
             <CoinList
               data={assetsData}
-              value={2}
               priceIndex={{
                 RUNE: 1,
               }}
