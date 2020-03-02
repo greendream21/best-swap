@@ -1,3 +1,3 @@
-import CoinList from './coinList';
+import { CoinList } from './coinList';
 
 export default CoinList;

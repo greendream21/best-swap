@@ -5,7 +5,7 @@ import { ThemeProvider } from 'styled-components';
 import AppHolder from '../../../../AppStyle';
 import { defaultTheme } from '../../../../settings';
 
-import CoinList from './coinList';
+import CoinList from './index';
 import { assetsData, stakeData } from './data';
 
 storiesOf('Components/Coins/CoinList', module).add('default', () => {
@@ -20,6 +20,7 @@ storiesOf('Components/Coins/CoinList', module).add('default', () => {
               priceIndex={{
                 RUNE: 1,
               }}
+              selected={[assetsData[2], assetsData[3]]}
               onSelect={() => {}}
               style={{ height: '200px' }}
             />
@@ -27,7 +28,7 @@ storiesOf('Components/Coins/CoinList', module).add('default', () => {
           <div style={{ display: 'block', width: '400px' }}>
             <CoinList
               data={stakeData}
-              selected={[1]}
+              selected={[stakeData[1]]}
               priceIndex={{
                 RUNE: 1,
               }}

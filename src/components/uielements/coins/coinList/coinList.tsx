@@ -9,7 +9,7 @@ import { AssetData, StakeData, StakeOrAssetData, isStakeData } from '../../../..
 import { PriceDataIndex } from '../../../../redux/midgard/types';
 import { CoinDataWrapperType } from '../coinData/coinData.style';
 
-type CoinListDataList = AssetData[] | StakeData[]
+export type CoinListDataList = AssetData[] | StakeData[]
 
 type Props = {
   data?: CoinListDataList;
@@ -23,7 +23,7 @@ type Props = {
   type?: CoinDataWrapperType;
 };
 
-const CoinList: React.FC<Props> = (props: Props): JSX.Element => {
+export const CoinList: React.FC<Props> = (props: Props): JSX.Element => {
   const {
     data = [],
     value = Nothing,
@@ -103,5 +103,3 @@ const CoinList: React.FC<Props> = (props: Props): JSX.Element => {
     </CoinListWrapper>
     );
 };
-
-export default CoinList;

@@ -10,7 +10,8 @@ import { WalletViewWrapper } from './WalletView.style';
 import Tabs from '../../components/uielements/tabs';
 import Label from '../../components/uielements/label';
 import Button from '../../components/uielements/button';
-import CoinList from '../../components/uielements/coins/coinList';
+import CoinList from  '../../components/uielements/coins/coinList';
+import { CoinListDataList } from  '../../components/uielements/coins/coinList/coinList';
 import * as midgardActions from '../../redux/midgard/actions';
 import { getPair, Pair, getTickerFormat } from '../../helpers/stringHelper';
 import {
@@ -72,7 +73,7 @@ class WalletView extends React.Component<Props, State> {
     return sortedAssets[index].asset || '';
   };
 
-  getAssetIndexByName = (asset: string): Maybe<AssetData> => {
+  getAssetByName = (asset: string): Maybe<AssetData> => {
     const { assetData } = this.props;
 
     const result = assetData.find(data => data.asset === asset);
@@ -130,9 +131,9 @@ class WalletView extends React.Component<Props, State> {
 
     if (page === 'pool') {
       const { target = '' } = pair;
-      const targetIndex = this.getAssetIndexByName(target);
+      const asset = this.getAssetByName(target);
 
-      return targetIndex ? [targetIndex] : [];
+      return asset ? [asset] : [];
     }
     return [];
   };
@@ -151,7 +152,7 @@ class WalletView extends React.Component<Props, State> {
     const pair: Pair = getPair(info);
     const { source = '' } = pair;
     const selectedAsset = this.getSelectedAsset(pair);
-    const sourceIndex = this.getAssetIndexByName(source);
+    const sourceIndex = this.getAssetByName(source);
     const sortedAssets = _sortBy(assetData, ['asset']);
     const stakeDataForSorting = RD.toNullable(stakeData);
     const sortedStakerData = stakeDataForSorting ? _sortBy(stakeDataForSorting, ['target']) : null;
@@ -173,7 +174,7 @@ class WalletView extends React.Component<Props, State> {
                 data-test="wallet-asset-list"
                 data={sortedAssets}
                 value={sourceIndex}
-                selected={selectedAsset}
+                selected={selectedAsset as CoinListDataList}
                 priceIndex={priceIndex}
                 onSelect={this.handleSelectAsset}
                 unit={basePriceAsset}
