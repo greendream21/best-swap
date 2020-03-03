@@ -25,7 +25,7 @@ export const TokenCardWrapper = styled.div`
       margin-bottom: 10px;
 
       ${media.sm`
-        width: 50%; 
+        width: 50%;
         margin-bottom: 0;
         margin-right: 12px;
       `}

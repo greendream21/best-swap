@@ -33,7 +33,6 @@ import {
   getPair,
   getFixedNumber,
   emptyString,
-  Pair,
 } from '../../../helpers/stringHelper';
 import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
 import {
@@ -54,7 +53,7 @@ import StepBar from '../../../components/uielements/stepBar';
 import Trend from '../../../components/uielements/trend';
 import { MAX_VALUE } from '../../../redux/app/const';
 import { delay } from '../../../helpers/asyncHelper';
-import { FixmeType, Maybe, Nothing, TokenData } from '../../../types/bepswap';
+import { FixmeType, Maybe, Nothing, TokenData, Pair } from '../../../types/bepswap';
 import { SwapSendView, CalcResult } from './types';
 import { User, AssetData } from '../../../redux/wallet/types';
 import { TxStatus, TxTypes } from '../../../redux/app/types';
@@ -456,11 +455,16 @@ class SwapSend extends React.Component<Props, State> {
     const { source, target }: Pair = getPair(info);
     const selectedToken = getTickerFormat(asset);
 
-    const URL =
-      selectedToken === target
-        ? `/swap/${view}/${selectedToken}-${source}`
-        : `/swap/${view}/${selectedToken}-${target}`;
-    this.props.history.push(URL);
+    if (source && target) {
+      const URL =
+        selectedToken === target
+          ? `/swap/${view}/${selectedToken}-${source}`
+          : `/swap/${view}/${selectedToken}-${target}`;
+      this.props.history.push(URL);
+    } else {
+      // eslint-disable-next-line no-console
+      console.error(`Could not parse target / source pair: ${target} / ${source}`);
+    }
   };
 
   handleSelectTraget = (asset: string) => {
@@ -468,11 +472,16 @@ class SwapSend extends React.Component<Props, State> {
     const { source, target }: Pair = getPair(info);
     const selectedToken = getTickerFormat(asset);
 
-    const URL =
-      source === selectedToken
-        ? `/swap/${view}/${target}-${selectedToken}`
-        : `/swap/${view}/${source}-${selectedToken}`;
-    this.props.history.push(URL);
+    if (source && target) {
+      const URL =
+        source === selectedToken
+          ? `/swap/${view}/${target}-${selectedToken}`
+          : `/swap/${view}/${source}-${selectedToken}`;
+      this.props.history.push(URL);
+    } else {
+      // eslint-disable-next-line no-console
+      console.error(`Could not parse target / source pair: ${target} / ${source}`);
+    }
   };
 
   handleReversePair = () => {
@@ -487,9 +496,13 @@ class SwapSend extends React.Component<Props, State> {
       return;
     }
 
-    const URL = `/swap/${view}/${target}-${source}`;
-
-    this.props.history.push(URL);
+    if (source && target) {
+      const URL = `/swap/${view}/${target}-${source}`;
+      this.props.history.push(URL);
+    } else {
+      // eslint-disable-next-line no-console
+      console.error(`Could not parse target / source pair: ${target} / ${source}`);
+    }
   };
 
   validatePair = (
@@ -539,7 +552,7 @@ class SwapSend extends React.Component<Props, State> {
     const { xValue, address, slipProtection } = this.state;
     const { source, target }: Pair = getPair(info);
 
-    if (user && this.calcResult) {
+    if (user && source && target && this.calcResult) {
       this.setState({
         txResult: null,
       });
@@ -885,7 +898,6 @@ class SwapSend extends React.Component<Props, State> {
                   onChangeAsset={this.handleChangeSource}
                   onSelect={this.handleSelectAmount(swapSource)}
                   inputProps={{ 'data-test': 'coincard-source-input' }}
-                  withSelection
                   withSearch
                   data-test="coincard-source"
                 />

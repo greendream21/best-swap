@@ -22,3 +22,12 @@ export type TokenData = {
   asset: string;
   price: number;
 }
+
+export type Pair = {
+  source: Maybe<string>;
+  target: Maybe<string>;
+};
+
+export type AssetPair = {
+  asset: string;
+};

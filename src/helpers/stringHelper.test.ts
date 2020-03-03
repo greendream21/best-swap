@@ -5,8 +5,8 @@ import {
   getPair,
   getFixedNumber,
   compareShallowStr,
-  Pair,
 } from './stringHelper';
+import { Pair } from '../types/bepswap';
 
 describe('helpers/stringHelper/', () => {
   // getTickerFormat
@@ -67,13 +67,15 @@ describe('helpers/stringHelper/', () => {
       const result: Pair = getPair('HELLO-WORLD');
       expect(result).toEqual({ source: 'hello', target: 'world' });
     });
-    it('returns a valid value pair for non "-" separated strings', () => {
+    it('returns a valid source value for non "-" separated strings', () => {
       const result: Pair = getPair('HELLO');
-      expect(result).toEqual({ source: 'hello', target: '' });
+      expect(result.source).toEqual('hello');
+      expect(result.target).toBeNothing();
     });
-    it('returns an empty array if no value entered', () => {
+    it('returns a null value pair if no value entered', () => {
       const result: Pair = getPair();
-      expect(result).toEqual({ source: '', target: '' });
+      expect(result.source).toBeNothing();
+      expect(result.target).toBeNothing();
     });
   });
 

@@ -1,4 +1,3 @@
-import { Maybe } from '../../../types/bepswap';
 
 export enum SwapSendView {
   DETAIL = 'detail',
@@ -22,9 +21,4 @@ export type CalcResult = {
   outputPrice: number;
   fee: number;
   lim?: number;
-};
-
-export type Pair = {
-  source: Maybe<string>;
-  target: Maybe<string>;
 };

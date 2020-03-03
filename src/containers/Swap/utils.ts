@@ -3,14 +3,13 @@ import {
   getTickerFormat,
   getFixedNumber,
   getUserFormat,
-  Pair,
 } from '../../helpers/stringHelper';
 import { getZValue, getPx, getPz, getSlip, getFee } from './calc';
 import { BASE_NUMBER } from '../../settings/constants';
 import { getTxHashFromMemo } from '../../helpers/binance';
 import { PriceDataIndex, PoolDataMap } from '../../redux/midgard/types';
 import { PoolDetail } from '../../types/generated/midgard';
-import { FixmeType, Nothing, Maybe } from '../../types/bepswap';
+import { FixmeType, Nothing, Maybe, Pair } from '../../types/bepswap';
 import {
   TransferResult,
   TransferEvent,
@@ -28,11 +27,11 @@ export const validatePair = (
   const { target = '', source = '' }: Pair = pair;
   const targetData = targetInfo.filter(
     (data: { asset: string }) =>
-      getTickerFormat(data.asset) !== target.toLowerCase(),
+      getTickerFormat(data.asset) !== target?.toLowerCase(),
   );
   const sourceData = sourceInfo.filter(
     (data: { asset: string }) =>
-      getTickerFormat(data.asset) !== source.toLowerCase(),
+      getTickerFormat(data.asset) !== source?.toLowerCase(),
   );
   return {
     sourceData,

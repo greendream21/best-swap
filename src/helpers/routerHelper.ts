@@ -1,6 +1,6 @@
 import { matchPath } from 'react-router-dom';
-import { Maybe, Nothing } from '../types/bepswap';
-import { Pair, getPair } from './stringHelper';
+import { Maybe, Nothing, Pair } from '../types/bepswap';
+import { getPair } from './stringHelper';
 
 /**
  * Helper to check if any page is related to a path
