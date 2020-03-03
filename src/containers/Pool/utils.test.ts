@@ -11,6 +11,8 @@ import {
   getCalcResult,
   CalcResult,
   PoolData,
+  getCreatePoolCalc,
+  CreatePoolCalc,
 } from './utils-next';
 import { AssetData } from '../../redux/wallet/types';
 import {
@@ -545,6 +547,62 @@ describe('pool/utils/', () => {
         // Test all again just in case we will forget to test a new property in the future
         expect(result).toEqual(expected);
       });
+    });
+  });
+
+  describe('getCreatePoolCalc', () => {
+    it('calculates data to create a TOMOB-1E1 pool', () => {
+      const tokenSymbol = 'TOMOB-1E1';
+      const poolAddress = 'tbnb1XXX';
+      const runeAmount = 809.288;
+      const runePrice = 1;
+      const tokenAmount = 0.14;
+      const expected: CreatePoolCalc = {
+        poolAddress: 'tbnb1XXX',
+        tokenSymbol: 'TOMOB-1E1',
+        poolPrice: 5780.63,
+        depth: 809.29,
+        share: 100,
+        Pr: 1,
+      };
+      const result = getCreatePoolCalc(
+        { tokenSymbol, poolAddress, runeAmount, runePrice, tokenAmount },
+      );
+      expect(result.poolAddress).toEqual(expected.poolAddress);
+      expect(result.tokenSymbol).toEqual(expected.tokenSymbol);
+      expect(result.poolPrice).toEqual(expected.poolPrice);
+      expect(result.depth).toEqual(expected.depth);
+      expect(result.share).toEqual(expected.share);
+      expect(result.Pr).toEqual(expected.Pr);
+      // Test all again, just in case of other properties in the future
+      expect(result).toEqual(expected);
+    });
+
+    it('calculates data to create a TOMOB-1E1 pool again, but with more amounts', () => {
+      const tokenSymbol = 'TOMOB-1E1';
+      const poolAddress = 'tbnb1XXX';
+      const runeAmount = 3237.152;
+      const runePrice = 1;
+      const tokenAmount = 0.559;
+      const expected: CreatePoolCalc = {
+        poolAddress: 'tbnb1XXX',
+        tokenSymbol: 'TOMOB-1E1',
+        poolPrice: 5790.97,
+        depth: 3237.15,
+        share: 100,
+        Pr: 1,
+      };
+      const result = getCreatePoolCalc(
+        { tokenSymbol, poolAddress, runeAmount, runePrice, tokenAmount },
+      );
+      expect(result.poolAddress).toEqual(expected.poolAddress);
+      expect(result.tokenSymbol).toEqual(expected.tokenSymbol);
+      expect(result.poolPrice).toEqual(expected.poolPrice);
+      expect(result.depth).toEqual(expected.depth);
+      expect(result.share).toEqual(expected.share);
+      expect(result.Pr).toEqual(expected.Pr);
+      // Test all again, just in case of other properties in the future
+      expect(result).toEqual(expected);
     });
   });
 });
