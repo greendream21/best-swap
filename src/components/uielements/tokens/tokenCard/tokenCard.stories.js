@@ -12,7 +12,7 @@ storiesOf('Components/Tokens/TokenCard', module).add('default', () => {
     <ThemeProvider theme={defaultTheme}>
       <AppHolder>
         <div
-          style={{ display: 'flex', flexDirection: 'column', width: '300px' }}
+          style={{ display: 'flex', flexDirection: 'column', width: '800px' }}
         >
           <TokenCard
             title="You are swapping"
@@ -31,6 +31,9 @@ storiesOf('Components/Tokens/TokenCard', module).add('default', () => {
             amount={1.354}
             price={600}
             withSelection
+            priceIndex={{
+              RUNE: 1,
+            }}
           />
         </div>
       </AppHolder>

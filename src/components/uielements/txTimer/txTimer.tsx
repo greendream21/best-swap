@@ -32,7 +32,7 @@ const TxTimer: React.FC<Props> = (props): JSX.Element => {
   } = props;
 
   const [active, setActive] = useState(false);
-  const [totalDuration, setTotalDuration] = useState();
+  const [totalDuration, setTotalDuration] = useState(0);
 
   // Check if counter has reached the end
   const isEnd = useCallback(() => value >= maxValue, [value, maxValue]);

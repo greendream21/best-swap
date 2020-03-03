@@ -1,26 +1,10 @@
 import { BASE_NUMBER } from '../settings/constants';
-import { Maybe } from '../types/bepswap';
+import { Maybe, Nothing, Pair } from '../types/bepswap';
 
-export type Pair = {
-  source?: string,
-  target?: string,
-}
-
-export const getPair = (info?: string) => {
-  if (info) {
-    const source = info.split('-')[0];
-    const target = info.split('-')[1] || '';
-
-    return {
-      source: source.toLowerCase(),
-      target: target.toLowerCase(),
-    };
-  }
-  return {
-    source: '',
-    target: '',
-  };
-};
+export const getPair = (info?: string): Pair => ({
+  source: info?.split('-')[0]?.toLowerCase() ?? Nothing,
+  target: info?.split('-')[1]?.toLowerCase() ?? Nothing,
+});
 
 export const getUserFormat = (value?: number) => {
   if (value) {

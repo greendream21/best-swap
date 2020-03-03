@@ -13,7 +13,7 @@ import { TransferEvent, TransferEventData } from '../../types/binance';
 import { PoolDetail, PoolDetailStatusEnum } from '../../types/generated/midgard';
 import { Nothing } from '../../types/bepswap';
 import { PoolDataMap } from '../../redux/midgard/types';
-import { CalcResult } from './SwapSend/types';
+import { CalcResult, AssetPair } from './SwapSend/types';
 
 const bnbPoolInfo: PoolDetail = {
   asset: 'BNB.BNB',
@@ -288,8 +288,8 @@ describe('swap/utils/', () => {
   describe('validatePair', () => {
     it('should filter source and target data', () => {
       const pair = { source: 'A', target: 'B' };
-      const sources = [{ asset: 'A-B' }, { asset: 'B-C' }, { asset: 'C-D' }];
-      const targets = [{ asset: 'A-B' }, { asset: 'B-C' }, { asset: 'C-D' }];
+      const sources: AssetPair[] = [{ asset: 'A-B' }, { asset: 'B-C' }, { asset: 'C-D' }];
+      const targets: AssetPair[] = [{ asset: 'A-B' }, { asset: 'B-C' }, { asset: 'C-D' }];
       const result = validatePair(pair, sources, targets);
       const expected = {
         sourceData: [{ asset: 'B-C' }, { asset: 'C-D' }],
@@ -300,8 +300,8 @@ describe('swap/utils/', () => {
 
     it('should not filter anything if pair are unknown', () => {
       const pair = {};
-      const sources = [{ asset: 'A-B' }, { asset: 'B-C' }, { asset: 'C-D' }];
-      const targets = [{ asset: 'A-B' }, { asset: 'B-C' }, { asset: 'C-D' }];
+      const sources: AssetPair[] = [{ asset: 'A-B' }, { asset: 'B-C' }, { asset: 'C-D' }];
+      const targets: AssetPair[] = [{ asset: 'A-B' }, { asset: 'B-C' }, { asset: 'C-D' }];
       const result = validatePair(pair, sources, targets);
       const expected = {
         sourceData: [...sources],

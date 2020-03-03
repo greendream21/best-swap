@@ -74,7 +74,7 @@ class WalletView extends React.Component<Props, State> {
     const { assetData } = this.props;
     const result = assetData.find((data: AssetData) => {
       const { source: assetSource } = getPair(data.asset);
-      return assetSource === source;
+      return assetSource && (assetSource === source);
     });
     return result || Nothing;
   };
