@@ -482,3 +482,112 @@ export type Transfer = {
   log: string;
   ok: boolean;
 };
+
+/**
+ * Binance Chain Client
+ * https://github.com/binance-chain/javascript-sdk/wiki/API-Documentation#module_client.BncClient
+ * */
+export interface BncClient {
+  /**
+   * Sets the client network (testnet or mainnet).
+   * https://github.com/binance-chain/javascript-sdk/wiki/API-Documentation#bncclientchoosenetworknetwork
+   *
+   * @param {string} network
+   * @memberof BncClient
+   */
+  chooseNetwork(network: string): void;
+
+  /**
+   * Initialize the client with the chain's ID. Asynchronous.
+   * https://github.com/binance-chain/javascript-sdk/wiki/API-Documentation#bncclientinitchain--promise
+   */
+  initChain(): Promise<BncClient>;
+
+  /**
+   * Sets the client's private key for calls made by this client.
+   * https://github.com/binance-chain/javascript-sdk/wiki/API-Documentation#bncclientsetprivatekeyprivatekey-localonly--promise
+   */
+  setPrivateKey(privateKey: string, localOnly?: boolean): Promise<BncClient>;
+
+  /**
+   * Validates an address.
+   * https://github.com/binance-chain/javascript-sdk/wiki/API-Documentation#bncclientcheckaddressaddress-prefix--boolean
+   */
+  checkAddress(address: Address, prefix: string): boolean;
+
+  /**
+   * Getter for Binance DEX url
+   */
+  getBinanceUrl(): string;
+
+  /**
+   * Getter for prefix
+   */
+  getPrefix(): string;
+
+  /**
+   * Validates an address.
+   * https://github.com/binance-chain/javascript-sdk/wiki/API-Documentation#cryptocheckaddress--boolean
+   */
+  isValidAddress(address: Address): boolean;
+
+  /**
+   * Get balances
+   * https://github.com/binance-chain/javascript-sdk/wiki/API-Documentation#clientgetbalancesbalances
+   */
+  getBalance(address: Address): Promise<Balance>;
+
+  /**
+   * Get markets
+   * https://github.com/binance-chain/javascript-sdk/wiki/API-Documentation#bncclientgetmarketsoffset-limit--promise
+   */
+  getMarkets(limit: number, offset: number): Promise<Market>;
+
+  /**
+   * Create and sign a multi send tx
+   * https://github.com/binance-chain/javascript-sdk/wiki/API-Documentation#bncclientmultisendfromaddress-outputs-memo-sequence--promise
+   */
+  multiSend(
+    fromAddress: Address,
+    outputs: MultiTransfer[],
+    memo?: string,
+    sequence?: number,
+  ): Promise<TransferResult>;
+
+  /**
+   * Transfer tokens from one address to another.
+   * https://github.com/binance-chain/javascript-sdk/wiki/API-Documentation#bncclienttransferfromaddress-toaddress-amount-asset-memo-sequence--promise
+   */
+  transfer(
+    fromAddress: Address,
+    toAddress: Address,
+    amount: number,
+    asset: string,
+    memo?: string,
+    sequence?: number,
+  ): Promise<TransferResult>;
+
+  /**
+   * crypto
+   * https://github.com/binance-chain/javascript-sdk/wiki/API-Documentation#crypto
+   */
+  crypto: BNBCrypto;
+}
+
+type BNBCrypto = {
+  /**
+   * Checks whether an address is valid.
+   * https://github.com/binance-chain/javascript-sdk/wiki/API-Documentation#cryptocheckaddress--boolean
+   */
+  checkAddress(address: Address, hrp: string): boolean;
+};
+
+export type MultiTransfer = {
+  to: Address;
+  coins: Coin[];
+};
+
+export type Coin = {
+  denom: string;
+  amount: number; // TokenAmount
+};

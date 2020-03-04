@@ -11,9 +11,9 @@ import {
 } from './utils';
 import { TransferEvent, TransferEventData } from '../../types/binance';
 import { PoolDetail, PoolDetailStatusEnum } from '../../types/generated/midgard';
-import { Nothing } from '../../types/bepswap';
+import { Nothing, Pair, AssetPair } from '../../types/bepswap';
 import { PoolDataMap } from '../../redux/midgard/types';
-import { CalcResult, AssetPair } from './SwapSend/types';
+import { CalcResult } from './SwapSend/types';
 
 const bnbPoolInfo: PoolDetail = {
   asset: 'BNB.BNB',
@@ -298,8 +298,8 @@ describe('swap/utils/', () => {
       expect(result).toEqual(expected);
     });
 
-    it('should not filter anything if pair are unknown', () => {
-      const pair = {};
+    it('should not filter anything if values of pair are unknown', () => {
+      const pair: Pair = { source: Nothing, target: Nothing };
       const sources: AssetPair[] = [{ asset: 'A-B' }, { asset: 'B-C' }, { asset: 'C-D' }];
       const targets: AssetPair[] = [{ asset: 'A-B' }, { asset: 'B-C' }, { asset: 'C-D' }];
       const result = validatePair(pair, sources, targets);
@@ -448,8 +448,13 @@ describe('swap/utils/', () => {
     };
 
     it('returns invalid in the single swap', () => {
+      // invalid wallet address
       expect(validateSwap('', 'single_swap', data, 10)).toEqual(false);
+      // invalid amount
       expect(validateSwap('address', 'single_swap', data, 0)).toEqual(false);
+      // invalid data (poolAddresTo)
+      const invalidData = { ...data, poolAddressTo: undefined };
+      expect(validateSwap('address', 'single_swap', invalidData, 0)).toEqual(false);
     });
     it('returns valid in the single swap', () => {
       expect(validateSwap('address', 'single_swap', data, 10)).toEqual(true);
