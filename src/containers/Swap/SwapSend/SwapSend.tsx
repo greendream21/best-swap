@@ -188,7 +188,7 @@ class SwapSend extends React.Component<Props, State> {
     resetTxStatus();
   }
 
-  isValidRecipient = () => {
+  isValidRecipient = async () => {
     const { address } = this.state;
 
     return Binance.isValidAddress(address);
@@ -298,7 +298,7 @@ class SwapSend extends React.Component<Props, State> {
 
       try {
         const privateKey = crypto.getPrivateKeyFromKeyStore(keystore, password);
-        Binance.setPrivateKey(privateKey);
+        await Binance.setPrivateKey(privateKey);
         const address = crypto.getAddressFromPrivateKey(
           privateKey,
           Binance.getPrefix(),
@@ -357,7 +357,7 @@ class SwapSend extends React.Component<Props, State> {
     });
   };
 
-  handleEndDrag = () => {
+  handleEndDrag = async () => {
     const { view, user } = this.props;
     const { xValue } = this.state;
     const wallet = user ? user.wallet : null;
@@ -384,7 +384,8 @@ class SwapSend extends React.Component<Props, State> {
       return;
     }
 
-    if (view === SwapSendView.SEND && !this.isValidRecipient()) {
+    const isValidRecipient = await this.isValidRecipient();
+    if (view === SwapSendView.SEND && !isValidRecipient) {
       this.setState({
         invalidAddress: true,
         dragReset: true,
@@ -578,7 +579,7 @@ class SwapSend extends React.Component<Props, State> {
       } catch (error) {
         notification['error']({
           message: 'Swap Invalid',
-          description: 'Swap information is not valid.',
+          description: `Swap information is not valid: ${error.toString()}`,
         });
         this.setState({
           dragReset: true,

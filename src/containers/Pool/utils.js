@@ -15,7 +15,7 @@ export const validateStake = (wallet, tokenAmount, poolAddress) => {
 };
 
 export const confirmStake = (
-  Binance,
+  Binance, // BncClient
   wallet,
   runeAmount,
   tokenAmount,
@@ -46,7 +46,7 @@ export const confirmStake = (
           ],
         },
       ];
-
+      console.log('xxx multisend:');
       Binance.multiSend(wallet, outputs, memo)
         .then(response => resolve(response))
         .catch(error => reject(error));
@@ -67,7 +67,7 @@ export const confirmStake = (
 };
 
 export const confirmCreatePool = (
-  Binance,
+  Binance, // BncClient
   wallet,
   runeAmount,
   tokenAmount,
@@ -105,7 +105,7 @@ export const confirmCreatePool = (
 };
 
 export const confirmWithdraw = (
-  Binance,
+  Binance, // BncClient
   wallet,
   poolAddress,
   symbol,

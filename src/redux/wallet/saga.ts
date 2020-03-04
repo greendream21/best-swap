@@ -64,7 +64,7 @@ export function* refreshBalance() {
     const address = payload;
 
     try {
-      const balances: Balance[] = yield call(Binance.getBalances, address);
+      const balances: Balance[] = yield call(Binance.getBalance, address);
 
       try {
         const markets: { result: Market[] } = yield call(Binance.getMarkets);

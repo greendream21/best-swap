@@ -9,12 +9,13 @@ import { BASE_NUMBER } from '../../settings/constants';
 import { getTxHashFromMemo } from '../../helpers/binance';
 import { PriceDataIndex, PoolDataMap } from '../../redux/midgard/types';
 import { PoolDetail } from '../../types/generated/midgard';
-import { FixmeType, Nothing, Maybe, Pair } from '../../types/bepswap';
+import { Nothing, Maybe, Pair } from '../../types/bepswap';
 import {
   TransferResult,
   TransferEvent,
   TransferEventData,
 } from '../../types/binance';
+import { BinanceClient } from '../../clients/binance';
 import { CalcResult } from './SwapSend/types';
 import { getAssetFromString } from '../../redux/midgard/utils';
 import { SwapCardType } from './SwapView/types';
@@ -289,7 +290,8 @@ export const validateSwap = (
 ) => {
   if (type === 'single_swap') {
     const symbolTo = data?.symbolTo;
-    if (!wallet || !symbolTo || !amount) {
+    const poolAddressTo = data?.poolAddressTo;
+    if (!wallet || !poolAddressTo || !symbolTo || !amount) {
       return false;
     }
   }
@@ -314,7 +316,7 @@ export const validateSwap = (
 };
 
 export const confirmSwap = (
-  Binance: FixmeType,
+  Binance: BinanceClient,
   wallet: string,
   from: string,
   to: string,
@@ -326,11 +328,15 @@ export const confirmSwap = (
   return new Promise((resolve, reject) => {
     const type = getSwapType(from, to);
 
+
     if (!validateSwap(wallet, type, data, amount)) {
       return reject();
     }
 
-    const { poolAddressTo, symbolTo, symbolFrom, lim } = data;
+    // Since `validateSwap` checks everything of `data`
+    // `poolAddressTo` and `symbolFrom` should never be undefined
+    // but we have to make `tsc` happy with optional values, though
+    const { poolAddressTo = '', symbolTo, symbolFrom = '', lim } = data;
 
     const limit = protectSlip && lim ? lim.toString() : '';
     const memo = getSwapMemo(symbolTo, destAddr, limit);

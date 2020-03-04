@@ -521,7 +521,7 @@ class PoolStake extends React.Component<Props, State> {
 
       try {
         const privateKey = crypto.getPrivateKeyFromKeyStore(keystore, password);
-        Binance.setPrivateKey(privateKey);
+        await Binance.setPrivateKey(privateKey);
         const address = crypto.getAddressFromPrivateKey(
           privateKey,
           Binance.getPrefix(),

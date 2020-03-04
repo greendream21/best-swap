@@ -354,7 +354,7 @@ class PoolCreate extends React.Component<Props, State> {
           user.keystore,
           password,
         );
-        Binance.setPrivateKey(privateKey);
+        await Binance.setPrivateKey(privateKey);
         const address = crypto.getAddressFromPrivateKey(
           privateKey,
           Binance.getPrefix(),
