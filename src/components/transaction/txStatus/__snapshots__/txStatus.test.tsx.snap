@@ -1,0 +1,28 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FilterDropdown Matches the snapshot 1`] = `
+<div
+  className="sc-AykKC gdKxTg txStatus-wrapper"
+>
+  <p
+    className="txStatus-type"
+  >
+    in
+  </p>
+  <div
+    className="sc-AykKD iwToAo tx-status-content"
+  >
+    <p
+      className="txStatus-amount"
+    >
+      1.25
+    </p>
+    <p
+      className="txStatus-asset"
+    >
+      rune
+    </p>
+    
+  </div>
+</div>
+`;
