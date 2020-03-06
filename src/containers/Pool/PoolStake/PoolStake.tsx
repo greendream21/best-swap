@@ -8,7 +8,7 @@ import { SliderValue } from 'antd/lib/slider';
 import { crypto } from '@binance-chain/javascript-sdk';
 import { get as _get } from 'lodash';
 
-import Binance from '../../../clients/binance';
+import bncClient from '../../../clients/binance';
 import { withBinanceTransferWS } from '../../../HOC/websocket/WSBinance';
 
 import Label from '../../../components/uielements/label';
@@ -33,13 +33,16 @@ import {
   ConfirmModal,
   ConfirmModalContent,
 } from './PoolStake.style';
-import { confirmStake, confirmWithdraw, withdrawResult } from '../utils';
 import {
+  WithdrawResultParams,
+  confirmStake,
+  confirmWithdraw,
   getCalcResult,
   CalcResult,
   getPoolData,
   PoolData,
-} from '../utils-next';
+  withdrawResult,
+} from '../utils';
 import {
   getUserFormat,
   getTickerFormat,
@@ -62,7 +65,10 @@ import {
   PoolDataMap,
   PriceDataIndex,
 } from '../../../redux/midgard/types';
-import { StakersAssetData, StakersAddressData } from '../../../types/generated/midgard';
+import {
+  StakersAssetData,
+  StakersAddressData,
+} from '../../../types/generated/midgard';
 import { getAssetFromString } from '../../../redux/midgard/utils';
 
 const { TabPane } = Tabs;
@@ -208,7 +214,7 @@ class PoolStake extends React.Component<Props, State> {
           const txResult = withdrawResult({
             tx: lastTx,
             hash,
-          });
+          } as WithdrawResultParams);
 
           if (txResult) {
             this.setState({
@@ -429,15 +435,18 @@ class PoolStake extends React.Component<Props, State> {
       const data = this.getData();
 
       try {
-        const { result } = await confirmStake(
-          Binance,
+        const { result } = await confirmStake({
+          bncClient,
           wallet,
           runeAmount,
           tokenAmount,
-          data,
-        );
-
-        setTxHash(result[0].hash);
+          poolAddress: data.poolAddress,
+          symbolTo: data.symbolTo,
+        });
+        const hash = result ? result[0]?.hash ?? null : null;
+        if (hash) {
+          setTxHash(hash);
+        }
       } catch (error) {
         notification.error({
           message: 'Stake Invalid',
@@ -521,10 +530,10 @@ class PoolStake extends React.Component<Props, State> {
 
       try {
         const privateKey = crypto.getPrivateKeyFromKeyStore(keystore, password);
-        await Binance.setPrivateKey(privateKey);
+        await bncClient.setPrivateKey(privateKey);
         const address = crypto.getAddressFromPrivateKey(
           privateKey,
-          Binance.getPrefix(),
+          bncClient.getPrefix(),
         );
         if (wallet && wallet === address) {
           if (this.type === TxTypes.STAKE) {
@@ -610,16 +619,19 @@ class PoolStake extends React.Component<Props, State> {
       });
 
       try {
-        const percentage = withdrawRate * 100;
-        const { result } = await confirmWithdraw(
-          Binance,
+        const percent = withdrawRate * 100;
+        const { result } = await confirmWithdraw({
+          bncClient,
           wallet,
           poolAddress,
           symbol,
-          percentage,
-        );
+          percent,
+        });
 
-        setTxHash(result[0].hash);
+        const hash = result ? result[0]?.hash ?? null : null;
+        if (hash) {
+          setTxHash(hash);
+        }
       } catch (error) {
         notification.error({
           message: 'Withdraw Invalid',
@@ -926,17 +938,15 @@ class PoolStake extends React.Component<Props, State> {
       };
     });
 
-    const stakeInfo = (stakeData && stakeData[symbol]) || {
-      stakeUnits: 0,
-      runeStaked: 0,
-      assetStaked: 0,
-    } as StakersAddressData;
+    const stakeInfo =
+      (stakeData && stakeData[symbol]) ||
+      ({
+        stakeUnits: 0,
+        runeStaked: 0,
+        assetStaked: 0,
+      } as StakersAddressData);
 
-    const {
-      R,
-      T,
-      poolUnits = 0,
-    } = calcResult;
+    const { R, T, poolUnits = 0 } = calcResult;
 
     // withdraw values
     const withdrawRate = (widthdrawPercentage || 50) / 100;

@@ -13,7 +13,7 @@ import Table from '../../../components/uielements/table';
 import Button from '../../../components/uielements/button';
 
 import { ContentWrapper } from './PoolView.style';
-import { getCreatePoolTokens, getPoolData, PoolData } from '../utils-next';
+import { getCreatePoolTokens, getPoolData, PoolData } from '../utils';
 import { getTickerFormat } from '../../../helpers/stringHelper';
 import * as midgardActions from '../../../redux/midgard/actions';
 import { RootState } from '../../../redux/store';

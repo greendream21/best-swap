@@ -65,9 +65,7 @@ class Binance implements BinanceClient {
       this.bncClient = client;
       return client;
     } else {
-      return new Promise<BncClient>(resolve =>
-        resolve(this.bncClient as BncClient),
-      );
+      return Promise.resolve(this.bncClient as BncClient);
     }
   };
 

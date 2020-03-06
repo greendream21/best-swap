@@ -7,7 +7,7 @@ import { Row, Col, notification, Icon } from 'antd';
 import { crypto } from '@binance-chain/javascript-sdk';
 import { get as _get } from 'lodash';
 
-import Binance from '../../../clients/binance';
+import bncClient from '../../../clients/binance';
 
 import Button from '../../../components/uielements/button';
 import Label from '../../../components/uielements/label';
@@ -30,16 +30,13 @@ import {
   ConfirmModal,
   ConfirmModalContent,
 } from './PoolCreate.style';
+import { getTickerFormat, emptyString } from '../../../helpers/stringHelper';
 import {
-  getTickerFormat,
-  emptyString,
-} from '../../../helpers/stringHelper';
-import { confirmCreatePool } from '../utils';
-import {
+  confirmCreatePool,
   getCreatePoolTokens,
   getCreatePoolCalc,
   CreatePoolCalc,
-} from '../utils-next';
+} from '../utils';
 
 import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
 import { MAX_VALUE } from '../../../redux/app/const';
@@ -300,13 +297,15 @@ class PoolCreate extends React.Component<Props, State> {
       // start timer modal
       this.handleStartTimer();
       try {
-        const { result } = await confirmCreatePool(
-          Binance,
-          user.wallet,
+        const { poolAddress, tokenSymbol } = this.getData();
+        const { result } = await confirmCreatePool({
+          bncClient,
+          wallet: user.wallet,
           runeAmount,
           tokenAmount,
-          this.getData(),
-        );
+          poolAddress,
+          tokenSymbol,
+        });
 
         const hash = result && result.length ? result[0].hash : null;
         if (hash) {
@@ -354,10 +353,10 @@ class PoolCreate extends React.Component<Props, State> {
           user.keystore,
           password,
         );
-        await Binance.setPrivateKey(privateKey);
+        await bncClient.setPrivateKey(privateKey);
         const address = crypto.getAddressFromPrivateKey(
           privateKey,
-          Binance.getPrefix(),
+          bncClient.getPrefix(),
         );
         if (user.wallet === address) {
           this.handleConfirmCreate();
