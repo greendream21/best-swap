@@ -2,8 +2,7 @@ import React, { useCallback } from 'react';
 import { Dropdown, Icon } from 'antd';
 import { ClickParam } from 'antd/lib/menu';
 
-import Button from '../uielements/button';
-import { Menu } from './filterDropdown.style';
+import { Menu, DesktopButton, MobileButton } from './filterDropdown.style';
 
 type Props = {
   onClick?: (key: string) => void;
@@ -31,22 +30,22 @@ const FilterDropdown: React.FC<Props> = (props: Props): JSX.Element => {
     const items: MenuItems = [
       {
         icon: 'database',
-        title: 'All',
+        title: 'ALL',
         key: 'all',
       },
       {
         icon: 'swap',
-        title: 'Swap',
+        title: 'SWAP',
         key: 'swap',
       },
       {
         icon: 'double-right',
-        title: 'Stake',
+        title: 'STAKE',
         key: 'stake',
       },
       {
         icon: 'import',
-        title: 'Withdraw',
+        title: 'WITHDRAW',
         key: 'withdraw',
       },
     ];
@@ -66,9 +65,14 @@ const FilterDropdown: React.FC<Props> = (props: Props): JSX.Element => {
 
   return (
     <Dropdown overlay={renderMenu()} trigger={['click']}>
-      <Button color="primary" typevalue="outline">
-        Filter <Icon type="caret-down" />
-      </Button>
+      <div className="dropdown-wrapper">
+        <DesktopButton color="primary" typevalue="outline">
+          Filter <Icon type="caret-down" />
+        </DesktopButton>
+        <MobileButton color="primary" typevalue="ghost">
+          <Icon type="filter" />
+        </MobileButton>
+      </div>
     </Dropdown>
   );
 };

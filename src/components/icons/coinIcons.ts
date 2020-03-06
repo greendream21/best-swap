@@ -7,8 +7,8 @@ import tomoIcon from '../../assets/SVG/coin-tomob.svg';
 import mithIcon from '../../assets/SVG/coin-mith.svg';
 import elrondIcon from '../../assets/SVG/coin-elrond.svg';
 import oneIcon from '../../assets/SVG/coin-one.svg';
-import ravenIcon from '../../assets/PNG/raven.png';
-import cosIcon from '../../assets/PNG/cos.png';
+import * as ravenIcon from '../../assets/PNG/raven.png';
+import * as cosIcon from '../../assets/PNG/cos.png';
 
 export const coinIconGroup = {
   bnb: bnbIcon,
