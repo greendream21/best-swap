@@ -15,6 +15,7 @@ import {
   PoolDetail,
   StakersAssetData,
   ThorchainEndpoints,
+  TxDetails,
 } from '../../types/generated/midgard';
 
 const midgardApi = new DefaultApi({ basePath: MIDGARD_API_URL });
@@ -119,6 +120,90 @@ export function* getPoolAddress() {
   });
 }
 
+export function* getTxByAddress() {
+  yield takeEvery(actions.GET_TX_BY_ADDRESS, function*({
+    payload,
+  }: actions.GetTxByAddress) {
+    try {
+      const { data }: AxiosResponse<TxDetails[]> = yield call(
+        {
+          context: midgardApi,
+          fn: midgardApi.getTxDetails,
+        },
+        payload,
+      );
+
+      yield put(actions.getTxByAddressSuccess(data));
+    } catch (error) {
+      yield put(actions.getTxByAddressFailed(error));
+    }
+  });
+}
+
+export function* getTxByAddressTxId() {
+  yield takeEvery(actions.GET_TX_BY_ADDRESS_TXID, function*({
+    payload,
+  }: actions.GetTxByAddressTxId) {
+    try {
+      const { address, txId } = payload;
+      const { data }: AxiosResponse<TxDetails[]> = yield call(
+        {
+          context: midgardApi,
+          fn: midgardApi.getTxDetailsByAddressTxId,
+        },
+        address,
+        txId,
+      );
+
+      yield put(actions.getTxByAddressTxIdSuccess(data));
+    } catch (error) {
+      yield put(actions.getTxByAddressTxIdFailed(error));
+    }
+  });
+}
+
+export function* getTxByAddressAsset() {
+  yield takeEvery(actions.GET_TX_BY_ADDRESS_ASSET, function*({
+    payload,
+  }: actions.GetTxByAddressAsset) {
+    try {
+      const { address, asset } = payload;
+      const { data }: AxiosResponse<TxDetails[]> = yield call(
+        {
+          context: midgardApi,
+          fn: midgardApi.getTxDetailsByAddressAsset,
+        },
+        address,
+        asset,
+      );
+
+      yield put(actions.getTxByAddressAssetSuccess(data));
+    } catch (error) {
+      yield put(actions.getTxByAddressAssetFailed(error));
+    }
+  });
+}
+
+export function* getTxByAsset() {
+  yield takeEvery(actions.GET_TX_BY_ASSET, function*({
+    payload,
+  }: actions.GetTxByAsset) {
+    try {
+      const { data }: AxiosResponse<TxDetails[]> = yield call(
+        {
+          context: midgardApi,
+          fn: midgardApi.getTxDetailsByAsset,
+        },
+        payload,
+      );
+
+      yield put(actions.getTxByAssetSuccess(data));
+    } catch (error) {
+      yield put(actions.getTxByAssetFailed(error));
+    }
+  });
+}
+
 export function* setBasePriceAsset() {
   yield takeEvery(actions.SET_BASE_PRICE_ASSET, function*({
     payload,
@@ -134,5 +219,9 @@ export default function* rootSaga() {
     fork(getStakerPoolData),
     fork(getPoolAddress),
     fork(setBasePriceAsset),
+    fork(getTxByAddress),
+    fork(getTxByAddressTxId),
+    fork(getTxByAddressAsset),
+    fork(getTxByAsset),
   ]);
 }
