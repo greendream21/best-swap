@@ -2,7 +2,6 @@ import React, { useCallback } from 'react';
 import { Dropdown } from 'antd';
 import { sortBy as _sortBy } from 'lodash';
 
-import { ClickParam } from 'antd/lib/menu';
 import Label from '../../label';
 import Selection from '../../selection';
 import CoinInputAdvanced from '../coinInputAdvanced';
@@ -26,8 +25,8 @@ import {
 import Ref from '../../../../helpers/event/ref';
 import clickedInNode from '../../../../helpers/event/clickedInNode';
 import { PriceDataIndex } from '../../../../redux/midgard/types';
-import { FixmeType } from '../../../../types/bepswap';
-import { CoinCardAssetData } from './types';
+import { FixmeType, AssetPair } from '../../../../types/bepswap';
+import { delay } from '../../../../helpers/asyncHelper';
 
 type DropdownCarretProps = {
   open: boolean;
@@ -57,7 +56,7 @@ const DropdownCarret: React.FC<DropdownCarretProps> = ({
 
 type Props = {
   asset: string;
-  assetData: CoinCardAssetData[];
+  assetData: AssetPair[];
   amount: number;
   price: string | number;
   priceIndex: PriceDataIndex;
@@ -177,16 +176,15 @@ class CoinCard extends React.Component<Props, State> {
     onSelect(percentButtonSelected);
   };
 
-  handleChangeAsset = (clickParam: ClickParam) => {
+  handleChangeAsset = async (asset: string) => {
     const { onChangeAsset } = this.props;
 
     this.setState({ openDropdown: false });
 
-    // HACK (Rudi): Wait for the dropdown to close
-    setTimeout(() => {
-      this.handleResetPercentButtons();
-      onChangeAsset(clickParam.key);
-    }, 500);
+    // Wait for the dropdown to close
+    await delay(500);
+    this.handleResetPercentButtons();
+    onChangeAsset(asset);
   };
 
   renderMenu() {

@@ -50,8 +50,9 @@ import {
   PoolDataMap,
   StakerPoolData,
 } from '../../../redux/midgard/types';
-import { Maybe, FixmeType } from '../../../types/bepswap';
+import { Maybe, FixmeType, AssetPair } from '../../../types/bepswap';
 import { User, AssetData } from '../../../redux/wallet/types';
+import { AssetDetail } from '../../../types/generated/midgard';
 
 type ComponentProps = {
   symbol: string;
@@ -437,6 +438,9 @@ class PoolCreate extends React.Component<Props, State> {
 
     const runePrice = priceIndex.RUNE;
     const tokensData = getCreatePoolTokens(assetData, pools);
+    // AssetDetail[] -> AssetPair[]
+    const coinDardData = tokensData
+      .map<AssetPair>((detail: AssetDetail) => ({ asset: detail.asset || '' }));
 
     const tokenPrice = _get(priceIndex, target.toUpperCase(), 0);
 
@@ -480,7 +484,7 @@ class PoolCreate extends React.Component<Props, State> {
           />
           <CoinCard
             asset={target}
-            assetData={tokensData}
+            assetData={coinDardData}
             amount={tokenAmount}
             price={tokenPrice}
             priceIndex={priceIndex}

@@ -53,7 +53,7 @@ import StepBar from '../../../components/uielements/stepBar';
 import Trend from '../../../components/uielements/trend';
 import { MAX_VALUE } from '../../../redux/app/const';
 import { delay } from '../../../helpers/asyncHelper';
-import { FixmeType, Maybe, Nothing, TokenData, Pair } from '../../../types/bepswap';
+import { FixmeType, Maybe, Nothing, TokenData, Pair, AssetPair } from '../../../types/bepswap';
 import { SwapSendView, CalcResult } from './types';
 import { User, AssetData } from '../../../redux/wallet/types';
 import { TxStatus, TxTypes } from '../../../redux/app/types';
@@ -508,7 +508,7 @@ class SwapSend extends React.Component<Props, State> {
 
   validatePair = (
     sourceInfo: AssetData[],
-    targetInfo: { asset: string }[],
+    targetInfo: AssetPair[],
     pair: Pair,
   ) => {
     if (!targetInfo.length) {

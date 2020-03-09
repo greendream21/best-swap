@@ -1,6 +1,9 @@
 import styled from 'styled-components';
 import { palette } from 'styled-theme';
 
+type TokenDataWrapperProps = {
+  target?: boolean
+}
 export const TokenDataWrapper = styled.div`
   display: flex;
   align-items: center;
@@ -14,7 +17,7 @@ export const TokenDataWrapper = styled.div`
   }
 
   .coinData-coin-avatar {
-    margin-right: ${props => (props.target ? '0px' : '12px')};
+    margin-right: ${(props: TokenDataWrapperProps) => (props.target ? '0px' : '12px')};
   }
 
   .coinData-asset-label {
