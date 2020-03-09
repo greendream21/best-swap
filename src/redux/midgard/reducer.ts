@@ -25,6 +25,18 @@ import {
   GET_POOL_ADDRESSES_SUCCESS,
   GET_POOL_ADDRESSES_REQUEST,
   GET_POOL_ADDRESSES_FAILED,
+  GET_TX_BY_ADDRESS,
+  GET_TX_BY_ADDRESS_SUCCESS,
+  GET_TX_BY_ADDRESS_FAILED,
+  GET_TX_BY_ADDRESS_TXID,
+  GET_TX_BY_ADDRESS_TXID_SUCCESS,
+  GET_TX_BY_ADDRESS_TXID_FAILED,
+  GET_TX_BY_ADDRESS_ASSET,
+  GET_TX_BY_ADDRESS_ASSET_SUCCESS,
+  GET_TX_BY_ADDRESS_ASSET_FAILED,
+  GET_TX_BY_ASSET,
+  GET_TX_BY_ASSET_SUCCESS,
+  GET_TX_BY_ASSET_FAILED,
 } from './actions';
 import { Nothing } from '../../types/bepswap';
 import { PoolDetail } from '../../types/generated/midgard';
@@ -48,6 +60,7 @@ const initState: State = {
   error: null,
   poolLoading: false,
   stakerPoolDataLoading: false,
+  txData: [],
 };
 
 const reducer: Reducer<State, MidgardActionTypes> = (
@@ -192,6 +205,77 @@ const reducer: Reducer<State, MidgardActionTypes> = (
         poolAddressData: Nothing,
         bnbPoolAddress: {},
         poolAddress: Nothing,
+        error: action.payload,
+      };
+    case GET_TX_BY_ADDRESS:
+      return {
+        ...state,
+        txData: [],
+        error: Nothing,
+      };
+    case GET_TX_BY_ADDRESS_SUCCESS:
+      return {
+        ...state,
+        txData: action.payload,
+        error: Nothing,
+      };
+    case GET_TX_BY_ADDRESS_FAILED:
+      return {
+        ...state,
+        error: action.payload,
+      };
+
+    case GET_TX_BY_ADDRESS_ASSET:
+      return {
+        ...state,
+        txData: [],
+        error: Nothing,
+      };
+    case GET_TX_BY_ADDRESS_ASSET_SUCCESS:
+      return {
+        ...state,
+        txData: action.payload,
+        error: Nothing,
+      };
+    case GET_TX_BY_ADDRESS_ASSET_FAILED:
+      return {
+        ...state,
+        error: action.payload,
+      };
+
+    case GET_TX_BY_ADDRESS_TXID:
+      return {
+        ...state,
+        txData: [],
+        error: Nothing,
+      };
+    case GET_TX_BY_ADDRESS_TXID_SUCCESS:
+      return {
+        ...state,
+        txData: action.payload,
+        error: Nothing,
+      };
+    case GET_TX_BY_ADDRESS_TXID_FAILED:
+      return {
+        ...state,
+        error: action.payload,
+      };
+
+    case GET_TX_BY_ASSET:
+      return {
+        ...state,
+        txData: [],
+        error: Nothing,
+      };
+    case GET_TX_BY_ASSET_SUCCESS:
+      return {
+        ...state,
+        txData: action.payload,
+        error: Nothing,
+      };
+    case GET_TX_BY_ASSET_FAILED:
+      return {
+        ...state,
         error: action.payload,
       };
     default:
