@@ -8,8 +8,9 @@ import { getFixedNumber } from '../../../../helpers/stringHelper';
 import Label from '../../label';
 import TokenSelect from '../tokenSelect';
 import TokenInput from '../tokenInput';
-import { AssetPair } from '../../../../types/bepswap';
+import { AssetPair, Nothing } from '../../../../types/bepswap';
 import { PriceDataIndex } from '../../../../redux/midgard/types';
+import { TokenInputProps } from '../tokenInput/types';
 
 type Props = {
   asset: string;
@@ -24,16 +25,13 @@ type Props = {
   searchDisable?: string[];
   withSearch: boolean;
   onSelect?: (_: number) => void;
-  onChange?: (_: number | string) => void;
+  onChange?: (_: number) => void;
   onChangeAsset: (_: string) => void;
   className?: string;
   dataTestWrapper?: string;
   dataTestInput?: string;
   'data-test': string;
-  inputProps: {
-    disabled?: boolean;
-    'data-test'?: string;
-  };
+  inputProps: TokenInputProps;
 };
 
 const TokenCard: React.FC<Props> = (props: Props): JSX.Element => {
@@ -50,7 +48,7 @@ const TokenCard: React.FC<Props> = (props: Props): JSX.Element => {
     withSearch = false,
     searchDisable = [],
     onSelect = () => {},
-    onChange = () => {},
+    onChange = (_: number) => {},
     onChangeAsset = () => {},
     className = '',
     inputProps = {},
@@ -58,7 +56,7 @@ const TokenCard: React.FC<Props> = (props: Props): JSX.Element => {
     ...otherProps
   } = props;
 
-  const slipValue = slip ? `slip ${slip}%` : null;
+  const slipValue = slip ? `slip ${slip}%` : Nothing;
   const priceValue = `${unit} ${getFixedNumber(amount * price)}`;
   const tokenSelectDataTest = `${dataTest}-select`;
   const sortedAssetData = _sortBy(assetData, ['asset']);
@@ -73,7 +71,7 @@ const TokenCard: React.FC<Props> = (props: Props): JSX.Element => {
         <TokenInput
           title={inputTitle}
           status={slipValue}
-          value={amount}
+          amount={amount}
           onChange={onChange}
           label={priceValue}
           inputProps={inputProps}

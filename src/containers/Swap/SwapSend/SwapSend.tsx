@@ -241,13 +241,8 @@ class SwapSend extends React.Component<Props, State> {
     });
   };
 
-  handleChangeValue = (value: number | string) => {
-    if (Number.isNaN(Number(value))) {
-      return;
-    }
-
+  handleChangeValue = (newValue: number) => {
     const { info, user } = this.props;
-    const newValue = value as number;
     const wallet = user ? user.wallet : null;
 
     // if wallet is disconnected, just set the value

@@ -879,8 +879,8 @@ class PoolStake extends React.Component<Props, State> {
         title: 'All Time Volume',
         value: `${basePriceAsset} ${getUserFormat(volumeAT)}`,
       },
-      { key: 'swap', title: 'Total Swaps', value: totalSwaps },
-      { key: 'stakers', title: 'Total Stakers', value: totalStakers },
+      { key: 'swap', title: 'Total Swaps', value: totalSwaps.toString() },
+      { key: 'stakers', title: 'Total Stakers', value: totalStakers.toString() },
       {
         key: 'roi',
         title: 'All Time RoI',
