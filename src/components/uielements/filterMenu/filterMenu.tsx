@@ -4,15 +4,15 @@ import { ClickParam } from 'antd/lib/menu';
 import { Menu, MenuItem } from './filterMenu.style';
 
 import Input from '../input';
-import { CoinCardAssetData } from '../coins/coinCard/types';
+import { AssetPair } from '../../../types/bepswap';
 
 type Props = {
-  onSelect?: (clickParam: ClickParam) => void;
-  filterFunction: (item: CoinCardAssetData, searchTerm: string) => boolean;
+  onSelect?: (value: string) => void;
+  filterFunction: (item: AssetPair, searchTerm: string) => boolean;
   searchEnabled?: boolean;
-  cellRenderer: (data: CoinCardAssetData) => { key: string; node: JSX.Element };
-  data: CoinCardAssetData[];
-  disableItemFilter?: (item: CoinCardAssetData) => boolean;
+  cellRenderer: (data: AssetPair) => { key: string; node: JSX.Element };
+  data: AssetPair[];
+  disableItemFilter?: (item: AssetPair) => boolean;
   placeholder?: string;
 };
 
@@ -34,7 +34,7 @@ const FilterMenu: React.FC<Props> = ({
       if (!event || !event.key || event.key === '_search') return;
 
       setSearchTerm('');
-      onSelect(event);
+      onSelect(event.key);
     },
     [onSelect],
   );
@@ -47,7 +47,7 @@ const FilterMenu: React.FC<Props> = ({
     [],
   );
 
-  const filteredData: CoinCardAssetData[] = useMemo(
+  const filteredData: AssetPair[] = useMemo(
     () =>
       searchTerm === ''
         ? data
@@ -68,7 +68,7 @@ const FilterMenu: React.FC<Props> = ({
           />
         </Menu.Item>
       )}
-      {filteredData.map((item: CoinCardAssetData) => {
+      {filteredData.map((item: AssetPair) => {
         const { key, node } = cellRenderer(item);
         const disableItem = disableItemFilter(item);
 

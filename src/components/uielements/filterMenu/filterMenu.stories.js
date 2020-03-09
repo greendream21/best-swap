@@ -36,7 +36,7 @@ storiesOf('Components/FilterMenu', module).add('coins example', () => {
             { asset: 'TCAN-014', assetValue: 8935, price: 1 },
             { asset: 'TOMOB-1E1', assetValue: 198, price: 1 },
             { asset: 'BNB', assetValue: 200.01, price: 0.00387 },
-          ]} // CoinCardAssetData[]
+          ]} // AssetPair[]
         />
       </AppHolder>
     </ThemeProvider>
@@ -59,7 +59,7 @@ storiesOf('Components/FilterMenu', module).add('general use', () => {
             { asset: 'Paul', name: 'Paul', price: 2 },
             { asset: 'George', name: 'George', price: 3 },
             { asset: 'Ringo', name: 'Ringo', price: 4 },
-          ]} // CoinCardAssetData[]
+          ]} // AssetPair[]
         />
       </AppHolder>
     </ThemeProvider>

@@ -18,13 +18,11 @@ storiesOf('Components/Coins/CoinCard', module).add('default', () => {
             assetData={[
               {
                 asset: 'rune',
-                price: 100,
               },
               {
                 asset: 'tomo',
-                price: 100,
               },
-            ]}
+            ]} // AssetPair[]
             amount={1.354}
             price={600}
             priceIndex={{

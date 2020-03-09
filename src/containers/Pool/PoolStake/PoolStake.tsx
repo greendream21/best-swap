@@ -57,7 +57,7 @@ import { getHashFromTransfer } from '../../../helpers/binance';
 import { delay } from '../../../helpers/asyncHelper';
 import { RootState } from '../../../redux/store';
 import { User, AssetData } from '../../../redux/wallet/types';
-import { FixmeType, Maybe, Nothing, TokenData } from '../../../types/bepswap';
+import { FixmeType, Maybe, Nothing, AssetPair } from '../../../types/bepswap';
 import { TxStatus, TxTypes } from '../../../redux/app/types';
 import {
   AssetDetailMap,
@@ -926,15 +926,13 @@ class PoolStake extends React.Component<Props, State> {
     const runePrice = priceIndex.RUNE;
     const tokenPrice = _get(priceIndex, target.toUpperCase(), 0);
 
-    const tokensData: TokenData[] = Object.keys(assets).map(tokenName => {
+    const tokensData: AssetPair[] = Object.keys(assets).map(tokenName => {
       const tokenData = assets[tokenName];
       const assetStr = tokenData?.asset;
       const asset = assetStr ? getAssetFromString(assetStr) : null;
-      const price = tokenData?.priceRune ?? 0;
 
       return {
         asset: asset?.symbol ?? '',
-        price,
       };
     });
 

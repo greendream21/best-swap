@@ -9,7 +9,7 @@ import { BASE_NUMBER } from '../../settings/constants';
 import { getTxHashFromMemo } from '../../helpers/binance';
 import { PriceDataIndex, PoolDataMap } from '../../redux/midgard/types';
 import { PoolDetail } from '../../types/generated/midgard';
-import { Nothing, Maybe, Pair } from '../../types/bepswap';
+import { Nothing, Maybe, Pair, AssetPair } from '../../types/bepswap';
 import {
   TransferResult,
   TransferEvent,
@@ -22,16 +22,16 @@ import { SwapCardType } from './SwapView/types';
 
 export const validatePair = (
   pair: Pair,
-  sourceInfo: { asset: string }[],
-  targetInfo: { asset: string }[],
+  sourceInfo: AssetPair[],
+  targetInfo: AssetPair[],
 ) => {
   const { target = '', source = '' }: Pair = pair;
   const targetData = targetInfo.filter(
-    (data: { asset: string }) =>
+    (data: AssetPair) =>
       getTickerFormat(data.asset) !== target?.toLowerCase(),
   );
   const sourceData = sourceInfo.filter(
-    (data: { asset: string }) =>
+    (data: AssetPair) =>
       getTickerFormat(data.asset) !== source?.toLowerCase(),
   );
   return {

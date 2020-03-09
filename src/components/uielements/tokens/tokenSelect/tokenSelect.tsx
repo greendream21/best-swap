@@ -1,5 +1,4 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React from 'react';
 import { Dropdown } from 'antd';
 
 import {
@@ -13,8 +12,18 @@ import TokenMenu from './tokenMenu';
 import TokenData from '../tokenData';
 import Ref from '../../../../helpers/event/ref';
 import clickedInNode from '../../../../helpers/event/clickedInNode';
+import { AssetPair, FixmeType } from '../../../../types/bepswap';
+import { PriceDataIndex } from '../../../../redux/midgard/types';
+import { delay } from '../../../../helpers/asyncHelper';
 
-function DropdownCarret({ open, onClick, className }) {
+type DropdownCarretProps = {
+  className?: string,
+  open: boolean,
+  onClick?: () => void,
+}
+
+const DropdownCarret: React.FC<DropdownCarretProps> = (props: DropdownCarretProps): JSX.Element => {
+  const { open, onClick = () => {}, className = '' } = props;
   return (
     <DropdownIconHolder>
       <DropdownIcon
@@ -25,18 +34,34 @@ function DropdownCarret({ open, onClick, className }) {
       />
     </DropdownIconHolder>
   );
-}
-
-DropdownCarret.propTypes = {
-  className: PropTypes.string,
-  open: PropTypes.bool.isRequired,
-  onClick: PropTypes.func,
 };
 
-class TokenSelect extends Component {
+
+type Props = {
+  assetData: AssetPair[],
+  asset: string,
+  price: number,
+  priceIndex: PriceDataIndex,
+  priceUnit?: string,
+  withSearch?: boolean,
+  searchDisable?: string[],
+  onSelect: (_: number) => void,
+  onChangeAsset?: (asset: string) => void,
+  className?: string,
+  'data-test': string;
+};
+
+type State = {
+  openDropdown: boolean
+}
+
+
+class TokenSelect extends React.Component<Props, State> {
   ref = React.createRef();
 
-  constructor(props) {
+  menuRef = React.createRef();
+
+  constructor(props: Props) {
     super(props);
     this.state = {
       openDropdown: false,
@@ -51,19 +76,19 @@ class TokenSelect extends Component {
     document.removeEventListener('click', this.handleDocumentClick);
   }
 
-  handleRef = ref => {
+  handleRef = (ref: FixmeType) => {
     if (ref) {
       this.ref = ref;
     }
   };
 
-  handleMenuRef = menuRef => {
+  handleMenuRef = (menuRef: FixmeType) => {
     if (menuRef) {
       this.menuRef = menuRef;
     }
   };
 
-  handleDocumentClick = e => {
+  handleDocumentClick = (e: MouseEvent) => {
     if (
       this.ref &&
       !clickedInNode(this.ref, e) &&
@@ -75,7 +100,7 @@ class TokenSelect extends Component {
     }
   };
 
-  handleVisibleChange = openDropdown => {
+  handleVisibleChange = (openDropdown: boolean) => {
     this.setState({
       openDropdown,
     });
@@ -86,21 +111,22 @@ class TokenSelect extends Component {
     this.handleVisibleChange(!openDropdown);
   };
 
-  handleChangeAsset = asset => {
+  handleChangeAsset = async (asset: string) => {
     const { onChangeAsset } = this.props;
 
     this.setState({ openDropdown: false });
 
-    // HACK: Wait for the dropdown to close
-    setTimeout(() => {
-      onChangeAsset(asset.key);
-    }, 500);
+    if (onChangeAsset) {
+      // Wait for the dropdown to close
+      await delay(500);
+      onChangeAsset(asset);
+    }
   };
 
   renderDropDownButton() {
     const { assetData } = this.props;
     const { openDropdown: open } = this.state;
-    const disabled = assetData.length === 0;
+    const disabled = !assetData || assetData.length === 0;
 
     return (
       <TokenDropdownButton
@@ -120,11 +146,11 @@ class TokenSelect extends Component {
       assetData,
       asset,
       priceIndex,
-      priceUnit,
-      withSearch,
-      searchDisable,
+      priceUnit = 'RUNE',
+      withSearch = true,
+      searchDisable = [],
+      'data-test': dataTest,
     } = this.props;
-    const dataTest = this.props['data-test']; // eslint-disable-line
     const menuDataTest = `${dataTest}-menu`;
 
     return (
@@ -147,12 +173,8 @@ class TokenSelect extends Component {
     const {
       asset,
       price,
-      priceIndex,
-      priceUnit,
-      assetData,
-      onChangeAsset,
-      className,
-      ...props
+      priceUnit = 'RUNE',
+      className = '',
     } = this.props;
     const { openDropdown } = this.state;
 
@@ -165,7 +187,6 @@ class TokenSelect extends Component {
         >
           <TokenSelectWrapper
             className={`tokenSelect-wrapper ${className}`}
-            {...props}
           >
             <TokenData asset={asset} price={price} priceUnit={priceUnit} />
             {this.renderDropDownButton()}
@@ -175,26 +196,5 @@ class TokenSelect extends Component {
     );
   }
 }
-
-TokenSelect.propTypes = {
-  assetData: PropTypes.array.isRequired,
-  asset: PropTypes.string.isRequired,
-  price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-  priceIndex: PropTypes.object.isRequired,
-  priceUnit: PropTypes.string,
-  withSearch: PropTypes.bool,
-  searchDisable: PropTypes.array,
-  onSelect: PropTypes.func.isRequired,
-  onChangeAsset: PropTypes.func,
-  className: PropTypes.string,
-};
-
-TokenSelect.defaultProps = {
-  priceUnit: 'RUNE',
-  withSearch: true,
-  searchDisable: [],
-  onChangeAsset: () => {},
-  className: '',
-};
 
 export default TokenSelect;

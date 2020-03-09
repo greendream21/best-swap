@@ -14,6 +14,7 @@ storiesOf('Components/Tokens/TokenSelect', module).add('default', () => {
         <div style={{ padding: '10px' }}>
           <TokenSelect
             asset="bnb"
+            priceIndex={{ RUNE: 1 }}
             assetData={[
               {
                 asset: 'rune',
