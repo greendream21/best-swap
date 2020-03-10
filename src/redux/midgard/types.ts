@@ -1,3 +1,4 @@
+import { RemoteData } from '@devexperts/remote-data-ts';
 import { Maybe } from '../../types/bepswap';
 import {
   AssetDetail,
@@ -39,6 +40,8 @@ export type GetTxByAddressAssetPayload = {
   asset: string;
 };
 
+export type TxDetailData = RemoteData<Error, TxDetails[]>;
+
 export type State = {
   assets: AssetDetailMap;
   assetArray: AssetDetail[];
@@ -54,5 +57,5 @@ export type State = {
   error: Maybe<Error>;
   poolLoading: boolean;
   stakerPoolDataLoading: boolean;
-  txData: TxDetails[];
+  txData: TxDetailData;
 };
