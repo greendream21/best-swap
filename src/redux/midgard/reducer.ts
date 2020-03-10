@@ -1,4 +1,6 @@
 import { Reducer } from 'redux';
+import { initial, success, pending, failure } from '@devexperts/remote-data-ts';
+
 import {
   getBNBPoolAddress,
   getPoolAddress,
@@ -60,7 +62,7 @@ const initState: State = {
   error: null,
   poolLoading: false,
   stakerPoolDataLoading: false,
-  txData: [],
+  txData: initial,
 };
 
 const reducer: Reducer<State, MidgardActionTypes> = (
@@ -210,73 +212,64 @@ const reducer: Reducer<State, MidgardActionTypes> = (
     case GET_TX_BY_ADDRESS:
       return {
         ...state,
-        txData: [],
-        error: Nothing,
+        txData: pending,
       };
     case GET_TX_BY_ADDRESS_SUCCESS:
       return {
         ...state,
-        txData: action.payload,
-        error: Nothing,
+        txData: success(action.payload),
       };
     case GET_TX_BY_ADDRESS_FAILED:
       return {
         ...state,
-        error: action.payload,
+        txData: failure(action.payload),
       };
-
     case GET_TX_BY_ADDRESS_ASSET:
       return {
         ...state,
-        txData: [],
-        error: Nothing,
+        txData: pending,
       };
     case GET_TX_BY_ADDRESS_ASSET_SUCCESS:
       return {
         ...state,
-        txData: action.payload,
-        error: Nothing,
+        txData: success(action.payload),
       };
     case GET_TX_BY_ADDRESS_ASSET_FAILED:
       return {
         ...state,
-        error: action.payload,
+        txData: failure(action.payload),
       };
 
     case GET_TX_BY_ADDRESS_TXID:
       return {
         ...state,
-        txData: [],
-        error: Nothing,
+        txData: pending,
       };
     case GET_TX_BY_ADDRESS_TXID_SUCCESS:
       return {
         ...state,
-        txData: action.payload,
-        error: Nothing,
+        txData: success(action.payload),
       };
     case GET_TX_BY_ADDRESS_TXID_FAILED:
       return {
         ...state,
-        error: action.payload,
+        txData: failure(action.payload),
       };
 
     case GET_TX_BY_ASSET:
       return {
         ...state,
-        txData: [],
-        error: Nothing,
+        txData: pending,
       };
     case GET_TX_BY_ASSET_SUCCESS:
       return {
         ...state,
-        txData: action.payload,
-        error: Nothing,
+        txData: success(action.payload),
       };
     case GET_TX_BY_ASSET_FAILED:
       return {
         ...state,
-        error: action.payload,
+        txData: failure(action.payload),
       };
     default:
       return state;
