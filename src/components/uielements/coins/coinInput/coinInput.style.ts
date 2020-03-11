@@ -1,6 +1,10 @@
 import styled from 'styled-components';
 
-export const CoinInputWrapper = styled.div`
+type CoinInputWrapperProps = {
+  reverse: boolean;
+};
+
+export const CoinInputWrapper = styled.div<CoinInputWrapperProps>`
   display: flex;
   flex-direction: column;
 

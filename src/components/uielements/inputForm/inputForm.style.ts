@@ -1,6 +1,9 @@
 import styled from 'styled-components';
 
-export const InputFormWrapper = styled.div`
+type InputFormWrapperProps = {
+  reverse: boolean;
+};
+export const InputFormWrapper = styled.div<InputFormWrapperProps>`
   display: flex;
   flex-direction: column;
 
