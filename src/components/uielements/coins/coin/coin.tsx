@@ -1,11 +1,11 @@
 import React, { useMemo } from 'react';
 
 import { CoinWrapper, CoinsWrapper } from './coin.style';
-import { coinGroup } from '../../../../settings';
 import CoinIcon from '../coinIcon';
 import DynamicCoin from '../dynamicCoin';
 import { CoinSize } from './types';
 import { Nothing, Maybe } from '../../../../types/bepswap';
+import { coinGroup } from '../../../../settings';
 
 type Props = {
   type: string;

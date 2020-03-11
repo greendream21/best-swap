@@ -1165,8 +1165,8 @@ class PoolStake extends React.Component<Props, State> {
                 <div className="share-info-row">
                   <div className="your-share-info">
                     <Status
-                      title={String(source).toUpperCase()}
-                      value={runeShare}
+                      title={source.toUpperCase()}
+                      value={runeShare?.toString()}
                       loading={loading}
                     />
                     <Label
@@ -1184,8 +1184,8 @@ class PoolStake extends React.Component<Props, State> {
                   </div>
                   <div className="your-share-info">
                     <Status
-                      title={String(target).toUpperCase()}
-                      value={tokensShare}
+                      title={target.toUpperCase()}
+                      value={tokensShare?.toString()}
                       loading={loading}
                     />
 
@@ -1235,7 +1235,7 @@ class PoolStake extends React.Component<Props, State> {
                 <div className="your-share-info">
                   <Status
                     title={String(source).toUpperCase()}
-                    value={runeEarned}
+                    value={runeEarned?.toString()}
                     loading={loading}
                   />
                   <Label
@@ -1250,7 +1250,7 @@ class PoolStake extends React.Component<Props, State> {
                 <div className="your-share-info">
                   <Status
                     title={String(target).toUpperCase()}
-                    value={assetEarned}
+                    value={assetEarned?.toString()}
                     loading={loading}
                   />
                   <Label

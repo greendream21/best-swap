@@ -1,19 +1,17 @@
 import styled from 'styled-components';
 import { palette, key } from 'styled-theme';
 import { InputNumber } from 'antd';
+import { InputNumberWrapperColor, InputNumberWrapperSize } from './types';
 
 const fontSettings = {
   small: {
     size: key('sizes.font.small', '10px'),
-    spacing: '0.5px',
   },
   default: {
     size: key('sizes.font.normal', '11px'),
-    spacing: '0.5px',
   },
   large: {
     size: key('sizes.font.normal', '12px'),
-    spacing: '0.5px',
   },
 };
 
@@ -24,10 +22,15 @@ const colors = {
   error: palette('error', 0),
 };
 
-export const InputNumberWrapper = styled(InputNumber)`
+type InputNumberWrapperProps = {
+  color: InputNumberWrapperColor;
+  size: InputNumberWrapperSize;
+};
+
+export const InputNumberWrapper = styled(InputNumber)<InputNumberWrapperProps>`
   &.ant-input-number {
     font-size: ${props => fontSettings[props.size].size};
-    letter-spacing: ${props => fontSettings[props.size].spacing};
+    letter-spacing: '0.5px';
     &:hover,
     &:focus {
       border-color: ${props => colors[props.color]};

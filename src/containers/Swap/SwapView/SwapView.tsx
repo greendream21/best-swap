@@ -205,7 +205,6 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
         onClick={() => {
           setActiveAsset(asset);
         }}
-        focused={asset === activeAsset}
         disabled={asset !== 'rune'} // enable only rune for base pair
         price={runePrice}
         priceUnit={basePriceAsset}

@@ -572,7 +572,7 @@ class PoolCreate extends React.Component<Props, State> {
                 </Label>
                 <Status
                   title="Ticker"
-                  value={String(ticker).toUpperCase()}
+                  value={ticker.toUpperCase()}
                   direction="horizontal"
                 />
                 <Status

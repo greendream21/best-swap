@@ -1,7 +1,14 @@
 import styled from 'styled-components';
+import { ButtonProps } from 'antd/lib/button';
 import Button from '../../button';
 
-export const CoinButtonWrapper = styled(Button)`
+type CoinButtonWrapperProps = {
+  reversed: boolean;
+};
+
+type Props = CoinButtonWrapperProps & ButtonProps;
+
+export const CoinButtonWrapper = styled(Button)<Props>`
   width: 166px;
   padding: 0 10px;
   flex-direction: column;
