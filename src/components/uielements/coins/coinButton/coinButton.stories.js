@@ -11,7 +11,7 @@ storiesOf('Components/Coins/CoinButton', module).add('default', () => {
   return (
     <ThemeProvider theme={defaultTheme}>
       <AppHolder>
-        <CoinButton cointype="bnb" />
+        <CoinButton cointype="bnb" focused />
         <CoinButton cointype="rune" />
         <CoinButton cointype="bolt" />
         <CoinButton cointype="ankr" />

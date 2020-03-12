@@ -1,20 +1,21 @@
 import React from 'react';
 
-import { ButtonProps } from 'antd/lib/button';
 import { CoinButtonWrapper } from './coinButton.style';
 import CoinIcon from '../coinIcon';
 import Label from '../../label';
 
 import { getFixedNumber } from '../../../../helpers/stringHelper';
 
-type CustomProps = {
+type Props = {
   cointype: string;
   price?: number;
   priceUnit?: string;
   reversed?: boolean;
+  focused?: boolean;
+  disabled?: boolean;
+  onClick?: () => void;
+  className?: string;
 };
-
-type Props = CustomProps & ButtonProps;
 
 const CoinButton: React.FC<Props> = (props: Props): JSX.Element => {
   const {
@@ -23,6 +24,9 @@ const CoinButton: React.FC<Props> = (props: Props): JSX.Element => {
     priceUnit = 'RUNE',
     reversed = false,
     className = '',
+    focused = false,
+    disabled = false,
+    onClick = () => {},
     ...otherProps
   } = props;
   const priceValue = getFixedNumber(price);
@@ -31,7 +35,10 @@ const CoinButton: React.FC<Props> = (props: Props): JSX.Element => {
   return (
     <CoinButtonWrapper
       className={`coinButton-wrapper ${className}`}
+      onClick={onClick}
+      focused={focused}
       reversed={reversed}
+      disabled={disabled}
       {...otherProps}
     >
       <div className="coinButton-content">
