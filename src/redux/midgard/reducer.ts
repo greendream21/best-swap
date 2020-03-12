@@ -255,7 +255,6 @@ const reducer: Reducer<State, MidgardActionTypes> = (
         ...state,
         txData: failure(action.payload),
       };
-
     case GET_TX_BY_ASSET:
       return {
         ...state,
