@@ -1,6 +1,8 @@
 import styled from 'styled-components';
 import { palette, key } from 'styled-theme';
 import { Button } from 'antd';
+import { ButtonProps } from 'antd/lib/button';
+import { ButtonColor, ButtonSize, ButtonWeight, ButtonType, ButtonRound } from './types';
 
 const fontSettings = {
   small: {
@@ -35,7 +37,19 @@ const sizes = {
   },
 };
 
-const colorGroups = {
+type ColorGroup = {
+  main: string;
+  darken: string;
+  lighten: string;
+  text: string;
+  borderBottom: string;
+};
+
+type ColorGroups = {
+  [key in ButtonColor]: ColorGroup;
+};
+
+const colorGroups: ColorGroups = {
   primary: {
     main: palette('primary', 0),
     darken: palette('secondary', 0),
@@ -66,13 +80,36 @@ const colorGroups = {
   },
 };
 
-const getBtnThemeColor = () => {
-  const theme = {};
+type ButtonThemeValue = {
+  text: string;
+  border: string;
+  background: string;
+  action: {
+    text: string;
+    border: string;
+    background: string;
+  };
+  focus: {
+    border: string;
+    borderBottom?: string;
+  };
+};
+
+type ButtonTheme = {
+  [key in ButtonType]?: ButtonThemeValue;
+};
+
+type ButtonThemes = {
+  [key in ButtonColor]?: ButtonTheme;
+};
+
+const getThemes = () => {
+  const theme: ButtonThemes = {};
 
   Object.keys(colorGroups).forEach(colorType => {
-    const value = {};
+    const value: ButtonTheme = {};
     const { main, lighten, darken, text, borderBottom } = colorGroups[
-      colorType
+      colorType as ButtonColor
     ];
 
     value.default = {
@@ -130,22 +167,38 @@ const getBtnThemeColor = () => {
       },
     };
 
-    theme[colorType] = value;
+    theme[colorType as ButtonColor] = value;
   });
 
   return theme;
 };
 
-const colors = getBtnThemeColor();
+const themes: ButtonThemes = getThemes();
 
-export const ButtonWrapper = styled(Button)`
+const getThemeValue = (color: ButtonColor, typeValue: ButtonType) => {
+  const theme = themes[color];
+  const themValue = theme && theme[typeValue];
+  return themValue;
+};
+
+export type ButtonWrapperProps = {
+  round: ButtonRound;
+  color: ButtonColor;
+  sizevalue: ButtonSize;
+  weight: ButtonWeight;
+  typevalue: ButtonType;
+};
+
+type Props = ButtonWrapperProps & ButtonProps;
+
+export const ButtonWrapper = styled(Button)<Props>`
   &.ant-btn {
     display: flex;
     justify-content: space-around;
     align-items: center;
 
     border-radius: ${props =>
-      props.round === 'true' ? sizes[props.sizevalue].height : '3px'};
+      props.round ? sizes[props.sizevalue].height : '3px'};
     min-width: ${props => sizes[props.sizevalue].width};
     height: ${props => sizes[props.sizevalue].height};
     font-size: ${props => fontSettings[props.sizevalue].size};
@@ -158,9 +211,12 @@ export const ButtonWrapper = styled(Button)`
     &,
     &:active,
     &:focus {
-      color: ${props => colors[props.color][props.typevalue].text};
-      border-color: ${props => colors[props.color][props.typevalue].border};
-      background: ${props => colors[props.color][props.typevalue].background};
+      color: ${props =>
+        getThemeValue(props.color, props.typevalue)?.text ?? ''};
+      border-color: ${props =>
+        getThemeValue(props.color, props.typevalue)?.border ?? ''};
+      background: ${props =>
+        getThemeValue(props.color, props.typevalue)?.background ?? ''};
       ${props =>
         props.typevalue === 'normal' &&
         `
@@ -176,8 +232,8 @@ export const ButtonWrapper = styled(Button)`
     &:focus,
     &:active {
       border-color: ${props =>
-        colors[props.color][props.typevalue].focus
-          .border} !important; /* HACK: Border is overridden in selection.style.js buttons we need to create a new style for these buttons remove this when ready */
+        getThemeValue(props.color, props.typevalue)?.focus.border ??
+        ''} !important; /* (Rudi): HACK: Border is overridden in selection.style.js buttons we need to create a new style for these buttons remove this when ready */
     }
 
     /* apply special override styles for .focused class */
@@ -186,13 +242,16 @@ export const ButtonWrapper = styled(Button)`
       &,
       &:focus,
       &:active {
-        color: ${props => colors[props.color][props.typevalue].action.text};
+        color: ${props =>
+          getThemeValue(props.color, props.typevalue)?.action.text ?? ''};
         border-color: ${props =>
-          colors[props.color][props.typevalue].action.border};
+          getThemeValue(props.color, props.typevalue)?.action.border ?? ''};
         background: ${props =>
           props.typevalue === 'normal'
-            ? colors[props.color][props.typevalue].focus.borderBottom
-            : colors[props.color][props.typevalue].action.background};
+            ? getThemeValue(props.color, props.typevalue)?.focus.borderBottom ??
+              ''
+            : getThemeValue(props.color, props.typevalue)?.action.background ??
+              ''};
         ${props =>
           props.typevalue === 'normal' &&
           `
