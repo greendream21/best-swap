@@ -6,7 +6,7 @@ import { getPair } from './stringHelper';
  * Helper to check if any page is related to a path
  * */
 const isPage = (path: string, pagePath: string): boolean => {
-    const match = matchPath<{path?: string}>(path, {
+    const match = matchPath(path, {
       path: pagePath,
       exact: true,
       strict: true,
@@ -38,7 +38,7 @@ export const matchSwapDetailPair = (path: string): Maybe<Pair> => {
 };
 
 /**
- * Returns the Pair of a Pool page by parsing the path
+ * Returns the symbol of a Pool page by parsing the path
  * */
 export const matchPoolSymbol = (path: string): Maybe<string> => {
   const match = matchPath<{symbol?: string}>(path, {

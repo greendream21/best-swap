@@ -10,7 +10,7 @@ type Props = {
   value: number;
   reverse?: boolean;
   step?: number;
-  onChange: (value?: number) => void;
+  onChange?: (value?: number) => void;
   className?: string;
 };
 

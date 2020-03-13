@@ -8,7 +8,7 @@ exports[`FilterDropdown Matches the snapshot 1`] = `
   onTouchStart={[Function]}
 >
   <button
-    className="ant-btn sc-AxjAm fiyLWi sc-AxiKw jjGJAt btn-wrapper  ant-btn-primary"
+    className="ant-btn sc-AxjAm eiRMgW sc-AxiKw jjGJAt btn-wrapper  ant-btn-primary"
     color="primary"
     onClick={[Function]}
     round="false"
@@ -41,7 +41,7 @@ exports[`FilterDropdown Matches the snapshot 1`] = `
     </i>
   </button>
   <button
-    className="ant-btn sc-AxjAm dbsNol sc-AxhCb igecY btn-wrapper  ant-btn-primary"
+    className="ant-btn sc-AxjAm cFa-drF sc-AxhCb igecY btn-wrapper  ant-btn-primary"
     color="primary"
     onClick={[Function]}
     round="false"

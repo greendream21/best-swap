@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
-import { withRouter, Link } from 'react-router-dom';
+import React from 'react';
+import * as H from 'history';
+import { withRouter, Link, RouteComponentProps } from 'react-router-dom';
 import { Row, Col, Icon } from 'antd';
-import PropTypes from 'prop-types';
 
 import { ContentWrapper } from './Swap.style';
 import Centered from '../../../../components/utility/centered';
@@ -18,24 +18,40 @@ import {
 
 import { formatNumber, formatCurrency } from '../../../../helpers/formatHelper';
 import { data } from './data';
+import { TutorialContent } from '../../types';
 
 const { X, Y, Px } = data;
 
-class Swap extends Component {
-  constructor(props) {
+type ComponentProps = {
+  view?: string;
+  history: H.History;
+};
+
+type State = {
+  xValue: number;
+};
+
+type Props = RouteComponentProps & ComponentProps;
+
+class Swap extends React.Component<Props, State> {
+  static readonly defaultProps: Partial<Props> = {
+    view: TutorialContent.INTRO,
+  };
+
+  constructor(props: Props) {
     super(props);
     this.state = {
       xValue: 0,
     };
   }
 
-  handleChangeValue = name => value => {
+  handleChangeX = (xValue: number | undefined) => {
     this.setState({
-      [name]: value,
+      xValue: xValue || 0,
     });
   };
 
-  renderFlow = view => {
+  renderFlow = (view: TutorialContent) => {
     const { xValue } = this.state;
     const balance = formatCurrency((X + xValue) * Px);
     const initPy = formatCurrency(Px * (X / Y));
@@ -71,19 +87,21 @@ class Swap extends Component {
         </div>
         <Centered>
           <Label
-            className={view === 'play' && 'contains-tooltip'}
+            className={
+              view === TutorialContent.PLAY ? 'contains-tooltip' : undefined
+            }
             size="large"
             color="normal"
             weight="bold"
           >
-            {view === 'play' && (
+            {view === TutorialContent.PLAY && (
               <TooltipIcon
                 text="The balances of the pool change."
                 placement="leftTop"
               />
             )}
-            {view === 'intro' && formatNumber(X)}
-            {view === 'play' && formatNumber(X + xValue)}
+            {view === TutorialContent.INTRO && formatNumber(X)}
+            {view === TutorialContent.PLAY && formatNumber(X + xValue)}
           </Label>
           <Label size="large" color="normal" weight="bold">
             :
@@ -94,12 +112,12 @@ class Swap extends Component {
             color="normal"
             weight="bold"
           >
-            {view === 'intro' && formatNumber(Y)}
-            {view === 'play' && formatNumber(Y - outputToken)}
-            {view === 'intro' && (
+            {view === TutorialContent.INTRO && formatNumber(Y)}
+            {view === TutorialContent.PLAY && formatNumber(Y - outputToken)}
+            {view === TutorialContent.INTRO && (
               <TooltipIcon text="Pools contain assets." placement="rightTop" />
             )}
-            {view === 'play' && (
+            {view === TutorialContent.PLAY && (
               <TooltipIcon
                 text="A small fee is retained in the pool to pay stakers."
                 placement="rightTop"
@@ -109,11 +127,11 @@ class Swap extends Component {
         </Centered>
         <Centered>
           <Label
-            className={view === 'intro' && 'contains-tooltip'}
+            className={view === TutorialContent.INTRO ? 'contains-tooltip' : ''}
             size="large"
             color="normal"
           >
-            {view === 'intro' && (
+            {view === TutorialContent.INTRO && (
               <TooltipIcon
                 text="The value of assets must always be equal."
                 placement="leftTop"
@@ -132,15 +150,15 @@ class Swap extends Component {
           </Label>
           <Label size="large" color="normal" />
           <Label className="contains-tooltip" size="large" color="normal">
-            {view === 'intro' && initPy}
-            {view === 'play' && outputPy}
-            {view === 'play' && (
+            {view === TutorialContent.INTRO && initPy}
+            {view === TutorialContent.PLAY && outputPy}
+            {view === TutorialContent.PLAY && (
               <TooltipIcon
                 text="The price of the asset changes slightly due to the pool slip."
                 placement="rightTop"
               />
             )}
-            {view === 'intro' && (
+            {view === TutorialContent.INTRO && (
               <TooltipIcon
                 text="The price of the asset is based on the value of RUNE."
                 placement="rightTop"
@@ -166,14 +184,16 @@ class Swap extends Component {
   };
 
   renderButtons = () => {
+    const { history } = this.props;
+
+    const goBack = () => history.goBack();
+
     return (
       <Row className="bottom-nav-button">
-        <Link to="/tutorial/swap/intro">
-          <Button color="primary" typevalue="ghost">
-            back
-          </Button>
-        </Link>
-        <Link to="/tutorial/swap/doubleintro">
+        <Button color="primary" typevalue="ghost" onClick={goBack}>
+          back
+        </Button>
+        <Link to="/tutorial/swap/double">
           <Button color="primary" typevalue="outline">
             Double
             <Icon type="arrow-right" />
@@ -184,14 +204,18 @@ class Swap extends Component {
   };
 
   renderIntro = () => {
-    return <div className="swap-intro-wrapper">{this.renderFlow('intro')}</div>;
+    return (
+      <div className="swap-intro-wrapper">
+        {this.renderFlow(TutorialContent.INTRO)}
+      </div>
+    );
   };
 
   renderPlay = () => {
     const { xValue } = this.state;
     const times = (xValue + X) ** 2;
-    const outputToken = ((xValue * X * Y) / times).toFixed(2);
-    const outputPy = ((Px * (X + xValue)) / (Y - outputToken)).toFixed(2);
+    const outputToken = (xValue * X * Y) / times;
+    const outputPy = (Px * (X + xValue)) / (Y - outputToken);
     const input = xValue * Px;
     const output = outputToken * outputPy;
     const slip = Math.round(((input - output) / input) * 100);
@@ -203,12 +227,12 @@ class Swap extends Component {
             title="Select token to swap:"
             asset="rune"
             amount={xValue}
-            onChange={this.handleChangeValue('xValue')}
+            onChange={this.handleChangeX}
             price={Px}
             step={1000}
           />
         </div>
-        {this.renderFlow('play')}
+        {this.renderFlow(TutorialContent.PLAY)}
         <div className="token-receive-wrapper">
           <CoinInput
             title="Select token to receive:"
@@ -235,7 +259,7 @@ class Swap extends Component {
     return (
       <ContentWrapper className="tutorial-swap-wrapper">
         <Row>
-          <Col span="4" className="intro-text">
+          <Col span={4} className="intro-text">
             <Label size="normal" weight="bold" color="normal">
               SWAP
             </Label>
@@ -250,14 +274,14 @@ class Swap extends Component {
             <Label size="small" color="dark">
               You can swap both ways, or swap and send to someone else.
             </Label>
-            {view === 'intro' && (
-              <Link to="/tutorial/swap/play">
+            {view === TutorialContent.INTRO && (
+              <Link to="/tutorial/swap/single/play">
                 <Button className="try-btn" typevalue="outline">
                   try
                 </Button>
               </Link>
             )}
-            {view === 'play' && (
+            {view === TutorialContent.PLAY && (
               <>
                 <Label size="small" color="dark">
                   When you swap, you change the balances of the assets in the
@@ -275,25 +299,17 @@ class Swap extends Component {
               </>
             )}
           </Col>
-          <Col span="20" className="tutorial-content">
+          <Col span={20} className="tutorial-content">
             <Row className="tutorial-flow">
-              {view === 'intro' && this.renderIntro()}
-              {view === 'play' && this.renderPlay()}
+              {view === TutorialContent.INTRO && this.renderIntro()}
+              {view === TutorialContent.PLAY && this.renderPlay()}
             </Row>
-            {view === 'play' && this.renderButtons()}
+            {view === TutorialContent.PLAY && this.renderButtons()}
           </Col>
         </Row>
       </ContentWrapper>
     );
   }
 }
-Swap.propTypes = {
-  view: PropTypes.string,
-  history: PropTypes.object,
-};
-
-Swap.defaultProps = {
-  view: 'intro',
-};
 
 export default withRouter(Swap);
