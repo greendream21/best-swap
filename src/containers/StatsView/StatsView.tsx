@@ -56,11 +56,11 @@ const StatsView: React.FC<Props> = (props: Props): JSX.Element => {
       )}
       {props.user && props.user.wallet && (
         <Row>
-          <Col span="12">
+          <Col span={12}>
             <StatusGroup title="users" status={getValues(stats.users)} />
             <StatusGroup title="pools" status={getValues(stats.pools)} />
           </Col>
-          <Col span="12">
+          <Col span={12}>
             <StatusGroup
               title="transactions"
               status={getValues(stats.transactions)}

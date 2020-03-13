@@ -19,7 +19,7 @@ class Pool extends Component {
     return (
       <ContentWrapper>
         <Row className="pool-content-text">
-          <Col span="8">
+          <Col span={8}>
             <Label size="normal" weight="bold" color="normal">
               POOL
             </Label>

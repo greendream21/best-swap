@@ -14,7 +14,7 @@ const routes = [
     component: asyncComponent(() => import('../pages/Home')),
   },
   {
-    path: 'tutorial/:type?/:view?',
+    path: 'tutorial/:type?/:view?/:content?',
     component: asyncComponent(() => import('../pages/Tutorial')),
   },
   {

@@ -20,6 +20,7 @@ describe('routeHelper', () => {
       expect(result).toBeFalsy();
     });
   });
+
   describe('isPoolPage', () => {
     it('should parse an url of a pool page', () => {
       const result = isPoolPage('/pool');
@@ -34,6 +35,7 @@ describe('routeHelper', () => {
       expect(result).toBeFalsy();
     });
   });
+
   describe('matchSwapDetailPair', () => {
     it('should match swap detail pair', () => {
       const result = matchSwapDetailPair('/swap/detail/fsn-rune');
@@ -49,6 +51,7 @@ describe('routeHelper', () => {
       expect(result).toBeNothing();
     });
   });
+
   describe('matchPoolSymbol', () => {
     it('should match symbol of current pool', () => {
       const result = matchPoolSymbol('/pool/fsn-rune');

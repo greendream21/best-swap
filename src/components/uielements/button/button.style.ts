@@ -198,7 +198,7 @@ export const ButtonWrapper = styled(Button)<Props>`
     align-items: center;
 
     border-radius: ${props =>
-      props.round ? sizes[props.sizevalue].height : '3px'};
+      props.round === 'true' ? sizes[props.sizevalue].height : '3px'};
     min-width: ${props => sizes[props.sizevalue].width};
     height: ${props => sizes[props.sizevalue].height};
     font-size: ${props => fontSettings[props.sizevalue].size};

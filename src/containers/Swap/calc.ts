@@ -1,3 +1,5 @@
+import { Maybe } from '../../types/bepswap';
+
 export type DoubleSwapCalcData = {
   X: number;
   Y: number;
@@ -42,7 +44,7 @@ export const getFee = (xValue: number, data: DoubleSwapCalcData) => {
   return (yTimes * Z) / times;
 };
 
-export const getPx = (xValue: number, data: SingleSwapCalcData) => {
+export const getPx = (xValue: Maybe<number>, data: SingleSwapCalcData) => {
   const { X, Y, Py } = data;
 
   if (xValue) {
@@ -53,7 +55,7 @@ export const getPx = (xValue: number, data: SingleSwapCalcData) => {
   return (Py * Y) / X;
 };
 
-export const getPz = (xValue: number, data: DoubleSwapCalcData) => {
+export const getPz = (xValue: Maybe<number>, data: DoubleSwapCalcData) => {
   const { Z, R, Pr } = data;
 
   if (xValue) {

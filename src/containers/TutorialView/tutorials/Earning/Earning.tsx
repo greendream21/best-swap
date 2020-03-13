@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
-import { withRouter, Link } from 'react-router-dom';
+import React from 'react';
+import * as H from 'history';
+import { withRouter, Link, RouteComponentProps } from 'react-router-dom';
 import { Row, Col } from 'antd';
-import PropTypes from 'prop-types';
 
 import { ContentWrapper } from './Earning.style';
 import Centered from '../../../../components/utility/centered';
@@ -19,11 +19,29 @@ import {
 
 import { formatNumber, formatCurrency } from '../../../../helpers/formatHelper';
 import { data, getVr, getSS, getVss, getWr, getWt } from './data';
+import { TutorialContent } from '../../types';
+
+type ComponentProps = {
+  view?: string;
+  history: H.History;
+};
+
+type Props = RouteComponentProps & ComponentProps;
+
+type State = {
+  rValue: number;
+  tValue: number;
+  wss: number;
+};
 
 const { R, T, WR, WT, VWR, Pr, Pt, SS } = data;
 
-class Earning extends Component {
-  constructor(props) {
+class Earning extends React.Component<Props, State> {
+  static readonly defaultProps: Partial<Props> = {
+    view: TutorialContent.INTRO,
+  };
+
+  constructor(props: Props) {
     super(props);
     this.state = {
       rValue: 200000,
@@ -32,13 +50,25 @@ class Earning extends Component {
     };
   }
 
-  handleChangeValue = name => value => {
+  handleChangeRValue = (value: number | undefined) => {
     this.setState({
-      [name]: value,
+      rValue: value || 0,
     });
   };
 
-  renderFlow = view => {
+  handleChangeTValue = (value: number | undefined) => {
+    this.setState({
+      tValue: value || 0,
+    });
+  };
+
+  handleChangeWssValue = (value: number | undefined) => {
+    this.setState({
+      wss: value || 0,
+    });
+  };
+
+  renderFlow = (view: TutorialContent) => {
     const { rValue, tValue, wss } = this.state;
     const Vr = formatCurrency(getVr(rValue));
     const Vt = Vr;
@@ -74,10 +104,10 @@ class Earning extends Component {
           POOL
         </Label>
         <div className="earning-flow-diagram">
-          {view === 'earningintro' && (
+          {view === TutorialContent.INTRO && (
             <img src={arrowTwoIcon} alt="arrow-green" />
           )}
-          {view === 'earningplay' && (
+          {view === TutorialContent.PLAY && (
             <img
               className="reverse-image"
               src={arrowGreenIcon}
@@ -85,41 +115,41 @@ class Earning extends Component {
             />
           )}
           <img src={orbBlueIcon} alt="arrow-green" />
-          {view === 'earningintro' && (
+          {view === TutorialContent.INTRO && (
             <img src={arrowTwoIcon} alt="arrow-green" />
           )}
-          {view === 'earningplay' && (
+          {view === TutorialContent.PLAY && (
             <img src={arrowGreenIcon} alt="arrow-yello" />
           )}
         </div>
         <Centered>
           <Label size="large" color="normal" weight="bold">
-            {view === 'earningintro' && formatNumber(R + rValue)}
-            {view === 'earningplay' && formatNumber(WR - Wr)}
+            {view === TutorialContent.INTRO && formatNumber(R + rValue)}
+            {view === TutorialContent.PLAY && formatNumber(WR - Wr)}
           </Label>
           <Label size="large" color="normal" weight="bold">
             :
           </Label>
           <Label size="large" color="normal" weight="bold">
-            {view === 'earningintro' && formatNumber(T + tValue)}
-            {view === 'earningplay' && formatNumber(WT - Wt)}
+            {view === TutorialContent.INTRO && formatNumber(T + tValue)}
+            {view === TutorialContent.PLAY && formatNumber(WT - Wt)}
           </Label>
         </Centered>
         <Centered>
           <Label size="large" color="normal">
-            {view === 'earningintro' && Vr}
-            {view === 'earningplay' && formatCurrency(VWR - rValuePrice)}
+            {view === TutorialContent.INTRO && Vr}
+            {view === TutorialContent.PLAY && formatCurrency(VWR - rValuePrice)}
           </Label>
           <Label size="large" color="normal" />
           <Label size="large" color="normal">
-            {view === 'earningintro' && Vt}
-            {view === 'earningplay' && formatCurrency(VWR - tValuePrice)}
+            {view === TutorialContent.INTRO && Vt}
+            {view === TutorialContent.PLAY && formatCurrency(VWR - tValuePrice)}
           </Label>
         </Centered>
         <div className="center-text">
           <Label size="large" color="normal" weight="bold">
-            {view === 'earningintro' && ssValue}
-            {view === 'earningplay' && ss}
+            {view === TutorialContent.INTRO && ssValue}
+            {view === TutorialContent.PLAY && ss}
           </Label>
         </div>
         <div className="center-text description-label">
@@ -130,8 +160,8 @@ class Earning extends Component {
         <Centered>
           <Label />
           <Label size="large" color="normal" weight="bold">
-            {view === 'earningintro' && VssValue}
-            {view === 'earningplay' && Vss}
+            {view === TutorialContent.INTRO && VssValue}
+            {view === TutorialContent.PLAY && Vss}
           </Label>
           <Label className="contains-tooltip" />
         </Centered>
@@ -145,23 +175,15 @@ class Earning extends Component {
   };
 
   renderButtons = () => {
-    const { view } = this.props;
+    const { history } = this.props;
 
-    let URL = '';
-    if (view === 'earningintro') {
-      URL = '/tutorial/pool/stakingplay';
-    }
-    if (view === 'earningplay') {
-      URL = '/tutorial/pool/earningintro';
-    }
+    const goBack = () => history.goBack();
 
     return (
       <Row className="bottom-nav-button">
-        <Link to={URL}>
-          <Button color="primary" typevalue="ghost">
-            back
-          </Button>
-        </Link>
+        <Button color="primary" typevalue="ghost" onClick={goBack}>
+          back
+        </Button>
       </Row>
     );
   };
@@ -176,7 +198,7 @@ class Earning extends Component {
             title="Add earnings:"
             type="rune"
             value={rValue}
-            onChange={this.handleChangeValue('rValue')}
+            onChange={this.handleChangeRValue}
             step={10000}
           />
           <TooltipIcon
@@ -184,13 +206,13 @@ class Earning extends Component {
             placement="rightTop"
           />
         </div>
-        {this.renderFlow('earningintro')}
+        {this.renderFlow(TutorialContent.INTRO)}
         <div className="token-wrapper">
           <InputForm
             title="Add earnings:"
             type="bolt"
             value={tValue}
-            onChange={this.handleChangeValue('tValue')}
+            onChange={this.handleChangeTValue}
             step={20000}
             reverse
           />
@@ -215,13 +237,13 @@ class Earning extends Component {
       <div className="earning-play-wrapper">
         <div className="token-wrapper">
           <InputForm title="Withdraw share:" type="%" value={wss} />
-          <Selection onSelect={this.handleChangeValue('wss')} />
+          <Selection onSelect={this.handleChangeWssValue} />
           <InputForm title="PAYOUT:" type="rune" value={Wr} step={1000} />
           <Label className="payout-price-label" color="gray">
             {rValuePrice} (USD)
           </Label>
         </div>
-        {this.renderFlow('earningplay')}
+        {this.renderFlow(TutorialContent.PLAY)}
         <div className="token-wrapper-right">
           <InputForm
             title="PAYOUT:"
@@ -244,7 +266,7 @@ class Earning extends Component {
     return (
       <ContentWrapper className="tutorial-swap-wrapper">
         <Row>
-          <Col span="4" className="intro-text">
+          <Col span={4} className="intro-text">
             <Label size="normal" weight="bold" color="normal">
               EARNINGS
             </Label>
@@ -258,14 +280,14 @@ class Earning extends Component {
             <Label size="small" color="dark">
               You can withdraw your earnings at any time.
             </Label>
-            {view === 'earningintro' && (
-              <Link to="/tutorial/pool/earningplay">
+            {view === TutorialContent.INTRO && (
+              <Link to="/tutorial/pool/earn/play">
                 <Button className="try-btn" typevalue="outline">
                   try
                 </Button>
               </Link>
             )}
-            {view === 'earningplay' && (
+            {view === TutorialContent.PLAY && (
               <>
                 <Label size="small" color="dark">
                   Since anyone can <strong>stake</strong> alongside you, you own
@@ -282,10 +304,10 @@ class Earning extends Component {
               </>
             )}
           </Col>
-          <Col span="20" className="tutorial-content">
+          <Col span={20} className="tutorial-content">
             <Row className="tutorial-flow">
-              {view === 'earningintro' && this.renderIntro()}
-              {view === 'earningplay' && this.renderPlay()}
+              {view === TutorialContent.INTRO && this.renderIntro()}
+              {view === TutorialContent.PLAY && this.renderPlay()}
             </Row>
             {this.renderButtons()}
           </Col>
@@ -294,14 +316,5 @@ class Earning extends Component {
     );
   }
 }
-
-Earning.propTypes = {
-  view: PropTypes.string,
-  history: PropTypes.object,
-};
-
-Earning.defaultProps = {
-  view: 'intro',
-};
 
 export default withRouter(Earning);

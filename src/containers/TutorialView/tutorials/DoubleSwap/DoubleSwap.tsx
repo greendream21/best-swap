@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
-import { withRouter, Link } from 'react-router-dom';
+import React from 'react';
+import * as H from 'history';
+import { withRouter, Link, RouteComponentProps } from 'react-router-dom';
 import { Row, Col, Icon } from 'antd';
-import PropTypes from 'prop-types';
 
 import { ContentWrapper } from './DoubleSwap.style';
 import Centered from '../../../../components/utility/centered';
@@ -28,24 +28,41 @@ import {
   getBalanceA,
   getBalanceB,
 } from './data';
+import { Nothing } from '../../../../types/bepswap';
+import { TutorialContent } from '../../types';
 
 const { X, Y, Z, R, Py, Pr } = data;
 
-class DoubleSwap extends Component {
-  constructor(props) {
+type ComponentProps = {
+  view?: string;
+  history: H.History;
+};
+
+type Props = RouteComponentProps & ComponentProps;
+
+type State = {
+  xValue: number;
+};
+
+class DoubleSwap extends React.Component<Props, State> {
+  static readonly defaultProps: Partial<Props> = {
+    view: TutorialContent.INTRO,
+  };
+
+  constructor(props: Props) {
     super(props);
     this.state = {
       xValue: 0,
     };
   }
 
-  handleChangeX = xValue => {
+  handleChangeX = (xValue: number | undefined) => {
     this.setState({
-      xValue,
+      xValue: xValue || 0,
     });
   };
 
-  renderFlow = view => {
+  renderFlow = (view: TutorialContent) => {
     const { xValue } = this.state;
     const yValue = getYValue(xValue);
     const zValue = getZValue(xValue);
@@ -64,13 +81,15 @@ class DoubleSwap extends Component {
                 :
               </Label>
               <Label
-                className={view === 'doubleintro' && 'contains-tooltip'}
+                className={
+                  view === TutorialContent.INTRO ? 'contains-tooltip' : ''
+                }
                 size="large"
                 color="normal"
                 weight="bold"
               >
                 RUNE
-                {view === 'doubleintro' && (
+                {view === TutorialContent.INTRO && (
                   <TooltipIcon
                     text="RUNE is the settlement asset."
                     placement="rightTop"
@@ -120,26 +139,28 @@ class DoubleSwap extends Component {
           <div className="swap-flow-wrapper">
             <Centered>
               <Label
-                className={view === 'doubleplay' && 'contains-tooltip'}
+                className={
+                  view === TutorialContent.PLAY ? 'contains-tooltip' : ''
+                }
                 size="large"
                 color="normal"
                 weight="bold"
               >
-                {view === 'doubleplay' && (
+                {view === TutorialContent.PLAY && (
                   <TooltipIcon
                     text="The balances of the pool change."
                     placement="leftTop"
                   />
                 )}
-                {view === 'doubleintro' && formatNumber(X)}
-                {view === 'doubleplay' && formatNumber(X + xValue)}
+                {view === TutorialContent.INTRO && formatNumber(X)}
+                {view === TutorialContent.PLAY && formatNumber(X + xValue)}
               </Label>
               <Label size="large" color="normal" weight="bold">
                 :
               </Label>
               <Label size="large" color="normal" weight="bold">
-                {view === 'doubleintro' && formatNumber(Y)}
-                {view === 'doubleplay' && formatNumber(Y - yValue)}
+                {view === TutorialContent.INTRO && formatNumber(Y)}
+                {view === TutorialContent.PLAY && formatNumber(Y - yValue)}
               </Label>
             </Centered>
             <Centered>
@@ -153,8 +174,9 @@ class DoubleSwap extends Component {
             </Centered>
             <Centered>
               <Label size="large" color="normal">
-                {view === 'doubleintro' && formatCurrency(getPx())}
-                {view === 'doubleplay' && formatCurrency(getPx(xValue))}
+                {view === TutorialContent.INTRO &&
+                  formatCurrency(getPx(Nothing))}
+                {view === TutorialContent.PLAY && formatCurrency(getPx(xValue))}
               </Label>
               <Label size="large" color="normal" />
               <Label size="large" color="normal">
@@ -169,14 +191,16 @@ class DoubleSwap extends Component {
               </Label>
               <Label size="normal" color="normal" />
               <Label
-                className={view === 'doubleintro' && 'contains-tooltip'}
+                className={
+                  view === TutorialContent.INTRO ? 'contains-tooltip' : ''
+                }
                 size="normal"
                 color="normal"
               >
                 RUNE Price
                 <br />
                 (external)
-                {view === 'doubleintro' && (
+                {view === TutorialContent.INTRO && (
                   <TooltipIcon
                     text="RUNE price is always fixed."
                     placement="rightTop"
@@ -188,15 +212,15 @@ class DoubleSwap extends Component {
           <div className="swap-flow-wrapper">
             <Centered>
               <Label size="large" color="normal" weight="bold">
-                {view === 'doubleintro' && formatNumber(R)}
-                {view === 'doubleplay' && formatNumber(R + yValue)}
+                {view === TutorialContent.INTRO && formatNumber(R)}
+                {view === TutorialContent.PLAY && formatNumber(R + yValue)}
               </Label>
               <Label size="large" color="normal" weight="bold">
                 :
               </Label>
               <Label size="large" color="normal" weight="bold">
-                {view === 'doubleintro' && formatNumber(Z)}
-                {view === 'doubleplay' && formatNumber(Z - zValue)}
+                {view === TutorialContent.INTRO && formatNumber(Z)}
+                {view === TutorialContent.PLAY && formatNumber(Z - zValue)}
               </Label>
             </Centered>
             <Centered>
@@ -214,8 +238,9 @@ class DoubleSwap extends Component {
               </Label>
               <Label size="large" color="normal" />
               <Label size="large" color="normal">
-                {view === 'doubleintro' && formatCurrency(getPz())}
-                {view === 'doubleplay' && formatCurrency(getPz(xValue))}
+                {view === TutorialContent.INTRO &&
+                  formatCurrency(getPz(Nothing))}
+                {view === TutorialContent.PLAY && formatCurrency(getPz(xValue))}
               </Label>
             </Centered>
             <Centered>
@@ -238,25 +263,17 @@ class DoubleSwap extends Component {
   };
 
   renderButtons = () => {
-    const { view } = this.props;
+    const { view, history } = this.props;
 
-    let URL = '';
-    if (view === 'doubleintro') {
-      URL = '/tutorial/swap/play';
-    }
-    if (view === 'doubleplay') {
-      URL = '/tutorial/swap/doubleintro';
-    }
+    const goBack = () => history.goBack();
 
     return (
       <Row className="bottom-nav-button">
-        <Link to={URL}>
-          <Button color="primary" typevalue="ghost">
-            back
-          </Button>
-        </Link>
-        {view === 'doubleplay' && (
-          <Link to="/tutorial/pool/stakingintro">
+        <Button color="primary" typevalue="ghost" onClick={goBack}>
+          back
+        </Button>
+        {view === TutorialContent.PLAY && (
+          <Link to="/tutorial/pool/stake">
             <Button color="primary" typevalue="outline">
               Staking
               <Icon type="arrow-right" />
@@ -269,7 +286,9 @@ class DoubleSwap extends Component {
 
   renderIntro = () => {
     return (
-      <div className="swap-intro-wrapper">{this.renderFlow('doubleintro')}</div>
+      <div className="swap-intro-wrapper">
+        {this.renderFlow(TutorialContent.INTRO)}
+      </div>
     );
   };
 
@@ -288,17 +307,17 @@ class DoubleSwap extends Component {
             asset="bnb"
             amount={xValue}
             onChange={this.handleChangeX}
-            price={Px.toFixed(2)}
+            price={Px}
             step={10}
           />
         </div>
-        {this.renderFlow('doubleplay')}
+        {this.renderFlow(TutorialContent.PLAY)}
         <div className="token-receive-wrapper">
           <CoinInput
             title="Select token to receive:"
             asset="bolt"
-            amount={zValue.toFixed(2)}
-            price={Pz.toFixed(2)}
+            amount={zValue}
+            price={Pz}
             slip={slip}
             reverse
           />
@@ -318,7 +337,7 @@ class DoubleSwap extends Component {
     return (
       <ContentWrapper className="tutorial-swap-wrapper">
         <Row>
-          <Col span="4" className="intro-text">
+          <Col span={4} className="intro-text">
             <Label size="normal" weight="bold" color="normal">
               DOUBLE SWAP
             </Label>
@@ -333,14 +352,14 @@ class DoubleSwap extends Component {
             <Label size="small" color="dark">
               You can swap both ways, or swap and send to someone else.
             </Label>
-            {view === 'doubleintro' && (
-              <Link to="/tutorial/swap/doubleplay">
+            {view === TutorialContent.INTRO && (
+              <Link to="/tutorial/swap/double/play">
                 <Button className="try-btn" typevalue="outline">
                   try
                 </Button>
               </Link>
             )}
-            {view === 'doubleplay' && (
+            {view === TutorialContent.PLAY && (
               <>
                 <Label size="small" color="dark">
                   When you swap, you change the balances of the assets in the
@@ -358,10 +377,10 @@ class DoubleSwap extends Component {
               </>
             )}
           </Col>
-          <Col span="20" className="tutorial-content">
+          <Col span={20} className="tutorial-content">
             <Row className="tutorial-flow">
-              {view === 'doubleintro' && this.renderIntro()}
-              {view === 'doubleplay' && this.renderPlay()}
+              {view === TutorialContent.INTRO && this.renderIntro()}
+              {view === TutorialContent.PLAY && this.renderPlay()}
             </Row>
             {this.renderButtons()}
           </Col>
@@ -370,14 +389,5 @@ class DoubleSwap extends Component {
     );
   }
 }
-
-DoubleSwap.propTypes = {
-  view: PropTypes.string,
-  history: PropTypes.object,
-};
-
-DoubleSwap.defaultProps = {
-  view: 'doubleintro',
-};
 
 export default withRouter(DoubleSwap);
