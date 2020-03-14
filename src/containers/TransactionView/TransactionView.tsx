@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import * as RD from '@devexperts/remote-data-ts';
@@ -35,12 +36,17 @@ type Props = ComponentProps & ConnectedProps;
 
 const Transaction: React.FC<Props> = (props): JSX.Element => {
   const { user, txData, getTxByAddress } = props;
+  const history = useHistory();
 
   useEffect(() => {
     const walletAddress = user?.wallet ?? null;
+
     if (walletAddress) {
       getTxByAddress(walletAddress);
+    } else {
+      history.push('/connect');
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
