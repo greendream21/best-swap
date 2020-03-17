@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { useHistory } from 'react-router-dom';
 import { Icon, notification } from 'antd';
 import { connect } from 'react-redux';
 import copy from 'copy-to-clipboard';
@@ -26,6 +27,7 @@ type Props = {
 const WalletDrawer: React.FC<Props> = props => {
   const [visible, setVisible] = useState(false);
   const [refresh, setRefresh] = useState(false);
+  const history = useHistory();
 
   const { user, refreshBalance, refreshStake } = props;
   const wallet = user ? user.wallet : null;
@@ -62,6 +64,11 @@ const WalletDrawer: React.FC<Props> = props => {
     setRefresh(false);
   }, [refreshBalance, refreshStake, wallet]);
 
+  const handleGotoTransaction = () => {
+    onClose();
+    history.push('/transaction');
+  };
+
   const status = wallet ? 'connected' : 'disconnected';
 
   return (
@@ -95,6 +102,15 @@ const WalletDrawer: React.FC<Props> = props => {
             onClick={props.forgetWallet}
           >
             FORGET
+          </Button>
+          <Button
+            className="transaction-btn"
+            data-test="wallet-transaction-button"
+            typevalue="outline"
+            color="warning"
+            onClick={handleGotoTransaction}
+          >
+            transactions
           </Button>
         </div>
         {wallet && (

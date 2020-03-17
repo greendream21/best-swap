@@ -15,13 +15,11 @@ exports[`FilterDropdown Matches the snapshot 1`] = `
     <p
       className="txStatus-amount"
     >
-      1.25
+      0.00
     </p>
     <p
       className="txStatus-asset"
-    >
-      rune
-    </p>
+    />
     
   </div>
 </div>

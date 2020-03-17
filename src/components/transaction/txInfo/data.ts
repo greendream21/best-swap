@@ -8,7 +8,7 @@ export const txData1: TxDetails = {
   pool: 'BNB',
   type: TxDetailsTypeEnum.Stake,
   status: TxDetailsStatusEnum.Success,
-  _in: {
+  in: {
     txID: 'txid',
     memo: 'txmemo',
     address: 'walletaddr',
@@ -52,7 +52,7 @@ export const txData2: TxDetails = {
   pool: 'BNB',
   type: TxDetailsTypeEnum.Swap,
   status: TxDetailsStatusEnum.Success,
-  _in: {
+  in: {
     txID: 'txid',
     memo: 'txmemo',
     address: 'walletaddr',
@@ -96,7 +96,7 @@ export const txData3: TxDetails = {
   pool: 'BNB',
   type: TxDetailsTypeEnum.Unstake,
   status: TxDetailsStatusEnum.Success,
-  _in: {
+  in: {
     txID: 'txid',
     memo: 'txmemo',
     address: 'walletaddr',
@@ -140,7 +140,7 @@ export const txData4: TxDetails = {
   pool: 'BNB',
   type: TxDetailsTypeEnum.Stake,
   status: TxDetailsStatusEnum.Success,
-  _in: {
+  in: {
     txID: 'txid',
     memo: 'txmemo',
     address: 'walletaddr',
