@@ -40,6 +40,7 @@ export const ContentWrapper = styled(ContentView)`
 
   .tx-detail-button {
     display: flex;
+    justify-content: center;
     align-items: center;
     cursor: pointer;
   }

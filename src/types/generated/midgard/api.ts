@@ -720,7 +720,7 @@ export interface TxDetails {
      * @type {Tx}
      * @memberof TxDetails
      */
-    _in?: Tx;
+    in?: Tx;
     /**
      * 
      * @type {Option}

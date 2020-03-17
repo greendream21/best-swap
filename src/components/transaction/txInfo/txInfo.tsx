@@ -10,13 +10,14 @@ type Props = {
 
 const TxInfo: React.FC<Props> = (props: Props): JSX.Element => {
   const {
-    data: { type, events, _in, out },
+    data: { type, events, in: _in, out },
   } = props;
 
   // swap tx
   if (type === TxDetailsTypeEnum.Swap) {
     const inData = _in?.coins?.[0];
     const outData = out?.[0]?.coins?.[0];
+    const slipValue = (events?.slip ?? 0) * 100;
 
     return (
       <TxInfoWrapper className="txInfo-wrapper swap-tx">
@@ -33,7 +34,7 @@ const TxInfo: React.FC<Props> = (props: Props): JSX.Element => {
           <Dash />
           <div className="tx-event-label">
             <p className="tx-event-title">SLIP</p>
-            <p className="tx-event-value">{events?.slip ?? 0}%</p>
+            <p className="tx-event-value">{slipValue}%</p>
           </div>
         </div>
       </TxInfoWrapper>

@@ -18,6 +18,7 @@ import {
 } from './TransactionView.style';
 import { TxDetails } from '../../types/generated/midgard';
 import { ViewType, Maybe } from '../../types/bepswap';
+import { TESTNET_TX_BASE_URL } from '../../helpers/apiHelper';
 
 import * as midgardActions from '../../redux/midgard/actions';
 import { TxDetailData } from '../../redux/midgard/types';
@@ -50,107 +51,122 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const renderTxTable = (data: TxDetailData, view: ViewType) => {
-      return RD.fold(
-        () => null, // initial
-        () => <TransactionLoader />,
-        (error: Error) => <p>{error.toString()}</p>, // show error
-        (data: TxDetails[]): JSX.Element => {
-          const filterCol = {
-            key: 'filter',
-            title: <FilterDropdown />,
-            render: (text: string, rowData: TxDetails) => {
-              const { type } = rowData;
+  const renderTxTable = (data: TxDetails[], view: ViewType) => {
+    const filterCol = {
+      key: 'filter',
+      title: <FilterDropdown />,
+      render: (text: string, rowData: TxDetails) => {
+        const { type } = rowData;
 
-              return <TxLabel type={type} />;
-            },
-          };
+        return <TxLabel type={type} />;
+      },
+    };
 
-          const desktopColumns = [
-            filterCol,
-            {
-              key: 'history',
-              title: 'history',
-              render: (text: string, rowData: TxDetails) => {
-                return <TxInfo data={rowData} />;
-              },
-            },
-            {
-              key: 'time',
-              title: 'time',
-              render: (text: string, rowData: TxDetails) => {
-                const { date } = rowData;
-
-                return new Date(date || 0).toDateString();
-              },
-            },
-            {
-              key: 'detail',
-              title: 'detail',
-              render: () => {
-                return (
-                  <div className="tx-detail-button">
-                    <DetailIcon />
-                  </div>
-                );
-              },
-            },
-          ];
-
-          const mobileColumns = [
-            {
-              key: 'history',
-              title: (
-                <MobileColumeHeader>
-                  <div className="mobile-col-title">history</div>
-                  <div className="mobile-col-filter">
-                    <FilterDropdown />
-                  </div>
-                </MobileColumeHeader>
-              ),
-              render: (text: string, rowData: TxDetails) => {
-                const { type, date } = rowData;
-                const dateString = new Date(date || 0).toDateString();
-
-                return (
-                  <div className="tx-history-row">
-                    <div className="tx-history-data">
-                      <TxLabel type={type} />
-                      <div className="tx-history-detail">
-                        <p>{dateString}</p>
-                        <div className="tx-detail-button">
-                          <DetailIcon />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="tx-history-info">
-                      <TxInfo data={rowData} />
-                    </div>
-                  </div>
-                );
-              },
-            },
-          ];
-
-          const columns =
-            view === ViewType.DESKTOP ? desktopColumns : mobileColumns;
-
-          return <Table columns={columns} dataSource={data} rowKey="key" />;
+    const desktopColumns = [
+      filterCol,
+      {
+        key: 'history',
+        title: 'history',
+        render: (text: string, rowData: TxDetails) => {
+          return <TxInfo data={rowData} />;
         },
-      )(data);
+      },
+      {
+        key: 'date',
+        title: 'date',
+        render: (text: string, rowData: TxDetails) => {
+          const { date } = rowData;
+
+          return new Date(Number(date) || 0).toDateString();
+        },
+      },
+      {
+        key: 'detail',
+        title: 'detail',
+        render: (text: string, rowData: TxDetails) => {
+          const { in: _in } = rowData;
+          const txID = _in?.txID ?? null;
+          const txURL = txID ? TESTNET_TX_BASE_URL + txID : null;
+
+          return (
+            <div className="tx-detail-button">
+              {txURL ? (
+                <a href={txURL} target="_blank" rel="noopener noreferrer">
+                  <DetailIcon />
+                </a>
+              ) : (
+                <DetailIcon />
+              )}
+            </div>
+          );
+        },
+      },
+    ];
+
+    const mobileColumns = [
+      {
+        key: 'history',
+        title: (
+          <MobileColumeHeader>
+            <div className="mobile-col-title">history</div>
+            <div className="mobile-col-filter">
+              <FilterDropdown />
+            </div>
+          </MobileColumeHeader>
+        ),
+        render: (text: string, rowData: TxDetails) => {
+          const { type, date, in: _in } = rowData;
+          const dateString = new Date(Number(date) || 0).toDateString();
+          const txID = _in?.txID ?? null;
+          const txURL = txID ? TESTNET_TX_BASE_URL + txID : null;
+
+          return (
+            <div className="tx-history-row">
+              <div className="tx-history-data">
+                <TxLabel type={type} />
+                <div className="tx-history-detail">
+                  <p>{dateString}</p>
+                  <div className="tx-detail-button">
+                    {txURL ? (
+                      <a href={txURL} target="_blank" rel="noopener noreferrer">
+                        <DetailIcon />
+                      </a>
+                    ) : (
+                      <DetailIcon />
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div className="tx-history-info">
+                <TxInfo data={rowData} />
+              </div>
+            </div>
+          );
+        },
+      },
+    ];
+
+    const columns = view === ViewType.DESKTOP ? desktopColumns : mobileColumns;
+
+    return <Table columns={columns} dataSource={data} rowKey="key" />;
   };
 
-  return (
-    <>
-      <ContentWrapper className="transaction-view-wrapper desktop-view">
-        {renderTxTable(txData, ViewType.DESKTOP)}
-      </ContentWrapper>
-      <ContentWrapper className="transaction-view-wrapper mobile-view">
-        {renderTxTable(txData, ViewType.MOBILE)}
-      </ContentWrapper>
-      <StyledPagination defaultCurrent={1} total={50} />
-    </>
-  );
+  return RD.fold(
+    () => <div />, // initial
+    () => <TransactionLoader />,
+    (error: Error) => <p>{error.toString()}</p>, // show error
+    (data: TxDetails[]): JSX.Element => (
+      <>
+        <ContentWrapper className="transaction-view-wrapper desktop-view">
+          {renderTxTable(data, ViewType.DESKTOP)}
+        </ContentWrapper>
+        <ContentWrapper className="transaction-view-wrapper mobile-view">
+          {renderTxTable(data, ViewType.MOBILE)}
+        </ContentWrapper>
+        <StyledPagination defaultCurrent={1} total={data?.length ?? 0} />
+      </>
+    ),
+  )(txData);
 };
 
 export default compose(

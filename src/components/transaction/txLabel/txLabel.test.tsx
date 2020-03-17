@@ -22,19 +22,22 @@ describe('FilterDropdown', () => {
   it('has label for tx type', () => {
     expect(component.find('p')).toHaveLength(1);
   });
-  it('has label - swap for tx type sell', () => {
-    const sellTypeComponent = mount(<TxLabel type={TxDetailsTypeEnum.Swap} />);
+  it('has label - swap for tx type swap', () => {
+    const swapTypeComponent = mount(<TxLabel type={TxDetailsTypeEnum.Swap} />);
 
-    expect(sellTypeComponent.find('p').text()).toBe('swap');
+    expect(swapTypeComponent.find('p').text()).toBe('swap');
   });
-
   it('has label - stake for tx type stake', () => {
-    const stakeTypeComponent = mount(<TxLabel type={TxDetailsTypeEnum.Stake} />);
+    const stakeTypeComponent = mount(
+      <TxLabel type={TxDetailsTypeEnum.Stake} />,
+    );
 
     expect(stakeTypeComponent.find('p').text()).toBe('stake');
   });
   it('has label - withdraw for tx type withdraw', () => {
-    const withdrawTypeComponent = mount(<TxLabel type={TxDetailsTypeEnum.Unstake} />);
+    const withdrawTypeComponent = mount(
+      <TxLabel type={TxDetailsTypeEnum.Unstake} />,
+    );
 
     expect(withdrawTypeComponent.find('p').text()).toBe('withdraw');
   });
