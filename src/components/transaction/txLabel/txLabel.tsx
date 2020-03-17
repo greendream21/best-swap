@@ -13,12 +13,12 @@ const TxLabel: React.FC<Props> = (props: Props): JSX.Element => {
   let label = '';
   let TxIcon = SwapIcon;
 
-  if (type === TxDetailsTypeEnum.Sell || type === TxDetailsTypeEnum.Buy) {
+  if (type === TxDetailsTypeEnum.Swap) {
     label = 'swap';
     TxIcon = SwapIcon;
   }
 
-  if (type === TxDetailsTypeEnum.Withdraw) {
+  if (type === TxDetailsTypeEnum.Unstake) {
     label = 'withdraw';
     TxIcon = WithdrawIcon;
   }

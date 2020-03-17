@@ -33,10 +33,10 @@ export interface AssetDetail {
     asset?: string;
     /**
      * 
-     * @type {number}
+     * @type {string}
      * @memberof AssetDetail
      */
-    dateCreated?: number;
+    dateCreated?: string;
     /**
      * 
      * @type {string}
@@ -64,10 +64,10 @@ export interface AssetDetail {
 export interface Coin {
     /**
      * 
-     * @type {number}
+     * @type {string}
      * @memberof Coin
      */
-    amount?: number;
+    amount?: string;
     /**
      * 
      * @type {string}
@@ -83,10 +83,10 @@ export interface Coin {
 export interface Event {
     /**
      * 
-     * @type {number}
+     * @type {string}
      * @memberof Event
      */
-    fee?: number;
+    fee?: string;
     /**
      * 
      * @type {number}
@@ -95,10 +95,10 @@ export interface Event {
     slip?: number;
     /**
      * 
-     * @type {number}
+     * @type {string}
      * @memberof Event
      */
-    stakeUnits?: number;
+    stakeUnits?: string;
 }
 /**
  * 
@@ -108,10 +108,10 @@ export interface Event {
 export interface Gas {
     /**
      * 
-     * @type {number}
+     * @type {string}
      * @memberof Gas
      */
-    amount?: number;
+    amount?: string;
     /**
      * 
      * @type {string}
@@ -146,10 +146,10 @@ export interface Option {
     asymmetry?: number;
     /**
      * 
-     * @type {number}
+     * @type {string}
      * @memberof Option
      */
-    priceTarget?: number;
+    priceTarget?: string;
     /**
      * 
      * @type {number}
@@ -171,10 +171,10 @@ export interface PoolDetail {
     asset?: string;
     /**
      * Total current Asset balance
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    assetDepth?: number;
+    assetDepth?: string;
     /**
      * Asset return on investment
      * @type {number}
@@ -183,28 +183,28 @@ export interface PoolDetail {
     assetROI?: number;
     /**
      * Total Asset staked
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    assetStakedTotal?: number;
+    assetStakedTotal?: string;
     /**
      * Number of RUNE->ASSET transactions
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    buyAssetCount?: number;
+    buyAssetCount?: string;
     /**
      * Average sell Asset fee size for RUNE->ASSET (in ASSET)
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    buyFeeAverage?: number;
+    buyFeeAverage?: string;
     /**
      * Total fees (in Asset)
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    buyFeesTotal?: number;
+    buyFeesTotal?: string;
     /**
      * Average trade slip for RUNE->ASSET in %
      * @type {number}
@@ -213,34 +213,34 @@ export interface PoolDetail {
     buySlipAverage?: number;
     /**
      * Average Asset buy transaction size for (RUNE->ASSET) (in ASSET)
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    buyTxAverage?: number;
+    buyTxAverage?: string;
     /**
      * Total Asset buy volume (RUNE->ASSET) (in Asset)
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    buyVolume?: number;
+    buyVolume?: string;
     /**
      * Total depth of both sides (in RUNE)
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    poolDepth?: number;
+    poolDepth?: string;
     /**
      * Average pool fee
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    poolFeeAverage?: number;
+    poolFeeAverage?: string;
     /**
      * Total fees
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    poolFeesTotal?: number;
+    poolFeesTotal?: string;
     /**
      * Pool ROI (average of RUNE and Asset ROI)
      * @type {number}
@@ -261,34 +261,34 @@ export interface PoolDetail {
     poolSlipAverage?: number;
     /**
      * Rune value staked Total
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    poolStakedTotal?: number;
+    poolStakedTotal?: string;
     /**
      * Average pool transaction
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    poolTxAverage?: number;
+    poolTxAverage?: string;
     /**
      * Total pool units outstanding
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    poolUnits?: number;
+    poolUnits?: string;
     /**
      * Two-way volume of all-time (in RUNE)
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    poolVolume?: number;
+    poolVolume?: string;
     /**
      * Two-way volume in 24hrs (in RUNE)
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    poolVolume24hr?: number;
+    poolVolume24hr?: string;
     /**
      * Price of Asset (in RUNE).
      * @type {number}
@@ -297,10 +297,10 @@ export interface PoolDetail {
     price?: number;
     /**
      * Total current Rune balance
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    runeDepth?: number;
+    runeDepth?: string;
     /**
      * RUNE return on investment
      * @type {number}
@@ -309,28 +309,28 @@ export interface PoolDetail {
     runeROI?: number;
     /**
      * Total RUNE staked
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    runeStakedTotal?: number;
+    runeStakedTotal?: string;
     /**
      * Number of ASSET->RUNE transactions
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    sellAssetCount?: number;
+    sellAssetCount?: string;
     /**
      * Average buy Asset fee size for ASSET->RUNE (in RUNE)
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    sellFeeAverage?: number;
+    sellFeeAverage?: string;
     /**
      * Total fees (in RUNE)
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    sellFeesTotal?: number;
+    sellFeesTotal?: string;
     /**
      * Average trade slip for ASSET->RUNE in %
      * @type {number}
@@ -339,34 +339,34 @@ export interface PoolDetail {
     sellSlipAverage?: number;
     /**
      * Average Asset sell transaction size (ASSET>RUNE) (in RUNE)
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    sellTxAverage?: number;
+    sellTxAverage?: string;
     /**
      * Total Asset sell volume (ASSET>RUNE) (in RUNE).
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    sellVolume?: number;
+    sellVolume?: string;
     /**
      * Number of stake transactions
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    stakeTxCount?: number;
+    stakeTxCount?: string;
     /**
      * Number of unique stakers
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    stakersCount?: number;
+    stakersCount?: string;
     /**
      * Number of stake & withdraw transactions
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    stakingTxCount?: number;
+    stakingTxCount?: string;
     /**
      * 
      * @type {string}
@@ -375,22 +375,22 @@ export interface PoolDetail {
     status?: PoolDetailStatusEnum;
     /**
      * Number of unique swappers interacting with pool
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    swappersCount?: number;
+    swappersCount?: string;
     /**
      * Number of swapping transactions in the pool (buys and sells)
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    swappingTxCount?: number;
+    swappingTxCount?: string;
     /**
      * Number of withdraw transactions
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    withdrawTxCount?: number;
+    withdrawTxCount?: string;
 }
 
 /**
@@ -417,10 +417,10 @@ export interface StakersAddressData {
     poolsArray?: Array<string>;
     /**
      * Total value of earnings (in RUNE) across all pools.
-     * @type {number}
+     * @type {string}
      * @memberof StakersAddressData
      */
-    totalEarned?: number;
+    totalEarned?: string;
     /**
      * Average of all pool ROIs.
      * @type {number}
@@ -429,10 +429,10 @@ export interface StakersAddressData {
     totalROI?: number;
     /**
      * Total staked (in RUNE) across all pools.
-     * @type {number}
+     * @type {string}
      * @memberof StakersAddressData
      */
-    totalStaked?: number;
+    totalStaked?: string;
 }
 /**
  * 
@@ -448,10 +448,10 @@ export interface StakersAssetData {
     asset?: string;
     /**
      * Value of Assets earned from the pool.
-     * @type {number}
+     * @type {string}
      * @memberof StakersAssetData
      */
-    assetEarned?: number;
+    assetEarned?: string;
     /**
      * ROI of the Asset side
      * @type {number}
@@ -460,22 +460,22 @@ export interface StakersAssetData {
     assetROI?: number;
     /**
      * Amount of Assets staked.
-     * @type {number}
+     * @type {string}
      * @memberof StakersAssetData
      */
-    assetStaked?: number;
+    assetStaked?: string;
     /**
      * 
-     * @type {number}
+     * @type {string}
      * @memberof StakersAssetData
      */
-    dateFirstStaked?: number;
+    dateFirstStaked?: string;
     /**
      * Total value of earnings (in RUNE).
-     * @type {number}
+     * @type {string}
      * @memberof StakersAssetData
      */
-    poolEarned?: number;
+    poolEarned?: string;
     /**
      * Average ROI (in RUNE) of both sides
      * @type {number}
@@ -484,16 +484,16 @@ export interface StakersAssetData {
     poolROI?: number;
     /**
      * RUNE value staked.
-     * @type {number}
+     * @type {string}
      * @memberof StakersAssetData
      */
-    poolStaked?: number;
+    poolStaked?: string;
     /**
      * Value of RUNE earned from the pool.
-     * @type {number}
+     * @type {string}
      * @memberof StakersAssetData
      */
-    runeEarned?: number;
+    runeEarned?: string;
     /**
      * ROI of the Rune side.
      * @type {number}
@@ -502,16 +502,16 @@ export interface StakersAssetData {
     runeROI?: number;
     /**
      * Amount of RUNE staked.
-     * @type {number}
+     * @type {string}
      * @memberof StakersAssetData
      */
-    runeStaked?: number;
+    runeStaked?: string;
     /**
      * Represents ownership of a pool.
-     * @type {number}
+     * @type {string}
      * @memberof StakersAssetData
      */
-    stakeUnits?: number;
+    stakeUnits?: string;
 }
 /**
  * 
@@ -521,100 +521,100 @@ export interface StakersAssetData {
 export interface StatsData {
     /**
      * Daily active users (unique addresses interacting)
-     * @type {number}
+     * @type {string}
      * @memberof StatsData
      */
-    dailyActiveUsers?: number;
+    dailyActiveUsers?: string;
     /**
      * Daily transactions
-     * @type {number}
+     * @type {string}
      * @memberof StatsData
      */
-    dailyTx?: number;
+    dailyTx?: string;
     /**
      * Monthly active users
-     * @type {number}
+     * @type {string}
      * @memberof StatsData
      */
-    monthlyActiveUsers?: number;
+    monthlyActiveUsers?: string;
     /**
      * Monthly transactions
-     * @type {number}
+     * @type {string}
      * @memberof StatsData
      */
-    monthlyTx?: number;
+    monthlyTx?: string;
     /**
      * Number of active pools
-     * @type {number}
+     * @type {string}
      * @memberof StatsData
      */
-    poolCount?: number;
+    poolCount?: string;
     /**
      * Total buying transactions
-     * @type {number}
+     * @type {string}
      * @memberof StatsData
      */
-    totalAssetBuys?: number;
+    totalAssetBuys?: string;
     /**
      * Total selling transactions
-     * @type {number}
+     * @type {string}
      * @memberof StatsData
      */
-    totalAssetSells?: number;
+    totalAssetSells?: string;
     /**
      * Total RUNE balances
-     * @type {number}
+     * @type {string}
      * @memberof StatsData
      */
-    totalDepth?: number;
+    totalDepth?: string;
     /**
      * Total earned (in RUNE Value).
-     * @type {number}
+     * @type {string}
      * @memberof StatsData
      */
-    totalEarned?: number;
+    totalEarned?: string;
     /**
      * Total staking transactions
-     * @type {number}
+     * @type {string}
      * @memberof StatsData
      */
-    totalStakeTx?: number;
+    totalStakeTx?: string;
     /**
      * Total staked (in RUNE Value).
-     * @type {number}
+     * @type {string}
      * @memberof StatsData
      */
-    totalStaked?: number;
+    totalStaked?: string;
     /**
      * Total transactions
-     * @type {number}
+     * @type {string}
      * @memberof StatsData
      */
-    totalTx?: number;
+    totalTx?: string;
     /**
      * Total unique swappers & stakers
-     * @type {number}
+     * @type {string}
      * @memberof StatsData
      */
-    totalUsers?: number;
+    totalUsers?: string;
     /**
      * Total (in RUNE Value) of all assets swapped since start.
-     * @type {number}
+     * @type {string}
      * @memberof StatsData
      */
-    totalVolume?: number;
+    totalVolume?: string;
     /**
      * Total (in RUNE Value) of all assets swapped in 24hrs
-     * @type {number}
+     * @type {string}
      * @memberof StatsData
      */
-    totalVolume24hr?: number;
+    totalVolume24hr?: string;
     /**
      * Total withdrawing transactions
-     * @type {number}
+     * @type {string}
      * @memberof StatsData
      */
-    totalWithdrawTx?: number;
+    totalWithdrawTx?: string;
 }
 /**
  * 
@@ -693,10 +693,10 @@ export interface Tx {
 export interface TxDetails {
     /**
      * 
-     * @type {number}
+     * @type {string}
      * @memberof TxDetails
      */
-    date?: number;
+    date?: string;
     /**
      * 
      * @type {Event}
@@ -711,10 +711,10 @@ export interface TxDetails {
     gas?: Gas;
     /**
      * 
-     * @type {number}
+     * @type {string}
      * @memberof TxDetails
      */
-    height?: number;
+    height?: string;
     /**
      * 
      * @type {Tx}
@@ -767,11 +767,14 @@ export enum TxDetailsStatusEnum {
     * @enum {string}
     */
 export enum TxDetailsTypeEnum {
-    Sell = 'sell',
-    Buy = 'buy',
-    CrossPool = 'crossPool',
+    Swap = 'swap',
     Stake = 'stake',
-    Withdraw = 'withdraw'
+    Unstake = 'unstake',
+    Rewards = 'rewards',
+    Add = 'add',
+    Pool = 'pool',
+    Gas = 'gas',
+    Refund = 'refund'
 }
 
 

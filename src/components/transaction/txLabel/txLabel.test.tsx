@@ -7,7 +7,7 @@ import { TxDetailsTypeEnum } from '../../../types/generated/midgard';
 
 describe('FilterDropdown', () => {
   const props = {
-    type: TxDetailsTypeEnum.Sell,
+    type: TxDetailsTypeEnum.Swap,
   };
   const component = mount(<TxLabel {...props} />);
 
@@ -23,22 +23,18 @@ describe('FilterDropdown', () => {
     expect(component.find('p')).toHaveLength(1);
   });
   it('has label - swap for tx type sell', () => {
-    const sellTypeComponent = mount(<TxLabel type={TxDetailsTypeEnum.Sell} />);
+    const sellTypeComponent = mount(<TxLabel type={TxDetailsTypeEnum.Swap} />);
 
     expect(sellTypeComponent.find('p').text()).toBe('swap');
   });
-  it('has label - swap for tx type buy', () => {
-    const buyTypeComponent = mount(<TxLabel type={TxDetailsTypeEnum.Buy} />);
 
-    expect(buyTypeComponent.find('p').text()).toBe('swap');
-  });
   it('has label - stake for tx type stake', () => {
     const stakeTypeComponent = mount(<TxLabel type={TxDetailsTypeEnum.Stake} />);
 
     expect(stakeTypeComponent.find('p').text()).toBe('stake');
   });
   it('has label - withdraw for tx type withdraw', () => {
-    const withdrawTypeComponent = mount(<TxLabel type={TxDetailsTypeEnum.Withdraw} />);
+    const withdrawTypeComponent = mount(<TxLabel type={TxDetailsTypeEnum.Unstake} />);
 
     expect(withdrawTypeComponent.find('p').text()).toBe('withdraw');
   });

@@ -14,9 +14,9 @@ storiesOf('Components/Transaction/TxLabel', module).add('default', () => {
         <div
           style={{ display: 'flex', flexDirection: 'column', padding: '20px' }}
         >
-          <TxLabel type={TxDetailsTypeEnum.Sell} />
+          <TxLabel type={TxDetailsTypeEnum.Swap} />
           <TxLabel type={TxDetailsTypeEnum.Stake} />
-          <TxLabel type={TxDetailsTypeEnum.Withdraw} />
+          <TxLabel type={TxDetailsTypeEnum.Unstake} />
         </div>
       </AppHolder>
     </ThemeProvider>

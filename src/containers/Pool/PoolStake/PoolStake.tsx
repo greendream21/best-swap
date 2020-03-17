@@ -950,10 +950,10 @@ class PoolStake extends React.Component<Props, State> {
     const withdrawRate = (widthdrawPercentage || 50) / 100;
     const { stakeUnits = 0 } = stakeInfo;
 
-    const value = ((withdrawRate * stakeUnits) / poolUnits) * R;
+    const value = ((withdrawRate * Number(stakeUnits)) / poolUnits) * R;
     const runeValue = getUserFormat(value);
     const tokenValue = getUserFormat(
-      ((withdrawRate * stakeUnits) / poolUnits) * T,
+      ((withdrawRate * Number(stakeUnits)) / poolUnits) * T,
     );
     this.withdrawData = {
       runeValue,
@@ -1109,7 +1109,8 @@ class PoolStake extends React.Component<Props, State> {
     const runePrice = priceIndex.RUNE;
     const tokenPrice = _get(priceIndex, target.toUpperCase(), 0);
 
-    const { stakeUnits }: StakersAssetData = stakeInfo;
+    const { stakeUnits:stakeUnitsValue }: StakersAssetData = stakeInfo;
+    const stakeUnits = Number(stakeUnitsValue);
     const loading = this.isLoading() || poolUnits === undefined;
 
     let poolShare;
@@ -1120,8 +1121,8 @@ class PoolStake extends React.Component<Props, State> {
       runeShare = getUserFormat((R * stakeUnits) / poolUnits);
       tokensShare = getUserFormat((T * stakeUnits) / poolUnits);
     }
-    const runeEarned = getUserFormat(stakeInfo.runeEarned);
-    const assetEarned = getUserFormat(stakeInfo.assetEarned);
+    const runeEarned = getUserFormat(Number(stakeInfo.runeEarned));
+    const assetEarned = getUserFormat(Number(stakeInfo.assetEarned));
     const connected = hasWallet;
     const hasStake = hasWallet && stakeUnits !== undefined && stakeUnits > 0;
 

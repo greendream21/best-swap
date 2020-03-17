@@ -60,10 +60,10 @@ export const getSwapData = (
 
     const runePrice = priceIndex.RUNE;
     const depth = Number(poolInfo.runeDepth) * runePrice;
-    const volume = (poolInfo?.poolVolume24hr ?? 0) * runePrice;
-    const transaction = (poolInfo?.poolTxAverage ?? 0) * runePrice;
+    const volume = Number(poolInfo?.poolVolume24hr ?? 0) * runePrice;
+    const transaction = Number(poolInfo?.poolTxAverage ?? 0) * runePrice;
     const slip = (poolInfo.poolSlipAverage ?? 0) * runePrice;
-    const trade = poolInfo?.swappingTxCount ?? 0;
+    const trade = Number(poolInfo?.swappingTxCount ?? 0);
 
     const depthValue = `${basePriceAsset} ${getUserFormat(
       depth,
@@ -128,8 +128,8 @@ export const getCalcResult = (
     */
     Object.keys(pools).forEach(key => {
       const poolData = pools[key];
-      const runeStakedTotal = poolData?.runeStakedTotal ?? 0;
-      const assetStakedTotal = poolData?.assetStakedTotal ?? 0;
+      const runeStakedTotal = Number(poolData?.runeStakedTotal ?? 0);
+      const assetStakedTotal = Number(poolData?.assetStakedTotal ?? 0);
       const { symbol = '' } = getAssetFromString(poolData?.asset);
 
       const token = getTickerFormat(symbol);
@@ -175,8 +175,8 @@ export const getCalcResult = (
 
     Object.keys(pools).forEach(key => {
       const poolData = pools[key];
-      const runeStakedTotal = poolData?.runeStakedTotal ?? 0;
-      const assetStakedTotal = poolData?.assetStakedTotal ?? 0;
+      const runeStakedTotal = Number(poolData?.runeStakedTotal ?? 0);
+      const assetStakedTotal = Number(poolData?.assetStakedTotal ?? 0);
       const { symbol = '' } = getAssetFromString(poolData?.asset);
 
       const token = getTickerFormat(symbol);
@@ -231,8 +231,8 @@ export const getCalcResult = (
 
     Object.keys(pools).forEach(key => {
       const poolData = pools[key];
-      const runeStakedTotal = poolData?.runeStakedTotal ?? 0;
-      const assetStakedTotal = poolData?.assetStakedTotal ?? 0;
+      const runeStakedTotal = Number(poolData?.runeStakedTotal ?? 0);
+      const assetStakedTotal = Number(poolData?.assetStakedTotal ?? 0);
       const { symbol = '' } = getAssetFromString(poolData?.asset);
 
       const token = getTickerFormat(symbol);

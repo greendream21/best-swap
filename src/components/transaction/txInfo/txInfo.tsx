@@ -14,7 +14,7 @@ const TxInfo: React.FC<Props> = (props: Props): JSX.Element => {
   } = props;
 
   // swap tx
-  if (type === TxDetailsTypeEnum.Buy || type === TxDetailsTypeEnum.Sell) {
+  if (type === TxDetailsTypeEnum.Swap) {
     const inData = _in?.coins?.[0];
     const outData = out?.[0]?.coins?.[0];
 
@@ -41,7 +41,7 @@ const TxInfo: React.FC<Props> = (props: Props): JSX.Element => {
   }
 
   // withdraw tx
-  if (type === TxDetailsTypeEnum.Withdraw) {
+  if (type === TxDetailsTypeEnum.Unstake) {
     const inData = _in?.coins?.[0];
     const outData = out?.[0]?.coins;
 
