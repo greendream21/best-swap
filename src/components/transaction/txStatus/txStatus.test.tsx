@@ -10,7 +10,7 @@ describe('FilterDropdown', () => {
     data: [
       {
         asset: 'rune',
-        amount: 1.25,
+        amount: '1.25',
       },
     ],
     round: 'left',
@@ -20,11 +20,11 @@ describe('FilterDropdown', () => {
     data: [
       {
         asset: 'rune',
-        amount: 1.25,
+        amount: '1.25',
       },
       {
         asset: 'bnb',
-        amount: 12.5,
+        amount: '12.5',
       },
     ],
     round: 'right',

@@ -74,7 +74,7 @@ export const getCalcResult = (
       T = Number(assetStakedTotal);
       ratio = 1 / (R / T);
       symbolTo = symbol;
-      poolUnits = poolDataUnits;
+      poolUnits = Number(poolDataUnits);
     }
   });
 
@@ -169,16 +169,16 @@ export const getPoolData = (
   );
 
   const runePrice = priceIndex.RUNE || 0;
-  const depth = (poolDetail?.runeDepth ?? 0) * runePrice;
-  const volume24 = (poolDetail?.poolVolume24hr ?? 0) * runePrice;
-  const volumeAT = (poolDetail?.poolVolume ?? 0) * runePrice;
-  const transaction = (poolDetail?.poolTxAverage ?? 0) * runePrice;
+  const depth = Number(poolDetail?.runeDepth ?? 0) * runePrice;
+  const volume24 = Number(poolDetail?.poolVolume24hr ?? 0) * runePrice;
+  const volumeAT = Number(poolDetail?.poolVolume ?? 0) * runePrice;
+  const transaction = Number(poolDetail?.poolTxAverage ?? 0) * runePrice;
 
   const roiAT = poolDetail?.poolROI ?? 0;
-  const liqFee = poolDetail?.poolFeeAverage ?? 0;
+  const liqFee = Number(poolDetail?.poolFeeAverage ?? 0);
 
-  const totalSwaps = poolDetail?.swappersCount ?? 0;
-  const totalStakers = poolDetail?.stakersCount ?? 0;
+  const totalSwaps = Number(poolDetail?.swappersCount ?? 0);
+  const totalStakers = Number(poolDetail?.stakersCount ?? 0);
 
   const depthValue = `${basePriceAsset} ${getUserFormat(
     depth,

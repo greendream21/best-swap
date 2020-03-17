@@ -12,7 +12,7 @@ storiesOf('Components/Transaction/TxStatus', module).add('default', () => {
     data: [
       {
         asset: 'rune',
-        amount: 1.25,
+        amount: '1.25',
       },
     ],
     round: 'left',
@@ -22,11 +22,11 @@ storiesOf('Components/Transaction/TxStatus', module).add('default', () => {
     data: [
       {
         asset: 'rune',
-        amount: 1.25,
+        amount: '1.25',
       },
       {
         asset: 'bnb',
-        amount: 12.5,
+        amount: '12.5',
       },
     ],
     round: 'right',

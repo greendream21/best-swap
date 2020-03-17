@@ -138,11 +138,11 @@ export function* getUserStakeData(payload: {
         const stakeData = {
           targetSymbol: symbol,
           target: ticker.toLowerCase(),
-          targetValue: userStakerData.assetStaked
-            ? getFixedNumber(userStakerData.assetStaked / BASE_NUMBER)
+          targetValue: Number(userStakerData.assetStaked)
+            ? getFixedNumber(Number(userStakerData.assetStaked) / BASE_NUMBER)
             : 0,
-          assetValue: userStakerData.runeStaked
-            ? getFixedNumber(userStakerData.runeStaked / BASE_NUMBER)
+          assetValue: Number(userStakerData.runeStaked)
+            ? getFixedNumber(Number(userStakerData.runeStaked) / BASE_NUMBER)
             : 0,
           asset: 'rune',
           price,
