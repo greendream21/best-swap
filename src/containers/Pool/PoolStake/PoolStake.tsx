@@ -186,10 +186,16 @@ class PoolStake extends React.Component<Props, State> {
       user,
       txStatus: { type, hash },
       refreshStake,
+      symbol,
     } = this.props;
     const { txResult } = this.state;
     const length = wsTransfers.length;
     const wallet = user ? user.wallet : null;
+
+    if (prevProps.symbol !== symbol) {
+      // stakerPoolData needs to be updated
+      this.getStakerInfo();
+    }
 
     if (
       length !== prevProps.wsTransfers.length &&

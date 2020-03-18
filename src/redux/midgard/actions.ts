@@ -111,10 +111,10 @@ export const getStakerPoolData = (
 export const GET_STAKER_POOL_DATA_SUCCESS = 'GET_STAKER_POOL_DATA_SUCCESS';
 export interface GetStakerPoolDataSuccess {
   type: typeof GET_STAKER_POOL_DATA_SUCCESS;
-  payload: StakersAssetData;
+  payload: StakersAssetData[];
 }
 export const getStakerPoolDataSuccess = (
-  payload: StakersAssetData,
+  payload: StakersAssetData[],
 ): GetStakerPoolDataSuccess => ({
   type: GET_STAKER_POOL_DATA_SUCCESS,
   payload,
