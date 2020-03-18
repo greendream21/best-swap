@@ -27,7 +27,7 @@
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook -o ./build/storybook",
     "generate:types": "yarn clean:types:midgard && yarn generate:types:midgard",
-    "generate:types:midgard": "openapi-generator generate -i http://159.89.252.210:8080/v1/swagger.json -g typescript-axios -o ./src/types/generated/midgard",
+    "generate:types:midgard": "openapi-generator generate -i http://159.89.252.210:8080/v1/swagger.json -g typescript-axios -o ./src/types/generated/midgard --reserved-words-mappings in=in",
     "clean:types:midgard": "rm -rf ./src/types/generated/midgard"
   },
   "dependencies": {
