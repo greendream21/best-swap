@@ -58,7 +58,7 @@ export const getPriceIndex = (
     const { ticker } = getAssetFromString(asset);
     return ticker === baseTokenTicker.toUpperCase();
   });
-  baseTokenPrice = baseTokenInfo?.priceRune ?? 1;
+  baseTokenPrice = Number(baseTokenInfo?.priceRune ?? 1);
 
   let priceDataIndex: PriceDataIndex = {
     RUNE: 1 / baseTokenPrice,
@@ -69,7 +69,7 @@ export const getPriceIndex = (
 
     let price = 0;
     if (priceRune && baseTokenPrice) {
-      price = getFixedNumber((1 / baseTokenPrice) * priceRune);
+      price = getFixedNumber((1 / baseTokenPrice) * Number(priceRune));
     }
 
     const { ticker } = getAssetFromString(asset);

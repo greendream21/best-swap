@@ -793,7 +793,7 @@ class SwapSend extends React.Component<Props, State> {
       const tokenData = tokenInfo[tokenName];
       const assetStr = tokenData?.asset;
       const asset = assetStr ? getAssetFromString(assetStr) : null;
-      const price = tokenData?.priceRune ?? 0;
+      const price = Number(tokenData?.priceRune ?? 0);
 
       return {
         asset: asset?.symbol ?? '',

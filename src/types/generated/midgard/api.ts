@@ -51,10 +51,10 @@ export interface AssetDetail {
     name?: string;
     /**
      * 
-     * @type {number}
+     * @type {string}
      * @memberof AssetDetail
      */
-    priceRune?: number;
+    priceRune?: string;
 }
 /**
  * 
@@ -89,10 +89,10 @@ export interface Event {
     fee?: string;
     /**
      * 
-     * @type {number}
+     * @type {string}
      * @memberof Event
      */
-    slip?: number;
+    slip?: string;
     /**
      * 
      * @type {string}
@@ -140,10 +140,10 @@ export interface ModelError {
 export interface Option {
     /**
      * 
-     * @type {number}
+     * @type {string}
      * @memberof Option
      */
-    asymmetry?: number;
+    asymmetry?: string;
     /**
      * 
      * @type {string}
@@ -152,10 +152,10 @@ export interface Option {
     priceTarget?: string;
     /**
      * 
-     * @type {number}
+     * @type {string}
      * @memberof Option
      */
-    withdrawBasisPoints?: number;
+    withdrawBasisPoints?: string;
 }
 /**
  * 
@@ -177,10 +177,10 @@ export interface PoolDetail {
     assetDepth?: string;
     /**
      * Asset return on investment
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    assetROI?: number;
+    assetROI?: string;
     /**
      * Total Asset staked
      * @type {string}
@@ -207,10 +207,10 @@ export interface PoolDetail {
     buyFeesTotal?: string;
     /**
      * Average trade slip for RUNE->ASSET in %
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    buySlipAverage?: number;
+    buySlipAverage?: string;
     /**
      * Average Asset buy transaction size for (RUNE->ASSET) (in ASSET)
      * @type {string}
@@ -243,22 +243,22 @@ export interface PoolDetail {
     poolFeesTotal?: string;
     /**
      * Pool ROI (average of RUNE and Asset ROI)
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    poolROI?: number;
+    poolROI?: string;
     /**
      * Pool ROI over 12 months
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    poolROI12?: number;
+    poolROI12?: string;
     /**
      * Average pool slip
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    poolSlipAverage?: number;
+    poolSlipAverage?: string;
     /**
      * Rune value staked Total
      * @type {string}
@@ -291,10 +291,10 @@ export interface PoolDetail {
     poolVolume24hr?: string;
     /**
      * Price of Asset (in RUNE).
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    price?: number;
+    price?: string;
     /**
      * Total current Rune balance
      * @type {string}
@@ -303,10 +303,10 @@ export interface PoolDetail {
     runeDepth?: string;
     /**
      * RUNE return on investment
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    runeROI?: number;
+    runeROI?: string;
     /**
      * Total RUNE staked
      * @type {string}
@@ -333,10 +333,10 @@ export interface PoolDetail {
     sellFeesTotal?: string;
     /**
      * Average trade slip for ASSET->RUNE in %
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    sellSlipAverage?: number;
+    sellSlipAverage?: string;
     /**
      * Average Asset sell transaction size (ASSET>RUNE) (in RUNE)
      * @type {string}
@@ -423,10 +423,10 @@ export interface StakersAddressData {
     totalEarned?: string;
     /**
      * Average of all pool ROIs.
-     * @type {number}
+     * @type {string}
      * @memberof StakersAddressData
      */
-    totalROI?: number;
+    totalROI?: string;
     /**
      * Total staked (in RUNE) across all pools.
      * @type {string}
@@ -454,10 +454,10 @@ export interface StakersAssetData {
     assetEarned?: string;
     /**
      * ROI of the Asset side
-     * @type {number}
+     * @type {string}
      * @memberof StakersAssetData
      */
-    assetROI?: number;
+    assetROI?: string;
     /**
      * Amount of Assets staked.
      * @type {string}
@@ -478,10 +478,10 @@ export interface StakersAssetData {
     poolEarned?: string;
     /**
      * Average ROI (in RUNE) of both sides
-     * @type {number}
+     * @type {string}
      * @memberof StakersAssetData
      */
-    poolROI?: number;
+    poolROI?: string;
     /**
      * RUNE value staked.
      * @type {string}
@@ -496,10 +496,10 @@ export interface StakersAssetData {
     runeEarned?: string;
     /**
      * ROI of the Rune side.
-     * @type {number}
+     * @type {string}
      * @memberof StakersAssetData
      */
-    runeROI?: number;
+    runeROI?: string;
     /**
      * Amount of RUNE staked.
      * @type {string}
