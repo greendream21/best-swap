@@ -62,7 +62,7 @@ export const getSwapData = (
     const depth = Number(poolInfo.runeDepth) * runePrice;
     const volume = Number(poolInfo?.poolVolume24hr ?? 0) * runePrice;
     const transaction = Number(poolInfo?.poolTxAverage ?? 0) * runePrice;
-    const slip = (poolInfo.poolSlipAverage ?? 0) * runePrice;
+    const slip = Number(poolInfo.poolSlipAverage ?? 0) * runePrice;
     const trade = Number(poolInfo?.swappingTxCount ?? 0);
 
     const depthValue = `${basePriceAsset} ${getUserFormat(

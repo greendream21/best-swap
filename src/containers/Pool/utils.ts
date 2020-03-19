@@ -174,7 +174,7 @@ export const getPoolData = (
   const volumeAT = Number(poolDetail?.poolVolume ?? 0) * runePrice;
   const transaction = Number(poolDetail?.poolTxAverage ?? 0) * runePrice;
 
-  const roiAT = poolDetail?.poolROI ?? 0;
+  const roiAT = Number(poolDetail?.poolROI ?? 0);
   const liqFee = Number(poolDetail?.poolFeeAverage ?? 0);
 
   const totalSwaps = Number(poolDetail?.swappersCount ?? 0);

@@ -44,7 +44,7 @@ export const txData1: TxDetails = {
   events: {
     fee: '1.234',
     stakeUnits: '100',
-    slip: 0.3,
+    slip: '0.3',
   },
 };
 
@@ -88,7 +88,7 @@ export const txData2: TxDetails = {
   events: {
     fee: '1.234',
     stakeUnits: '100',
-    slip: 0.3,
+    slip: '0.3',
   },
 };
 
@@ -132,7 +132,7 @@ export const txData3: TxDetails = {
   events: {
     fee: '1.234',
     stakeUnits: '100',
-    slip: 0.3,
+    slip: '0.3',
   },
 };
 
@@ -176,6 +176,6 @@ export const txData4: TxDetails = {
   events: {
     fee: '1.234',
     stakeUnits: '100',
-    slip: 0.3,
+    slip: '0.3',
   },
 };

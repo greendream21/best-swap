@@ -17,7 +17,7 @@ const TxInfo: React.FC<Props> = (props: Props): JSX.Element => {
   if (type === TxDetailsTypeEnum.Swap) {
     const inData = _in?.coins?.[0];
     const outData = out?.[0]?.coins?.[0];
-    const slipValue = (events?.slip ?? 0) * 100;
+    const slipValue = Number(events?.slip ?? 0) * 100;
 
     return (
       <TxInfoWrapper className="txInfo-wrapper swap-tx">
