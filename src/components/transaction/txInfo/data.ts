@@ -36,7 +36,7 @@ export const txData1: TxDetails = {
       ],
     },
   ],
-  date: '1550102400',
+  date: 1550102400,
   gas: {
     asset: 'RUNE',
     amount: '1',
@@ -80,7 +80,7 @@ export const txData2: TxDetails = {
       ],
     },
   ],
-  date: '1550102400',
+  date: 1550102400,
   gas: {
     asset: 'RUNE',
     amount: '1',
@@ -124,7 +124,7 @@ export const txData3: TxDetails = {
       ],
     },
   ],
-  date: '1550102400',
+  date: 1550102400,
   gas: {
     asset: 'RUNE',
     amount: '1',
@@ -168,7 +168,7 @@ export const txData4: TxDetails = {
       ],
     },
   ],
-  date: '1550102400',
+  date: 1550102400,
   gas: {
     asset: 'RUNE',
     amount: '1',

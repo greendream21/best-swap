@@ -33,10 +33,10 @@ export interface AssetDetail {
     asset?: string;
     /**
      * 
-     * @type {string}
+     * @type {number}
      * @memberof AssetDetail
      */
-    dateCreated?: string;
+    dateCreated?: number;
     /**
      * 
      * @type {string}
@@ -466,10 +466,10 @@ export interface StakersAssetData {
     assetStaked?: string;
     /**
      * 
-     * @type {string}
+     * @type {number}
      * @memberof StakersAssetData
      */
-    dateFirstStaked?: string;
+    dateFirstStaked?: number;
     /**
      * Total value of earnings (in RUNE).
      * @type {string}
@@ -693,10 +693,10 @@ export interface Tx {
 export interface TxDetails {
     /**
      * 
-     * @type {string}
+     * @type {number}
      * @memberof TxDetails
      */
-    date?: string;
+    date?: number;
     /**
      * 
      * @type {Event}
