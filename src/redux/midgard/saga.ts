@@ -1,5 +1,4 @@
 import { all, takeEvery, put, fork, call } from 'redux-saga/effects';
-import { AxiosResponse } from 'axios';
 import { isEmpty as _isEmpty } from 'lodash';
 import * as actions from './actions';
 import { MIDGARD_API_URL } from '../../helpers/apiHelper';
@@ -9,30 +8,45 @@ import {
   getBasePriceAsset,
 } from '../../helpers/webStorageHelper';
 import { getAssetDetailIndex, getPriceIndex } from './utils';
-import {
-  DefaultApi,
-  AssetDetail,
-  PoolDetail,
-  StakersAssetData,
-  ThorchainEndpoints,
-  TxDetails,
-} from '../../types/generated/midgard';
+import { DefaultApi } from '../../types/generated/midgard';
+import { UnpackedPromise } from '../../types/util';
+
+/**
+ * Helper type to infer types of Midgard API responses
+ * because `redux-saga` `call` functions need to know what the return type is.
+ * Basicly it's a transformation from Promise<AnyValue>) to AxiosResponse<AnyValue>
+ * by using `conditional types` and `infer` features of TypeScript
+ *
+ * Note: `call` of `redux-saga` would just return an `any` without using that helper type
+ * and we would lost all type safety w/o using this helper type.
+ *
+ * <F> Type of midgard endpoint function
+ * <R> Return type of midgards endpoint function
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type MidgardAPIResponse<F> = F extends (...args: any[]) => infer R
+  ? UnpackedPromise<R>
+  : F;
 
 const midgardApi = new DefaultApi({ basePath: MIDGARD_API_URL });
 
 export function* getPools() {
   yield takeEvery(actions.GET_POOLS_REQUEST, function*() {
     try {
-      const { data }: AxiosResponse<string[]> = yield call({
+      const fn = midgardApi.getPools;
+      const { data }: MidgardAPIResponse<typeof fn> = yield call({
         context: midgardApi,
-        fn: midgardApi.getPools,
+        fn,
       });
 
       if (data && !_isEmpty(data)) {
-        const { data: assetDetails }: AxiosResponse<AssetDetail[]> = yield call(
+        const fn = midgardApi.getAssetInfo;
+        const {
+          data: assetDetails,
+        }: MidgardAPIResponse<typeof fn> = yield call(
           {
             context: midgardApi,
-            fn: midgardApi.getAssetInfo,
+            fn,
           },
           data.join(),
         );
@@ -69,8 +83,9 @@ export function* getPoolData() {
   }: actions.GetPoolData) {
     const { assets, overrideAllPoolData } = payload;
     try {
-      const { data }: AxiosResponse<PoolDetail[]> = yield call(
-        { context: midgardApi, fn: midgardApi.getPoolsData },
+      const fn = midgardApi.getPoolsData;
+      const { data }: MidgardAPIResponse<typeof fn> = yield call(
+        { context: midgardApi, fn },
         assets.join(),
       );
       yield put(
@@ -92,8 +107,9 @@ export function* getStakerPoolData() {
     const assetId = `BNB.${asset}`;
 
     try {
-      const { data }: AxiosResponse<StakersAssetData> = yield call(
-        { context: midgardApi, fn: midgardApi.getStakersAddressAndAssetData },
+      const fn = midgardApi.getStakersAddressAndAssetData;
+      const { data }: MidgardAPIResponse<typeof fn> = yield call(
+        { context: midgardApi, fn },
         address,
         assetId,
       );
@@ -108,9 +124,10 @@ export function* getStakerPoolData() {
 export function* getPoolAddress() {
   yield takeEvery(actions.GET_POOL_ADDRESSES_REQUEST, function*() {
     try {
-      const { data }: AxiosResponse<ThorchainEndpoints> = yield call({
+      const fn = midgardApi.getThorchainProxiedEndpoints;
+      const { data }: MidgardAPIResponse<typeof fn> = yield call({
         context: midgardApi,
-        fn: midgardApi.getThorchainProxiedEndpoints,
+        fn,
       });
 
       yield put(actions.getPoolAddressSuccess(data));
@@ -125,11 +142,9 @@ export function* getTxByAddress() {
     payload,
   }: actions.GetTxByAddress) {
     try {
-      const { data }: AxiosResponse<TxDetails[]> = yield call(
-        {
-          context: midgardApi,
-          fn: midgardApi.getTxDetails,
-        },
+      const fn = midgardApi.getTxDetails;
+      const { data }: MidgardAPIResponse<typeof fn> = yield call(
+        { context: midgardApi, fn },
         payload,
       );
 
@@ -145,11 +160,12 @@ export function* getTxByAddressTxId() {
     payload,
   }: actions.GetTxByAddressTxId) {
     try {
+      const fn = midgardApi.getTxDetailsByAddressTxId;
       const { address, txId } = payload;
-      const { data }: AxiosResponse<TxDetails[]> = yield call(
+      const { data }: MidgardAPIResponse<typeof fn> = yield call(
         {
           context: midgardApi,
-          fn: midgardApi.getTxDetailsByAddressTxId,
+          fn,
         },
         address,
         txId,
@@ -167,11 +183,12 @@ export function* getTxByAddressAsset() {
     payload,
   }: actions.GetTxByAddressAsset) {
     try {
+      const fn = midgardApi.getTxDetailsByAddressAsset;
       const { address, asset } = payload;
-      const { data }: AxiosResponse<TxDetails[]> = yield call(
+      const { data }: MidgardAPIResponse<typeof fn> = yield call(
         {
           context: midgardApi,
-          fn: midgardApi.getTxDetailsByAddressAsset,
+          fn,
         },
         address,
         asset,
@@ -189,10 +206,11 @@ export function* getTxByAsset() {
     payload,
   }: actions.GetTxByAsset) {
     try {
-      const { data }: AxiosResponse<TxDetails[]> = yield call(
+      const fn = midgardApi.getTxDetailsByAsset;
+      const { data }: MidgardAPIResponse<typeof fn> = yield call(
         {
           context: midgardApi,
-          fn: midgardApi.getTxDetailsByAsset,
+          fn,
         },
         payload,
       );
