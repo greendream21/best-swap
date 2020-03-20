@@ -39,12 +39,6 @@ export function* saveWalletSaga() {
 
     yield put(actions.refreshBalance(wallet));
     yield put(actions.refreshStake(wallet));
-
-    yield put(push('/swap'));
-
-    // force reload the page to init websocket
-
-    window.location.href = '/swap';
   });
 }
 
