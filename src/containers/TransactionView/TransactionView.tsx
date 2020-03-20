@@ -76,8 +76,9 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
         title: 'date',
         render: (text: string, rowData: TxDetails) => {
           const { date } = rowData;
+          const timestamp = date || 0;
 
-          return new Date(date || 0).toDateString();
+          return new Date(timestamp * 1000).toDateString();
         },
       },
       {
@@ -116,7 +117,8 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
         ),
         render: (text: string, rowData: TxDetails) => {
           const { type, date, in: _in } = rowData;
-          const dateString = new Date(date || 0).toDateString();
+          const timestamp = date || 0;
+          const dateString = new Date(timestamp * 1000).toDateString();
           const txID = _in?.txID ?? null;
           const txURL = txID ? TESTNET_TX_BASE_URL + txID : null;
 
