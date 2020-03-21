@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
+import { Icon } from 'antd';
 import * as RD from '@devexperts/remote-data-ts';
 
 import Table from '../../components/uielements/table';
@@ -10,6 +11,8 @@ import TxLabel from '../../components/transaction/txLabel';
 import TxInfo from '../../components/transaction/txInfo';
 import TransactionLoader from '../../components/utility/loaders/transaction';
 import { DetailIcon } from '../../components/icons/txIcons';
+import WalletButton from '../../components/uielements/walletButton';
+import Label from '../../components/uielements/label';
 
 import {
   ContentWrapper,
@@ -37,15 +40,12 @@ type Props = ComponentProps & ConnectedProps;
 
 const Transaction: React.FC<Props> = (props): JSX.Element => {
   const { user, txData, getTxByAddress } = props;
-  const history = useHistory();
 
   useEffect(() => {
     const walletAddress = user?.wallet ?? null;
 
     if (walletAddress) {
       getTxByAddress(walletAddress);
-    } else {
-      history.push('/connect');
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -151,22 +151,48 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
     return <Table columns={columns} dataSource={data} rowKey="key" />;
   };
 
-  return RD.fold(
-    () => <div />, // initial
-    () => <TransactionLoader />,
-    (error: Error) => <p>{error.toString()}</p>, // show error
-    (data: TxDetails[]): JSX.Element => (
-      <>
-        <ContentWrapper className="transaction-view-wrapper desktop-view">
-          {renderTxTable(data, ViewType.DESKTOP)}
+  const pageContent = (data: TxDetails[]) => (
+    <>
+      <ContentWrapper className="transaction-view-wrapper desktop-view">
+        {renderTxTable(data, ViewType.DESKTOP)}
+      </ContentWrapper>
+      <ContentWrapper className="transaction-view-wrapper mobile-view">
+        {renderTxTable(data, ViewType.MOBILE)}
+      </ContentWrapper>
+      <StyledPagination defaultCurrent={1} total={data?.length ?? 0} />
+    </>
+  );
+
+  const renderPage = () => {
+    const walletAddress = user?.wallet ?? null;
+
+    if (walletAddress) {
+      return RD.fold(
+        () => <div />, // initial
+        () => <TransactionLoader />,
+        (error: Error) => <p>{error.toString()}</p>, // show error
+        (data: TxDetails[]): JSX.Element => pageContent(data),
+      )(txData);
+    } else {
+      return (
+        <ContentWrapper className="transaction-view-wrapper center-align">
+          <div className="connect-wallet">
+            <div className="add-wallet-icon">
+              <Icon type="file-add" theme="outlined" />
+            </div>
+            <Label className="connect-wallet-label">
+              Please connect your wallet!
+            </Label>
+            <Link to="/connect">
+              <WalletButton connected={false} />
+            </Link>
+          </div>
         </ContentWrapper>
-        <ContentWrapper className="transaction-view-wrapper mobile-view">
-          {renderTxTable(data, ViewType.MOBILE)}
-        </ContentWrapper>
-        <StyledPagination defaultCurrent={1} total={data?.length ?? 0} />
-      </>
-    ),
-  )(txData);
+      );
+    }
+  };
+
+  return renderPage();
 };
 
 export default compose(
