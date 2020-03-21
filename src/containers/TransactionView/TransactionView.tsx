@@ -1,8 +1,6 @@
 import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { Icon } from 'antd';
 import * as RD from '@devexperts/remote-data-ts';
 
 import Table from '../../components/uielements/table';
@@ -11,8 +9,6 @@ import TxLabel from '../../components/transaction/txLabel';
 import TxInfo from '../../components/transaction/txInfo';
 import TransactionLoader from '../../components/utility/loaders/transaction';
 import { DetailIcon } from '../../components/icons/txIcons';
-import WalletButton from '../../components/uielements/walletButton';
-import Label from '../../components/uielements/label';
 
 import {
   ContentWrapper,
@@ -27,6 +23,7 @@ import * as midgardActions from '../../redux/midgard/actions';
 import { TxDetailData } from '../../redux/midgard/types';
 import { User } from '../../redux/wallet/types';
 import { RootState } from '../../redux/store';
+import AddWallet from '../../components/uielements/addWallet';
 
 type ComponentProps = {};
 
@@ -178,17 +175,7 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
     } else {
       return (
         <ContentWrapper className="transaction-view-wrapper center-align">
-          <div className="connect-wallet">
-            <div className="add-wallet-icon">
-              <Icon type="file-add" theme="outlined" />
-            </div>
-            <Label className="connect-wallet-label">
-              Please connect your wallet!
-            </Label>
-            <Link to="/connect">
-              <WalletButton connected={false} />
-            </Link>
-          </div>
+          <AddWallet />
         </ContentWrapper>
       );
     }

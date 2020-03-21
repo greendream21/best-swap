@@ -20,7 +20,7 @@ import TxTimer from '../../../components/uielements/txTimer';
 import Drag from '../../../components/uielements/drag';
 import Modal from '../../../components/uielements/modal';
 import Button from '../../../components/uielements/button';
-import WalletButton from '../../../components/uielements/walletButton';
+import AddWallet from '../../../components/uielements/addWallet';
 import PrivateModal from '../../../components/modals/privateModal';
 
 import * as appActions from '../../../redux/app/actions';
@@ -1129,29 +1129,13 @@ class PoolStake extends React.Component<Props, State> {
     }
     const runeEarned = getUserFormat(Number(stakeInfo.runeEarned));
     const assetEarned = getUserFormat(Number(stakeInfo.assetEarned));
-    const connected = hasWallet;
     const hasStake = hasWallet && stakeUnits !== undefined && stakeUnits > 0;
 
     return (
       <>
         <div className="your-share-wrapper">
           {!hasWallet && (
-            <Label className="label-title" size="normal">
-              YOUR SHARE
-            </Label>
-          )}
-          {!hasWallet && (
-            <div className="share-placeholder-wrapper">
-              <div className="placeholder-icon">
-                <Icon type="switcher" />
-              </div>
-              <Label className="placeholder-label">
-                Please connect your wallet.
-              </Label>
-              <Link to="/connect">
-                <WalletButton connected={connected} value={wallet} />
-              </Link>
-            </div>
+            <AddWallet />
           )}
           {hasWallet && stakeUnits === 0 && (
             <div className="share-placeholder-wrapper">

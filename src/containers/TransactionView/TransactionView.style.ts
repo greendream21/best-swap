@@ -51,27 +51,6 @@ export const ContentWrapper = styled(ContentView)`
     justify-content: center;
     align-items: center;
   }
-
-  .connect-wallet {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-
-    .add-wallet-icon {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      font-size: 32px;
-      background: #D3DBE7;
-    }
-
-    .connect-wallet-label {
-      text-transform: uppercase;
-    }
   }
 `;
 
