@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { crypto } from '@binance-chain/javascript-sdk';
 import { FilePicker } from 'react-file-picker';
@@ -20,8 +21,9 @@ const Keystore = props => {
   const [keystore, setKeystore] = useState(null);
   const [password, setPassword] = useState(null);
   const [invalideStatus, setInvalideStatus] = useState(false);
-
   const [keystoreError, setKeystoreError] = useState(null);
+
+  const history = useHistory();
 
   const reader = new FileReader();
 
@@ -67,6 +69,10 @@ const Keystore = props => {
       // clean up
       setPassword(null);
       setKeystore(null);
+
+      // redirect to previous page
+
+      history.goBack();
     } catch (error) {
       setInvalideStatus(true);
       console.error(error);
