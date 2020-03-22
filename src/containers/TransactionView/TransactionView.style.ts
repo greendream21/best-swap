@@ -51,7 +51,6 @@ export const ContentWrapper = styled(ContentView)`
     justify-content: center;
     align-items: center;
   }
-  }
 `;
 
 export const MobileColumeHeader = styled.div`
