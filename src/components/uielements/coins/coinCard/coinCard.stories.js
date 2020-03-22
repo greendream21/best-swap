@@ -6,6 +6,7 @@ import AppHolder from '../../../../AppStyle';
 import { defaultTheme } from '../../../../settings';
 
 import CoinCard from './coinCard';
+import { bn } from '../../../../helpers/bnHelper';
 
 storiesOf('Components/Coins/CoinCard', module).add('default', () => {
   return (
@@ -22,9 +23,12 @@ storiesOf('Components/Coins/CoinCard', module).add('default', () => {
               {
                 asset: 'tomo',
               },
-            ]} // AssetPair[]
-            amount={1.354}
-            price={600}
+              {
+                asset: 'tomo',
+              },
+            ]}
+            amount={bn(1.354)}
+            price={bn(600)}
             priceIndex={{
               RUNE: 1,
             }}
@@ -33,8 +37,8 @@ storiesOf('Components/Coins/CoinCard', module).add('default', () => {
           <CoinCard
             title="You will receive"
             asset="bolt"
-            amount={13549}
-            price={596}
+            amount={bn(13549)}
+            price={bn(596)}
             slip={2}
           />
         </div>

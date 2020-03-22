@@ -1,5 +1,6 @@
 import React from 'react';
 
+import BigNumber from 'bignumber.js';
 import { TokenInfoWrapper } from './tokenInfo.style';
 import Trend from '../../trend';
 import Label from '../../label';
@@ -8,7 +9,7 @@ import TokenInfoLoader from '../../../utility/loaders/tokenInfo';
 type Props = {
   asset: string;
   target: string;
-  trend: number;
+  trend: BigNumber;
   value: string;
   label: string;
   loading: boolean;
@@ -38,7 +39,7 @@ const TokenInfo: React.FC<Props> = (props: Props): JSX.Element => {
         <>
           <div className="tokenInfo-header">
             <Label className="pool-label">{poolLabel}</Label>
-            <Trend value={trend} />
+            <Trend amount={trend} />
           </div>
           <Label size="big">{value}</Label>
           <Label color="light">{label}</Label>

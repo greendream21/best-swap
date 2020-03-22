@@ -1,5 +1,4 @@
 import React from 'react';
-import { getFixedNumber } from '../../../../helpers/stringHelper';
 
 import { TokenDataWrapper } from './tokenData.style';
 
@@ -8,7 +7,7 @@ import { CoinSize } from '../../coins/coin/types';
 
 type Props = {
   asset: string;
-  price: number;
+  priceValue: string;
   priceUnit: string;
   size?: CoinSize;
   className?: string;
@@ -17,13 +16,13 @@ type Props = {
 const TokenData: React.FC<Props> = (props: Props): JSX.Element => {
   const {
     asset,
-    price,
+    priceValue,
     priceUnit,
     size = 'big',
     className = '',
     ...otherProps
   } = props;
-  const priceValue = `${priceUnit} ${getFixedNumber(price)}`;
+
   return (
     <TokenDataWrapper
       className={`tokenData-wrapper ${className}`}
@@ -31,7 +30,7 @@ const TokenData: React.FC<Props> = (props: Props): JSX.Element => {
     >
       <Coin className="coinData-coin-avatar" type={asset} size={size} />
       <div className="coinData-asset-label">{asset}</div>
-      <div className="asset-price-info">{priceValue}</div>
+      <div className="asset-price-info">{priceUnit} {priceValue}</div>
     </TokenDataWrapper>
   );
 };

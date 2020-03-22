@@ -1,6 +1,7 @@
 import React from 'react';
 import { Dropdown } from 'antd';
 
+import BigNumber from 'bignumber.js';
 import {
   TokenSelectWrapper,
   TokenDropdownButton,
@@ -12,17 +13,20 @@ import TokenMenu from './tokenMenu';
 import TokenData from '../tokenData';
 import Ref from '../../../../helpers/event/ref';
 import clickedInNode from '../../../../helpers/event/clickedInNode';
+import { formatBN } from '../../../../helpers/bnHelper';
 import { AssetPair, FixmeType } from '../../../../types/bepswap';
 import { PriceDataIndex } from '../../../../redux/midgard/types';
 import { delay } from '../../../../helpers/asyncHelper';
 
 type DropdownCarretProps = {
-  className?: string,
-  open: boolean,
-  onClick?: () => void,
-}
+  className?: string;
+  open: boolean;
+  onClick?: () => void;
+};
 
-const DropdownCarret: React.FC<DropdownCarretProps> = (props: DropdownCarretProps): JSX.Element => {
+const DropdownCarret: React.FC<DropdownCarretProps> = (
+  props: DropdownCarretProps,
+): JSX.Element => {
   const { open, onClick = () => {}, className = '' } = props;
   return (
     <DropdownIconHolder>
@@ -36,25 +40,23 @@ const DropdownCarret: React.FC<DropdownCarretProps> = (props: DropdownCarretProp
   );
 };
 
-
 type Props = {
-  assetData: AssetPair[],
-  asset: string,
-  price: number,
-  priceIndex: PriceDataIndex,
-  priceUnit?: string,
-  withSearch?: boolean,
-  searchDisable?: string[],
-  onSelect: (_: number) => void,
-  onChangeAsset?: (asset: string) => void,
-  className?: string,
+  assetData: AssetPair[];
+  asset: string;
+  price: BigNumber;
+  priceIndex: PriceDataIndex;
+  priceUnit?: string;
+  withSearch?: boolean;
+  searchDisable?: string[];
+  onSelect: (_: number) => void;
+  onChangeAsset?: (asset: string) => void;
+  className?: string;
   'data-test': string;
 };
 
 type State = {
-  openDropdown: boolean
-}
-
+  openDropdown: boolean;
+};
 
 class TokenSelect extends React.Component<Props, State> {
   ref = React.createRef();
@@ -170,12 +172,7 @@ class TokenSelect extends React.Component<Props, State> {
   };
 
   render() {
-    const {
-      asset,
-      price,
-      priceUnit = 'RUNE',
-      className = '',
-    } = this.props;
+    const { asset, price, priceUnit = 'RUNE', className = '' } = this.props;
     const { openDropdown } = this.state;
 
     return (
@@ -185,10 +182,12 @@ class TokenSelect extends React.Component<Props, State> {
           trigger={[]}
           visible={openDropdown}
         >
-          <TokenSelectWrapper
-            className={`tokenSelect-wrapper ${className}`}
-          >
-            <TokenData asset={asset} price={price} priceUnit={priceUnit} />
+          <TokenSelectWrapper className={`tokenSelect-wrapper ${className}`}>
+            <TokenData
+              asset={asset}
+              priceValue={formatBN(price)}
+              priceUnit={priceUnit}
+            />
             {this.renderDropDownButton()}
           </TokenSelectWrapper>
         </Dropdown>

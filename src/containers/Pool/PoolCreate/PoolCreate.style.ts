@@ -175,7 +175,12 @@ export const ContentWrapper = styled(ContentView)`
 
             .status-wrapper {
               ${media.lg`
-                width: 110px !important;
+                width: 21%;
+                margin-right: 20px;
+              `}
+
+              ${media.xxl`
+                width: 27%;
                 margin-right: 30px;
               `}
 

@@ -1,15 +1,19 @@
+import BigNumber from 'bignumber.js';
 import { getSwapMemo } from '../../helpers/memoHelper';
+import { getTickerFormat } from '../../helpers/stringHelper';
 import {
-  getTickerFormat,
-  getFixedNumber,
-  getUserFormat,
-} from '../../helpers/stringHelper';
-import { getZValue, getPx, getPz, getSlip, getFee } from './calc';
-import { BASE_NUMBER } from '../../settings/constants';
+  DoubleSwapCalcData,
+  getZValue,
+  getPx,
+  getPz,
+  getSlip,
+  getFee,
+  SingleSwapCalcData,
+} from './calc';
 import { getTxHashFromMemo } from '../../helpers/binance';
 import { PriceDataIndex, PoolDataMap } from '../../redux/midgard/types';
 import { PoolDetail } from '../../types/generated/midgard';
-import { Nothing, Maybe, Pair, AssetPair } from '../../types/bepswap';
+import { Nothing, Maybe, SwapType, Pair, AssetPair } from '../../types/bepswap';
 import {
   TransferResult,
   TransferEvent,
@@ -19,6 +23,15 @@ import { BinanceClient } from '../../clients/binance';
 import { CalcResult } from './SwapSend/types';
 import { getAssetFromString } from '../../redux/midgard/utils';
 import { SwapCardType } from './SwapView/types';
+import { BN_ZERO, isValidBN, bn, validBNOrZero } from '../../helpers/bnHelper';
+import {
+  tokenAmount,
+  baseToToken,
+  baseAmount,
+  tokenToBase,
+  formatBaseAsTokenAmount,
+} from '../../helpers/tokenHelper';
+import { TokenAmount } from '../../types/token';
 
 export const validatePair = (
   pair: Pair,
@@ -27,12 +40,10 @@ export const validatePair = (
 ) => {
   const { target = '', source = '' }: Pair = pair;
   const targetData = targetInfo.filter(
-    (data: AssetPair) =>
-      getTickerFormat(data.asset) !== target?.toLowerCase(),
+    (data: AssetPair) => getTickerFormat(data.asset) !== target?.toLowerCase(),
   );
   const sourceData = sourceInfo.filter(
-    (data: AssetPair) =>
-      getTickerFormat(data.asset) !== source?.toLowerCase(),
+    (data: AssetPair) => getTickerFormat(data.asset) !== source?.toLowerCase(),
   );
   return {
     sourceData,
@@ -40,12 +51,10 @@ export const validatePair = (
   };
 };
 
-export const getSwapType = (from: string, to: string) => {
-  if (from.toLowerCase() === 'rune' || to.toLowerCase() === 'rune') {
-    return 'single_swap';
-  }
-  return 'double_swap';
-};
+export const getSwapType = (from: string, to: string) =>
+  from.toLowerCase() === 'rune' || to.toLowerCase() === 'rune'
+    ? SwapType.SINGLE_SWAP
+    : SwapType.DOUBLE_SWAP;
 
 export const getSwapData = (
   from: string,
@@ -58,41 +67,50 @@ export const getSwapData = (
   if (poolInfo) {
     const { ticker: target = '' } = getAssetFromString(poolInfo?.asset);
 
-    const runePrice = priceIndex.RUNE;
-    const depth = Number(poolInfo.runeDepth) * runePrice;
-    const volume = Number(poolInfo?.poolVolume24hr ?? 0) * runePrice;
-    const transaction = Number(poolInfo?.poolTxAverage ?? 0) * runePrice;
-    const slip = Number(poolInfo.poolSlipAverage ?? 0) * runePrice;
-    const trade = Number(poolInfo?.swappingTxCount ?? 0);
-
-    const depthValue = `${basePriceAsset} ${getUserFormat(
-      depth,
-    ).toLocaleString()}`;
-    const volumeValue = `${basePriceAsset} ${getUserFormat(volume)}`;
-    const transactionValue = `${basePriceAsset} ${getUserFormat(transaction)}`;
-    const slipValue = `${slip}`;
-    const tradeValue = `${trade}`;
+    const runePrice = validBNOrZero(priceIndex?.RUNE);
+    // formula: poolInfo.runeDepth * runePrice
+    const depth = bn(poolInfo?.runeDepth ?? 0).multipliedBy(runePrice);
+    const depthAsString = `${basePriceAsset} ${formatBaseAsTokenAmount(
+      baseAmount(depth),
+    )}`;
+    // formula: poolInfo.poolVolume24hr * runePrice
+    const volume = bn(poolInfo?.poolVolume24hr ?? 0).multipliedBy(runePrice);
+    const volumeAsString = `${basePriceAsset} ${formatBaseAsTokenAmount(
+      baseAmount(volume),
+    )}`;
+    // formula: poolInfo.poolTxAverage * runePrice
+    const transaction = bn(poolInfo?.poolTxAverage ?? 0).multipliedBy(
+      runePrice,
+    );
+    const transactionAsString = `${basePriceAsset} ${formatBaseAsTokenAmount(
+      baseAmount(transaction),
+    )}`;
+    // formula: poolInfo.poolSlipAverage * runePrice
+    const slip = bn(poolInfo?.poolSlipAverage ?? 0).multipliedBy(runePrice);
+    const slipAsString = slip.toString();
+    const trade = bn(poolInfo?.swappingTxCount ?? 0);
+    const tradeAsString = trade.toString();
 
     return {
       pool: {
         asset,
         target,
       },
-      depth: depthValue,
-      volume: volumeValue,
-      transaction: transactionValue,
-      slip: slipValue,
-      trade: tradeValue,
+      depth: depthAsString,
+      volume: volumeAsString,
+      transaction: transactionAsString,
+      slip: slipAsString,
+      trade: tradeAsString,
       raw: {
-        depth: getUserFormat(depth),
-        volume: getUserFormat(volume),
-        transaction: getUserFormat(transaction),
+        depth,
+        volume,
+        transaction,
         slip,
         trade,
       },
     };
   } else {
-    return null;
+    return Nothing;
   }
 };
 
@@ -101,24 +119,30 @@ export const getCalcResult = (
   to: string,
   pools: PoolDataMap,
   poolAddress: string,
-  xValue: number,
-  runePrice: number,
+  xValue: TokenAmount,
+  runePrice: BigNumber,
 ): Maybe<CalcResult> => {
-  const type = getSwapType(from, to);
+  const swapType = getSwapType(from, to);
 
   const result: {
-    poolAddressFrom?: string;
-    poolAddressTo?: string;
-    symbolFrom?: string;
-    symbolTo?: string;
-    poolRatio?: number;
-  } = {};
+    poolAddressFrom: Maybe<string>;
+    poolAddressTo: Maybe<string>;
+    symbolFrom: Maybe<string>;
+    symbolTo: Maybe<string>;
+  } = {
+    poolAddressFrom: Nothing,
+    poolAddressTo: Nothing,
+    symbolFrom: Nothing,
+    symbolTo: Nothing,
+  };
 
-  if (type === 'double_swap') {
-    let X = 10000;
-    let Y = 10;
-    let R = 10000;
-    let Z = 10;
+  const lim = Nothing;
+
+  if (swapType === SwapType.DOUBLE_SWAP) {
+    let X = tokenAmount(10000); // Input asset
+    let Y = tokenAmount(10); // Output asset
+    let R = tokenAmount(10000);
+    let Z = tokenAmount(10);
     const Py = runePrice;
 
     // CHANGELOG:
@@ -128,34 +152,37 @@ export const getCalcResult = (
     */
     Object.keys(pools).forEach(key => {
       const poolData = pools[key];
-      const runeStakedTotal = Number(poolData?.runeStakedTotal ?? 0);
-      const assetStakedTotal = Number(poolData?.assetStakedTotal ?? 0);
+      const runeStakedTotal = baseAmount(poolData?.runeStakedTotal ?? 0);
+      const assetStakedTotal = baseAmount(poolData?.assetStakedTotal ?? 0);
       const { symbol = '' } = getAssetFromString(poolData?.asset);
 
       const token = getTickerFormat(symbol);
       if (token.toLowerCase() === from.toLowerCase()) {
-        X = Number(assetStakedTotal / BASE_NUMBER);
-        Y = Number(runeStakedTotal / BASE_NUMBER);
+        // formula: assetStakedTotal / BASE_NUMBER
+        X = baseToToken(assetStakedTotal);
+        // formula: runeStakedTotal / BASE_NUMBER
+        Y = baseToToken(runeStakedTotal);
         result.poolAddressFrom = poolAddress;
         result.symbolFrom = symbol;
       }
 
       if (token.toLowerCase() === to.toLowerCase()) {
-        R = Number(runeStakedTotal / BASE_NUMBER);
-        Z = Number(assetStakedTotal / BASE_NUMBER);
+        // formula: runeStakedTotal / BASE_NUMBER
+        R = baseToToken(runeStakedTotal);
+        // formula: assetStakedTotal / BASE_NUMBER
+        Z = baseToToken(assetStakedTotal);
         result.poolAddressTo = poolAddress;
         result.symbolTo = symbol;
       }
     });
-    result.poolRatio = (Z / R / Y) * X;
 
-    const calcData = { X, Y, R, Z, Py, Pr: Py };
+    const calcData: DoubleSwapCalcData = { X, Y, R, Z, Py, Pr: Py };
 
-    const zValue = Number(getZValue(xValue, calcData).toFixed(2));
-    const slip = getFixedNumber(getSlip(xValue, calcData), 0);
+    const zValue = getZValue(xValue, calcData);
+    const slip = getSlip(xValue, calcData);
     const Px = getPx(xValue, calcData);
-    const Pz = Number(getPz(xValue, calcData).toFixed(2));
-    const fee = getFixedNumber(getFee(xValue, calcData));
+    const Pz = getPz(xValue, calcData);
+    const fee = getFee(xValue, calcData);
 
     return {
       ...result,
@@ -164,26 +191,28 @@ export const getCalcResult = (
       outputAmount: zValue,
       outputPrice: Pz,
       fee,
+      lim,
     };
   }
 
-  if (type === 'single_swap' && to.toLowerCase() === 'rune') {
-    let X = 10;
-    let Y = 10;
+  if (swapType === SwapType.SINGLE_SWAP && to.toLowerCase() === 'rune') {
+    let X = tokenAmount(10);
+    let Y = tokenAmount(10);
     const Py = runePrice;
     const rune = 'RUNE-A1F';
 
     Object.keys(pools).forEach(key => {
       const poolData = pools[key];
-      const runeStakedTotal = Number(poolData?.runeStakedTotal ?? 0);
-      const assetStakedTotal = Number(poolData?.assetStakedTotal ?? 0);
+      const runeStakedTotal = baseAmount(poolData?.runeStakedTotal ?? 0);
+      const assetStakedTotal = baseAmount(poolData?.assetStakedTotal ?? 0);
       const { symbol = '' } = getAssetFromString(poolData?.asset);
 
       const token = getTickerFormat(symbol);
       if (token.toLowerCase() === from.toLowerCase()) {
-        X = Number(assetStakedTotal / BASE_NUMBER);
-        Y = Number(runeStakedTotal / BASE_NUMBER);
-        result.poolRatio = Y / X;
+        // formula: assetStakedTotal / BASE_NUMBER
+        X = baseToToken(assetStakedTotal);
+        // formula: runeStakedTotal / BASE_NUMBER
+        Y = baseToToken(runeStakedTotal);
 
         result.poolAddressTo = poolAddress;
         result.symbolFrom = symbol;
@@ -191,55 +220,75 @@ export const getCalcResult = (
     });
 
     result.symbolTo = rune;
-    const calcData = { X, Y, Py };
+    const calcData: SingleSwapCalcData = { X, Y, Py };
 
     const Px = getPx(xValue, calcData);
-    const times = (xValue + X) ** 2;
-    const xTimes = xValue ** 2;
-    const balanceTimes = X ** 2;
-    const outputToken = Number(((xValue * X * Y) / times).toFixed(2));
-    const outputPy = Number(
-      ((Px * (X + xValue)) / (Y - outputToken)).toFixed(2),
-    );
-    // const input = xValue * Px;
-    // const output = outputToken * outputPy;
-    // const priceSlip = Math.round(
-    //   (xTimes / (xTimes + X * xValue + balanceTimes)) * 100,
-    // );
+    // formula: (xValue + X) ** 2
+    const times = X.amount()
+      .plus(xValue.amount())
+      .pow(2);
+    const xTimes = xValue.amount().pow(2);
+    // formula: X ** 2
+    const balanceTimes = X.amount().pow(2);
+    // formula: (xValue * X * Y) / times
+    const outputTokenBN = X.amount()
+      .multipliedBy(Y.amount())
+      .multipliedBy(xValue.amount())
+      .div(times);
+    // formula: (Px * (X + xValue)) / (Y - outputToken)
+    const a = X.amount()
+      .plus(xValue.amount())
+      .multipliedBy(Px);
+    const b = Y.amount().minus(outputTokenBN);
+    const outputPy = a.div(b);
 
     // calc trade slip
-    const slip = Math.round(((xValue * (2 * X + xValue)) / balanceTimes) * 100);
-    const lim = Math.round((1 - 3 / 100) * outputToken * BASE_NUMBER);
-    const fee = getFixedNumber((xTimes * Y) / times);
+    // formula: ((xValue * (2 * X + xValue)) / balanceTimes) * 100
+    const slipValue = X.amount()
+      .multipliedBy(2)
+      .plus(xValue.amount())
+      .multipliedBy(xValue.amount())
+      .div(balanceTimes)
+      .multipliedBy(100);
+    const slip = bn(slipValue);
+    // formula: (1 - 3 / 100) * outputToken * BASE_NUMBER
+    const limValue = bn(1)
+      .minus(3 / 100)
+      .multipliedBy(outputTokenBN);
+    const lim = tokenToBase(tokenAmount(limValue));
+    // formula: (xTimes * Y) / times
+    const feeValue = Y.amount()
+      .multipliedBy(xTimes)
+      .div(times);
+    const fee = tokenAmount(feeValue);
 
     return {
       ...result,
       Px,
       slip,
-      outputAmount: outputToken,
+      outputAmount: tokenAmount(outputTokenBN),
       outputPrice: outputPy,
       lim,
       fee,
     };
   }
 
-  if (type === 'single_swap' && from.toLowerCase() === 'rune') {
-    let X = 10000;
-    let Y = 10;
-    const Px = runePrice;
+  if (swapType === SwapType.SINGLE_SWAP && from.toLowerCase() === 'rune') {
+    let X = tokenAmount(10000);
+    let Y = tokenAmount(10);
+    const Px = bn(runePrice);
     const rune = 'RUNE-A1F';
 
     Object.keys(pools).forEach(key => {
       const poolData = pools[key];
-      const runeStakedTotal = Number(poolData?.runeStakedTotal ?? 0);
-      const assetStakedTotal = Number(poolData?.assetStakedTotal ?? 0);
+      const runeStakedTotal = baseAmount(poolData?.runeStakedTotal ?? 0);
+      const assetStakedTotal = baseAmount(poolData?.assetStakedTotal ?? 0);
       const { symbol = '' } = getAssetFromString(poolData?.asset);
 
-      const token = getTickerFormat(symbol);
-      if (token.toLowerCase() === to.toLowerCase()) {
-        X = Number(runeStakedTotal / BASE_NUMBER);
-        Y = Number(assetStakedTotal / BASE_NUMBER);
-        result.poolRatio = Y / X;
+      const ticker = getTickerFormat(symbol);
+      if (ticker.toLowerCase() === to.toLowerCase()) {
+        X = baseToToken(runeStakedTotal);
+        Y = baseToToken(assetStakedTotal);
 
         result.poolAddressTo = poolAddress;
         result.symbolTo = symbol;
@@ -249,30 +298,48 @@ export const getCalcResult = (
     // Set RUNE for fromToken as we don't have rune in the pool from thorchain
     result.symbolFrom = rune;
 
-    const times = (xValue + X) ** 2;
-    const xTimes = xValue ** 2;
-    const balanceTimes = X ** 2;
-    const outputToken = Number(((xValue * X * Y) / times).toFixed(2));
-    const outputPy = Number(
-      ((Px * (X + xValue)) / (Y - outputToken)).toFixed(2),
-    );
-    // const input = xValue * Px;
-    // const output = outputToken * outputPy;
-
-    // const priceSlip = Math.round(
-    //   (xTimes / (xTimes + X * xValue + balanceTimes)) * 100,
-    // );
+    const times = X.amount()
+      .plus(xValue.amount())
+      .pow(2);
+    const xTimes = xValue.amount().pow(2);
+    const balanceTimes = X.amount().pow(2);
+    const outputTokenBN = X.amount()
+      .multipliedBy(Y.amount())
+      .multipliedBy(xValue.amount())
+      .div(times);
+    const a = X.amount()
+      .plus(xValue.amount())
+      .multipliedBy(Px);
+    const b = Y.amount().minus(outputTokenBN);
+    const outputPy = a.div(b);
 
     // trade slip
-    const slip = Math.round(((xValue * (2 * X + xValue)) / balanceTimes) * 100);
+    // avoid division by zero
+    const slip = balanceTimes.gt(0)
+      ? X.amount()
+          .multipliedBy(2)
+          .plus(xValue.amount())
+          .multipliedBy(xValue.amount())
+          .div(balanceTimes)
+          .multipliedBy(100)
+      : BN_ZERO;
 
-    const lim = Math.round((1 - 3 / 100) * outputToken * BASE_NUMBER);
-    const fee = getFixedNumber((xTimes * Y) / times);
+    // formula: (1 - 3 / 100) * outputToken * BASE_NUMBER;
+    const third = bn(3).div(bn(100));
+    const limValue = bn(1)
+      .minus(third)
+      .div(100)
+      .multipliedBy(outputTokenBN);
+    const lim = tokenToBase(tokenAmount(limValue));
+    const feeValue = Y.amount()
+      .multipliedBy(xTimes)
+      .div(times);
+    const fee = tokenAmount(feeValue);
     return {
       ...result,
       Px,
       slip,
-      outputAmount: outputToken,
+      outputAmount: tokenAmount(outputTokenBN),
       outputPrice: outputPy,
       lim,
       fee,
@@ -282,65 +349,96 @@ export const getCalcResult = (
   return Nothing;
 };
 
+export enum SwapErrorMsg {
+  INVALID_AMOUNT = 'Amount to swap is invalid.',
+  MISSING_WALLET = 'Wallet address is missing or invalid.',
+  MISSING_SYMBOL = 'Symbol is missing.',
+  MISSING_SYMBOL_TO = 'Symbol to swap to is missing.',
+  MISSING_SYMBOL_FROM = 'Symbol to swap from is missing.',
+  MISSING_ADDRESS_TO = 'Address to swap to is missing.',
+  MISSING_ADDRESS_FROM = 'Address to swap from is missing.',
+  MISSING_POOL_ADDRESS = 'Pool address is missing.',
+}
+
 export const validateSwap = (
   wallet: string,
-  type: string,
+  swapType: SwapType,
   data: Partial<CalcResult>,
-  amount: number,
-) => {
-  if (type === 'single_swap') {
-    const symbolTo = data?.symbolTo;
-    const poolAddressTo = data?.poolAddressTo;
-    if (!wallet || !poolAddressTo || !symbolTo || !amount) {
-      return false;
-    }
+  amount: TokenAmount,
+): Maybe<SwapErrorMsg> => {
+  if (!wallet) {
+    return SwapErrorMsg.MISSING_WALLET;
   }
-  if (type === 'double_swap') {
-    const poolAddressFrom = data?.poolAddressFrom;
-    const symbolFrom = data?.symbolFrom;
-    const poolAddressTo = data?.poolAddressTo;
-    const symbolTo = data?.symbolTo;
+  const amountValue = amount.amount();
+  // amount can't be NaN or an INFITIY number
+  // The latter check is needed for Binance API, which accepts numbers only
+  const validAmount =
+    isValidBN(amountValue) &&
+    amountValue.isGreaterThan(0) &&
+    amountValue.isFinite();
+  // validate values - needed for single swap and double swap
+  if (!validAmount) {
+    return SwapErrorMsg.INVALID_AMOUNT;
+  }
+  const symbolTo = data?.symbolTo;
+  if (!symbolTo) {
+    return SwapErrorMsg.MISSING_SYMBOL_TO;
+  }
+  const poolAddressTo = data?.poolAddressTo;
+  if (!poolAddressTo) {
+    return SwapErrorMsg.MISSING_ADDRESS_TO;
+  }
 
-    if (
-      !wallet ||
-      !poolAddressFrom ||
-      !symbolFrom ||
-      !poolAddressTo ||
-      !symbolTo ||
-      !amount
-    ) {
-      return false;
+  // validate values - needed for double swap only
+  if (swapType === SwapType.DOUBLE_SWAP) {
+    const poolAddressFrom = data?.poolAddressFrom;
+    if (!poolAddressFrom) {
+      return SwapErrorMsg.MISSING_ADDRESS_FROM;
+    }
+    const symbolFrom = data?.symbolFrom;
+    if (!symbolFrom) {
+      return SwapErrorMsg.MISSING_SYMBOL_FROM;
     }
   }
-  return true;
+  return Nothing;
 };
 
+// TODO(Veado): Write tests for `confirmSwap'
 export const confirmSwap = (
   Binance: BinanceClient,
   wallet: string,
   from: string,
   to: string,
   data: CalcResult,
-  amount: number,
+  amount: TokenAmount,
   protectSlip: boolean,
   destAddr = '',
 ): Promise<TransferResult> => {
   return new Promise((resolve, reject) => {
-    const type = getSwapType(from, to);
+    const swapType = getSwapType(from, to);
 
-
-    if (!validateSwap(wallet, type, data, amount)) {
-      return reject();
+    const validationErrorMsg = validateSwap(wallet, swapType, data, amount);
+    if (validationErrorMsg) {
+      return reject(new Error(validationErrorMsg));
     }
 
-    // Since `validateSwap` checks everything of `data`
-    // `poolAddressTo` and `symbolFrom` should never be undefined
-    // but we have to make `tsc` happy with optional values, though
-    const { poolAddressTo = '', symbolTo, symbolFrom = '', lim } = data;
+    const { poolAddressTo, symbolTo, symbolFrom, lim } = data;
 
-    const limit = protectSlip && lim ? lim.toString() : '';
+    if (!poolAddressTo) {
+      return reject(new Error(SwapErrorMsg.MISSING_POOL_ADDRESS));
+    }
+
+    if (!symbolFrom) {
+      return reject(new Error(SwapErrorMsg.MISSING_SYMBOL));
+    }
+
+    // Check of `validateSwap` before makes sure that we have a valid number here
+    const amountNumber = amount.amount().toNumber();
+
+    const limit = protectSlip && lim ? lim.amount().toString() : '';
     const memo = getSwapMemo(symbolTo, destAddr, limit);
-    Binance.transfer(wallet, poolAddressTo, amount, symbolFrom, memo)
+
+    Binance.transfer(wallet, poolAddressTo, amountNumber, symbolFrom, memo)
       .then((response: TransferResult) => resolve(response))
       .catch((error: Error) => reject(error));
   });

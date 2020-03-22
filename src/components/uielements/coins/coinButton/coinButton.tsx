@@ -1,14 +1,15 @@
 import React from 'react';
 
+import BigNumber from 'bignumber.js';
 import { CoinButtonWrapper } from './coinButton.style';
 import CoinIcon from '../coinIcon';
 import Label from '../../label';
 
-import { getFixedNumber } from '../../../../helpers/stringHelper';
+import { BN_ZERO, formatBN } from '../../../../helpers/bnHelper';
 
 type Props = {
   cointype: string;
-  price?: number;
+  price?: BigNumber;
   priceUnit?: string;
   reversed?: boolean;
   focused?: boolean;
@@ -20,7 +21,7 @@ type Props = {
 const CoinButton: React.FC<Props> = (props: Props): JSX.Element => {
   const {
     cointype,
-    price = 0,
+    price = BN_ZERO,
     priceUnit = 'RUNE',
     reversed = false,
     className = '',
@@ -29,7 +30,7 @@ const CoinButton: React.FC<Props> = (props: Props): JSX.Element => {
     onClick = () => {},
     ...otherProps
   } = props;
-  const priceValue = getFixedNumber(price);
+  const priceValue = formatBN(price);
   const priceLabel = `${priceUnit.toUpperCase()} ${priceValue}`;
 
   return (

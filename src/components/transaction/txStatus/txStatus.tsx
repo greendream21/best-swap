@@ -3,7 +3,10 @@ import React from 'react';
 import { TxStatusWrapper, TxStatusContent, Seperator } from './txStatus.style';
 import { Coin } from '../../../types/generated/midgard';
 import { getAssetFromString } from '../../../redux/midgard/utils';
-import { getUserFormat } from '../../../helpers/stringHelper';
+import {
+  formatBaseAsTokenAmount,
+  baseAmount,
+} from '../../../helpers/tokenHelper';
 
 export type RoundValue = 'left' | 'right';
 
@@ -19,10 +22,10 @@ const TxStatus: React.FC<Props> = (props: Props): JSX.Element => {
   return (
     <TxStatusWrapper className="txStatus-wrapper" round={round}>
       <p className="txStatus-type">{type}</p>
-      {data.map((txDetail, index) => {
+      {data.map((txDetail: Coin, index) => {
         const { asset, amount } = txDetail;
         const { ticker: assetValue } = getAssetFromString(asset);
-        const amountValue = getUserFormat(Number(amount)).toFixed(2);
+        const amountValue = formatBaseAsTokenAmount(baseAmount(amount));
 
         return (
           <TxStatusContent className="tx-status-content" key={index}>

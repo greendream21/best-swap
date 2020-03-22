@@ -1,4 +1,5 @@
 import { RemoteData } from '@devexperts/remote-data-ts';
+import BigNumber from 'bignumber.js';
 import { Maybe } from '../../types/bepswap';
 import {
   AssetDetail,
@@ -27,7 +28,7 @@ export type StakerPoolData = {
 };
 
 export type PriceDataIndex = {
-  [symbol: string]: number;
+  [symbol: string]: BigNumber;
 };
 
 export type GetTxByAddressTxIdPayload = {

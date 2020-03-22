@@ -17,9 +17,18 @@ import {
   arrowGreenIcon,
 } from '../../../../components/icons';
 
-import { formatNumber, formatCurrency } from '../../../../helpers/formatHelper';
 import { data, getVr, getSS, getVss, getWr, getWt } from './data';
 import { TutorialContent } from '../../types';
+import { TokenAmount } from '../../../../types/token';
+import {
+  tokenAmount,
+  formatTokenAmountCurrency,
+  formatTokenAmount,
+} from '../../../../helpers/tokenHelper';
+import {
+  formatBNCurrency,
+  formatBN,
+} from '../../../../helpers/bnHelper';
 
 type ComponentProps = {
   view?: string;
@@ -29,9 +38,9 @@ type ComponentProps = {
 type Props = RouteComponentProps & ComponentProps;
 
 type State = {
-  rValue: number;
-  tValue: number;
-  wss: number;
+  rValue: TokenAmount;
+  tValue: TokenAmount;
+  wss: TokenAmount;
 };
 
 const { R, T, WR, WT, VWR, Pr, Pt, SS } = data;
@@ -44,43 +53,53 @@ class Earning extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      rValue: 200000,
-      tValue: 400000,
-      wss: 0,
+      rValue: tokenAmount(200000),
+      tValue: tokenAmount(400000),
+      wss: tokenAmount(0),
     };
   }
 
   handleChangeRValue = (value: number | undefined) => {
     this.setState({
-      rValue: value || 0,
+      rValue: tokenAmount(value),
     });
   };
 
   handleChangeTValue = (value: number | undefined) => {
     this.setState({
-      tValue: value || 0,
+      tValue: tokenAmount(value),
     });
   };
 
   handleChangeWssValue = (value: number | undefined) => {
     this.setState({
-      wss: value || 0,
+      wss: tokenAmount(value),
     });
   };
 
   renderFlow = (view: TutorialContent) => {
     const { rValue, tValue, wss } = this.state;
-    const Vr = formatCurrency(getVr(rValue));
-    const Vt = Vr;
-    const ss = `${Math.round(getSS(wss))}%`;
-    const ssValue = `${SS}%`;
-    const Vss = formatCurrency(getVss(wss));
-    const VssValue = formatCurrency((getVr(rValue) * 2 * SS) / 100);
+    const Vr = getVr(rValue);
+    const VrFormatted = formatTokenAmountCurrency(Vr);
+    const VtFormatted = VrFormatted;
+    const ss = getSS(wss);
+    const ssFormatted = `${formatTokenAmount(ss)}%`;
+    const SSValueFormatted = `${formatTokenAmount(SS)}%`;
+    const Vss = getVss(wss);
+    const VssFormatted = formatTokenAmountCurrency(Vss);
+    // formula: (getVr(rValue) * 2 * SS) / 100)
+    const VssValue = Vr.amount()
+      .multipliedBy(2)
+      .multipliedBy(SS.amount())
+      .div(100);
+    const VssValueFormatted = formatBNCurrency(VssValue);
 
     const Wr = getWr(wss);
     const Wt = getWt(wss);
-    const rValuePrice = Wr * Pr;
-    const tValuePrice = Wt * Pt;
+    // formula: Wr * Pr
+    const rValuePrice = Wr.amount().multipliedBy(Pr);
+    // formula: Wt * Pt
+    const tValuePrice = Wt.amount().multipliedBy(Pt);
 
     return (
       <div className="earning-flow-wrapper">
@@ -124,32 +143,44 @@ class Earning extends React.Component<Props, State> {
         </div>
         <Centered>
           <Label size="large" color="normal" weight="bold">
-            {view === TutorialContent.INTRO && formatNumber(R + rValue)}
-            {view === TutorialContent.PLAY && formatNumber(WR - Wr)}
+            {view === TutorialContent.INTRO &&
+              // formula R + rValue
+              formatTokenAmount(tokenAmount(R.amount().plus(rValue.amount())))}
+            {view === TutorialContent.PLAY &&
+              // formula WR - Wr
+              formatTokenAmount(tokenAmount(WR.amount().minus(Wr.amount())))}
           </Label>
           <Label size="large" color="normal" weight="bold">
             :
           </Label>
           <Label size="large" color="normal" weight="bold">
-            {view === TutorialContent.INTRO && formatNumber(T + tValue)}
-            {view === TutorialContent.PLAY && formatNumber(WT - Wt)}
+            {view === TutorialContent.INTRO &&
+              // formula T + tValue
+              formatTokenAmount(tokenAmount(T.amount().plus(tValue.amount())))}
+            {view === TutorialContent.PLAY &&
+              // formula WT - Wt
+              formatTokenAmount(tokenAmount(WT.amount().minus(Wt.amount())))}
           </Label>
         </Centered>
         <Centered>
           <Label size="large" color="normal">
-            {view === TutorialContent.INTRO && Vr}
-            {view === TutorialContent.PLAY && formatCurrency(VWR - rValuePrice)}
+            {view === TutorialContent.INTRO && VrFormatted}
+            {view === TutorialContent.PLAY &&
+              // formula: VWR - rValuePrice
+              formatBN(VWR.amount().minus(rValuePrice))}
           </Label>
           <Label size="large" color="normal" />
           <Label size="large" color="normal">
-            {view === TutorialContent.INTRO && Vt}
-            {view === TutorialContent.PLAY && formatCurrency(VWR - tValuePrice)}
+            {view === TutorialContent.INTRO && VtFormatted}
+            {view === TutorialContent.PLAY &&
+              // formula: VWR - tValuePrice
+              formatBN(VWR.amount().minus(tValuePrice))}
           </Label>
         </Centered>
         <div className="center-text">
           <Label size="large" color="normal" weight="bold">
-            {view === TutorialContent.INTRO && ssValue}
-            {view === TutorialContent.PLAY && ss}
+            {view === TutorialContent.INTRO && SSValueFormatted}
+            {view === TutorialContent.PLAY && ssFormatted}
           </Label>
         </div>
         <div className="center-text description-label">
@@ -160,8 +191,8 @@ class Earning extends React.Component<Props, State> {
         <Centered>
           <Label />
           <Label size="large" color="normal" weight="bold">
-            {view === TutorialContent.INTRO && VssValue}
-            {view === TutorialContent.PLAY && Vss}
+            {view === TutorialContent.INTRO && VssValueFormatted}
+            {view === TutorialContent.PLAY && VssFormatted}
           </Label>
           <Label className="contains-tooltip" />
         </Centered>
@@ -197,7 +228,7 @@ class Earning extends React.Component<Props, State> {
           <InputForm
             title="Add earnings:"
             type="rune"
-            value={rValue}
+            amount={rValue}
             onChange={this.handleChangeRValue}
             step={10000}
           />
@@ -211,7 +242,7 @@ class Earning extends React.Component<Props, State> {
           <InputForm
             title="Add earnings:"
             type="bolt"
-            value={tValue}
+            amount={tValue}
             onChange={this.handleChangeTValue}
             step={20000}
             reverse
@@ -230,17 +261,19 @@ class Earning extends React.Component<Props, State> {
     const { wss } = this.state;
     const Wr = getWr(wss);
     const Wt = getWt(wss);
-    const rValuePrice = formatCurrency(Wr * Pr);
-    const tValuePrice = formatCurrency(Wt * Pt);
+    // formula: Wr * Pr
+    const rValuePrice = Wr.amount().multipliedBy(Pr);
+    // formula: Wt * Pt
+    const tValuePrice = Wt.amount().multipliedBy(Pt);
 
     return (
       <div className="earning-play-wrapper">
         <div className="token-wrapper">
-          <InputForm title="Withdraw share:" type="%" value={wss} />
+          <InputForm title="Withdraw share:" type="%" amount={wss} />
           <Selection onSelect={this.handleChangeWssValue} />
-          <InputForm title="PAYOUT:" type="rune" value={Wr} step={1000} />
+          <InputForm title="PAYOUT:" type="rune" amount={Wr} step={1000} />
           <Label className="payout-price-label" color="gray">
-            {rValuePrice} (USD)
+            {formatBNCurrency(rValuePrice)} (USD)
           </Label>
         </div>
         {this.renderFlow(TutorialContent.PLAY)}
@@ -248,7 +281,7 @@ class Earning extends React.Component<Props, State> {
           <InputForm
             title="PAYOUT:"
             type="bolt"
-            value={Wt}
+            amount={Wt}
             step={1000}
             reverse
           />

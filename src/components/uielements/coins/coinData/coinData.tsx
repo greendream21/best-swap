@@ -1,19 +1,21 @@
 import React from 'react';
 
+import BigNumber from 'bignumber.js';
 import { CoinDataWrapper, CoinDataWrapperType, CoinDataWrapperSize } from './coinData.style';
 import Coin from '../coin';
 import Label from '../../label';
-
-import { getFixedNumber } from '../../../../helpers/stringHelper';
 import { Maybe, Nothing } from '../../../../types/bepswap';
+import { BN_ZERO, formatBN } from '../../../../helpers/bnHelper';
+import { TokenAmount } from '../../../../types/token';
+import { formatTokenAmount } from '../../../../helpers/tokenHelper';
 
 type Props = {
   'data-test'?: string;
   asset?: string;
-  assetValue?: Maybe<number>;
+  assetValue?: Maybe<TokenAmount>;
   target?: Maybe<string>;
-  targetValue?: Maybe<number>;
-  price?: number;
+  targetValue?: Maybe<TokenAmount>;
+  price?: BigNumber;
   priceUnit?: string;
   size?: CoinDataWrapperSize;
   className?: string;
@@ -26,7 +28,7 @@ const CoinData: React.FC<Props> = (props: Props): JSX.Element => {
     assetValue = Nothing,
     target = Nothing,
     targetValue = Nothing,
-    price = 0,
+    price = BN_ZERO,
     priceUnit = 'RUNE',
     size = 'small',
     className = '',
@@ -34,8 +36,7 @@ const CoinData: React.FC<Props> = (props: Props): JSX.Element => {
     ...otherProps
   } = props;
 
-  const priceValue = getFixedNumber(price);
-  const priceLabel = `${priceUnit.toUpperCase()} ${priceValue}`;
+  const priceLabel = `${priceUnit.toUpperCase()} ${formatBN(price)}`;
 
   return (
     <CoinDataWrapper
@@ -67,7 +68,7 @@ const CoinData: React.FC<Props> = (props: Props): JSX.Element => {
             type="normal"
             weight="600"
           >
-            {Number(Number(assetValue).toFixed(2)).toLocaleString()}
+            {formatTokenAmount(assetValue)}
           </Label>
         )}
       </div>
@@ -78,7 +79,7 @@ const CoinData: React.FC<Props> = (props: Props): JSX.Element => {
           </Label>
           {targetValue && (
             <Label className="coinData-target-value" type="normal" weight="600">
-              {targetValue}
+              {formatTokenAmount(targetValue)}
             </Label>
           )}
         </div>

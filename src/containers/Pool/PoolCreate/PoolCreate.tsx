@@ -7,6 +7,7 @@ import { Row, Col, notification, Icon } from 'antd';
 import { crypto } from '@binance-chain/javascript-sdk';
 import { get as _get } from 'lodash';
 
+import BigNumber from 'bignumber.js';
 import bncClient from '../../../clients/binance';
 
 import Button from '../../../components/uielements/button';
@@ -52,6 +53,15 @@ import {
 } from '../../../redux/midgard/types';
 import { Maybe, FixmeType, AssetPair } from '../../../types/bepswap';
 import { User, AssetData } from '../../../redux/wallet/types';
+import {
+  BN_ZERO,
+  validBNOrZero,
+  formatBN,
+  formatBNCurrency,
+  bnOrZero,
+} from '../../../helpers/bnHelper';
+import { TokenAmount } from '../../../types/token';
+import { tokenAmount } from '../../../helpers/tokenHelper';
 import { AssetDetail } from '../../../types/generated/midgard';
 
 type ComponentProps = {
@@ -91,10 +101,10 @@ type State = {
   password: string;
   invalidPassword: boolean;
   validatingPassword: boolean;
-  runeAmount: number;
-  tokenAmount: number;
-  fR: number;
-  fT: number;
+  runeAmount: TokenAmount;
+  tokenAmount: TokenAmount;
+  fR: number; // fine tune balance of RUNE (set by "adjust balance" slider, which will come back in the future)
+  fT: number; // fine tuning balance of token (set by "adjust balance" slider, which will come back in the future)
 };
 
 class PoolCreate extends React.Component<Props, State> {
@@ -106,8 +116,8 @@ class PoolCreate extends React.Component<Props, State> {
       password: emptyString,
       invalidPassword: false,
       validatingPassword: false,
-      runeAmount: 0,
-      tokenAmount: 0,
+      runeAmount: tokenAmount(0),
+      tokenAmount: tokenAmount(0),
       fR: 1,
       fT: 1,
     };
@@ -137,7 +147,7 @@ class PoolCreate extends React.Component<Props, State> {
     const { symbol, poolAddress, priceIndex } = this.props;
     const { runeAmount, tokenAmount } = this.state;
 
-    const runePrice = priceIndex.RUNE;
+    const runePrice = validBNOrZero(priceIndex?.RUNE);
 
     return getCreatePoolCalc({
       tokenSymbol: symbol,
@@ -163,11 +173,10 @@ class PoolCreate extends React.Component<Props, State> {
     });
   };
 
-  handleChangeTokenAmount = (tokenName: string) => (amount: number) => {
+  handleChangeTokenAmount = (tokenName: string) => (amount: BigNumber) => {
     const { assetData, symbol } = this.props;
     const { fR, fT } = this.state;
 
-    let newValue;
     const source = getTickerFormat(tokenName);
 
     const sourceAsset = assetData.find(data => {
@@ -193,43 +202,42 @@ class PoolCreate extends React.Component<Props, State> {
 
     const balance = tokenName === 'rune' ? fR : fT;
 
-    const totalAmount = !sourceAsset ? 0 : sourceAsset.assetValue * balance;
+    // Fine tuning of amout by using "adjust balance" slider
+    // This slider has been remove, but will come back in the future
+    const totalAmount: BigNumber = sourceAsset.assetValue
+      .amount()
+      .multipliedBy(balance);
 
+    const newValue = tokenAmount(amount);
     if (tokenName === 'rune') {
-      newValue = amount;
-
-      if (totalAmount < newValue) {
+      if (totalAmount.isLessThan(newValue.amount())) {
         this.setState({
-          runeAmount: totalAmount,
+          runeAmount: tokenAmount(totalAmount),
         });
       } else {
         this.setState({
           runeAmount: newValue,
         });
       }
+    } else if (totalAmount.isLessThan(newValue.amount())) {
+      this.setState({
+        tokenAmount: tokenAmount(totalAmount),
+      });
     } else {
-      newValue = amount;
-
-      if (totalAmount < newValue) {
-        this.setState({
-          tokenAmount: totalAmount,
-        });
-      } else {
-        this.setState({
-          tokenAmount: newValue,
-        });
-      }
+      this.setState({
+        tokenAmount: newValue,
+      });
     }
   };
 
-  handleSelectTokenAmount = (token: string) => (amount: number) => {
+  handleSelectTokenAmount = (tokenName: string) => (amount: number) => {
     const { assetData, symbol } = this.props;
     const { fR, fT } = this.state;
 
     const selectedToken = assetData.find(data => {
       const { asset } = data;
-      const tokenName = getTickerFormat(asset);
-      if (tokenName === token.toLowerCase()) {
+      const ticker = getTickerFormat(asset);
+      if (ticker === tokenName.toLowerCase()) {
         return true;
       }
       return false;
@@ -247,11 +255,18 @@ class PoolCreate extends React.Component<Props, State> {
       return;
     }
 
-    const balance = token === 'rune' ? fR : fT;
-    const totalAmount = selectedToken.assetValue || 0;
-    const newValue = ((totalAmount * amount) / 100) * balance;
+    const balance = tokenName === 'rune' ? fR : fT;
+    const totalAmount = selectedToken.assetValue.amount();
+    // Fine tuning of amout by using "adjust balance" slider
+    // This slider has been remove, but will come back in the future
+    // formula ((totalAmount * amount) / 100) * balance;
+    const newValueBN = totalAmount
+      .multipliedBy(amount)
+      .div(100)
+      .multipliedBy(balance);
+    const newValue = tokenAmount(newValueBN);
 
-    if (token === 'rune') {
+    if (tokenName === 'rune') {
       this.setState({
         runeAmount: newValue,
       });
@@ -272,11 +287,15 @@ class PoolCreate extends React.Component<Props, State> {
       return;
     }
 
-    if (Number(runeAmount) <= 0 || Number(tokenAmount) <= 0) {
+    if (
+      runeAmount.amount().isLessThanOrEqualTo(0) ||
+      tokenAmount.amount().isLessThanOrEqualTo(0)
+    ) {
       notification.error({
         message: 'Stake Invalid',
         description: 'You need to enter an amount to stake.',
       });
+      this.handleCloseModal();
       this.setState({
         dragReset: true,
       });
@@ -317,10 +336,11 @@ class PoolCreate extends React.Component<Props, State> {
           message: 'Create Pool Failed',
           description: 'Create Pool information is not valid.',
         });
-        console.error(error); // eslint-disable-line no-console
+        this.handleCloseModal();
         this.setState({
           dragReset: true,
         });
+        console.error(error); // eslint-disable-line no-console
       }
     }
   };
@@ -436,13 +456,14 @@ class PoolCreate extends React.Component<Props, State> {
     const source = 'rune';
     const target = getTickerFormat(symbol);
 
-    const runePrice = priceIndex.RUNE;
+    const runePrice = validBNOrZero(priceIndex?.RUNE);
     const tokensData = getCreatePoolTokens(assetData, pools);
     // AssetDetail[] -> AssetPair[]
-    const coinDardData = tokensData
-      .map<AssetPair>((detail: AssetDetail) => ({ asset: detail.asset || '' }));
+    const coinDardData = tokensData.map<AssetPair>((detail: AssetDetail) => ({
+      asset: detail.asset || '',
+    }));
 
-    const tokenPrice = _get(priceIndex, target.toUpperCase(), 0);
+    const tokenPrice = priceIndex[target.toUpperCase()] || 0;
 
     const { poolPrice, depth, share } = this.getData();
 
@@ -450,12 +471,12 @@ class PoolCreate extends React.Component<Props, State> {
       {
         key: 'price',
         title: 'Pool Price',
-        value: `${basePriceAsset} ${poolPrice}`,
+        value: `${basePriceAsset} ${formatBN(poolPrice)}`,
       },
       {
         key: 'depth',
         title: 'Pool Depth',
-        value: `${basePriceAsset} ${depth}`,
+        value: `${basePriceAsset} ${formatBN(depth)}`,
       },
       { key: 'share', title: 'Your Share', value: `${share}%` },
     ];
@@ -540,14 +561,10 @@ class PoolCreate extends React.Component<Props, State> {
       market => market.base_asset_symbol === symbol,
     );
 
-    const token = (binanceToken && binanceToken.name) || target;
-    const ticker = (binanceToken && binanceToken.original_symbol) || target;
-    const totalSupply = Number(
-      (binanceToken && binanceToken.total_supply) || 0,
-    );
-    const marketPrice = Number(
-      (binanceMarket && binanceMarket.list_price) || 0,
-    );
+    const token = binanceToken?.name ?? target;
+    const ticker = binanceToken?.original_symbol ?? target;
+    const totalSupply = bnOrZero(binanceToken?.total_supply);
+    const marketPrice = bnOrZero(binanceMarket?.list_price);
 
     return (
       <div className="token-detail-container">
@@ -577,12 +594,12 @@ class PoolCreate extends React.Component<Props, State> {
                 />
                 <Status
                   title="Market Price"
-                  value={`$${marketPrice.toFixed(2)}`}
+                  value={`${formatBNCurrency(marketPrice)}`}
                   direction="horizontal"
                 />
                 <Status
                   title="Total Supply"
-                  value={totalSupply.toFixed(0)}
+                  value={formatBN(totalSupply)}
                   direction="horizontal"
                 />
               </>
@@ -604,7 +621,7 @@ class PoolCreate extends React.Component<Props, State> {
 
     const source = 'rune';
     const target = getTickerFormat(symbol);
-    const runePrice = priceIndex.RUNE;
+    const runePrice = validBNOrZero(priceIndex?.RUNE);
 
     const completed = hash && !status;
     const txURL = TESTNET_TX_BASE_URL + hash;
@@ -629,14 +646,14 @@ class PoolCreate extends React.Component<Props, State> {
                 data-test="stakeconfirm-coin-data-source"
                 asset={source}
                 assetValue={runeAmount}
-                price={runeAmount * runePrice}
+                price={runeAmount.amount().multipliedBy(runePrice)}
                 priceUnit={basePriceAsset}
               />
               <CoinData
                 data-test="stakeconfirm-coin-data-target"
                 asset={target}
                 assetValue={tokenAmount}
-                price={0}
+                price={BN_ZERO}
                 priceUnit={basePriceAsset}
               />
             </div>

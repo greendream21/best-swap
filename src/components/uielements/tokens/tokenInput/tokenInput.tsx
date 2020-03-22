@@ -1,5 +1,6 @@
 import React, { useRef, useCallback } from 'react';
 
+import BigNumber from 'bignumber.js';
 import { TokenInputWrapper } from './tokenInput.style';
 import CoinInputAdvanced from '../../coins/coinInputAdvanced';
 import { FixmeType, Maybe } from '../../../../types/bepswap';
@@ -8,19 +9,19 @@ import { TokenInputProps } from './types';
 type Props = {
   title: string;
   status: Maybe<string>;
-  amount: number;
+  amount: BigNumber;
   label: string;
-  inputProps: TokenInputProps;
-  onChange: (value: number) => void;
+  inputProps?: TokenInputProps;
+  onChange: (value: BigNumber) => void;
   className?: string;
 };
 
 const TokenInput: React.FC<Props> = (props: Props): JSX.Element => {
   const {
-    title = '',
+    title,
     amount,
     status,
-    label = '',
+    label,
     inputProps = {},
     className = '',
     onChange,
@@ -30,7 +31,7 @@ const TokenInput: React.FC<Props> = (props: Props): JSX.Element => {
   const inputRef = useRef<FixmeType>();
 
   const onChangeHandler = useCallback(
-    (value: number) => {
+    (value: BigNumber) => {
       onChange(value);
     },
     [onChange],

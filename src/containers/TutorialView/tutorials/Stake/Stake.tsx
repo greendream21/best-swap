@@ -12,9 +12,14 @@ import CoinInput from '../../../../components/uielements/coins/coinInput';
 
 import { orbGreenIcon, arrowGreenIcon } from '../../../../components/icons';
 
-import { formatNumber, formatCurrency } from '../../../../helpers/formatHelper';
 import { data, getVr, getSS, getVss } from './data';
 import { TutorialContent } from '../../types';
+import { TokenAmount } from '../../../../types/token';
+import {
+  tokenAmount,
+  formatTokenAmount,
+  formatTokenAmountCurrency,
+} from '../../../../helpers/tokenHelper';
 
 const { R, T, Pr, Pt } = data;
 
@@ -26,8 +31,8 @@ type ComponentProps = {
 type Props = RouteComponentProps & ComponentProps;
 
 type State = {
-  rValue: number;
-  tValue: number;
+  rValue: TokenAmount;
+  tValue: TokenAmount;
 };
 
 class Stake extends React.Component<Props, State> {
@@ -38,29 +43,32 @@ class Stake extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      rValue: 0,
-      tValue: 0,
+      rValue: tokenAmount(0),
+      tValue: tokenAmount(0),
     };
   }
 
   handleChangeRValue = (value: number | undefined) => {
     this.setState({
-      rValue: value || 0,
+      rValue: tokenAmount(value),
     });
   };
 
   handleChangeTValue = (value: number | undefined) => {
     this.setState({
-      tValue: value || 0,
+      tValue: tokenAmount(value),
     });
   };
 
   renderFlow = (view: TutorialContent) => {
     const { rValue, tValue } = this.state;
-    const Vr = formatCurrency(getVr(rValue));
-    const Vt = Vr;
-    const ss = `${Math.round(getSS(rValue, tValue))}%`;
-    const Vss = formatCurrency(getVss(rValue, tValue));
+    const Vr = getVr(rValue);
+    const VrFormatted = formatTokenAmount(Vr);
+    const VtFormatted = VrFormatted;
+    const ss = getSS(rValue, tValue);
+    const ssFormatted = `${formatTokenAmount(ss)}%`;
+    const Vss = getVss(rValue, tValue);
+    const VssFormatted = formatTokenAmountCurrency(Vss);
 
     return (
       <div className="stake-flow-wrapper">
@@ -104,29 +112,33 @@ class Stake extends React.Component<Props, State> {
         </div>
         <Centered>
           <Label size="large" color="normal" weight="bold">
-            {view === TutorialContent.INTRO && formatNumber(R)}
-            {view === TutorialContent.PLAY && formatNumber(R + rValue)}
+            {view === TutorialContent.INTRO && formatTokenAmount(R)}
+            {view === TutorialContent.PLAY &&
+              // formula: R + rValue
+              formatTokenAmount(tokenAmount(R.amount().plus(rValue.amount())))}
           </Label>
           <Label size="large" color="normal" weight="bold">
             :
           </Label>
           <Label size="large" color="normal" weight="bold">
-            {view === TutorialContent.INTRO && formatNumber(T)}
-            {view === TutorialContent.PLAY && formatNumber(T + tValue)}
+            {view === TutorialContent.INTRO && formatTokenAmount(T)}
+            {view === TutorialContent.PLAY &&
+              // formula: T + tValue
+              formatTokenAmount(tokenAmount(T.amount().plus(tValue.amount())))}
           </Label>
         </Centered>
         <Centered>
           <Label size="large" color="normal">
-            {Vr}
+            {VrFormatted}
           </Label>
           <Label size="large" color="normal" />
           <Label size="large" color="normal">
-            {Vt}
+            {VtFormatted}
           </Label>
         </Centered>
         <div className="center-text">
           <Label size="large" color="normal" weight="bold">
-            {ss}
+            {ssFormatted}
           </Label>
         </div>
         <div className="center-text description-label">
@@ -137,7 +149,7 @@ class Stake extends React.Component<Props, State> {
         <Centered>
           <Label />
           <Label size="large" color="normal" weight="bold">
-            {Vss}
+            {VssFormatted}
           </Label>
           <Label className="contains-tooltip">
             <span />

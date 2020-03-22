@@ -1,9 +1,9 @@
 import { renderHook, act } from '@testing-library/react-hooks';
-
 import {
   useCoinCardInputBehaviour,
   isBroadcastable,
 } from './coinInputAdvanced';
+import { bn } from '../../../../helpers/bnHelper';
 
 // Unit testing is really required to ensure a complex component
 // like this actually works as expected.
@@ -15,6 +15,7 @@ test('isBroadcastable', () => {
   expect(isBroadcastable('.123')).toBe(true);
   expect(isBroadcastable('123.123.123')).toBe(false);
   expect(isBroadcastable('123,123.123')).toBe(true);
+  expect(isBroadcastable('.1')).toBeTruthy();
 });
 
 function getLastCallValue(mockFn) {
@@ -64,10 +65,7 @@ const simulateControlledChange = ({ onChangeValue, hook }) => value => {
 
   const handlerHasBeenCalled = newCallCount === oldCallCount + 1;
 
-  if (
-    handlerHasBeenCalled &&
-    getLastCallValue(onChangeValue) === Number(value)
-  ) {
+  if (handlerHasBeenCalled && getLastCallValue(onChangeValue) === bn(value)) {
     // pass in a new value from outslide the component
     // as if the component was a controlled one
     hook.rerender({ value, onChangeValue });
@@ -87,10 +85,13 @@ function setup(initValue) {
 
   const hook = renderHook(
     ({ value, onChangeValue }) => {
-      return useCoinCardInputBehaviour({ value, onChangeValue });
+      return useCoinCardInputBehaviour({
+        amount: bn(value),
+        onChangeValue,
+      });
     },
     {
-      initialProps: { value: initValue, onChangeValue },
+      initialProps: { value: bn(initValue), onChangeValue },
     },
   );
 
@@ -118,9 +119,9 @@ describe('useCoinCardInputBehaviour', () => {
   it('should render values passed in with formatting', () => {
     const { hook, onChangeValue } = setup(0);
     expect(hook.result.current.value).toBe('0.00');
-    hook.rerender({ value: '1234.56', onChangeValue });
+    hook.rerender({ value: bn('1234.56'), onChangeValue });
     expect(hook.result.current.value).toBe('1,234.56');
-    hook.rerender({ value: '12345678', onChangeValue });
+    hook.rerender({ value: bn('12345678'), onChangeValue });
     expect(hook.result.current.value).toBe('12,345,678.00');
   });
 
@@ -186,10 +187,11 @@ describe('useCoinCardInputBehaviour', () => {
     expect(result.current.value).toBe('1,234.56');
     simulateFocus();
     simulateTypingInInput('12345678.90');
-    expect(onChangeValue).lastCalledWith(12345678.9);
+    expect(onChangeValue).toHaveBeenCalledTimes(2);
     expect(result.current.value).toBe('12345678.90');
     simulateBlur();
-    expect(onChangeValue).lastCalledWith(12345678.9);
+    /* simulateBlur seems to broadcast twice */
+    expect(onChangeValue).toHaveBeenCalledTimes(4);
     expect(result.current.value).toBe('12,345,678.90');
   });
 
@@ -204,20 +206,23 @@ describe('useCoinCardInputBehaviour', () => {
     expect(hook.result.current.value).toBe('0.00');
 
     simulateFocus();
-    expect(onChangeValue.mock.calls.length).toBe(1);
-    simulateTypingInInput('1.');
-    expect(hook.result.current.value).toBe('1.');
-    expect(onChangeValue.mock.calls.length).toBe(1);
+    // just focus, no broadcast
+    expect(onChangeValue.mock.calls.length).toBe(0);
+    simulateTypingInInput('.');
+    expect(hook.result.current.value).toBe('0.');
+    // ignore any typing of '.', no broadcast
+    expect(onChangeValue.mock.calls.length).toBe(0);
     simulateTypingInInput('1.0');
     expect(hook.result.current.value).toBe('1.0');
-    expect(onChangeValue.mock.calls.length).toBe(2);
+    expect(onChangeValue.mock.calls.length).toBe(1);
 
     simulateBlur();
-    expect(onChangeValue.mock.calls.length).toBe(2);
-    expect(hook.result.current.value).toBe('1.00');
-    hook.rerender({ value: 123, onChangeValue });
-    expect(hook.result.current.value).toBe('123.00');
+    // simulateBlur seems to call `onChangeValue` twice
     expect(onChangeValue.mock.calls.length).toBe(3);
+    expect(hook.result.current.value).toBe('1.00');
+    hook.rerender({ value: bn(123), onChangeValue });
+    expect(hook.result.current.value).toBe('123.00');
+    expect(onChangeValue.mock.calls.length).toBe(4);
   });
 
   it('should be able to send an empty string', () => {
@@ -244,7 +249,7 @@ describe('useCoinCardInputBehaviour', () => {
     simulateTypingInInput('12345678912345678');
     simulateBlur();
     expect(hook.result.current.value).toBe('12,345,678,912,345,678.00');
-    hook.rerender({ value: 40000, onChangeValue });
+    hook.rerender({ value: bn(40000), onChangeValue });
     expect(hook.result.current.value).toBe('40,000.00');
   });
 });

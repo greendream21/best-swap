@@ -1,11 +1,12 @@
+import BigNumber from 'bignumber.js';
 import { PoolInfoType } from '../../Pool/types';
 
 type RawSwapCardDataType = {
-  depth: number;
-  volume: number;
-  transaction: number;
-  slip: number;
-  trade: number;
+  depth: BigNumber;
+  volume: BigNumber;
+  transaction: BigNumber;
+  slip: BigNumber;
+  trade: BigNumber;
 };
 
 export type SwapCardType = {
@@ -18,13 +19,4 @@ export type SwapCardType = {
   raw: RawSwapCardDataType;
 };
 
-export type SwapTableRowType = {
-  pool: PoolInfoType;
-  depth: string;
-  volume: string;
-  transaction: string;
-  slip: string;
-  trade: string;
-  key: number;
-  raw: RawSwapCardDataType;
-};
+export type SwapTableRowType = SwapCardType & { key: number };

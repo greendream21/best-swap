@@ -13,8 +13,6 @@ import {
   clearKeystore,
 } from '../../helpers/webStorageHelper';
 
-import { getFixedNumber } from '../../helpers/stringHelper';
-import { BASE_NUMBER } from '../../settings/constants';
 import * as actions from './actions';
 import { AssetData, StakeData } from './types';
 import {
@@ -25,6 +23,8 @@ import {
 } from '../../types/generated/midgard';
 import { Market, Balance, Address } from '../../types/binance';
 import { getAssetFromString } from '../midgard/utils';
+import { bnOrZero, BN_ZERO } from '../../helpers/bnHelper';
+import { baseToToken, baseAmount, tokenAmount } from '../../helpers/tokenHelper';
 
 const midgardApi = new DefaultApi({ basePath: MIDGARD_API_URL });
 
@@ -62,14 +62,15 @@ export function* refreshBalance() {
 
       try {
         const markets: { result: Market[] } = yield call(Binance.getMarkets);
+        // TODO(Veado): token or base amounts?
         const coins = balances.map((coin: Balance) => {
           const market = markets.result.find(
             (market: Market) => market.base_asset_symbol === coin.symbol,
           );
           return {
             asset: coin.symbol,
-            assetValue: parseFloat(coin.free),
-            price: market ? parseFloat(market.list_price) : 0,
+            assetValue: tokenAmount(coin.free),
+            price: market ? bnOrZero(market.list_price) : BN_ZERO,
           } as AssetData;
         });
 
@@ -121,7 +122,7 @@ export function* getUserStakeData(payload: {
   );
 
   // Transform results of requests 1 + 2 into `StakeData[]`
-  const stakeData: StakeData[] = poolDataList.reduce(
+  const stakeDataList: StakeData[] = poolDataList.reduce(
     (acc: StakeData[], poolData: PoolDetail) => {
       const userStakerData = poolData.asset
         ? poolDetailMap[poolData.asset]
@@ -129,15 +130,11 @@ export function* getUserStakeData(payload: {
       if (userStakerData && poolData.asset) {
         const price = poolData?.price ?? 0;
         const { symbol = '', ticker = '' } = getAssetFromString(poolData.asset);
-        const stakeData = {
+        const stakeData: StakeData = {
           targetSymbol: symbol,
           target: ticker.toLowerCase(),
-          targetValue: Number(userStakerData.assetStaked)
-            ? getFixedNumber(Number(userStakerData.assetStaked) / BASE_NUMBER)
-            : 0,
-          assetValue: Number(userStakerData.runeStaked)
-            ? getFixedNumber(Number(userStakerData.runeStaked) / BASE_NUMBER)
-            : 0,
+          targetValue: baseToToken(baseAmount(userStakerData?.assetStaked)),
+          assetValue: baseToToken(baseAmount(userStakerData?.runeStaked)),
           asset: 'rune',
           price,
         } as StakeData;
@@ -148,8 +145,7 @@ export function* getUserStakeData(payload: {
     },
     [],
   );
-
-  return stakeData;
+  return stakeDataList;
 }
 
 export function* refreshStakes() {
