@@ -8,115 +8,119 @@ import {
   DoubleSwapCalcData,
   SingleSwapCalcData,
 } from './calc';
+import { bn, BN_ZERO } from '../../helpers/bnHelper';
+import { tokenAmount } from '../../helpers/tokenHelper';
 
 const doubleSwapCalcData: DoubleSwapCalcData = {
-  X: 1000000,
-  Y: 1000,
-  R: 100000,
-  Z: 100,
-  Py: 50,
-  Pr: 20,
+  X: tokenAmount(1000000),
+  Y: tokenAmount(1000),
+  R: tokenAmount(100000),
+  Z: tokenAmount(100),
+  Py: bn(50),
+  Pr: bn(20),
 };
 
 const singleSwapCalcData: SingleSwapCalcData = {
-  X: 1000000,
-  Y: 1000,
-  Py: 50,
+  X: tokenAmount(1000000),
+  Y: tokenAmount(1000),
+  Py: bn(50),
 };
 
-const XVALUE = 1000;
+const XVALUE_TOKEN = tokenAmount(1000);
+const ZERO_TOKEN = tokenAmount(0);
 
 describe('swap/calc', () => {
   describe('getYValue', () => {
     it('calculate yValue from double swap calc data', () => {
-      const yValue = getYValue(XVALUE, doubleSwapCalcData);
-      const expected = 0.998002996004994;
+      const yValue = getYValue(XVALUE_TOKEN, doubleSwapCalcData);
+      const expected = tokenAmount('0.99800299600499400699').amount();
 
-      expect(yValue).toBe(expected);
+      expect(yValue.amount()).toEqual(expected);
     });
 
     it('calculate yValue from single swap calc data', () => {
-      const yValue = getYValue(XVALUE, singleSwapCalcData);
-      const expected = 0.998002996004994;
+      const yValue = getYValue(XVALUE_TOKEN, singleSwapCalcData);
+      const expected = tokenAmount('0.99800299600499400699').amount();
 
-      expect(yValue).toBe(expected);
+      expect(yValue.amount()).toEqual(expected);
     });
   });
 
   describe('getZValue', () => {
     it('calculate zValue from swap calc data', () => {
-      const zValue = getZValue(XVALUE, doubleSwapCalcData);
-      const expected = 0.0009979830761035957;
+      const zValue = getZValue(XVALUE_TOKEN, doubleSwapCalcData);
+      const expected = tokenAmount('0.00099798').amount();
 
-      expect(zValue).toBe(expected);
+      expect(zValue.amount()).toEqual(expected);
     });
 
     it('calculate zValue from single swap calc data with 0 x value', () => {
-      const zValue = getZValue(0, doubleSwapCalcData);
-
-      expect(zValue).toBe(0);
+      const zValue = getZValue(ZERO_TOKEN, doubleSwapCalcData);
+      const expected = tokenAmount('0').amount();
+      expect(zValue.amount()).toEqual(expected);
     });
   });
 
   describe('getFee', () => {
     it('calculate fee from swap calc data', () => {
-      const fee = getFee(XVALUE, doubleSwapCalcData);
-      const expected = 9.959900999136684e-9;
+      const fee = getFee(XVALUE_TOKEN, doubleSwapCalcData);
+      // TODO (Veado) Check the result of this test again, `'1e-8'` might be wrong
+      const expected = tokenAmount('1e-8').amount();
 
-      expect(fee).toBe(expected);
+      expect(fee.amount()).toEqual(expected);
     });
 
     it('calculate fee from single swap calc data with 0 x value', () => {
-      const fee = getFee(0, doubleSwapCalcData);
+      const fee = getFee(ZERO_TOKEN, doubleSwapCalcData);
 
-      expect(fee).toBe(0);
+      expect(fee.amount()).toEqual(BN_ZERO);
     });
   });
 
   describe('getPx', () => {
     it('calculate xPrice from swap calc data', () => {
-      const xPrice = getPx(XVALUE, singleSwapCalcData);
-      const expected = 0.049900199650549204;
+      const xPrice = getPx(XVALUE_TOKEN, singleSwapCalcData);
+      const expected = bn('0.04990019965034965035');
 
-      expect(xPrice).toBe(expected);
+      expect(xPrice).toEqual(expected);
     });
 
     it('calculate xPrice from single swap calc data with 0 x value', () => {
-      const xPrice = getPx(0, singleSwapCalcData);
-      const expected = 0.05;
+      const xPrice = getPx(ZERO_TOKEN, singleSwapCalcData);
+      const expected = bn('0.05');
 
-      expect(xPrice).toBe(expected);
+      expect(xPrice).toEqual(expected);
     });
   });
 
   describe('getPz', () => {
     it('calculate zPrice from swap calc data', () => {
-      const zPrice = getPz(XVALUE, doubleSwapCalcData);
-      const expected = 20000.39920119838;
+      const zPrice = getPz(XVALUE_TOKEN, doubleSwapCalcData);
+      const expected = bn('20000.39920058394198762425');
 
-      expect(zPrice).toBe(expected);
+      expect(zPrice).toEqual(expected);
     });
 
     it('calculate zPrice from single swap calc data with 0 x value', () => {
-      const zPrice = getPz(0, doubleSwapCalcData);
-      const expected = 20000;
+      const zPrice = getPz(ZERO_TOKEN, doubleSwapCalcData);
+      const expected = bn('20000');
 
-      expect(zPrice).toBe(expected);
+      expect(zPrice).toEqual(expected);
     });
   });
 
   describe('getSlip', () => {
     it('calculate slip from swap calc data', () => {
-      const slip = getSlip(XVALUE, doubleSwapCalcData);
-      const expected = 0.0019959761121081904;
+      const slip = getSlip(XVALUE_TOKEN, doubleSwapCalcData);
+      const expected = bn('0.001995976120097963');
 
-      expect(slip).toBe(expected);
+      expect(slip).toEqual(expected);
     });
 
     it('calculate slip from single swap calc data with 0 x value', () => {
-      const slip = getSlip(0, doubleSwapCalcData);
+      const slip = getSlip(ZERO_TOKEN, doubleSwapCalcData);
 
-      expect(slip).toBe(0);
+      expect(slip).toEqual(BN_ZERO);
     });
   });
 });

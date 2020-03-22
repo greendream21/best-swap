@@ -3,14 +3,16 @@ import React from 'react';
 import { InputFormWrapper } from './inputForm.style';
 import InputNumber from '../inputNumber';
 import Label from '../label';
+import { TokenAmount } from '../../../types/token';
+import { tokenAmount } from '../../../helpers/tokenHelper';
 
 type Props = {
   title: string;
   type: string;
-  value: number;
+  amount: TokenAmount;
   reverse?: boolean;
   step?: number;
-  onChange?: (value?: number) => void;
+  onChange?: (value: number | undefined) => void;
   className?: string;
 };
 
@@ -18,13 +20,15 @@ const InputForm: React.FC<Props> = (props: Props): JSX.Element => {
   const {
     title,
     type,
-    value = 0,
+    amount = tokenAmount(0),
     step = 1,
     className = '',
     reverse = false,
     onChange = () => {},
     ...otherProps
   } = props;
+
+  const valueNumber = amount.amount().toNumber();
 
   return (
     <InputFormWrapper
@@ -38,7 +42,7 @@ const InputForm: React.FC<Props> = (props: Props): JSX.Element => {
       <div className="value-wrapper">
         <InputNumber
           className="value-input"
-          value={value}
+          value={valueNumber}
           onChange={onChange}
           min={0}
           step={step}

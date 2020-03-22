@@ -138,7 +138,7 @@ class WalletView extends React.Component<Props, State> {
     return asset ? [asset] : [];
   };
 
-  getSelectedStake = (): AssetData[] => {
+  getSelectedStake = (): StakeData[] => {
     const { pathname } = this.props;
     const symbol = matchPoolSymbol(pathname);
     const stake = this.getStakeDataBySource(symbol || '');

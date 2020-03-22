@@ -17,7 +17,6 @@ import {
   arrowYellowIcon,
 } from '../../../../components/icons';
 
-import { formatCurrency, formatNumber } from '../../../../helpers/formatHelper';
 import {
   data,
   getYValue,
@@ -30,6 +29,13 @@ import {
 } from './data';
 import { Nothing } from '../../../../types/bepswap';
 import { TutorialContent } from '../../types';
+import {
+  tokenAmount,
+  formatTokenAmount,
+  formatTokenAmountCurrency,
+} from '../../../../helpers/tokenHelper';
+import { TokenAmount } from '../../../../types/token';
+import { formatBNCurrency } from '../../../../helpers/bnHelper';
 
 const { X, Y, Z, R, Py, Pr } = data;
 
@@ -41,7 +47,7 @@ type ComponentProps = {
 type Props = RouteComponentProps & ComponentProps;
 
 type State = {
-  xValue: number;
+  xValue: TokenAmount;
 };
 
 class DoubleSwap extends React.Component<Props, State> {
@@ -52,13 +58,13 @@ class DoubleSwap extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      xValue: 0,
+      xValue: tokenAmount(0),
     };
   }
 
   handleChangeX = (xValue: number | undefined) => {
     this.setState({
-      xValue: xValue || 0,
+      xValue: tokenAmount(xValue),
     });
   };
 
@@ -152,35 +158,42 @@ class DoubleSwap extends React.Component<Props, State> {
                     placement="leftTop"
                   />
                 )}
-                {view === TutorialContent.INTRO && formatNumber(X)}
-                {view === TutorialContent.PLAY && formatNumber(X + xValue)}
+                {view === TutorialContent.INTRO && formatTokenAmount(X)}
+                {view === TutorialContent.PLAY &&
+                  formatTokenAmount(
+                    tokenAmount(X.amount().plus(xValue.amount())),
+                  )}
               </Label>
               <Label size="large" color="normal" weight="bold">
                 :
               </Label>
               <Label size="large" color="normal" weight="bold">
-                {view === TutorialContent.INTRO && formatNumber(Y)}
-                {view === TutorialContent.PLAY && formatNumber(Y - yValue)}
+                {view === TutorialContent.INTRO && formatTokenAmount(Y)}
+                {view === TutorialContent.PLAY &&
+                  formatTokenAmount(
+                    tokenAmount(Y.amount().minus(yValue.amount())),
+                  )}
               </Label>
             </Centered>
             <Centered>
               <Label size="large" color="normal">
-                {formatCurrency(balanceA)}
+                {formatTokenAmountCurrency(balanceA)}
               </Label>
               <Label size="large" color="normal" />
               <Label size="large" color="normal">
-                {formatCurrency(balanceA)}
+                {formatTokenAmountCurrency(balanceA)}
               </Label>
             </Centered>
             <Centered>
               <Label size="large" color="normal">
                 {view === TutorialContent.INTRO &&
-                  formatCurrency(getPx(Nothing))}
-                {view === TutorialContent.PLAY && formatCurrency(getPx(xValue))}
+                  formatBNCurrency(getPx(Nothing))}
+                {view === TutorialContent.PLAY &&
+                  formatBNCurrency(getPx(xValue))}
               </Label>
               <Label size="large" color="normal" />
               <Label size="large" color="normal">
-                {formatCurrency(Py)}
+                {formatBNCurrency(Py)}
               </Label>
             </Centered>
             <Centered>
@@ -212,35 +225,38 @@ class DoubleSwap extends React.Component<Props, State> {
           <div className="swap-flow-wrapper">
             <Centered>
               <Label size="large" color="normal" weight="bold">
-                {view === TutorialContent.INTRO && formatNumber(R)}
-                {view === TutorialContent.PLAY && formatNumber(R + yValue)}
+                {view === TutorialContent.INTRO && formatTokenAmount(R)}
+                {view === TutorialContent.PLAY &&
+                  formatTokenAmount(tokenAmount(R.amount().plus(yValue.amount())))}
               </Label>
               <Label size="large" color="normal" weight="bold">
                 :
               </Label>
               <Label size="large" color="normal" weight="bold">
-                {view === TutorialContent.INTRO && formatNumber(Z)}
-                {view === TutorialContent.PLAY && formatNumber(Z - zValue)}
+                {view === TutorialContent.INTRO && formatTokenAmount(Z)}
+                {view === TutorialContent.PLAY &&
+                  formatTokenAmount(tokenAmount(Z.amount().minus(zValue.amount())))}
               </Label>
             </Centered>
             <Centered>
               <Label size="large" color="normal">
-                {formatCurrency(balanceB)}
+                {formatTokenAmountCurrency(balanceB)}
               </Label>
               <Label size="large" color="normal" />
               <Label size="large" color="normal">
-                {formatCurrency(balanceB)}
+                {formatTokenAmountCurrency(balanceB)}
               </Label>
             </Centered>
             <Centered>
               <Label size="large" color="normal">
-                {formatCurrency(Pr)}
+                {formatBNCurrency(Pr)}
               </Label>
               <Label size="large" color="normal" />
               <Label size="large" color="normal">
                 {view === TutorialContent.INTRO &&
-                  formatCurrency(getPz(Nothing))}
-                {view === TutorialContent.PLAY && formatCurrency(getPz(xValue))}
+                  formatBNCurrency(getPz(Nothing))}
+                {view === TutorialContent.PLAY &&
+                  formatBNCurrency(getPz(xValue))}
               </Label>
             </Centered>
             <Centered>

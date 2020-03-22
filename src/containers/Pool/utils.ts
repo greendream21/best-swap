@@ -1,14 +1,10 @@
+import BigNumber from 'bignumber.js';
 import {
   getStakeMemo,
   getCreateMemo,
   getWithdrawMemo,
 } from '../../helpers/memoHelper';
-import {
-  getFixedNumber,
-  getBaseNumberFormat,
-  getTickerFormat,
-  getUserFormat,
-} from '../../helpers/stringHelper';
+import { getTickerFormat } from '../../helpers/stringHelper';
 import { getTxHashFromMemo } from '../../helpers/binance';
 import {
   Address,
@@ -21,36 +17,49 @@ import { PoolDataMap, PriceDataIndex } from '../../redux/midgard/types';
 import { PoolDetail, AssetDetail } from '../../types/generated/midgard';
 import { getAssetFromString } from '../../redux/midgard/utils';
 import { PoolInfoType } from './types';
-import { Maybe } from '../../types/bepswap';
+import { Maybe, Nothing } from '../../types/bepswap';
+import {
+  tokenToBase,
+  baseAmount,
+  formatBaseAsTokenAmount,
+} from '../../helpers/tokenHelper';
+import {
+  bn,
+  BN_ZERO,
+  bnOrZero,
+  validBNOrZero,
+  fixedBN,
+  isValidBN,
+} from '../../helpers/bnHelper';
+import { TokenAmount, BaseAmount } from '../../types/token';
 
 export type CalcResult = {
   poolAddress: Maybe<string>;
-  ratio?: number;
-  symbolTo?: string;
-  poolUnits?: number;
-  poolPrice: number;
-  newPrice: number;
-  newDepth: number;
-  share: number;
-  Pr: number;
-  R: number;
-  T: number;
+  ratio: Maybe<BigNumber>;
+  symbolTo: Maybe<string>;
+  poolUnits: Maybe<BigNumber>;
+  poolPrice: BigNumber;
+  newPrice: BigNumber;
+  newDepth: BigNumber;
+  share: BigNumber;
+  Pr: BigNumber;
+  R: BigNumber;
+  T: BigNumber;
 };
 
 export const getCalcResult = (
   tokenName: string,
   pools: PoolDataMap,
   poolAddress: Maybe<string>,
-  rValue: number,
-  runePrice: number,
-  tValue: number,
+  rValue: TokenAmount,
+  runePrice: BigNumber,
+  tValue: TokenAmount,
 ): CalcResult => {
-  let R = 10000;
-  let T = 10;
-  const Pr = runePrice;
-  let ratio;
-  let symbolTo;
-  let poolUnits;
+  let R = bn(10000);
+  let T = bn(10);
+  let ratio: Maybe<BigNumber> = Nothing;
+  let symbolTo: Maybe<string> = Nothing;
+  let poolUnits: Maybe<BigNumber> = Nothing;
 
   // CHANGELOG:
   /*
@@ -70,21 +79,47 @@ export const getCalcResult = (
     const { symbol } = getAssetFromString(asset);
 
     if (symbol && symbol.toLowerCase() === tokenName.toLowerCase()) {
-      R = Number(runeStakedTotal);
-      T = Number(assetStakedTotal);
-      ratio = 1 / (R / T);
+      R = bn(runeStakedTotal || 0);
+      T = bn(assetStakedTotal || 0);
+      // formula: 1 / (R / T)
+      const a = R.div(T);
+      // Ratio does need more than 2 decimal places
+      ratio = bn(1)
+        .div(a)
+        .decimalPlaces(2);
       symbolTo = symbol;
-      poolUnits = Number(poolDataUnits);
+      poolUnits = bn(poolDataUnits || 0);
     }
   });
 
-  const r = getBaseNumberFormat(rValue);
-  const t = getBaseNumberFormat(tValue);
+  const rBase = tokenToBase(rValue);
+  const r = rBase.amount();
+  const tBase = tokenToBase(tValue);
+  const t = tBase.amount();
 
-  const poolPrice = getFixedNumber((R / T) * runePrice);
-  const newPrice = getFixedNumber((runePrice * (r + R)) / (t + T));
-  const newDepth = getFixedNumber(runePrice * (1 + (r / R + t / T) / 2) * R);
-  const share: number = getFixedNumber(((r / (r + R) + t / (t + T)) / 2) * 100);
+  // formula: (R / T) * runePrice
+  const poolPrice = fixedBN(R.div(T).multipliedBy(runePrice));
+  // formula: (runePrice * (r + R)) / (t + T)
+  const a = r.plus(R).multipliedBy(runePrice);
+  const aa = t.plus(T);
+  const newPrice = fixedBN(a.dividedBy(aa));
+  // formula: runePrice * (1 + (r / R + t / T) / 2) * R
+  const b = r.dividedBy(R); // r / R
+  const bb = t.dividedBy(T); // t / T
+  const bbb = b.plus(bb); // (r / R + t / T)
+  const bbbb = bbb.dividedBy(2).plus(1); // (1 + (r / R + t / T) / 2)
+  const newDepth = fixedBN(runePrice.multipliedBy(bbbb).multipliedBy(R));
+  // formula: ((r / (r + R) + t / (t + T)) / 2) * 100
+  const c = r.plus(R); // (r + R)
+  const cc = t.plus(T); // (t + T)
+  const ccc = r.dividedBy(c); // r / (r + R)
+  const cccc = t.dividedBy(cc); // (t / (t + T))
+  const share = fixedBN(
+    ccc
+      .plus(cccc)
+      .div(2)
+      .multipliedBy(100),
+  );
 
   return {
     poolAddress,
@@ -95,21 +130,20 @@ export const getCalcResult = (
     newPrice,
     newDepth,
     share,
-    Pr,
+    Pr: runePrice,
     R,
     T,
   };
 };
-
 export type PoolData = {
   asset: string;
   target: string;
-  depth: number;
-  volume24: number;
-  volumeAT: number;
-  transaction: number;
-  liqFee: number;
-  roiAT: number;
+  depth: BaseAmount;
+  volume24: BaseAmount;
+  volumeAT: BaseAmount;
+  transaction: BaseAmount;
+  liqFee: BaseAmount;
+  roiAT: BaseAmount;
   totalSwaps: number;
   totalStakers: number;
   values: PoolDataValues;
@@ -128,11 +162,11 @@ export type PoolDataValues = {
 };
 
 export type PoolDataRaw = {
-  depth: number;
-  volume24: number;
-  transaction: number;
-  liqFee: number;
-  roiAT: number;
+  depth: BaseAmount;
+  volume24: BaseAmount;
+  transaction: BaseAmount;
+  liqFee: BaseAmount;
+  roiAT: BaseAmount;
 };
 
 export const getCreatePoolTokens = (
@@ -168,25 +202,39 @@ export const getPoolData = (
     poolDetail?.asset,
   );
 
-  const runePrice = priceIndex.RUNE || 0;
-  const depth = Number(poolDetail?.runeDepth ?? 0) * runePrice;
-  const volume24 = Number(poolDetail?.poolVolume24hr ?? 0) * runePrice;
-  const volumeAT = Number(poolDetail?.poolVolume ?? 0) * runePrice;
-  const transaction = Number(poolDetail?.poolTxAverage ?? 0) * runePrice;
+  const runePrice = validBNOrZero(priceIndex?.RUNE);
+  const depthResult = bnOrZero(poolDetail?.runeDepth).multipliedBy(runePrice);
+  const depth = baseAmount(depthResult);
+  const volume24Result = bnOrZero(poolDetail?.poolVolume24hr).multipliedBy(
+    runePrice,
+  );
+  const volume24 = baseAmount(volume24Result);
+  const volumeATResult = bnOrZero(poolDetail?.poolVolume).multipliedBy(
+    runePrice,
+  );
+  const volumeAT = baseAmount(volumeATResult);
+  const transactionResult = bnOrZero(poolDetail?.poolTxAverage).multipliedBy(
+    runePrice,
+  );
+  const transaction = baseAmount(transactionResult);
 
-  const roiAT = Number(poolDetail?.poolROI ?? 0);
-  const liqFee = Number(poolDetail?.poolFeeAverage ?? 0);
+  const roiATResult = poolDetail?.poolROI ?? 0;
+  const roiAT = baseAmount(roiATResult);
+  const liqFeeResult = poolDetail?.poolFeeAverage ?? 0;
+  const liqFee = baseAmount(liqFeeResult);
 
   const totalSwaps = Number(poolDetail?.swappersCount ?? 0);
   const totalStakers = Number(poolDetail?.stakersCount ?? 0);
 
-  const depthValue = `${basePriceAsset} ${getUserFormat(
-    depth,
-  ).toLocaleString()}`;
-  const volume24Value = `${basePriceAsset} ${getUserFormat(volume24)}`;
-  const transactionValue = `${basePriceAsset} ${getUserFormat(transaction)}`;
-  const liqFeeValue = `${getUserFormat(liqFee)}%`;
-  const roiAtValue = `${getUserFormat(roiAT)}% pa`;
+  const depthValue = `${basePriceAsset} ${formatBaseAsTokenAmount(depth)}`;
+  const volume24Value = `${basePriceAsset} ${formatBaseAsTokenAmount(
+    volume24,
+  )}`;
+  const transactionValue = `${basePriceAsset} ${formatBaseAsTokenAmount(
+    transaction,
+  )}`;
+  const liqFeeValue = `${formatBaseAsTokenAmount(liqFee)}%`;
+  const roiAtValue = `${formatBaseAsTokenAmount(roiAT)}% pa`;
 
   return {
     asset,
@@ -213,30 +261,30 @@ export const getPoolData = (
       roiAT: roiAtValue,
     },
     raw: {
-      depth: getUserFormat(depth),
-      volume24: getUserFormat(volume24),
-      transaction: getUserFormat(transaction),
-      liqFee: getUserFormat(liqFee),
-      roiAT: getUserFormat(roiAT),
+      depth,
+      volume24,
+      transaction,
+      liqFee,
+      roiAT,
     },
   };
 };
 
 export type CreatePoolCalc = {
-  poolPrice: number;
-  depth: number;
+  poolPrice: BigNumber;
+  depth: BigNumber;
   share: number;
   poolAddress?: string;
   tokenSymbol?: string;
-  Pr?: number;
+  Pr?: BigNumber;
 };
 
 type GetCreatePoolCalcParams = {
   tokenSymbol: string;
   poolAddress: string;
-  runeAmount: number;
-  runePrice: number;
-  tokenAmount: number;
+  runeAmount: TokenAmount;
+  tokenAmount: TokenAmount;
+  runePrice: BigNumber;
 };
 
 export const getCreatePoolCalc = ({
@@ -250,17 +298,21 @@ export const getCreatePoolCalc = ({
 
   if (!poolAddress) {
     return {
-      poolPrice: 0,
-      depth: 0,
+      poolPrice: BN_ZERO,
+      depth: BN_ZERO,
       share: 100,
     };
   }
 
-  const poolPrice =
-    (tokenAmount > 0 &&
-      getFixedNumber((runeAmount / tokenAmount) * runePrice)) ||
-    0;
-  const depth = getFixedNumber(runePrice * runeAmount);
+  // formula: (runeAmount / tokenAmount) * runePrice)
+  const poolPrice = tokenAmount.amount().isGreaterThan(0)
+    ? runeAmount
+        .amount()
+        .div(tokenAmount.amount())
+        .multipliedBy(runePrice)
+    : BN_ZERO;
+  // formula: runePrice * runeAmount
+  const depth = runeAmount.amount().multipliedBy(runePrice);
 
   return {
     poolAddress,
@@ -275,15 +327,17 @@ export const getCreatePoolCalc = ({
 export enum StakeErrorMsg {
   MISSING_SYMBOL = 'Symbol to stake is missing.',
   MISSING_POOL_ADDRESS = 'Pool address is missing.',
+  INVALID_TOKEN_AMOUNT = 'Invalid token amount.',
+  INVALID_RUNE_AMOUNT = 'Invalid RUNE amount.',
 }
 
 export type ConfirmStakeParams = {
   bncClient: BinanceClient;
   wallet: Address;
-  runeAmount: number;
-  tokenAmount: number;
+  runeAmount: TokenAmount;
+  tokenAmount: TokenAmount;
   poolAddress: Maybe<string>;
-  symbolTo?: string;
+  symbolTo: Maybe<string>;
 };
 
 export const confirmStake = (
@@ -299,6 +353,15 @@ export const confirmStake = (
   } = params;
 
   return new Promise<TransferResult>((resolve, reject) => {
+    const runeAmountValue = runeAmount.amount();
+    if (!runeAmountValue.isFinite()) {
+      return reject(new Error(StakeErrorMsg.INVALID_RUNE_AMOUNT));
+    }
+    const tokenAmountValue = tokenAmount.amount();
+    if (!tokenAmountValue.isFinite()) {
+      return reject(new Error(StakeErrorMsg.INVALID_TOKEN_AMOUNT));
+    }
+
     if (!poolAddress) {
       return reject(new Error(StakeErrorMsg.MISSING_POOL_ADDRESS));
     }
@@ -307,7 +370,11 @@ export const confirmStake = (
       return reject(new Error(StakeErrorMsg.MISSING_SYMBOL));
     }
 
-    if (runeAmount > 0 && tokenAmount > 0) {
+    // We have to convert BNs back into numbers needed by Binance JS SDK
+    // However, we are safe here, since we have already checked amounts of rune and token before
+    const runeAmountNumber = runeAmountValue.toNumber();
+    const tokenAmountNumber = tokenAmountValue.toNumber();
+    if (runeAmountValue.isGreaterThan(0) && tokenAmountValue.isGreaterThan(0)) {
       const memo = getStakeMemo(symbolTo);
 
       const outputs: MultiTransfer[] = [
@@ -316,11 +383,11 @@ export const confirmStake = (
           coins: [
             {
               denom: 'RUNE-A1F',
-              amount: Number(runeAmount.toFixed(8)),
+              amount: runeAmountNumber,
             },
             {
               denom: symbolTo,
-              amount: Number(tokenAmount.toFixed(8)),
+              amount: tokenAmountNumber,
             },
           ],
         },
@@ -328,20 +395,20 @@ export const confirmStake = (
 
       bncClient
         .multiSend(wallet, outputs, memo)
-        .then(response => resolve(response))
-        .catch(error => reject(error));
-    } else if (runeAmount <= 0 && tokenAmount) {
+        .then((response: TransferResult) => resolve(response))
+        .catch((error: Error) => reject(error));
+    } else if (runeAmountValue.isLessThanOrEqualTo(0) && tokenAmount) {
       const memo = getStakeMemo(symbolTo);
 
       bncClient
-        .transfer(wallet, poolAddress, tokenAmount, symbolTo, memo)
-        .then(response => resolve(response))
-        .catch(error => reject(error));
-    } else if (tokenAmount <= 0 && runeAmount) {
-      const memo = getStakeMemo('RUNE-A1F');
+        .transfer(wallet, poolAddress, tokenAmountNumber, symbolTo, memo)
+        .then((response: TransferResult) => resolve(response))
+        .catch((error: Error) => reject(error));
+    } else if (runeAmount && tokenAmountValue.isLessThanOrEqualTo(0)) {
+      const memo = getStakeMemo(symbolTo);
 
       bncClient
-        .transfer(wallet, poolAddress, runeAmount, 'RUNE-A1F', memo)
+        .transfer(wallet, poolAddress, runeAmountNumber, 'RUNE-A1F', memo)
         .then(response => resolve(response))
         .catch(error => reject(error));
     }
@@ -350,7 +417,8 @@ export const confirmStake = (
 
 export enum CreatePoolErrorMsg {
   MISSING_WALLET = 'Wallet address is missing or invalid.',
-  INVALID_TOKEN_AMOUNT = 'Token amount has to be greater then 0.',
+  INVALID_TOKEN_AMOUNT = 'Token amount is invalid.',
+  INVALID_RUNE_AMOUNT = 'Rune amount is invalid.',
   MISSING_POOL_ADDRESS = 'Pool address is missing.',
   MISSING_TOKEN_SYMBOL = 'Token symbol is missing.',
 }
@@ -358,8 +426,8 @@ export enum CreatePoolErrorMsg {
 type ConfirmCreatePoolParams = {
   bncClient: BinanceClient;
   wallet: string;
-  runeAmount: number;
-  tokenAmount: number;
+  runeAmount: TokenAmount;
+  tokenAmount: TokenAmount;
   poolAddress: Maybe<string>;
   tokenSymbol?: string;
 };
@@ -379,7 +447,20 @@ export const confirmCreatePool = (
       return reject(new Error(CreatePoolErrorMsg.MISSING_WALLET));
     }
 
-    if (tokenAmount <= 0) {
+    const runeValue = runeAmount.amount();
+    if (
+      !isValidBN(runeValue) ||
+      runeValue.isLessThanOrEqualTo(0) ||
+      !runeValue.isFinite()
+    ) {
+      return reject(new Error(CreatePoolErrorMsg.INVALID_RUNE_AMOUNT));
+    }
+    const tokenValue = tokenAmount.amount();
+    if (
+      !isValidBN(tokenValue) ||
+      tokenValue.isLessThanOrEqualTo(0) ||
+      !tokenValue.isFinite()
+    ) {
       return reject(new Error(CreatePoolErrorMsg.INVALID_TOKEN_AMOUNT));
     }
 
@@ -393,17 +474,22 @@ export const confirmCreatePool = (
 
     const memo = getCreateMemo(tokenSymbol);
 
+    // We have to convert BNs back into numbers needed by Binance JS SDK
+    // We are safe here, since we have already checked that amounts of RUNE and toke are valid numbers
+    const runeAmountNumber = runeAmount.amount().toNumber();
+    const tokenAmountNumber = tokenAmount.amount().toNumber();
+
     const outputs: MultiTransfer[] = [
       {
         to: poolAddress,
         coins: [
           {
             denom: 'RUNE-A1F',
-            amount: Number(runeAmount.toFixed(8)),
+            amount: runeAmountNumber,
           },
           {
             denom: tokenSymbol,
-            amount: Number(tokenAmount.toFixed(8)),
+            amount: tokenAmountNumber,
           },
         ],
       },

@@ -1,15 +1,22 @@
 import React, { Fragment, useCallback } from 'react';
-import { Scrollbars } from 'react-custom-scrollbars';
+import BigNumber from 'bignumber.js';
 
+import { Scrollbars } from 'react-custom-scrollbars';
 import { CoinListWrapper, CoinListWrapperSize } from './coinList.style';
 import CoinData from '../coinData';
 import { getTickerFormat } from '../../../../helpers/stringHelper';
 import { Maybe, Nothing } from '../../../../types/bepswap';
-import { AssetData, StakeData, StakeOrAssetData, isStakeData } from '../../../../redux/wallet/types';
+import { StakeOrAssetData, isStakeData } from '../../../../redux/wallet/types';
 import { PriceDataIndex } from '../../../../redux/midgard/types';
 import { CoinDataWrapperType } from '../coinData/coinData.style';
+import { validBNOrZero } from '../../../../helpers/bnHelper';
+import { TokenAmount } from '../../../../types/token';
 
-export type CoinListDataList = AssetData[] | StakeData[]
+// This does not work anymore
+// export type CoinListDataList = AssetData[] | StakeData[]
+// ^ Maybe similar issue to "error on valid array with union type" https://github.com/microsoft/TypeScript/issues/36390
+
+export type CoinListDataList = StakeOrAssetData[]
 
 type Props = {
   data?: CoinListDataList;
@@ -35,9 +42,9 @@ export const CoinList: React.FC<Props> = (props: Props): JSX.Element => {
     ...otherProps
   } = props;
 
-  const getPrice = useCallback((asset: string) => {
+  const getPrice = useCallback((asset: string): BigNumber => {
     const ticker = getTickerFormat(asset);
-    return priceIndex[ticker.toUpperCase()] || 0;
+    return validBNOrZero(priceIndex[ticker.toUpperCase()]);
   }, [priceIndex]);
 
   const toggleSelect = useCallback((key: number) => () => {
@@ -53,20 +60,19 @@ export const CoinList: React.FC<Props> = (props: Props): JSX.Element => {
       <Scrollbars className="coinList-scroll">
         {data.map((coinData: StakeOrAssetData, index: number) => {
             let target: Maybe<string> = Nothing;
-            let targetValue: Maybe<number> = Nothing;
+            let targetValue: Maybe<TokenAmount> = Nothing;
 
             const { asset, assetValue } = coinData;
 
-            let priceValue;
+            let price;
 
             if (isStakeData(coinData)) {
               target = coinData.target;
               targetValue = coinData.targetValue;
-              priceValue = getPrice(target);
+              price = getPrice(target);
             } else {
-              priceValue = getPrice(asset);
+              price = getPrice(asset);
             }
-
 
             const tokenName = getTickerFormat(asset);
 
@@ -74,7 +80,7 @@ export const CoinList: React.FC<Props> = (props: Props): JSX.Element => {
               return <Fragment key={asset} />;
             }
 
-            const isSelected = selected && selected.includes(data[index]);
+            const isSelected = selected && selected.includes(coinData);
             const activeClass = isSelected ? 'active' : '';
 
             return (
@@ -89,7 +95,7 @@ export const CoinList: React.FC<Props> = (props: Props): JSX.Element => {
                   assetValue={assetValue}
                   target={target}
                   targetValue={targetValue}
-                  price={priceValue}
+                  price={price}
                   priceUnit={unit}
                   size={size}
                   type={type}

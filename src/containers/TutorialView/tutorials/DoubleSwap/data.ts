@@ -1,42 +1,58 @@
 import { DoubleSwapCalcData } from '../../../Swap/calc';
 import * as calc from '../../../Swap/calc';
 import { Maybe } from '../../../../types/bepswap';
+import { tokenAmount } from '../../../../helpers/tokenHelper';
+import { TokenAmount } from '../../../../types/token';
+import { bn } from '../../../../helpers/bnHelper';
 
 export const data: DoubleSwapCalcData = {
-  X: 1000,
-  Y: 1000000,
-  R: 2500000,
-  Z: 5000000,
-  Py: 0.04,
-  Pr: 0.04,
+  X: tokenAmount(1000),
+  Y: tokenAmount(1000000),
+  R: tokenAmount(2500000),
+  Z: tokenAmount(5000000),
+  Py: bn(0.04),
+  Pr: bn(0.04),
 };
 
-export const getYValue = (xValue: number) => calc.getYValue(xValue, data);
+export const getYValue = (xValue: TokenAmount) => calc.getYValue(xValue, data);
 
-export const getZValue = (xValue: number) => calc.getZValue(xValue, data);
+export const getZValue = (xValue: TokenAmount) => calc.getZValue(xValue, data);
 
-export const getPx = (xValue: Maybe<number>) => calc.getPx(xValue, data);
+export const getPx = (xValue: Maybe<TokenAmount>) => calc.getPx(xValue, data);
 
-export const getPz = (xValue?: Maybe<number>) => calc.getPz(xValue, data);
+export const getPz = (xValue?: Maybe<TokenAmount>) => calc.getPz(xValue, data);
 
-export const getVx = (xValue: number) => {
-  return xValue * getPx(xValue);
+export const getVx = (xValue: TokenAmount): TokenAmount => {
+  // formula: xValue * getPx(xValue)
+  const pX = getPx(xValue);
+  const value = xValue.amount().multipliedBy(pX);
+  return tokenAmount(value);
 };
 
-export const getVz = (xValue: number) => {
-  return getZValue(xValue) * getPz(xValue);
+export const getVz = (xValue: TokenAmount): TokenAmount => {
+  // formula: getZValue(xValue) * getPz(xValue)
+  const z = getZValue(xValue).amount();
+  const pZ = getPz(xValue);
+  const value = z.multipliedBy(pZ);
+  return tokenAmount(value);
 };
 
-export const getSlip = (xValue: number) => calc.getSlip(xValue, data);
+export const getSlip = (xValue: TokenAmount) => calc.getSlip(xValue, data);
 
-export const getBalanceA = (yValue: number) => {
+export const getBalanceA = (yValue: TokenAmount): TokenAmount => {
   const { Y, Py } = data;
-
-  return (Y - yValue) * Py;
+  // formula: (Y - yValue) * Py;
+  const value = Y.amount()
+    .minus(yValue.amount())
+    .multipliedBy(Py);
+  return tokenAmount(value);
 };
 
-export const getBalanceB = (yValue: number) => {
+export const getBalanceB = (yValue: TokenAmount): TokenAmount => {
   const { R, Pr } = data;
-
-  return (R + yValue) * Pr;
+  // formula: (R + yValue) * Pr;
+  const value = R.amount()
+    .plus(yValue.amount())
+    .multipliedBy(Pr);
+  return tokenAmount(value);
 };

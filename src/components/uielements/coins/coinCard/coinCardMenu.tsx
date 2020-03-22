@@ -5,6 +5,7 @@ import FilterMenu from '../../filterMenu';
 import { getTickerFormat } from '../../../../helpers/stringHelper';
 import CoinData from '../coinData';
 import { PriceDataIndex } from '../../../../redux/midgard/types';
+import { validBNOrZero } from '../../../../helpers/bnHelper';
 import { AssetPair } from '../../../../types/bepswap';
 
 const filterFunction = (item: AssetPair, searchTerm: string) => {
@@ -51,10 +52,8 @@ const CoinCardMenu: React.FC<Props> = (props: Props): JSX.Element => {
       const key = asset || 'unknown-key';
       const tokenName = getTickerFormat(asset);
 
-      let price = 0;
       const ticker = getTickerFormat(asset).toUpperCase();
-      if (ticker === 'RUNE') price = priceIndex.RUNE;
-      else price = priceIndex[ticker] || 0;
+      const price = validBNOrZero(priceIndex[ticker]);
 
       const node = (
         <CoinData

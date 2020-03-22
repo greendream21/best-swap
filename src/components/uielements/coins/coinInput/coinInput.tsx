@@ -1,17 +1,20 @@
 import React from 'react';
 
+import BigNumber from 'bignumber.js';
 import { CoinInputWrapper } from './coinInput.style';
 import { CoinType } from '../../../../settings';
 import CoinButton from '../coinButton';
 import InputNumber from '../../inputNumber';
 import Label from '../../label';
+import { TokenAmount } from '../../../../types/token';
+import { formatBN } from '../../../../helpers/bnHelper';
 
 type Props = {
   title: string;
   asset: CoinType;
-  amount: number;
-  price: number;
-  slip?: number;
+  amount: TokenAmount;
+  price: BigNumber;
+  slip?: BigNumber;
   step?: number;
   reverse?: boolean;
   className?: string;
@@ -32,8 +35,10 @@ const CoinInput: React.FC<Props> = (props: Props): JSX.Element => {
     ...otherProps
   } = props;
 
-  const totalPrice = (amount * price).toFixed(2);
+  const totalPrice = formatBN(amount.amount().multipliedBy(price));
   const priceLabel = `$${totalPrice} (USD)`;
+
+  const amountNumber = amount.amount().toNumber();
 
   return (
     <CoinInputWrapper
@@ -57,7 +62,7 @@ const CoinInput: React.FC<Props> = (props: Props): JSX.Element => {
       <div className="amount-wrapper">
         <InputNumber
           className="asset-amount-input"
-          value={amount}
+          value={amountNumber}
           onChange={onChange}
           min={0}
           step={step}
@@ -72,7 +77,7 @@ const CoinInput: React.FC<Props> = (props: Props): JSX.Element => {
       </Label>
       {slip !== undefined && (
         <Label className="asset-price-label" color="gray">
-          SLIP: {slip.toFixed(2)} %
+          SLIP: {formatBN(slip, 8)} %
         </Label>
       )}
     </CoinInputWrapper>

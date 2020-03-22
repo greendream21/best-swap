@@ -42,6 +42,7 @@ import {
 } from './actions';
 import { Nothing } from '../../types/bepswap';
 import { PoolDetail, StakersAssetData } from '../../types/generated/midgard';
+import { bn } from '../../helpers/bnHelper';
 
 const basePriceAsset = getBasePriceAsset() || 'RUNE';
 
@@ -57,7 +58,7 @@ const initState: State = {
   runePrice: 0,
   basePriceAsset, // set base price asset as a RUNE
   priceIndex: {
-    RUNE: 1,
+    RUNE: bn(1),
   },
   error: null,
   poolLoading: false,

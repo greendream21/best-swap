@@ -1,4 +1,3 @@
-import { getFixedNumber } from '../../helpers/stringHelper';
 import { Nothing, Maybe } from '../../types/bepswap';
 import { PriceDataIndex, AssetDetailMap } from './types';
 import {
@@ -8,6 +7,7 @@ import {
   StakersAssetData,
 } from '../../types/generated/midgard';
 import { Asset } from '../../types/midgard';
+import { bn, BN_ZERO } from '../../helpers/bnHelper';
 
 export const getAssetSymbolFromPayload = (
   payload: Pick<StakersAssetData, 'asset'>,
@@ -48,9 +48,10 @@ export const getPriceIndex = (
   assets: AssetDetail[],
   baseTokenTicker: string,
 ): PriceDataIndex => {
-  let baseTokenPrice = 1;
+  let baseTokenPrice = BN_ZERO;
+
   if (baseTokenTicker.toLowerCase() === 'rune') {
-    baseTokenPrice = 1;
+    baseTokenPrice = bn(1);
   }
 
   const baseTokenInfo = assets.find(assetInfo => {
@@ -58,18 +59,20 @@ export const getPriceIndex = (
     const { ticker } = getAssetFromString(asset);
     return ticker === baseTokenTicker.toUpperCase();
   });
-  baseTokenPrice = Number(baseTokenInfo?.priceRune ?? 1);
+  baseTokenPrice = bn(baseTokenInfo?.priceRune ?? 1);
 
   let priceDataIndex: PriceDataIndex = {
-    RUNE: 1 / baseTokenPrice,
+    // formula: 1 / baseTokenPrice
+    RUNE: bn(1).div(baseTokenPrice),
   };
 
   assets.forEach(assetInfo => {
     const { asset = '', priceRune } = assetInfo;
 
-    let price = 0;
+    let price = BN_ZERO;
     if (priceRune && baseTokenPrice) {
-      price = getFixedNumber((1 / baseTokenPrice) * Number(priceRune));
+      // formula: 1 / baseTokenPrice) * priceRune
+      price = bn(1).div(baseTokenPrice).multipliedBy(priceRune);
     }
 
     const { ticker } = getAssetFromString(asset);

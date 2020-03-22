@@ -22,6 +22,7 @@ import { ContentWrapper } from './SwapView.style';
 import { RootState } from '../../../redux/store';
 import { getAssetFromString } from '../../../redux/midgard/utils';
 import { PoolInfoType } from '../../Pool/types';
+import { bn, validBNOrZero } from '../../../helpers/bnHelper';
 
 type ComponentProps = {};
 
@@ -122,7 +123,7 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
         title: 'depth',
         dataIndex: 'depth',
         sorter: (a: SwapTableRowType, b: SwapTableRowType) =>
-          a.raw.depth - b.raw.depth,
+          a.raw.depth.minus(b.raw.depth), // TODO(Veado): Does it work for sorting BN?
         sortDirections: ['descend', 'ascend'],
         defaultSortOrder: 'descend',
       },
@@ -131,7 +132,7 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
         title: '24h vol',
         dataIndex: 'volume',
         sorter: (a: SwapTableRowType, b: SwapTableRowType) =>
-          a.raw.volume - b.raw.volume,
+          a.raw.volume.minus(b.raw.volume), // TODO(Veado): Does it work for sorting BN?
         sortDirections: ['descend', 'ascend'],
       },
       {
@@ -139,16 +140,16 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
         title: 'avg. transaction',
         dataIndex: 'transaction',
         sorter: (a: SwapTableRowType, b: SwapTableRowType) =>
-          a.raw.transaction - b.raw.transaction,
+          a.raw.transaction.minus(b.raw.transaction), // TODO(Veado): Does it work for sorting BN?
         sortDirections: ['descend', 'ascend'],
       },
       {
         key: 'slip',
         title: 'avg. slip',
         dataIndex: 'slip',
-        render: (slip: string) => <Trend value={Number(slip)} />,
+        render: (slip: string) => <Trend amount={bn(slip)} />,
         sorter: (a: SwapTableRowType, b: SwapTableRowType) =>
-          a.raw.slip - b.raw.slip,
+          a.raw.slip.minus(b.raw.slip), // TODO(Veado): Does it work for sorting BN?,
         sortDirections: ['descend', 'ascend'],
       },
       {
@@ -156,13 +157,13 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
         title: 'no. of trades',
         dataIndex: 'trade',
         sorter: (a: SwapTableRowType, b: SwapTableRowType) =>
-          a.raw.trade - b.raw.trade,
+          a.raw.trade.minus(b.raw.trade), // TODO(Veado): Does it work for sorting BN?,
         sortDirections: ['descend', 'ascend'],
       },
       btnCol,
     ];
 
-    const columnData: FixmeType = {
+    const columnData: {desktop: FixmeType, mobile: FixmeType} = {
       desktop: desktopColumns,
       mobile: mobileColumns,
     };
@@ -197,7 +198,7 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
 
   const renderAssets = () => {
     const asset = 'rune';
-    const runePrice = priceIndex.RUNE;
+    const runePrice = validBNOrZero(priceIndex?.RUNE);
 
     return (
       <CoinButton

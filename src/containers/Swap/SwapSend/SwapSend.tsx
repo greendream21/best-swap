@@ -6,6 +6,7 @@ import { withRouter } from 'react-router-dom';
 import { Row, Col, Icon, notification, Popover } from 'antd';
 
 import { crypto } from '@binance-chain/javascript-sdk';
+import BigNumber from 'bignumber.js';
 import Binance from '../../../clients/binance';
 
 import Button from '../../../components/uielements/button';
@@ -31,7 +32,6 @@ import {
 import {
   getTickerFormat,
   getPair,
-  getFixedNumber,
   emptyString,
 } from '../../../helpers/stringHelper';
 import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
@@ -53,7 +53,14 @@ import StepBar from '../../../components/uielements/stepBar';
 import Trend from '../../../components/uielements/trend';
 import { MAX_VALUE } from '../../../redux/app/const';
 import { delay } from '../../../helpers/asyncHelper';
-import { FixmeType, Maybe, Nothing, TokenData, Pair, AssetPair } from '../../../types/bepswap';
+import {
+  FixmeType,
+  Maybe,
+  Nothing,
+  TokenData,
+  Pair,
+  AssetPair,
+} from '../../../types/bepswap';
 import { SwapSendView, CalcResult } from './types';
 import { User, AssetData } from '../../../redux/wallet/types';
 import { TxStatus, TxTypes } from '../../../redux/app/types';
@@ -65,6 +72,16 @@ import {
 } from '../../../redux/midgard/types';
 import { RootState } from '../../../redux/store';
 import { getAssetFromString } from '../../../redux/midgard/utils';
+import {
+  BN_ZERO,
+  isValidBN,
+  bnOrZero,
+  bn,
+  validBNOrZero,
+  formatBN,
+} from '../../../helpers/bnHelper';
+import { tokenAmount } from '../../../helpers/tokenHelper';
+import { TokenAmount } from '../../../types/token';
 
 type ComponentProps = {
   info: string;
@@ -103,7 +120,7 @@ interface State {
   invalidAddress: boolean;
   validatingPassword: boolean;
   dragReset: boolean;
-  xValue: number;
+  xValue: TokenAmount;
   percent: number;
   openPrivateModal: boolean;
   openWalletAlert: boolean;
@@ -137,7 +154,7 @@ class SwapSend extends React.Component<Props, State> {
       invalidAddress: false,
       validatingPassword: false,
       dragReset: true,
-      xValue: 0,
+      xValue: tokenAmount(0),
       percent: 0,
       openPrivateModal: false,
       openWalletAlert: false,
@@ -223,16 +240,17 @@ class SwapSend extends React.Component<Props, State> {
       return false;
     });
 
-    const totalAmount = !sourceAsset ? 0 : sourceAsset.assetValue || 0;
-    const newValue = (totalAmount * percent) / 100;
+    const totalAmount = sourceAsset?.assetValue.amount() ?? BN_ZERO;
+    // formula (totalAmount * percent) / 100
+    const newValue = totalAmount.multipliedBy(percent).div(100);
 
-    if (totalAmount < newValue) {
+    if (totalAmount.isLessThan(newValue)) {
       this.setState({
-        xValue: totalAmount,
+        xValue: tokenAmount(totalAmount),
       });
     } else {
       this.setState({
-        xValue: newValue,
+        xValue: tokenAmount(newValue),
       });
     }
 
@@ -241,8 +259,9 @@ class SwapSend extends React.Component<Props, State> {
     });
   };
 
-  handleChangeValue = (newValue: number) => {
+  handleChangeValue = (value: BigNumber) => {
     const { info, user } = this.props;
+    const newValue = tokenAmount(value);
     const wallet = user ? user.wallet : null;
 
     // if wallet is disconnected, just set the value
@@ -265,17 +284,22 @@ class SwapSend extends React.Component<Props, State> {
       return false;
     });
 
-    const totalAmount = !sourceAsset ? 0 : sourceAsset.assetValue || 0;
+    const totalAmount = sourceAsset?.assetValue.amount() ?? BN_ZERO;
 
-    if (totalAmount < newValue) {
+    if (totalAmount.isLessThanOrEqualTo(newValue.amount())) {
       this.setState({
-        xValue: totalAmount,
+        xValue: tokenAmount(totalAmount),
         percent: 100,
       });
     } else {
       this.setState({
         xValue: newValue,
-        percent: (100 * newValue) / totalAmount,
+        // formula (100 * newValue) / totalAmount
+        percent: newValue
+          .amount()
+          .multipliedBy(100)
+          .div(totalAmount)
+          .toNumber(),
       });
     }
   };
@@ -367,7 +391,7 @@ class SwapSend extends React.Component<Props, State> {
       return;
     }
 
-    if (Number(xValue) <= 0) {
+    if (xValue.amount().isLessThanOrEqualTo(0)) {
       /* eslint-disable dot-notation */
       notification['error']({
         message: 'Swap Invalid',
@@ -459,7 +483,9 @@ class SwapSend extends React.Component<Props, State> {
       this.props.history.push(URL);
     } else {
       // eslint-disable-next-line no-console
-      console.error(`Could not parse target / source pair: ${target} / ${source}`);
+      console.error(
+        `Could not parse target / source pair: ${target} / ${source}`,
+      );
     }
   };
 
@@ -476,7 +502,9 @@ class SwapSend extends React.Component<Props, State> {
       this.props.history.push(URL);
     } else {
       // eslint-disable-next-line no-console
-      console.error(`Could not parse target / source pair: ${target} / ${source}`);
+      console.error(
+        `Could not parse target / source pair: ${target} / ${source}`,
+      );
     }
   };
 
@@ -497,7 +525,9 @@ class SwapSend extends React.Component<Props, State> {
       this.props.history.push(URL);
     } else {
       // eslint-disable-next-line no-console
-      console.error(`Could not parse target / source pair: ${target} / ${source}`);
+      console.error(
+        `Could not parse target / source pair: ${target} / ${source}`,
+      );
     }
   };
 
@@ -546,7 +576,7 @@ class SwapSend extends React.Component<Props, State> {
   handleConfirmSwap = async () => {
     const { user, info, setTxHash, resetTxStatus } = this.props;
     const { xValue, address, slipProtection } = this.state;
-    const { source, target }: Pair = getPair(info);
+    const { source = '', target = '' }: Pair = getPair(info);
 
     if (user && source && target && this.calcResult) {
       this.setState({
@@ -585,7 +615,7 @@ class SwapSend extends React.Component<Props, State> {
     }
   };
 
-  handleSelectAmount = (source: string) => (amount: number) => {
+  handleSelectSourceAmount = (source: string, amount: number) => {
     const { assetData } = this.props;
 
     const sourceAsset = assetData.find(data => {
@@ -601,10 +631,11 @@ class SwapSend extends React.Component<Props, State> {
       return;
     }
 
-    const totalAmount = sourceAsset.assetValue || 0;
-    const xValue = (totalAmount * amount) / 100;
+    const totalAmount = sourceAsset.assetValue.amount() ?? BN_ZERO;
+    // formula (totalAmount * amount) / 100
+    const xValueBN = totalAmount.multipliedBy(amount).div(100);
     this.setState({
-      xValue,
+      xValue: tokenAmount(xValueBN),
     });
   };
 
@@ -617,7 +648,7 @@ class SwapSend extends React.Component<Props, State> {
   renderSwapModalContent = (
     swapSource: string,
     swapTarget: string,
-    info: CalcResult,
+    calcResult: CalcResult,
   ) => {
     const {
       txStatus: { status, value, startTime, hash },
@@ -626,37 +657,29 @@ class SwapSend extends React.Component<Props, State> {
     } = this.props;
     const { xValue, txResult } = this.state;
 
-    const { slip, outputAmount } = info;
+    const { slip, outputAmount } = calcResult;
 
-    const Px = priceIndex.RUNE;
-    const tokenPrice = priceIndex[swapTarget.toUpperCase()] || 0;
+    const Px = validBNOrZero(priceIndex?.RUNE);
+    const tokenPrice = validBNOrZero(priceIndex[swapTarget.toUpperCase()]);
 
-    const priceFrom = Number(Px * xValue);
-    const priceTo = outputAmount * Number(tokenPrice);
+    const priceFrom: BigNumber = Px.multipliedBy(xValue.amount());
     const slipAmount = slip;
 
-    // const transactionLabels = [
-    //   'sending transaction',
-    //   'processing transaction',
-    //   'signing transaction',
-    //   'finishing transaction',
-    //   'complete',
-    // ];
-
-    const completed = !status && txResult !== null;
+    const completed = !status && txResult !== Nothing;
     const refunded = txResult?.type === 'refund' ?? false;
+    const amountBN = bnOrZero(txResult?.amount);
     const targetToken = !completed
       ? swapTarget
       : getTickerFormat(txResult?.token);
-    const tokenAmount = !completed
-      ? Number(outputAmount)
-      : Number(txResult?.amount);
-    let priceValue = 0;
+    const assetAmount = !completed ? outputAmount : tokenAmount(amountBN);
 
+    let priceTo;
     if (refunded) {
-      priceValue = priceFrom;
+      priceTo = priceFrom;
     } else {
-      priceValue = !completed ? priceTo : Number(txResult?.amount) * tokenPrice;
+      priceTo = !completed
+        ? outputAmount.amount().multipliedBy(tokenPrice)
+        : amountBN.multipliedBy(tokenPrice);
     }
 
     const txURL = TESTNET_TX_BASE_URL + hash;
@@ -688,15 +711,15 @@ class SwapSend extends React.Component<Props, State> {
               <CoinData
                 data-test="swapmodal-coin-data-receive"
                 asset={targetToken}
-                assetValue={tokenAmount}
-                price={priceValue}
+                assetValue={assetAmount}
+                price={priceTo}
                 priceUnit={basePriceAsset}
               />
             </div>
           </div>
         </Row>
         <Row className="swap-info-wrapper">
-          <Trend value={slipAmount} />
+          <Trend amount={slipAmount} />
           {hash && (
             <div className="hash-address">
               <div className="copy-btn-wrapper">
@@ -720,13 +743,13 @@ class SwapSend extends React.Component<Props, State> {
     );
   };
 
-  validateSlip = (slip: number) => {
+  validateSlip = (slip: BigNumber) => {
     const { maxSlip } = this.state;
 
-    if (slip >= maxSlip) {
+    if (slip.isGreaterThanOrEqualTo(maxSlip)) {
       notification.error({
         message: 'Swap Invalid',
-        description: `Slip ${slip}% is too high, try less.`,
+        description: `Slip ${formatBN(slip)}% is too high, try less than ${maxSlip}%.`,
       });
       this.setState({
         dragReset: true,
@@ -793,7 +816,7 @@ class SwapSend extends React.Component<Props, State> {
       const tokenData = tokenInfo[tokenName];
       const assetStr = tokenData?.asset;
       const asset = assetStr ? getAssetFromString(assetStr) : null;
-      const price = Number(tokenData?.priceRune ?? 0);
+      const price = bnOrZero(tokenData?.priceRune);
 
       return {
         asset: asset?.symbol ?? '',
@@ -801,7 +824,7 @@ class SwapSend extends React.Component<Props, State> {
       };
     });
 
-    const runePrice = priceIndex.RUNE;
+    const runePrice = validBNOrZero(priceIndex?.RUNE);
 
     // add rune data in the target token list
     tokensData.push({
@@ -836,13 +859,20 @@ class SwapSend extends React.Component<Props, State> {
       return <></>;
     } else {
       const { slip, outputAmount, outputPrice } = this.calcResult;
-      const sourcePrice = priceIndex[swapSource.toUpperCase()] || outputPrice;
-      const targetPrice = priceIndex[swapTarget.toUpperCase()] || outputPrice;
+      const sourcePriceBN = bn(priceIndex[swapSource.toUpperCase()]);
+      const sourcePrice = isValidBN(sourcePriceBN)
+        ? sourcePriceBN
+        : outputPrice;
+      const targetPriceBN = bn(priceIndex[swapTarget.toUpperCase()]);
+      const targetPrice = isValidBN(targetPriceBN)
+        ? targetPriceBN
+        : outputPrice;
 
-      const ratio = targetPrice !== 0 ? sourcePrice / targetPrice : 0;
+      const ratio = !targetPrice.isEqualTo(BN_ZERO)
+        ? sourcePrice.div(targetPrice)
+        : BN_ZERO;
 
-      const ratioLabel = `1 ${swapSource.toUpperCase()} = ${getFixedNumber(
-        ratio,
+      const ratioLabel = `1 ${swapSource.toUpperCase()} = ${ratio.toFixed(
         2,
       )} ${swapTarget.toUpperCase()}`;
 
@@ -892,7 +922,8 @@ class SwapSend extends React.Component<Props, State> {
                   unit={basePriceAsset}
                   onChange={this.handleChangeValue}
                   onChangeAsset={this.handleChangeSource}
-                  onSelect={this.handleSelectAmount(swapSource)}
+                  onSelect={(amount: number) =>
+                    this.handleSelectSourceAmount(swapSource, amount)}
                   inputProps={{ 'data-test': 'coincard-source-input' }}
                   withSearch
                   data-test="coincard-source"

@@ -16,9 +16,18 @@ import {
   arrowYellowIcon,
 } from '../../../../components/icons';
 
-import { formatNumber, formatCurrency } from '../../../../helpers/formatHelper';
 import { data } from './data';
 import { TutorialContent } from '../../types';
+import {
+  tokenAmount,
+  formatTokenAmountCurrency,
+  formatTokenAmount,
+} from '../../../../helpers/tokenHelper';
+import { TokenAmount } from '../../../../types/token';
+import {
+  formatBNCurrency,
+  formatBN,
+} from '../../../../helpers/bnHelper';
 
 const { X, Y, Px } = data;
 
@@ -28,7 +37,7 @@ type ComponentProps = {
 };
 
 type State = {
-  xValue: number;
+  xValue: TokenAmount;
 };
 
 type Props = RouteComponentProps & ComponentProps;
@@ -41,23 +50,46 @@ class Swap extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      xValue: 0,
+      xValue: tokenAmount(0),
     };
   }
 
   handleChangeX = (xValue: number | undefined) => {
     this.setState({
-      xValue: xValue || 0,
+      xValue: tokenAmount(xValue),
     });
   };
 
   renderFlow = (view: TutorialContent) => {
     const { xValue } = this.state;
-    const balance = formatCurrency((X + xValue) * Px);
-    const initPy = formatCurrency(Px * (X / Y));
-    const times = (xValue + X) ** 2;
-    const outputToken = (xValue * X * Y) / times;
-    const outputPy = ((Px * (X + xValue)) / (Y - outputToken)).toFixed(2);
+    // formula: (X + xValue) * Px
+    const balance = tokenAmount(
+      X.amount()
+        .plus(xValue.amount())
+        .multipliedBy(Px),
+    );
+    const balanceFormatted = formatTokenAmountCurrency(balance);
+    // formula: Px * (X / Y);
+    const divXY = X.amount().multipliedBy(Y.amount());
+    const initPy = Px.multipliedBy(divXY);
+    const initPyFormatted = formatBNCurrency(initPy);
+    // formula: (xValue + X) ** 2;
+    const times = xValue
+      .amount()
+      .plus(X.amount())
+      .pow(2);
+    // formula: (xValue * X * Y) / times;
+    const outputValue = xValue
+      .amount()
+      .multipliedBy(X.amount())
+      .multipliedBy(Y.amount())
+      .div(times);
+    const outputToken = tokenAmount(outputValue);
+    // formula: ((Px * (X + xValue)) / (Y - outputToken)).toFixed(2);
+    const xValueX = X.amount().plus(xValue.amount());
+    const yValueO = Y.amount().minus(outputToken.amount());
+    const outputPy = Px.multipliedBy(xValueX).div(yValueO);
+    const outputPyFormatted = formatBN(outputPy);
 
     return (
       <div className="swap-flow-wrapper">
@@ -100,8 +132,10 @@ class Swap extends React.Component<Props, State> {
                 placement="leftTop"
               />
             )}
-            {view === TutorialContent.INTRO && formatNumber(X)}
-            {view === TutorialContent.PLAY && formatNumber(X + xValue)}
+            {view === TutorialContent.INTRO && formatTokenAmount(X)}
+            {view === TutorialContent.PLAY &&
+              // formula: X + xValue
+              formatTokenAmount(tokenAmount(X.amount().plus(xValue.amount())))}
           </Label>
           <Label size="large" color="normal" weight="bold">
             :
@@ -112,8 +146,12 @@ class Swap extends React.Component<Props, State> {
             color="normal"
             weight="bold"
           >
-            {view === TutorialContent.INTRO && formatNumber(Y)}
-            {view === TutorialContent.PLAY && formatNumber(Y - outputToken)}
+            {view === TutorialContent.INTRO && formatTokenAmount(Y)}
+            {view === TutorialContent.PLAY &&
+              // formula: Y - outputToken
+              formatTokenAmount(
+                tokenAmount(Y.amount().minus(outputToken.amount())),
+              )}
             {view === TutorialContent.INTRO && (
               <TooltipIcon text="Pools contain assets." placement="rightTop" />
             )}
@@ -137,21 +175,21 @@ class Swap extends React.Component<Props, State> {
                 placement="leftTop"
               />
             )}
-            {balance}
+            {balanceFormatted}
           </Label>
           <Label size="large" color="normal" />
           <Label size="large" color="normal">
-            {balance}
+            {balanceFormatted}
           </Label>
         </Centered>
         <Centered>
           <Label size="large" color="normal">
-            {formatCurrency(Px)}
+            {formatBN(Px)}
           </Label>
           <Label size="large" color="normal" />
           <Label className="contains-tooltip" size="large" color="normal">
-            {view === TutorialContent.INTRO && initPy}
-            {view === TutorialContent.PLAY && outputPy}
+            {view === TutorialContent.INTRO && initPyFormatted}
+            {view === TutorialContent.PLAY && outputPyFormatted}
             {view === TutorialContent.PLAY && (
               <TooltipIcon
                 text="The price of the asset changes slightly due to the pool slip."
@@ -213,12 +251,29 @@ class Swap extends React.Component<Props, State> {
 
   renderPlay = () => {
     const { xValue } = this.state;
-    const times = (xValue + X) ** 2;
-    const outputToken = (xValue * X * Y) / times;
-    const outputPy = (Px * (X + xValue)) / (Y - outputToken);
-    const input = xValue * Px;
-    const output = outputToken * outputPy;
-    const slip = Math.round(((input - output) / input) * 100);
+    // formula: (xValue + X) ** 2;
+    const times = xValue
+      .amount()
+      .plus(X.amount())
+      .pow(2);
+    // formula: (xValue * X * Y) / times;
+    const outputValue = xValue
+      .amount()
+      .multipliedBy(X.amount())
+      .multipliedBy(Y.amount())
+      .div(times);
+    const outputToken = tokenAmount(outputValue);
+    // formula: (Px * (X + xValue)) / (Y - outputToken)
+    const xValueX = X.amount().plus(xValue.amount());
+    const yValueO = Y.amount().minus(outputToken.amount());
+    const outputPy = Px.multipliedBy(xValueX).div(yValueO);
+    // formula:  xValue * Px;
+    const input = xValue.amount().multipliedBy(Px);
+    // formula: outputToken * outputPy
+    const output = outputToken.amount().multipliedBy(outputPy);
+    // formula: (input - output) / input) * 100
+    const io = input.minus(output);
+    const slip = io.div(input).multipliedBy(100);
 
     return (
       <div className="swap-play-wrapper">

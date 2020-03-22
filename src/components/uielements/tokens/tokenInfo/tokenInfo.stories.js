@@ -6,6 +6,7 @@ import AppHolder from '../../../../AppStyle';
 import { defaultTheme } from '../../../../settings';
 
 import TokenInfo from './tokenInfo';
+import { bn } from '../../../../helpers/bnHelper';
 
 storiesOf('Components/Tokens/TokenInfo', module).add('default', () => {
   return (
@@ -17,7 +18,7 @@ storiesOf('Components/Tokens/TokenInfo', module).add('default', () => {
           <TokenInfo
             asset="rune"
             target="bnb"
-            trend={2.66}
+            trend={bn(2.66)}
             value="$12000"
             label="Depth"
           />

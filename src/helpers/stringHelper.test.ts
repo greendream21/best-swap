@@ -1,9 +1,6 @@
 import {
   getTickerFormat,
-  getBaseNumberFormat,
-  getUserFormat,
   getPair,
-  getFixedNumber,
   compareShallowStr,
 } from './stringHelper';
 import { Pair } from '../types/bepswap';
@@ -26,40 +23,6 @@ describe('helpers/stringHelper/', () => {
     });
   });
 
-  // getBaseNumberFormat
-
-  describe('getBaseNumberFormat', () => {
-    it('returns a valid value ', () => {
-      const result = getBaseNumberFormat(10);
-      expect(result).toEqual(1000000000);
-    });
-    it('returns 0 if we don\'t put something into the func ', () => {
-      const result = getBaseNumberFormat();
-      expect(result).toEqual(0);
-    });
-    it('returns 0 if we put a string into the func ', () => {
-      const result = getBaseNumberFormat('hello');
-      expect(result).toEqual(0);
-    });
-  });
-
-  // getUserFormat
-
-  describe('getUserFormat', () => {
-    it('returns a valid value ', () => {
-      const result = getUserFormat(100000000);
-      expect(result).toEqual(1);
-    });
-    it('returns 0 if we don\'t input to function ', () => {
-      const result = getUserFormat();
-      expect(result).toEqual(0);
-    });
-    it('returns 0 if a string is input to function ', () => {
-      const result = getBaseNumberFormat('hello');
-      expect(result).toEqual(0);
-    });
-  });
-
   // getPair
 
   describe('getPair', () => {
@@ -76,23 +39,6 @@ describe('helpers/stringHelper/', () => {
       const result: Pair = getPair();
       expect(result.source).toBeNothing();
       expect(result.target).toBeNothing();
-    });
-  });
-
-  // getFixedNumber
-
-  describe('getFixedNumber', () => {
-    it('returns a valid value', () => {
-      const result = getFixedNumber(100.888787, 3);
-      expect(result).toEqual(100.889);
-    });
-    it('returns 0 if a string is input to function', () => {
-      const result = getFixedNumber('hello', 4);
-      expect(result).toEqual(0);
-    });
-    it('returns 0 if we don\'t input to function ', () => {
-      const result = getFixedNumber();
-      expect(result).toEqual(0);
     });
   });
 

@@ -14,6 +14,8 @@ import {
   REFRESH_STAKES_FAILED,
 } from './actions';
 import { Nothing } from '../../types/bepswap';
+import { BN_ZERO } from '../../helpers/bnHelper';
+import { tokenAmount } from '../../helpers/tokenHelper';
 
 const wallet = getWalletAddress();
 const keystore = getKeystore();
@@ -25,8 +27,8 @@ const initState: State = {
   assetData: [
     {
       asset: 'RUNE-A1F',
-      assetValue: 0,
-      price: 0,
+      assetValue: tokenAmount(0),
+      price: BN_ZERO,
     },
   ],
   stakeData: initial,

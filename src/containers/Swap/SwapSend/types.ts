@@ -1,3 +1,6 @@
+import BigNumber from 'bignumber.js';
+import { Maybe } from '../../../types/bepswap';
+import { TokenAmount, BaseAmount } from '../../../types/token';
 
 export enum SwapSendView {
   DETAIL = 'detail',
@@ -10,15 +13,14 @@ export type SwapData = {
 };
 
 export type CalcResult = {
-  poolAddressFrom?: string;
-  poolAddressTo?: string;
-  symbolFrom?: string;
-  symbolTo?: string;
-  poolRatio?: number;
-  Px: number;
-  slip: number;
-  outputAmount: number;
-  outputPrice: number;
-  fee: number;
-  lim?: number;
+  poolAddressFrom: Maybe<string>;
+  poolAddressTo: Maybe<string>;
+  symbolFrom: Maybe<string>;
+  symbolTo: Maybe<string>;
+  Px: BigNumber;
+  slip: BigNumber;
+  outputAmount: TokenAmount;
+  outputPrice: BigNumber;
+  fee: TokenAmount;
+  lim: Maybe<BaseAmount>;
 };

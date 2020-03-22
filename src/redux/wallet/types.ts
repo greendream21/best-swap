@@ -1,5 +1,7 @@
 import { RemoteData } from '@devexperts/remote-data-ts';
+import BigNumber from 'bignumber.js';
 import { FixmeType, Maybe, Address } from '../../types/bepswap';
+import { TokenAmount } from '../../types/token';
 
 export interface User {
   /**
@@ -14,15 +16,15 @@ export type EmptyUser = {};
 
 export interface AssetData {
   asset: string;
-  assetValue: number;
-  price: number;
+  assetValue: TokenAmount;
+  price: BigNumber;
 }
 
 export type StakeData = {
   targetSymbol: string;
   target: string;
-  targetValue: number;
-  assetValue: number;
+  targetValue: TokenAmount;
+  assetValue: TokenAmount;
   asset: string;
   price: number;
 };

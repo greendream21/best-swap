@@ -2,6 +2,7 @@ import React, { useCallback } from 'react';
 import { Dropdown } from 'antd';
 import { sortBy as _sortBy } from 'lodash';
 
+import BigNumber from 'bignumber.js';
 import Label from '../../label';
 import Selection from '../../selection';
 import CoinInputAdvanced from '../coinInputAdvanced';
@@ -24,7 +25,10 @@ import {
 
 import Ref from '../../../../helpers/event/ref';
 import clickedInNode from '../../../../helpers/event/clickedInNode';
+import { formatBN, BN_ZERO } from '../../../../helpers/bnHelper';
 import { PriceDataIndex } from '../../../../redux/midgard/types';
+import { TokenAmount } from '../../../../types/token';
+import { tokenAmount } from '../../../../helpers/tokenHelper';
 import { FixmeType, AssetPair } from '../../../../types/bepswap';
 import { delay } from '../../../../helpers/asyncHelper';
 
@@ -57,8 +61,8 @@ const DropdownCarret: React.FC<DropdownCarretProps> = ({
 type Props = {
   asset: string;
   assetData: AssetPair[];
-  amount: number;
-  price: string | number;
+  amount: TokenAmount;
+  price: BigNumber;
   priceIndex: PriceDataIndex;
   unit: string;
   slip?: number;
@@ -67,7 +71,7 @@ type Props = {
   withSelection: boolean;
   withSearch: boolean;
   onSelect: (value: number) => void;
-  onChange: (value: number) => void;
+  onChange: (value: BigNumber) => void;
   onChangeAsset: (asset: string) => void;
   className: string;
   max: number;
@@ -94,15 +98,15 @@ class CoinCard extends React.Component<Props, State> {
   static readonly defaultProps: Partial<Props> = {
     asset: 'bnb',
     assetData: [],
-    amount: 0,
-    price: 0,
+    amount: tokenAmount(0),
+    price: BN_ZERO,
     unit: 'RUNE',
     title: '',
     withSelection: false,
     withSearch: false,
     searchDisable: [],
     onSelect: (_: number) => {},
-    onChange: (_: number) => {},
+    onChange: (_: BigNumber) => {},
     onChangeAsset: (_: string) => {},
     className: '',
     max: 1000000,
@@ -151,7 +155,7 @@ class CoinCard extends React.Component<Props, State> {
     }
   };
 
-  onChange = (value: number) => {
+  onChange = (value: BigNumber) => {
     this.props.onChange(value);
   };
 
@@ -277,16 +281,14 @@ class CoinCard extends React.Component<Props, State> {
                   <CoinInputAdvanced
                     className="asset-amount-label"
                     size="large"
-                    value={amount}
+                    value={amount.amount()}
                     onChangeValue={this.onChange}
                     {...inputProps}
                   />
                   <HorizontalDivider color="primary" />
                   <AssetCardFooter>
                     <FooterLabel>
-                      {`${unit} ${Number(
-                        (amount * Number(price)).toFixed(2),
-                      ).toLocaleString()}`}
+                      {`${unit} ${formatBN(amount.amount().multipliedBy(price))}`}
                     </FooterLabel>
                     {slip !== undefined && (
                       <FooterLabel

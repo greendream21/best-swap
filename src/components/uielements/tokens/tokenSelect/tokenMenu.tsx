@@ -7,6 +7,10 @@ import TokenData from '../tokenData';
 import { getTickerFormat } from '../../../../helpers/stringHelper';
 import { AssetPair } from '../../../../types/bepswap';
 import { PriceDataIndex } from '../../../../redux/midgard/types';
+import {
+  formatBN,
+  validBNOrZero,
+} from '../../../../helpers/bnHelper';
 
 const filterFunction = (item: AssetPair, searchTerm: string): boolean => {
   const tokenName = getTickerFormat(item.asset);
@@ -14,13 +18,13 @@ const filterFunction = (item: AssetPair, searchTerm: string): boolean => {
 };
 
 type Props = {
-  asset: string,
-  priceIndex: PriceDataIndex,
-  priceUnit: string,
-  assetData: AssetPair[],
-  searchDisable: string[],
-  withSearch?: boolean,
-  onSelect?: (asset: string) => void,
+  asset: string;
+  priceIndex: PriceDataIndex;
+  priceUnit: string;
+  assetData: AssetPair[];
+  searchDisable: string[];
+  withSearch?: boolean;
+  onSelect?: (asset: string) => void;
 };
 
 const TokenMenu: React.FC<Props> = (props: Props): JSX.Element => {
@@ -35,25 +39,30 @@ const TokenMenu: React.FC<Props> = (props: Props): JSX.Element => {
     ...otherProps // (Chris) need to pass props for antd to provide box shadow
   } = props;
 
-  const filteredData = useMemo(() => assetData.filter((item: AssetPair) => {
-    const tokenName = getTickerFormat(item.asset);
-    return asset && (tokenName.toLowerCase() !== asset.toLowerCase());
-  }), [asset, assetData]);
+  const filteredData = useMemo(
+    () =>
+      assetData.filter((item: AssetPair) => {
+        const tokenName = getTickerFormat(item.asset);
+        return asset && tokenName.toLowerCase() !== asset.toLowerCase();
+      }),
+    [asset, assetData],
+  );
 
   const cellRenderer = (data: AssetPair) => {
     const { asset: key } = data;
     const tokenName = getTickerFormat(key);
     const dataTest = `token-menu-item-${tokenName}`;
 
-    let price = 0;
     const ticker = getTickerFormat(data.asset).toUpperCase();
-    if (ticker === 'RUNE') price = priceIndex.RUNE;
-    else price = _get(priceIndex, ticker, 0);
+    const price =
+      ticker === 'RUNE'
+        ? validBNOrZero(priceIndex?.RUNE)
+        : validBNOrZero(priceIndex?.ticker);
 
     const node = (
       <TokenData
         asset={tokenName}
-        price={price}
+        priceValue={formatBN(price)}
         priceUnit={priceUnit}
         size="small"
         data-test={dataTest}
@@ -78,6 +87,5 @@ const TokenMenu: React.FC<Props> = (props: Props): JSX.Element => {
     />
   );
 };
-
 
 export default TokenMenu;

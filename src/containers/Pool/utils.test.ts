@@ -23,6 +23,8 @@ import {
   PoolDetailStatusEnum,
 } from '../../types/generated/midgard';
 import { PriceDataIndex, PoolDataMap } from '../../redux/midgard/types';
+import { bn } from '../../helpers/bnHelper';
+import { tokenAmount, baseAmount } from '../../helpers/tokenHelper';
 
 import bncClient from '../../clients/binance';
 
@@ -183,13 +185,13 @@ describe('pool/utils/', () => {
     it('should filter pool assets ', () => {
       const assetA: AssetData = {
         asset: 'A',
-        assetValue: 1,
-        price: 2,
+        assetValue: tokenAmount(1),
+        price: bn(2),
       };
       const assetB: AssetData = {
         asset: 'B',
-        assetValue: 1,
-        price: 2,
+        assetValue: tokenAmount(1),
+        price: bn(2),
       };
       const assets: AssetData[] = [assetA, assetB];
       const pools: string[] = ['A.A'];
@@ -200,18 +202,18 @@ describe('pool/utils/', () => {
     it('should filter `RUNE` assets ', () => {
       const assetA: AssetData = {
         asset: 'RUNE',
-        assetValue: 1,
-        price: 2,
+        assetValue: tokenAmount(1),
+        price: bn(2),
       };
       const assetB: AssetData = {
         asset: 'RUNE',
-        assetValue: 1,
-        price: 2,
+        assetValue: tokenAmount(1),
+        price: bn(2),
       };
       const assetC: AssetData = {
         asset: 'C',
-        assetValue: 1,
-        price: 2,
+        assetValue: tokenAmount(1),
+        price: bn(2),
       };
       const assets: AssetData[] = [assetA, assetB, assetC];
       const pools: string[] = ['A.A'];
@@ -303,19 +305,19 @@ describe('pool/utils/', () => {
       withdrawTxCount: '0',
     };
     const priceIndex: PriceDataIndex = {
-      RUNE: 1,
-      FSN: 2,
+      RUNE: bn(1),
+      FSN: bn(2),
     };
     it('returns PoolData for a FSN based pool', () => {
       const expected: PoolData = {
         asset: 'RUNE',
         target: 'FSN',
-        depth: 200000,
-        volume24: 0,
-        volumeAT: 0,
-        transaction: 0,
-        liqFee: 0,
-        roiAT: 0.5,
+        depth: baseAmount(200000),
+        volume24: baseAmount(0),
+        volumeAT: baseAmount(0),
+        transaction: baseAmount(0),
+        liqFee: baseAmount(0),
+        roiAT: baseAmount(0.5),
         totalSwaps: 0,
         totalStakers: 1,
         values: {
@@ -325,33 +327,55 @@ describe('pool/utils/', () => {
           },
           target: 'FSN',
           symbol: 'FSN-F1B',
-          depth: 'RUNE 0',
-          volume24: 'RUNE 0',
-          transaction: 'RUNE 0',
-          liqFee: '0%',
-          roiAT: '0% pa',
+          depth: 'RUNE 0.00',
+          volume24: 'RUNE 0.00',
+          transaction: 'RUNE 0.00',
+          liqFee: '0.00%',
+          roiAT: '0.00% pa',
         },
         raw: {
-          depth: 0,
-          volume24: 0,
-          transaction: 0,
-          liqFee: 0,
-          roiAT: 0,
+          depth: baseAmount(200000),
+          volume24: baseAmount(0),
+          transaction: baseAmount(0),
+          liqFee: baseAmount(0),
+          roiAT: baseAmount(0.5),
         },
       };
       const result = getPoolData('RUNE', fsnPoolDetail, priceIndex, 'RUNE');
-      expect(result).toEqual(expected);
+      const rRaw = result.raw;
+      const eRaw = expected.raw;
+
+      expect(result.asset).toEqual(expected.asset);
+      expect(result.target).toEqual(expected.target);
+      expect(result.depth.amount()).toEqual(expected.depth.amount());
+      expect(result.volume24.amount()).toEqual(expected.volume24.amount());
+      expect(result.transaction.amount()).toEqual(
+        expected.transaction.amount(),
+      );
+      expect(result.liqFee.amount()).toEqual(expected.liqFee.amount());
+      expect(result.roiAT.amount()).toEqual(expected.roiAT.amount());
+      expect(result.totalSwaps).toEqual(expected.totalSwaps);
+      expect(result.totalStakers).toEqual(expected.totalStakers);
+      expect(result.values).toEqual(expected.values);
+
+      expect(rRaw.depth.amount()).toEqual(eRaw.depth.amount());
+      expect(rRaw.volume24.amount()).toEqual(eRaw.volume24.amount());
+      expect(rRaw.transaction.amount()).toEqual(eRaw.transaction.amount());
+      expect(rRaw.liqFee.amount()).toEqual(eRaw.liqFee.amount());
+      expect(rRaw.roiAT.amount()).toEqual(eRaw.roiAT.amount());
+      // Unsafe, just to test all props again (in case we might forget to test a new property in the future)
+      expect(result.toString()).toEqual(expected.toString());
     });
     it('returns PoolData for a BNB based pool', () => {
       const expected: PoolData = {
         asset: 'RUNE',
         target: 'BNB',
-        depth: 199999799,
-        volume24: 0,
-        volumeAT: 32387,
-        transaction: 16193,
-        liqFee: 99800,
-        roiAT: 999.2768763636363,
+        depth: baseAmount(199999799),
+        volume24: baseAmount(0),
+        volumeAT: baseAmount(32387),
+        transaction: baseAmount(16193),
+        liqFee: baseAmount(99800),
+        roiAT: baseAmount(999.2768763636363),
         totalSwaps: 1,
         totalStakers: 1,
         values: {
@@ -361,43 +385,65 @@ describe('pool/utils/', () => {
           },
           target: 'BNB',
           symbol: 'BNB',
-          depth: 'RUNE 2',
-          volume24: 'RUNE 0',
-          transaction: 'RUNE 0',
-          liqFee: '0%',
-          roiAT: '0% pa',
+          depth: 'RUNE 2.00',
+          volume24: 'RUNE 0.00',
+          transaction: 'RUNE 0.00',
+          liqFee: '0.00%',
+          roiAT: '0.00% pa',
         },
         raw: {
-          depth: 2,
-          volume24: 0,
-          transaction: 0,
-          liqFee: 0,
-          roiAT: 0,
+          depth: baseAmount(199999799),
+          volume24: baseAmount(0),
+          transaction: baseAmount(16193),
+          liqFee: baseAmount(99800),
+          roiAT: baseAmount(999.2768763636363),
         },
       };
       const result = getPoolData('RUNE', bnbPoolDetail, priceIndex, 'RUNE');
-      expect(result).toEqual(expected);
+      const rRaw = result.raw;
+      const eRaw = expected.raw;
+
+      expect(result.asset).toEqual(expected.asset);
+      expect(result.target).toEqual(expected.target);
+      expect(result.depth.amount()).toEqual(expected.depth.amount());
+      expect(result.volume24.amount()).toEqual(expected.volume24.amount());
+      expect(result.transaction.amount()).toEqual(
+        expected.transaction.amount(),
+      );
+      expect(result.liqFee.amount()).toEqual(expected.liqFee.amount());
+      expect(result.roiAT.amount()).toEqual(expected.roiAT.amount());
+      expect(result.totalSwaps).toEqual(expected.totalSwaps);
+      expect(result.totalStakers).toEqual(expected.totalStakers);
+      expect(result.values).toEqual(expected.values);
+
+      expect(rRaw.depth.amount()).toEqual(eRaw.depth.amount());
+      expect(rRaw.volume24.amount()).toEqual(eRaw.volume24.amount());
+      expect(rRaw.transaction.amount()).toEqual(eRaw.transaction.amount());
+      expect(rRaw.liqFee.amount()).toEqual(eRaw.liqFee.amount());
+      expect(rRaw.roiAT.amount()).toEqual(eRaw.roiAT.amount());
+      // Unsafe, just to test all props again (in case we might forget to test a new property in the future)
+      expect(result.toString()).toEqual(expected.toString());
     });
   });
 
   describe('getCalcResult', () => {
     it('calculates result of staking into RUNE - BNB pool ', () => {
       const poolAddress = 'tbnabc123';
-      const runeAmount = 744.568;
-      const runePrice = 1;
-      const tokenAmount = 0.023;
+      const runeAmount = tokenAmount(744.568);
+      const runePrice = bn(1);
+      const tAmount = tokenAmount(0.023);
       const expected: CalcResult = {
         poolAddress: 'tbnabc123',
-        ratio: 0.000030627871362940275,
+        ratio: bn(0),
         symbolTo: 'BNB',
-        poolUnits: 2705690593,
-        poolPrice: 32650,
-        newPrice: 32394.72,
-        newDepth: 81305900000,
-        share: 91.97,
-        Pr: 1,
-        R: 6530000000,
-        T: 200000,
+        poolUnits: bn('2705690593'),
+        poolPrice: bn(32650),
+        newPrice: bn(32394.72),
+        newDepth: bn('81305900000'),
+        share: bn(91.97),
+        Pr: bn(1),
+        R: bn('6530000000'),
+        T: bn(200000),
       };
 
       const result: CalcResult = getCalcResult(
@@ -406,7 +452,7 @@ describe('pool/utils/', () => {
         poolAddress,
         runeAmount,
         runePrice,
-        tokenAmount,
+        tAmount,
       );
 
       expect(result.poolAddress).toEqual(expected.poolAddress);
@@ -426,21 +472,21 @@ describe('pool/utils/', () => {
 
     it('calculates result of staking into RUNE - TCAN pool ', () => {
       const poolAddress = 'tbnabc123';
-      const runeAmount = 938.803;
-      const runePrice = 1;
-      const tokenAmount = 49.061;
+      const runeAmount = tokenAmount(938.803);
+      const runePrice = bn(1);
+      const tAmount = tokenAmount(49.061);
       const expected = {
         poolAddress: 'tbnabc123',
-        ratio: 0.052259427527900894,
+        ratio: bn('0.05'),
         symbolTo: 'TCAN-014',
-        poolUnits: 56929542778,
-        poolPrice: 19.14,
-        newPrice: 19.14,
-        newDepth: 202084405946.38,
-        share: 46.46,
-        Pr: 1,
-        R: 108204400000,
-        T: 5654700000,
+        poolUnits: bn('56929542778'),
+        poolPrice: bn(19.14),
+        newPrice: bn(19.14),
+        newDepth: bn('202084405946.38'),
+        share: bn(46.46),
+        Pr: bn(1),
+        R: bn('108204400000'),
+        T: bn('5654700000'),
       };
 
       const result: CalcResult = getCalcResult(
@@ -449,7 +495,7 @@ describe('pool/utils/', () => {
         poolAddress,
         runeAmount,
         runePrice,
-        tokenAmount,
+        tAmount,
       );
 
       expect(result.poolAddress).toEqual(expected.poolAddress);
@@ -472,23 +518,23 @@ describe('pool/utils/', () => {
     it('calculates data to create a TOMOB-1E1 pool', () => {
       const tokenSymbol = 'TOMOB-1E1';
       const poolAddress = 'tbnb1XXX';
-      const runeAmount = 809.288;
-      const runePrice = 1;
-      const tokenAmount = 0.14;
+      const runeAmount = tokenAmount(809.29);
+      const runePrice = bn(1);
+      const tAmount = tokenAmount(0.14);
       const expected: CreatePoolCalc = {
         poolAddress: 'tbnb1XXX',
         tokenSymbol: 'TOMOB-1E1',
-        poolPrice: 5780.63,
-        depth: 809.29,
+        poolPrice: bn('5780.64285714285714285714'),
+        depth: bn(809.29),
         share: 100,
-        Pr: 1,
+        Pr: bn(1),
       };
       const result = getCreatePoolCalc({
         tokenSymbol,
         poolAddress,
         runeAmount,
         runePrice,
-        tokenAmount,
+        tokenAmount: tAmount,
       });
       expect(result.poolAddress).toEqual(expected.poolAddress);
       expect(result.tokenSymbol).toEqual(expected.tokenSymbol);
@@ -503,23 +549,23 @@ describe('pool/utils/', () => {
     it('calculates data to create a TOMOB-1E1 pool again, but with more amounts', () => {
       const tokenSymbol = 'TOMOB-1E1';
       const poolAddress = 'tbnb1XXX';
-      const runeAmount = 3237.152;
-      const runePrice = 1;
-      const tokenAmount = 0.559;
+      const runeAmount = tokenAmount(3237.152);
+      const runePrice = bn(1);
+      const tAmount = tokenAmount(0.559);
       const expected: CreatePoolCalc = {
         poolAddress: 'tbnb1XXX',
         tokenSymbol: 'TOMOB-1E1',
-        poolPrice: 5790.97,
-        depth: 3237.15,
+        poolPrice: bn('5790.96958855098389982111'),
+        depth: bn(3237.152),
         share: 100,
-        Pr: 1,
+        Pr: bn(1),
       };
       const result = getCreatePoolCalc({
         tokenSymbol,
         poolAddress,
         runeAmount,
         runePrice,
-        tokenAmount,
+        tokenAmount: tAmount,
       });
       expect(result.poolAddress).toEqual(expected.poolAddress);
       expect(result.tokenSymbol).toEqual(expected.tokenSymbol);
@@ -583,8 +629,8 @@ describe('pool/utils/', () => {
       const response = await confirmCreatePool({
         bncClient,
         wallet: 'abc123',
-        runeAmount: 2,
-        tokenAmount: 1,
+        runeAmount: tokenAmount(2),
+        tokenAmount: tokenAmount(1),
         poolAddress: 'bnb1abc',
         tokenSymbol: 'BNB',
       });
@@ -599,8 +645,8 @@ describe('pool/utils/', () => {
         confirmCreatePool({
           bncClient,
           wallet: '',
-          runeAmount: 2,
-          tokenAmount: 1,
+          runeAmount: tokenAmount(2),
+          tokenAmount: tokenAmount(1),
           poolAddress: 'bnb1abc',
           tokenSymbol: 'BNB',
         }),
@@ -612,8 +658,8 @@ describe('pool/utils/', () => {
         confirmCreatePool({
           bncClient,
           wallet: 'abc123',
-          runeAmount: 2,
-          tokenAmount: 0,
+          runeAmount: tokenAmount(2),
+          tokenAmount: tokenAmount(0),
           poolAddress: 'bnb1abc',
           tokenSymbol: 'BNB',
         }),
@@ -625,8 +671,8 @@ describe('pool/utils/', () => {
         confirmCreatePool({
           bncClient,
           wallet: 'abc123',
-          runeAmount: 2,
-          tokenAmount: 1,
+          runeAmount: tokenAmount(2),
+          tokenAmount: tokenAmount(1),
           poolAddress: '',
           tokenSymbol: 'BNB',
         }),
@@ -638,8 +684,8 @@ describe('pool/utils/', () => {
         confirmCreatePool({
           bncClient,
           wallet: 'abc123',
-          runeAmount: 2,
-          tokenAmount: 1,
+          runeAmount: tokenAmount(2),
+          tokenAmount: tokenAmount(1),
           poolAddress: 'bnb1abc',
           tokenSymbol: '',
         }),
@@ -656,8 +702,8 @@ describe('pool/utils/', () => {
       const response = await confirmStake({
         bncClient,
         wallet: 'bnb1',
-        runeAmount: 1,
-        tokenAmount: 2,
+        runeAmount: tokenAmount(1),
+        tokenAmount: tokenAmount(2),
         poolAddress: 'bnb1abc',
         symbolTo: 'BNB',
       });
@@ -668,36 +714,30 @@ describe('pool/utils/', () => {
       expect(result[0].ok).not.toBeUndefined();
     });
 
-    it('calls `transfer` to stake if runeAmount <= 0', async () => {
-      const response = await confirmStake({
-        bncClient,
-        wallet: 'bnb1',
-        runeAmount: 0,
-        tokenAmount: 1,
-        poolAddress: 'bnb1abc',
-        symbolTo: 'BNB',
-      });
-
-      expect(bncClient.transfer).toBeCalledTimes(1);
-      const result = response?.result ?? [];
-      expect(response).toBeTruthy();
-      expect(result[0].ok).not.toBeUndefined();
+    it('rejects in case of an infinity runeAmount', async () => {
+      await expect(
+        confirmStake({
+          bncClient,
+          wallet: 'bnb1',
+          runeAmount: tokenAmount(Number.POSITIVE_INFINITY),
+          tokenAmount: tokenAmount(1),
+          poolAddress: 'bnb1abc',
+          symbolTo: 'BNB',
+        }),
+      ).rejects.toEqual(new Error(StakeErrorMsg.INVALID_RUNE_AMOUNT));
     });
 
-    it('calls `transfer` to stake if tokenAmount <= 0', async () => {
-      const response = await confirmStake({
-        bncClient,
-        wallet: 'bnb1',
-        runeAmount: 1,
-        tokenAmount: 0,
-        poolAddress: 'bnb1abc',
-        symbolTo: 'BNB',
-      });
-
-      expect(bncClient.transfer).toBeCalledTimes(1);
-      const result = response?.result ?? [];
-      expect(response).toBeTruthy();
-      expect(result[0].ok).not.toBeUndefined();
+    it('rejects in case of an infinity tokenAmount', async () => {
+      await expect(
+        confirmStake({
+          bncClient,
+          wallet: 'bnb1',
+          runeAmount: tokenAmount(1),
+          tokenAmount: tokenAmount(Number.POSITIVE_INFINITY),
+          poolAddress: 'bnb1abc',
+          symbolTo: 'BNB',
+        }),
+      ).rejects.toEqual(new Error(StakeErrorMsg.INVALID_TOKEN_AMOUNT));
     });
 
     it('rejects if pool address is missing', async () => {
@@ -705,8 +745,8 @@ describe('pool/utils/', () => {
         confirmStake({
           bncClient,
           wallet: 'bnb1',
-          runeAmount: 1,
-          tokenAmount: 2,
+          runeAmount: tokenAmount(1),
+          tokenAmount: tokenAmount(2),
           poolAddress: '',
           symbolTo: 'BNB',
         }),
@@ -718,8 +758,8 @@ describe('pool/utils/', () => {
         confirmStake({
           bncClient,
           wallet: 'bnb1',
-          runeAmount: 1,
-          tokenAmount: 2,
+          runeAmount: tokenAmount(1),
+          tokenAmount: tokenAmount(2),
           poolAddress: 'bnb1abc',
           symbolTo: '',
         }),

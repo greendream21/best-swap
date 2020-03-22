@@ -1,20 +1,18 @@
 import React from 'react';
 import { Icon } from 'antd';
-
+import BigNumber from 'bignumber.js';
 import Label from '../label';
-
-import { getFixedNumber } from '../../../helpers/stringHelper';
-
 import { TrendWrapper } from './trend.style';
+import { formatBN, isValidBN, BN_ZERO } from '../../../helpers/bnHelper';
 
 type Props = {
-  value: number;
+  amount?: BigNumber;
 };
 const Trend: React.FC<Props> = (props: Props): JSX.Element => {
-  const { value = 0, ...otherProps } = props;
-  const trend = value >= 0;
+  const { amount = BN_ZERO, ...otherProps } = props;
+  const trend = isValidBN(amount) && amount.isGreaterThanOrEqualTo(0);
   const trendIcon = trend ? 'arrow-up' : 'arrow-down';
-  const trendVal = `${getFixedNumber(Math.abs(value))}%`;
+  const trendVal = `${formatBN(amount)}%`;
 
   return (
     <TrendWrapper trend={trend} {...otherProps}>

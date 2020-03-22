@@ -20,37 +20,37 @@ storiesOf('Components/Tokens/TokenData', module).add('default', () => {
           <TokenData
             asset="bnb"
             assetValue={2.49274}
-            price={217.92}
+            priceValue="217.92"
             priceUnit={priceUnit}
           />
           <TokenData
             asset="ftm"
             assetValue={2.49274}
-            price={217.92}
+            priceValue="217.92"
             priceUnit={priceUnit}
           />
           <TokenData
             asset="rune"
             assetValue={2.49274}
-            price={217.92}
+            priceValue="217.92"
             priceUnit={priceUnit}
           />
           <TokenData
             asset="ankr"
             assetValue={2.49274}
-            price={217.92}
+            priceValue="217.92"
             priceUnit={priceUnit}
           />
           <TokenData
             asset="bolt"
             assetValue={2.49274}
-            price={217.92}
+            priceValue="217.92"
             priceUnit={priceUnit}
           />
           <TokenData
             asset="tomo"
             assetValue={2.49274}
-            price={217.92}
+            priceValue="217.92"
             priceUnit={priceUnit}
           />
         </div>

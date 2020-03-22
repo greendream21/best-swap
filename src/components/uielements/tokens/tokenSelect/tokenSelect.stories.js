@@ -6,6 +6,7 @@ import AppHolder from '../../../../AppStyle';
 import { defaultTheme } from '../../../../settings';
 
 import TokenSelect from './tokenSelect';
+import { tokenAmount } from '../../../../helpers/tokenHelper';
 
 storiesOf('Components/Tokens/TokenSelect', module).add('default', () => {
   return (
@@ -14,7 +15,8 @@ storiesOf('Components/Tokens/TokenSelect', module).add('default', () => {
         <div style={{ padding: '10px' }}>
           <TokenSelect
             asset="bnb"
-            priceIndex={{ RUNE: 1 }}
+            price={tokenAmount(100)}
+            priceIndex={{ RUNE: '111' }}
             assetData={[
               {
                 asset: 'rune',

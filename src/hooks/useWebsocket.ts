@@ -74,7 +74,7 @@ export const useWebsocket = (props: Props) => {
     ws.onclose = onCloseHandler;
     setWS(ws);
     return () => {
-      setWS(null);
+      setWS(Nothing);
       ws.close();
     };
   }, [

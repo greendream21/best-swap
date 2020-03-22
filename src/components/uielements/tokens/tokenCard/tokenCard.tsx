@@ -1,31 +1,33 @@
 import React from 'react';
 import { sortBy as _sortBy } from 'lodash';
 
+import BigNumber from 'bignumber.js';
 import { TokenCardWrapper } from './tokenCard.style';
-
-import { getFixedNumber } from '../../../../helpers/stringHelper';
 
 import Label from '../../label';
 import TokenSelect from '../tokenSelect';
 import TokenInput from '../tokenInput';
 import { AssetPair, Nothing } from '../../../../types/bepswap';
 import { PriceDataIndex } from '../../../../redux/midgard/types';
+import { TokenAmount } from '../../../../types/token';
+import { tokenAmount } from '../../../../helpers/tokenHelper';
+import { formatBN, bn } from '../../../../helpers/bnHelper';
 import { TokenInputProps } from '../tokenInput/types';
 
 type Props = {
   asset: string;
   assetData: AssetPair[];
-  amount: number;
-  price: number;
+  amount: TokenAmount;
+  price: BigNumber;
   priceIndex: PriceDataIndex;
   unit: string;
-  slip?: number;
+  slip?: BigNumber;
   title: string;
   inputTitle: string;
   searchDisable?: string[];
   withSearch: boolean;
   onSelect?: (_: number) => void;
-  onChange?: (_: number) => void;
+  onChange?: (_: BigNumber) => void;
   onChangeAsset: (_: string) => void;
   className?: string;
   dataTestWrapper?: string;
@@ -38,8 +40,8 @@ const TokenCard: React.FC<Props> = (props: Props): JSX.Element => {
   const {
     asset = 'bnb',
     assetData = [],
-    amount = 0,
-    price = 0,
+    amount = tokenAmount(0),
+    price = bn(0),
     priceIndex,
     unit = 'RUNE',
     slip,
@@ -48,7 +50,7 @@ const TokenCard: React.FC<Props> = (props: Props): JSX.Element => {
     withSearch = false,
     searchDisable = [],
     onSelect = () => {},
-    onChange = (_: number) => {},
+    onChange = (_: BigNumber) => {},
     onChangeAsset = () => {},
     className = '',
     inputProps = {},
@@ -56,8 +58,10 @@ const TokenCard: React.FC<Props> = (props: Props): JSX.Element => {
     ...otherProps
   } = props;
 
-  const slipValue = slip ? `slip ${slip}%` : Nothing;
-  const priceValue = `${unit} ${getFixedNumber(amount * price)}`;
+  const slipValue = slip ? `slip ${formatBN(slip, 2)}%` : Nothing;
+  // formula: amount * price
+  const priceResult = amount.amount().multipliedBy(price);
+  const priceValue = `${unit} ${formatBN(priceResult)}`;
   const tokenSelectDataTest = `${dataTest}-select`;
   const sortedAssetData = _sortBy(assetData, ['asset']);
 
@@ -71,7 +75,7 @@ const TokenCard: React.FC<Props> = (props: Props): JSX.Element => {
         <TokenInput
           title={inputTitle}
           status={slipValue}
-          amount={amount}
+          amount={amount.amount()}
           onChange={onChange}
           label={priceValue}
           inputProps={inputProps}
