@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { history } from '../../redux/store';
 
 import asyncComponent from '../../helpers/AsyncFunc';
 
@@ -58,21 +57,19 @@ class AppRouter extends Component {
 
     return (
       <div>
-        <Router history={history}>
-          <Switch>
-            {routes.map(singleRoute => {
-              const { path, exact = true, ...otherProps } = singleRoute;
-              return (
-                <Route
-                  exact={exact}
-                  key={singleRoute.path}
-                  path={`${url}${singleRoute.path}`}
-                  {...otherProps}
-                />
-              );
-            })}
-          </Switch>
-        </Router>
+        <Switch>
+          {routes.map(singleRoute => {
+            const { path, exact = true, ...otherProps } = singleRoute;
+            return (
+              <Route
+                exact={exact}
+                key={singleRoute.path}
+                path={`${url}${singleRoute.path}`}
+                {...otherProps}
+              />
+            );
+          })}
+        </Switch>
       </div>
     );
   }
