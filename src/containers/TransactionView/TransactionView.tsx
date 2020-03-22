@@ -147,7 +147,13 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
 
     const columns = view === ViewType.DESKTOP ? desktopColumns : mobileColumns;
 
-    return <Table columns={columns} dataSource={data} rowKey="key" />;
+    return (
+      <Table
+        columns={columns}
+        dataSource={data}
+        rowKey={(record: TxDetails, index: number) => index}
+      />
+    );
   };
 
   const pageContent = (data: TxDetails[]) => (
