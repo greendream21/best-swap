@@ -9,8 +9,12 @@ import 'react-circular-progressbar/dist/styles.css';
 interface Props {
   status: boolean;
   value: number;
+  /* max. value to count */
   maxValue: number;
+  /* max. duration to count (in seconds) - optional */
+  maxSec?: number;
   startTime?: number;
+  /* interval for counting (in ms) - optional */
   interval?: number;
   onChange?: () => void;
   onEnd?: () => void;
@@ -23,6 +27,7 @@ const TxTimer: React.FC<Props> = (props): JSX.Element => {
     status = false,
     value,
     maxValue,
+    maxSec = 0,
     startTime = Date.now(),
     onChange = () => {},
     interval = 1000,
@@ -35,7 +40,13 @@ const TxTimer: React.FC<Props> = (props): JSX.Element => {
   const [totalDuration, setTotalDuration] = useState<number>(0);
 
   // Check if counter has reached the end
-  const isEnd = useCallback(() => value >= maxValue, [value, maxValue]);
+  const isEnd = useCallback(() => {
+    // Check of `maxSec` wins over `maxValue`
+    if (maxSec > 0 && totalDuration >= maxSec) {
+        return true;
+    }
+    return value >= maxValue;
+  }, [maxSec, value, maxValue, totalDuration]);
 
   // Callback for counting
   const countHandler = useCallback(() => {

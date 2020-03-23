@@ -560,7 +560,7 @@ class SwapSend extends React.Component<Props, State> {
         countTxTimerValue(25);
       } else if (value >= 75 && value < 95) {
         // With last quarter we just count a little bit to signalize still a progress
-        countTxTimerValue(1);
+        countTxTimerValue(0.75);
       }
     }
   };
@@ -692,6 +692,7 @@ class SwapSend extends React.Component<Props, State> {
               status={status}
               value={value}
               maxValue={MAX_VALUE}
+              maxSec={45}
               startTime={startTime}
               onChange={this.handleChangeTxTimer}
               onEnd={this.handleEndTxTimer}
