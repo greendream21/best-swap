@@ -13,7 +13,8 @@ import Table from '../../../components/uielements/table';
 import Button from '../../../components/uielements/button';
 
 import { ContentWrapper } from './PoolView.style';
-import { getCreatePoolTokens, getPoolData, PoolData } from '../utils';
+import { getCreatePoolTokens, getPoolData } from '../utils';
+import { PoolData } from '../types';
 import { getTickerFormat } from '../../../helpers/stringHelper';
 import * as midgardActions from '../../../redux/midgard/actions';
 import { RootState } from '../../../redux/store';
@@ -150,12 +151,20 @@ class PoolView extends React.Component<Props, State> {
         sortDirections: ['descend', 'ascend'],
       },
       {
+        key: 'poolprice',
+        title: 'pool price',
+        dataIndex: 'poolPrice',
+        sorter: (a: FixmeType, b: FixmeType) =>
+          a.raw.poolPrice.minus(b.raw.poolPrice),
+        sortDirections: ['descend', 'ascend'],
+        defaultSortOrder: 'descend',
+      },
+      {
         key: 'depth',
         title: 'depth',
         dataIndex: 'depth',
         sorter: (a: FixmeType, b: FixmeType) => a.raw.depth - b.raw.depth,
         sortDirections: ['descend', 'ascend'],
-        defaultSortOrder: 'descend',
       },
       {
         key: 'volume24',

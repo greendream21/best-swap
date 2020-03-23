@@ -41,9 +41,9 @@ import {
   getCalcResult,
   CalcResult,
   getPoolData,
-  PoolData,
   withdrawResult,
 } from '../utils';
+import { PoolData } from '../types';
 import { getTickerFormat, emptyString } from '../../../helpers/stringHelper';
 import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
 import TokenInfo from '../../../components/uielements/tokens/tokenInfo';

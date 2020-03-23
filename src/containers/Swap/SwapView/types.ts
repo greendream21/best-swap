@@ -7,10 +7,12 @@ type RawSwapCardDataType = {
   transaction: BigNumber;
   slip: BigNumber;
   trade: BigNumber;
+  poolPrice: BigNumber;
 };
 
 export type SwapCardType = {
   pool: PoolInfoType;
+  poolPrice: string,
   depth: string;
   volume: string;
   transaction: string;
