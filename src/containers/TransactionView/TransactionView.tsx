@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import * as RD from '@devexperts/remote-data-ts';
+import { FormattedDate, FormattedTime } from 'react-intl';
 
 import Table from '../../components/uielements/table';
 import FilterDropdown from '../../components/filterDropdown';
@@ -72,10 +73,24 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
         key: 'date',
         title: 'date',
         render: (text: string, rowData: TxDetails) => {
-          const { date } = rowData;
-          const timestamp = date || 0;
-
-          return new Date(timestamp * 1000).toDateString();
+          const { date: timestamp = 0 } = rowData;
+          const date = new Date(timestamp * 1000);
+          return (
+            <>
+              <FormattedDate
+                value={date}
+                year="numeric"
+                month="long"
+                day="2-digit"
+              />{' '}
+              <FormattedTime
+                value={date}
+                hour="numeric"
+                minute="numeric"
+                second="numeric"
+              />
+            </>
+          );
         },
       },
       {
@@ -113,9 +128,8 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
           </MobileColumeHeader>
         ),
         render: (text: string, rowData: TxDetails) => {
-          const { type, date, in: _in } = rowData;
-          const timestamp = date || 0;
-          const dateString = new Date(timestamp * 1000).toDateString();
+          const { type, date: timestamp = 0, in: _in } = rowData;
+          const date = new Date(timestamp * 1000);
           const txID = _in?.txID ?? null;
           const txURL = txID ? TESTNET_TX_BASE_URL + txID : null;
 
@@ -124,7 +138,21 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
               <div className="tx-history-data">
                 <TxLabel type={type} />
                 <div className="tx-history-detail">
-                  <p>{dateString}</p>
+                  <p>
+                    <FormattedDate
+                      value={date}
+                      year="numeric"
+                      month="2-digit"
+                      day="2-digit"
+                    />{' '}
+                    <FormattedTime
+                      value={date}
+                      hour="2-digit"
+                      minute="2-digit"
+                      second="2-digit"
+                      hour12={false}
+                    />
+                  </p>
                   <div className="tx-detail-button">
                     {txURL ? (
                       <a href={txURL} target="_blank" rel="noopener noreferrer">
