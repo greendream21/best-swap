@@ -16,7 +16,6 @@ import { BinanceClient } from '../../clients/binance';
 import { PoolDataMap, PriceDataIndex } from '../../redux/midgard/types';
 import { PoolDetail, AssetDetail } from '../../types/generated/midgard';
 import { getAssetFromString } from '../../redux/midgard/utils';
-import { PoolInfoType } from './types';
 import { Maybe, Nothing } from '../../types/bepswap';
 import {
   tokenToBase,
@@ -31,7 +30,8 @@ import {
   fixedBN,
   isValidBN,
 } from '../../helpers/bnHelper';
-import { TokenAmount, BaseAmount } from '../../types/token';
+import { TokenAmount } from '../../types/token';
+import { PoolData } from './types';
 
 export type CalcResult = {
   poolAddress: Maybe<string>;
@@ -135,39 +135,6 @@ export const getCalcResult = (
     T,
   };
 };
-export type PoolData = {
-  asset: string;
-  target: string;
-  depth: BaseAmount;
-  volume24: BaseAmount;
-  volumeAT: BaseAmount;
-  transaction: BaseAmount;
-  liqFee: BaseAmount;
-  roiAT: BaseAmount;
-  totalSwaps: number;
-  totalStakers: number;
-  values: PoolDataValues;
-  raw: PoolDataRaw;
-};
-
-export type PoolDataValues = {
-  pool: PoolInfoType;
-  target: string;
-  symbol: string;
-  depth: string;
-  volume24: string;
-  transaction: string;
-  liqFee: string;
-  roiAT: string;
-};
-
-export type PoolDataRaw = {
-  depth: BaseAmount;
-  volume24: BaseAmount;
-  transaction: BaseAmount;
-  liqFee: BaseAmount;
-  roiAT: BaseAmount;
-};
 
 export const getCreatePoolTokens = (
   assetData: AssetDetail[],
@@ -191,6 +158,9 @@ export const getCreatePoolTokens = (
   });
 };
 
+// TODO(Chris): merge duplicated functions from swap and pool utils
+// TODO(Chris): Refactor utils
+
 export const getPoolData = (
   from: string,
   poolDetail: PoolDetail,
@@ -203,6 +173,13 @@ export const getPoolData = (
   );
 
   const runePrice = validBNOrZero(priceIndex?.RUNE);
+
+  const R = bn(poolDetail?.runeStakedTotal ?? 0);
+  const T = bn(poolDetail?.assetStakedTotal ?? 0);
+  // formula: (R / T) * runePrice
+  const poolPrice = fixedBN(R.div(T).multipliedBy(runePrice));
+  const poolPriceValue = `${basePriceAsset} ${poolPrice}`;
+
   const depthResult = bnOrZero(poolDetail?.runeDepth).multipliedBy(runePrice);
   const depth = baseAmount(depthResult);
   const volume24Result = bnOrZero(poolDetail?.poolVolume24hr).multipliedBy(
@@ -259,6 +236,7 @@ export const getPoolData = (
       transaction: transactionValue,
       liqFee: liqFeeValue,
       roiAT: roiAtValue,
+      poolPrice: poolPriceValue,
     },
     raw: {
       depth,
@@ -266,6 +244,7 @@ export const getPoolData = (
       transaction,
       liqFee,
       roiAT,
+      poolPrice,
     },
   };
 };

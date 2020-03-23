@@ -119,13 +119,21 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
         sortDirections: ['descend', 'ascend'],
       },
       {
+        key: 'poolprice',
+        title: 'pool price',
+        dataIndex: 'poolPrice',
+        sorter: (a: SwapTableRowType, b: SwapTableRowType) =>
+          a.raw.poolPrice.minus(b.raw.poolPrice), // TODO(Veado): Does it work for sorting BN?
+        sortDirections: ['descend', 'ascend'],
+        defaultSortOrder: 'descend',
+      },
+      {
         key: 'depth',
         title: 'depth',
         dataIndex: 'depth',
         sorter: (a: SwapTableRowType, b: SwapTableRowType) =>
           a.raw.depth.minus(b.raw.depth), // TODO(Veado): Does it work for sorting BN?
         sortDirections: ['descend', 'ascend'],
-        defaultSortOrder: 'descend',
       },
       {
         key: 'vol',
@@ -163,7 +171,7 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
       btnCol,
     ];
 
-    const columnData: {desktop: FixmeType, mobile: FixmeType} = {
+    const columnData: { desktop: FixmeType; mobile: FixmeType } = {
       desktop: desktopColumns,
       mobile: mobileColumns,
     };

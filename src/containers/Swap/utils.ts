@@ -23,7 +23,7 @@ import { BinanceClient } from '../../clients/binance';
 import { CalcResult } from './SwapSend/types';
 import { getAssetFromString } from '../../redux/midgard/utils';
 import { SwapCardType } from './SwapView/types';
-import { BN_ZERO, isValidBN, bn, validBNOrZero } from '../../helpers/bnHelper';
+import { BN_ZERO, isValidBN, bn, validBNOrZero, fixedBN } from '../../helpers/bnHelper';
 import {
   tokenAmount,
   baseToToken,
@@ -56,6 +56,9 @@ export const getSwapType = (from: string, to: string) =>
     ? SwapType.SINGLE_SWAP
     : SwapType.DOUBLE_SWAP;
 
+// TODO(Chris): merge duplicated functions from swap and pool utils
+// TODO(Chris): Refactor utils
+
 export const getSwapData = (
   from: string,
   poolInfo: Maybe<PoolDetail>,
@@ -68,6 +71,13 @@ export const getSwapData = (
     const { ticker: target = '' } = getAssetFromString(poolInfo?.asset);
 
     const runePrice = validBNOrZero(priceIndex?.RUNE);
+
+    const R = bn(poolInfo?.runeStakedTotal ?? 0);
+    const T = bn(poolInfo?.assetStakedTotal ?? 0);
+    // formula: (R / T) * runePrice
+    const poolPrice = fixedBN(R.div(T).multipliedBy(runePrice));
+    const poolPriceString = `${basePriceAsset} ${poolPrice}`;
+
     // formula: poolInfo.runeDepth * runePrice
     const depth = bn(poolInfo?.runeDepth ?? 0).multipliedBy(runePrice);
     const depthAsString = `${basePriceAsset} ${formatBaseAsTokenAmount(
@@ -96,6 +106,7 @@ export const getSwapData = (
         asset,
         target,
       },
+      poolPrice: poolPriceString,
       depth: depthAsString,
       volume: volumeAsString,
       transaction: transactionAsString,
@@ -107,6 +118,7 @@ export const getSwapData = (
         transaction,
         slip,
         trade,
+        poolPrice,
       },
     };
   } else {

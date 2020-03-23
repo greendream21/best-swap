@@ -8,7 +8,6 @@ import {
   getPoolData,
   getCalcResult,
   CalcResult,
-  PoolData,
   getCreatePoolCalc,
   CreatePoolCalc,
   confirmWithdraw,
@@ -17,6 +16,7 @@ import {
   confirmStake,
   StakeErrorMsg,
 } from './utils';
+import { PoolData } from './types';
 import { AssetData } from '../../redux/wallet/types';
 import {
   PoolDetail,
@@ -332,6 +332,7 @@ describe('pool/utils/', () => {
           transaction: 'RUNE 0.00',
           liqFee: '0.00%',
           roiAT: '0.00% pa',
+          poolPrice: 'RUNE 1',
         },
         raw: {
           depth: baseAmount(200000),
@@ -339,6 +340,7 @@ describe('pool/utils/', () => {
           transaction: baseAmount(0),
           liqFee: baseAmount(0),
           roiAT: baseAmount(0.5),
+          poolPrice: bn(1),
         },
       };
       const result = getPoolData('RUNE', fsnPoolDetail, priceIndex, 'RUNE');
@@ -390,6 +392,7 @@ describe('pool/utils/', () => {
           transaction: 'RUNE 0.00',
           liqFee: '0.00%',
           roiAT: '0.00% pa',
+          poolPrice: 'RUNE 0.09',
         },
         raw: {
           depth: baseAmount(199999799),
@@ -397,6 +400,7 @@ describe('pool/utils/', () => {
           transaction: baseAmount(16193),
           liqFee: baseAmount(99800),
           roiAT: baseAmount(999.2768763636363),
+          poolPrice: bn(0.09),
         },
       };
       const result = getPoolData('RUNE', bnbPoolDetail, priceIndex, 'RUNE');
