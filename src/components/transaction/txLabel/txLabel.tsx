@@ -2,10 +2,10 @@ import React from 'react';
 
 import { SwapIcon, StakeIcon, WithdrawIcon } from '../../icons/txIcons';
 import { TxLabelWrapper } from './txLabel.style';
-import { TxDetailsTypeEnum } from '../../../types/generated/midgard';
+import { EventDetailsTypeEnum } from '../../../types/generated/midgard';
 
 type Props = {
-  type?: TxDetailsTypeEnum;
+  type?: EventDetailsTypeEnum;
 };
 
 const TxLabel: React.FC<Props> = (props: Props): JSX.Element => {
@@ -13,17 +13,17 @@ const TxLabel: React.FC<Props> = (props: Props): JSX.Element => {
   let label = '';
   let TxIcon = SwapIcon;
 
-  if (type === TxDetailsTypeEnum.Swap) {
+  if (type === EventDetailsTypeEnum.Swap) {
     label = 'swap';
     TxIcon = SwapIcon;
   }
 
-  if (type === TxDetailsTypeEnum.Unstake) {
+  if (type === EventDetailsTypeEnum.Unstake) {
     label = 'withdraw';
     TxIcon = WithdrawIcon;
   }
 
-  if (type === TxDetailsTypeEnum.Stake) {
+  if (type === EventDetailsTypeEnum.Stake) {
     label = 'stake';
     TxIcon = StakeIcon;
   }

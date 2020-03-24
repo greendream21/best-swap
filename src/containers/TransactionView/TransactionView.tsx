@@ -16,7 +16,7 @@ import {
   StyledPagination,
   MobileColumeHeader,
 } from './TransactionView.style';
-import { TxDetails } from '../../types/generated/midgard';
+import { EventDetails } from '../../types/generated/midgard';
 import { ViewType, Maybe } from '../../types/bepswap';
 import { TESTNET_TX_BASE_URL } from '../../helpers/apiHelper';
 
@@ -43,17 +43,17 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
     const walletAddress = user?.wallet ?? null;
 
     if (walletAddress) {
-      getTxByAddress(walletAddress);
+      getTxByAddress({ address: walletAddress });
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const renderTxTable = (data: TxDetails[], view: ViewType) => {
+  const renderTxTable = (data: EventDetails[], view: ViewType) => {
     const filterCol = {
       key: 'filter',
       title: <FilterDropdown />,
-      render: (text: string, rowData: TxDetails) => {
+      render: (text: string, rowData: EventDetails) => {
         const { type } = rowData;
 
         return <TxLabel type={type} />;
@@ -65,14 +65,14 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
       {
         key: 'history',
         title: 'history',
-        render: (text: string, rowData: TxDetails) => {
+        render: (text: string, rowData: EventDetails) => {
           return <TxInfo data={rowData} />;
         },
       },
       {
         key: 'date',
         title: 'date',
-        render: (text: string, rowData: TxDetails) => {
+        render: (text: string, rowData: EventDetails) => {
           const { date: timestamp = 0 } = rowData;
           const date = new Date(timestamp * 1000);
           return (
@@ -96,7 +96,7 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
       {
         key: 'detail',
         title: 'detail',
-        render: (text: string, rowData: TxDetails) => {
+        render: (text: string, rowData: EventDetails) => {
           const { in: _in } = rowData;
           const txID = _in?.txID ?? null;
           const txURL = txID ? TESTNET_TX_BASE_URL + txID : null;
@@ -127,7 +127,7 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
             </div>
           </MobileColumeHeader>
         ),
-        render: (text: string, rowData: TxDetails) => {
+        render: (text: string, rowData: EventDetails) => {
           const { type, date: timestamp = 0, in: _in } = rowData;
           const date = new Date(timestamp * 1000);
           const txID = _in?.txID ?? null;
@@ -179,12 +179,12 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
       <Table
         columns={columns}
         dataSource={data}
-        rowKey={(record: TxDetails, index: number) => index}
+        rowKey={(record: EventDetails, index: number) => index}
       />
     );
   };
 
-  const pageContent = (data: TxDetails[]) => (
+  const pageContent = (data: EventDetails[]) => (
     <>
       <ContentWrapper className="transaction-view-wrapper desktop-view">
         {renderTxTable(data, ViewType.DESKTOP)}
@@ -204,7 +204,7 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
         () => <div />, // initial
         () => <TransactionLoader />,
         (error: Error) => <p>{error.toString()}</p>, // show error
-        (data: TxDetails[]): JSX.Element => pageContent(data),
+        (data: EventDetails[]): JSX.Element => pageContent(data),
       )(txData);
     } else {
       return (

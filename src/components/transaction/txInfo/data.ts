@@ -1,13 +1,13 @@
 import {
-  TxDetails,
-  TxDetailsTypeEnum,
-  TxDetailsStatusEnum,
+  EventDetails,
+  EventDetailsTypeEnum,
+  EventDetailsStatusEnum,
 } from '../../../types/generated/midgard';
 
-export const txData1: TxDetails = {
+export const txData1: EventDetails = {
   pool: 'BNB',
-  type: TxDetailsTypeEnum.Stake,
-  status: TxDetailsStatusEnum.Success,
+  type: EventDetailsTypeEnum.Stake,
+  status: EventDetailsStatusEnum.Success,
   in: {
     txID: 'txid',
     memo: 'txmemo',
@@ -48,10 +48,10 @@ export const txData1: TxDetails = {
   },
 };
 
-export const txData2: TxDetails = {
+export const txData2: EventDetails = {
   pool: 'BNB',
-  type: TxDetailsTypeEnum.Swap,
-  status: TxDetailsStatusEnum.Success,
+  type: EventDetailsTypeEnum.Swap,
+  status: EventDetailsStatusEnum.Success,
   in: {
     txID: 'txid',
     memo: 'txmemo',
@@ -92,10 +92,10 @@ export const txData2: TxDetails = {
   },
 };
 
-export const txData3: TxDetails = {
+export const txData3: EventDetails = {
   pool: 'BNB',
-  type: TxDetailsTypeEnum.Unstake,
-  status: TxDetailsStatusEnum.Success,
+  type: EventDetailsTypeEnum.Unstake,
+  status: EventDetailsStatusEnum.Success,
   in: {
     txID: 'txid',
     memo: 'txmemo',
@@ -136,10 +136,10 @@ export const txData3: TxDetails = {
   },
 };
 
-export const txData4: TxDetails = {
+export const txData4: EventDetails = {
   pool: 'BNB',
-  type: TxDetailsTypeEnum.Stake,
-  status: TxDetailsStatusEnum.Success,
+  type: EventDetailsTypeEnum.Stake,
+  status: EventDetailsStatusEnum.Success,
   in: {
     txID: 'txid',
     memo: 'txmemo',

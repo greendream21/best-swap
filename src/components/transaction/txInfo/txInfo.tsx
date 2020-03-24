@@ -2,7 +2,7 @@ import React from 'react';
 
 import TxStatus from '../txStatus';
 import { TxInfoWrapper, Seperator, Dash } from './txInfo.style';
-import { TxDetails, TxDetailsTypeEnum } from '../../../types/generated/midgard';
+import { EventDetails, EventDetailsTypeEnum } from '../../../types/generated/midgard';
 import { bnOrZero, formatBN } from '../../../helpers/bnHelper';
 import {
   formatBaseAsTokenAmount,
@@ -10,7 +10,7 @@ import {
 } from '../../../helpers/tokenHelper';
 
 type Props = {
-  data: TxDetails;
+  data: EventDetails;
 };
 
 const TxInfo: React.FC<Props> = (props: Props): JSX.Element => {
@@ -19,7 +19,7 @@ const TxInfo: React.FC<Props> = (props: Props): JSX.Element => {
   } = props;
 
   // swap tx
-  if (type === TxDetailsTypeEnum.Swap) {
+  if (type === EventDetailsTypeEnum.Swap) {
     const inData = _in?.coins?.[0];
     const outData = out?.[0]?.coins?.[0];
     const fee = baseAmount(events?.fee);
@@ -50,7 +50,7 @@ const TxInfo: React.FC<Props> = (props: Props): JSX.Element => {
   }
 
   // withdraw tx
-  if (type === TxDetailsTypeEnum.Unstake) {
+  if (type === EventDetailsTypeEnum.Unstake) {
     const inData = _in?.coins?.[0];
     const outData = out?.[0]?.coins;
 
@@ -72,7 +72,7 @@ const TxInfo: React.FC<Props> = (props: Props): JSX.Element => {
   }
 
   // stake tx
-  if (type === TxDetailsTypeEnum.Stake) {
+  if (type === EventDetailsTypeEnum.Stake) {
     const inData1 = _in?.coins?.[0];
     const inData2 = _in?.coins?.[1];
 

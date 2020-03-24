@@ -103,6 +103,97 @@ export interface Event {
 /**
  * 
  * @export
+ * @interface EventDetails
+ */
+export interface EventDetails {
+    /**
+     * 
+     * @type {number}
+     * @memberof EventDetails
+     */
+    date?: number;
+    /**
+     * 
+     * @type {Event}
+     * @memberof EventDetails
+     */
+    events?: Event;
+    /**
+     * 
+     * @type {Gas}
+     * @memberof EventDetails
+     */
+    gas?: Gas;
+    /**
+     * 
+     * @type {string}
+     * @memberof EventDetails
+     */
+    height?: string;
+    /**
+     * 
+     * @type {Tx}
+     * @memberof EventDetails
+     */
+    in?: Tx;
+    /**
+     * 
+     * @type {Option}
+     * @memberof EventDetails
+     */
+    options?: Option;
+    /**
+     * 
+     * @type {Array<Tx>}
+     * @memberof EventDetails
+     */
+    out?: Array<Tx>;
+    /**
+     * 
+     * @type {string}
+     * @memberof EventDetails
+     */
+    pool?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof EventDetails
+     */
+    status?: EventDetailsStatusEnum;
+    /**
+     * 
+     * @type {string}
+     * @memberof EventDetails
+     */
+    type?: EventDetailsTypeEnum;
+}
+
+/**
+    * @export
+    * @enum {string}
+    */
+export enum EventDetailsStatusEnum {
+    Success = 'success',
+    Refund = 'refund'
+}
+/**
+    * @export
+    * @enum {string}
+    */
+export enum EventDetailsTypeEnum {
+    Swap = 'swap',
+    Stake = 'stake',
+    Unstake = 'unstake',
+    Rewards = 'rewards',
+    Add = 'add',
+    Pool = 'pool',
+    Gas = 'gas',
+    Refund = 'refund'
+}
+
+/**
+ * 
+ * @export
  * @interface Gas
  */
 export interface Gas {
@@ -685,98 +776,6 @@ export interface Tx {
      */
     txID?: string;
 }
-/**
- * 
- * @export
- * @interface TxDetails
- */
-export interface TxDetails {
-    /**
-     * 
-     * @type {number}
-     * @memberof TxDetails
-     */
-    date?: number;
-    /**
-     * 
-     * @type {Event}
-     * @memberof TxDetails
-     */
-    events?: Event;
-    /**
-     * 
-     * @type {Gas}
-     * @memberof TxDetails
-     */
-    gas?: Gas;
-    /**
-     * 
-     * @type {string}
-     * @memberof TxDetails
-     */
-    height?: string;
-    /**
-     * 
-     * @type {Tx}
-     * @memberof TxDetails
-     */
-    in?: Tx;
-    /**
-     * 
-     * @type {Option}
-     * @memberof TxDetails
-     */
-    options?: Option;
-    /**
-     * 
-     * @type {Array<Tx>}
-     * @memberof TxDetails
-     */
-    out?: Array<Tx>;
-    /**
-     * 
-     * @type {string}
-     * @memberof TxDetails
-     */
-    pool?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof TxDetails
-     */
-    status?: TxDetailsStatusEnum;
-    /**
-     * 
-     * @type {string}
-     * @memberof TxDetails
-     */
-    type?: TxDetailsTypeEnum;
-}
-
-/**
-    * @export
-    * @enum {string}
-    */
-export enum TxDetailsStatusEnum {
-    Success = 'success',
-    Refund = 'refund',
-    PriceCancelled = 'priceCancelled'
-}
-/**
-    * @export
-    * @enum {string}
-    */
-export enum TxDetailsTypeEnum {
-    Swap = 'swap',
-    Stake = 'stake',
-    Unstake = 'unstake',
-    Rewards = 'rewards',
-    Add = 'add',
-    Pool = 'pool',
-    Gas = 'gas',
-    Refund = 'refund'
-}
-
 
 /**
  * DefaultApi - axios parameter creator
@@ -808,6 +807,68 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
             if (asset !== undefined) {
                 localVarQueryParameter['asset'] = asset;
+            }
+
+
+    
+            localVarUrlObj.query = {...localVarUrlObj.query, ...localVarQueryParameter, ...options.query};
+            // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
+            delete localVarUrlObj.search;
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...options.headers};
+
+            return {
+                url: globalImportUrl.format(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Return an array containing the event details
+         * @summary Get events by address, asset or tx-id
+         * @param {number} offset pagination offset
+         * @param {number} limit pagination limit
+         * @param {string} [address] Address of sender or recipient of any in/out tx in event
+         * @param {string} [txid] ID of any in/out tx in event
+         * @param {string} [asset] Any asset used in event (CHAIN.SYMBOL)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getEvents(offset: number, limit: number, address?: string, txid?: string, asset?: string, options: any = {}): RequestArgs {
+            // verify required parameter 'offset' is not null or undefined
+            if (offset === null || offset === undefined) {
+                throw new RequiredError('offset','Required parameter offset was null or undefined when calling getEvents.');
+            }
+            // verify required parameter 'limit' is not null or undefined
+            if (limit === null || limit === undefined) {
+                throw new RequiredError('limit','Required parameter limit was null or undefined when calling getEvents.');
+            }
+            const localVarPath = `/v1/events`;
+            const localVarUrlObj = globalImportUrl.parse(localVarPath, true);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (address !== undefined) {
+                localVarQueryParameter['address'] = address;
+            }
+
+            if (txid !== undefined) {
+                localVarQueryParameter['txid'] = txid;
+            }
+
+            if (asset !== undefined) {
+                localVarQueryParameter['asset'] = asset;
+            }
+
+            if (offset !== undefined) {
+                localVarQueryParameter['offset'] = offset;
+            }
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
             }
 
 
@@ -1084,158 +1145,6 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 options: localVarRequestOptions,
             };
         },
-        /**
-         * Return an object containing the tx details
-         * @summary Get transaction
-         * @param {string} address An address
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getTxDetails(address: string, options: any = {}): RequestArgs {
-            // verify required parameter 'address' is not null or undefined
-            if (address === null || address === undefined) {
-                throw new RequiredError('address','Required parameter address was null or undefined when calling getTxDetails.');
-            }
-            const localVarPath = `/v1/tx/{address}`
-                .replace(`{${"address"}}`, encodeURIComponent(String(address)));
-            const localVarUrlObj = globalImportUrl.parse(localVarPath, true);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            localVarUrlObj.query = {...localVarUrlObj.query, ...localVarQueryParameter, ...options.query};
-            // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
-            delete localVarUrlObj.search;
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...options.headers};
-
-            return {
-                url: globalImportUrl.format(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * Return an object containing the tx details
-         * @summary Get transaction
-         * @param {string} address An address
-         * @param {string} asset An asset (CHAIN.SYMBOL)
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getTxDetailsByAddressAsset(address: string, asset: string, options: any = {}): RequestArgs {
-            // verify required parameter 'address' is not null or undefined
-            if (address === null || address === undefined) {
-                throw new RequiredError('address','Required parameter address was null or undefined when calling getTxDetailsByAddressAsset.');
-            }
-            // verify required parameter 'asset' is not null or undefined
-            if (asset === null || asset === undefined) {
-                throw new RequiredError('asset','Required parameter asset was null or undefined when calling getTxDetailsByAddressAsset.');
-            }
-            const localVarPath = `/v1/tx/{address}/asset/{asset}`
-                .replace(`{${"address"}}`, encodeURIComponent(String(address)))
-                .replace(`{${"asset"}}`, encodeURIComponent(String(asset)));
-            const localVarUrlObj = globalImportUrl.parse(localVarPath, true);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            localVarUrlObj.query = {...localVarUrlObj.query, ...localVarQueryParameter, ...options.query};
-            // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
-            delete localVarUrlObj.search;
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...options.headers};
-
-            return {
-                url: globalImportUrl.format(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * Return an object containing the tx details
-         * @summary Get transaction
-         * @param {string} address An address
-         * @param {string} txid An Asset
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getTxDetailsByAddressTxId(address: string, txid: string, options: any = {}): RequestArgs {
-            // verify required parameter 'address' is not null or undefined
-            if (address === null || address === undefined) {
-                throw new RequiredError('address','Required parameter address was null or undefined when calling getTxDetailsByAddressTxId.');
-            }
-            // verify required parameter 'txid' is not null or undefined
-            if (txid === null || txid === undefined) {
-                throw new RequiredError('txid','Required parameter txid was null or undefined when calling getTxDetailsByAddressTxId.');
-            }
-            const localVarPath = `/v1/tx/{address}/txid/{txid}`
-                .replace(`{${"address"}}`, encodeURIComponent(String(address)))
-                .replace(`{${"txid"}}`, encodeURIComponent(String(txid)));
-            const localVarUrlObj = globalImportUrl.parse(localVarPath, true);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            localVarUrlObj.query = {...localVarUrlObj.query, ...localVarQueryParameter, ...options.query};
-            // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
-            delete localVarUrlObj.search;
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...options.headers};
-
-            return {
-                url: globalImportUrl.format(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * Return an object containing the tx details
-         * @summary Get transaction
-         * @param {string} asset An asset (CHAIN.SYMBOL)
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getTxDetailsByAsset(asset: string, options: any = {}): RequestArgs {
-            // verify required parameter 'asset' is not null or undefined
-            if (asset === null || asset === undefined) {
-                throw new RequiredError('asset','Required parameter asset was null or undefined when calling getTxDetailsByAsset.');
-            }
-            const localVarPath = `/v1/tx/asset/{asset}`
-                .replace(`{${"asset"}}`, encodeURIComponent(String(asset)));
-            const localVarUrlObj = globalImportUrl.parse(localVarPath, true);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            localVarUrlObj.query = {...localVarUrlObj.query, ...localVarQueryParameter, ...options.query};
-            // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
-            delete localVarUrlObj.search;
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...options.headers};
-
-            return {
-                url: globalImportUrl.format(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
     }
 };
 
@@ -1254,6 +1163,24 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          */
         getAssetInfo(asset: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<AssetDetail>> {
             const localVarAxiosArgs = DefaultApiAxiosParamCreator(configuration).getAssetInfo(asset, options);
+            return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
+                const axiosRequestArgs = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
+                return axios.request(axiosRequestArgs);
+            };
+        },
+        /**
+         * Return an array containing the event details
+         * @summary Get events by address, asset or tx-id
+         * @param {number} offset pagination offset
+         * @param {number} limit pagination limit
+         * @param {string} [address] Address of sender or recipient of any in/out tx in event
+         * @param {string} [txid] ID of any in/out tx in event
+         * @param {string} [asset] Any asset used in event (CHAIN.SYMBOL)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getEvents(offset: number, limit: number, address?: string, txid?: string, asset?: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<EventDetails>> {
+            const localVarAxiosArgs = DefaultApiAxiosParamCreator(configuration).getEvents(offset, limit, address, txid, asset, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
                 return axios.request(axiosRequestArgs);
@@ -1367,64 +1294,6 @@ export const DefaultApiFp = function(configuration?: Configuration) {
                 return axios.request(axiosRequestArgs);
             };
         },
-        /**
-         * Return an object containing the tx details
-         * @summary Get transaction
-         * @param {string} address An address
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getTxDetails(address: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TxDetails>> {
-            const localVarAxiosArgs = DefaultApiAxiosParamCreator(configuration).getTxDetails(address, options);
-            return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
-                const axiosRequestArgs = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
-                return axios.request(axiosRequestArgs);
-            };
-        },
-        /**
-         * Return an object containing the tx details
-         * @summary Get transaction
-         * @param {string} address An address
-         * @param {string} asset An asset (CHAIN.SYMBOL)
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getTxDetailsByAddressAsset(address: string, asset: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TxDetails>> {
-            const localVarAxiosArgs = DefaultApiAxiosParamCreator(configuration).getTxDetailsByAddressAsset(address, asset, options);
-            return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
-                const axiosRequestArgs = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
-                return axios.request(axiosRequestArgs);
-            };
-        },
-        /**
-         * Return an object containing the tx details
-         * @summary Get transaction
-         * @param {string} address An address
-         * @param {string} txid An Asset
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getTxDetailsByAddressTxId(address: string, txid: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TxDetails>> {
-            const localVarAxiosArgs = DefaultApiAxiosParamCreator(configuration).getTxDetailsByAddressTxId(address, txid, options);
-            return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
-                const axiosRequestArgs = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
-                return axios.request(axiosRequestArgs);
-            };
-        },
-        /**
-         * Return an object containing the tx details
-         * @summary Get transaction
-         * @param {string} asset An asset (CHAIN.SYMBOL)
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getTxDetailsByAsset(asset: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TxDetails>> {
-            const localVarAxiosArgs = DefaultApiAxiosParamCreator(configuration).getTxDetailsByAsset(asset, options);
-            return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
-                const axiosRequestArgs = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
-                return axios.request(axiosRequestArgs);
-            };
-        },
     }
 };
 
@@ -1443,6 +1312,20 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          */
         getAssetInfo(asset: string, options?: any): AxiosPromise<Array<AssetDetail>> {
             return DefaultApiFp(configuration).getAssetInfo(asset, options)(axios, basePath);
+        },
+        /**
+         * Return an array containing the event details
+         * @summary Get events by address, asset or tx-id
+         * @param {number} offset pagination offset
+         * @param {number} limit pagination limit
+         * @param {string} [address] Address of sender or recipient of any in/out tx in event
+         * @param {string} [txid] ID of any in/out tx in event
+         * @param {string} [asset] Any asset used in event (CHAIN.SYMBOL)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getEvents(offset: number, limit: number, address?: string, txid?: string, asset?: string, options?: any): AxiosPromise<Array<EventDetails>> {
+            return DefaultApiFp(configuration).getEvents(offset, limit, address, txid, asset, options)(axios, basePath);
         },
         /**
          * Returns an object containing the health response of the API.
@@ -1520,48 +1403,6 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         getThorchainProxiedEndpoints(options?: any): AxiosPromise<ThorchainEndpoints> {
             return DefaultApiFp(configuration).getThorchainProxiedEndpoints(options)(axios, basePath);
         },
-        /**
-         * Return an object containing the tx details
-         * @summary Get transaction
-         * @param {string} address An address
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getTxDetails(address: string, options?: any): AxiosPromise<Array<TxDetails>> {
-            return DefaultApiFp(configuration).getTxDetails(address, options)(axios, basePath);
-        },
-        /**
-         * Return an object containing the tx details
-         * @summary Get transaction
-         * @param {string} address An address
-         * @param {string} asset An asset (CHAIN.SYMBOL)
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getTxDetailsByAddressAsset(address: string, asset: string, options?: any): AxiosPromise<Array<TxDetails>> {
-            return DefaultApiFp(configuration).getTxDetailsByAddressAsset(address, asset, options)(axios, basePath);
-        },
-        /**
-         * Return an object containing the tx details
-         * @summary Get transaction
-         * @param {string} address An address
-         * @param {string} txid An Asset
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getTxDetailsByAddressTxId(address: string, txid: string, options?: any): AxiosPromise<Array<TxDetails>> {
-            return DefaultApiFp(configuration).getTxDetailsByAddressTxId(address, txid, options)(axios, basePath);
-        },
-        /**
-         * Return an object containing the tx details
-         * @summary Get transaction
-         * @param {string} asset An asset (CHAIN.SYMBOL)
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getTxDetailsByAsset(asset: string, options?: any): AxiosPromise<Array<TxDetails>> {
-            return DefaultApiFp(configuration).getTxDetailsByAsset(asset, options)(axios, basePath);
-        },
     };
 };
 
@@ -1582,6 +1423,22 @@ export class DefaultApi extends BaseAPI {
      */
     public getAssetInfo(asset: string, options?: any) {
         return DefaultApiFp(this.configuration).getAssetInfo(asset, options)(this.axios, this.basePath);
+    }
+
+    /**
+     * Return an array containing the event details
+     * @summary Get events by address, asset or tx-id
+     * @param {number} offset pagination offset
+     * @param {number} limit pagination limit
+     * @param {string} [address] Address of sender or recipient of any in/out tx in event
+     * @param {string} [txid] ID of any in/out tx in event
+     * @param {string} [asset] Any asset used in event (CHAIN.SYMBOL)
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getEvents(offset: number, limit: number, address?: string, txid?: string, asset?: string, options?: any) {
+        return DefaultApiFp(this.configuration).getEvents(offset, limit, address, txid, asset, options)(this.axios, this.basePath);
     }
 
     /**
@@ -1674,56 +1531,6 @@ export class DefaultApi extends BaseAPI {
      */
     public getThorchainProxiedEndpoints(options?: any) {
         return DefaultApiFp(this.configuration).getThorchainProxiedEndpoints(options)(this.axios, this.basePath);
-    }
-
-    /**
-     * Return an object containing the tx details
-     * @summary Get transaction
-     * @param {string} address An address
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof DefaultApi
-     */
-    public getTxDetails(address: string, options?: any) {
-        return DefaultApiFp(this.configuration).getTxDetails(address, options)(this.axios, this.basePath);
-    }
-
-    /**
-     * Return an object containing the tx details
-     * @summary Get transaction
-     * @param {string} address An address
-     * @param {string} asset An asset (CHAIN.SYMBOL)
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof DefaultApi
-     */
-    public getTxDetailsByAddressAsset(address: string, asset: string, options?: any) {
-        return DefaultApiFp(this.configuration).getTxDetailsByAddressAsset(address, asset, options)(this.axios, this.basePath);
-    }
-
-    /**
-     * Return an object containing the tx details
-     * @summary Get transaction
-     * @param {string} address An address
-     * @param {string} txid An Asset
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof DefaultApi
-     */
-    public getTxDetailsByAddressTxId(address: string, txid: string, options?: any) {
-        return DefaultApiFp(this.configuration).getTxDetailsByAddressTxId(address, txid, options)(this.axios, this.basePath);
-    }
-
-    /**
-     * Return an object containing the tx details
-     * @summary Get transaction
-     * @param {string} asset An asset (CHAIN.SYMBOL)
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof DefaultApi
-     */
-    public getTxDetailsByAsset(asset: string, options?: any) {
-        return DefaultApiFp(this.configuration).getTxDetailsByAsset(asset, options)(this.axios, this.basePath);
     }
 
 }
@@ -1925,3 +1732,5 @@ export class SpecificationApi extends BaseAPI {
     }
 
 }
+
+

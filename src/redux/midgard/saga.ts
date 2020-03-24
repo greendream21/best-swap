@@ -142,10 +142,14 @@ export function* getTxByAddress() {
     payload,
   }: actions.GetTxByAddress) {
     try {
-      const fn = midgardApi.getTxDetails;
+      // TODO (Veado) Remove optional values for offset / limit when we will implement pagination
+      const { address, offset = 1, limit = 20 } = payload;
+      const fn = midgardApi.getEvents;
       const { data }: MidgardAPIResponse<typeof fn> = yield call(
         { context: midgardApi, fn },
-        payload,
+        offset,
+        limit,
+        address,
       );
 
       yield put(actions.getTxByAddressSuccess(data));
@@ -160,13 +164,16 @@ export function* getTxByAddressTxId() {
     payload,
   }: actions.GetTxByAddressTxId) {
     try {
-      const fn = midgardApi.getTxDetailsByAddressTxId;
-      const { address, txId } = payload;
+      const fn = midgardApi.getEvents;
+      // TODO (Veado) Remove optional values for offset / limit when we will implement pagination
+      const { address, txId, offset = 1, limit = 20 } = payload;
       const { data }: MidgardAPIResponse<typeof fn> = yield call(
         {
           context: midgardApi,
           fn,
         },
+        offset,
+        limit,
         address,
         txId,
       );
@@ -183,14 +190,18 @@ export function* getTxByAddressAsset() {
     payload,
   }: actions.GetTxByAddressAsset) {
     try {
-      const fn = midgardApi.getTxDetailsByAddressAsset;
-      const { address, asset } = payload;
+      const fn = midgardApi.getEvents;
+            // TODO (Veado) Remove optional values for offset / limit when we will implement pagination
+      const { address, asset, offset = 1, limit = 20  } = payload;
       const { data }: MidgardAPIResponse<typeof fn> = yield call(
         {
           context: midgardApi,
           fn,
         },
+        offset,
+        limit,
         address,
+        undefined,
         asset,
       );
 
@@ -206,13 +217,19 @@ export function* getTxByAsset() {
     payload,
   }: actions.GetTxByAsset) {
     try {
-      const fn = midgardApi.getTxDetailsByAsset;
+      // TODO (Veado) Remove optional values for offset / limit when we will implement pagination
+      const { asset, offset = 1, limit = 20  } = payload;
+      const fn = midgardApi.getEvents;
       const { data }: MidgardAPIResponse<typeof fn> = yield call(
         {
           context: midgardApi,
           fn,
         },
-        payload,
+        offset,
+        limit,
+        undefined,
+        undefined,
+        asset,
       );
 
       yield put(actions.getTxByAssetSuccess(data));
