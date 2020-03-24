@@ -5,7 +5,7 @@ import { ThemeProvider } from 'styled-components';
 import AppHolder from '../../../AppStyle';
 import { defaultTheme } from '../../../settings';
 import TxLabel from './txLabel';
-import { TxDetailsTypeEnum } from '../../../types/generated/midgard';
+import { EventDetailsTypeEnum } from '../../../types/generated/midgard';
 
 storiesOf('Components/Transaction/TxLabel', module).add('default', () => {
   return (
@@ -14,9 +14,9 @@ storiesOf('Components/Transaction/TxLabel', module).add('default', () => {
         <div
           style={{ display: 'flex', flexDirection: 'column', padding: '20px' }}
         >
-          <TxLabel type={TxDetailsTypeEnum.Swap} />
-          <TxLabel type={TxDetailsTypeEnum.Stake} />
-          <TxLabel type={TxDetailsTypeEnum.Unstake} />
+          <TxLabel type={EventDetailsTypeEnum.Swap} />
+          <TxLabel type={EventDetailsTypeEnum.Stake} />
+          <TxLabel type={EventDetailsTypeEnum.Unstake} />
         </div>
       </AppHolder>
     </ThemeProvider>

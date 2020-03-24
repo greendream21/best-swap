@@ -5,13 +5,15 @@ import {
   AssetDetailMap,
   GetTxByAddressTxIdPayload,
   GetTxByAddressAssetPayload,
+  GetTxByAddressPayload,
+  GetTxByAssetPayload,
 } from './types';
 import {
   AssetDetail,
   PoolDetail,
   StakersAssetData,
   ThorchainEndpoints,
-  TxDetails,
+  EventDetails,
 } from '../../types/generated/midgard';
 
 export interface SetAssetsPayload {
@@ -193,9 +195,9 @@ export const setPriceIndex = (payload: PriceDataIndex): SetPriceIndex => ({
 export const GET_TX_BY_ADDRESS = 'GET_TX_BY_ADDRESS';
 export interface GetTxByAddress {
   type: typeof GET_TX_BY_ADDRESS;
-  payload: string;
+  payload: GetTxByAddressPayload;
 }
-export const getTxByAddress = (payload: string): GetTxByAddress => ({
+export const getTxByAddress = (payload: GetTxByAddressPayload): GetTxByAddress => ({
   type: GET_TX_BY_ADDRESS,
   payload,
 });
@@ -203,10 +205,10 @@ export const getTxByAddress = (payload: string): GetTxByAddress => ({
 export const GET_TX_BY_ADDRESS_SUCCESS = 'GET_TX_BY_ADDRESS_SUCCESS';
 export interface GetTxByAddressSuccess {
   type: typeof GET_TX_BY_ADDRESS_SUCCESS;
-  payload: TxDetails[];
+  payload: EventDetails[];
 }
 export const getTxByAddressSuccess = (
-  payload: TxDetails[],
+  payload: EventDetails[],
 ): GetTxByAddressSuccess => ({
   type: GET_TX_BY_ADDRESS_SUCCESS,
   payload,
@@ -238,10 +240,10 @@ export const getTxByAddressTxId = (
 export const GET_TX_BY_ADDRESS_TXID_SUCCESS = 'GET_TX_BY_ADDRESS_TXID_SUCCESS';
 export interface GetTxByAddressTxIdSuccess {
   type: typeof GET_TX_BY_ADDRESS_TXID_SUCCESS;
-  payload: TxDetails[];
+  payload: EventDetails[];
 }
 export const getTxByAddressTxIdSuccess = (
-  payload: TxDetails[],
+  payload: EventDetails[],
 ): GetTxByAddressTxIdSuccess => ({
   type: GET_TX_BY_ADDRESS_TXID_SUCCESS,
   payload,
@@ -276,10 +278,10 @@ export const GET_TX_BY_ADDRESS_ASSET_SUCCESS =
   'GET_TX_BY_ADDRESS_ASSET_SUCCESS';
 export interface GetTxByAddressAssetSuccess {
   type: typeof GET_TX_BY_ADDRESS_ASSET_SUCCESS;
-  payload: TxDetails[];
+  payload: EventDetails[];
 }
 export const getTxByAddressAssetSuccess = (
-  payload: TxDetails[],
+  payload: EventDetails[],
 ): GetTxByAddressAssetSuccess => ({
   type: GET_TX_BY_ADDRESS_ASSET_SUCCESS,
   payload,
@@ -301,9 +303,9 @@ export const getTxByAddressAssetFailed = (
 export const GET_TX_BY_ASSET = 'GET_TX_BY_ASSET';
 export interface GetTxByAsset {
   type: typeof GET_TX_BY_ASSET;
-  payload: string;
+  payload: GetTxByAssetPayload;
 }
-export const getTxByAsset = (payload: string): GetTxByAsset => ({
+export const getTxByAsset = (payload: GetTxByAssetPayload): GetTxByAsset => ({
   type: GET_TX_BY_ASSET,
   payload,
 });
@@ -311,10 +313,10 @@ export const getTxByAsset = (payload: string): GetTxByAsset => ({
 export const GET_TX_BY_ASSET_SUCCESS = 'GET_TX_BY_ASSET_SUCCESS';
 export interface GetTxByAssetSuccess {
   type: typeof GET_TX_BY_ASSET_SUCCESS;
-  payload: TxDetails[];
+  payload: EventDetails[];
 }
 export const getTxByAssetSuccess = (
-  payload: TxDetails[],
+  payload: EventDetails[],
 ): GetTxByAssetSuccess => ({
   type: GET_TX_BY_ASSET_SUCCESS,
   payload,
