@@ -205,7 +205,12 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
       return RD.fold(
         () => <div />, // initial
         () => <TransactionLoader />,
-        (error: Error) => <p>{error.toString()}</p>, // show error
+        (error: Error) => (
+          <ContentWrapper className="transaction-view-wrapper center-align">
+            <h2>Loading history data failed.</h2>
+            {error && <p>{ error.toString()}</p>}
+          </ContentWrapper>
+        ),
         (data: EventDetails[]): JSX.Element => pageContent(data),
       )(txData);
     } else {
