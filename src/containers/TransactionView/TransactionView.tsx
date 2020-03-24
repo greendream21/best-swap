@@ -50,6 +50,8 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
   }, []);
 
   const renderTxTable = (data: EventDetails[], view: ViewType) => {
+    const sortedData = [...data.sort((a, b) => (b?.date ?? 0) - (a?.date ?? 0))];
+
     const filterCol = {
       key: 'filter',
       title: <FilterDropdown />,
@@ -127,7 +129,7 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
             </div>
           </MobileColumeHeader>
         ),
-        render: (text: string, rowData: EventDetails) => {
+        render: (_: string, rowData: EventDetails) => {
           const { type, date: timestamp = 0, in: _in } = rowData;
           const date = new Date(timestamp * 1000);
           const txID = _in?.txID ?? null;
@@ -178,7 +180,7 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
     return (
       <Table
         columns={columns}
-        dataSource={data}
+        dataSource={sortedData}
         rowKey={(record: EventDetails, index: number) => index}
       />
     );
