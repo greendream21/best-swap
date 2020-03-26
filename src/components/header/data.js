@@ -1,5 +1,6 @@
 import { keyBy } from 'lodash';
-import Binance from '../../clients/binance';
+import { binance } from 'asgardex-common';
+import { NET } from '../../env';
 
 const getLocation = href => {
   const l = document.createElement('a');
@@ -11,7 +12,7 @@ export const menuItems = [
   {
     key: 'binance_chain',
     label: 'binance chain',
-    url: getLocation(Binance.getBinanceUrl()).hostname,
+    url: getLocation(binance.getBinanceUrl(NET)).hostname,
     status: 'green',
   },
   {

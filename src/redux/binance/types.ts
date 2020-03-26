@@ -1,14 +1,14 @@
+import { binance } from 'asgardex-common';
 import { Maybe } from '../../types/bepswap';
-import { Token, Market, TickerStatistics, TxPage, OrderList, Account } from '../../types/binance';
 
 export type State = {
-  tokenList: Token[];
-  marketList: Market[];
-  ticker: Maybe<TickerStatistics>;
-  account: Maybe<Account>;
+  tokenList:  binance.Token[];
+  marketList:  binance.Market[];
+  ticker: Maybe< binance.TickerStatistics>;
+  account: Maybe<binance.Account>;
   accountSequence: Maybe<number>;
-  transactions: Maybe<TxPage>;
-  openOrders: Maybe<OrderList>;
+  transactions: Maybe< binance.TxPage>;
+  openOrders: Maybe< binance.OrderList>;
   error: Maybe<Error>;
   loadingToken: boolean;
   loadingMarket: boolean;

@@ -5,8 +5,8 @@ import { crypto } from '@binance-chain/javascript-sdk';
 import { FilePicker } from 'react-file-picker';
 import { Row, Icon, Input, Form, Tooltip } from 'antd';
 
+import { binance } from 'asgardex-common';
 import { ContentWrapper } from './ConnectView.style';
-import Binance from '../../clients/binance';
 
 import Label from '../../components/uielements/label';
 import Button from '../../components/uielements/button';
@@ -15,6 +15,7 @@ import FormGroup from '../../components/uielements/formGroup';
 import * as walletActions from '../../redux/wallet/actions';
 import { Maybe, Nothing, FixmeType } from '../../types/bepswap';
 import { delay } from '../../helpers/asyncHelper';
+import { NET } from '../../env';
 
 type ConnectedProps = {
   saveWallet: typeof walletActions.saveWallet;
@@ -70,34 +71,33 @@ const Keystore: React.FC<Props> = (props: Props): JSX.Element => {
   );
 
   const unlock = useCallback(async () => {
-      setProcessing(true);
-      // Short delay to render processing message`
-      await delay(200);
-      try {
-        const privateKey = crypto.getPrivateKeyFromKeyStore(keystore, password);
-        const address = crypto.getAddressFromPrivateKey(
-          privateKey,
-          Binance.getPrefix(),
-        );
+    setProcessing(true);
+    // Short delay to render processing message`
+    await delay(200);
+    try {
+      const privateKey = crypto.getPrivateKeyFromKeyStore(keystore, password);
+      const address = crypto.getAddressFromPrivateKey(
+        privateKey,
+        binance.getPrefix(NET),
+      );
 
-        saveWallet({
-          wallet: address,
-          keystore,
-        });
+      saveWallet({
+        wallet: address,
+        keystore,
+      });
 
-        // clean up
-        setPassword(Nothing);
-        setKeystore(Nothing);
+      // clean up
+      setPassword(Nothing);
+      setKeystore(Nothing);
 
-        // redirect to previous page
-        history.goBack();
-      } catch (error) {
-        setInvalideStatus(true);
-        console.error(error);
-      }
-      setProcessing(false);
+      // redirect to previous page
+      history.goBack();
+    } catch (error) {
+      setInvalideStatus(true);
+      console.error(error);
+    }
+    setProcessing(false);
   }, [history, keystore, password, saveWallet]);
-
 
   const ready = (password || '').length > 0 && !keystoreError && !processing;
 
@@ -169,10 +169,10 @@ const Keystore: React.FC<Props> = (props: Props): JSX.Element => {
               Unlock
             </Button>
             {processing && (
-            <Label color="input" size="small" weight="bold">
-              Unlocking wallet ...
-            </Label>
-)}
+              <Label color="input" size="small" weight="bold">
+                Unlocking wallet ...
+              </Label>
+            )}
           </div>
         </Row>
       </div>

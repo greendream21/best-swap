@@ -4,10 +4,10 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { Row, Col, Icon, notification, Popover } from 'antd';
+import { binance } from 'asgardex-common';
 
 import { crypto } from '@binance-chain/javascript-sdk';
 import BigNumber from 'bignumber.js';
-import Binance from '../../../clients/binance';
 
 import Button from '../../../components/uielements/button';
 import Drag from '../../../components/uielements/drag';
@@ -82,6 +82,7 @@ import {
 } from '../../../helpers/bnHelper';
 import { tokenAmount } from '../../../helpers/tokenHelper';
 import { TokenAmount } from '../../../types/token';
+import { NET } from '../../../env';
 
 type ComponentProps = {
   info: string;
@@ -207,8 +208,8 @@ class SwapSend extends React.Component<Props, State> {
 
   isValidRecipient = async () => {
     const { address } = this.state;
-
-    return Binance.isValidAddress(address);
+    const bncClient = await binance.client(NET);
+    return bncClient.isValidAddress(address);
   };
 
   handleChangePassword = (password: string) => {
@@ -317,10 +318,11 @@ class SwapSend extends React.Component<Props, State> {
 
       try {
         const privateKey = crypto.getPrivateKeyFromKeyStore(keystore, password);
-        await Binance.setPrivateKey(privateKey);
+        const bncClient = await binance.client(NET);
+        await bncClient.setPrivateKey(privateKey);
         const address = crypto.getAddressFromPrivateKey(
           privateKey,
-          Binance.getPrefix(),
+          binance.getPrefix(NET),
         );
         if (wallet === address) {
           this.handleConfirmSwap();
@@ -584,9 +586,10 @@ class SwapSend extends React.Component<Props, State> {
       });
 
       this.handleStartTimer();
+      const bncClient = await binance.client(NET);
       try {
         const data = await confirmSwap(
-          Binance,
+          bncClient,
           user.wallet,
           source,
           target,

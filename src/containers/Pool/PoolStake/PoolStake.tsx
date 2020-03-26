@@ -9,7 +9,7 @@ import { crypto } from '@binance-chain/javascript-sdk';
 import { get as _get } from 'lodash';
 
 import BigNumber from 'bignumber.js';
-import bncClient from '../../../clients/binance';
+import { binance } from 'asgardex-common';
 import { withBinanceTransferWS } from '../../../HOC/websocket/WSBinance';
 
 import Label from '../../../components/uielements/label';
@@ -49,7 +49,6 @@ import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
 import TokenInfo from '../../../components/uielements/tokens/tokenInfo';
 import StepBar from '../../../components/uielements/stepBar';
 import { MAX_VALUE } from '../../../redux/app/const';
-import { getHashFromTransfer } from '../../../helpers/binance';
 import { delay } from '../../../helpers/asyncHelper';
 import { RootState } from '../../../redux/store';
 import { User, AssetData } from '../../../redux/wallet/types';
@@ -77,6 +76,7 @@ import {
   baseAmount,
   baseToToken,
 } from '../../../helpers/tokenHelper';
+import { NET } from '../../../env';
 
 const { TabPane } = Tabs;
 
@@ -211,7 +211,7 @@ class PoolStake extends React.Component<Props, State> {
       !txResult
     ) {
       const lastTx = wsTransfers[length - 1];
-      const transferHash = getHashFromTransfer(lastTx);
+      const transferHash = binance.getHashFromTransfer(lastTx);
 
       if (wallet) {
         // Currently we do a different handling for `stake` + `withdraw`
@@ -464,6 +464,7 @@ class PoolStake extends React.Component<Props, State> {
       });
 
       const data = this.getData();
+      const bncClient = await binance.client(NET);
 
       try {
         const { result } = await confirmStake({
@@ -567,10 +568,11 @@ class PoolStake extends React.Component<Props, State> {
 
       try {
         const privateKey = crypto.getPrivateKeyFromKeyStore(keystore, password);
+        const bncClient = await binance.client(NET);
         await bncClient.setPrivateKey(privateKey);
         const address = crypto.getAddressFromPrivateKey(
           privateKey,
-          bncClient.getPrefix(),
+          binance.getPrefix(NET),
         );
         if (wallet && wallet === address) {
           if (this.type === TxTypes.STAKE) {
@@ -654,6 +656,8 @@ class PoolStake extends React.Component<Props, State> {
       this.setState({
         txResult: false,
       });
+
+      const bncClient = await binance.client(NET);
 
       try {
         const percent = withdrawRate * 100;
@@ -1231,9 +1235,7 @@ class PoolStake extends React.Component<Props, State> {
     return (
       <>
         <div className="your-share-wrapper">
-          {!hasWallet && (
-            <AddWallet />
-          )}
+          {!hasWallet && <AddWallet />}
           {hasWallet && stakeUnitsBN.isEqualTo(0) && (
             <div className="share-placeholder-wrapper">
               <div className="placeholder-icon">

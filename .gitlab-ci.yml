@@ -1,4 +1,4 @@
-image: node:10.15
+image: node:12.14
 
 stages:
   - test
@@ -19,7 +19,7 @@ before_script:
 test:develop:
   variables:
     # provide cypress with our cached folder to install its cache in
-    CYPRESS_CACHE_FOLDER: "$CI_PROJECT_DIR/cache/Cypress"
+    CYPRESS_CACHE_FOLDER: '$CI_PROJECT_DIR/cache/Cypress'
   stage: test
   except:
     - bepswap-testnet-reskin

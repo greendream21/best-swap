@@ -1,4 +1,5 @@
 import BigNumber from 'bignumber.js';
+import { binance } from 'asgardex-common';
 import { getSwapMemo } from '../../helpers/memoHelper';
 import { getTickerFormat } from '../../helpers/stringHelper';
 import {
@@ -10,16 +11,9 @@ import {
   getFee,
   SingleSwapCalcData,
 } from './calc';
-import { getTxHashFromMemo } from '../../helpers/binance';
 import { PriceDataIndex, PoolDataMap } from '../../redux/midgard/types';
 import { PoolDetail } from '../../types/generated/midgard';
 import { Nothing, Maybe, SwapType, Pair, AssetPair } from '../../types/bepswap';
-import {
-  TransferResult,
-  TransferEvent,
-  TransferEventData,
-} from '../../types/binance';
-import { BinanceClient } from '../../clients/binance';
 import { CalcResult } from './SwapSend/types';
 import { getAssetFromString } from '../../redux/midgard/utils';
 import { SwapCardType } from './SwapView/types';
@@ -417,7 +411,7 @@ export const validateSwap = (
 
 // TODO(Veado): Write tests for `confirmSwap'
 export const confirmSwap = (
-  Binance: BinanceClient,
+  Binance: binance.BinanceClient,
   wallet: string,
   from: string,
   to: string,
@@ -425,7 +419,7 @@ export const confirmSwap = (
   amount: TokenAmount,
   protectSlip: boolean,
   destAddr = '',
-): Promise<TransferResult> => {
+): Promise<binance.TransferResult> => {
   return new Promise((resolve, reject) => {
     const swapType = getSwapType(from, to);
 
@@ -451,12 +445,12 @@ export const confirmSwap = (
     const memo = getSwapMemo(symbolTo, destAddr, limit);
 
     Binance.transfer(wallet, poolAddressTo, amountNumber, symbolFrom, memo)
-      .then((response: TransferResult) => resolve(response))
+      .then((response: binance.TransferResult) => resolve(response))
       .catch((error: Error) => reject(error));
   });
 };
 
-export const parseTransfer = (tx?: Pick<TransferEvent, 'data'>) => {
+export const parseTransfer = (tx?: Pick<binance.TransferEvent, 'data'>) => {
   const txHash = tx?.data?.H;
   const txMemo = tx?.data?.M;
   const txFrom = tx?.data?.f;
@@ -476,22 +470,22 @@ export const parseTransfer = (tx?: Pick<TransferEvent, 'data'>) => {
   };
 };
 
-export const isOutboundTx = (tx?: { data?: Pick<TransferEventData, 'M'> }) =>
+export const isOutboundTx = (tx?: { data?: Pick<binance.TransferEventData, 'M'> }) =>
   tx?.data?.M?.toUpperCase().includes('OUTBOUND') ?? false;
 
-export const isRefundTx = (tx?: { data?: Pick<TransferEventData, 'M'> }) =>
+export const isRefundTx = (tx?: { data?: Pick<binance.TransferEventData, 'M'> }) =>
   tx?.data?.M?.toUpperCase().includes('REFUND') ?? false;
 
 export const getTxResult = ({
   tx,
   hash,
 }: {
-  tx: TransferEvent;
+  tx: binance.TransferEvent;
   hash: string;
 }) => {
   const { txToken, txAmount } = parseTransfer(tx);
 
-  if (isRefundTx(tx) && getTxHashFromMemo(tx) === hash) {
+  if (isRefundTx(tx) && binance.getTxHashFromMemo(tx) === hash) {
     return {
       type: 'refund',
       amount: txAmount,
@@ -499,7 +493,7 @@ export const getTxResult = ({
     };
   }
 
-  if (isOutboundTx(tx) && getTxHashFromMemo(tx) === hash) {
+  if (isOutboundTx(tx) && binance.getTxHashFromMemo(tx) === hash) {
     return {
       type: 'success',
       amount: txAmount,
