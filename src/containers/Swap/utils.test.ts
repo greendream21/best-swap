@@ -1,3 +1,4 @@
+import { binance } from 'asgardex-common';
 import {
   parseTransfer,
   isOutboundTx,
@@ -10,7 +11,6 @@ import {
   validateSwap,
   SwapErrorMsg,
 } from './utils';
-import { TransferEvent, TransferEventData } from '../../types/binance';
 import {
   PoolDetail,
   PoolDetailStatusEnum,
@@ -153,7 +153,7 @@ describe('swap/utils/', () => {
 
   describe('parseTransfer', () => {
     it('should parse transfer event ', () => {
-      const transferEvent: TransferEvent = {
+      const transferEvent: binance.TransferEvent = {
         stream: 'transfers',
         data: {
           e: 'outboundTransferInfo',
@@ -203,7 +203,7 @@ describe('swap/utils/', () => {
     });
 
     it('can not parse anything if event includes an empty payload` ', () => {
-      const result = parseTransfer({ data: {} as TransferEventData });
+      const result = parseTransfer({ data: {} as binance.TransferEventData });
       const expected = {
         txHash: undefined,
         txMemo: undefined,
@@ -219,7 +219,7 @@ describe('swap/utils/', () => {
 
   describe('getTxResult', () => {
     it('should return a "refunded" TxResult', () => {
-      const tx: TransferEvent = {
+      const tx: binance.TransferEvent = {
         stream: '',
         data: {
           e: 'outboundTransferInfo',
@@ -255,7 +255,7 @@ describe('swap/utils/', () => {
     });
 
     it('should return a "refunded" TxResult', () => {
-      const tx: TransferEvent = {
+      const tx: binance.TransferEvent = {
         stream: '',
         data: {
           e: 'outboundTransferInfo',

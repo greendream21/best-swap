@@ -44,6 +44,7 @@
     "@types/styled-components": "^4.4.2",
     "@walletconnect/qrcode-modal": "^1.0.0-beta.46",
     "antd": "^3.26.7",
+    "asgardex-common": "https://gitlab.com/thorchain/bepswap/asgardex-common.git#master",
     "axios": "^0.19.2",
     "axios-mock-adapter": "^1.17.0",
     "babel-jest": "^25.1.0",

@@ -8,7 +8,7 @@ import { crypto } from '@binance-chain/javascript-sdk';
 import { get as _get } from 'lodash';
 
 import BigNumber from 'bignumber.js';
-import bncClient from '../../../clients/binance';
+import { binance } from 'asgardex-common';
 
 import Button from '../../../components/uielements/button';
 import Label from '../../../components/uielements/label';
@@ -63,6 +63,7 @@ import {
 import { TokenAmount } from '../../../types/token';
 import { tokenAmount } from '../../../helpers/tokenHelper';
 import { AssetDetail } from '../../../types/generated/midgard';
+import { NET } from '../../../env';
 
 type ComponentProps = {
   symbol: string;
@@ -316,6 +317,7 @@ class PoolCreate extends React.Component<Props, State> {
     if (user) {
       // start timer modal
       this.handleStartTimer();
+      const bncClient = await binance.client(NET);
       try {
         const { poolAddress, tokenSymbol } = this.getData();
         const { result } = await confirmCreatePool({
@@ -374,10 +376,11 @@ class PoolCreate extends React.Component<Props, State> {
           user.keystore,
           password,
         );
+        const bncClient = await binance.client(NET);
         await bncClient.setPrivateKey(privateKey);
         const address = crypto.getAddressFromPrivateKey(
           privateKey,
-          bncClient.getPrefix(),
+          binance.getPrefix(NET),
         );
         if (user.wallet === address) {
           this.handleConfirmCreate();

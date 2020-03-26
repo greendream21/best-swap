@@ -3,7 +3,7 @@ import { push } from 'connected-react-router';
 import { isEmpty as _isEmpty } from 'lodash';
 
 import { AxiosResponse } from 'axios';
-import Binance from '../../clients/binance';
+import { binance } from 'asgardex-common';
 import { MIDGARD_API_URL } from '../../helpers/apiHelper';
 
 import {
@@ -21,10 +21,10 @@ import {
   PoolDetail,
   StakersAssetData,
 } from '../../types/generated/midgard';
-import { Market, Balance, Address } from '../../types/binance';
 import { getAssetFromString } from '../midgard/utils';
 import { bnOrZero, BN_ZERO } from '../../helpers/bnHelper';
 import { baseToToken, baseAmount, tokenAmount } from '../../helpers/tokenHelper';
+import { NET } from '../../env';
 
 const midgardApi = new DefaultApi({ basePath: MIDGARD_API_URL });
 
@@ -58,14 +58,15 @@ export function* refreshBalance() {
     const address = payload;
 
     try {
-      const balances: Balance[] = yield call(Binance.getBalance, address);
+      const bncClient = yield call(binance.client, NET);
+      const balances: binance.Balance[] = yield call(bncClient.getBalance, address);
 
       try {
-        const markets: { result: Market[] } = yield call(Binance.getMarkets);
+        const markets: { result: binance.Market[] } = yield call(bncClient.getMarkets);
         // TODO(Veado): token or base amounts?
-        const coins = balances.map((coin: Balance) => {
+        const coins = balances.map((coin: binance.Balance) => {
           const market = markets.result.find(
-            (market: Market) => market.base_asset_symbol === coin.symbol,
+            (market: binance.Market) => market.base_asset_symbol === coin.symbol,
           );
           return {
             asset: coin.symbol,
@@ -89,7 +90,7 @@ type StakersAssetDataMap = {
 };
 
 export function* getUserStakeData(payload: {
-  address: Address;
+  address: binance.Address;
   assets: string[];
 }) {
   const { address, assets } = payload;

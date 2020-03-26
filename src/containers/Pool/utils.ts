@@ -1,18 +1,11 @@
 import BigNumber from 'bignumber.js';
+import { binance } from 'asgardex-common';
 import {
   getStakeMemo,
   getCreateMemo,
   getWithdrawMemo,
 } from '../../helpers/memoHelper';
 import { getTickerFormat } from '../../helpers/stringHelper';
-import { getTxHashFromMemo } from '../../helpers/binance';
-import {
-  Address,
-  MultiTransfer,
-  TransferResult,
-  TransferEvent,
-} from '../../types/binance';
-import { BinanceClient } from '../../clients/binance';
 import { PoolDataMap, PriceDataIndex } from '../../redux/midgard/types';
 import { PoolDetail, AssetDetail } from '../../types/generated/midgard';
 import { getAssetFromString } from '../../redux/midgard/utils';
@@ -311,8 +304,8 @@ export enum StakeErrorMsg {
 }
 
 export type ConfirmStakeParams = {
-  bncClient: BinanceClient;
-  wallet: Address;
+  bncClient: binance.BinanceClient;
+  wallet: binance.Address;
   runeAmount: TokenAmount;
   tokenAmount: TokenAmount;
   poolAddress: Maybe<string>;
@@ -321,7 +314,7 @@ export type ConfirmStakeParams = {
 
 export const confirmStake = (
   params: ConfirmStakeParams,
-): Promise<TransferResult> => {
+): Promise<binance.TransferResult> => {
   const {
     bncClient,
     wallet,
@@ -331,7 +324,7 @@ export const confirmStake = (
     symbolTo,
   } = params;
 
-  return new Promise<TransferResult>((resolve, reject) => {
+  return new Promise<binance.TransferResult>((resolve, reject) => {
     const runeAmountValue = runeAmount.amount();
     if (!runeAmountValue.isFinite()) {
       return reject(new Error(StakeErrorMsg.INVALID_RUNE_AMOUNT));
@@ -356,7 +349,7 @@ export const confirmStake = (
     if (runeAmountValue.isGreaterThan(0) && tokenAmountValue.isGreaterThan(0)) {
       const memo = getStakeMemo(symbolTo);
 
-      const outputs: MultiTransfer[] = [
+      const outputs: binance.MultiTransfer[] = [
         {
           to: poolAddress,
           coins: [
@@ -374,14 +367,14 @@ export const confirmStake = (
 
       bncClient
         .multiSend(wallet, outputs, memo)
-        .then((response: TransferResult) => resolve(response))
+        .then((response: binance.TransferResult) => resolve(response))
         .catch((error: Error) => reject(error));
     } else if (runeAmountValue.isLessThanOrEqualTo(0) && tokenAmount) {
       const memo = getStakeMemo(symbolTo);
 
       bncClient
         .transfer(wallet, poolAddress, tokenAmountNumber, symbolTo, memo)
-        .then((response: TransferResult) => resolve(response))
+        .then((response: binance.TransferResult) => resolve(response))
         .catch((error: Error) => reject(error));
     } else if (runeAmount && tokenAmountValue.isLessThanOrEqualTo(0)) {
       const memo = getStakeMemo(symbolTo);
@@ -403,7 +396,7 @@ export enum CreatePoolErrorMsg {
 }
 
 type ConfirmCreatePoolParams = {
-  bncClient: BinanceClient;
+  bncClient: binance.BinanceClient;
   wallet: string;
   runeAmount: TokenAmount;
   tokenAmount: TokenAmount;
@@ -412,7 +405,7 @@ type ConfirmCreatePoolParams = {
 };
 export const confirmCreatePool = (
   params: ConfirmCreatePoolParams,
-): Promise<TransferResult> => {
+): Promise<binance.TransferResult> => {
   const {
     bncClient,
     wallet,
@@ -421,7 +414,7 @@ export const confirmCreatePool = (
     poolAddress,
     tokenSymbol,
   } = params;
-  return new Promise<TransferResult>((resolve, reject) => {
+  return new Promise<binance.TransferResult>((resolve, reject) => {
     if (!wallet) {
       return reject(new Error(CreatePoolErrorMsg.MISSING_WALLET));
     }
@@ -458,7 +451,7 @@ export const confirmCreatePool = (
     const runeAmountNumber = runeAmount.amount().toNumber();
     const tokenAmountNumber = tokenAmount.amount().toNumber();
 
-    const outputs: MultiTransfer[] = [
+    const outputs: binance.MultiTransfer[] = [
       {
         to: poolAddress,
         coins: [
@@ -487,7 +480,7 @@ export enum WithdrawErrorMsg {
 }
 
 type WithdrawParams = {
-  bncClient: BinanceClient;
+  bncClient: binance.BinanceClient;
   wallet: string;
   poolAddress: Maybe<string>;
   symbol: string;
@@ -495,9 +488,9 @@ type WithdrawParams = {
 };
 export const confirmWithdraw = (
   params: WithdrawParams,
-): Promise<TransferResult> => {
+): Promise<binance.TransferResult> => {
   const { bncClient, wallet, poolAddress, symbol, percent } = params;
-  return new Promise<TransferResult>((resolve, reject) => {
+  return new Promise<binance.TransferResult>((resolve, reject) => {
     if (!wallet) {
       return reject(new Error(WithdrawErrorMsg.MISSING_WALLET));
     }
@@ -562,12 +555,12 @@ export const getTxType = (memo?: string) => {
 };
 
 export type WithdrawResultParams = {
-  tx: TransferEvent;
+  tx: binance.TransferEvent;
   hash: string;
 };
 
 export const withdrawResult = ({ tx, hash }: WithdrawResultParams) => {
   const txType = getTxType(tx?.data?.M);
-  const txHash = getTxHashFromMemo(tx);
+  const txHash = binance.getTxHashFromMemo(tx);
   return txType === 'outbound' && hash === txHash;
 };
