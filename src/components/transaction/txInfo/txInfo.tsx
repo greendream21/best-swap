@@ -2,7 +2,10 @@ import React from 'react';
 
 import TxStatus from '../txStatus';
 import { TxInfoWrapper, Seperator, Dash } from './txInfo.style';
-import { EventDetails, EventDetailsTypeEnum } from '../../../types/generated/midgard';
+import {
+  EventDetails,
+  EventDetailsTypeEnum,
+} from '../../../types/generated/midgard';
 import { bnOrZero, formatBN } from '../../../helpers/bnHelper';
 import {
   formatBaseAsTokenAmount,
@@ -30,9 +33,19 @@ const TxInfo: React.FC<Props> = (props: Props): JSX.Element => {
     return (
       <TxInfoWrapper className="txInfo-wrapper swap-tx">
         <div className="txInfo-main-data">
-          <TxStatus type="in" data={inData ? [inData] : []} round="left" />
+          <TxStatus
+            type="in"
+            data={inData ? [inData] : []}
+            txID={_in?.txID}
+            round="left"
+          />
           <Seperator />
-          <TxStatus type="out" data={outData ? [outData] : []} round="right" />
+          <TxStatus
+            type="out"
+            data={outData ? [outData] : []}
+            txID={out?.[0]?.txID}
+            round="right"
+          />
         </div>
         <div className="txInfo-extra-data">
           <div className="tx-event-label left-margin">
@@ -57,9 +70,19 @@ const TxInfo: React.FC<Props> = (props: Props): JSX.Element => {
     return (
       <TxInfoWrapper className="txInfo-wrapper withdraw-tx">
         <div className="txInfo-main-data">
-          <TxStatus type="in" data={inData ? [inData] : []} round="left" />
+          <TxStatus
+            type="in"
+            data={inData ? [inData] : []}
+            txID={_in?.txID}
+            round="left"
+          />
           <Seperator />
-          <TxStatus type="out" data={outData || []} round="right" />
+          <TxStatus
+            type="out"
+            data={outData || []}
+            txID={out?.[0]?.txID}
+            round="right"
+          />
         </div>
         <div className="txInfo-extra-data">
           <div className="tx-event-label left-margin">
@@ -79,9 +102,19 @@ const TxInfo: React.FC<Props> = (props: Props): JSX.Element => {
     return (
       <TxInfoWrapper className="txInfo-wrapper withdraw-tx">
         <div className="txInfo-main-data">
-          <TxStatus type="in" data={inData1 ? [inData1] : []} round="left" />
+          <TxStatus
+            type="in"
+            data={inData1 ? [inData1] : []}
+            txID={_in?.txID}
+            round="left"
+          />
           <Seperator />
-          <TxStatus type="out" data={inData2 ? [inData2] : []} round="right" />
+          <TxStatus
+            type="out"
+            data={inData2 ? [inData2] : []}
+            txID={out?.[0]?.txID}
+            round="right"
+          />
         </div>
       </TxInfoWrapper>
     );

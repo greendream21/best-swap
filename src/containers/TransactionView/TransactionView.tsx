@@ -9,7 +9,6 @@ import FilterDropdown from '../../components/filterDropdown';
 import TxLabel from '../../components/transaction/txLabel';
 import TxInfo from '../../components/transaction/txInfo';
 import TransactionLoader from '../../components/utility/loaders/transaction';
-import { DetailIcon } from '../../components/icons/txIcons';
 
 import {
   ContentWrapper,
@@ -18,7 +17,6 @@ import {
 } from './TransactionView.style';
 import { EventDetails } from '../../types/generated/midgard';
 import { ViewType, Maybe } from '../../types/bepswap';
-import { TESTNET_TX_BASE_URL } from '../../helpers/apiHelper';
 
 import * as midgardActions from '../../redux/midgard/actions';
 import { TxDetailData } from '../../redux/midgard/types';
@@ -50,7 +48,9 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
   }, []);
 
   const renderTxTable = (data: EventDetails[], view: ViewType) => {
-    const sortedData = [...data.sort((a, b) => (b?.date ?? 0) - (a?.date ?? 0))];
+    const sortedData = [
+      ...data.sort((a, b) => (b?.date ?? 0) - (a?.date ?? 0)),
+    ];
 
     const filterCol = {
       key: 'filter',
@@ -95,27 +95,6 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
           );
         },
       },
-      {
-        key: 'detail',
-        title: 'detail',
-        render: (text: string, rowData: EventDetails) => {
-          const { in: _in } = rowData;
-          const txID = _in?.txID ?? null;
-          const txURL = txID ? TESTNET_TX_BASE_URL + txID : null;
-
-          return (
-            <div className="tx-detail-button">
-              {txURL ? (
-                <a href={txURL} target="_blank" rel="noopener noreferrer">
-                  <DetailIcon />
-                </a>
-              ) : (
-                <DetailIcon />
-              )}
-            </div>
-          );
-        },
-      },
     ];
 
     const mobileColumns = [
@@ -132,8 +111,6 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
         render: (_: string, rowData: EventDetails) => {
           const { type, date: timestamp = 0, in: _in } = rowData;
           const date = new Date(timestamp * 1000);
-          const txID = _in?.txID ?? null;
-          const txURL = txID ? TESTNET_TX_BASE_URL + txID : null;
 
           return (
             <div className="tx-history-row">
@@ -155,15 +132,6 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
                       hour12={false}
                     />
                   </p>
-                  <div className="tx-detail-button">
-                    {txURL ? (
-                      <a href={txURL} target="_blank" rel="noopener noreferrer">
-                        <DetailIcon />
-                      </a>
-                    ) : (
-                      <DetailIcon />
-                    )}
-                  </div>
                 </div>
               </div>
               <div className="tx-history-info">
@@ -208,7 +176,7 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
         (error: Error) => (
           <ContentWrapper className="transaction-view-wrapper center-align">
             <h2>Loading history data failed.</h2>
-            {error && <p>{ error.toString()}</p>}
+            {error && <p>{error.toString()}</p>}
           </ContentWrapper>
         ),
         (data: EventDetails[]): JSX.Element => pageContent(data),

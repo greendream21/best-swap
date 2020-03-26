@@ -17,8 +17,12 @@ export const TxStatusWrapper = styled.div`
       border-top-left-radius: 20px;
       border-bottom-left-radius: 20px;
   `};
-  background: #f4f5f7;
+  background: #e6e7ec;
   text-transform: uppercase;
+  &:hover {
+    box-shadow: 2px 2px 4px 1px #aab5c4;
+    cursor: pointer;
+  }
 
   height: 30px;
   padding: 8px 8px;
