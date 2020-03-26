@@ -1166,13 +1166,7 @@ class PoolStake extends React.Component<Props, State> {
     const wallet = user ? user.wallet : null;
     const hasWallet = wallet !== null;
 
-    const stakeInfo =
-      (stakeData && stakeData[symbol]) ||
-      ({
-        stakeUnits: '0',
-        runeEarned: '0',
-        assetEarned: '0',
-      } as StakersAssetData);
+    const stakeInfo = stakeData && stakeData[symbol];
 
     const { poolUnits, R, T } = calcResult;
     const source = 'rune';
@@ -1181,12 +1175,16 @@ class PoolStake extends React.Component<Props, State> {
     const runePrice = validBNOrZero(priceIndex?.RUNE);
     const tokenPrice = _get(priceIndex, target.toUpperCase(), 0);
 
-    const { stakeUnits }: StakersAssetData = stakeInfo;
+    const { stakeUnits, runeStaked, assetStaked }: StakersAssetData = stakeInfo;
     const stakeUnitsBN = bnOrZero(stakeUnits);
+    const runeStakedBN = bnOrZero(runeStaked);
+    const assetStakedBN = bnOrZero(assetStaked);
     const loading = this.isLoading() || poolUnits === undefined;
 
     let poolShare: BigNumber | undefined;
     let runeShare: BaseAmount | undefined;
+    let runeStakedShare: BaseAmount | undefined;
+    let assetStakedShare: BaseAmount | undefined;
     let tokensShare: BaseAmount | undefined;
     let runeSharePriceLabel = '';
     let tokenSharePriceLabel = '';
@@ -1198,7 +1196,10 @@ class PoolStake extends React.Component<Props, State> {
       const runeShareValue: BigNumber = R.multipliedBy(stakeUnitsBN).div(
         poolUnits,
       );
+      runeStakedShare = baseAmount(runeStakedBN.multipliedBy(poolShare).div(100));
+      assetStakedShare = baseAmount(assetStakedBN.multipliedBy(poolShare).div(100));
       runeShare = baseAmount(runeShareValue);
+
       const runeSharePrice: BaseAmount = baseAmount(
         runeShare.amount().multipliedBy(runePrice),
       );
@@ -1254,7 +1255,7 @@ class PoolStake extends React.Component<Props, State> {
                     <Status
                       title={source.toUpperCase()}
                       value={
-                        runeShare ? formatBaseAsTokenAmount(runeShare) : '...'
+                        runeStakedShare ? formatBaseAsTokenAmount(runeStakedShare) : '...'
                       }
                       loading={loading}
                     />
@@ -1273,8 +1274,8 @@ class PoolStake extends React.Component<Props, State> {
                     <Status
                       title={target.toUpperCase()}
                       value={
-                        tokensShare
-                          ? formatBaseAsTokenAmount(tokensShare)
+                        assetStakedShare
+                          ? formatBaseAsTokenAmount(assetStakedShare)
                           : '...'
                       }
                       loading={loading}
