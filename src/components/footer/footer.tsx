@@ -69,7 +69,7 @@ const Footer: React.FC<Props> = ({ commitHash }): JSX.Element => {
             </a>
             {commitHash && (
               <a
-                href={`https://gitlab.com/thorchain/bepswap/bepswap-react-app/-/commit/${commitHash}`}
+                href={`https://gitlab.com/thorchain/bepswap/bepswap-web-ui/-/commit/${commitHash}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
