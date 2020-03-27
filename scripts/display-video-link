@@ -4,6 +4,6 @@ if [[ -n "$CI_JOB_ID" ]]; then
   echo ""
   echo "After this script has finished you will be able to view your video assets here:"
   echo ""
-  echo "  https://gitlab.com/thorchain/bepswap/bepswap-react-app/-/jobs/${CI_JOB_ID}/artifacts/browse/cypress/videos"
+  echo "  https://gitlab.com/thorchain/bepswap/bepswap-web-ui/-/jobs/${CI_JOB_ID}/artifacts/browse/cypress/videos"
   echo ""
 fi
