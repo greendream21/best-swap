@@ -4,6 +4,7 @@ import { Icon, notification } from 'antd';
 import { connect } from 'react-redux';
 import copy from 'copy-to-clipboard';
 
+import { util } from 'asgardex-common';
 import Button from '../../components/uielements/button';
 import Label from '../../components/uielements/label';
 import WalletButton from '../../components/uielements/walletButton';
@@ -15,7 +16,6 @@ import { RootState } from '../../redux/store';
 import { User } from '../../redux/wallet/types';
 import { Maybe } from '../../types/bepswap';
 import WalletView from './WalletView';
-import { delay } from '../../helpers/asyncHelper';
 
 type Props = {
   user: Maybe<User>;
@@ -60,7 +60,7 @@ const WalletDrawer: React.FC<Props> = props => {
     }
 
     setRefresh(true);
-    await delay(1000);
+    await util.delay(1000);
     setRefresh(false);
   }, [refreshBalance, refreshStake, wallet]);
 

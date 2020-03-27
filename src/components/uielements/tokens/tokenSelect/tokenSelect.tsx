@@ -2,6 +2,7 @@ import React from 'react';
 import { Dropdown } from 'antd';
 
 import BigNumber from 'bignumber.js';
+import { util } from 'asgardex-common';
 import {
   TokenSelectWrapper,
   TokenDropdownButton,
@@ -16,7 +17,6 @@ import clickedInNode from '../../../../helpers/event/clickedInNode';
 import { formatBN } from '../../../../helpers/bnHelper';
 import { AssetPair, FixmeType } from '../../../../types/bepswap';
 import { PriceDataIndex } from '../../../../redux/midgard/types';
-import { delay } from '../../../../helpers/asyncHelper';
 
 type DropdownCarretProps = {
   className?: string;
@@ -120,7 +120,7 @@ class TokenSelect extends React.Component<Props, State> {
 
     if (onChangeAsset) {
       // Wait for the dropdown to close
-      await delay(500);
+      await util.delay(500);
       onChangeAsset(asset);
     }
   };
