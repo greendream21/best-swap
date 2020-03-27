@@ -86,8 +86,8 @@ build-docker:
     - apk add python py-pip make git jq curl
     - docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
   script:
-    - docker build -t registry.gitlab.com/thorchain/bepswap/bepswap-react-app .
-    - docker push registry.gitlab.com/thorchain/bepswap/bepswap-react-app
+    - docker build -t registry.gitlab.com/thorchain/bepswap/bepswap-web-ui .
+    - docker push registry.gitlab.com/thorchain/bepswap/bepswap-web-ui
 
 deploy:reskin:
   stage: deploy

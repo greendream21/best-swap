@@ -431,7 +431,7 @@ class PoolCreate extends React.Component<Props, State> {
   handleChangeTxValue = () => {
     const { countTxTimerValue } = this.props;
     // ATM we just count a `quarter` w/o any other checks
-    // See https://gitlab.com/thorchain/bepswap/bepswap-react-app/issues/281
+    // See https://gitlab.com/thorchain/bepswap/bepswap-web-ui/issues/281
     countTxTimerValue(25);
   };
 
