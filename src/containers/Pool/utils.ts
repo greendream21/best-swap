@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-import { binance } from 'asgardex-common';
+import { binance, util } from 'asgardex-common';
 import {
   getStakeMemo,
   getCreateMemo,
@@ -15,14 +15,6 @@ import {
   baseAmount,
   formatBaseAsTokenAmount,
 } from '../../helpers/tokenHelper';
-import {
-  bn,
-  BN_ZERO,
-  bnOrZero,
-  validBNOrZero,
-  fixedBN,
-  isValidBN,
-} from '../../helpers/bnHelper';
 import { TokenAmount } from '../../types/token';
 import { PoolData } from './types';
 
@@ -48,8 +40,8 @@ export const getCalcResult = (
   runePrice: BigNumber,
   tValue: TokenAmount,
 ): CalcResult => {
-  let R = bn(10000);
-  let T = bn(10);
+  let R = util.bn(10000);
+  let T = util.bn(10);
   let ratio: Maybe<BigNumber> = Nothing;
   let symbolTo: Maybe<string> = Nothing;
   let poolUnits: Maybe<BigNumber> = Nothing;
@@ -72,16 +64,16 @@ export const getCalcResult = (
     const { symbol } = getAssetFromString(asset);
 
     if (symbol && symbol.toLowerCase() === tokenName.toLowerCase()) {
-      R = bn(runeStakedTotal || 0);
-      T = bn(assetStakedTotal || 0);
+      R = util.bn(runeStakedTotal || 0);
+      T = util.bn(assetStakedTotal || 0);
       // formula: 1 / (R / T)
       const a = R.div(T);
       // Ratio does need more than 2 decimal places
-      ratio = bn(1)
+      ratio = util.bn(1)
         .div(a)
         .decimalPlaces(2);
       symbolTo = symbol;
-      poolUnits = bn(poolDataUnits || 0);
+      poolUnits = util.bn(poolDataUnits || 0);
     }
   });
 
@@ -91,23 +83,23 @@ export const getCalcResult = (
   const t = tBase.amount();
 
   // formula: (R / T) * runePrice
-  const poolPrice = fixedBN(R.div(T).multipliedBy(runePrice));
+  const poolPrice = util.fixedBN(R.div(T).multipliedBy(runePrice));
   // formula: (runePrice * (r + R)) / (t + T)
   const a = r.plus(R).multipliedBy(runePrice);
   const aa = t.plus(T);
-  const newPrice = fixedBN(a.dividedBy(aa));
+  const newPrice = util.fixedBN(a.dividedBy(aa));
   // formula: runePrice * (1 + (r / R + t / T) / 2) * R
   const b = r.dividedBy(R); // r / R
   const bb = t.dividedBy(T); // t / T
   const bbb = b.plus(bb); // (r / R + t / T)
   const bbbb = bbb.dividedBy(2).plus(1); // (1 + (r / R + t / T) / 2)
-  const newDepth = fixedBN(runePrice.multipliedBy(bbbb).multipliedBy(R));
+  const newDepth = util.fixedBN(runePrice.multipliedBy(bbbb).multipliedBy(R));
   // formula: ((r / (r + R) + t / (t + T)) / 2) * 100
   const c = r.plus(R); // (r + R)
   const cc = t.plus(T); // (t + T)
   const ccc = r.dividedBy(c); // r / (r + R)
   const cccc = t.dividedBy(cc); // (t / (t + T))
-  const share = fixedBN(
+  const share = util.fixedBN(
     ccc
       .plus(cccc)
       .div(2)
@@ -165,25 +157,25 @@ export const getPoolData = (
     poolDetail?.asset,
   );
 
-  const runePrice = validBNOrZero(priceIndex?.RUNE);
+  const runePrice = util.validBNOrZero(priceIndex?.RUNE);
 
-  const R = bn(poolDetail?.runeStakedTotal ?? 0);
-  const T = bn(poolDetail?.assetStakedTotal ?? 0);
+  const R = util.bn(poolDetail?.runeStakedTotal ?? 0);
+  const T = util.bn(poolDetail?.assetStakedTotal ?? 0);
   // formula: (R / T) * runePrice
-  const poolPrice = fixedBN(R.div(T).multipliedBy(runePrice));
+  const poolPrice = util.fixedBN(R.div(T).multipliedBy(runePrice));
   const poolPriceValue = `${basePriceAsset} ${poolPrice}`;
 
-  const depthResult = bnOrZero(poolDetail?.runeDepth).multipliedBy(runePrice);
+  const depthResult = util.bnOrZero(poolDetail?.runeDepth).multipliedBy(runePrice);
   const depth = baseAmount(depthResult);
-  const volume24Result = bnOrZero(poolDetail?.poolVolume24hr).multipliedBy(
+  const volume24Result = util.bnOrZero(poolDetail?.poolVolume24hr).multipliedBy(
     runePrice,
   );
   const volume24 = baseAmount(volume24Result);
-  const volumeATResult = bnOrZero(poolDetail?.poolVolume).multipliedBy(
+  const volumeATResult = util.bnOrZero(poolDetail?.poolVolume).multipliedBy(
     runePrice,
   );
   const volumeAT = baseAmount(volumeATResult);
-  const transactionResult = bnOrZero(poolDetail?.poolTxAverage).multipliedBy(
+  const transactionResult = util.bnOrZero(poolDetail?.poolTxAverage).multipliedBy(
     runePrice,
   );
   const transaction = baseAmount(transactionResult);
@@ -270,8 +262,8 @@ export const getCreatePoolCalc = ({
 
   if (!poolAddress) {
     return {
-      poolPrice: BN_ZERO,
-      depth: BN_ZERO,
+      poolPrice: util.bn(0),
+      depth: util.bn(0),
       share: 100,
     };
   }
@@ -282,7 +274,7 @@ export const getCreatePoolCalc = ({
         .amount()
         .div(tokenAmount.amount())
         .multipliedBy(runePrice)
-    : BN_ZERO;
+    : util.bn(0);
   // formula: runePrice * runeAmount
   const depth = runeAmount.amount().multipliedBy(runePrice);
 
@@ -421,7 +413,7 @@ export const confirmCreatePool = (
 
     const runeValue = runeAmount.amount();
     if (
-      !isValidBN(runeValue) ||
+      !util.isValidBN(runeValue) ||
       runeValue.isLessThanOrEqualTo(0) ||
       !runeValue.isFinite()
     ) {
@@ -429,7 +421,7 @@ export const confirmCreatePool = (
     }
     const tokenValue = tokenAmount.amount();
     if (
-      !isValidBN(tokenValue) ||
+      !util.isValidBN(tokenValue) ||
       tokenValue.isLessThanOrEqualTo(0) ||
       !tokenValue.isFinite()
     ) {

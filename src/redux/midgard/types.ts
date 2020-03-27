@@ -67,7 +67,7 @@ export type State = {
   bnbPoolAddress: Maybe<ThorchainEndpoint>;
   poolAddress: Maybe<string>;
   poolData: PoolDataMap;
-  stakerPoolData: StakerPoolData;
+  stakerPoolData: Maybe<StakerPoolData>;
   runePrice: number;
   basePriceAsset: string; // set base price asset as a RUNE
   priceIndex: PriceDataIndex;

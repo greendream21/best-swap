@@ -1,4 +1,5 @@
 // import BigNumber from 'bignumber.js';
+import { util } from 'asgardex-common';
 import {
   tokenAmount,
   baseAmount,
@@ -11,14 +12,13 @@ import {
   formatTokenAmountCurrency,
 } from './tokenHelper';
 import { Denomination } from '../types/token';
-import { bn } from './bnHelper';
 
 describe('tokenHelper', () => {
   describe('token', () => {
     it('should create amount for token by given value', () => {
       const r = tokenAmount(10);
       expect(r.type).toEqual(Denomination.TOKEN);
-      expect(r.amount()).toEqual(bn('10'));
+      expect(r.amount()).toEqual(util.bn('10'));
     });
   });
 
@@ -26,7 +26,7 @@ describe('tokenHelper', () => {
     it('should create base amounts by given value', () => {
       const t = baseAmount(10);
       expect(t.type).toEqual(Denomination.BASE);
-      expect(t.amount()).toEqual(bn('10'));
+      expect(t.amount()).toEqual(util.bn('10'));
     });
   });
 
@@ -34,7 +34,7 @@ describe('tokenHelper', () => {
     it('should return token by given base amounts', () => {
       const t = baseToToken(baseAmount(123));
       expect(t.type).toEqual(Denomination.TOKEN);
-      expect(t.amount()).toEqual(bn('0.00000123'));
+      expect(t.amount()).toEqual(util.bn('0.00000123'));
     });
   });
 
@@ -42,7 +42,7 @@ describe('tokenHelper', () => {
     it('should return base amounts by given token amounts', () => {
       const t = tokenToBase(tokenAmount(22));
       expect(t.type).toEqual(Denomination.BASE);
-      expect(t.amount()).toEqual(bn('2200000000'));
+      expect(t.amount()).toEqual(util.bn('2200000000'));
     });
   });
 

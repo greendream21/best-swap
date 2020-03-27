@@ -3,7 +3,7 @@ import { push } from 'connected-react-router';
 import { isEmpty as _isEmpty } from 'lodash';
 
 import { AxiosResponse } from 'axios';
-import { binance } from 'asgardex-common';
+import { binance, util } from 'asgardex-common';
 import { MIDGARD_API_URL } from '../../helpers/apiHelper';
 
 import {
@@ -22,7 +22,7 @@ import {
   StakersAssetData,
 } from '../../types/generated/midgard';
 import { getAssetFromString } from '../midgard/utils';
-import { bnOrZero, BN_ZERO } from '../../helpers/bnHelper';
+
 import { baseToToken, baseAmount, tokenAmount } from '../../helpers/tokenHelper';
 import { NET } from '../../env';
 
@@ -71,7 +71,7 @@ export function* refreshBalance() {
           return {
             asset: coin.symbol,
             assetValue: tokenAmount(coin.free),
-            price: market ? bnOrZero(market.list_price) : BN_ZERO,
+            price: market ? util.bnOrZero(market.list_price) : util.bn(0),
           } as AssetData;
         });
 

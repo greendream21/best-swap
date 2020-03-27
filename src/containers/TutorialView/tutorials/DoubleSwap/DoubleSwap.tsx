@@ -2,6 +2,7 @@ import React from 'react';
 import * as H from 'history';
 import { withRouter, Link, RouteComponentProps } from 'react-router-dom';
 import { Row, Col, Icon } from 'antd';
+import { util } from 'asgardex-common';
 
 import { ContentWrapper } from './DoubleSwap.style';
 import Centered from '../../../../components/utility/centered';
@@ -35,7 +36,6 @@ import {
   formatTokenAmountCurrency,
 } from '../../../../helpers/tokenHelper';
 import { TokenAmount } from '../../../../types/token';
-import { formatBNCurrency } from '../../../../helpers/bnHelper';
 
 const { X, Y, Z, R, Py, Pr } = data;
 
@@ -187,13 +187,13 @@ class DoubleSwap extends React.Component<Props, State> {
             <Centered>
               <Label size="large" color="normal">
                 {view === TutorialContent.INTRO &&
-                  formatBNCurrency(getPx(Nothing))}
+                  util.formatBNCurrency(getPx(Nothing))}
                 {view === TutorialContent.PLAY &&
-                  formatBNCurrency(getPx(xValue))}
+                  util.formatBNCurrency(getPx(xValue))}
               </Label>
               <Label size="large" color="normal" />
               <Label size="large" color="normal">
-                {formatBNCurrency(Py)}
+                {util.formatBNCurrency(Py)}
               </Label>
             </Centered>
             <Centered>
@@ -249,14 +249,14 @@ class DoubleSwap extends React.Component<Props, State> {
             </Centered>
             <Centered>
               <Label size="large" color="normal">
-                {formatBNCurrency(Pr)}
+                {util.formatBNCurrency(Pr)}
               </Label>
               <Label size="large" color="normal" />
               <Label size="large" color="normal">
                 {view === TutorialContent.INTRO &&
-                  formatBNCurrency(getPz(Nothing))}
+                  util.formatBNCurrency(getPz(Nothing))}
                 {view === TutorialContent.PLAY &&
-                  formatBNCurrency(getPz(xValue))}
+                  util.formatBNCurrency(getPz(xValue))}
               </Label>
             </Centered>
             <Centered>

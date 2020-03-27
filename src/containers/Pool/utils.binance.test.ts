@@ -10,27 +10,27 @@ import {
 } from './utils';
 import { tokenAmount } from '../../helpers/tokenHelper';
 
-const responseMock: binance.TransferResult = {
+const transferResponseMock: binance.TransferResult = {
   result: [{ code: 1, hash: 'hash', log: 'log', ok: true }],
 };
 
-const mockClient = {
-  transfer: jest.fn(() => Promise.resolve(responseMock)),
-  multiSend: jest.fn(() => Promise.resolve(responseMock)),
-};
+const mockClient = jest.fn(() => Promise.resolve({
+  transfer: jest.fn(() => Promise.resolve(transferResponseMock)),
+  multiSend: jest.fn(() => Promise.resolve(transferResponseMock)),
+  // all other functions not needed for testing and filled as simple as possible
+  getBalance: jest.fn(() => Promise.reject(new Error('Not needed for testing...'))),
+  isTestnet: jest.fn(() => true),
+  setPrivateKey: jest.fn(() => Promise.reject(new Error('Not needed for testing...'))),
+  isValidAddress: jest.fn(() => Promise.reject(new Error('Not needed for testing...'))),
+  getMarkets: jest.fn(() => Promise.reject(new Error('Not needed for testing...'))),
+  removePrivateKey: jest.fn(() => Promise.reject(new Error('Not needed for testing...'))),
+}));
 
-jest.mock('asgardex-common', () => {
-  return {
-    binance: {
-      client: jest.fn(() => Promise.resolve(mockClient)),
-    },
-  };
-});
 describe('pool/utils/', () => {
   describe('binance transfers', () => {
     let bncClient: binance.BinanceClient;
     beforeAll(async () => {
-      bncClient = await binance.client();
+      bncClient = await mockClient();
     });
 
     describe('confirmWithdraw', () => {

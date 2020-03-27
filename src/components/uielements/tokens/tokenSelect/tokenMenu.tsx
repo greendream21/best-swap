@@ -1,16 +1,14 @@
 import React, { useMemo } from 'react';
 import { get as _get } from 'lodash';
 
+import { util,
+} from 'asgardex-common';
 import FilterMenu from '../../filterMenu';
 import TokenData from '../tokenData';
 
 import { getTickerFormat } from '../../../../helpers/stringHelper';
 import { AssetPair } from '../../../../types/bepswap';
 import { PriceDataIndex } from '../../../../redux/midgard/types';
-import {
-  formatBN,
-  validBNOrZero,
-} from '../../../../helpers/bnHelper';
 
 const filterFunction = (item: AssetPair, searchTerm: string): boolean => {
   const tokenName = getTickerFormat(item.asset);
@@ -56,13 +54,13 @@ const TokenMenu: React.FC<Props> = (props: Props): JSX.Element => {
     const ticker = getTickerFormat(data.asset).toUpperCase();
     const price =
       ticker === 'RUNE'
-        ? validBNOrZero(priceIndex?.RUNE)
-        : validBNOrZero(priceIndex?.ticker);
+        ? util.validBNOrZero(priceIndex?.RUNE)
+        : util.validBNOrZero(priceIndex?.ticker);
 
     const node = (
       <TokenData
         asset={tokenName}
-        priceValue={formatBN(price)}
+        priceValue={util.formatBN(price)}
         priceUnit={priceUnit}
         size="small"
         data-test={dataTest}

@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-import { binance } from 'asgardex-common';
+import { binance, util } from 'asgardex-common';
 import { getSwapMemo } from '../../helpers/memoHelper';
 import { getTickerFormat } from '../../helpers/stringHelper';
 import {
@@ -17,7 +17,6 @@ import { Nothing, Maybe, SwapType, Pair, AssetPair } from '../../types/bepswap';
 import { CalcResult } from './SwapSend/types';
 import { getAssetFromString } from '../../redux/midgard/utils';
 import { SwapCardType } from './SwapView/types';
-import { BN_ZERO, isValidBN, bn, validBNOrZero, fixedBN } from '../../helpers/bnHelper';
 import {
   tokenAmount,
   baseToToken,
@@ -64,35 +63,35 @@ export const getSwapData = (
   if (poolInfo) {
     const { ticker: target = '' } = getAssetFromString(poolInfo?.asset);
 
-    const runePrice = validBNOrZero(priceIndex?.RUNE);
+    const runePrice = util.validBNOrZero(priceIndex?.RUNE);
 
-    const R = bn(poolInfo?.runeStakedTotal ?? 0);
-    const T = bn(poolInfo?.assetStakedTotal ?? 0);
+    const R = util.bn(poolInfo?.runeStakedTotal ?? 0);
+    const T = util.bn(poolInfo?.assetStakedTotal ?? 0);
     // formula: (R / T) * runePrice
-    const poolPrice = fixedBN(R.div(T).multipliedBy(runePrice));
+    const poolPrice = util.fixedBN(R.div(T).multipliedBy(runePrice));
     const poolPriceString = `${basePriceAsset} ${poolPrice}`;
 
     // formula: poolInfo.runeDepth * runePrice
-    const depth = bn(poolInfo?.runeDepth ?? 0).multipliedBy(runePrice);
+    const depth = util.bn(poolInfo?.runeDepth ?? 0).multipliedBy(runePrice);
     const depthAsString = `${basePriceAsset} ${formatBaseAsTokenAmount(
       baseAmount(depth),
     )}`;
     // formula: poolInfo.poolVolume24hr * runePrice
-    const volume = bn(poolInfo?.poolVolume24hr ?? 0).multipliedBy(runePrice);
+    const volume = util.bn(poolInfo?.poolVolume24hr ?? 0).multipliedBy(runePrice);
     const volumeAsString = `${basePriceAsset} ${formatBaseAsTokenAmount(
       baseAmount(volume),
     )}`;
     // formula: poolInfo.poolTxAverage * runePrice
-    const transaction = bn(poolInfo?.poolTxAverage ?? 0).multipliedBy(
+    const transaction = util.bn(poolInfo?.poolTxAverage ?? 0).multipliedBy(
       runePrice,
     );
     const transactionAsString = `${basePriceAsset} ${formatBaseAsTokenAmount(
       baseAmount(transaction),
     )}`;
     // formula: poolInfo.poolSlipAverage * runePrice
-    const slip = bn(poolInfo?.poolSlipAverage ?? 0).multipliedBy(runePrice);
+    const slip = util.bn(poolInfo?.poolSlipAverage ?? 0).multipliedBy(runePrice);
     const slipAsString = slip.toString();
-    const trade = bn(poolInfo?.swappingTxCount ?? 0);
+    const trade = util.bn(poolInfo?.swappingTxCount ?? 0);
     const tradeAsString = trade.toString();
 
     return {
@@ -256,9 +255,9 @@ export const getCalcResult = (
       .multipliedBy(xValue.amount())
       .div(balanceTimes)
       .multipliedBy(100);
-    const slip = bn(slipValue);
+    const slip = util.bn(slipValue);
     // formula: (1 - 3 / 100) * outputToken * BASE_NUMBER
-    const limValue = bn(1)
+    const limValue = util.bn(1)
       .minus(3 / 100)
       .multipliedBy(outputTokenBN);
     const lim = tokenToBase(tokenAmount(limValue));
@@ -282,7 +281,7 @@ export const getCalcResult = (
   if (swapType === SwapType.SINGLE_SWAP && from.toLowerCase() === 'rune') {
     let X = tokenAmount(10000);
     let Y = tokenAmount(10);
-    const Px = bn(runePrice);
+    const Px = util.bn(runePrice);
     const rune = 'RUNE-A1F';
 
     Object.keys(pools).forEach(key => {
@@ -328,11 +327,11 @@ export const getCalcResult = (
           .multipliedBy(xValue.amount())
           .div(balanceTimes)
           .multipliedBy(100)
-      : BN_ZERO;
+      : util.bn(0);
 
     // formula: (1 - 3 / 100) * outputToken * BASE_NUMBER;
-    const third = bn(3).div(bn(100));
-    const limValue = bn(1)
+    const third = util.bn(3).div(util.bn(100));
+    const limValue = util.bn(1)
       .minus(third)
       .div(100)
       .multipliedBy(outputTokenBN);
@@ -379,7 +378,7 @@ export const validateSwap = (
   // amount can't be NaN or an INFITIY number
   // The latter check is needed for Binance API, which accepts numbers only
   const validAmount =
-    isValidBN(amountValue) &&
+    util.isValidBN(amountValue) &&
     amountValue.isGreaterThan(0) &&
     amountValue.isFinite();
   // validate values - needed for single swap and double swap

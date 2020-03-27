@@ -2,11 +2,11 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { ThemeProvider } from 'styled-components';
 
+import { util } from 'asgardex-common';
 import AppHolder from '../../../../AppStyle';
 import { defaultTheme } from '../../../../settings';
 
 import CoinCard from './coinCard';
-import { bn } from '../../../../helpers/bnHelper';
 
 storiesOf('Components/Coins/CoinCard', module).add('default', () => {
   return (
@@ -27,8 +27,8 @@ storiesOf('Components/Coins/CoinCard', module).add('default', () => {
                 asset: 'tomo',
               },
             ]}
-            amount={bn(1.354)}
-            price={bn(600)}
+            amount={util.bn(1.354)}
+            price={util.bn(600)}
             priceIndex={{
               RUNE: 1,
             }}
@@ -37,8 +37,8 @@ storiesOf('Components/Coins/CoinCard', module).add('default', () => {
           <CoinCard
             title="You will receive"
             asset="bolt"
-            amount={bn(13549)}
-            price={bn(596)}
+            amount={util.bn(13549)}
+            price={util.bn(596)}
             slip={2}
           />
         </div>

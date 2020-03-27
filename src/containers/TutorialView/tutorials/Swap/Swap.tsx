@@ -3,6 +3,7 @@ import * as H from 'history';
 import { withRouter, Link, RouteComponentProps } from 'react-router-dom';
 import { Row, Col, Icon } from 'antd';
 
+import { util } from 'asgardex-common';
 import { ContentWrapper } from './Swap.style';
 import Centered from '../../../../components/utility/centered';
 import Label from '../../../../components/uielements/label';
@@ -24,10 +25,6 @@ import {
   formatTokenAmount,
 } from '../../../../helpers/tokenHelper';
 import { TokenAmount } from '../../../../types/token';
-import {
-  formatBNCurrency,
-  formatBN,
-} from '../../../../helpers/bnHelper';
 
 const { X, Y, Px } = data;
 
@@ -72,7 +69,7 @@ class Swap extends React.Component<Props, State> {
     // formula: Px * (X / Y);
     const divXY = X.amount().multipliedBy(Y.amount());
     const initPy = Px.multipliedBy(divXY);
-    const initPyFormatted = formatBNCurrency(initPy);
+    const initPyFormatted = util.formatBNCurrency(initPy);
     // formula: (xValue + X) ** 2;
     const times = xValue
       .amount()
@@ -89,7 +86,7 @@ class Swap extends React.Component<Props, State> {
     const xValueX = X.amount().plus(xValue.amount());
     const yValueO = Y.amount().minus(outputToken.amount());
     const outputPy = Px.multipliedBy(xValueX).div(yValueO);
-    const outputPyFormatted = formatBN(outputPy);
+    const outputPyFormatted = util.formatBN(outputPy);
 
     return (
       <div className="swap-flow-wrapper">
@@ -184,7 +181,7 @@ class Swap extends React.Component<Props, State> {
         </Centered>
         <Centered>
           <Label size="large" color="normal">
-            {formatBN(Px)}
+            {util.formatBN(Px)}
           </Label>
           <Label size="large" color="normal" />
           <Label className="contains-tooltip" size="large" color="normal">

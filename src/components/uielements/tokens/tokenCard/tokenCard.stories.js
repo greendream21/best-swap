@@ -2,11 +2,11 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { ThemeProvider } from 'styled-components';
 
+import { util } from 'asgardex-common';
 import AppHolder from '../../../../AppStyle';
 import { defaultTheme } from '../../../../settings';
 
 import TokenCard from './tokenCard';
-import { bn } from '../../../../helpers/bnHelper';
 
 storiesOf('Components/Tokens/TokenCard', module).add('default', () => {
   return (
@@ -29,8 +29,8 @@ storiesOf('Components/Tokens/TokenCard', module).add('default', () => {
                 price: 100,
               },
             ]}
-            amount={bn(1.354)}
-            price={bn(600)}
+            amount={util.bn(1.354)}
+            price={util.bn(600)}
             withSelection
             priceIndex={{
               RUNE: 1,

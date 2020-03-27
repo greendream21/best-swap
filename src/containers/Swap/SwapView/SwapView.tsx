@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { withRouter, Link } from 'react-router-dom';
 import { Icon } from 'antd';
 
+import { util } from 'asgardex-common';
 import Label from '../../../components/uielements/label';
 import CoinButton from '../../../components/uielements/coins/coinButton';
 import CoinPair from '../../../components/uielements/coins/coinPair';
@@ -22,7 +23,6 @@ import { ContentWrapper } from './SwapView.style';
 import { RootState } from '../../../redux/store';
 import { getAssetFromString } from '../../../redux/midgard/utils';
 import { PoolInfoType } from '../../Pool/types';
-import { bn, validBNOrZero } from '../../../helpers/bnHelper';
 
 type ComponentProps = {};
 
@@ -155,7 +155,7 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
         key: 'slip',
         title: 'avg. slip',
         dataIndex: 'slip',
-        render: (slip: string) => <Trend amount={bn(slip)} />,
+        render: (slip: string) => <Trend amount={util.bn(slip)} />,
         sorter: (a: SwapTableRowType, b: SwapTableRowType) =>
           a.raw.slip.minus(b.raw.slip), // TODO(Veado): Does it work for sorting BN?,
         sortDirections: ['descend', 'ascend'],
@@ -206,7 +206,7 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
 
   const renderAssets = () => {
     const asset = 'rune';
-    const runePrice = validBNOrZero(priceIndex?.RUNE);
+    const runePrice = util.validBNOrZero(priceIndex?.RUNE);
 
     return (
       <CoinButton
