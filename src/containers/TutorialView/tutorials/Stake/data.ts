@@ -1,15 +1,15 @@
+import { util } from 'asgardex-common';
 import { StakeCalcData } from '../../../Pool/calc';
 import * as calc from '../../../Pool/calc';
 import { Maybe } from '../../../../types/bepswap';
 import { tokenAmount } from '../../../../helpers/tokenHelper';
 import { TokenAmount } from '../../../../types/token';
-import { bn } from '../../../../helpers/bnHelper';
 
 export const data: StakeCalcData = {
   R: tokenAmount(1000000),
   T: tokenAmount(2000000),
-  Pr: bn(0.04),
-  Pt: bn(0.02),
+  Pr: util.bn(0.04),
+  Pt: util.bn(0.02),
 };
 
 export const getVr = (rValue: Maybe<TokenAmount>): TokenAmount => calc.getVr(rValue, data);

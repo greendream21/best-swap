@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
+import { util } from 'asgardex-common';
 import { Denomination, TokenAmount, BaseAmount, Amounts } from '../types/token';
-import { formatBN, fixedBN } from './bnHelper';
 
 /**
  * Number of token decimals - For binance chain tokens only!
@@ -18,15 +18,17 @@ export const TOKEN_DECIMAL = 8;
  */
 export const BASE_NUMBER = 10 ** TOKEN_DECIMAL; // 1e8
 
-
 /**
  * Factory to create any values of tokens (e.g. RUNE)
  * If the value is undefined, 0 is returned
  * */
-export const tokenAmount = (value?: string | number | BigNumber | undefined, decimal: number = TOKEN_DECIMAL) =>
+export const tokenAmount = (
+  value?: string | number | BigNumber | undefined,
+  decimal: number = TOKEN_DECIMAL,
+) =>
   ({
     type: Denomination.TOKEN,
-    amount: () => fixedBN(value, decimal),
+    amount: () => util.fixedBN(value, decimal),
   } as TokenAmount);
 
 /**
@@ -36,21 +38,30 @@ export const tokenAmount = (value?: string | number | BigNumber | undefined, dec
 export const baseAmount = (value?: string | number | BigNumber | undefined) =>
   ({
     type: Denomination.BASE,
-    amount: () => fixedBN(value, 0),
+    amount: () => util.fixedBN(value, 0),
   } as BaseAmount);
 
 /**
  * Helper to convert values for a token from base values (e.g. RUNE from tor)
  * */
-export const baseToToken = (base: BaseAmount, decimal: number = TOKEN_DECIMAL): TokenAmount => {
-  const value = base.amount().div(BASE_NUMBER).decimalPlaces(decimal);
+export const baseToToken = (
+  base: BaseAmount,
+  decimal: number = TOKEN_DECIMAL,
+): TokenAmount => {
+  const value = base
+    .amount()
+    .div(BASE_NUMBER)
+    .decimalPlaces(decimal);
   return tokenAmount(value);
 };
 /**
  * Helper to convert token to base values (e.g. tor -> RUNE)
  * */
 export const tokenToBase = (token: TokenAmount): BaseAmount => {
-  const value = token.amount().multipliedBy(BASE_NUMBER).integerValue();
+  const value = token
+    .amount()
+    .multipliedBy(BASE_NUMBER)
+    .integerValue();
   return baseAmount(value);
 };
 
@@ -71,12 +82,13 @@ export const isBaseAmount = (v: Amounts): v is BaseAmount =>
  * depending on given decimal places
  */
 export const formatTokenAmount = (token: TokenAmount, decimal = 2) =>
-  formatBN(token.amount(), decimal);
+  util.formatBN(token.amount(), decimal);
 
 /**
  * Formats a token value by prefixing it with `$`
  */
-export const formatTokenAmountCurrency = (token: TokenAmount) => `$${formatTokenAmount(token)}`;
+export const formatTokenAmountCurrency = (token: TokenAmount) =>
+  `$${formatTokenAmount(token)}`;
 
 /**
  * Format a base value as a token in a user friendly way,

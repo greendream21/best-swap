@@ -1,11 +1,11 @@
 import React, { useMemo, useCallback } from 'react';
 import { get as _get } from 'lodash';
 
+import { util } from 'asgardex-common';
 import FilterMenu from '../../filterMenu';
 import { getTickerFormat } from '../../../../helpers/stringHelper';
 import CoinData from '../coinData';
 import { PriceDataIndex } from '../../../../redux/midgard/types';
-import { validBNOrZero } from '../../../../helpers/bnHelper';
 import { AssetPair } from '../../../../types/bepswap';
 
 const filterFunction = (item: AssetPair, searchTerm: string) => {
@@ -53,7 +53,7 @@ const CoinCardMenu: React.FC<Props> = (props: Props): JSX.Element => {
       const tokenName = getTickerFormat(asset);
 
       const ticker = getTickerFormat(asset).toUpperCase();
-      const price = validBNOrZero(priceIndex[ticker]);
+      const price = util.validBNOrZero(priceIndex[ticker]);
 
       const node = (
         <CoinData

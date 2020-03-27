@@ -3,6 +3,9 @@ import * as H from 'history';
 import { withRouter, Link, RouteComponentProps } from 'react-router-dom';
 import { Row, Col } from 'antd';
 
+import {
+  util,
+} from 'asgardex-common';
 import { ContentWrapper } from './Earning.style';
 import Centered from '../../../../components/utility/centered';
 import Label from '../../../../components/uielements/label';
@@ -25,10 +28,6 @@ import {
   formatTokenAmountCurrency,
   formatTokenAmount,
 } from '../../../../helpers/tokenHelper';
-import {
-  formatBNCurrency,
-  formatBN,
-} from '../../../../helpers/bnHelper';
 
 type ComponentProps = {
   view?: string;
@@ -92,7 +91,7 @@ class Earning extends React.Component<Props, State> {
       .multipliedBy(2)
       .multipliedBy(SS.amount())
       .div(100);
-    const VssValueFormatted = formatBNCurrency(VssValue);
+    const VssValueFormatted = util.formatBNCurrency(VssValue);
 
     const Wr = getWr(wss);
     const Wt = getWt(wss);
@@ -167,14 +166,14 @@ class Earning extends React.Component<Props, State> {
             {view === TutorialContent.INTRO && VrFormatted}
             {view === TutorialContent.PLAY &&
               // formula: VWR - rValuePrice
-              formatBN(VWR.amount().minus(rValuePrice))}
+              util.formatBN(VWR.amount().minus(rValuePrice))}
           </Label>
           <Label size="large" color="normal" />
           <Label size="large" color="normal">
             {view === TutorialContent.INTRO && VtFormatted}
             {view === TutorialContent.PLAY &&
               // formula: VWR - tValuePrice
-              formatBN(VWR.amount().minus(tValuePrice))}
+              util.formatBN(VWR.amount().minus(tValuePrice))}
           </Label>
         </Centered>
         <div className="center-text">
@@ -273,7 +272,7 @@ class Earning extends React.Component<Props, State> {
           <Selection onSelect={this.handleChangeWssValue} />
           <InputForm title="PAYOUT:" type="rune" amount={Wr} step={1000} />
           <Label className="payout-price-label" color="gray">
-            {formatBNCurrency(rValuePrice)} (USD)
+            {util.formatBNCurrency(rValuePrice)} (USD)
           </Label>
         </div>
         {this.renderFlow(TutorialContent.PLAY)}

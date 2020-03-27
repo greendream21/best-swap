@@ -7,33 +7,31 @@ stages:
 cache:
   key: ${CI_COMMIT_REF_SLUG}
   paths:
-    - cache/Cypress
-    - node_modules/
+    - .npm
+    - .cache
 
 before_script:
   - echo "REACT_APP_MIDGARD_API_URL:" ${REACT_APP_MIDGARD_API_URL}
-  - yarn
+  - yarn install --frozen-lockfile
   - npm i -g firebase-tools
   - firebase -V
 
 test:develop:
-  variables:
-    # provide cypress with our cached folder to install its cache in
-    CYPRESS_CACHE_FOLDER: '$CI_PROJECT_DIR/cache/Cypress'
   stage: test
   except:
     - bepswap-testnet-reskin
   image: cypress/base:10
   script:
+    - yarn cy:verify
     - yarn test
   environment:
     name: develop
   artifacts:
-    expire_in: 1 min
     when: always
     paths:
-      - cypress/screenshots
-      - cypress/videos
+      - cypress/videos/**/*.mp4
+      - cypress/screenshots/**/*.png
+    expire_in: 1 day
 
 deploy:develop:
   stage: deploy

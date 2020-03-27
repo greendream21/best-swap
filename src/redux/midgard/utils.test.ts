@@ -1,3 +1,4 @@
+import { util } from 'asgardex-common';
 import {
   getAssetSymbolFromPayload,
   getBNBPoolAddress,
@@ -10,7 +11,6 @@ import {
   ThorchainEndpoint,
   ThorchainEndpoints,
 } from '../../types/generated/midgard';
-import { bn } from '../../helpers/bnHelper';
 import { PriceDataIndex } from './types';
 
 type PoolDataMock = { asset?: string };
@@ -116,9 +116,9 @@ describe('redux/midgard/utils/', () => {
         'AAA',
       );
       const expected: PriceDataIndex = {
-        RUNE: bn(1),
-        TOMOB: bn('0.3333333333333333'),
-        BBB: bn('2206.896551724138'),
+        RUNE: util.bn(1),
+        TOMOB: util.bn('0.3333333333333333'),
+        BBB: util.bn('2206.896551724138'),
       };
       expect(result).toEqual(expected);
     });
@@ -132,10 +132,10 @@ describe('redux/midgard/utils/', () => {
         'BBB',
       );
       const expected: PriceDataIndex = {
-        RUNE: bn(0.5),
-        AAA: bn(2),
-        BBB: bn(1),
-        CCC: bn(5),
+        RUNE: util.bn(0.5),
+        AAA: util.bn(2),
+        BBB: util.bn(1),
+        CCC: util.bn(5),
       };
       expect(result).toEqual(expected);
     });
