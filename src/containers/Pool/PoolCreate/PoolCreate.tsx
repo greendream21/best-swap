@@ -8,7 +8,7 @@ import { crypto } from '@binance-chain/javascript-sdk';
 import { get as _get } from 'lodash';
 
 import BigNumber from 'bignumber.js';
-import { binance } from 'asgardex-common';
+import { binance, util } from 'asgardex-common';
 
 import Button from '../../../components/uielements/button';
 import Label from '../../../components/uielements/label';
@@ -41,7 +41,6 @@ import {
 
 import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
 import { MAX_VALUE } from '../../../redux/app/const';
-import { delay } from '../../../helpers/asyncHelper';
 import TokenDetailLoader from '../../../components/utility/loaders/tokenDetail';
 import { RootState } from '../../../redux/store';
 import { TxStatus, TxTypes } from '../../../redux/app/types';
@@ -369,7 +368,7 @@ class PoolCreate extends React.Component<Props, State> {
     if (user) {
       this.setState({ validatingPassword: true });
       // Short delay to render latest state changes of `validatingPassword`
-      await delay(200);
+      await util.delay(200);
 
       try {
         const privateKey = crypto.getPrivateKeyFromKeyStore(

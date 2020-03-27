@@ -29,7 +29,7 @@ test:develop:
   environment:
     name: develop
   artifacts:
-    expire_in: 1 week
+    expire_in: 1 min
     when: always
     paths:
       - cypress/screenshots

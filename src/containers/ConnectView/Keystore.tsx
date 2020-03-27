@@ -5,7 +5,7 @@ import { crypto } from '@binance-chain/javascript-sdk';
 import { FilePicker } from 'react-file-picker';
 import { Row, Icon, Input, Form, Tooltip } from 'antd';
 
-import { binance } from 'asgardex-common';
+import { binance, util } from 'asgardex-common';
 import { ContentWrapper } from './ConnectView.style';
 
 import Label from '../../components/uielements/label';
@@ -14,7 +14,6 @@ import FormGroup from '../../components/uielements/formGroup';
 
 import * as walletActions from '../../redux/wallet/actions';
 import { Maybe, Nothing, FixmeType } from '../../types/bepswap';
-import { delay } from '../../helpers/asyncHelper';
 import { NET } from '../../env';
 
 type ConnectedProps = {
@@ -73,7 +72,7 @@ const Keystore: React.FC<Props> = (props: Props): JSX.Element => {
   const unlock = useCallback(async () => {
     setProcessing(true);
     // Short delay to render processing message`
-    await delay(200);
+    await util.delay(200);
     try {
       const privateKey = crypto.getPrivateKeyFromKeyStore(keystore, password);
       const address = crypto.getAddressFromPrivateKey(

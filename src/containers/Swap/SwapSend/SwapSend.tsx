@@ -4,7 +4,7 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { Row, Col, Icon, notification, Popover } from 'antd';
-import { binance } from 'asgardex-common';
+import { binance, util } from 'asgardex-common';
 
 import { crypto } from '@binance-chain/javascript-sdk';
 import BigNumber from 'bignumber.js';
@@ -52,7 +52,6 @@ import Slider from '../../../components/uielements/slider';
 import StepBar from '../../../components/uielements/stepBar';
 import Trend from '../../../components/uielements/trend';
 import { MAX_VALUE } from '../../../redux/app/const';
-import { delay } from '../../../helpers/asyncHelper';
 import {
   FixmeType,
   Maybe,
@@ -314,7 +313,7 @@ class SwapSend extends React.Component<Props, State> {
 
       this.setState({ validatingPassword: true });
       // Short delay to render latest state changes of `validatingPassword`
-      await delay(200);
+      await util.delay(200);
 
       try {
         const privateKey = crypto.getPrivateKeyFromKeyStore(keystore, password);

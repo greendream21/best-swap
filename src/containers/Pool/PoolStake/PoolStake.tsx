@@ -9,7 +9,7 @@ import { crypto } from '@binance-chain/javascript-sdk';
 import { get as _get } from 'lodash';
 
 import BigNumber from 'bignumber.js';
-import { binance } from 'asgardex-common';
+import { binance, util } from 'asgardex-common';
 import { withBinanceTransferWS } from '../../../HOC/websocket/WSBinance';
 
 import Label from '../../../components/uielements/label';
@@ -49,7 +49,6 @@ import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
 import TokenInfo from '../../../components/uielements/tokens/tokenInfo';
 import StepBar from '../../../components/uielements/stepBar';
 import { MAX_VALUE } from '../../../redux/app/const';
-import { delay } from '../../../helpers/asyncHelper';
 import { RootState } from '../../../redux/store';
 import { User, AssetData } from '../../../redux/wallet/types';
 import { FixmeType, Maybe, Nothing, AssetPair } from '../../../types/bepswap';
@@ -564,7 +563,7 @@ class PoolStake extends React.Component<Props, State> {
 
       this.setState({ validatingPassword: true });
       // Short delay to render latest state changes of `validatingPassword`
-      await delay(2000);
+      await util.delay(2000);
 
       try {
         const privateKey = crypto.getPrivateKeyFromKeyStore(keystore, password);
