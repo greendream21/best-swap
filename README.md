@@ -1,5 +1,17 @@
 # BEPSwap React Front-End
 
+****
+
+> **Mirror**
+>
+> This repo mirrors from THORChain Gitlab to Github. 
+> To contribute, please contact the team and commit to the Gitlab repo:
+>
+> https://gitlab.com/thorchain/bepswap-web-ui
+
+
+****
+
 BEPSwap is UniSwap for BinanceChain. It will be the first go-to market product for THORChain and makes some compromises as to infrastructure and trustlessness. It will only swap BNB and BEP2 assets on Binance Chain using a second layer protocol that moves assets around on BNB accounts.
 
 ## Project Setup
