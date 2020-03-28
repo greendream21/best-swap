@@ -71,6 +71,18 @@ deploy:production:
     - master
   when: manual
 
+deploy:cloudfront:
+  stage: deploy
+  script:
+    - yarn build
+    - apt-get update -y && apt install python3-pip -y 
+    - pip3 install --upgrade pip 
+    - pip3 install awscli --upgrade 
+    - make aws-ci-login
+    - aws s3 cp --recursive build/ s3://${CLOUDFRONT_BUCKET}
+  only:
+    - master
+
 # Build docker image
 build-docker:
   stage: deploy
