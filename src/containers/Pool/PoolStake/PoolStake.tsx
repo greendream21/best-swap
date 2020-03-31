@@ -1328,7 +1328,7 @@ class PoolStake extends React.Component<Props, State> {
                     color="gray"
                     loading={loading}
                   >
-                    `${basePriceAsset} ${runeEarnedAmountLabel}`
+                    {basePriceAsset} {runeEarnedAmountLabel}
                   </Label>
                 </div>
                 <div className="your-share-info">
@@ -1343,7 +1343,7 @@ class PoolStake extends React.Component<Props, State> {
                     color="gray"
                     loading={loading}
                   >
-                    `${basePriceAsset} ${assetEarnedAmountLabel}`
+                    {basePriceAsset} {assetEarnedAmountLabel}
                   </Label>
                 </div>
               </div>
