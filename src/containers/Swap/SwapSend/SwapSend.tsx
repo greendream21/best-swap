@@ -105,7 +105,7 @@ type ConnectedProps = {
 
 type Props = ComponentProps & ConnectedProps;
 
-interface State {
+type State = {
   address: string;
   password: string;
   invalidPassword: boolean;
@@ -119,6 +119,7 @@ interface State {
   slipProtection: boolean;
   maxSlip: number;
   txResult: Maybe<TxResult>;
+  timerFinished: boolean;
 }
 
 type TxResult = {
@@ -153,6 +154,7 @@ class SwapSend extends React.Component<Props, State> {
       slipProtection: true,
       maxSlip: 30,
       txResult: null,
+      timerFinished: false,
     };
   }
 
@@ -177,7 +179,8 @@ class SwapSend extends React.Component<Props, State> {
       length !== prevProps.wsTransfers.length &&
       length > 0 &&
       hash !== undefined &&
-      txResult === null
+      txResult === null &&
+      !this.isCompleted()
     ) {
       const txResult = getTxResult({
         tx: lastTx,
@@ -202,6 +205,12 @@ class SwapSend extends React.Component<Props, State> {
     const bncClient = await binance.client(NET);
     return bncClient.isValidAddress(address);
   };
+
+  isCompleted = (): boolean => {
+    const { txResult, timerFinished } = this.state;
+    const { txStatus } = this.props;
+    return !txStatus.status && (txResult !== Nothing || timerFinished);
+  }
 
   handleChangePassword = (password: string) => {
     this.setState({
@@ -422,6 +431,7 @@ class SwapSend extends React.Component<Props, State> {
   handleStartTimer = () => {
     const { resetTxStatus } = this.props;
 
+    this.setState({ timerFinished: false });
     resetTxStatus({
       type: TxTypes.SWAP,
       modal: true,
@@ -432,7 +442,11 @@ class SwapSend extends React.Component<Props, State> {
 
   handleCloseModal = () => {
     const { setTxTimerModal } = this.props;
-    setTxTimerModal(false);
+    if (this.isCompleted()) {
+      this.handleCompleted();
+    } else {
+      setTxTimerModal(false);
+    }
   };
 
   handleChangeSwapType = (state: boolean) => {
@@ -563,6 +577,7 @@ class SwapSend extends React.Component<Props, State> {
     setTxTimerStatus(false);
     this.setState({
       dragReset: true,
+      timerFinished: true,
     });
   };
 
@@ -633,9 +648,17 @@ class SwapSend extends React.Component<Props, State> {
     });
   };
 
-  handleClickFinish = () => {
+  handleCompleted = () => {
     const { resetTxStatus } = this.props;
+    this.setState({
+      xValue: tokenAmount(0),
+      timerFinished: false,
+   });
     resetTxStatus();
+  };
+
+  handleClickFinish = () => {
+    this.handleCompleted();
     this.props.history.push('/swap');
   };
 
@@ -659,21 +682,20 @@ class SwapSend extends React.Component<Props, State> {
     const priceFrom: BigNumber = Px.multipliedBy(xValue.amount());
     const slipAmount = slip;
 
-    const completed = !status && txResult !== Nothing;
     const refunded = txResult?.type === 'refund' ?? false;
     const amountBN = util.bnOrZero(txResult?.amount);
-    const targetToken = !completed
-      ? swapTarget
-      : getTickerFormat(txResult?.token);
-    const assetAmount = !completed ? outputAmount : tokenAmount(amountBN);
+    const targetToken = txResult
+      ? getTickerFormat(txResult?.token)
+      : swapTarget;
+    const assetAmount = txResult ? tokenAmount(amountBN) : outputAmount;
 
     let priceTo;
     if (refunded) {
       priceTo = priceFrom;
     } else {
-      priceTo = !completed
-        ? outputAmount.amount().multipliedBy(tokenPrice)
-        : amountBN.multipliedBy(tokenPrice);
+      priceTo = txResult
+        ? amountBN.multipliedBy(tokenPrice)
+        : outputAmount.amount().multipliedBy(tokenPrice);
     }
 
     const txURL = TESTNET_TX_BASE_URL + hash;
@@ -718,7 +740,7 @@ class SwapSend extends React.Component<Props, State> {
           {hash && (
             <div className="hash-address">
               <div className="copy-btn-wrapper">
-                {completed && (
+                {this.isCompleted() && (
                   <Button
                     className="view-btn"
                     color="success"
@@ -872,12 +894,10 @@ class SwapSend extends React.Component<Props, State> {
       )} ${swapTarget.toUpperCase()}`;
 
       // swap modal
-
-      const completed = !txStatus.status && txResult !== null;
       const refunded = txResult && txResult.type === 'refund';
 
       // eslint-disable-next-line no-nested-ternary
-      const swapTitle = !completed
+      const swapTitle = !this.isCompleted()
         ? 'YOU ARE SWAPPING'
         : refunded
         ? 'TOKEN REFUNDED'

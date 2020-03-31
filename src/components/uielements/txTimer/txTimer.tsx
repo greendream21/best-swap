@@ -70,6 +70,7 @@ const TxTimer: React.FC<Props> = (props): JSX.Element => {
   // Reset everything at end
   const handleEndTimer = useCallback(() => {
     onEnd();
+    setTotalDuration(0);
     setActive(false);
   }, [onEnd]);
 
