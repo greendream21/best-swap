@@ -88,10 +88,11 @@ type ConnectedProps = {
   poolData: PoolDataMap;
   assets: AssetDetailMap;
   stakerPoolData: Maybe<StakerPoolData>;
+  stakerPoolDataLoading: boolean;
+  stakerPoolDataError: Maybe<Error>;
   priceIndex: PriceDataIndex;
   basePriceAsset: string;
   poolLoading: boolean;
-  stakerPoolDataLoading: boolean;
   getPools: typeof midgardActions.getPools;
   getPoolAddress: typeof midgardActions.getPoolAddress;
   getStakerPoolData: typeof midgardActions.getStakerPoolData;
@@ -953,7 +954,7 @@ class PoolStake extends React.Component<Props, State> {
   renderShareDetail = (
     _: PoolData,
     calcResult: CalcResult,
-    stakeInfo: StakersAssetData,
+    stakersAssetData: StakersAssetData,
   ) => {
     const { symbol, priceIndex, basePriceAsset, assets } = this.props;
     const {
@@ -984,7 +985,7 @@ class PoolStake extends React.Component<Props, State> {
 
     // withdraw values
     const withdrawRate: number = (widthdrawPercentage || 50) / 100;
-    const { stakeUnits = '0' } = stakeInfo;
+    const { stakeUnits = '0' } = stakersAssetData;
     const stakeUnitsBN = util.bn(stakeUnits);
 
     const value =
@@ -1152,7 +1153,10 @@ class PoolStake extends React.Component<Props, State> {
     );
   };
 
-  renderYourShare = (calcResult: CalcResult, stakeInfo: StakersAssetData) => {
+  renderYourShare = (
+    calcResult: CalcResult,
+    stakersAssetData: StakersAssetData,
+  ) => {
     const { symbol, user, priceIndex, basePriceAsset } = this.props;
 
     const wallet = user ? user.wallet : null;
@@ -1165,7 +1169,11 @@ class PoolStake extends React.Component<Props, State> {
     const runePrice = util.validBNOrZero(priceIndex?.RUNE);
     const tokenPrice = _get(priceIndex, target.toUpperCase(), 0);
 
-    const { stakeUnits, runeStaked, assetStaked }: StakersAssetData = stakeInfo;
+    const {
+      stakeUnits,
+      runeStaked,
+      assetStaked,
+    }: StakersAssetData = stakersAssetData;
     const stakeUnitsBN = util.bnOrZero(stakeUnits);
     const runeStakedBN = util.bnOrZero(runeStaked);
     const assetStakedBN = util.bnOrZero(assetStaked);
@@ -1208,13 +1216,13 @@ class PoolStake extends React.Component<Props, State> {
       );
       tokenSharePriceLabel = formatBaseAsTokenAmount(tokenSharePrice);
     }
-    const runeEarned: BaseAmount = baseAmount(stakeInfo.runeEarned || 0);
+    const runeEarned: BaseAmount = baseAmount(stakersAssetData.runeEarned || 0);
     const runeEarnedAmount: BaseAmount = baseAmount(
       runeEarned.amount().multipliedBy(runePrice),
     );
     const runeEarnedAmountLabel = formatBaseAsTokenAmount(runeEarnedAmount);
 
-    const assetEarned = baseAmount(stakeInfo.assetEarned || 0);
+    const assetEarned = baseAmount(stakersAssetData.assetEarned || 0);
     const assetEarnedAmount: BaseAmount = baseAmount(
       assetEarned.amount().multipliedBy(tokenPrice),
     );
@@ -1354,12 +1362,31 @@ class PoolStake extends React.Component<Props, State> {
     );
   };
 
+  renderStakeDataPoolError = () => {
+    const { stakerPoolDataError: error } = this.props;
+    const msg: Maybe<string> = error?.message ?? Nothing;
+    return (
+      <div className="your-share-wrapper">
+        <div className="share-placeholder-wrapper">
+          <div className="placeholder-icon">
+            <Icon type="info" />
+          </div>
+          <h2>Loading of staked data for this pool failed.</h2>
+          {msg && (<p className="placeholder-label">{msg}</p>)}
+          <p className="placeholder-label"> You might have to create a pool first.</p>
+
+        </div>
+      </div>
+    );
+  };
+
   render() {
     const {
       priceIndex,
       basePriceAsset,
       poolData,
       stakerPoolData,
+      stakerPoolDataError,
       txStatus,
       user,
     } = this.props;
@@ -1406,18 +1433,27 @@ class PoolStake extends React.Component<Props, State> {
 
     const withdrawText = !completed ? 'YOU ARE WITHDRAWING' : 'YOU WITHDRAWN';
 
-    const stakeInfo = stakerPoolData && stakerPoolData[symbol];
+    const stakersAssetData: Maybe<StakersAssetData> = stakerPoolData
+      ? stakerPoolData[symbol]
+      : Nothing;
 
     return (
       <ContentWrapper className="pool-stake-wrapper" transparent>
         <Row className="stake-info-view">{this.renderStakeInfo(poolStats)}</Row>
         <Row className="share-view">
-          <Col className="your-share-view" span={24} lg={yourShareSpan}>
-            {stakeInfo && this.renderYourShare(calcResult, stakeInfo)}
-          </Col>
-          {hasWallet && (
+          {!stakersAssetData && stakerPoolDataError && (
+            <Col className="your-share-view">
+              {this.renderStakeDataPoolError()}
+            </Col>
+          )}
+          {stakersAssetData && (
+            <Col className="your-share-view" span={24} lg={yourShareSpan}>
+              {this.renderYourShare(calcResult, stakersAssetData)}
+            </Col>
+          )}
+          {stakersAssetData && hasWallet && (
             <Col className="share-detail-view" span={24} lg={16}>
-              { stakeInfo && this.renderShareDetail(poolStats, calcResult, stakeInfo)}
+              {this.renderShareDetail(poolStats, calcResult, stakersAssetData)}
             </Col>
           )}
         </Row>
@@ -1479,11 +1515,12 @@ export default compose(
       poolAddress: state.Midgard.poolAddress,
       poolData: state.Midgard.poolData,
       assets: state.Midgard.assets,
-      stakerPoolData: state.Midgard.stakerPoolData,
       priceIndex: state.Midgard.priceIndex,
       basePriceAsset: state.Midgard.basePriceAsset,
       poolLoading: state.Midgard.poolLoading,
+      stakerPoolData: state.Midgard.stakerPoolData,
       stakerPoolDataLoading: state.Midgard.stakerPoolDataLoading,
+      stakerPoolDataError: state.Midgard.stakerPoolDataError,
     }),
     {
       getPools: midgardActions.getPools,

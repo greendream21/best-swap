@@ -68,11 +68,12 @@ export type State = {
   poolAddress: Maybe<string>;
   poolData: PoolDataMap;
   stakerPoolData: Maybe<StakerPoolData>;
+  stakerPoolDataLoading: boolean;
+  stakerPoolDataError: Maybe<Error>;
   runePrice: number;
   basePriceAsset: string; // set base price asset as a RUNE
   priceIndex: PriceDataIndex;
   error: Maybe<Error>;
   poolLoading: boolean;
-  stakerPoolDataLoading: boolean;
   txData: TxDetailData;
 };
