@@ -175,8 +175,8 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
         () => <TransactionLoader />,
         (error: Error) => (
           <ContentWrapper className="transaction-view-wrapper center-align">
-            <h2>Loading history data failed.</h2>
-            {error && <p>{error.toString()}</p>}
+            <h2>Loading of transaction history data failed.</h2>
+            {(error?.message ?? false) && <p>{error.message}</p>}
           </ContentWrapper>
         ),
         (data: EventDetails[]): JSX.Element => pageContent(data),
