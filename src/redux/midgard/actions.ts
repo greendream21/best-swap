@@ -13,7 +13,7 @@ import {
   PoolDetail,
   StakersAssetData,
   ThorchainEndpoints,
-  EventDetails,
+  InlineResponse200,
 } from '../../types/generated/midgard';
 
 export interface SetAssetsPayload {
@@ -207,10 +207,10 @@ export const getTxByAddress = (
 export const GET_TX_BY_ADDRESS_SUCCESS = 'GET_TX_BY_ADDRESS_SUCCESS';
 export interface GetTxByAddressSuccess {
   type: typeof GET_TX_BY_ADDRESS_SUCCESS;
-  payload: EventDetails[];
+  payload: InlineResponse200;
 }
 export const getTxByAddressSuccess = (
-  payload: EventDetails[],
+  payload: InlineResponse200,
 ): GetTxByAddressSuccess => ({
   type: GET_TX_BY_ADDRESS_SUCCESS,
   payload,
@@ -242,10 +242,10 @@ export const getTxByAddressTxId = (
 export const GET_TX_BY_ADDRESS_TXID_SUCCESS = 'GET_TX_BY_ADDRESS_TXID_SUCCESS';
 export interface GetTxByAddressTxIdSuccess {
   type: typeof GET_TX_BY_ADDRESS_TXID_SUCCESS;
-  payload: EventDetails[];
+  payload: InlineResponse200;
 }
 export const getTxByAddressTxIdSuccess = (
-  payload: EventDetails[],
+  payload: InlineResponse200,
 ): GetTxByAddressTxIdSuccess => ({
   type: GET_TX_BY_ADDRESS_TXID_SUCCESS,
   payload,
@@ -280,10 +280,10 @@ export const GET_TX_BY_ADDRESS_ASSET_SUCCESS =
   'GET_TX_BY_ADDRESS_ASSET_SUCCESS';
 export interface GetTxByAddressAssetSuccess {
   type: typeof GET_TX_BY_ADDRESS_ASSET_SUCCESS;
-  payload: EventDetails[];
+  payload: InlineResponse200;
 }
 export const getTxByAddressAssetSuccess = (
-  payload: EventDetails[],
+  payload: InlineResponse200,
 ): GetTxByAddressAssetSuccess => ({
   type: GET_TX_BY_ADDRESS_ASSET_SUCCESS,
   payload,
@@ -315,10 +315,10 @@ export const getTxByAsset = (payload: GetTxByAssetPayload): GetTxByAsset => ({
 export const GET_TX_BY_ASSET_SUCCESS = 'GET_TX_BY_ASSET_SUCCESS';
 export interface GetTxByAssetSuccess {
   type: typeof GET_TX_BY_ASSET_SUCCESS;
-  payload: EventDetails[];
+  payload: InlineResponse200;
 }
 export const getTxByAssetSuccess = (
-  payload: EventDetails[],
+  payload: InlineResponse200,
 ): GetTxByAssetSuccess => ({
   type: GET_TX_BY_ASSET_SUCCESS,
   payload,

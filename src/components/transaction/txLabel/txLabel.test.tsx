@@ -3,11 +3,11 @@ import { mount } from 'enzyme';
 import { create } from 'react-test-renderer';
 
 import TxLabel from './txLabel';
-import { EventDetailsTypeEnum } from '../../../types/generated/midgard';
+import { TxDetailsTypeEnum } from '../../../types/generated/midgard';
 
 describe('FilterDropdown', () => {
   const props = {
-    type: EventDetailsTypeEnum.Swap,
+    type: TxDetailsTypeEnum.Swap,
   };
   const component = mount(<TxLabel {...props} />);
 
@@ -23,20 +23,20 @@ describe('FilterDropdown', () => {
     expect(component.find('p')).toHaveLength(1);
   });
   it('has label - swap for tx type swap', () => {
-    const swapTypeComponent = mount(<TxLabel type={EventDetailsTypeEnum.Swap} />);
+    const swapTypeComponent = mount(<TxLabel type={TxDetailsTypeEnum.Swap} />);
 
     expect(swapTypeComponent.find('p').text()).toBe('swap');
   });
   it('has label - stake for tx type stake', () => {
     const stakeTypeComponent = mount(
-      <TxLabel type={EventDetailsTypeEnum.Stake} />,
+      <TxLabel type={TxDetailsTypeEnum.Stake} />,
     );
 
     expect(stakeTypeComponent.find('p').text()).toBe('stake');
   });
   it('has label - withdraw for tx type withdraw', () => {
     const withdrawTypeComponent = mount(
-      <TxLabel type={EventDetailsTypeEnum.Unstake} />,
+      <TxLabel type={TxDetailsTypeEnum.Unstake} />,
     );
 
     expect(withdrawTypeComponent.find('p').text()).toBe('withdraw');
