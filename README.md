@@ -37,19 +37,7 @@ firebase-tools
 
 ### Env variables
 
-While environment variables are not required (sane defaults are set), you can
-configure them.
-Create `.env` file and set the following variables.
-
-```
-REACT_APP_BINANCE_MAINNET_WS_URI = wss://xxx
-REACT_APP_BINANCE_TESTNET_WS_URI = wss://xxx
-
-REACT_APP_BINANCE_MAINNET_URL = https://xxx
-REACT_APP_BINANCE_TESTNET_URL = https://xxx
-
-REACT_APP_MIDGARD_API_URL = https://xxx
-```
+While environment variables are not required (sane defaults are set), you can configure them. Create `.env` file while copying all content of `.env.sample` and set all needed variables in there.
 
 ### Project Setup
 

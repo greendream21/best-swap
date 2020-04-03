@@ -55,7 +55,7 @@ import { User, AssetData } from '../../../redux/wallet/types';
 import { TokenAmount } from '../../../types/token';
 import { tokenAmount } from '../../../helpers/tokenHelper';
 import { AssetDetail } from '../../../types/generated/midgard';
-import { NET } from '../../../env';
+import { BINANCE_NET } from '../../../env';
 
 type ComponentProps = {
   symbol: string;
@@ -308,7 +308,7 @@ class PoolCreate extends React.Component<Props, State> {
     if (user) {
       // start timer modal
       this.handleStartTimer();
-      const bncClient = await binance.client(NET);
+      const bncClient = await binance.client(BINANCE_NET);
       try {
         const { poolAddress, tokenSymbol } = this.getData();
         const { result } = await confirmCreatePool({
@@ -367,11 +367,11 @@ class PoolCreate extends React.Component<Props, State> {
           user.keystore,
           password,
         );
-        const bncClient = await binance.client(NET);
+        const bncClient = await binance.client(BINANCE_NET);
         await bncClient.setPrivateKey(privateKey);
         const address = crypto.getAddressFromPrivateKey(
           privateKey,
-          binance.getPrefix(NET),
+          binance.getPrefix(BINANCE_NET),
         );
         if (user.wallet === address) {
           this.handleConfirmCreate();

@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { Link, useRouteMatch } from 'react-router-dom';
 import { Button, Tooltip, Icon } from 'antd';
 
+import * as RD from '@devexperts/remote-data-ts';
 import Tabs from '../uielements/tabs';
 import TxView from '../uielements/txView';
 import Logo from '../uielements/logo';
@@ -32,6 +33,7 @@ type ConnectedProps = {
   setTxTimerModal: typeof appActions.setTxTimerModal;
   setTxTimerStatus: typeof appActions.setTxTimerStatus;
   txStatus: TxStatus;
+  midgardBasePath: Maybe<string>;
 };
 
 type ComponentProps = {
@@ -41,7 +43,7 @@ type ComponentProps = {
 type Props = ConnectedProps & ComponentProps;
 
 const Header: React.FC<Props> = (props: Props): JSX.Element => {
-  const { setTxTimerModal, setTxTimerStatus, txStatus, user } = props;
+  const { setTxTimerModal, setTxTimerStatus, txStatus, user, midgardBasePath } = props;
   const { status, value, type } = txStatus;
   const wallet: Maybe<string> = user ? user.wallet : Nothing;
 
@@ -131,7 +133,7 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
         )}
         {wallet && <WalletDrawer />}
         <BasePriceSelector />
-        <HeaderSetting />
+        <HeaderSetting midgardBasePath={midgardBasePath} />
         {wallet && (
           <TxView
             status={status}
@@ -151,6 +153,7 @@ export default connect(
   (state: RootState) => ({
     txStatus: state.App.txStatus,
     user: state.Wallet.user,
+    midgardBasePath: RD.toNullable(state.Midgard.apiBasePath),
   }),
   {
     setTxTimerModal: appActions.setTxTimerModal,

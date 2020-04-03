@@ -197,7 +197,9 @@ export interface GetTxByAddress {
   type: typeof GET_TX_BY_ADDRESS;
   payload: GetTxByAddressPayload;
 }
-export const getTxByAddress = (payload: GetTxByAddressPayload): GetTxByAddress => ({
+export const getTxByAddress = (
+  payload: GetTxByAddressPayload,
+): GetTxByAddress => ({
   type: GET_TX_BY_ADDRESS,
   payload,
 });
@@ -327,10 +329,38 @@ export interface GetTxByAssetFailed {
   type: typeof GET_TX_BY_ASSET_FAILED;
   payload: Error;
 }
-export const getTxByAssetFailed = (
-  payload: Error,
-): GetTxByAssetFailed => ({
+export const getTxByAssetFailed = (payload: Error): GetTxByAssetFailed => ({
   type: GET_TX_BY_ASSET_FAILED,
+  payload,
+});
+
+export const GET_API_BASEPATH_PENDING = 'GET_API_BASEPATH_PENDING';
+export interface GetApiBasePathPending {
+  type: typeof GET_API_BASEPATH_PENDING;
+}
+export const getApiBasePathPending = (): GetApiBasePathPending => ({
+  type: GET_API_BASEPATH_PENDING,
+});
+
+export const GET_API_BASEPATH_FAILED = 'GET_API_BASEPATH_FAILED';
+export interface GetApiBasePathFailed {
+  type: typeof GET_API_BASEPATH_FAILED;
+  payload: Error;
+}
+export const getApiBasePathFailed = (payload: Error): GetApiBasePathFailed => ({
+  type: GET_API_BASEPATH_FAILED,
+  payload,
+});
+
+export const GET_API_BASEPATH_SUCCESS = 'GET_API_BASEPATH_SUCCESS';
+export interface GetApiBasePathSuccess {
+  type: typeof GET_API_BASEPATH_SUCCESS;
+  payload: string;
+}
+export const getApiBasePathSuccess = (
+  payload: string,
+): GetApiBasePathSuccess => ({
+  type: GET_API_BASEPATH_SUCCESS,
   payload,
 });
 
@@ -362,4 +392,7 @@ export type MidgardActionTypes =
   | GetTxByAddressAssetFailed
   | GetTxByAsset
   | GetTxByAssetSuccess
-  | GetTxByAssetFailed;
+  | GetTxByAssetFailed
+  | GetApiBasePathPending
+  | GetApiBasePathFailed
+  | GetApiBasePathSuccess;
