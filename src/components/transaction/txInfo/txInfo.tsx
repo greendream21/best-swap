@@ -4,8 +4,8 @@ import { util } from 'asgardex-common';
 import TxStatus from '../txStatus';
 import { TxInfoWrapper, Seperator, Dash } from './txInfo.style';
 import {
-  EventDetails,
-  EventDetailsTypeEnum,
+  TxDetails,
+  TxDetailsTypeEnum,
 } from '../../../types/generated/midgard';
 import {
   formatBaseAsTokenAmount,
@@ -13,7 +13,7 @@ import {
 } from '../../../helpers/tokenHelper';
 
 type Props = {
-  data: EventDetails;
+  data: TxDetails;
 };
 
 const TxInfo: React.FC<Props> = (props: Props): JSX.Element => {
@@ -22,7 +22,7 @@ const TxInfo: React.FC<Props> = (props: Props): JSX.Element => {
   } = props;
 
   // swap tx
-  if (type === EventDetailsTypeEnum.Swap) {
+  if (type === TxDetailsTypeEnum.Swap) {
     const inData = _in?.coins?.[0];
     const outData = out?.[0]?.coins?.[0];
     const fee = baseAmount(events?.fee);
@@ -63,7 +63,7 @@ const TxInfo: React.FC<Props> = (props: Props): JSX.Element => {
   }
 
   // withdraw tx
-  if (type === EventDetailsTypeEnum.Unstake) {
+  if (type === TxDetailsTypeEnum.Unstake) {
     const inData = _in?.coins?.[0];
     const outData = out?.[0]?.coins;
 
@@ -95,7 +95,7 @@ const TxInfo: React.FC<Props> = (props: Props): JSX.Element => {
   }
 
   // stake tx
-  if (type === EventDetailsTypeEnum.Stake) {
+  if (type === TxDetailsTypeEnum.Stake) {
     const inData1 = _in?.coins?.[0];
     const inData2 = _in?.coins?.[1];
 

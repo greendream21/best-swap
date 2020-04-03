@@ -148,16 +148,18 @@ export function* getTxByAddress() {
     payload,
   }: actions.GetTxByAddress) {
     try {
-      // TODO (Chris) Remove optional values for offset / limit when we will implement pagination
-      const { address, offset = 1, limit = 20 } = payload;
+      const { address, offset, limit, type } = payload;
       const basePath: string = yield call(getApiBasePath, isTestnet);
       const midgardApi = api.getMidgardDefaultApi(basePath);
-      const fn = midgardApi.getEvents;
+      const fn = midgardApi.getTxDetails;
       const { data }: UnpackPromiseResponse<typeof fn> = yield call(
         { context: midgardApi, fn },
         offset,
         limit,
         address,
+        undefined,
+        undefined,
+        type,
       );
 
       yield put(actions.getTxByAddressSuccess(data));
@@ -174,9 +176,8 @@ export function* getTxByAddressTxId() {
     try {
       const basePath: string = yield call(getApiBasePath, isTestnet);
       const midgardApi = api.getMidgardDefaultApi(basePath);
-      const fn = midgardApi.getEvents;
-      // TODO (Chris) Remove optional values for offset / limit when we will implement pagination
-      const { address, txId, offset = 1, limit = 20 } = payload;
+      const fn = midgardApi.getTxDetails;
+      const { address, txId, offset, limit, type } = payload;
       const { data }: UnpackPromiseResponse<typeof fn> = yield call(
         {
           context: midgardApi,
@@ -186,6 +187,8 @@ export function* getTxByAddressTxId() {
         limit,
         address,
         txId,
+        undefined,
+        type,
       );
 
       yield put(actions.getTxByAddressTxIdSuccess(data));
@@ -202,9 +205,8 @@ export function* getTxByAddressAsset() {
     try {
       const basePath: string = yield call(getApiBasePath, isTestnet);
       const midgardApi = api.getMidgardDefaultApi(basePath);
-      const fn = midgardApi.getEvents;
-      // TODO (Chris) Remove optional values for offset / limit when we will implement pagination
-      const { address, asset, offset = 1, limit = 20 } = payload;
+      const fn = midgardApi.getTxDetails;
+      const { address, asset, offset, limit, type } = payload;
       const { data }: UnpackPromiseResponse<typeof fn> = yield call(
         {
           context: midgardApi,
@@ -215,6 +217,7 @@ export function* getTxByAddressAsset() {
         address,
         undefined,
         asset,
+        type,
       );
 
       yield put(actions.getTxByAddressAssetSuccess(data));
@@ -229,11 +232,10 @@ export function* getTxByAsset() {
     payload,
   }: actions.GetTxByAsset) {
     try {
-      // TODO (Chris) Remove optional values for offset / limit when we will implement pagination
-      const { asset, offset = 1, limit = 20 } = payload;
+const { asset, offset, limit, type } = payload;
       const basePath: string = yield call(getApiBasePath, isTestnet);
       const midgardApi = api.getMidgardDefaultApi(basePath);
-      const fn = midgardApi.getEvents;
+      const fn = midgardApi.getTxDetails;
       const { data }: UnpackPromiseResponse<typeof fn> = yield call(
         {
           context: midgardApi,
@@ -244,6 +246,7 @@ export function* getTxByAsset() {
         undefined,
         undefined,
         asset,
+        type,
       );
 
       yield put(actions.getTxByAssetSuccess(data));

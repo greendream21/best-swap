@@ -18,7 +18,7 @@ exports[`FilterDropdown Matches the snapshot 1`] = `
     weight="500"
   >
     <span>
-      Filter 
+      swap 
     </span>
     <i
       aria-label="icon: caret-down"

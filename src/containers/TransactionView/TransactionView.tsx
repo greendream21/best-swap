@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import * as RD from '@devexperts/remote-data-ts';
@@ -15,11 +15,11 @@ import {
   StyledPagination,
   MobileColumeHeader,
 } from './TransactionView.style';
-import { EventDetails } from '../../types/generated/midgard';
+import { TxDetails, InlineResponse200, TxDetailsTypeEnum } from '../../types/generated/midgard';
 import { ViewType, Maybe } from '../../types/bepswap';
 
 import * as midgardActions from '../../redux/midgard/actions';
-import { TxDetailData } from '../../redux/midgard/types';
+import { TxDetailData, TxDetailType } from '../../redux/midgard/types';
 import { User } from '../../redux/wallet/types';
 import { RootState } from '../../redux/store';
 import AddWallet from '../../components/uielements/addWallet';
@@ -36,26 +36,39 @@ type Props = ComponentProps & ConnectedProps;
 
 const Transaction: React.FC<Props> = (props): JSX.Element => {
   const { user, txData, getTxByAddress } = props;
+  const [filter, setFilter] = useState('all');
+  const [page, setPage] = useState(1);
+
+  const limit = 5;
+  const txTypesPair: { [key: string]: TxDetailType } = {
+    swap: TxDetailsTypeEnum.Swap,
+    stake: TxDetailsTypeEnum.Stake,
+    unstake: TxDetailsTypeEnum.Unstake,
+  };
+
+  const getTxDetails = () => {
+    const address = user?.wallet ?? null;
+
+    if (address) {
+      getTxByAddress({
+        address,
+        offset: (page - 1) * limit,
+        limit,
+        type: txTypesPair[filter],
+      });
+    }
+  };
 
   useEffect(() => {
-    const walletAddress = user?.wallet ?? null;
-
-    if (walletAddress) {
-      getTxByAddress({ address: walletAddress });
-    }
-
+    getTxDetails();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [page, filter]);
 
-  const renderTxTable = (data: EventDetails[], view: ViewType) => {
-    const sortedData = [
-      ...data.sort((a, b) => (b?.date ?? 0) - (a?.date ?? 0)),
-    ];
-
+  const renderTxTable = (data: TxDetails[], view: ViewType) => {
     const filterCol = {
       key: 'filter',
-      title: <FilterDropdown />,
-      render: (text: string, rowData: EventDetails) => {
+      title: <FilterDropdown value={filter} onClick={setFilter} />,
+      render: (text: string, rowData: TxDetails) => {
         const { type } = rowData;
 
         return <TxLabel type={type} />;
@@ -67,14 +80,14 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
       {
         key: 'history',
         title: 'history',
-        render: (text: string, rowData: EventDetails) => {
+        render: (text: string, rowData: TxDetails) => {
           return <TxInfo data={rowData} />;
         },
       },
       {
         key: 'date',
         title: 'date',
-        render: (text: string, rowData: EventDetails) => {
+        render: (text: string, rowData: TxDetails) => {
           const { date: timestamp = 0 } = rowData;
           const date = new Date(timestamp * 1000);
           return (
@@ -104,11 +117,11 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
           <MobileColumeHeader>
             <div className="mobile-col-title">history</div>
             <div className="mobile-col-filter">
-              <FilterDropdown />
+              <FilterDropdown value={filter} onClick={setFilter} />
             </div>
           </MobileColumeHeader>
         ),
-        render: (_: string, rowData: EventDetails) => {
+        render: (_: string, rowData: TxDetails) => {
           const { type, date: timestamp = 0, in: _in } = rowData;
           const date = new Date(timestamp * 1000);
 
@@ -148,23 +161,36 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
     return (
       <Table
         columns={columns}
-        dataSource={sortedData}
-        rowKey={(record: EventDetails, index: number) => index}
+        dataSource={data}
+        rowKey={(record: TxDetails, index: number) => index}
       />
     );
   };
 
-  const pageContent = (data: EventDetails[]) => (
-    <>
-      <ContentWrapper className="transaction-view-wrapper desktop-view">
-        {renderTxTable(data, ViewType.DESKTOP)}
-      </ContentWrapper>
-      <ContentWrapper className="transaction-view-wrapper mobile-view">
-        {renderTxTable(data, ViewType.MOBILE)}
-      </ContentWrapper>
-      <StyledPagination defaultCurrent={1} total={data?.length ?? 0} />
-    </>
-  );
+  const pageContent = (data: TxDetails[], count: number) => {
+    // const filteredData = data.filter(eventData => eventData.type === filter);
+
+    return (
+      <>
+        <ContentWrapper className="transaction-view-wrapper desktop-view">
+          {renderTxTable(data, ViewType.DESKTOP)}
+        </ContentWrapper>
+        <ContentWrapper className="transaction-view-wrapper mobile-view">
+          {renderTxTable(data, ViewType.MOBILE)}
+        </ContentWrapper>
+        {count ? (
+          <StyledPagination
+            current={page}
+            onChange={setPage}
+            pageSize={limit}
+            total={count}
+          />
+        ) : (
+          ''
+        )}
+      </>
+    );
+  };
 
   const renderPage = () => {
     const walletAddress = user?.wallet ?? null;
@@ -179,7 +205,10 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
             {(error?.message ?? false) && <p>{error.message}</p>}
           </ContentWrapper>
         ),
-        (data: EventDetails[]): JSX.Element => pageContent(data),
+        (data: InlineResponse200): JSX.Element => {
+          const { count, txs } = data;
+          return pageContent(txs || [], count || 0);
+        },
       )(txData);
     } else {
       return (

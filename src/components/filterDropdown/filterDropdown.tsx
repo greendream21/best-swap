@@ -2,22 +2,26 @@ import React, { useCallback } from 'react';
 import { Dropdown, Icon } from 'antd';
 import { ClickParam } from 'antd/lib/menu';
 
+import { TxDetailsTypeEnum } from '../../types/generated/midgard';
 import { Menu, DesktopButton, MobileButton } from './filterDropdown.style';
 
+export type FilterValue = TxDetailsTypeEnum.Swap | TxDetailsTypeEnum.Stake | TxDetailsTypeEnum.Unstake | 'all';
+
 type Props = {
+  value: string;
   onClick?: (key: string) => void;
 };
 
 type MenuItem = {
   icon: string;
   title: string;
-  key: string;
+  key: FilterValue;
 };
 
 type MenuItems = MenuItem[];
 
 const FilterDropdown: React.FC<Props> = (props: Props): JSX.Element => {
-  const { onClick } = props;
+  const { value, onClick } = props;
 
   const handleClickItem = useCallback(
     ({ key }: ClickParam) => {
@@ -36,22 +40,26 @@ const FilterDropdown: React.FC<Props> = (props: Props): JSX.Element => {
       {
         icon: 'swap',
         title: 'SWAP',
-        key: 'swap',
+        key: TxDetailsTypeEnum.Swap,
       },
       {
         icon: 'double-right',
         title: 'STAKE',
-        key: 'stake',
+        key: TxDetailsTypeEnum.Stake,
       },
       {
         icon: 'import',
         title: 'WITHDRAW',
-        key: 'withdraw',
+        key: TxDetailsTypeEnum.Unstake,
       },
     ];
 
     return (
-      <Menu className="filterDropdown-menu-items" onClick={handleClickItem}>
+      <Menu
+        className="filterDropdown-menu-items"
+        onClick={handleClickItem}
+        selectedKeys={[value]}
+      >
         {items.map(item => {
           return (
             <Menu.Item key={item.key}>
@@ -67,7 +75,7 @@ const FilterDropdown: React.FC<Props> = (props: Props): JSX.Element => {
     <Dropdown overlay={renderMenu()} trigger={['click']}>
       <div className="dropdown-wrapper">
         <DesktopButton color="primary" typevalue="outline">
-          Filter <Icon type="caret-down" />
+          {value} <Icon type="caret-down" />
         </DesktopButton>
         <MobileButton color="primary" typevalue="ghost">
           <Icon type="filter" />

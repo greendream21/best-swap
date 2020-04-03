@@ -7,7 +7,8 @@ import {
   StakersAssetData,
   ThorchainEndpoints,
   ThorchainEndpoint,
-  EventDetails,
+  InlineResponse200,
+  TxDetailsTypeEnum,
 } from '../../types/generated/midgard';
 
 export type AssetDetailMap = {
@@ -31,33 +32,41 @@ export type PriceDataIndex = {
   [symbol: string]: BigNumber;
 };
 
+export type TxDetailType = TxDetailsTypeEnum.Swap
+ | TxDetailsTypeEnum.Stake | TxDetailsTypeEnum.Unstake
+ | TxDetailsTypeEnum.Add | TxDetailsTypeEnum.Refund;
+
 export type GetTxByAddressPayload = {
-  address: string,
-  offset?: number, // TODO(Veado): optional for now, should be required (not optional) as soon as we will implement pagination
-  limit?: number, //  TODO(Veado): optional for now, should be required (not optional) as soon as we will implement pagination
-}
+  address: string;
+  offset: number;
+  limit: number;
+  type?: TxDetailType;
+};
 
 export type GetTxByAddressTxIdPayload = {
   address: string;
   txId: string;
-  offset?: number, // TODO(Veado): optional for now, should be required (not optional) as soon as we will implement pagination
-  limit?: number, // TODO(Veado): optional for now, should be required (not optional) as soon as we will implement pagination
+  offset: number;
+  limit: number;
+  type?: TxDetailType;
 };
 
 export type GetTxByAddressAssetPayload = {
   address: string;
   asset: string;
-  offset?: number, // TODO(Veado): optional for now, should be required (not optional) as soon as we will implement pagination
-  limit?: number, // TODO(Veado): optional for now, should be required (not optional) as soon as we will implement pagination
+  offset: number;
+  limit: number;
+  type?: TxDetailType;
 };
 
 export type GetTxByAssetPayload = {
   asset: string;
-  offset?: number, // TODO(Veado): optional for now, should be required (not optional) as soon as we will implement pagination
-  limit?: number, // TODO(Veado): optional for now, should be required (not optional) as soon as we will implement pagination
+  offset: number;
+  limit: number;
+  type?: TxDetailType;
 };
 
-export type TxDetailData = RemoteData<Error, EventDetails[]>;
+export type TxDetailData = RemoteData<Error, InlineResponse200>;
 
 export type State = {
   assets: AssetDetailMap;
