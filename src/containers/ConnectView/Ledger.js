@@ -10,7 +10,7 @@ import Label from '../../components/uielements/label';
 import Button from '../../components/uielements/button';
 
 import * as walletActions from '../../redux/wallet/actions';
-import { NET } from '../../env';
+import { BINANCE_NET } from '../../env';
 
 const { saveWallet } = walletActions;
 
@@ -47,7 +47,7 @@ const Connector = props => {
 
     // select which address to use
     // TODO (Chad): use "bnb" when on mainnet
-    const _ = await app.showAddress(binance.getPrefix(NET), hdPath); // results
+    const _ = await app.showAddress(binance.getPrefix(BINANCE_NET), hdPath); // results
 
     // get public key
     let pk;
@@ -58,7 +58,7 @@ const Connector = props => {
       // TODO: use "bnb" when on mainnet
       const address = crypto.getAddressFromPublicKey(
         pk,
-        binance.getPrefix(NET),
+        binance.getPrefix(BINANCE_NET),
       );
       setConnecting(false);
 

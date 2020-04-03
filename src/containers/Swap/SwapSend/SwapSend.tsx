@@ -73,7 +73,7 @@ import { RootState } from '../../../redux/store';
 import { getAssetFromString } from '../../../redux/midgard/utils';
 import { tokenAmount } from '../../../helpers/tokenHelper';
 import { TokenAmount } from '../../../types/token';
-import { NET } from '../../../env';
+import { BINANCE_NET } from '../../../env';
 
 type ComponentProps = {
   info: string;
@@ -202,7 +202,7 @@ class SwapSend extends React.Component<Props, State> {
 
   isValidRecipient = async () => {
     const { address } = this.state;
-    const bncClient = await binance.client(NET);
+    const bncClient = await binance.client(BINANCE_NET);
     return bncClient.isValidAddress(address);
   };
 
@@ -318,11 +318,11 @@ class SwapSend extends React.Component<Props, State> {
 
       try {
         const privateKey = crypto.getPrivateKeyFromKeyStore(keystore, password);
-        const bncClient = await binance.client(NET);
+        const bncClient = await binance.client(BINANCE_NET);
         await bncClient.setPrivateKey(privateKey);
         const address = crypto.getAddressFromPrivateKey(
           privateKey,
-          binance.getPrefix(NET),
+          binance.getPrefix(BINANCE_NET),
         );
         if (wallet === address) {
           this.handleConfirmSwap();
@@ -592,7 +592,7 @@ class SwapSend extends React.Component<Props, State> {
       });
 
       this.handleStartTimer();
-      const bncClient = await binance.client(NET);
+      const bncClient = await binance.client(BINANCE_NET);
       try {
         const data = await confirmSwap(
           bncClient,

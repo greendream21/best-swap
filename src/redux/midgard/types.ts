@@ -76,4 +76,5 @@ export type State = {
   error: Maybe<Error>;
   poolLoading: boolean;
   txData: TxDetailData;
+  apiBasePath: RemoteData<Error, string>;
 };

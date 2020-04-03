@@ -3,11 +3,12 @@ import { binance } from 'asgardex-common';
 const prod_hostnames = ['bepswap.com'];
 const dev_hostnames = ['localhost'];
 
-const isMainnet = prod_hostnames.includes(window.location.hostname);
-const isTestnet = !isMainnet;
-const isDevnet = dev_hostnames.includes(window.location.hostname);
+const hostname = window.location.hostname;
 
-const NET = isTestnet ? binance.Network.TESTNET : binance.Network.MAINNET;
-const CHAIN_ID = isTestnet ? 'Binance-Chain-Nile' : 'Binance-Chain-Tigris';
+const isMainnet = prod_hostnames.includes(hostname);
+const isTestnet = hostname.includes('testnet');
+const isDevnet = dev_hostnames.includes(hostname);
 
-export { NET, CHAIN_ID, isDevnet, isTestnet, isMainnet };
+const BINANCE_NET = isMainnet ? binance.Network.MAINNET : binance.Network.TESTNET;
+
+export { BINANCE_NET, isDevnet, isTestnet, isMainnet };

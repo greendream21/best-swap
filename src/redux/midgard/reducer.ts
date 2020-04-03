@@ -40,6 +40,9 @@ import {
   GET_TX_BY_ASSET,
   GET_TX_BY_ASSET_SUCCESS,
   GET_TX_BY_ASSET_FAILED,
+  GET_API_BASEPATH_SUCCESS,
+  GET_API_BASEPATH_FAILED,
+  GET_API_BASEPATH_PENDING,
 } from './actions';
 import { Nothing } from '../../types/bepswap';
 import { PoolDetail, StakersAssetData } from '../../types/generated/midgard';
@@ -65,6 +68,7 @@ const initState: State = {
   error: null,
   poolLoading: false,
   txData: initial,
+  apiBasePath: initial,
 };
 
 const reducer: Reducer<State, MidgardActionTypes> = (
@@ -271,6 +275,21 @@ const reducer: Reducer<State, MidgardActionTypes> = (
       return {
         ...state,
         txData: failure(action.payload),
+      };
+    case GET_API_BASEPATH_PENDING:
+      return {
+        ...state,
+        apiBasePath: pending,
+      };
+    case GET_API_BASEPATH_FAILED:
+      return {
+        ...state,
+        apiBasePath: failure(action.payload),
+      };
+    case GET_API_BASEPATH_SUCCESS:
+      return {
+        ...state,
+        apiBasePath: success(action.payload),
       };
     default:
       return state;
