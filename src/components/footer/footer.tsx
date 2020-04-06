@@ -25,7 +25,7 @@ const Footer: React.FC<Props> = ({ commitHash }): JSX.Element => {
         </FooterItem>
         <FooterItem>
           <div className="footer-links-bar">
-            <Link to="/stats">STATS</Link>
+            {/* <Link to="/stats">STATS</Link> */}
             <Link to="/tutorial">TUTORIAL</Link>
             <Link to="/faqs">FAQS</Link>
           </div>
