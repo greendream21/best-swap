@@ -14,7 +14,7 @@ storiesOf('Components/Button/WalletButton', module).add('default', () => {
       <AppHolder>
         <Row>
           <WalletButton />
-          <WalletButton connected value="bnb12345645645645edf" />
+          <WalletButton connected address="bnb12345645645645edf" />
         </Row>
       </AppHolder>
     </ThemeProvider>
