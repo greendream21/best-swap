@@ -120,7 +120,7 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
             <WalletButton
               data-test="add-wallet-button"
               connected={false}
-              value={wallet}
+              address={wallet}
             />
           </Link>
         )}
