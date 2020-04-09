@@ -68,6 +68,7 @@ const initState: State = {
   error: null,
   poolLoading: false,
   txData: initial,
+  txCurData: {},
   apiBasePath: initial,
 };
 
@@ -182,7 +183,9 @@ const reducer: Reducer<State, MidgardActionTypes> = (
 
       return {
         ...state,
-        stakerPoolData: state.stakerPoolData ? { ...state.stakerPoolData, ...newStakerPoolData } : newStakerPoolData,
+        stakerPoolData: state.stakerPoolData
+          ? { ...state.stakerPoolData, ...newStakerPoolData }
+          : newStakerPoolData,
         stakerPoolDataLoading: false,
       };
     }
@@ -224,6 +227,7 @@ const reducer: Reducer<State, MidgardActionTypes> = (
       return {
         ...state,
         txData: success(action.payload),
+        txCurData: action.payload,
       };
     case GET_TX_BY_ADDRESS_FAILED:
       return {
