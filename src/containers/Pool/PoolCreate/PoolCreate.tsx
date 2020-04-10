@@ -2,8 +2,8 @@ import React from 'react';
 import * as H from 'history';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { withRouter, Link } from 'react-router-dom';
-import { Row, Col, notification, Icon } from 'antd';
+import { withRouter } from 'react-router-dom';
+import { Row, Col, Icon, notification } from 'antd';
 import { crypto } from '@binance-chain/javascript-sdk';
 import { get as _get } from 'lodash';
 
@@ -45,11 +45,8 @@ import TokenDetailLoader from '../../../components/utility/loaders/tokenDetail';
 import { RootState } from '../../../redux/store';
 import { TxStatus, TxTypes } from '../../../redux/app/types';
 import { State as BinanceState } from '../../../redux/binance/types';
-import {
-  PriceDataIndex,
-  PoolDataMap,
-} from '../../../redux/midgard/types';
-import { Maybe, FixmeType, AssetPair } from '../../../types/bepswap';
+import { PriceDataIndex, PoolDataMap } from '../../../redux/midgard/types';
+import { Maybe, AssetPair } from '../../../types/bepswap';
 import { User, AssetData } from '../../../redux/wallet/types';
 
 import { TokenAmount } from '../../../types/token';
@@ -59,7 +56,6 @@ import { BINANCE_NET } from '../../../env';
 
 type ComponentProps = {
   symbol: string;
-  assets: FixmeType; // PropTypes.object
 };
 
 type ConnectedProps = {
@@ -434,6 +430,16 @@ class PoolCreate extends React.Component<Props, State> {
     });
   };
 
+  handleFinishTx = () => {
+    notification.open({
+      message: 'Pool Created Successfully!',
+      description:
+        'It may take a few moments until a new pool appears in the pool list!',
+    });
+
+    this.props.history.push('/pools');
+  };
+
   renderAssetView = () => {
     const { symbol, priceIndex, basePriceAsset, assetData, pools } = this.props;
 
@@ -657,11 +663,13 @@ class PoolCreate extends React.Component<Props, State> {
           {completed && (
             <div className="hash-address">
               <div className="copy-btn-wrapper">
-                <Link to="/pools">
-                  <Button className="view-btn" color="success">
-                    FINISH
-                  </Button>
-                </Link>
+                <Button
+                  className="view-btn"
+                  color="success"
+                  onClick={this.handleFinishTx}
+                >
+                  FINISH
+                </Button>
                 <a href={txURL} target="_blank" rel="noopener noreferrer">
                   VIEW TRANSACTION
                 </a>
