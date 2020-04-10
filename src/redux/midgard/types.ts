@@ -68,6 +68,8 @@ export type GetTxByAssetPayload = {
 
 export type TxDetailData = RemoteData<Error, InlineResponse200>;
 
+export type ApiBasePathRD = RemoteData<Error, string>;
+
 export type State = {
   assets: AssetDetailMap;
   assetArray: AssetDetail[];
@@ -86,5 +88,5 @@ export type State = {
   poolLoading: boolean;
   txData: TxDetailData;
   txCurData: Maybe<InlineResponse200>;
-  apiBasePath: RemoteData<Error, string>;
+  apiBasePath: ApiBasePathRD;
 };

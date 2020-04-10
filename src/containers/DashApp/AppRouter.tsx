@@ -1,10 +1,15 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Route, Switch } from 'react-router-dom';
-import PropTypes from 'prop-types';
 
 import asyncComponent from '../../helpers/AsyncFunc';
 
-const routes = [
+type AppRoute = {
+  path: string;
+  exact?: boolean;
+  component: ReturnType<typeof asyncComponent>;
+};
+
+const routes: AppRoute[] = [
   {
     path: '',
     component: asyncComponent(() => import('../pages/Swap/SwapLanding')),
@@ -51,32 +56,30 @@ const routes = [
   },
 ];
 
-class AppRouter extends Component {
-  render() {
-    const { url } = this.props;
+type Props = {
+  url: string;
+};
 
-    return (
-      <div>
-        <Switch>
-          {routes.map(singleRoute => {
-            const { path, exact = true, ...otherProps } = singleRoute;
-            return (
-              <Route
-                exact={exact}
-                key={singleRoute.path}
-                path={`${url}${singleRoute.path}`}
-                {...otherProps}
-              />
-            );
-          })}
-        </Switch>
-      </div>
-    );
-  }
-}
+const AppRouter: React.FC<Props> = (props: Props): JSX.Element => {
+  const { url } = props;
 
-AppRouter.propTypes = {
-  url: PropTypes.string.isRequired,
+  return (
+    <div>
+      <Switch>
+        {routes.map(singleRoute => {
+          const { path, exact = true, ...other } = singleRoute;
+          return (
+            <Route
+              exact={exact}
+              key={singleRoute.path}
+              path={`${url}${singleRoute.path}`}
+              {...other}
+            />
+          );
+        })}
+      </Switch>
+    </div>
+  );
 };
 
 export default AppRouter;

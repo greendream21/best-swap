@@ -23,7 +23,7 @@ import {
 import { getAssetFromString } from '../midgard/utils';
 
 import { baseToToken, baseAmount, tokenAmount } from '../../helpers/tokenHelper';
-import { BINANCE_NET, isTestnet } from '../../env';
+import { BINANCE_NET, getNet } from '../../env';
 import { getApiBasePath } from '../midgard/saga';
 
 export function* saveWalletSaga() {
@@ -93,7 +93,7 @@ export function* getUserStakeData(payload: {
 }) {
   const { address, assets } = payload;
 
-  let basePath: string = yield call(getApiBasePath, isTestnet);
+  let basePath: string = yield call(getApiBasePath, getNet());
   let midgardApi = api.getMidgardDefaultApi(basePath);
   // (Request 1) Load list of possible `StakersAssetData`
   const { data }: AxiosResponse<StakersAssetData[]> = yield call(
@@ -118,7 +118,7 @@ export function* getUserStakeData(payload: {
 
   // (Request 2) Load list of possible `PoolDetail`
   // And we do need to check `basePath` again before
-  basePath = yield call(getApiBasePath, isTestnet);
+  basePath = yield call(getApiBasePath, getNet());
   midgardApi = api.getMidgardDefaultApi(basePath);
   const { data: poolDataList }: AxiosResponse<PoolDetail[]> = yield call(
     { context: midgardApi, fn: midgardApi.getPoolsData },
@@ -159,7 +159,7 @@ export function* refreshStakes() {
     const address = payload;
 
     try {
-      const basePath: string = yield call(getApiBasePath, isTestnet);
+      const basePath: string = yield call(getApiBasePath, getNet());
       const midgardApi = api.getMidgardDefaultApi(basePath);
       const { data }: AxiosResponse<StakersAddressData> = yield call(
         { context: midgardApi, fn: midgardApi.getStakersAddressData },
