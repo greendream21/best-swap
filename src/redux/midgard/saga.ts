@@ -1,5 +1,6 @@
 import { all, takeEvery, put, fork, call } from 'redux-saga/effects';
 import { isEmpty as _isEmpty } from 'lodash';
+import byzantine from '@thorchain/byzantine-module';
 import * as actions from './actions';
 import * as api from '../../helpers/apiHelper';
 
@@ -8,14 +9,18 @@ import {
   getBasePriceAsset,
 } from '../../helpers/webStorageHelper';
 import { getAssetDetailIndex, getPriceIndex } from './utils';
-import { isTestnet } from '../../env';
+import { NET, getNet } from '../../env';
 import { UnpackPromiseResponse } from '../../types/util';
 
-export function* getApiBasePath(isTestnet: boolean) {
+export function* getApiBasePath(net: NET) {
+  if (net === NET.DEV) {
+    return api.getMidgardBasePathByIP(api.MIDGARD_DEV_API_DEV_IP);
+  }
+
   try {
     yield put(actions.getApiBasePathPending());
-    const fn = api.getMidgardBasePath;
-    const basePath: UnpackPromiseResponse<typeof fn> = yield call(fn, isTestnet);
+    const fn = byzantine;
+    const basePath: UnpackPromiseResponse<typeof fn> = yield call(fn, net === NET.MAIN);
     yield put(actions.getApiBasePathSuccess(basePath));
     return basePath;
   } catch (error) {
@@ -27,7 +32,7 @@ export function* getApiBasePath(isTestnet: boolean) {
 export function* getPools() {
   yield takeEvery(actions.GET_POOLS_REQUEST, function*() {
     try {
-      let basePath: string = yield call(getApiBasePath, isTestnet);
+      let basePath: string = yield call(getApiBasePath, getNet());
       let midgardApi = api.getMidgardDefaultApi(basePath);
       const fn = midgardApi.getPools;
       const { data }: UnpackPromiseResponse<typeof fn> = yield call({
@@ -37,7 +42,7 @@ export function* getPools() {
 
       if (data && !_isEmpty(data)) {
         // We do need to check `basePath` again here
-        basePath = yield call(getApiBasePath, isTestnet);
+        basePath = yield call(getApiBasePath, getNet());
         midgardApi = api.getMidgardDefaultApi(basePath);
         const fn = midgardApi.getAssetInfo;
         const {
@@ -82,7 +87,7 @@ export function* getPoolData() {
   }: actions.GetPoolData) {
     const { assets, overrideAllPoolData } = payload;
     try {
-      const basePath: string = yield call(getApiBasePath, isTestnet);
+      const basePath: string = yield call(getApiBasePath, getNet());
       const midgardApi = api.getMidgardDefaultApi(basePath);
       const fn = midgardApi.getPoolsData;
       const { data }: UnpackPromiseResponse<typeof fn> = yield call(
@@ -108,7 +113,7 @@ export function* getStakerPoolData() {
     const assetId = `BNB.${asset}`;
 
     try {
-      const basePath: string = yield call(getApiBasePath, isTestnet);
+      const basePath: string = yield call(getApiBasePath, getNet());
       const midgardApi = api.getMidgardDefaultApi(basePath);
       const fn = midgardApi.getStakersAddressAndAssetData;
       const response: UnpackPromiseResponse<typeof fn> = yield call(
@@ -128,7 +133,7 @@ export function* getStakerPoolData() {
 export function* getPoolAddress() {
   yield takeEvery(actions.GET_POOL_ADDRESSES_REQUEST, function*() {
     try {
-      const basePath: string = yield call(getApiBasePath, isTestnet);
+      const basePath: string = yield call(getApiBasePath, getNet());
       const midgardApi = api.getMidgardDefaultApi(basePath);
       const fn = midgardApi.getThorchainProxiedEndpoints;
       const { data }: UnpackPromiseResponse<typeof fn> = yield call({
@@ -149,7 +154,7 @@ export function* getTxByAddress() {
   }: actions.GetTxByAddress) {
     try {
       const { address, offset, limit, type } = payload;
-      const basePath: string = yield call(getApiBasePath, isTestnet);
+      const basePath: string = yield call(getApiBasePath, getNet());
       const midgardApi = api.getMidgardDefaultApi(basePath);
       const fn = midgardApi.getTxDetails;
       const { data }: UnpackPromiseResponse<typeof fn> = yield call(
@@ -174,7 +179,7 @@ export function* getTxByAddressTxId() {
     payload,
   }: actions.GetTxByAddressTxId) {
     try {
-      const basePath: string = yield call(getApiBasePath, isTestnet);
+      const basePath: string = yield call(getApiBasePath, getNet());
       const midgardApi = api.getMidgardDefaultApi(basePath);
       const fn = midgardApi.getTxDetails;
       const { address, txId, offset, limit, type } = payload;
@@ -203,7 +208,7 @@ export function* getTxByAddressAsset() {
     payload,
   }: actions.GetTxByAddressAsset) {
     try {
-      const basePath: string = yield call(getApiBasePath, isTestnet);
+      const basePath: string = yield call(getApiBasePath, getNet());
       const midgardApi = api.getMidgardDefaultApi(basePath);
       const fn = midgardApi.getTxDetails;
       const { address, asset, offset, limit, type } = payload;
@@ -233,7 +238,7 @@ export function* getTxByAsset() {
   }: actions.GetTxByAsset) {
     try {
 const { asset, offset, limit, type } = payload;
-      const basePath: string = yield call(getApiBasePath, isTestnet);
+      const basePath: string = yield call(getApiBasePath, getNet());
       const midgardApi = api.getMidgardDefaultApi(basePath);
       const fn = midgardApi.getTxDetails;
       const { data }: UnpackPromiseResponse<typeof fn> = yield call(
