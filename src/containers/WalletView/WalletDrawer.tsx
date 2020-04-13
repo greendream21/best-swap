@@ -4,7 +4,7 @@ import { Icon, notification } from 'antd';
 import { connect } from 'react-redux';
 import copy from 'copy-to-clipboard';
 
-import { util } from 'asgardex-common';
+import { delay } from '@thorchain/asgardex-util';
 import Button from '../../components/uielements/button';
 import Label from '../../components/uielements/label';
 import WalletButton from '../../components/uielements/walletButton';
@@ -60,7 +60,7 @@ const WalletDrawer: React.FC<Props> = props => {
     }
 
     setRefresh(true);
-    await util.delay(1000);
+    await delay(1000);
     setRefresh(false);
   }, [refreshBalance, refreshStake, wallet]);
 

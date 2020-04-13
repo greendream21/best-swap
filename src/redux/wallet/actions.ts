@@ -1,4 +1,4 @@
-import { binance } from 'asgardex-common';
+import { Address } from '@thorchain/asgardex-binance';
 import { AssetData, User, StakeData } from './types';
 
 export interface SaveWallet {
@@ -12,7 +12,7 @@ export interface ForgetWallet {
 
 export interface RefreshBalance {
   type: typeof REFRESH_BALANCE;
-  payload: binance.Address;
+  payload: Address;
 }
 
 export interface RefreshBalanceSuccess {
@@ -25,7 +25,7 @@ export interface RefreshBalanceFailed {
 }
 export interface RefreshStakes {
   type: typeof REFRESH_STAKES;
-  payload: binance.Address;
+  payload: Address;
 }
 export interface RefreshStakesSuccess {
   type: typeof REFRESH_STAKES_SUCCESS;
@@ -66,7 +66,7 @@ export const forgetWallet = (): ForgetWallet => ({
   type: FORGET_WALLET,
 });
 
-export const refreshBalance = (payload: binance.Address): RefreshBalance => ({
+export const refreshBalance = (payload: Address): RefreshBalance => ({
   type: REFRESH_BALANCE,
   payload,
 });
@@ -83,7 +83,7 @@ export const refreshBalanceFailed = (payload: Error): RefreshBalanceFailed => ({
   payload,
 });
 
-export const refreshStake = (payload: binance.Address): RefreshStakes => ({
+export const refreshStake = (payload: Address): RefreshStakes => ({
   type: REFRESH_STAKES,
   payload,
 });

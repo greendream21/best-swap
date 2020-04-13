@@ -1,7 +1,7 @@
 import React from 'react';
 
 import BigNumber from 'bignumber.js';
-import { util } from 'asgardex-common';
+import { formatBN, bn } from '@thorchain/asgardex-util';
 import { CoinButtonWrapper } from './coinButton.style';
 import CoinIcon from '../coinIcon';
 import Label from '../../label';
@@ -21,7 +21,7 @@ type Props = {
 const CoinButton: React.FC<Props> = (props: Props): JSX.Element => {
   const {
     cointype,
-    price = util.bn(0),
+    price = bn(0),
     priceUnit = 'RUNE',
     reversed = false,
     className = '',
@@ -30,7 +30,7 @@ const CoinButton: React.FC<Props> = (props: Props): JSX.Element => {
     onClick = () => {},
     ...otherProps
   } = props;
-  const priceValue = util.formatBN(price);
+  const priceValue = formatBN(price);
   const priceLabel = `${priceUnit.toUpperCase()} ${priceValue}`;
 
   return (

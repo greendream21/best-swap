@@ -3,7 +3,7 @@ import { Menu, Dropdown, Icon, Row } from 'antd';
 
 import { ClickParam } from 'antd/lib/menu';
 import { keyBy } from 'lodash';
-import { binance } from 'asgardex-common';
+import { getBinanceUrl } from '@thorchain/asgardex-binance';
 import ConnectionStatus from '../uielements/connectionStatus';
 
 import { BINANCE_NET } from '../../env';
@@ -30,7 +30,7 @@ const HeaderSetting: React.FC<Props> = (props: Props): JSX.Element => {
       {
         key: 'binance_chain',
         label: 'binance chain',
-        url: getHostnameFromUrl(binance.getBinanceUrl(BINANCE_NET)),
+        url: getHostnameFromUrl(getBinanceUrl(BINANCE_NET)),
         status: 'green',
       },
       {

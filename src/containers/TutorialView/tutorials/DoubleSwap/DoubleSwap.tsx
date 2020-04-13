@@ -2,7 +2,7 @@ import React from 'react';
 import * as H from 'history';
 import { withRouter, Link, RouteComponentProps } from 'react-router-dom';
 import { Row, Col, Icon } from 'antd';
-import { util } from 'asgardex-common';
+import { formatBNCurrency } from '@thorchain/asgardex-util';
 
 import { ContentWrapper } from './DoubleSwap.style';
 import Centered from '../../../../components/utility/centered';
@@ -187,13 +187,13 @@ class DoubleSwap extends React.Component<Props, State> {
             <Centered>
               <Label size="large" color="normal">
                 {view === TutorialContent.INTRO &&
-                  util.formatBNCurrency(getPx(Nothing))}
+                  formatBNCurrency(getPx(Nothing))}
                 {view === TutorialContent.PLAY &&
-                  util.formatBNCurrency(getPx(xValue))}
+                  formatBNCurrency(getPx(xValue))}
               </Label>
               <Label size="large" color="normal" />
               <Label size="large" color="normal">
-                {util.formatBNCurrency(Py)}
+                {formatBNCurrency(Py)}
               </Label>
             </Centered>
             <Centered>
@@ -249,14 +249,14 @@ class DoubleSwap extends React.Component<Props, State> {
             </Centered>
             <Centered>
               <Label size="large" color="normal">
-                {util.formatBNCurrency(Pr)}
+                {formatBNCurrency(Pr)}
               </Label>
               <Label size="large" color="normal" />
               <Label size="large" color="normal">
                 {view === TutorialContent.INTRO &&
-                  util.formatBNCurrency(getPz(Nothing))}
+                  formatBNCurrency(getPz(Nothing))}
                 {view === TutorialContent.PLAY &&
-                  util.formatBNCurrency(getPz(xValue))}
+                  formatBNCurrency(getPz(xValue))}
               </Label>
             </Centered>
             <Centered>

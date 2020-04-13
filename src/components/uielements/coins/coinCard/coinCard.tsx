@@ -3,7 +3,7 @@ import { Dropdown } from 'antd';
 import { sortBy as _sortBy } from 'lodash';
 
 import BigNumber from 'bignumber.js';
-import { util } from 'asgardex-common';
+import { bn, delay, formatBN } from '@thorchain/asgardex-util';
 import Label from '../../label';
 import Selection from '../../selection';
 import CoinInputAdvanced from '../coinInputAdvanced';
@@ -98,7 +98,7 @@ class CoinCard extends React.Component<Props, State> {
     asset: 'bnb',
     assetData: [],
     amount: tokenAmount(0),
-    price: util.bn(0),
+    price: bn(0),
     unit: 'RUNE',
     title: '',
     withSelection: false,
@@ -185,7 +185,7 @@ class CoinCard extends React.Component<Props, State> {
     this.setState({ openDropdown: false });
 
     // Wait for the dropdown to close
-    await util.delay(500);
+    await delay(500);
     this.handleResetPercentButtons();
     onChangeAsset(asset);
   };
@@ -287,7 +287,7 @@ class CoinCard extends React.Component<Props, State> {
                   <HorizontalDivider color="primary" />
                   <AssetCardFooter>
                     <FooterLabel>
-                      {`${unit} ${util.formatBN(amount.amount().multipliedBy(price))}`}
+                      {`${unit} ${formatBN(amount.amount().multipliedBy(price))}`}
                     </FooterLabel>
                     {slip !== undefined && (
                       <FooterLabel

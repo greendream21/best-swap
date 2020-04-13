@@ -1,4 +1,5 @@
-import { binance, util } from 'asgardex-common';
+import { TransferEvent, TransferEventData } from '@thorchain/asgardex-binance';
+import { bn } from '@thorchain/asgardex-util';
 import {
   parseTransfer,
   isOutboundTx,
@@ -108,9 +109,9 @@ const poolData: PoolDataMap = {
 };
 
 const priceIndex = {
-  RUNE: util.bn(1),
-  LOK: util.bn(0.89),
-  BNB: util.bn(0),
+  RUNE: bn(1),
+  LOK: bn(0.89),
+  BNB: bn(0),
 };
 
 describe('swap/utils/', () => {
@@ -152,7 +153,7 @@ describe('swap/utils/', () => {
 
   describe('parseTransfer', () => {
     it('should parse transfer event ', () => {
-      const transferEvent: binance.TransferEvent = {
+      const transferEvent: TransferEvent = {
         stream: 'transfers',
         data: {
           e: 'outboundTransferInfo',
@@ -202,7 +203,7 @@ describe('swap/utils/', () => {
     });
 
     it('can not parse anything if event includes an empty payload` ', () => {
-      const result = parseTransfer({ data: {} as binance.TransferEventData });
+      const result = parseTransfer({ data: {} as TransferEventData });
       const expected = {
         txHash: undefined,
         txMemo: undefined,
@@ -218,7 +219,7 @@ describe('swap/utils/', () => {
 
   describe('getTxResult', () => {
     it('should return a "refunded" TxResult', () => {
-      const tx: binance.TransferEvent = {
+      const tx: TransferEvent = {
         stream: '',
         data: {
           e: 'outboundTransferInfo',
@@ -254,7 +255,7 @@ describe('swap/utils/', () => {
     });
 
     it('should return a "refunded" TxResult', () => {
-      const tx: binance.TransferEvent = {
+      const tx: TransferEvent = {
         stream: '',
         data: {
           e: 'outboundTransferInfo',
@@ -358,12 +359,12 @@ describe('swap/utils/', () => {
         pool: { asset: 'rune', target: 'LOK' },
         poolPrice: 'RUNE 0.89',
         raw: {
-          depth: util.bn('3822400000'),
-          slip: util.bn(0),
-          trade: util.bn(0),
-          transaction: util.bn(0),
-          volume: util.bn(0),
-          poolPrice: util.bn(0.89),
+          depth: bn('3822400000'),
+          slip: bn(0),
+          trade: bn(0),
+          transaction: bn(0),
+          volume: bn(0),
+          poolPrice: bn(0.89),
         },
         slip: '0',
         trade: '0',
@@ -382,12 +383,12 @@ describe('swap/utils/', () => {
         pool: { asset: 'rune', target: 'BNB' },
         poolPrice: 'RUNE 0.00',
         raw: {
-          depth: util.bn('100000'),
-          slip: util.bn(0),
-          trade: util.bn(0),
-          transaction: util.bn(0),
-          volume: util.bn(0),
-          poolPrice: util.bn(0),
+          depth: bn('100000'),
+          slip: bn(0),
+          trade: bn(0),
+          transaction: bn(0),
+          volume: bn(0),
+          poolPrice: bn(0),
         },
         slip: '0',
         trade: '0',
@@ -412,20 +413,20 @@ describe('swap/utils/', () => {
   describe('getCalcResult', () => {
     const poolAddress = 'address';
     const xValue = tokenAmount(100);
-    const runePrice = util.bn(1);
+    const runePrice = bn(1);
 
     it('returns calculated result for single swap type: rune -> bnb', () => {
       const from = 'rune';
       const to = 'bnb';
       const expected: CalcResult = {
-        Px: util.bn(1),
+        Px: bn(1),
         fee: tokenAmount(0.001),
         lim: baseAmount(0),
         outputAmount: tokenAmount(0),
-        outputPrice: util.bn(100000),
+        outputPrice: bn(100000),
         poolAddressTo: 'address',
         poolAddressFrom: Nothing,
-        slip: util.bn(0),
+        slip: bn(0),
         symbolFrom: 'RUNE-A1F',
         symbolTo: 'BNB',
       };
@@ -456,14 +457,14 @@ describe('swap/utils/', () => {
       const from = 'lok';
       const to = 'rune';
       const expected: CalcResult = {
-        Px: util.bn('0.2114251131383284092'),
+        Px: bn('0.2114251131383284092'),
         fee: tokenAmount('18.73582991719004922921'),
         lim: baseAmount('778454623'),
         outputAmount: tokenAmount('8.02530538672918568684'),
-        outputPrice: util.bn('0.99999999989169020862'),
+        outputPrice: bn('0.99999999989169020862'),
         poolAddressFrom: Nothing,
         poolAddressTo: 'address',
-        slip: util.bn('1011.951723887787235647'),
+        slip: bn('1011.951723887787235647'),
         symbolFrom: 'LOK-3C0',
         symbolTo: 'RUNE-A1F',
       };
@@ -493,13 +494,13 @@ describe('swap/utils/', () => {
       const from = 'lok';
       const to = 'bnb';
       const expected: CalcResult = {
-        Px: util.bn('0.2114251131383284092'),
+        Px: bn('0.2114251131383284092'),
         fee: tokenAmount('0.001'),
         outputAmount: tokenAmount(0),
-        outputPrice: util.bn('8025.30539'),
+        outputPrice: bn('8025.30539'),
         poolAddressFrom: 'address',
         poolAddressTo: 'address',
-        slip: util.bn(100),
+        slip: bn(100),
         symbolFrom: 'LOK-3C0',
         symbolTo: 'BNB',
         lim: Nothing,

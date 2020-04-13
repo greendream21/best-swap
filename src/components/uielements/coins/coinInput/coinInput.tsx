@@ -1,7 +1,7 @@
 import React from 'react';
 
 import BigNumber from 'bignumber.js';
-import { util } from 'asgardex-common';
+import { formatBN } from '@thorchain/asgardex-util';
 import { CoinInputWrapper } from './coinInput.style';
 import { CoinType } from '../../../../settings';
 import CoinButton from '../coinButton';
@@ -35,7 +35,7 @@ const CoinInput: React.FC<Props> = (props: Props): JSX.Element => {
     ...otherProps
   } = props;
 
-  const totalPrice = util.formatBN(amount.amount().multipliedBy(price));
+  const totalPrice = formatBN(amount.amount().multipliedBy(price));
   const priceLabel = `$${totalPrice} (USD)`;
 
   const amountNumber = amount.amount().toNumber();
@@ -77,7 +77,7 @@ const CoinInput: React.FC<Props> = (props: Props): JSX.Element => {
       </Label>
       {slip !== undefined && (
         <Label className="asset-price-label" color="gray">
-          SLIP: {util.formatBN(slip, 8)} %
+          SLIP: {formatBN(slip, 8)} %
         </Label>
       )}
     </CoinInputWrapper>

@@ -1,7 +1,7 @@
 import { all, takeEvery, put, fork, call } from 'redux-saga/effects';
 
 import { Method, AxiosResponse } from 'axios';
-import { binance } from 'asgardex-common';
+import { Token, Market, TickerStatistics, Account, TxPage, OrderList } from '@thorchain/asgardex-binance';
 import * as actions from './actions';
 import {
   getBinanceTestnetURL,
@@ -23,7 +23,7 @@ export function* getBinanceTokens() {
     };
 
     try {
-      const { data }: AxiosResponse<binance.Token[]> = yield call(
+      const { data }: AxiosResponse<Token[]> = yield call(
         axiosRequest,
         params,
       );
@@ -44,7 +44,7 @@ export function* getBinanceMarkets() {
     };
 
     try {
-      const { data }: AxiosResponse<binance.Market[]> = yield call(
+      const { data }: AxiosResponse<Market[]> = yield call(
         axiosRequest,
         params,
       );
@@ -70,7 +70,7 @@ export function* getBinanceTicker() {
     };
 
     try {
-      const { data }: AxiosResponse<binance.TickerStatistics[]> = yield call(
+      const { data }: AxiosResponse<TickerStatistics[]> = yield call(
         axiosRequest,
         params,
       );
@@ -93,7 +93,7 @@ export function* getBinanceAccount() {
     };
 
     try {
-      const { data }: AxiosResponse<binance.Account> = yield call(axiosRequest, params);
+      const { data }: AxiosResponse<Account> = yield call(axiosRequest, params);
 
       yield put(actions.getBinanceAccountSuccess(data));
     } catch (error) {
@@ -117,7 +117,7 @@ export function* getBinanceTransactions() {
     };
 
     try {
-      const { data }: AxiosResponse<binance.TxPage> = yield call(
+      const { data }: AxiosResponse<TxPage> = yield call(
         axiosRequest,
         params,
       );
@@ -144,7 +144,7 @@ export function* getBinanceOpenOrders() {
     };
 
     try {
-      const { data }: AxiosResponse<binance.OrderList> = yield call(
+      const { data }: AxiosResponse<OrderList> = yield call(
         axiosRequest,
         params,
       );
