@@ -380,7 +380,7 @@ describe('swap/utils/', () => {
       const expected = {
         depth: 'RUNE 0.00',
         pool: { asset: 'rune', target: 'BNB' },
-        poolPrice: 'RUNE 0',
+        poolPrice: 'RUNE 0.00',
         raw: {
           depth: util.bn('100000'),
           slip: util.bn(0),

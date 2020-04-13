@@ -65,11 +65,8 @@ export const getSwapData = (
 
     const runePrice = util.validBNOrZero(priceIndex?.RUNE);
 
-    const R = util.bn(poolInfo?.runeStakedTotal ?? 0);
-    const T = util.bn(poolInfo?.assetStakedTotal ?? 0);
-    // formula: (R / T) * runePrice
-    const poolPrice = util.fixedBN(R.div(T).multipliedBy(runePrice));
-    const poolPriceString = `${basePriceAsset} ${poolPrice}`;
+    const poolPrice = util.validBNOrZero(priceIndex[target.toUpperCase()]);
+    const poolPriceString = `${basePriceAsset} ${poolPrice.toFixed(2)}`;
 
     // formula: poolInfo.runeDepth * runePrice
     const depth = util.bn(poolInfo?.runeDepth ?? 0).multipliedBy(runePrice);
@@ -77,19 +74,23 @@ export const getSwapData = (
       baseAmount(depth),
     )}`;
     // formula: poolInfo.poolVolume24hr * runePrice
-    const volume = util.bn(poolInfo?.poolVolume24hr ?? 0).multipliedBy(runePrice);
+    const volume = util
+      .bn(poolInfo?.poolVolume24hr ?? 0)
+      .multipliedBy(runePrice);
     const volumeAsString = `${basePriceAsset} ${formatBaseAsTokenAmount(
       baseAmount(volume),
     )}`;
     // formula: poolInfo.poolTxAverage * runePrice
-    const transaction = util.bn(poolInfo?.poolTxAverage ?? 0).multipliedBy(
-      runePrice,
-    );
+    const transaction = util
+      .bn(poolInfo?.poolTxAverage ?? 0)
+      .multipliedBy(runePrice);
     const transactionAsString = `${basePriceAsset} ${formatBaseAsTokenAmount(
       baseAmount(transaction),
     )}`;
     // formula: poolInfo.poolSlipAverage * runePrice
-    const slip = util.bn(poolInfo?.poolSlipAverage ?? 0).multipliedBy(runePrice);
+    const slip = util
+      .bn(poolInfo?.poolSlipAverage ?? 0)
+      .multipliedBy(runePrice);
     const slipAsString = slip.toString();
     const trade = util.bn(poolInfo?.swappingTxCount ?? 0);
     const tradeAsString = trade.toString();
@@ -257,7 +258,8 @@ export const getCalcResult = (
       .multipliedBy(100);
     const slip = util.bn(slipValue);
     // formula: (1 - 3 / 100) * outputToken * BASE_NUMBER
-    const limValue = util.bn(1)
+    const limValue = util
+      .bn(1)
       .minus(3 / 100)
       .multipliedBy(outputTokenBN);
     const lim = tokenToBase(tokenAmount(limValue));
@@ -331,7 +333,8 @@ export const getCalcResult = (
 
     // formula: (1 - 3 / 100) * outputToken * BASE_NUMBER;
     const third = util.bn(3).div(util.bn(100));
-    const limValue = util.bn(1)
+    const limValue = util
+      .bn(1)
       .minus(third)
       .div(100)
       .multipliedBy(outputTokenBN);
@@ -469,11 +472,13 @@ export const parseTransfer = (tx?: Pick<binance.TransferEvent, 'data'>) => {
   };
 };
 
-export const isOutboundTx = (tx?: { data?: Pick<binance.TransferEventData, 'M'> }) =>
-  tx?.data?.M?.toUpperCase().includes('OUTBOUND') ?? false;
+export const isOutboundTx = (tx?: {
+  data?: Pick<binance.TransferEventData, 'M'>;
+}) => tx?.data?.M?.toUpperCase().includes('OUTBOUND') ?? false;
 
-export const isRefundTx = (tx?: { data?: Pick<binance.TransferEventData, 'M'> }) =>
-  tx?.data?.M?.toUpperCase().includes('REFUND') ?? false;
+export const isRefundTx = (tx?: {
+  data?: Pick<binance.TransferEventData, 'M'>;
+}) => tx?.data?.M?.toUpperCase().includes('REFUND') ?? false;
 
 export const getTxResult = ({
   tx,
