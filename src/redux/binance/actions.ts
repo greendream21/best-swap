@@ -1,4 +1,4 @@
-import { binance } from 'asgardex-common';
+import { OrderList, TxPage, Account, TickerStatistics, Market, Token } from '@thorchain/asgardex-binance';
 
 export const GET_BINANCE_TOKENS = 'GET_BINANCE_TOKENS';
 export interface GetBinanceTokens {
@@ -11,9 +11,9 @@ export const getBinanceTokens = () => ({
 export const GET_BINANCE_TOKENS_SUCCESS = 'GET_BINANCE_TOKENS_SUCCESS';
 export interface GetBinanceTokensSuccess {
   type: typeof GET_BINANCE_TOKENS_SUCCESS;
-  payload: binance.Token[];
+  payload: Token[];
 }
-export const getBinanceTokensSuccess = (payload: binance.Token[]) => ({
+export const getBinanceTokensSuccess = (payload: Token[]) => ({
   type: GET_BINANCE_TOKENS_SUCCESS,
   payload,
 });
@@ -39,9 +39,9 @@ export const getBinanceMarkets = () => ({
 export const GET_BINANCE_MARKETS_SUCCESS = 'GET_BINANCE_MARKETS_SUCCESS';
 export interface GetBinanceMarketsSuccess {
   type: typeof GET_BINANCE_MARKETS_SUCCESS;
-  payload: binance.Market[];
+  payload: Market[];
 }
-export const getBinanceMarketsSuccess = (payload: binance.Market[]) => ({
+export const getBinanceMarketsSuccess = (payload: Market[]) => ({
   type: GET_BINANCE_MARKETS_SUCCESS,
   payload,
 });
@@ -68,9 +68,9 @@ export const getBinanceTicker = (payload: string) => ({
 export const GET_BINANCE_TICKER_SUCCESS = 'GET_BINANCE_TICKER_SUCCESS';
 export interface GetBinanceTickerSuccess {
   type: typeof GET_BINANCE_TICKER_SUCCESS;
-  payload: binance.TickerStatistics[];
+  payload: TickerStatistics[];
 }
-export const getBinanceTickerSuccess = (payload: binance.TickerStatistics[]) => ({
+export const getBinanceTickerSuccess = (payload: TickerStatistics[]) => ({
   type: GET_BINANCE_TICKER_SUCCESS,
   payload,
 });
@@ -98,9 +98,9 @@ export const getBinanceAccount = (payload: string) => ({
 export const GET_BINANCE_ACCOUNT_SUCCESS = 'GET_BINANCE_ACCOUNT_SUCCESS';
 export interface GetBinanceAccountSuccess {
   type: typeof GET_BINANCE_ACCOUNT_SUCCESS;
-  payload: binance.Account;
+  payload: Account;
 }
-export const getBinanceAccountSuccess = (payload: binance.Account) => ({
+export const getBinanceAccountSuccess = (payload: Account) => ({
   type: GET_BINANCE_ACCOUNT_SUCCESS,
   payload,
 });
@@ -138,9 +138,9 @@ export const GET_BINANCE_TRANSACTIONS_SUCCESS =
   'GET_BINANCE_TRANSACTIONS_SUCCESS';
 export interface GetBinanceTransactionsSuccess {
   type: typeof GET_BINANCE_TRANSACTIONS_SUCCESS;
-  payload: binance.TxPage;
+  payload: TxPage;
 }
-export const getBinanceTransactionsSuccess = (payload: binance.TxPage) => ({
+export const getBinanceTransactionsSuccess = (payload: TxPage) => ({
   type: GET_BINANCE_TRANSACTIONS_SUCCESS,
   payload,
 });
@@ -174,9 +174,9 @@ export const GET_BINANCE_OPEN_ORDERS_SUCCESS =
   'GET_BINANCE_OPEN_ORDERS_SUCCESS';
 export interface GetBinanceOpenOrdersSuccess {
   type: typeof GET_BINANCE_OPEN_ORDERS_SUCCESS;
-  payload: binance.OrderList;
+  payload: OrderList;
 }
-export const getBinanceOpenOrdersSuccess = (payload: binance.OrderList) => ({
+export const getBinanceOpenOrdersSuccess = (payload: OrderList) => ({
   type: GET_BINANCE_OPEN_ORDERS_SUCCESS,
   payload,
 });

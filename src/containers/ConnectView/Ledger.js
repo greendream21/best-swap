@@ -5,7 +5,7 @@ import { Icon, Row, Col, message, InputNumber } from 'antd';
 import { ledger, crypto } from '@binance-chain/javascript-sdk';
 import u2f_transport from '@ledgerhq/hw-transport-u2f';
 
-import { binance } from 'asgardex-common';
+import { getPrefix } from '@thorchain/asgardex-binance';
 import Label from '../../components/uielements/label';
 import Button from '../../components/uielements/button';
 
@@ -47,7 +47,7 @@ const Connector = props => {
 
     // select which address to use
     // TODO (Chad): use "bnb" when on mainnet
-    const _ = await app.showAddress(binance.getPrefix(BINANCE_NET), hdPath); // results
+    const _ = await app.showAddress(getPrefix(BINANCE_NET), hdPath); // results
 
     // get public key
     let pk;
@@ -58,7 +58,7 @@ const Connector = props => {
       // TODO: use "bnb" when on mainnet
       const address = crypto.getAddressFromPublicKey(
         pk,
-        binance.getPrefix(BINANCE_NET),
+        getPrefix(BINANCE_NET),
       );
       setConnecting(false);
 

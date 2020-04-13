@@ -3,7 +3,8 @@ import { push } from 'connected-react-router';
 import { isEmpty as _isEmpty } from 'lodash';
 
 import { AxiosResponse } from 'axios';
-import { binance, util } from 'asgardex-common';
+import { Balance, Market, client as binanceClient, Address } from '@thorchain/asgardex-binance';
+import { bnOrZero, bn } from '@thorchain/asgardex-util';
 import * as api from '../../helpers/apiHelper';
 
 import {
@@ -56,20 +57,20 @@ export function* refreshBalance() {
     const address = payload;
 
     try {
-      const bncClient = yield call(binance.client, BINANCE_NET);
-      const balances: binance.Balance[] = yield call(bncClient.getBalance, address);
+      const bncClient = yield call(binanceClient, BINANCE_NET);
+      const balances: Balance[] = yield call(bncClient.getBalance, address);
 
       try {
-        const markets: { result: binance.Market[] } = yield call(bncClient.getMarkets);
+        const markets: { result: Market[] } = yield call(bncClient.getMarkets);
         // TODO(Veado): token or base amounts?
-        const coins = balances.map((coin: binance.Balance) => {
+        const coins = balances.map((coin: Balance) => {
           const market = markets.result.find(
-            (market: binance.Market) => market.base_asset_symbol === coin.symbol,
+            (market: Market) => market.base_asset_symbol === coin.symbol,
           );
           return {
             asset: coin.symbol,
             assetValue: tokenAmount(coin.free),
-            price: market ? util.bnOrZero(market.list_price) : util.bn(0),
+            price: market ? bnOrZero(market.list_price) : bn(0),
           } as AssetData;
         });
 
@@ -88,7 +89,7 @@ type StakersAssetDataMap = {
 };
 
 export function* getUserStakeData(payload: {
-  address: binance.Address;
+  address: Address;
   assets: string[];
 }) {
   const { address, assets } = payload;

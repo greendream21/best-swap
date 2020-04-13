@@ -9,7 +9,12 @@ import { crypto } from '@binance-chain/javascript-sdk';
 import { get as _get } from 'lodash';
 
 import BigNumber from 'bignumber.js';
-import { binance, util } from 'asgardex-common';
+import {
+  client as binanceClient,
+  getHashFromTransfer,
+  getPrefix,
+} from '@thorchain/asgardex-binance';
+import { bn, validBNOrZero, delay, bnOrZero, formatBN } from '@thorchain/asgardex-util';
 import { withBinanceTransferWS } from '../../../HOC/websocket/WSBinance';
 
 import Label from '../../../components/uielements/label';
@@ -163,8 +168,8 @@ class PoolStake extends React.Component<Props, State> {
       tokenAmount: tokenAmount(0),
       fR: 1,
       fT: 1,
-      runeTotal: util.bn(0),
-      tokenTotal: util.bn(0),
+      runeTotal: bn(0),
+      tokenTotal: bn(0),
       runePercent: 0,
       tokenPercent: 0,
       txResult: false,
@@ -204,7 +209,7 @@ class PoolStake extends React.Component<Props, State> {
       !txResult
     ) {
       const lastTx = wsTransfers[length - 1];
-      const transferHash = binance.getHashFromTransfer(lastTx);
+      const transferHash = getHashFromTransfer(lastTx);
 
       if (wallet) {
         // Currently we do a different handling for `stake` + `withdraw`
@@ -290,7 +295,7 @@ class PoolStake extends React.Component<Props, State> {
 
     // formula: sourceAsset.assetValue * balance
     const totalAmount = !sourceAsset
-      ? util.bn(0)
+      ? bn(0)
       : sourceAsset.assetValue.amount().multipliedBy(balance);
     // formula: targetToken.assetValue * balance
     const totalTokenAmount = targetToken.assetValue
@@ -430,7 +435,7 @@ class PoolStake extends React.Component<Props, State> {
   getData = (): CalcResult => {
     const { symbol, poolData, priceIndex, poolAddress } = this.props;
     const { runeAmount, tokenAmount } = this.state;
-    const runePrice = util.validBNOrZero(priceIndex?.RUNE);
+    const runePrice = validBNOrZero(priceIndex?.RUNE);
 
     const calcResult = getCalcResult(
       symbol,
@@ -457,7 +462,7 @@ class PoolStake extends React.Component<Props, State> {
       });
 
       const data = this.getData();
-      const bncClient = await binance.client(BINANCE_NET);
+      const bncClient = await binanceClient(BINANCE_NET);
 
       try {
         const { result } = await confirmStake({
@@ -557,15 +562,15 @@ class PoolStake extends React.Component<Props, State> {
 
       this.setState({ validatingPassword: true });
       // Short delay to render latest state changes of `validatingPassword`
-      await util.delay(2000);
+      await delay(2000);
 
       try {
         const privateKey = crypto.getPrivateKeyFromKeyStore(keystore, password);
-        const bncClient = await binance.client(BINANCE_NET);
+        const bncClient = await binanceClient(BINANCE_NET);
         await bncClient.setPrivateKey(privateKey);
         const address = crypto.getAddressFromPrivateKey(
           privateKey,
-          binance.getPrefix(BINANCE_NET),
+          getPrefix(BINANCE_NET),
         );
         if (wallet && wallet === address) {
           if (this.type === TxTypes.STAKE) {
@@ -650,7 +655,7 @@ class PoolStake extends React.Component<Props, State> {
         txResult: false,
       });
 
-      const bncClient = await binance.client(BINANCE_NET);
+      const bncClient = await binanceClient(BINANCE_NET);
 
       try {
         const percent = withdrawRate * 100;
@@ -749,7 +754,7 @@ class PoolStake extends React.Component<Props, State> {
     const source = 'rune';
     const target = getTickerFormat(symbol);
 
-    const Pr = util.validBNOrZero(priceIndex?.RUNE);
+    const Pr = validBNOrZero(priceIndex?.RUNE);
     const tokenPrice = _get(priceIndex, target.toUpperCase(), 0);
     const txURL = TESTNET_TX_BASE_URL + hash;
 
@@ -820,8 +825,8 @@ class PoolStake extends React.Component<Props, State> {
     const source = 'rune';
     const target = getTickerFormat(symbol);
 
-    const runePrice = util.validBNOrZero(priceIndex?.RUNE);
-    const tokenPrice = util.validBNOrZero(priceIndex[target.toUpperCase()]);
+    const runePrice = validBNOrZero(priceIndex?.RUNE);
+    const tokenPrice = validBNOrZero(priceIndex[target.toUpperCase()]);
     const txURL = TESTNET_TX_BASE_URL + hash;
 
     if (!this.withdrawData) {
@@ -968,8 +973,8 @@ class PoolStake extends React.Component<Props, State> {
     const source = 'rune';
     const target = getTickerFormat(symbol);
 
-    const runePrice = util.validBNOrZero(priceIndex?.RUNE);
-    const tokenPrice = util.validBNOrZero(priceIndex[target.toUpperCase()]);
+    const runePrice = validBNOrZero(priceIndex?.RUNE);
+    const tokenPrice = validBNOrZero(priceIndex[target.toUpperCase()]);
 
     const tokensData: AssetPair[] = Object.keys(assets).map(tokenName => {
       const tokenData = assets[tokenName];
@@ -986,29 +991,27 @@ class PoolStake extends React.Component<Props, State> {
     // withdraw values
     const withdrawRate: number = (widthdrawPercentage || 50) / 100;
     const { stakeUnits = '0' } = stakersAssetData;
-    const stakeUnitsBN = util.bn(stakeUnits);
+    const stakeUnitsBN = bn(stakeUnits);
 
     const value =
       // avoid divison by zero
       poolUnits && poolUnits.isGreaterThan(0)
         ? // formula: ((withdrawRate * stakeUnits) / poolUnits) * R
-          util
-            .bn(withdrawRate)
+          bn(withdrawRate)
             .multipliedBy(stakeUnitsBN)
             .div(poolUnits)
             .multipliedBy(R)
-        : util.bn(0);
+        : bn(0);
     const runeBaseAmount = baseAmount(value);
     // formula: (withdrawRate * stakeUnits) / poolUnits) * T
     const tokenValue =
       // avoid divison by zero
       poolUnits && poolUnits.isGreaterThan(0)
-        ? util
-            .bn(withdrawRate)
+        ? bn(withdrawRate)
             .multipliedBy(stakeUnitsBN)
             .div(poolUnits)
             .multipliedBy(T)
-        : util.bn(0);
+        : bn(0);
     const tokenBaseAmount = baseAmount(tokenValue);
     this.withdrawData = {
       runeValue: runeBaseAmount,
@@ -1166,7 +1169,7 @@ class PoolStake extends React.Component<Props, State> {
     const source = 'rune';
     const target = getTickerFormat(symbol);
 
-    const runePrice = util.validBNOrZero(priceIndex?.RUNE);
+    const runePrice = validBNOrZero(priceIndex?.RUNE);
     const tokenPrice = _get(priceIndex, target.toUpperCase(), 0);
 
     const {
@@ -1174,9 +1177,9 @@ class PoolStake extends React.Component<Props, State> {
       runeStaked,
       assetStaked,
     }: StakersAssetData = stakersAssetData;
-    const stakeUnitsBN = util.bnOrZero(stakeUnits);
-    const runeStakedBN = util.bnOrZero(runeStaked);
-    const assetStakedBN = util.bnOrZero(assetStaked);
+    const stakeUnitsBN = bnOrZero(stakeUnits);
+    const runeStakedBN = bnOrZero(runeStaked);
+    const assetStakedBN = bnOrZero(assetStaked);
     const loading = this.isLoading() || poolUnits === undefined;
 
     let poolShare: BigNumber | undefined;
@@ -1299,7 +1302,7 @@ class PoolStake extends React.Component<Props, State> {
                   <div className="your-share-info pool-share-info">
                     <Status
                       title="Pool Share"
-                      value={poolShare ? `${util.formatBN(poolShare)}%` : '...'}
+                      value={poolShare ? `${formatBN(poolShare)}%` : '...'}
                       loading={loading}
                     />
                   </div>
@@ -1372,9 +1375,11 @@ class PoolStake extends React.Component<Props, State> {
             <Icon type="info" />
           </div>
           <h2>Loading of staked data for this pool failed.</h2>
-          {msg && (<p className="placeholder-label">{msg}</p>)}
-          <p className="placeholder-label"> You might have to create a pool first.</p>
-
+          {msg && <p className="placeholder-label">{msg}</p>}
+          <p className="placeholder-label">
+            {' '}
+            You might have to create a pool first.
+          </p>
         </div>
       </div>
     );

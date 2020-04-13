@@ -1,5 +1,12 @@
 import BigNumber from 'bignumber.js';
-import { binance, util } from 'asgardex-common';
+import {
+  TransferResult,
+  TransferEventData,
+  TransferEvent,
+  getTxHashFromMemo,
+  BinanceClient,
+} from '@thorchain/asgardex-binance';
+import { validBNOrZero, bn, isValidBN } from '@thorchain/asgardex-util';
 import { getSwapMemo } from '../../helpers/memoHelper';
 import { getTickerFormat } from '../../helpers/stringHelper';
 import {
@@ -63,36 +70,32 @@ export const getSwapData = (
   if (poolInfo) {
     const { ticker: target = '' } = getAssetFromString(poolInfo?.asset);
 
-    const runePrice = util.validBNOrZero(priceIndex?.RUNE);
+    const runePrice = validBNOrZero(priceIndex?.RUNE);
 
-    const poolPrice = util.validBNOrZero(priceIndex[target.toUpperCase()]);
+    const poolPrice = validBNOrZero(priceIndex[target.toUpperCase()]);
     const poolPriceString = `${basePriceAsset} ${poolPrice.toFixed(2)}`;
 
     // formula: poolInfo.runeDepth * runePrice
-    const depth = util.bn(poolInfo?.runeDepth ?? 0).multipliedBy(runePrice);
+    const depth = bn(poolInfo?.runeDepth ?? 0).multipliedBy(runePrice);
     const depthAsString = `${basePriceAsset} ${formatBaseAsTokenAmount(
       baseAmount(depth),
     )}`;
     // formula: poolInfo.poolVolume24hr * runePrice
-    const volume = util
-      .bn(poolInfo?.poolVolume24hr ?? 0)
-      .multipliedBy(runePrice);
+    const volume = bn(poolInfo?.poolVolume24hr ?? 0).multipliedBy(runePrice);
     const volumeAsString = `${basePriceAsset} ${formatBaseAsTokenAmount(
       baseAmount(volume),
     )}`;
     // formula: poolInfo.poolTxAverage * runePrice
-    const transaction = util
-      .bn(poolInfo?.poolTxAverage ?? 0)
-      .multipliedBy(runePrice);
+    const transaction = bn(poolInfo?.poolTxAverage ?? 0).multipliedBy(
+      runePrice,
+    );
     const transactionAsString = `${basePriceAsset} ${formatBaseAsTokenAmount(
       baseAmount(transaction),
     )}`;
     // formula: poolInfo.poolSlipAverage * runePrice
-    const slip = util
-      .bn(poolInfo?.poolSlipAverage ?? 0)
-      .multipliedBy(runePrice);
+    const slip = bn(poolInfo?.poolSlipAverage ?? 0).multipliedBy(runePrice);
     const slipAsString = slip.toString();
-    const trade = util.bn(poolInfo?.swappingTxCount ?? 0);
+    const trade = bn(poolInfo?.swappingTxCount ?? 0);
     const tradeAsString = trade.toString();
 
     return {
@@ -256,10 +259,9 @@ export const getCalcResult = (
       .multipliedBy(xValue.amount())
       .div(balanceTimes)
       .multipliedBy(100);
-    const slip = util.bn(slipValue);
+    const slip = bn(slipValue);
     // formula: (1 - 3 / 100) * outputToken * BASE_NUMBER
-    const limValue = util
-      .bn(1)
+    const limValue = bn(1)
       .minus(3 / 100)
       .multipliedBy(outputTokenBN);
     const lim = tokenToBase(tokenAmount(limValue));
@@ -283,7 +285,7 @@ export const getCalcResult = (
   if (swapType === SwapType.SINGLE_SWAP && from.toLowerCase() === 'rune') {
     let X = tokenAmount(10000);
     let Y = tokenAmount(10);
-    const Px = util.bn(runePrice);
+    const Px = bn(runePrice);
     const rune = 'RUNE-A1F';
 
     Object.keys(pools).forEach(key => {
@@ -329,12 +331,11 @@ export const getCalcResult = (
           .multipliedBy(xValue.amount())
           .div(balanceTimes)
           .multipliedBy(100)
-      : util.bn(0);
+      : bn(0);
 
     // formula: (1 - 3 / 100) * outputToken * BASE_NUMBER;
-    const third = util.bn(3).div(util.bn(100));
-    const limValue = util
-      .bn(1)
+    const third = bn(3).div(bn(100));
+    const limValue = bn(1)
       .minus(third)
       .div(100)
       .multipliedBy(outputTokenBN);
@@ -381,7 +382,7 @@ export const validateSwap = (
   // amount can't be NaN or an INFITIY number
   // The latter check is needed for Binance API, which accepts numbers only
   const validAmount =
-    util.isValidBN(amountValue) &&
+    isValidBN(amountValue) &&
     amountValue.isGreaterThan(0) &&
     amountValue.isFinite();
   // validate values - needed for single swap and double swap
@@ -413,7 +414,7 @@ export const validateSwap = (
 
 // TODO(Veado): Write tests for `confirmSwap'
 export const confirmSwap = (
-  Binance: binance.BinanceClient,
+  Binance: BinanceClient,
   wallet: string,
   from: string,
   to: string,
@@ -421,7 +422,7 @@ export const confirmSwap = (
   amount: TokenAmount,
   protectSlip: boolean,
   destAddr = '',
-): Promise<binance.TransferResult> => {
+): Promise<TransferResult> => {
   return new Promise((resolve, reject) => {
     const swapType = getSwapType(from, to);
 
@@ -447,12 +448,12 @@ export const confirmSwap = (
     const memo = getSwapMemo(symbolTo, destAddr, limit);
 
     Binance.transfer(wallet, poolAddressTo, amountNumber, symbolFrom, memo)
-      .then((response: binance.TransferResult) => resolve(response))
+      .then((response: TransferResult) => resolve(response))
       .catch((error: Error) => reject(error));
   });
 };
 
-export const parseTransfer = (tx?: Pick<binance.TransferEvent, 'data'>) => {
+export const parseTransfer = (tx?: Pick<TransferEvent, 'data'>) => {
   const txHash = tx?.data?.H;
   const txMemo = tx?.data?.M;
   const txFrom = tx?.data?.f;
@@ -472,24 +473,22 @@ export const parseTransfer = (tx?: Pick<binance.TransferEvent, 'data'>) => {
   };
 };
 
-export const isOutboundTx = (tx?: {
-  data?: Pick<binance.TransferEventData, 'M'>;
-}) => tx?.data?.M?.toUpperCase().includes('OUTBOUND') ?? false;
+export const isOutboundTx = (tx?: { data?: Pick<TransferEventData, 'M'> }) =>
+  tx?.data?.M?.toUpperCase().includes('OUTBOUND') ?? false;
 
-export const isRefundTx = (tx?: {
-  data?: Pick<binance.TransferEventData, 'M'>;
-}) => tx?.data?.M?.toUpperCase().includes('REFUND') ?? false;
+export const isRefundTx = (tx?: { data?: Pick<TransferEventData, 'M'> }) =>
+  tx?.data?.M?.toUpperCase().includes('REFUND') ?? false;
 
 export const getTxResult = ({
   tx,
   hash,
 }: {
-  tx: binance.TransferEvent;
+  tx: TransferEvent;
   hash: string;
 }) => {
   const { txToken, txAmount } = parseTransfer(tx);
 
-  if (isRefundTx(tx) && binance.getTxHashFromMemo(tx) === hash) {
+  if (isRefundTx(tx) && getTxHashFromMemo(tx) === hash) {
     return {
       type: 'refund',
       amount: txAmount,
@@ -497,7 +496,7 @@ export const getTxResult = ({
     };
   }
 
-  if (isOutboundTx(tx) && binance.getTxHashFromMemo(tx) === hash) {
+  if (isOutboundTx(tx) && getTxHashFromMemo(tx) === hash) {
     return {
       type: 'success',
       amount: txAmount,

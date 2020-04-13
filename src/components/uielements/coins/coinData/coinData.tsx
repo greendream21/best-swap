@@ -1,7 +1,7 @@
 import React from 'react';
 
 import BigNumber from 'bignumber.js';
-import { util } from 'asgardex-common';
+import { bn, formatBN } from '@thorchain/asgardex-util';
 import { CoinDataWrapper, CoinDataWrapperType, CoinDataWrapperSize } from './coinData.style';
 import Coin from '../coin';
 import Label from '../../label';
@@ -28,7 +28,7 @@ const CoinData: React.FC<Props> = (props: Props): JSX.Element => {
     assetValue = Nothing,
     target = Nothing,
     targetValue = Nothing,
-    price = util.bn(0),
+    price = bn(0),
     priceUnit = 'RUNE',
     size = 'small',
     className = '',
@@ -36,7 +36,7 @@ const CoinData: React.FC<Props> = (props: Props): JSX.Element => {
     ...otherProps
   } = props;
 
-  const priceLabel = `${priceUnit.toUpperCase()} ${util.formatBN(price)}`;
+  const priceLabel = `${priceUnit.toUpperCase()} ${formatBN(price)}`;
 
   return (
     <CoinDataWrapper

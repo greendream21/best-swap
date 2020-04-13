@@ -1,4 +1,4 @@
-import { util } from 'asgardex-common';
+import { bn } from '@thorchain/asgardex-util';
 import { DoubleSwapCalcData } from '../../../Swap/calc';
 import * as calc from '../../../Swap/calc';
 import { Maybe } from '../../../../types/bepswap';
@@ -10,8 +10,8 @@ export const data: DoubleSwapCalcData = {
   Y: tokenAmount(1000000),
   R: tokenAmount(2500000),
   Z: tokenAmount(5000000),
-  Py: util.bn(0.04),
-  Pr: util.bn(0.04),
+  Py: bn(0.04),
+  Pr: bn(0.04),
 };
 
 export const getYValue = (xValue: TokenAmount) => calc.getYValue(xValue, data);

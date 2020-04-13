@@ -2,7 +2,7 @@ import React, { Fragment, useCallback } from 'react';
 import BigNumber from 'bignumber.js';
 
 import { Scrollbars } from 'react-custom-scrollbars';
-import { util } from 'asgardex-common';
+import { validBNOrZero } from '@thorchain/asgardex-util';
 import { CoinListWrapper, CoinListWrapperSize } from './coinList.style';
 import CoinData from '../coinData';
 import { getTickerFormat } from '../../../../helpers/stringHelper';
@@ -44,7 +44,7 @@ export const CoinList: React.FC<Props> = (props: Props): JSX.Element => {
 
   const getPrice = useCallback((asset: string): BigNumber => {
     const ticker = getTickerFormat(asset);
-    return util.validBNOrZero(priceIndex[ticker.toUpperCase()]);
+    return validBNOrZero(priceIndex[ticker.toUpperCase()]);
   }, [priceIndex]);
 
   const toggleSelect = useCallback((key: number) => () => {
