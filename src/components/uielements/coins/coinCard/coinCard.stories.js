@@ -2,6 +2,7 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { ThemeProvider } from 'styled-components';
 
+import { util } from 'asgardex-common';
 import AppHolder from '../../../../AppStyle';
 import { defaultTheme } from '../../../../settings';
 
@@ -18,22 +19,26 @@ storiesOf('Components/Coins/CoinCard', module).add('default', () => {
             assetData={[
               {
                 asset: 'rune',
-                price: 100,
               },
               {
                 asset: 'tomo',
-                price: 100,
+              },
+              {
+                asset: 'tomo',
               },
             ]}
-            amount={1.354}
-            price={600}
+            amount={util.bn(1.354)}
+            price={util.bn(600)}
+            priceIndex={{
+              RUNE: 1,
+            }}
             withSelection
           />
           <CoinCard
             title="You will receive"
             asset="bolt"
-            amount={13549}
-            price={596}
+            amount={util.bn(13549)}
+            price={util.bn(596)}
             slip={2}
           />
         </div>

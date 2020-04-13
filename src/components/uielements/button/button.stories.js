@@ -63,7 +63,7 @@ storiesOf('Components/Button', module)
               </Button>
             </Row>
             <Row>
-              <Button sizevalue="normal" color="primary" round="true">
+              <Button sizevalue="normal" color="primary" round>
                 Primary Filled Round Normal
               </Button>
               <Button

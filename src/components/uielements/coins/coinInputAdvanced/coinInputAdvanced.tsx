@@ -1,4 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+
+import { InputSizes } from 'antd/lib/input/Input';
+import BigNumber from 'bignumber.js';
+import { util } from 'asgardex-common';
 import { CoinInputAdvancedView } from './coinInputAdvanced.view';
 import { emptyString } from '../../../../helpers/stringHelper';
 
@@ -8,8 +12,10 @@ const formatNumber = (value: string, minimumFractionDigits: number) => {
   });
 };
 
-function formatStringToNumber(value: string): number {
-  return Number(value.replace(/,/g, '')); // (Rudi) This will have a localisation problem
+function formatStringToBigNumber(value: string): BigNumber {
+  // (Rudi) This will have a localisation problem
+  const cleanValue = value.replace(/,/g, '');
+  return util.bn(cleanValue);
 }
 
 export function isBroadcastable(value: string) {
@@ -18,7 +24,7 @@ export function isBroadcastable(value: string) {
     value !== undefined &&
     value !== null &&
     value !== '' &&
-    !Number.isNaN(formatStringToNumber(value)) &&
+    util.isValidBN(formatStringToBigNumber(value)) &&
     !value.match(/\.$/)
   );
 }
@@ -26,8 +32,8 @@ export function isBroadcastable(value: string) {
 const DEFAULT_FIELD_VALUE = undefined;
 
 type BehaviorProps = {
-  value: number;
-  onChange: (value: number) => void;
+  amount: BigNumber;
+  onChangeValue: (value: BigNumber) => void;
   onFocus: (() => void) | undefined;
   minimumFractionDigits?: number;
 };
@@ -36,18 +42,19 @@ type BehaviorProps = {
 // custom hooks representing each mode focussed or not and then
 // switching between them. No time right now however.
 export function useCoinCardInputBehaviour({
-  value,
-  onChange,
+  amount,
+  onChangeValue,
   onFocus,
   minimumFractionDigits = 2,
 }: BehaviorProps) {
-  const valueAsString = String(value || 0);
+  // Note: Amount could be undefined|null, since we have not migrated everything to TS yet, so check it here
+  const valueAsString = !!amount && util.isValidBN(amount) ? amount.toString() : '0';
 
   const [focus, setFocus] = useState<boolean>(false);
   const [textFieldValue, setTextFieldValue] = useState<string | undefined>(
     DEFAULT_FIELD_VALUE,
   );
-  const broadcastRef = useRef<number>(NaN);
+  const broadcastRef = useRef<BigNumber>(util.bn(0));
 
   const getOutval = useCallback(() => {
     const txtValue =
@@ -75,7 +82,7 @@ export function useCoinCardInputBehaviour({
     // Update '.'  to ' 0.'
     const ZERO_DECIMAL = '0.';
     val = val === '.' ? ZERO_DECIMAL : val;
-    const isValidNumber = !Number.isNaN(Number(val));
+    const isValidNumber = util.isValidBN(util.bn(val));
     const validValue =
       isValidNumber || val === emptyString || val === ZERO_DECIMAL;
     if (validValue) {
@@ -86,13 +93,15 @@ export function useCoinCardInputBehaviour({
   useEffect(() => {
     const numberfiedValueStr = focus
       ? getOutval()
-      : String(formatStringToNumber(getOutval()));
+      : formatStringToBigNumber(getOutval()).toString();
+
+      numberfiedValueStr;
 
     if (isBroadcastable(numberfiedValueStr)) {
-      const valToSend = formatStringToNumber(numberfiedValueStr);
+      const valToSend = formatStringToBigNumber(numberfiedValueStr);
 
       // Update text value to be not empty
-      if (valToSend === 0 && textFieldValue === '') {
+      if (valToSend.isEqualTo(0) && textFieldValue === '') {
         setTextFieldValue(numberfiedValueStr);
       }
 
@@ -101,12 +110,13 @@ export function useCoinCardInputBehaviour({
       }
 
       // (Rudi) only broadcast when we are broadcasting a new value
-      if (broadcastRef.current !== valToSend) {
+      // We can't compare BigNumbers directly, since they are immutable
+      if (!broadcastRef.current.isEqualTo(valToSend)) {
         broadcastRef.current = valToSend;
-        onChange(valToSend);
+        onChangeValue(valToSend);
       }
     }
-  }, [focus, getOutval, onChange, setTextFieldValue, textFieldValue]);
+  }, [focus, getOutval, onChangeValue, setTextFieldValue, textFieldValue]);
 
   const handleBlur = useCallback(
     event => {
@@ -133,25 +143,33 @@ export function useCoinCardInputBehaviour({
 }
 
 type Props = {
-  value: number;
-  onChange: () => void;
+  value: BigNumber;
+  onChangeValue: (value: BigNumber) => void;
   onFocus?: () => void;
-  minimumFractionDigits: number;
+  className?: string;
+  size?: typeof InputSizes[number];
+  minimumFractionDigits?: number;
+  disabled?: boolean;
+  'data-test'?: string;
 };
 
 export const CoinInputAdvanced: React.FC<Props> = ({
   value,
-  onChange,
+  onChangeValue,
   onFocus,
-  minimumFractionDigits,
-  ...props
-}): JSX.Element => {
+  className = '',
+  minimumFractionDigits = 2,
+  size = 'default',
+  ...otherProps
+}: Props): JSX.Element => {
   return (
     <CoinInputAdvancedView
-      {...props}
+      className={className}
+      size={size}
+      {...otherProps}
       {...useCoinCardInputBehaviour({
-        value,
-        onChange,
+        amount: value,
+        onChangeValue,
         onFocus,
         minimumFractionDigits,
       })}

@@ -1,5 +1,7 @@
 import { RemoteData } from '@devexperts/remote-data-ts';
+import BigNumber from 'bignumber.js';
 import { FixmeType, Maybe, Address } from '../../types/bepswap';
+import { TokenAmount } from '../../types/token';
 
 export interface User {
   /**
@@ -14,20 +16,30 @@ export type EmptyUser = {};
 
 export interface AssetData {
   asset: string;
-  assetValue: number;
-  price: number;
+  assetValue: TokenAmount;
+  price: BigNumber;
 }
 
 export type StakeData = {
   targetSymbol: string;
   target: string;
-  targetValue: number;
-  assetValue: number;
+  targetValue: TokenAmount;
+  assetValue: TokenAmount;
   asset: string;
   price: number;
 };
 
-export type StakeDataListLoadingState = RemoteData<Error, StakeData[]>
+export type StakeOrAssetData = AssetData | StakeData;
+
+/**
+ * Custom type guard to check StakeData
+ */
+export const isStakeData = (v: StakeOrAssetData): v is StakeData =>
+  (v as StakeData).targetSymbol !== undefined &&
+  (v as StakeData).targetValue !== undefined &&
+  (v as StakeData).target !== undefined;
+
+export type StakeDataListLoadingState = RemoteData<Error, StakeData[]>;
 
 export interface State {
   readonly user: Maybe<User>;

@@ -26,11 +26,11 @@ class NetworkView extends Component {
     return (
       <ContentWrapper>
         <Row>
-          <Col span="12">
+          <Col span={12}>
             <StatusGroup title="nodes" status={stats.nodes} />
             <StatusGroup title="sidechain" status={stats.sidechain} />
           </Col>
-          <Col span="12">
+          <Col span={12}>
             <StatusGroup title="threshold addresses" status={stats.threshold} />
           </Col>
         </Row>

@@ -1,8 +1,10 @@
 import React, { useState, useCallback } from 'react';
+import { useHistory } from 'react-router-dom';
 import { Icon, notification } from 'antd';
 import { connect } from 'react-redux';
 import copy from 'copy-to-clipboard';
 
+import { util } from 'asgardex-common';
 import Button from '../../components/uielements/button';
 import Label from '../../components/uielements/label';
 import WalletButton from '../../components/uielements/walletButton';
@@ -14,7 +16,6 @@ import { RootState } from '../../redux/store';
 import { User } from '../../redux/wallet/types';
 import { Maybe } from '../../types/bepswap';
 import WalletView from './WalletView';
-import { delay } from '../../helpers/asyncHelper';
 
 type Props = {
   user: Maybe<User>;
@@ -26,6 +27,7 @@ type Props = {
 const WalletDrawer: React.FC<Props> = props => {
   const [visible, setVisible] = useState(false);
   const [refresh, setRefresh] = useState(false);
+  const history = useHistory();
 
   const { user, refreshBalance, refreshStake } = props;
   const wallet = user ? user.wallet : null;
@@ -58,9 +60,14 @@ const WalletDrawer: React.FC<Props> = props => {
     }
 
     setRefresh(true);
-    await delay(1000);
+    await util.delay(1000);
     setRefresh(false);
   }, [refreshBalance, refreshStake, wallet]);
+
+  const handleGotoTransaction = () => {
+    onClose();
+    history.push('/transaction');
+  };
 
   const status = wallet ? 'connected' : 'disconnected';
 
@@ -69,7 +76,7 @@ const WalletDrawer: React.FC<Props> = props => {
       <WalletButton
         data-test="wallet-draw-button"
         connected
-        value={wallet}
+        address={wallet}
         onClick={toggleDrawer}
       />
       <div className="wallet-mobile-btn" onClick={toggleDrawer}>
@@ -95,6 +102,15 @@ const WalletDrawer: React.FC<Props> = props => {
             onClick={props.forgetWallet}
           >
             FORGET
+          </Button>
+          <Button
+            className="transaction-btn"
+            data-test="wallet-transaction-button"
+            typevalue="outline"
+            color="warning"
+            onClick={handleGotoTransaction}
+          >
+            transactions
           </Button>
         </div>
         {wallet && (

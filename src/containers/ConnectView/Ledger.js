@@ -5,11 +5,12 @@ import { Icon, Row, Col, message, InputNumber } from 'antd';
 import { ledger, crypto } from '@binance-chain/javascript-sdk';
 import u2f_transport from '@ledgerhq/hw-transport-u2f';
 
-import Binance from '../../clients/binance';
+import { binance } from 'asgardex-common';
 import Label from '../../components/uielements/label';
 import Button from '../../components/uielements/button';
 
 import * as walletActions from '../../redux/wallet/actions';
+import { BINANCE_NET } from '../../env';
 
 const { saveWallet } = walletActions;
 
@@ -46,7 +47,7 @@ const Connector = props => {
 
     // select which address to use
     // TODO (Chad): use "bnb" when on mainnet
-    const _ = await app.showAddress(Binance.getPrefix(), hdPath); // results
+    const _ = await app.showAddress(binance.getPrefix(BINANCE_NET), hdPath); // results
 
     // get public key
     let pk;
@@ -55,7 +56,10 @@ const Connector = props => {
 
       // get address from pubkey
       // TODO: use "bnb" when on mainnet
-      const address = crypto.getAddressFromPublicKey(pk, Binance.getPrefix());
+      const address = crypto.getAddressFromPublicKey(
+        pk,
+        binance.getPrefix(BINANCE_NET),
+      );
       setConnecting(false);
 
       props.saveWallet({

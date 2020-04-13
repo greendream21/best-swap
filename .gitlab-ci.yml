@@ -1,4 +1,4 @@
-image: node:10.15
+image: node:12.14
 
 stages:
   - test
@@ -7,11 +7,12 @@ stages:
 cache:
   key: ${CI_COMMIT_REF_SLUG}
   paths:
+    - .yarn
     - cache/Cypress
     - node_modules/
 
 before_script:
-  - echo "REACT_APP_MIDGARD_API_URL:" ${REACT_APP_MIDGARD_API_URL}
+  - echo "MIDGARD_API_IP:" ${MIDGARD_API_IP}
   - yarn
   - npm i -g firebase-tools
   - firebase -V
@@ -19,11 +20,11 @@ before_script:
 test:develop:
   variables:
     # provide cypress with our cached folder to install its cache in
-    CYPRESS_CACHE_FOLDER: "$CI_PROJECT_DIR/cache/Cypress"
+    CYPRESS_CACHE_FOLDER: '$CI_PROJECT_DIR/cache/Cypress'
   stage: test
   except:
     - bepswap-testnet-reskin
-  image: cypress/base:10
+  image: cypress/base:12.14.0
   script:
     - yarn test
   environment:
@@ -74,9 +75,9 @@ deploy:cloudfront:
   stage: deploy
   script:
     - yarn build
-    - apt-get update -y && apt install python3-pip -y 
-    - pip3 install --upgrade pip 
-    - pip3 install awscli --upgrade 
+    - apt-get update -y && apt install python3-pip -y
+    - pip3 install --upgrade pip
+    - pip3 install awscli --upgrade
     - make aws-ci-login
     - aws s3 cp --recursive build/ s3://${CLOUDFRONT_BUCKET}
   only:

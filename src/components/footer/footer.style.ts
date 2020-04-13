@@ -50,11 +50,12 @@ export const StyledFooter = styled.div`
       height: 30px;
     }
   }
+
   .footer-links-bar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 280px;
+
 
     a {
       font-family: 'Montserrat Bold';
@@ -62,6 +63,10 @@ export const StyledFooter = styled.div`
       color: ${palette('text', 6)};
       letter-spacing: 1px;
       cursor: pointer;
+      padding-left: 50px;
+    }
+    a:first-child {
+      padding-left: 0;
     }
   }
   .footer-social-bar {

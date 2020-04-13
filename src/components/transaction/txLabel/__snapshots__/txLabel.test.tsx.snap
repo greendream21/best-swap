@@ -1,0 +1,18 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FilterDropdown Matches the snapshot 1`] = `
+<div
+  className="sc-AxjAm dzgnjC txLabel-wrapper"
+>
+  <p>
+    swap
+  </p>
+  <div
+    className="tx-label-icon"
+  >
+    <svg>
+      tx-swap.svg
+    </svg>
+  </div>
+</div>
+`;

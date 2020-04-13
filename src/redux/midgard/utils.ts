@@ -1,4 +1,4 @@
-import { getFixedNumber } from '../../helpers/stringHelper';
+import { util } from 'asgardex-common';
 import { Nothing, Maybe } from '../../types/bepswap';
 import { PriceDataIndex, AssetDetailMap } from './types';
 import {
@@ -48,9 +48,10 @@ export const getPriceIndex = (
   assets: AssetDetail[],
   baseTokenTicker: string,
 ): PriceDataIndex => {
-  let baseTokenPrice = 1;
+  let baseTokenPrice = util.bn(0);
+
   if (baseTokenTicker.toLowerCase() === 'rune') {
-    baseTokenPrice = 1;
+    baseTokenPrice = util.bn(1);
   }
 
   const baseTokenInfo = assets.find(assetInfo => {
@@ -58,18 +59,20 @@ export const getPriceIndex = (
     const { ticker } = getAssetFromString(asset);
     return ticker === baseTokenTicker.toUpperCase();
   });
-  baseTokenPrice = baseTokenInfo?.priceRune ?? 1;
+  baseTokenPrice = util.bn(baseTokenInfo?.priceRune ?? 1);
 
   let priceDataIndex: PriceDataIndex = {
-    RUNE: 1 / baseTokenPrice,
+    // formula: 1 / baseTokenPrice
+    RUNE: util.bn(1).div(baseTokenPrice),
   };
 
   assets.forEach(assetInfo => {
     const { asset = '', priceRune } = assetInfo;
 
-    let price = 0;
+    let price = util.bn(0);
     if (priceRune && baseTokenPrice) {
-      price = getFixedNumber((1 / baseTokenPrice) * priceRune);
+      // formula: 1 / baseTokenPrice) * priceRune
+      price = util.bn(1).div(baseTokenPrice).multipliedBy(priceRune);
     }
 
     const { ticker } = getAssetFromString(asset);

@@ -18,7 +18,7 @@ class Swap extends Component {
     return (
       <ContentWrapper>
         <Row className="swap-content-pool-text">
-          <Col span="8">
+          <Col span={8}>
             <Label size="normal" weight="bold" color="normal">
               SWAP
             </Label>

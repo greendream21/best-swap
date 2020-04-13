@@ -1,6 +1,6 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { text, radios } from '@storybook/addon-knobs';
+import { text, radios, withKnobs } from '@storybook/addon-knobs';
 import { ThemeProvider } from 'styled-components';
 import { Row } from 'antd';
 
@@ -34,12 +34,16 @@ storiesOf('Components/InputNumber', module)
       </ThemeProvider>
     );
   })
-  .add('properties', () => {
-    const inputText = text('Input Number', 'Number');
-    const sizeOptions = ['small', 'normal', 'big'];
-    const colorOptions = ['primary', 'success', 'warning', 'error'];
+  .add(
+    'properties',
+    () => {
+      const inputText = text('Input Number', 'Number');
+      const sizeOptions = ['small', 'default', 'large'];
+      const colorOptions = ['primary', 'success', 'warning', 'error'];
 
-    const size = radios('size', sizeOptions, 'normal');
-    const color = radios('color', colorOptions, 'primary');
-    return <InputNumber color={color} sizevalue={size} value={inputText} />;
-  });
+      const size = radios('size', sizeOptions, 'normal');
+      const color = radios('color', colorOptions, 'primary');
+      return <InputNumber color={color} sizevalue={size} value={inputText} />;
+    },
+    { decorator: withKnobs },
+  );

@@ -2,6 +2,7 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { ThemeProvider } from 'styled-components';
 
+import { util } from 'asgardex-common';
 import AppHolder from '../../../AppStyle';
 import { defaultTheme } from '../../../settings';
 
@@ -18,8 +19,8 @@ storiesOf('Components/Trend', module).add('default', () => {
             width: '300px',
           }}
         >
-          <Trend value={0.2} />
-          <Trend value={-1.5} />
+          <Trend amount={util.bn(0.2)} />
+          <Trend amount={util.bn(-1.5)} />
         </div>
       </AppHolder>
     </ThemeProvider>

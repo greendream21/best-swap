@@ -1,5 +1,16 @@
 # BEPSwap React Front-End
 
+---
+
+> **Mirror**
+>
+> This repo mirrors from THORChain Gitlab to Github.
+> To contribute, please contact the team and commit to the Gitlab repo:
+>
+> https://gitlab.com/thorchain/bepswap/bepswap-web-ui/
+
+---
+
 BEPSwap is UniSwap for BinanceChain. It will be the first go-to market product for THORChain and makes some compromises as to infrastructure and trustlessness. It will only swap BNB and BEP2 assets on Binance Chain using a second layer protocol that moves assets around on BNB accounts.
 
 ## Project Setup
@@ -26,19 +37,7 @@ firebase-tools
 
 ### Env variables
 
-While environment variables are not required (sane defaults are set), you can
-configure them.
-Create `.env` file and set the following variables.
-
-```
-REACT_APP_BINANCE_MAINNET_WS_URI = wss://xxx
-REACT_APP_BINANCE_TESTNET_WS_URI = wss://xxx
-
-REACT_APP_BINANCE_MAINNET_URL = https://xxx
-REACT_APP_BINANCE_TESTNET_URL = https://xxx
-
-REACT_APP_MIDGARD_API_URL = https://xxx
-```
+While environment variables are not required (sane defaults are set), you can configure them. Create `.env` file while copying all content of `.env.sample` and set all needed variables in there.
 
 ### Project Setup
 
@@ -80,7 +79,7 @@ yarn generate:types
 To run the entire test suite
 
 ```bash
-yarn test:all
+yarn test
 ```
 
 ### Unit testing with jest

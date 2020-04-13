@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
+import { Maybe, Nothing, FixmeType } from '../types/bepswap';
 
-type Message = any // eslint-disable-line @typescript-eslint/no-explicit-any
+type Message = FixmeType;
 
 interface Props {
   url: string;
@@ -24,7 +25,7 @@ export const useWebsocket = (props: Props) => {
     onClose = () => {},
   } = props;
   const [attempts, setAttempts] = useState(1);
-  const [ws, setWS] = useState();
+  const [ws, setWS] = useState<Maybe<WebSocket>>(Nothing);
   const [open, setOpen] = useState(false);
 
   const onOpenHandler = useCallback(() => {
@@ -36,14 +37,17 @@ export const useWebsocket = (props: Props) => {
     onError();
   }, [onError]);
 
-  const onMessageHandler = useCallback((e: MessageEvent) => {
-    const message = messageFilter(e.data);
-    if (message) {
-      onMessage(message);
-    }
-  }, [messageFilter, onMessage]);
+  const onMessageHandler = useCallback(
+    (e: MessageEvent) => {
+      const message = messageFilter(e.data);
+      if (message) {
+        onMessage(message);
+      }
+    },
+    [messageFilter, onMessage],
+  );
 
-  const generateInterval = (k: number) => Math.min(30, (2 ** k) - 1) * 1000;
+  const generateInterval = (k: number) => Math.min(30, 2 ** k - 1) * 1000;
 
   const onCloseHandler = useCallback(
     (_: CloseEvent) => {
@@ -70,7 +74,7 @@ export const useWebsocket = (props: Props) => {
     ws.onclose = onCloseHandler;
     setWS(ws);
     return () => {
-      setWS(null);
+      setWS(Nothing);
       ws.close();
     };
   }, [
@@ -84,8 +88,8 @@ export const useWebsocket = (props: Props) => {
   ]);
 
   const sendMessage = useCallback(
-    (message: JSON) => {
-      if (open) {
+    (message: string) => {
+      if (ws && open) {
         ws.send(message);
       }
     },

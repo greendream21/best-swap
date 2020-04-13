@@ -1,5 +1,6 @@
 import { Reducer } from 'redux';
 import { initial, success, pending, failure } from '@devexperts/remote-data-ts';
+import { util } from 'asgardex-common';
 import { getWalletAddress, getKeystore } from '../../helpers/webStorageHelper';
 import { State, User } from './types';
 import {
@@ -14,6 +15,7 @@ import {
   REFRESH_STAKES_FAILED,
 } from './actions';
 import { Nothing } from '../../types/bepswap';
+import { tokenAmount } from '../../helpers/tokenHelper';
 
 const wallet = getWalletAddress();
 const keystore = getKeystore();
@@ -25,8 +27,8 @@ const initState: State = {
   assetData: [
     {
       asset: 'RUNE-A1F',
-      assetValue: 0,
-      price: 0,
+      assetValue: tokenAmount(0),
+      price: util.bn(0),
     },
   ],
   stakeData: initial,

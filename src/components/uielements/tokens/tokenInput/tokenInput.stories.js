@@ -6,6 +6,7 @@ import AppHolder from '../../../../AppStyle';
 import { defaultTheme } from '../../../../settings';
 
 import TokenInput from './tokenInput';
+import { tokenAmount } from '../../../../helpers/tokenHelper';
 
 storiesOf('Components/Tokens/TokenInput', module).add('default', () => {
   return (
@@ -15,9 +16,11 @@ storiesOf('Components/Tokens/TokenInput', module).add('default', () => {
           <TokenInput
             title="swap amount"
             status="slip 2%"
-            amount="12345"
+            amount={tokenAmount(12345)}
             label="$usd 217.29"
-            onChange={() => {}}
+            onChange={value => {
+              console.log('value ', value.toString());
+            }}
           />
         </div>
       </AppHolder>
