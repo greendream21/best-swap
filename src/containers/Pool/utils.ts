@@ -159,11 +159,8 @@ export const getPoolData = (
 
   const runePrice = util.validBNOrZero(priceIndex?.RUNE);
 
-  const R = util.bn(poolDetail?.runeStakedTotal ?? 0);
-  const T = util.bn(poolDetail?.assetStakedTotal ?? 0);
-  // formula: (R / T) * runePrice
-  const poolPrice = util.fixedBN(R.div(T).multipliedBy(runePrice));
-  const poolPriceValue = `${basePriceAsset} ${poolPrice}`;
+  const poolPrice = util.validBNOrZero(priceIndex[target.toUpperCase()]);
+  const poolPriceValue = `${basePriceAsset} ${poolPrice.toFixed(2)}`;
 
   const depthResult = util.bnOrZero(poolDetail?.runeDepth).multipliedBy(runePrice);
   const depth = baseAmount(depthResult);

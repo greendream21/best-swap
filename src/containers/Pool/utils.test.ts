@@ -311,7 +311,7 @@ describe('pool/utils/', () => {
           transaction: 'RUNE 0.00',
           liqFee: '0.00%',
           roiAT: '0.00% pa',
-          poolPrice: 'RUNE 1',
+          poolPrice: 'RUNE 2.00',
         },
         raw: {
           depth: baseAmount(200000),
@@ -371,7 +371,7 @@ describe('pool/utils/', () => {
           transaction: 'RUNE 0.00',
           liqFee: '0.00%',
           roiAT: '0.00% pa',
-          poolPrice: 'RUNE 0.09',
+          poolPrice: 'RUNE 0.00',
         },
         raw: {
           depth: baseAmount(199999799),
