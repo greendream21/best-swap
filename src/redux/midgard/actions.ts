@@ -3,8 +3,18 @@ import {
   GetStakerPoolDataPayload,
   PriceDataIndex,
   AssetDetailMap,
+  GetTxByAddressTxIdPayload,
+  GetTxByAddressAssetPayload,
+  GetTxByAddressPayload,
+  GetTxByAssetPayload,
 } from './types';
-import { AssetDetail, PoolDetail, StakersAssetData, ThorchainEndpoints } from '../../types/generated/midgard';
+import {
+  AssetDetail,
+  PoolDetail,
+  StakersAssetData,
+  ThorchainEndpoints,
+  InlineResponse200,
+} from '../../types/generated/midgard';
 
 export interface SetAssetsPayload {
   assetDetailIndex: AssetDetailMap;
@@ -50,7 +60,7 @@ export const getPoolsFailed = (payload: Error): GetPoolsFailed => ({
 type GetPoolDataPayload = {
   assets: string[];
   overrideAllPoolData: boolean;
-}
+};
 
 export const GET_POOL_DATA_REQUEST = 'GET_POOL_DATA_REQUEST';
 export interface GetPoolData {
@@ -65,7 +75,7 @@ export const getPoolData = (payload: GetPoolDataPayload): GetPoolData => ({
 type GetPoolDataSuccessPayload = {
   poolDetails: PoolDetail[];
   overrideAllPoolData: boolean;
-}
+};
 export const GET_POOL_DATA_SUCCESS = 'GET_POOL_DATA_SUCCESS';
 export interface GetPoolDataSuccess {
   type: typeof GET_POOL_DATA_SUCCESS;
@@ -103,10 +113,10 @@ export const getStakerPoolData = (
 export const GET_STAKER_POOL_DATA_SUCCESS = 'GET_STAKER_POOL_DATA_SUCCESS';
 export interface GetStakerPoolDataSuccess {
   type: typeof GET_STAKER_POOL_DATA_SUCCESS;
-  payload: StakersAssetData;
+  payload: StakersAssetData[];
 }
 export const getStakerPoolDataSuccess = (
-  payload: StakersAssetData,
+  payload: StakersAssetData[],
 ): GetStakerPoolDataSuccess => ({
   type: GET_STAKER_POOL_DATA_SUCCESS,
   payload,
@@ -181,6 +191,179 @@ export const setPriceIndex = (payload: PriceDataIndex): SetPriceIndex => ({
   payload,
 });
 
+// get transactions by address
+export const GET_TX_BY_ADDRESS = 'GET_TX_BY_ADDRESS';
+export interface GetTxByAddress {
+  type: typeof GET_TX_BY_ADDRESS;
+  payload: GetTxByAddressPayload;
+}
+export const getTxByAddress = (
+  payload: GetTxByAddressPayload,
+): GetTxByAddress => ({
+  type: GET_TX_BY_ADDRESS,
+  payload,
+});
+
+export const GET_TX_BY_ADDRESS_SUCCESS = 'GET_TX_BY_ADDRESS_SUCCESS';
+export interface GetTxByAddressSuccess {
+  type: typeof GET_TX_BY_ADDRESS_SUCCESS;
+  payload: InlineResponse200;
+}
+export const getTxByAddressSuccess = (
+  payload: InlineResponse200,
+): GetTxByAddressSuccess => ({
+  type: GET_TX_BY_ADDRESS_SUCCESS,
+  payload,
+});
+
+export const GET_TX_BY_ADDRESS_FAILED = 'GET_TX_BY_ADDRESS_FAILED';
+export interface GetTxByAddressFailed {
+  type: typeof GET_TX_BY_ADDRESS_FAILED;
+  payload: Error;
+}
+export const getTxByAddressFailed = (payload: Error): GetTxByAddressFailed => ({
+  type: GET_TX_BY_ADDRESS_FAILED,
+  payload,
+});
+
+// get transactions by address and txId
+export const GET_TX_BY_ADDRESS_TXID = 'GET_TX_BY_ADDRESS_TXID';
+export interface GetTxByAddressTxId {
+  type: typeof GET_TX_BY_ADDRESS_TXID;
+  payload: GetTxByAddressTxIdPayload;
+}
+export const getTxByAddressTxId = (
+  payload: GetTxByAddressTxIdPayload,
+): GetTxByAddressTxId => ({
+  type: GET_TX_BY_ADDRESS_TXID,
+  payload,
+});
+
+export const GET_TX_BY_ADDRESS_TXID_SUCCESS = 'GET_TX_BY_ADDRESS_TXID_SUCCESS';
+export interface GetTxByAddressTxIdSuccess {
+  type: typeof GET_TX_BY_ADDRESS_TXID_SUCCESS;
+  payload: InlineResponse200;
+}
+export const getTxByAddressTxIdSuccess = (
+  payload: InlineResponse200,
+): GetTxByAddressTxIdSuccess => ({
+  type: GET_TX_BY_ADDRESS_TXID_SUCCESS,
+  payload,
+});
+
+export const GET_TX_BY_ADDRESS_TXID_FAILED = 'GET_TX_BY_ADDRESS_TXID_FAILED';
+export interface GetTxByAddressTxIdFailed {
+  type: typeof GET_TX_BY_ADDRESS_TXID_FAILED;
+  payload: Error;
+}
+export const getTxByAddressTxIdFailed = (
+  payload: Error,
+): GetTxByAddressTxIdFailed => ({
+  type: GET_TX_BY_ADDRESS_TXID_FAILED,
+  payload,
+});
+
+// get transactions by address and asset
+export const GET_TX_BY_ADDRESS_ASSET = 'GET_TX_BY_ADDRESS_ASSET';
+export interface GetTxByAddressAsset {
+  type: typeof GET_TX_BY_ADDRESS_ASSET;
+  payload: GetTxByAddressAssetPayload;
+}
+export const getTxByAddressAsset = (
+  payload: GetTxByAddressAssetPayload,
+): GetTxByAddressAsset => ({
+  type: GET_TX_BY_ADDRESS_ASSET,
+  payload,
+});
+
+export const GET_TX_BY_ADDRESS_ASSET_SUCCESS =
+  'GET_TX_BY_ADDRESS_ASSET_SUCCESS';
+export interface GetTxByAddressAssetSuccess {
+  type: typeof GET_TX_BY_ADDRESS_ASSET_SUCCESS;
+  payload: InlineResponse200;
+}
+export const getTxByAddressAssetSuccess = (
+  payload: InlineResponse200,
+): GetTxByAddressAssetSuccess => ({
+  type: GET_TX_BY_ADDRESS_ASSET_SUCCESS,
+  payload,
+});
+
+export const GET_TX_BY_ADDRESS_ASSET_FAILED = 'GET_TX_BY_ADDRESS_ASSET_FAILED';
+export interface GetTxByAddressAssetFailed {
+  type: typeof GET_TX_BY_ADDRESS_ASSET_FAILED;
+  payload: Error;
+}
+export const getTxByAddressAssetFailed = (
+  payload: Error,
+): GetTxByAddressAssetFailed => ({
+  type: GET_TX_BY_ADDRESS_ASSET_FAILED,
+  payload,
+});
+
+// get transactions by asset
+export const GET_TX_BY_ASSET = 'GET_TX_BY_ASSET';
+export interface GetTxByAsset {
+  type: typeof GET_TX_BY_ASSET;
+  payload: GetTxByAssetPayload;
+}
+export const getTxByAsset = (payload: GetTxByAssetPayload): GetTxByAsset => ({
+  type: GET_TX_BY_ASSET,
+  payload,
+});
+
+export const GET_TX_BY_ASSET_SUCCESS = 'GET_TX_BY_ASSET_SUCCESS';
+export interface GetTxByAssetSuccess {
+  type: typeof GET_TX_BY_ASSET_SUCCESS;
+  payload: InlineResponse200;
+}
+export const getTxByAssetSuccess = (
+  payload: InlineResponse200,
+): GetTxByAssetSuccess => ({
+  type: GET_TX_BY_ASSET_SUCCESS,
+  payload,
+});
+
+export const GET_TX_BY_ASSET_FAILED = 'GET_TX_BY_ASSET_FAILED';
+export interface GetTxByAssetFailed {
+  type: typeof GET_TX_BY_ASSET_FAILED;
+  payload: Error;
+}
+export const getTxByAssetFailed = (payload: Error): GetTxByAssetFailed => ({
+  type: GET_TX_BY_ASSET_FAILED,
+  payload,
+});
+
+export const GET_API_BASEPATH_PENDING = 'GET_API_BASEPATH_PENDING';
+export interface GetApiBasePathPending {
+  type: typeof GET_API_BASEPATH_PENDING;
+}
+export const getApiBasePathPending = (): GetApiBasePathPending => ({
+  type: GET_API_BASEPATH_PENDING,
+});
+
+export const GET_API_BASEPATH_FAILED = 'GET_API_BASEPATH_FAILED';
+export interface GetApiBasePathFailed {
+  type: typeof GET_API_BASEPATH_FAILED;
+  payload: Error;
+}
+export const getApiBasePathFailed = (payload: Error): GetApiBasePathFailed => ({
+  type: GET_API_BASEPATH_FAILED,
+  payload,
+});
+
+export const GET_API_BASEPATH_SUCCESS = 'GET_API_BASEPATH_SUCCESS';
+export interface GetApiBasePathSuccess {
+  type: typeof GET_API_BASEPATH_SUCCESS;
+  payload: string;
+}
+export const getApiBasePathSuccess = (
+  payload: string,
+): GetApiBasePathSuccess => ({
+  type: GET_API_BASEPATH_SUCCESS,
+  payload,
+});
+
 export type MidgardActionTypes =
   | GetPools
   | GetPoolsSuccess
@@ -197,4 +380,19 @@ export type MidgardActionTypes =
   | GetRunePrice
   | SetAssets
   | SetBasePriceAsset
-  | SetPriceIndex;
+  | SetPriceIndex
+  | GetTxByAddress
+  | GetTxByAddressSuccess
+  | GetTxByAddressFailed
+  | GetTxByAddressTxId
+  | GetTxByAddressTxIdSuccess
+  | GetTxByAddressTxIdFailed
+  | GetTxByAddressAsset
+  | GetTxByAddressAssetSuccess
+  | GetTxByAddressAssetFailed
+  | GetTxByAsset
+  | GetTxByAssetSuccess
+  | GetTxByAssetFailed
+  | GetApiBasePathPending
+  | GetApiBasePathFailed
+  | GetApiBasePathSuccess;

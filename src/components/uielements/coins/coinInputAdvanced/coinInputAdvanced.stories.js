@@ -23,7 +23,7 @@ function CoinCardInputStory() {
   );
   return (
     <div>
-      <CoinInputAdvanced value={value} onChange={handleChange} />
+      <CoinInputAdvanced value={value} onChangeValue={handleChange} />
       <button type="button" onClick={() => setExternalVal(40000)}>
         Send external 40k
       </button>

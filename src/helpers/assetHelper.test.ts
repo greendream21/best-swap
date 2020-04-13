@@ -11,7 +11,7 @@ describe('helpers/assetHelper', () => {
       expect(result).toEqual('BNB');
     });
     it('should return null for empty parameters', () => {
-      const result = getTokenName();
+      const result = getTokenName('');
       expect(result).toEqual(null);
     });
   });

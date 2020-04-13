@@ -1,3 +1,4 @@
+import { util } from 'asgardex-common';
 import {
   getAssetSymbolFromPayload,
   getBNBPoolAddress,
@@ -6,7 +7,11 @@ import {
   getPriceIndex,
   getAssetFromString,
 } from './utils';
-import { ThorchainEndpoint, ThorchainEndpoints } from '../../types/generated/midgard';
+import {
+  ThorchainEndpoint,
+  ThorchainEndpoints,
+} from '../../types/generated/midgard';
+import { PriceDataIndex } from './types';
 
 type PoolDataMock = { asset?: string };
 
@@ -85,7 +90,6 @@ describe('redux/midgard/utils/', () => {
         'B-C': asset1,
         'BB-CC': asset2,
       };
-      result;
       expect(result).toEqual(expected);
     });
     it('should return an emtpy {} if no asset or symbols in list', () => {
@@ -106,32 +110,45 @@ describe('redux/midgard/utils/', () => {
     it('should return prices indexes based on RUNE price', () => {
       const result = getPriceIndex(
         [
-          { asset: 'BNB.AAA-AAA', priceRune: 10 },
-          { asset: 'BNB.BBB-BBB', priceRune: 1 },
+          { asset: 'BNB.TOMOB-1E1', priceRune: '0.3333333333333333' },
+          { asset: 'BNB.BBB', priceRune: '2206.896551724138' },
         ],
         'AAA',
       );
-      result;
-      expect(result).toEqual({ RUNE: 0.1, AAA: 1, BBB: 0.1 });
+      const expected: PriceDataIndex = {
+        RUNE: util.bn(1),
+        TOMOB: util.bn('0.3333333333333333'),
+        BBB: util.bn('2206.896551724138'),
+      };
+      expect(result).toEqual(expected);
     });
     it('should return a prices indexes based on BBB price', () => {
       const result = getPriceIndex(
         [
-          { asset: 'AAA.AAA-AAA', priceRune: 4 },
-          { asset: 'BBB.BBB-BBB', priceRune: 2 },
-          { asset: 'CCC.CCC-CCC', priceRune: 10 },
+          { asset: 'AAA.AAA-AAA', priceRune: '4' },
+          { asset: 'BBB.BBB-BBB', priceRune: '2' },
+          { asset: 'CCC.CCC-CCC', priceRune: '10' },
         ],
         'BBB',
       );
-      result;
-      expect(result).toEqual({ RUNE: 0.5, AAA: 2, BBB: 1, CCC: 5 });
+      const expected: PriceDataIndex = {
+        RUNE: util.bn(0.5),
+        AAA: util.bn(2),
+        BBB: util.bn(1),
+        CCC: util.bn(5),
+      };
+      expect(result).toEqual(expected);
     });
   });
 
   describe('getAssetFromString', () => {
     it('should return an asset with all values', () => {
       const result = getAssetFromString('BNB.RUNE-B1A');
-      expect(result).toEqual({ chain: 'BNB', symbol: 'RUNE-B1A', ticker: 'RUNE' });
+      expect(result).toEqual({
+        chain: 'BNB',
+        symbol: 'RUNE-B1A',
+        ticker: 'RUNE',
+      });
     });
     it('should return an asset with all values, even if chain and symbol are provided only', () => {
       const result = getAssetFromString('BNB.RUNE');

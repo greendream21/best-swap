@@ -51,10 +51,10 @@ export interface AssetDetail {
     name?: string;
     /**
      * 
-     * @type {number}
+     * @type {string}
      * @memberof AssetDetail
      */
-    priceRune?: number;
+    priceRune?: string;
 }
 /**
  * 
@@ -64,10 +64,10 @@ export interface AssetDetail {
 export interface Coin {
     /**
      * 
-     * @type {number}
+     * @type {string}
      * @memberof Coin
      */
-    amount?: number;
+    amount?: string;
     /**
      * 
      * @type {string}
@@ -83,22 +83,22 @@ export interface Coin {
 export interface Event {
     /**
      * 
-     * @type {number}
+     * @type {string}
      * @memberof Event
      */
-    fee?: number;
+    fee?: string;
     /**
      * 
-     * @type {number}
+     * @type {string}
      * @memberof Event
      */
-    slip?: number;
+    slip?: string;
     /**
      * 
-     * @type {number}
+     * @type {string}
      * @memberof Event
      */
-    stakeUnits?: number;
+    stakeUnits?: string;
 }
 /**
  * 
@@ -108,16 +108,35 @@ export interface Event {
 export interface Gas {
     /**
      * 
-     * @type {number}
+     * @type {string}
      * @memberof Gas
      */
-    amount?: number;
+    amount?: string;
     /**
      * 
      * @type {string}
      * @memberof Gas
      */
     asset?: string;
+}
+/**
+ * 
+ * @export
+ * @interface InlineResponse200
+ */
+export interface InlineResponse200 {
+    /**
+     * 
+     * @type {number}
+     * @memberof InlineResponse200
+     */
+    count?: number;
+    /**
+     * 
+     * @type {Array<TxDetails>}
+     * @memberof InlineResponse200
+     */
+    txs?: Array<TxDetails>;
 }
 /**
  * 
@@ -140,22 +159,22 @@ export interface ModelError {
 export interface Option {
     /**
      * 
-     * @type {number}
+     * @type {string}
      * @memberof Option
      */
-    asymmetry?: number;
+    asymmetry?: string;
     /**
      * 
-     * @type {number}
+     * @type {string}
      * @memberof Option
      */
-    priceTarget?: number;
+    priceTarget?: string;
     /**
      * 
-     * @type {number}
+     * @type {string}
      * @memberof Option
      */
-    withdrawBasisPoints?: number;
+    withdrawBasisPoints?: string;
 }
 /**
  * 
@@ -171,202 +190,202 @@ export interface PoolDetail {
     asset?: string;
     /**
      * Total current Asset balance
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    assetDepth?: number;
+    assetDepth?: string;
     /**
      * Asset return on investment
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    assetROI?: number;
+    assetROI?: string;
     /**
      * Total Asset staked
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    assetStakedTotal?: number;
+    assetStakedTotal?: string;
     /**
      * Number of RUNE->ASSET transactions
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    buyAssetCount?: number;
+    buyAssetCount?: string;
     /**
      * Average sell Asset fee size for RUNE->ASSET (in ASSET)
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    buyFeeAverage?: number;
+    buyFeeAverage?: string;
     /**
      * Total fees (in Asset)
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    buyFeesTotal?: number;
+    buyFeesTotal?: string;
     /**
      * Average trade slip for RUNE->ASSET in %
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    buySlipAverage?: number;
+    buySlipAverage?: string;
     /**
      * Average Asset buy transaction size for (RUNE->ASSET) (in ASSET)
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    buyTxAverage?: number;
+    buyTxAverage?: string;
     /**
      * Total Asset buy volume (RUNE->ASSET) (in Asset)
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    buyVolume?: number;
+    buyVolume?: string;
     /**
      * Total depth of both sides (in RUNE)
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    poolDepth?: number;
+    poolDepth?: string;
     /**
      * Average pool fee
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    poolFeeAverage?: number;
+    poolFeeAverage?: string;
     /**
      * Total fees
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    poolFeesTotal?: number;
+    poolFeesTotal?: string;
     /**
      * Pool ROI (average of RUNE and Asset ROI)
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    poolROI?: number;
+    poolROI?: string;
     /**
      * Pool ROI over 12 months
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    poolROI12?: number;
+    poolROI12?: string;
     /**
      * Average pool slip
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    poolSlipAverage?: number;
+    poolSlipAverage?: string;
     /**
      * Rune value staked Total
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    poolStakedTotal?: number;
+    poolStakedTotal?: string;
     /**
      * Average pool transaction
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    poolTxAverage?: number;
+    poolTxAverage?: string;
     /**
      * Total pool units outstanding
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    poolUnits?: number;
+    poolUnits?: string;
     /**
      * Two-way volume of all-time (in RUNE)
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    poolVolume?: number;
+    poolVolume?: string;
     /**
      * Two-way volume in 24hrs (in RUNE)
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    poolVolume24hr?: number;
+    poolVolume24hr?: string;
     /**
      * Price of Asset (in RUNE).
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    price?: number;
+    price?: string;
     /**
      * Total current Rune balance
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    runeDepth?: number;
+    runeDepth?: string;
     /**
      * RUNE return on investment
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    runeROI?: number;
+    runeROI?: string;
     /**
      * Total RUNE staked
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    runeStakedTotal?: number;
+    runeStakedTotal?: string;
     /**
      * Number of ASSET->RUNE transactions
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    sellAssetCount?: number;
+    sellAssetCount?: string;
     /**
      * Average buy Asset fee size for ASSET->RUNE (in RUNE)
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    sellFeeAverage?: number;
+    sellFeeAverage?: string;
     /**
      * Total fees (in RUNE)
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    sellFeesTotal?: number;
+    sellFeesTotal?: string;
     /**
      * Average trade slip for ASSET->RUNE in %
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    sellSlipAverage?: number;
+    sellSlipAverage?: string;
     /**
      * Average Asset sell transaction size (ASSET>RUNE) (in RUNE)
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    sellTxAverage?: number;
+    sellTxAverage?: string;
     /**
      * Total Asset sell volume (ASSET>RUNE) (in RUNE).
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    sellVolume?: number;
+    sellVolume?: string;
     /**
      * Number of stake transactions
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    stakeTxCount?: number;
+    stakeTxCount?: string;
     /**
      * Number of unique stakers
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    stakersCount?: number;
+    stakersCount?: string;
     /**
      * Number of stake & withdraw transactions
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    stakingTxCount?: number;
+    stakingTxCount?: string;
     /**
      * 
      * @type {string}
@@ -375,22 +394,22 @@ export interface PoolDetail {
     status?: PoolDetailStatusEnum;
     /**
      * Number of unique swappers interacting with pool
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    swappersCount?: number;
+    swappersCount?: string;
     /**
      * Number of swapping transactions in the pool (buys and sells)
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    swappingTxCount?: number;
+    swappingTxCount?: string;
     /**
      * Number of withdraw transactions
-     * @type {number}
+     * @type {string}
      * @memberof PoolDetail
      */
-    withdrawTxCount?: number;
+    withdrawTxCount?: string;
 }
 
 /**
@@ -417,22 +436,22 @@ export interface StakersAddressData {
     poolsArray?: Array<string>;
     /**
      * Total value of earnings (in RUNE) across all pools.
-     * @type {number}
+     * @type {string}
      * @memberof StakersAddressData
      */
-    totalEarned?: number;
+    totalEarned?: string;
     /**
      * Average of all pool ROIs.
-     * @type {number}
+     * @type {string}
      * @memberof StakersAddressData
      */
-    totalROI?: number;
+    totalROI?: string;
     /**
      * Total staked (in RUNE) across all pools.
-     * @type {number}
+     * @type {string}
      * @memberof StakersAddressData
      */
-    totalStaked?: number;
+    totalStaked?: string;
 }
 /**
  * 
@@ -448,22 +467,22 @@ export interface StakersAssetData {
     asset?: string;
     /**
      * Value of Assets earned from the pool.
-     * @type {number}
+     * @type {string}
      * @memberof StakersAssetData
      */
-    assetEarned?: number;
+    assetEarned?: string;
     /**
      * ROI of the Asset side
-     * @type {number}
+     * @type {string}
      * @memberof StakersAssetData
      */
-    assetROI?: number;
+    assetROI?: string;
     /**
      * Amount of Assets staked.
-     * @type {number}
+     * @type {string}
      * @memberof StakersAssetData
      */
-    assetStaked?: number;
+    assetStaked?: string;
     /**
      * 
      * @type {number}
@@ -472,46 +491,46 @@ export interface StakersAssetData {
     dateFirstStaked?: number;
     /**
      * Total value of earnings (in RUNE).
-     * @type {number}
+     * @type {string}
      * @memberof StakersAssetData
      */
-    poolEarned?: number;
+    poolEarned?: string;
     /**
      * Average ROI (in RUNE) of both sides
-     * @type {number}
+     * @type {string}
      * @memberof StakersAssetData
      */
-    poolROI?: number;
+    poolROI?: string;
     /**
      * RUNE value staked.
-     * @type {number}
+     * @type {string}
      * @memberof StakersAssetData
      */
-    poolStaked?: number;
+    poolStaked?: string;
     /**
      * Value of RUNE earned from the pool.
-     * @type {number}
+     * @type {string}
      * @memberof StakersAssetData
      */
-    runeEarned?: number;
+    runeEarned?: string;
     /**
      * ROI of the Rune side.
-     * @type {number}
+     * @type {string}
      * @memberof StakersAssetData
      */
-    runeROI?: number;
+    runeROI?: string;
     /**
      * Amount of RUNE staked.
-     * @type {number}
+     * @type {string}
      * @memberof StakersAssetData
      */
-    runeStaked?: number;
+    runeStaked?: string;
     /**
      * Represents ownership of a pool.
-     * @type {number}
+     * @type {string}
      * @memberof StakersAssetData
      */
-    stakeUnits?: number;
+    stakeUnits?: string;
 }
 /**
  * 
@@ -521,100 +540,100 @@ export interface StakersAssetData {
 export interface StatsData {
     /**
      * Daily active users (unique addresses interacting)
-     * @type {number}
+     * @type {string}
      * @memberof StatsData
      */
-    dailyActiveUsers?: number;
+    dailyActiveUsers?: string;
     /**
      * Daily transactions
-     * @type {number}
+     * @type {string}
      * @memberof StatsData
      */
-    dailyTx?: number;
+    dailyTx?: string;
     /**
      * Monthly active users
-     * @type {number}
+     * @type {string}
      * @memberof StatsData
      */
-    monthlyActiveUsers?: number;
+    monthlyActiveUsers?: string;
     /**
      * Monthly transactions
-     * @type {number}
+     * @type {string}
      * @memberof StatsData
      */
-    monthlyTx?: number;
+    monthlyTx?: string;
     /**
      * Number of active pools
-     * @type {number}
+     * @type {string}
      * @memberof StatsData
      */
-    poolCount?: number;
+    poolCount?: string;
     /**
      * Total buying transactions
-     * @type {number}
+     * @type {string}
      * @memberof StatsData
      */
-    totalAssetBuys?: number;
+    totalAssetBuys?: string;
     /**
      * Total selling transactions
-     * @type {number}
+     * @type {string}
      * @memberof StatsData
      */
-    totalAssetSells?: number;
+    totalAssetSells?: string;
     /**
      * Total RUNE balances
-     * @type {number}
+     * @type {string}
      * @memberof StatsData
      */
-    totalDepth?: number;
+    totalDepth?: string;
     /**
      * Total earned (in RUNE Value).
-     * @type {number}
+     * @type {string}
      * @memberof StatsData
      */
-    totalEarned?: number;
+    totalEarned?: string;
     /**
      * Total staking transactions
-     * @type {number}
+     * @type {string}
      * @memberof StatsData
      */
-    totalStakeTx?: number;
+    totalStakeTx?: string;
     /**
      * Total staked (in RUNE Value).
-     * @type {number}
+     * @type {string}
      * @memberof StatsData
      */
-    totalStaked?: number;
+    totalStaked?: string;
     /**
      * Total transactions
-     * @type {number}
+     * @type {string}
      * @memberof StatsData
      */
-    totalTx?: number;
+    totalTx?: string;
     /**
      * Total unique swappers & stakers
-     * @type {number}
+     * @type {string}
      * @memberof StatsData
      */
-    totalUsers?: number;
+    totalUsers?: string;
     /**
      * Total (in RUNE Value) of all assets swapped since start.
-     * @type {number}
+     * @type {string}
      * @memberof StatsData
      */
-    totalVolume?: number;
+    totalVolume?: string;
     /**
      * Total (in RUNE Value) of all assets swapped in 24hrs
-     * @type {number}
+     * @type {string}
      * @memberof StatsData
      */
-    totalVolume24hr?: number;
+    totalVolume24hr?: string;
     /**
      * Total withdrawing transactions
-     * @type {number}
+     * @type {string}
      * @memberof StatsData
      */
-    totalWithdrawTx?: number;
+    totalWithdrawTx?: string;
 }
 /**
  * 
@@ -711,16 +730,16 @@ export interface TxDetails {
     gas?: Gas;
     /**
      * 
-     * @type {number}
+     * @type {string}
      * @memberof TxDetails
      */
-    height?: number;
+    height?: string;
     /**
      * 
      * @type {Tx}
      * @memberof TxDetails
      */
-    _in?: Tx;
+    in?: Tx;
     /**
      * 
      * @type {Option}
@@ -759,19 +778,21 @@ export interface TxDetails {
     */
 export enum TxDetailsStatusEnum {
     Success = 'success',
-    Refund = 'refund',
-    PriceCancelled = 'priceCancelled'
+    Refund = 'refund'
 }
 /**
     * @export
     * @enum {string}
     */
 export enum TxDetailsTypeEnum {
-    Sell = 'sell',
-    Buy = 'buy',
-    CrossPool = 'crossPool',
+    Swap = 'swap',
     Stake = 'stake',
-    Withdraw = 'withdraw'
+    Unstake = 'unstake',
+    Rewards = 'rewards',
+    Add = 'add',
+    Pool = 'pool',
+    Gas = 'gas',
+    Refund = 'refund'
 }
 
 
@@ -1082,144 +1103,59 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * Return an object containing the tx details
-         * @summary Get transaction
-         * @param {string} address An address
+         * Return an array containing the event details
+         * @summary Get details of a tx by address, asset or tx-id
+         * @param {number} offset pagination offset
+         * @param {number} limit pagination limit
+         * @param {string} [address] Address of sender or recipient of any in/out tx in event
+         * @param {string} [txid] ID of any in/out tx in event
+         * @param {string} [asset] Any asset used in event (CHAIN.SYMBOL)
+         * @param {'swap' | 'stake' | 'unstake' | 'add' | 'refund'} [type] Requested type of events
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getTxDetails(address: string, options: any = {}): RequestArgs {
-            // verify required parameter 'address' is not null or undefined
-            if (address === null || address === undefined) {
-                throw new RequiredError('address','Required parameter address was null or undefined when calling getTxDetails.');
+        getTxDetails(offset: number, limit: number, address?: string, txid?: string, asset?: string, type?: 'swap' | 'stake' | 'unstake' | 'add' | 'refund', options: any = {}): RequestArgs {
+            // verify required parameter 'offset' is not null or undefined
+            if (offset === null || offset === undefined) {
+                throw new RequiredError('offset','Required parameter offset was null or undefined when calling getTxDetails.');
             }
-            const localVarPath = `/v1/tx/{address}`
-                .replace(`{${"address"}}`, encodeURIComponent(String(address)));
+            // verify required parameter 'limit' is not null or undefined
+            if (limit === null || limit === undefined) {
+                throw new RequiredError('limit','Required parameter limit was null or undefined when calling getTxDetails.');
+            }
+            const localVarPath = `/v1/txs`;
             const localVarUrlObj = globalImportUrl.parse(localVarPath, true);
             let baseOptions;
             if (configuration) {
                 baseOptions = configuration.baseOptions;
-            }
+            }  
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-
-    
-            localVarUrlObj.query = {...localVarUrlObj.query, ...localVarQueryParameter, ...options.query};
-            // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
-            delete localVarUrlObj.search;
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...options.headers};
-
-            return {
-                url: globalImportUrl.format(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * Return an object containing the tx details
-         * @summary Get transaction
-         * @param {string} address An address
-         * @param {string} asset An asset (CHAIN.SYMBOL)
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getTxDetailsByAddressAsset(address: string, asset: string, options: any = {}): RequestArgs {
-            // verify required parameter 'address' is not null or undefined
-            if (address === null || address === undefined) {
-                throw new RequiredError('address','Required parameter address was null or undefined when calling getTxDetailsByAddressAsset.');
+            if (address !== undefined) {
+                localVarQueryParameter['address'] = address;
             }
-            // verify required parameter 'asset' is not null or undefined
-            if (asset === null || asset === undefined) {
-                throw new RequiredError('asset','Required parameter asset was null or undefined when calling getTxDetailsByAddressAsset.');
-            }
-            const localVarPath = `/v1/tx/{address}/asset/{asset}`
-                .replace(`{${"address"}}`, encodeURIComponent(String(address)))
-                .replace(`{${"asset"}}`, encodeURIComponent(String(asset)));
-            const localVarUrlObj = globalImportUrl.parse(localVarPath, true);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
 
-
-    
-            localVarUrlObj.query = {...localVarUrlObj.query, ...localVarQueryParameter, ...options.query};
-            // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
-            delete localVarUrlObj.search;
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...options.headers};
-
-            return {
-                url: globalImportUrl.format(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * Return an object containing the tx details
-         * @summary Get transaction
-         * @param {string} address An address
-         * @param {string} txid An Asset
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getTxDetailsByAddressTxId(address: string, txid: string, options: any = {}): RequestArgs {
-            // verify required parameter 'address' is not null or undefined
-            if (address === null || address === undefined) {
-                throw new RequiredError('address','Required parameter address was null or undefined when calling getTxDetailsByAddressTxId.');
+            if (txid !== undefined) {
+                localVarQueryParameter['txid'] = txid;
             }
-            // verify required parameter 'txid' is not null or undefined
-            if (txid === null || txid === undefined) {
-                throw new RequiredError('txid','Required parameter txid was null or undefined when calling getTxDetailsByAddressTxId.');
-            }
-            const localVarPath = `/v1/tx/{address}/txid/{txid}`
-                .replace(`{${"address"}}`, encodeURIComponent(String(address)))
-                .replace(`{${"txid"}}`, encodeURIComponent(String(txid)));
-            const localVarUrlObj = globalImportUrl.parse(localVarPath, true);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
 
-
-    
-            localVarUrlObj.query = {...localVarUrlObj.query, ...localVarQueryParameter, ...options.query};
-            // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
-            delete localVarUrlObj.search;
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...options.headers};
-
-            return {
-                url: globalImportUrl.format(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * Return an object containing the tx details
-         * @summary Get transaction
-         * @param {string} asset An asset (CHAIN.SYMBOL)
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getTxDetailsByAsset(asset: string, options: any = {}): RequestArgs {
-            // verify required parameter 'asset' is not null or undefined
-            if (asset === null || asset === undefined) {
-                throw new RequiredError('asset','Required parameter asset was null or undefined when calling getTxDetailsByAsset.');
+            if (asset !== undefined) {
+                localVarQueryParameter['asset'] = asset;
             }
-            const localVarPath = `/v1/tx/asset/{asset}`
-                .replace(`{${"asset"}}`, encodeURIComponent(String(asset)));
-            const localVarUrlObj = globalImportUrl.parse(localVarPath, true);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
+
+            if (type !== undefined) {
+                localVarQueryParameter['type'] = type;
             }
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
+
+            if (offset !== undefined) {
+                localVarQueryParameter['offset'] = offset;
+            }
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
 
 
     
@@ -1365,58 +1301,19 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             };
         },
         /**
-         * Return an object containing the tx details
-         * @summary Get transaction
-         * @param {string} address An address
+         * Return an array containing the event details
+         * @summary Get details of a tx by address, asset or tx-id
+         * @param {number} offset pagination offset
+         * @param {number} limit pagination limit
+         * @param {string} [address] Address of sender or recipient of any in/out tx in event
+         * @param {string} [txid] ID of any in/out tx in event
+         * @param {string} [asset] Any asset used in event (CHAIN.SYMBOL)
+         * @param {'swap' | 'stake' | 'unstake' | 'add' | 'refund'} [type] Requested type of events
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getTxDetails(address: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TxDetails>> {
-            const localVarAxiosArgs = DefaultApiAxiosParamCreator(configuration).getTxDetails(address, options);
-            return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
-                const axiosRequestArgs = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
-                return axios.request(axiosRequestArgs);
-            };
-        },
-        /**
-         * Return an object containing the tx details
-         * @summary Get transaction
-         * @param {string} address An address
-         * @param {string} asset An asset (CHAIN.SYMBOL)
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getTxDetailsByAddressAsset(address: string, asset: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TxDetails>> {
-            const localVarAxiosArgs = DefaultApiAxiosParamCreator(configuration).getTxDetailsByAddressAsset(address, asset, options);
-            return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
-                const axiosRequestArgs = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
-                return axios.request(axiosRequestArgs);
-            };
-        },
-        /**
-         * Return an object containing the tx details
-         * @summary Get transaction
-         * @param {string} address An address
-         * @param {string} txid An Asset
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getTxDetailsByAddressTxId(address: string, txid: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TxDetails>> {
-            const localVarAxiosArgs = DefaultApiAxiosParamCreator(configuration).getTxDetailsByAddressTxId(address, txid, options);
-            return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
-                const axiosRequestArgs = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
-                return axios.request(axiosRequestArgs);
-            };
-        },
-        /**
-         * Return an object containing the tx details
-         * @summary Get transaction
-         * @param {string} asset An asset (CHAIN.SYMBOL)
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getTxDetailsByAsset(asset: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TxDetails>> {
-            const localVarAxiosArgs = DefaultApiAxiosParamCreator(configuration).getTxDetailsByAsset(asset, options);
+        getTxDetails(offset: number, limit: number, address?: string, txid?: string, asset?: string, type?: 'swap' | 'stake' | 'unstake' | 'add' | 'refund', options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse200> {
+            const localVarAxiosArgs = DefaultApiAxiosParamCreator(configuration).getTxDetails(offset, limit, address, txid, asset, type, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
                 return axios.request(axiosRequestArgs);
@@ -1518,46 +1415,19 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return DefaultApiFp(configuration).getThorchainProxiedEndpoints(options)(axios, basePath);
         },
         /**
-         * Return an object containing the tx details
-         * @summary Get transaction
-         * @param {string} address An address
+         * Return an array containing the event details
+         * @summary Get details of a tx by address, asset or tx-id
+         * @param {number} offset pagination offset
+         * @param {number} limit pagination limit
+         * @param {string} [address] Address of sender or recipient of any in/out tx in event
+         * @param {string} [txid] ID of any in/out tx in event
+         * @param {string} [asset] Any asset used in event (CHAIN.SYMBOL)
+         * @param {'swap' | 'stake' | 'unstake' | 'add' | 'refund'} [type] Requested type of events
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getTxDetails(address: string, options?: any): AxiosPromise<Array<TxDetails>> {
-            return DefaultApiFp(configuration).getTxDetails(address, options)(axios, basePath);
-        },
-        /**
-         * Return an object containing the tx details
-         * @summary Get transaction
-         * @param {string} address An address
-         * @param {string} asset An asset (CHAIN.SYMBOL)
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getTxDetailsByAddressAsset(address: string, asset: string, options?: any): AxiosPromise<Array<TxDetails>> {
-            return DefaultApiFp(configuration).getTxDetailsByAddressAsset(address, asset, options)(axios, basePath);
-        },
-        /**
-         * Return an object containing the tx details
-         * @summary Get transaction
-         * @param {string} address An address
-         * @param {string} txid An Asset
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getTxDetailsByAddressTxId(address: string, txid: string, options?: any): AxiosPromise<Array<TxDetails>> {
-            return DefaultApiFp(configuration).getTxDetailsByAddressTxId(address, txid, options)(axios, basePath);
-        },
-        /**
-         * Return an object containing the tx details
-         * @summary Get transaction
-         * @param {string} asset An asset (CHAIN.SYMBOL)
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getTxDetailsByAsset(asset: string, options?: any): AxiosPromise<Array<TxDetails>> {
-            return DefaultApiFp(configuration).getTxDetailsByAsset(asset, options)(axios, basePath);
+        getTxDetails(offset: number, limit: number, address?: string, txid?: string, asset?: string, type?: 'swap' | 'stake' | 'unstake' | 'add' | 'refund', options?: any): AxiosPromise<InlineResponse200> {
+            return DefaultApiFp(configuration).getTxDetails(offset, limit, address, txid, asset, type, options)(axios, basePath);
         },
     };
 };
@@ -1674,53 +1544,20 @@ export class DefaultApi extends BaseAPI {
     }
 
     /**
-     * Return an object containing the tx details
-     * @summary Get transaction
-     * @param {string} address An address
+     * Return an array containing the event details
+     * @summary Get details of a tx by address, asset or tx-id
+     * @param {number} offset pagination offset
+     * @param {number} limit pagination limit
+     * @param {string} [address] Address of sender or recipient of any in/out tx in event
+     * @param {string} [txid] ID of any in/out tx in event
+     * @param {string} [asset] Any asset used in event (CHAIN.SYMBOL)
+     * @param {'swap' | 'stake' | 'unstake' | 'add' | 'refund'} [type] Requested type of events
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public getTxDetails(address: string, options?: any) {
-        return DefaultApiFp(this.configuration).getTxDetails(address, options)(this.axios, this.basePath);
-    }
-
-    /**
-     * Return an object containing the tx details
-     * @summary Get transaction
-     * @param {string} address An address
-     * @param {string} asset An asset (CHAIN.SYMBOL)
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof DefaultApi
-     */
-    public getTxDetailsByAddressAsset(address: string, asset: string, options?: any) {
-        return DefaultApiFp(this.configuration).getTxDetailsByAddressAsset(address, asset, options)(this.axios, this.basePath);
-    }
-
-    /**
-     * Return an object containing the tx details
-     * @summary Get transaction
-     * @param {string} address An address
-     * @param {string} txid An Asset
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof DefaultApi
-     */
-    public getTxDetailsByAddressTxId(address: string, txid: string, options?: any) {
-        return DefaultApiFp(this.configuration).getTxDetailsByAddressTxId(address, txid, options)(this.axios, this.basePath);
-    }
-
-    /**
-     * Return an object containing the tx details
-     * @summary Get transaction
-     * @param {string} asset An asset (CHAIN.SYMBOL)
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof DefaultApi
-     */
-    public getTxDetailsByAsset(asset: string, options?: any) {
-        return DefaultApiFp(this.configuration).getTxDetailsByAsset(asset, options)(this.axios, this.basePath);
+    public getTxDetails(offset: number, limit: number, address?: string, txid?: string, asset?: string, type?: 'swap' | 'stake' | 'unstake' | 'add' | 'refund', options?: any) {
+        return DefaultApiFp(this.configuration).getTxDetails(offset, limit, address, txid, asset, type, options)(this.axios, this.basePath);
     }
 
 }

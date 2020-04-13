@@ -1,12 +1,22 @@
+import { RemoteData } from '@devexperts/remote-data-ts';
+import BigNumber from 'bignumber.js';
 import { Maybe } from '../../types/bepswap';
-import { AssetDetail, PoolDetail, StakersAssetData, ThorchainEndpoints, ThorchainEndpoint } from '../../types/generated/midgard';
+import {
+  AssetDetail,
+  PoolDetail,
+  StakersAssetData,
+  ThorchainEndpoints,
+  ThorchainEndpoint,
+  InlineResponse200,
+  TxDetailsTypeEnum,
+} from '../../types/generated/midgard';
 
 export type AssetDetailMap = {
   [asset: string]: AssetDetail;
 };
 
 export type PoolDataMap = {
-  [symbol: string]: PoolDetail
+  [symbol: string]: PoolDetail;
 };
 
 export type GetStakerPoolDataPayload = {
@@ -19,8 +29,46 @@ export type StakerPoolData = {
 };
 
 export type PriceDataIndex = {
-  [symbol: string]: number;
+  [symbol: string]: BigNumber;
 };
+
+export type TxDetailType = TxDetailsTypeEnum.Swap
+ | TxDetailsTypeEnum.Stake | TxDetailsTypeEnum.Unstake
+ | TxDetailsTypeEnum.Add | TxDetailsTypeEnum.Refund;
+
+export type GetTxByAddressPayload = {
+  address: string;
+  offset: number;
+  limit: number;
+  type?: TxDetailType;
+};
+
+export type GetTxByAddressTxIdPayload = {
+  address: string;
+  txId: string;
+  offset: number;
+  limit: number;
+  type?: TxDetailType;
+};
+
+export type GetTxByAddressAssetPayload = {
+  address: string;
+  asset: string;
+  offset: number;
+  limit: number;
+  type?: TxDetailType;
+};
+
+export type GetTxByAssetPayload = {
+  asset: string;
+  offset: number;
+  limit: number;
+  type?: TxDetailType;
+};
+
+export type TxDetailData = RemoteData<Error, InlineResponse200>;
+
+export type ApiBasePathRD = RemoteData<Error, string>;
 
 export type State = {
   assets: AssetDetailMap;
@@ -30,11 +78,15 @@ export type State = {
   bnbPoolAddress: Maybe<ThorchainEndpoint>;
   poolAddress: Maybe<string>;
   poolData: PoolDataMap;
-  stakerPoolData: StakerPoolData;
+  stakerPoolData: Maybe<StakerPoolData>;
+  stakerPoolDataLoading: boolean;
+  stakerPoolDataError: Maybe<Error>;
   runePrice: number;
   basePriceAsset: string; // set base price asset as a RUNE
   priceIndex: PriceDataIndex;
   error: Maybe<Error>;
   poolLoading: boolean;
-  stakerPoolDataLoading: boolean;
+  txData: TxDetailData;
+  txCurData: Maybe<InlineResponse200>;
+  apiBasePath: ApiBasePathRD;
 };

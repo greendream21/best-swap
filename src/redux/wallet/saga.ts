@@ -3,8 +3,8 @@ import { push } from 'connected-react-router';
 import { isEmpty as _isEmpty } from 'lodash';
 
 import { AxiosResponse } from 'axios';
-import Binance from '../../clients/binance';
-import { MIDGARD_API_URL } from '../../helpers/apiHelper';
+import { binance, util } from 'asgardex-common';
+import * as api from '../../helpers/apiHelper';
 
 import {
   saveWalletAddress,
@@ -13,20 +13,18 @@ import {
   clearKeystore,
 } from '../../helpers/webStorageHelper';
 
-import { getFixedNumber } from '../../helpers/stringHelper';
-import { BASE_NUMBER } from '../../settings/constants';
 import * as actions from './actions';
 import { AssetData, StakeData } from './types';
 import {
-  DefaultApi,
   StakersAddressData,
   PoolDetail,
   StakersAssetData,
 } from '../../types/generated/midgard';
-import { Market, Balance, Address } from '../../types/binance';
 import { getAssetFromString } from '../midgard/utils';
 
-const midgardApi = new DefaultApi({ basePath: MIDGARD_API_URL });
+import { baseToToken, baseAmount, tokenAmount } from '../../helpers/tokenHelper';
+import { BINANCE_NET, getNet } from '../../env';
+import { getApiBasePath } from '../midgard/saga';
 
 export function* saveWalletSaga() {
   yield takeEvery(actions.SAVE_WALLET, function*({
@@ -39,12 +37,6 @@ export function* saveWalletSaga() {
 
     yield put(actions.refreshBalance(wallet));
     yield put(actions.refreshStake(wallet));
-
-    yield put(push('/swap'));
-
-    // force reload the page to init websocket
-
-    window.location.href = '/swap';
   });
 }
 
@@ -64,18 +56,20 @@ export function* refreshBalance() {
     const address = payload;
 
     try {
-      const balances: Balance[] = yield call(Binance.getBalances, address);
+      const bncClient = yield call(binance.client, BINANCE_NET);
+      const balances: binance.Balance[] = yield call(bncClient.getBalance, address);
 
       try {
-        const markets: { result: Market[] } = yield call(Binance.getMarkets);
-        const coins = balances.map((coin: Balance) => {
+        const markets: { result: binance.Market[] } = yield call(bncClient.getMarkets);
+        // TODO(Veado): token or base amounts?
+        const coins = balances.map((coin: binance.Balance) => {
           const market = markets.result.find(
-            (market: Market) => market.base_asset_symbol === coin.symbol,
+            (market: binance.Market) => market.base_asset_symbol === coin.symbol,
           );
           return {
             asset: coin.symbol,
-            assetValue: parseFloat(coin.free),
-            price: market ? parseFloat(market.list_price) : 0,
+            assetValue: tokenAmount(coin.free),
+            price: market ? util.bnOrZero(market.list_price) : util.bn(0),
           } as AssetData;
         });
 
@@ -94,11 +88,13 @@ type StakersAssetDataMap = {
 };
 
 export function* getUserStakeData(payload: {
-  address: Address;
+  address: binance.Address;
   assets: string[];
 }) {
   const { address, assets } = payload;
 
+  let basePath: string = yield call(getApiBasePath, getNet());
+  let midgardApi = api.getMidgardDefaultApi(basePath);
   // (Request 1) Load list of possible `StakersAssetData`
   const { data }: AxiosResponse<StakersAssetData[]> = yield call(
     { context: midgardApi, fn: midgardApi.getStakersAddressAndAssetData },
@@ -121,13 +117,16 @@ export function* getUserStakeData(payload: {
       : {};
 
   // (Request 2) Load list of possible `PoolDetail`
+  // And we do need to check `basePath` again before
+  basePath = yield call(getApiBasePath, getNet());
+  midgardApi = api.getMidgardDefaultApi(basePath);
   const { data: poolDataList }: AxiosResponse<PoolDetail[]> = yield call(
     { context: midgardApi, fn: midgardApi.getPoolsData },
     assets.join(),
   );
 
   // Transform results of requests 1 + 2 into `StakeData[]`
-  const stakeData: StakeData[] = poolDataList.reduce(
+  const stakeDataList: StakeData[] = poolDataList.reduce(
     (acc: StakeData[], poolData: PoolDetail) => {
       const userStakerData = poolData.asset
         ? poolDetailMap[poolData.asset]
@@ -135,15 +134,11 @@ export function* getUserStakeData(payload: {
       if (userStakerData && poolData.asset) {
         const price = poolData?.price ?? 0;
         const { symbol = '', ticker = '' } = getAssetFromString(poolData.asset);
-        const stakeData = {
+        const stakeData: StakeData = {
           targetSymbol: symbol,
           target: ticker.toLowerCase(),
-          targetValue: userStakerData.assetStaked
-            ? getFixedNumber(userStakerData.assetStaked / BASE_NUMBER)
-            : 0,
-          assetValue: userStakerData.runeStaked
-            ? getFixedNumber(userStakerData.runeStaked / BASE_NUMBER)
-            : 0,
+          targetValue: baseToToken(baseAmount(userStakerData?.assetStaked)),
+          assetValue: baseToToken(baseAmount(userStakerData?.runeStaked)),
           asset: 'rune',
           price,
         } as StakeData;
@@ -154,8 +149,7 @@ export function* getUserStakeData(payload: {
     },
     [],
   );
-
-  return stakeData;
+  return stakeDataList;
 }
 
 export function* refreshStakes() {
@@ -165,6 +159,8 @@ export function* refreshStakes() {
     const address = payload;
 
     try {
+      const basePath: string = yield call(getApiBasePath, getNet());
+      const midgardApi = api.getMidgardDefaultApi(basePath);
       const { data }: AxiosResponse<StakersAddressData> = yield call(
         { context: midgardApi, fn: midgardApi.getStakersAddressData },
         address,

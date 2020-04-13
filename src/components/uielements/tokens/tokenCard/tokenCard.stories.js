@@ -2,6 +2,7 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { ThemeProvider } from 'styled-components';
 
+import { util } from 'asgardex-common';
 import AppHolder from '../../../../AppStyle';
 import { defaultTheme } from '../../../../settings';
 
@@ -12,7 +13,7 @@ storiesOf('Components/Tokens/TokenCard', module).add('default', () => {
     <ThemeProvider theme={defaultTheme}>
       <AppHolder>
         <div
-          style={{ display: 'flex', flexDirection: 'column', width: '300px' }}
+          style={{ display: 'flex', flexDirection: 'column', width: '800px' }}
         >
           <TokenCard
             title="You are swapping"
@@ -28,9 +29,12 @@ storiesOf('Components/Tokens/TokenCard', module).add('default', () => {
                 price: 100,
               },
             ]}
-            amount={1.354}
-            price={600}
+            amount={util.bn(1.354)}
+            price={util.bn(600)}
             withSelection
+            priceIndex={{
+              RUNE: 1,
+            }}
           />
         </div>
       </AppHolder>

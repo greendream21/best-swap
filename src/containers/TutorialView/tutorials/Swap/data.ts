@@ -1,0 +1,18 @@
+// import { SingleSwapCalcData } from '../../../Swap/calc';
+
+import BigNumber from 'bignumber.js';
+import { util } from 'asgardex-common';
+import { TokenAmount } from '../../../../types/token';
+import { tokenAmount } from '../../../../helpers/tokenHelper';
+
+type SwapCalcData = {
+  X: TokenAmount
+  Y: TokenAmount
+  Px: BigNumber
+}
+
+export const data: SwapCalcData = {
+  X: tokenAmount(1000000),
+  Y: tokenAmount(1000),
+  Px: util.bn(0.04),
+};

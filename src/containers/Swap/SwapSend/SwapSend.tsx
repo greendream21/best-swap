@@ -4,9 +4,10 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { Row, Col, Icon, notification, Popover } from 'antd';
+import { binance, util } from 'asgardex-common';
 
 import { crypto } from '@binance-chain/javascript-sdk';
-import Binance from '../../../clients/binance';
+import BigNumber from 'bignumber.js';
 
 import Button from '../../../components/uielements/button';
 import Drag from '../../../components/uielements/drag';
@@ -31,9 +32,7 @@ import {
 import {
   getTickerFormat,
   getPair,
-  getFixedNumber,
   emptyString,
-  Pair,
 } from '../../../helpers/stringHelper';
 import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
 import {
@@ -53,8 +52,14 @@ import Slider from '../../../components/uielements/slider';
 import StepBar from '../../../components/uielements/stepBar';
 import Trend from '../../../components/uielements/trend';
 import { MAX_VALUE } from '../../../redux/app/const';
-import { delay } from '../../../helpers/asyncHelper';
-import { FixmeType, Maybe, Nothing, TokenData } from '../../../types/bepswap';
+import {
+  FixmeType,
+  Maybe,
+  Nothing,
+  TokenData,
+  Pair,
+  AssetPair,
+} from '../../../types/bepswap';
 import { SwapSendView, CalcResult } from './types';
 import { User, AssetData } from '../../../redux/wallet/types';
 import { TxStatus, TxTypes } from '../../../redux/app/types';
@@ -66,6 +71,9 @@ import {
 } from '../../../redux/midgard/types';
 import { RootState } from '../../../redux/store';
 import { getAssetFromString } from '../../../redux/midgard/utils';
+import { tokenAmount } from '../../../helpers/tokenHelper';
+import { TokenAmount } from '../../../types/token';
+import { BINANCE_NET } from '../../../env';
 
 type ComponentProps = {
   info: string;
@@ -97,20 +105,21 @@ type ConnectedProps = {
 
 type Props = ComponentProps & ConnectedProps;
 
-interface State {
+type State = {
   address: string;
   password: string;
   invalidPassword: boolean;
   invalidAddress: boolean;
   validatingPassword: boolean;
   dragReset: boolean;
-  xValue: number;
+  xValue: TokenAmount;
   percent: number;
   openPrivateModal: boolean;
   openWalletAlert: boolean;
   slipProtection: boolean;
   maxSlip: number;
   txResult: Maybe<TxResult>;
+  timerFinished: boolean;
 }
 
 type TxResult = {
@@ -120,8 +129,6 @@ type TxResult = {
 };
 
 class SwapSend extends React.Component<Props, State> {
-  addressRef = React.createRef();
-
   /**
    * Calculated result
    */
@@ -140,13 +147,14 @@ class SwapSend extends React.Component<Props, State> {
       invalidAddress: false,
       validatingPassword: false,
       dragReset: true,
-      xValue: 0,
+      xValue: tokenAmount(0),
       percent: 0,
       openPrivateModal: false,
       openWalletAlert: false,
       slipProtection: true,
       maxSlip: 30,
       txResult: null,
+      timerFinished: false,
     };
   }
 
@@ -171,7 +179,8 @@ class SwapSend extends React.Component<Props, State> {
       length !== prevProps.wsTransfers.length &&
       length > 0 &&
       hash !== undefined &&
-      txResult === null
+      txResult === null &&
+      !this.isCompleted()
     ) {
       const txResult = getTxResult({
         tx: lastTx,
@@ -191,11 +200,17 @@ class SwapSend extends React.Component<Props, State> {
     resetTxStatus();
   }
 
-  isValidRecipient = () => {
+  isValidRecipient = async () => {
     const { address } = this.state;
-
-    return Binance.isValidAddress(address);
+    const bncClient = await binance.client(BINANCE_NET);
+    return bncClient.isValidAddress(address);
   };
+
+  isCompleted = (): boolean => {
+    const { txResult, timerFinished } = this.state;
+    const { txStatus } = this.props;
+    return !txStatus.status && (txResult !== Nothing || timerFinished);
+  }
 
   handleChangePassword = (password: string) => {
     this.setState({
@@ -226,16 +241,17 @@ class SwapSend extends React.Component<Props, State> {
       return false;
     });
 
-    const totalAmount = !sourceAsset ? 0 : sourceAsset.assetValue || 0;
-    const newValue = (totalAmount * percent) / 100;
+    const totalAmount = sourceAsset?.assetValue.amount() ?? util.bn(0);
+    // formula (totalAmount * percent) / 100
+    const newValue = totalAmount.multipliedBy(percent).div(100);
 
-    if (totalAmount < newValue) {
+    if (totalAmount.isLessThan(newValue)) {
       this.setState({
-        xValue: totalAmount,
+        xValue: tokenAmount(totalAmount),
       });
     } else {
       this.setState({
-        xValue: newValue,
+        xValue: tokenAmount(newValue),
       });
     }
 
@@ -244,13 +260,9 @@ class SwapSend extends React.Component<Props, State> {
     });
   };
 
-  handleChangeValue = (value: number | string) => {
-    if (Number.isNaN(Number(value))) {
-      return;
-    }
-
+  handleChangeValue = (value: BigNumber) => {
     const { info, user } = this.props;
-    const newValue = value as number;
+    const newValue = tokenAmount(value);
     const wallet = user ? user.wallet : null;
 
     // if wallet is disconnected, just set the value
@@ -273,17 +285,22 @@ class SwapSend extends React.Component<Props, State> {
       return false;
     });
 
-    const totalAmount = !sourceAsset ? 0 : sourceAsset.assetValue || 0;
+    const totalAmount = sourceAsset?.assetValue.amount() ?? util.bn(0);
 
-    if (totalAmount < newValue) {
+    if (totalAmount.isLessThanOrEqualTo(newValue.amount())) {
       this.setState({
-        xValue: totalAmount,
+        xValue: tokenAmount(totalAmount),
         percent: 100,
       });
     } else {
       this.setState({
         xValue: newValue,
-        percent: (100 * newValue) / totalAmount,
+        // formula (100 * newValue) / totalAmount
+        percent: newValue
+          .amount()
+          .multipliedBy(100)
+          .div(totalAmount)
+          .toNumber(),
       });
     }
   };
@@ -297,14 +314,15 @@ class SwapSend extends React.Component<Props, State> {
 
       this.setState({ validatingPassword: true });
       // Short delay to render latest state changes of `validatingPassword`
-      await delay(200);
+      await util.delay(200);
 
       try {
         const privateKey = crypto.getPrivateKeyFromKeyStore(keystore, password);
-        Binance.setPrivateKey(privateKey);
+        const bncClient = await binance.client(BINANCE_NET);
+        await bncClient.setPrivateKey(privateKey);
         const address = crypto.getAddressFromPrivateKey(
           privateKey,
-          Binance.getPrefix(),
+          binance.getPrefix(BINANCE_NET),
         );
         if (wallet === address) {
           this.handleConfirmSwap();
@@ -360,7 +378,7 @@ class SwapSend extends React.Component<Props, State> {
     });
   };
 
-  handleEndDrag = () => {
+  handleEndDrag = async () => {
     const { view, user } = this.props;
     const { xValue } = this.state;
     const wallet = user ? user.wallet : null;
@@ -375,7 +393,7 @@ class SwapSend extends React.Component<Props, State> {
       return;
     }
 
-    if (Number(xValue) <= 0) {
+    if (xValue.amount().isLessThanOrEqualTo(0)) {
       /* eslint-disable dot-notation */
       notification['error']({
         message: 'Swap Invalid',
@@ -387,7 +405,8 @@ class SwapSend extends React.Component<Props, State> {
       return;
     }
 
-    if (view === SwapSendView.SEND && !this.isValidRecipient()) {
+    const isValidRecipient = await this.isValidRecipient();
+    if (view === SwapSendView.SEND && !isValidRecipient) {
       this.setState({
         invalidAddress: true,
         dragReset: true,
@@ -412,6 +431,7 @@ class SwapSend extends React.Component<Props, State> {
   handleStartTimer = () => {
     const { resetTxStatus } = this.props;
 
+    this.setState({ timerFinished: false });
     resetTxStatus({
       type: TxTypes.SWAP,
       modal: true,
@@ -422,7 +442,11 @@ class SwapSend extends React.Component<Props, State> {
 
   handleCloseModal = () => {
     const { setTxTimerModal } = this.props;
-    setTxTimerModal(false);
+    if (this.isCompleted()) {
+      this.handleCompleted();
+    } else {
+      setTxTimerModal(false);
+    }
   };
 
   handleChangeSwapType = (state: boolean) => {
@@ -458,11 +482,18 @@ class SwapSend extends React.Component<Props, State> {
     const { source, target }: Pair = getPair(info);
     const selectedToken = getTickerFormat(asset);
 
-    const URL =
-      selectedToken === target
-        ? `/swap/${view}/${selectedToken}-${source}`
-        : `/swap/${view}/${selectedToken}-${target}`;
-    this.props.history.push(URL);
+    if (source && target) {
+      const URL =
+        selectedToken === target
+          ? `/swap/${view}/${selectedToken}-${source}`
+          : `/swap/${view}/${selectedToken}-${target}`;
+      this.props.history.push(URL);
+    } else {
+      // eslint-disable-next-line no-console
+      console.error(
+        `Could not parse target / source pair: ${target} / ${source}`,
+      );
+    }
   };
 
   handleSelectTraget = (asset: string) => {
@@ -470,11 +501,18 @@ class SwapSend extends React.Component<Props, State> {
     const { source, target }: Pair = getPair(info);
     const selectedToken = getTickerFormat(asset);
 
-    const URL =
-      source === selectedToken
-        ? `/swap/${view}/${target}-${selectedToken}`
-        : `/swap/${view}/${source}-${selectedToken}`;
-    this.props.history.push(URL);
+    if (source && target) {
+      const URL =
+        source === selectedToken
+          ? `/swap/${view}/${target}-${selectedToken}`
+          : `/swap/${view}/${source}-${selectedToken}`;
+      this.props.history.push(URL);
+    } else {
+      // eslint-disable-next-line no-console
+      console.error(
+        `Could not parse target / source pair: ${target} / ${source}`,
+      );
+    }
   };
 
   handleReversePair = () => {
@@ -489,14 +527,20 @@ class SwapSend extends React.Component<Props, State> {
       return;
     }
 
-    const URL = `/swap/${view}/${target}-${source}`;
-
-    this.props.history.push(URL);
+    if (source && target) {
+      const URL = `/swap/${view}/${target}-${source}`;
+      this.props.history.push(URL);
+    } else {
+      // eslint-disable-next-line no-console
+      console.error(
+        `Could not parse target / source pair: ${target} / ${source}`,
+      );
+    }
   };
 
   validatePair = (
     sourceInfo: AssetData[],
-    targetInfo: { asset: string }[],
+    targetInfo: AssetPair[],
     pair: Pair,
   ) => {
     if (!targetInfo.length) {
@@ -523,7 +567,7 @@ class SwapSend extends React.Component<Props, State> {
         countTxTimerValue(25);
       } else if (value >= 75 && value < 95) {
         // With last quarter we just count a little bit to signalize still a progress
-        countTxTimerValue(1);
+        countTxTimerValue(0.75);
       }
     }
   };
@@ -533,23 +577,25 @@ class SwapSend extends React.Component<Props, State> {
     setTxTimerStatus(false);
     this.setState({
       dragReset: true,
+      timerFinished: true,
     });
   };
 
   handleConfirmSwap = async () => {
     const { user, info, setTxHash, resetTxStatus } = this.props;
     const { xValue, address, slipProtection } = this.state;
-    const { source, target }: Pair = getPair(info);
+    const { source = '', target = '' }: Pair = getPair(info);
 
-    if (user && this.calcResult) {
+    if (user && source && target && this.calcResult) {
       this.setState({
         txResult: null,
       });
 
       this.handleStartTimer();
+      const bncClient = await binance.client(BINANCE_NET);
       try {
         const data = await confirmSwap(
-          Binance,
+          bncClient,
           user.wallet,
           source,
           target,
@@ -567,7 +613,7 @@ class SwapSend extends React.Component<Props, State> {
       } catch (error) {
         notification['error']({
           message: 'Swap Invalid',
-          description: 'Swap information is not valid.',
+          description: `Swap information is not valid: ${error.toString()}`,
         });
         this.setState({
           dragReset: true,
@@ -578,7 +624,7 @@ class SwapSend extends React.Component<Props, State> {
     }
   };
 
-  handleSelectAmount = (source: string) => (amount: number) => {
+  handleSelectSourceAmount = (source: string, amount: number) => {
     const { assetData } = this.props;
 
     const sourceAsset = assetData.find(data => {
@@ -594,23 +640,32 @@ class SwapSend extends React.Component<Props, State> {
       return;
     }
 
-    const totalAmount = sourceAsset.assetValue || 0;
-    const xValue = (totalAmount * amount) / 100;
+    const totalAmount = sourceAsset.assetValue.amount() ?? util.bn(0);
+    // formula (totalAmount * amount) / 100
+    const xValueBN = totalAmount.multipliedBy(amount).div(100);
     this.setState({
-      xValue,
+      xValue: tokenAmount(xValueBN),
     });
   };
 
-  handleClickFinish = () => {
+  handleCompleted = () => {
     const { resetTxStatus } = this.props;
+    this.setState({
+      xValue: tokenAmount(0),
+      timerFinished: false,
+   });
     resetTxStatus();
+  };
+
+  handleClickFinish = () => {
+    this.handleCompleted();
     this.props.history.push('/swap');
   };
 
   renderSwapModalContent = (
     swapSource: string,
     swapTarget: string,
-    info: CalcResult,
+    calcResult: CalcResult,
   ) => {
     const {
       txStatus: { status, value, startTime, hash },
@@ -619,37 +674,28 @@ class SwapSend extends React.Component<Props, State> {
     } = this.props;
     const { xValue, txResult } = this.state;
 
-    const { slip, outputAmount } = info;
+    const { slip, outputAmount } = calcResult;
 
-    const Px = priceIndex.RUNE;
-    const tokenPrice = priceIndex[swapTarget.toUpperCase()] || 0;
+    const Px = util.validBNOrZero(priceIndex?.RUNE);
+    const tokenPrice = util.validBNOrZero(priceIndex[swapTarget.toUpperCase()]);
 
-    const priceFrom = Number(Px * xValue);
-    const priceTo = outputAmount * Number(tokenPrice);
+    const priceFrom: BigNumber = Px.multipliedBy(xValue.amount());
     const slipAmount = slip;
 
-    // const transactionLabels = [
-    //   'sending transaction',
-    //   'processing transaction',
-    //   'signing transaction',
-    //   'finishing transaction',
-    //   'complete',
-    // ];
-
-    const completed = !status && txResult !== null;
     const refunded = txResult?.type === 'refund' ?? false;
-    const targetToken = !completed
-      ? swapTarget
-      : getTickerFormat(txResult?.token);
-    const tokenAmount = !completed
-      ? Number(outputAmount)
-      : Number(txResult?.amount);
-    let priceValue = 0;
+    const amountBN = util.bnOrZero(txResult?.amount);
+    const targetToken = txResult
+      ? getTickerFormat(txResult?.token)
+      : swapTarget;
+    const assetAmount = txResult ? tokenAmount(amountBN) : outputAmount;
 
+    let priceTo;
     if (refunded) {
-      priceValue = priceFrom;
+      priceTo = priceFrom;
     } else {
-      priceValue = !completed ? priceTo : Number(txResult?.amount) * tokenPrice;
+      priceTo = txResult
+        ? amountBN.multipliedBy(tokenPrice)
+        : outputAmount.amount().multipliedBy(tokenPrice);
     }
 
     const txURL = TESTNET_TX_BASE_URL + hash;
@@ -662,6 +708,7 @@ class SwapSend extends React.Component<Props, State> {
               status={status}
               value={value}
               maxValue={MAX_VALUE}
+              maxSec={45}
               startTime={startTime}
               onChange={this.handleChangeTxTimer}
               onEnd={this.handleEndTxTimer}
@@ -681,19 +728,19 @@ class SwapSend extends React.Component<Props, State> {
               <CoinData
                 data-test="swapmodal-coin-data-receive"
                 asset={targetToken}
-                assetValue={tokenAmount}
-                price={priceValue}
+                assetValue={assetAmount}
+                price={priceTo}
                 priceUnit={basePriceAsset}
               />
             </div>
           </div>
         </Row>
         <Row className="swap-info-wrapper">
-          <Trend value={slipAmount} />
+          <Trend amount={slipAmount} />
           {hash && (
             <div className="hash-address">
               <div className="copy-btn-wrapper">
-                {completed && (
+                {this.isCompleted() && (
                   <Button
                     className="view-btn"
                     color="success"
@@ -713,13 +760,13 @@ class SwapSend extends React.Component<Props, State> {
     );
   };
 
-  validateSlip = (slip: number) => {
+  validateSlip = (slip: BigNumber) => {
     const { maxSlip } = this.state;
 
-    if (slip >= maxSlip) {
+    if (slip.isGreaterThanOrEqualTo(maxSlip)) {
       notification.error({
         message: 'Swap Invalid',
-        description: `Slip ${slip}% is too high, try less.`,
+        description: `Slip ${util.formatBN(slip)}% is too high, try less than ${maxSlip}%.`,
       });
       this.setState({
         dragReset: true,
@@ -786,7 +833,7 @@ class SwapSend extends React.Component<Props, State> {
       const tokenData = tokenInfo[tokenName];
       const assetStr = tokenData?.asset;
       const asset = assetStr ? getAssetFromString(assetStr) : null;
-      const price = tokenData?.priceRune ?? 0;
+      const price = util.bnOrZero(tokenData?.priceRune);
 
       return {
         asset: asset?.symbol ?? '',
@@ -794,7 +841,7 @@ class SwapSend extends React.Component<Props, State> {
       };
     });
 
-    const runePrice = priceIndex.RUNE;
+    const runePrice = util.validBNOrZero(priceIndex?.RUNE);
 
     // add rune data in the target token list
     tokensData.push({
@@ -829,23 +876,28 @@ class SwapSend extends React.Component<Props, State> {
       return <></>;
     } else {
       const { slip, outputAmount, outputPrice } = this.calcResult;
-      const sourcePrice = priceIndex[swapSource.toUpperCase()] || outputPrice;
-      const targetPrice = priceIndex[swapTarget.toUpperCase()] || outputPrice;
+      const sourcePriceBN = util.bn(priceIndex[swapSource.toUpperCase()]);
+      const sourcePrice = util.isValidBN(sourcePriceBN)
+        ? sourcePriceBN
+        : outputPrice;
+      const targetPriceBN = util.bn(priceIndex[swapTarget.toUpperCase()]);
+      const targetPrice = util.isValidBN(targetPriceBN)
+        ? targetPriceBN
+        : outputPrice;
 
-      const ratio = targetPrice !== 0 ? sourcePrice / targetPrice : 0;
+      const ratio = !targetPrice.isEqualTo(util.bn(0))
+        ? sourcePrice.div(targetPrice)
+        : util.bn(0);
 
-      const ratioLabel = `1 ${swapSource.toUpperCase()} = ${getFixedNumber(
-        ratio,
+      const ratioLabel = `1 ${swapSource.toUpperCase()} = ${ratio.toFixed(
         2,
       )} ${swapTarget.toUpperCase()}`;
 
       // swap modal
-
-      const completed = !txStatus.status && txResult !== null;
       const refunded = txResult && txResult.type === 'refund';
 
       // eslint-disable-next-line no-nested-ternary
-      const swapTitle = !completed
+      const swapTitle = !this.isCompleted()
         ? 'YOU ARE SWAPPING'
         : refunded
         ? 'TOKEN REFUNDED'
@@ -885,9 +937,9 @@ class SwapSend extends React.Component<Props, State> {
                   unit={basePriceAsset}
                   onChange={this.handleChangeValue}
                   onChangeAsset={this.handleChangeSource}
-                  onSelect={this.handleSelectAmount(swapSource)}
+                  onSelect={(amount: number) =>
+                    this.handleSelectSourceAmount(swapSource, amount)}
                   inputProps={{ 'data-test': 'coincard-source-input' }}
-                  withSelection
                   withSearch
                   data-test="coincard-source"
                 />

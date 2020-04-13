@@ -5,7 +5,7 @@ import { ThemeProvider } from 'styled-components';
 import AppHolder from '../../../../AppStyle';
 import { defaultTheme } from '../../../../settings';
 
-import CoinList from './coinList';
+import CoinList from './index';
 import { assetsData, stakeData } from './data';
 
 storiesOf('Components/Coins/CoinList', module).add('default', () => {
@@ -13,11 +13,27 @@ storiesOf('Components/Coins/CoinList', module).add('default', () => {
     <ThemeProvider theme={defaultTheme}>
       <AppHolder>
         <div style={{ display: 'flex', flexDirection: 'row', width: '800px' }}>
-          <div style={{ display: 'inline-block', width: '300px' }}>
-            <CoinList data={assetsData} value={2} />
+          <div style={{ display: 'inline-block', width: '400px' }}>
+            <CoinList
+              data={assetsData}
+              priceIndex={{
+                RUNE: 1,
+              }}
+              selected={[assetsData[2], assetsData[3]]}
+              onSelect={() => {}}
+              style={{ height: '200px' }}
+            />
           </div>
-          <div style={{ display: 'block', width: '300px' }}>
-            <CoinList data={stakeData} selected={[1]} />
+          <div style={{ display: 'block', width: '400px' }}>
+            <CoinList
+              data={stakeData}
+              selected={[stakeData[1]]}
+              priceIndex={{
+                RUNE: 1,
+              }}
+              onSelect={() => {}}
+              style={{ height: '200px' }}
+            />
           </div>
         </div>
         <div
@@ -28,11 +44,27 @@ storiesOf('Components/Coins/CoinList', module).add('default', () => {
             marginTop: '20px',
           }}
         >
-          <div style={{ display: 'inline-block', width: '300px' }}>
-            <CoinList data={assetsData} size="big" />
+          <div style={{ display: 'inline-block', width: '400px' }}>
+            <CoinList
+              data={assetsData}
+              size="big"
+              priceIndex={{
+                RUNE: 1,
+              }}
+              onSelect={() => {}}
+              style={{ height: '200px' }}
+            />
           </div>
-          <div style={{ display: 'block', width: '300px' }}>
-            <CoinList data={stakeData} size="big" />
+          <div style={{ display: 'block', width: '400px' }}>
+            <CoinList
+              data={stakeData}
+              size="big"
+              priceIndex={{
+                RUNE: 1,
+              }}
+              onSelect={() => {}}
+              style={{ height: '200px' }}
+            />
           </div>
         </div>
       </AppHolder>

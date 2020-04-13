@@ -271,18 +271,11 @@ export const ContentWrapper = styled(ContentView)`
             display: flex;
             justify-content: space-around;
             align-items: center;
-            padding-top: 10px;
-            padding-bottom: 10px;
+            padding: 10px;
             border-top: 1px solid ${palette('border', 0)};
           }
 
           .your-share-info {
-            width: 100px;
-            height: 80px;
-
-            &.pool-share-info {
-              height: 50px;
-            }
 
             & > div {
               text-align: center;

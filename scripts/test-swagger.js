@@ -11,7 +11,7 @@ async function main() {
    */
 
   await runSwaggerFixtureTest({
-    swaggerLocation: 'https://testnet-api.bepswap.net/v1/swagger.json',
+    swaggerLocation: 'http://159.89.252.210:8080/v1/swagger.json',
     fixtureFolder: 'api',
   });
 

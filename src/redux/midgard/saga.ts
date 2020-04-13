@@ -1,37 +1,56 @@
 import { all, takeEvery, put, fork, call } from 'redux-saga/effects';
-import { AxiosResponse } from 'axios';
 import { isEmpty as _isEmpty } from 'lodash';
+import byzantine from '@thorchain/byzantine-module';
 import * as actions from './actions';
-import { MIDGARD_API_URL } from '../../helpers/apiHelper';
+import * as api from '../../helpers/apiHelper';
 
 import {
   saveBasePriceAsset,
   getBasePriceAsset,
 } from '../../helpers/webStorageHelper';
 import { getAssetDetailIndex, getPriceIndex } from './utils';
-import {
-  DefaultApi,
-  AssetDetail,
-  PoolDetail,
-  StakersAssetData,
-  ThorchainEndpoints,
-} from '../../types/generated/midgard';
+import { NET, getNet } from '../../env';
+import { UnpackPromiseResponse } from '../../types/util';
 
-const midgardApi = new DefaultApi({ basePath: MIDGARD_API_URL });
+export function* getApiBasePath(net: NET) {
+  if (net === NET.DEV) {
+    return api.getMidgardBasePathByIP(api.MIDGARD_DEV_API_DEV_IP);
+  }
+
+  try {
+    yield put(actions.getApiBasePathPending());
+    const fn = byzantine;
+    const basePath: UnpackPromiseResponse<typeof fn> = yield call(fn, net === NET.MAIN);
+    yield put(actions.getApiBasePathSuccess(basePath));
+    return basePath;
+  } catch (error) {
+    yield put(actions.getApiBasePathFailed(error));
+    throw new Error(error);
+  }
+}
 
 export function* getPools() {
   yield takeEvery(actions.GET_POOLS_REQUEST, function*() {
     try {
-      const { data }: AxiosResponse<string[]> = yield call({
+      let basePath: string = yield call(getApiBasePath, getNet());
+      let midgardApi = api.getMidgardDefaultApi(basePath);
+      const fn = midgardApi.getPools;
+      const { data }: UnpackPromiseResponse<typeof fn> = yield call({
         context: midgardApi,
-        fn: midgardApi.getPools,
+        fn,
       });
 
       if (data && !_isEmpty(data)) {
-        const { data: assetDetails }: AxiosResponse<AssetDetail[]> = yield call(
+        // We do need to check `basePath` again here
+        basePath = yield call(getApiBasePath, getNet());
+        midgardApi = api.getMidgardDefaultApi(basePath);
+        const fn = midgardApi.getAssetInfo;
+        const {
+          data: assetDetails,
+        }: UnpackPromiseResponse<typeof fn> = yield call(
           {
             context: midgardApi,
-            fn: midgardApi.getAssetInfo,
+            fn,
           },
           data.join(),
         );
@@ -68,8 +87,11 @@ export function* getPoolData() {
   }: actions.GetPoolData) {
     const { assets, overrideAllPoolData } = payload;
     try {
-      const { data }: AxiosResponse<PoolDetail[]> = yield call(
-        { context: midgardApi, fn: midgardApi.getPoolsData },
+      const basePath: string = yield call(getApiBasePath, getNet());
+      const midgardApi = api.getMidgardDefaultApi(basePath);
+      const fn = midgardApi.getPoolsData;
+      const { data }: UnpackPromiseResponse<typeof fn> = yield call(
+        { context: midgardApi, fn },
         assets.join(),
       );
       yield put(
@@ -91,11 +113,15 @@ export function* getStakerPoolData() {
     const assetId = `BNB.${asset}`;
 
     try {
-      const { data }: AxiosResponse<StakersAssetData> = yield call(
-        { context: midgardApi, fn: midgardApi.getStakersAddressAndAssetData },
+      const basePath: string = yield call(getApiBasePath, getNet());
+      const midgardApi = api.getMidgardDefaultApi(basePath);
+      const fn = midgardApi.getStakersAddressAndAssetData;
+      const response: UnpackPromiseResponse<typeof fn> = yield call(
+        { context: midgardApi, fn },
         address,
         assetId,
       );
+      const { data } = response;
 
       yield put(actions.getStakerPoolDataSuccess(data));
     } catch (error) {
@@ -107,14 +133,130 @@ export function* getStakerPoolData() {
 export function* getPoolAddress() {
   yield takeEvery(actions.GET_POOL_ADDRESSES_REQUEST, function*() {
     try {
-      const { data }: AxiosResponse<ThorchainEndpoints> = yield call({
+      const basePath: string = yield call(getApiBasePath, getNet());
+      const midgardApi = api.getMidgardDefaultApi(basePath);
+      const fn = midgardApi.getThorchainProxiedEndpoints;
+      const { data }: UnpackPromiseResponse<typeof fn> = yield call({
         context: midgardApi,
-        fn: midgardApi.getThorchainProxiedEndpoints,
+        fn,
       });
 
       yield put(actions.getPoolAddressSuccess(data));
     } catch (error) {
       yield put(actions.getPoolAddressFailed(error));
+    }
+  });
+}
+
+export function* getTxByAddress() {
+  yield takeEvery(actions.GET_TX_BY_ADDRESS, function*({
+    payload,
+  }: actions.GetTxByAddress) {
+    try {
+      const { address, offset, limit, type } = payload;
+      const basePath: string = yield call(getApiBasePath, getNet());
+      const midgardApi = api.getMidgardDefaultApi(basePath);
+      const fn = midgardApi.getTxDetails;
+      const { data }: UnpackPromiseResponse<typeof fn> = yield call(
+        { context: midgardApi, fn },
+        offset,
+        limit,
+        address,
+        undefined,
+        undefined,
+        type,
+      );
+
+      yield put(actions.getTxByAddressSuccess(data));
+    } catch (error) {
+      yield put(actions.getTxByAddressFailed(error));
+    }
+  });
+}
+
+export function* getTxByAddressTxId() {
+  yield takeEvery(actions.GET_TX_BY_ADDRESS_TXID, function*({
+    payload,
+  }: actions.GetTxByAddressTxId) {
+    try {
+      const basePath: string = yield call(getApiBasePath, getNet());
+      const midgardApi = api.getMidgardDefaultApi(basePath);
+      const fn = midgardApi.getTxDetails;
+      const { address, txId, offset, limit, type } = payload;
+      const { data }: UnpackPromiseResponse<typeof fn> = yield call(
+        {
+          context: midgardApi,
+          fn,
+        },
+        offset,
+        limit,
+        address,
+        txId,
+        undefined,
+        type,
+      );
+
+      yield put(actions.getTxByAddressTxIdSuccess(data));
+    } catch (error) {
+      yield put(actions.getTxByAddressTxIdFailed(error));
+    }
+  });
+}
+
+export function* getTxByAddressAsset() {
+  yield takeEvery(actions.GET_TX_BY_ADDRESS_ASSET, function*({
+    payload,
+  }: actions.GetTxByAddressAsset) {
+    try {
+      const basePath: string = yield call(getApiBasePath, getNet());
+      const midgardApi = api.getMidgardDefaultApi(basePath);
+      const fn = midgardApi.getTxDetails;
+      const { address, asset, offset, limit, type } = payload;
+      const { data }: UnpackPromiseResponse<typeof fn> = yield call(
+        {
+          context: midgardApi,
+          fn,
+        },
+        offset,
+        limit,
+        address,
+        undefined,
+        asset,
+        type,
+      );
+
+      yield put(actions.getTxByAddressAssetSuccess(data));
+    } catch (error) {
+      yield put(actions.getTxByAddressAssetFailed(error));
+    }
+  });
+}
+
+export function* getTxByAsset() {
+  yield takeEvery(actions.GET_TX_BY_ASSET, function*({
+    payload,
+  }: actions.GetTxByAsset) {
+    try {
+const { asset, offset, limit, type } = payload;
+      const basePath: string = yield call(getApiBasePath, getNet());
+      const midgardApi = api.getMidgardDefaultApi(basePath);
+      const fn = midgardApi.getTxDetails;
+      const { data }: UnpackPromiseResponse<typeof fn> = yield call(
+        {
+          context: midgardApi,
+          fn,
+        },
+        offset,
+        limit,
+        undefined,
+        undefined,
+        asset,
+        type,
+      );
+
+      yield put(actions.getTxByAssetSuccess(data));
+    } catch (error) {
+      yield put(actions.getTxByAssetFailed(error));
     }
   });
 }
@@ -134,5 +276,9 @@ export default function* rootSaga() {
     fork(getStakerPoolData),
     fork(getPoolAddress),
     fork(setBasePriceAsset),
+    fork(getTxByAddress),
+    fork(getTxByAddressTxId),
+    fork(getTxByAddressAsset),
+    fork(getTxByAsset),
   ]);
 }

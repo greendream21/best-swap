@@ -1,4 +1,7 @@
 import { Reducer } from 'redux';
+import { initial, success, pending, failure } from '@devexperts/remote-data-ts';
+
+import { util } from 'asgardex-common';
 import {
   getBNBPoolAddress,
   getPoolAddress,
@@ -6,7 +9,7 @@ import {
   getAssetSymbolFromPayload,
 } from './utils';
 import { getBasePriceAsset } from '../../helpers/webStorageHelper';
-import { State, PoolDataMap } from './types';
+import { State, PoolDataMap, StakerPoolData } from './types';
 import {
   SET_BASE_PRICE_ASSET,
   SET_PRICE_INDEX,
@@ -25,9 +28,24 @@ import {
   GET_POOL_ADDRESSES_SUCCESS,
   GET_POOL_ADDRESSES_REQUEST,
   GET_POOL_ADDRESSES_FAILED,
+  GET_TX_BY_ADDRESS,
+  GET_TX_BY_ADDRESS_SUCCESS,
+  GET_TX_BY_ADDRESS_FAILED,
+  GET_TX_BY_ADDRESS_TXID,
+  GET_TX_BY_ADDRESS_TXID_SUCCESS,
+  GET_TX_BY_ADDRESS_TXID_FAILED,
+  GET_TX_BY_ADDRESS_ASSET,
+  GET_TX_BY_ADDRESS_ASSET_SUCCESS,
+  GET_TX_BY_ADDRESS_ASSET_FAILED,
+  GET_TX_BY_ASSET,
+  GET_TX_BY_ASSET_SUCCESS,
+  GET_TX_BY_ASSET_FAILED,
+  GET_API_BASEPATH_SUCCESS,
+  GET_API_BASEPATH_FAILED,
+  GET_API_BASEPATH_PENDING,
 } from './actions';
 import { Nothing } from '../../types/bepswap';
-import { PoolDetail } from '../../types/generated/midgard';
+import { PoolDetail, StakersAssetData } from '../../types/generated/midgard';
 
 const basePriceAsset = getBasePriceAsset() || 'RUNE';
 
@@ -39,15 +57,19 @@ const initState: State = {
   bnbPoolAddress: Nothing,
   poolAddress: Nothing,
   poolData: {},
-  stakerPoolData: {},
+  stakerPoolData: Nothing,
+  stakerPoolDataLoading: false,
+  stakerPoolDataError: Nothing,
   runePrice: 0,
   basePriceAsset, // set base price asset as a RUNE
   priceIndex: {
-    RUNE: 1,
+    RUNE: util.bn(1),
   },
   error: null,
   poolLoading: false,
-  stakerPoolDataLoading: false,
+  txData: initial,
+  txCurData: {},
+  apiBasePath: initial,
 };
 
 const reducer: Reducer<State, MidgardActionTypes> = (
@@ -145,32 +167,34 @@ const reducer: Reducer<State, MidgardActionTypes> = (
       return {
         ...state,
         stakerPoolDataLoading: true,
-        error: Nothing,
+        stakerPoolDataError: Nothing,
       };
     case GET_STAKER_POOL_DATA_SUCCESS: {
       const { payload } = action;
-      const symbol = getAssetSymbolFromPayload(payload);
-      if (symbol) {
-        return {
-          ...state,
-          stakerPoolData: {
-            ...state.stakerPoolData,
-            [symbol]: payload,
-          },
-          stakerPoolDataLoading: false,
-        };
-      }
+      // Transform `StakersAssetData[]` into `StakerPoolData`
+      // before storing data into state
+      const newStakerPoolData = payload.reduce(
+        (acc: StakerPoolData, data: StakersAssetData) => {
+          const symbol = getAssetSymbolFromPayload(data);
+          return symbol ? { ...acc, [symbol]: data } : acc;
+        },
+        {} as StakerPoolData,
+      );
+
       return {
         ...state,
+        stakerPoolData: state.stakerPoolData
+          ? { ...state.stakerPoolData, ...newStakerPoolData }
+          : newStakerPoolData,
         stakerPoolDataLoading: false,
       };
     }
     case GET_STAKER_POOL_DATA_FAILED:
       return {
         ...state,
-        stakerPoolData: {},
+        stakerPoolData: Nothing,
         stakerPoolDataLoading: false,
-        error: action.payload,
+        stakerPoolDataError: action.payload,
       };
     case GET_POOL_ADDRESSES_REQUEST:
       return {
@@ -193,6 +217,83 @@ const reducer: Reducer<State, MidgardActionTypes> = (
         bnbPoolAddress: {},
         poolAddress: Nothing,
         error: action.payload,
+      };
+    case GET_TX_BY_ADDRESS:
+      return {
+        ...state,
+        txData: pending,
+      };
+    case GET_TX_BY_ADDRESS_SUCCESS:
+      return {
+        ...state,
+        txData: success(action.payload),
+        txCurData: action.payload,
+      };
+    case GET_TX_BY_ADDRESS_FAILED:
+      return {
+        ...state,
+        txData: failure(action.payload),
+      };
+    case GET_TX_BY_ADDRESS_ASSET:
+      return {
+        ...state,
+        txData: pending,
+      };
+    case GET_TX_BY_ADDRESS_ASSET_SUCCESS:
+      return {
+        ...state,
+        txData: success(action.payload),
+      };
+    case GET_TX_BY_ADDRESS_ASSET_FAILED:
+      return {
+        ...state,
+        txData: failure(action.payload),
+      };
+
+    case GET_TX_BY_ADDRESS_TXID:
+      return {
+        ...state,
+        txData: pending,
+      };
+    case GET_TX_BY_ADDRESS_TXID_SUCCESS:
+      return {
+        ...state,
+        txData: success(action.payload),
+      };
+    case GET_TX_BY_ADDRESS_TXID_FAILED:
+      return {
+        ...state,
+        txData: failure(action.payload),
+      };
+    case GET_TX_BY_ASSET:
+      return {
+        ...state,
+        txData: pending,
+      };
+    case GET_TX_BY_ASSET_SUCCESS:
+      return {
+        ...state,
+        txData: success(action.payload),
+      };
+    case GET_TX_BY_ASSET_FAILED:
+      return {
+        ...state,
+        txData: failure(action.payload),
+      };
+    case GET_API_BASEPATH_PENDING:
+      return {
+        ...state,
+        apiBasePath: pending,
+      };
+    case GET_API_BASEPATH_FAILED:
+      return {
+        ...state,
+        apiBasePath: failure(action.payload),
+      };
+    case GET_API_BASEPATH_SUCCESS:
+      return {
+        ...state,
+        apiBasePath: success(action.payload),
       };
     default:
       return state;

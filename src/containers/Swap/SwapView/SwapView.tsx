@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { withRouter, Link } from 'react-router-dom';
 import { Icon } from 'antd';
 
+import { util } from 'asgardex-common';
 import Label from '../../../components/uielements/label';
 import CoinButton from '../../../components/uielements/coins/coinButton';
 import CoinPair from '../../../components/uielements/coins/coinPair';
@@ -118,20 +119,28 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
         sortDirections: ['descend', 'ascend'],
       },
       {
+        key: 'poolprice',
+        title: 'pool price',
+        dataIndex: 'poolPrice',
+        sorter: (a: SwapTableRowType, b: SwapTableRowType) =>
+          a.raw.poolPrice.minus(b.raw.poolPrice),
+        sortDirections: ['descend', 'ascend'],
+        defaultSortOrder: 'descend',
+      },
+      {
         key: 'depth',
         title: 'depth',
         dataIndex: 'depth',
         sorter: (a: SwapTableRowType, b: SwapTableRowType) =>
-          a.raw.depth - b.raw.depth,
+          a.raw.depth.minus(b.raw.depth),
         sortDirections: ['descend', 'ascend'],
-        defaultSortOrder: 'descend',
       },
       {
         key: 'vol',
         title: '24h vol',
         dataIndex: 'volume',
         sorter: (a: SwapTableRowType, b: SwapTableRowType) =>
-          a.raw.volume - b.raw.volume,
+          a.raw.volume.minus(b.raw.volume),
         sortDirections: ['descend', 'ascend'],
       },
       {
@@ -139,16 +148,16 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
         title: 'avg. transaction',
         dataIndex: 'transaction',
         sorter: (a: SwapTableRowType, b: SwapTableRowType) =>
-          a.raw.transaction - b.raw.transaction,
+          a.raw.transaction.minus(b.raw.transaction),
         sortDirections: ['descend', 'ascend'],
       },
       {
         key: 'slip',
         title: 'avg. slip',
         dataIndex: 'slip',
-        render: (slip: string) => <Trend value={Number(slip)} />,
+        render: (slip: string) => <Trend amount={util.bn(slip)} />,
         sorter: (a: SwapTableRowType, b: SwapTableRowType) =>
-          a.raw.slip - b.raw.slip,
+          a.raw.slip.minus(b.raw.slip),
         sortDirections: ['descend', 'ascend'],
       },
       {
@@ -156,13 +165,13 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
         title: 'no. of trades',
         dataIndex: 'trade',
         sorter: (a: SwapTableRowType, b: SwapTableRowType) =>
-          a.raw.trade - b.raw.trade,
+          a.raw.trade.minus(b.raw.trade),
         sortDirections: ['descend', 'ascend'],
       },
       btnCol,
     ];
 
-    const columnData: FixmeType = {
+    const columnData: { desktop: FixmeType; mobile: FixmeType } = {
       desktop: desktopColumns,
       mobile: mobileColumns,
     };
@@ -197,7 +206,7 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
 
   const renderAssets = () => {
     const asset = 'rune';
-    const runePrice = priceIndex.RUNE;
+    const runePrice = util.validBNOrZero(priceIndex?.RUNE);
 
     return (
       <CoinButton

@@ -2,6 +2,7 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { ThemeProvider } from 'styled-components';
 
+import { util } from 'asgardex-common';
 import AppHolder from '../../../../AppStyle';
 import { defaultTheme } from '../../../../settings';
 
@@ -14,26 +15,26 @@ storiesOf('Components/Coins/CoinData', module).add('default', () => {
         <div
           style={{ display: 'flex', flexDirection: 'column', width: '300px' }}
         >
-          <CoinData asset="bnb" price={217.92} />
-          <CoinData asset="bnb" assetValue={2.49274} price={217.92} />
-          <CoinData asset="ftm" assetValue={2.49274} price={217.92} />
-          <CoinData asset="rune" assetValue={2.49274} price={217.92} />
-          <CoinData asset="ankr" assetValue={2.49274} price={217.92} />
-          <CoinData asset="bolt" assetValue={2.49274} price={217.92} />
-          <CoinData asset="tomo" assetValue={2.49274} price={217.92} />
+          <CoinData asset="bnb" price={util.bn(217.92)} />
+          <CoinData asset="bnb" assetValue={2.49274} price={util.bn(217.92)} />
+          <CoinData asset="ftm" assetValue={2.49274} price={util.bn(217.92)} />
+          <CoinData asset="rune" assetValue={2.49274} price={util.bn(217.92)} />
+          <CoinData asset="ankr" assetValue={2.49274} price={util.bn(217.92)} />
+          <CoinData asset="bolt" assetValue={2.49274} price={util.bn(217.92)} />
+          <CoinData asset="tomo" assetValue={2.49274} price={util.bn(217.92)} />
           <CoinData
             asset="bnb"
             target="bolt"
             assetValue={2.49274}
             targetValue={0.49555}
-            price={217.92}
+            price={util.bn(217.92)}
           />
           <CoinData
             asset="bnb"
             target="bolt"
             assetValue={2.49274}
             targetValue={0.49555}
-            price={217.92}
+            price={util.bn(217.92)}
             size="big"
           />
         </div>
