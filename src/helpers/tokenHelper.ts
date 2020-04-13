@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-import { util } from 'asgardex-common';
+import { fixedBN, formatBN } from '@thorchain/asgardex-util';
 import { Denomination, TokenAmount, BaseAmount, Amounts } from '../types/token';
 
 /**
@@ -28,7 +28,7 @@ export const tokenAmount = (
 ) =>
   ({
     type: Denomination.TOKEN,
-    amount: () => util.fixedBN(value, decimal),
+    amount: () => fixedBN(value, decimal),
   } as TokenAmount);
 
 /**
@@ -38,7 +38,7 @@ export const tokenAmount = (
 export const baseAmount = (value?: string | number | BigNumber | undefined) =>
   ({
     type: Denomination.BASE,
-    amount: () => util.fixedBN(value, 0),
+    amount: () => fixedBN(value, 0),
   } as BaseAmount);
 
 /**
@@ -82,7 +82,7 @@ export const isBaseAmount = (v: Amounts): v is BaseAmount =>
  * depending on given decimal places
  */
 export const formatTokenAmount = (token: TokenAmount, decimal = 2) =>
-  util.formatBN(token.amount(), decimal);
+  formatBN(token.amount(), decimal);
 
 /**
  * Formats a token value by prefixing it with `$`

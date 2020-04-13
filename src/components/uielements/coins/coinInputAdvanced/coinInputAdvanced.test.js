@@ -1,5 +1,5 @@
 import { renderHook, act } from '@testing-library/react-hooks';
-import { util } from 'asgardex-common';
+import { bn } from '@thorchain/asgardex-util';
 import {
   useCoinCardInputBehaviour,
   isBroadcastable,
@@ -65,10 +65,7 @@ const simulateControlledChange = ({ onChangeValue, hook }) => value => {
 
   const handlerHasBeenCalled = newCallCount === oldCallCount + 1;
 
-  if (
-    handlerHasBeenCalled &&
-    getLastCallValue(onChangeValue) === util.bn(value)
-  ) {
+  if (handlerHasBeenCalled && getLastCallValue(onChangeValue) === bn(value)) {
     // pass in a new value from outslide the component
     // as if the component was a controlled one
     hook.rerender({ value, onChangeValue });
@@ -89,12 +86,12 @@ function setup(initValue) {
   const hook = renderHook(
     ({ value, onChangeValue }) => {
       return useCoinCardInputBehaviour({
-        amount: util.bn(value),
+        amount: bn(value),
         onChangeValue,
       });
     },
     {
-      initialProps: { value: util.bn(initValue), onChangeValue },
+      initialProps: { value: bn(initValue), onChangeValue },
     },
   );
 
@@ -122,9 +119,9 @@ describe('useCoinCardInputBehaviour', () => {
   it('should render values passed in with formatting', () => {
     const { hook, onChangeValue } = setup(0);
     expect(hook.result.current.value).toBe('0.00');
-    hook.rerender({ value: util.bn('1234.56'), onChangeValue });
+    hook.rerender({ value: bn('1234.56'), onChangeValue });
     expect(hook.result.current.value).toBe('1,234.56');
-    hook.rerender({ value: util.bn('12345678'), onChangeValue });
+    hook.rerender({ value: bn('12345678'), onChangeValue });
     expect(hook.result.current.value).toBe('12,345,678.00');
   });
 
@@ -223,7 +220,7 @@ describe('useCoinCardInputBehaviour', () => {
     // simulateBlur seems to call `onChangeValue` twice
     expect(onChangeValue.mock.calls.length).toBe(3);
     expect(hook.result.current.value).toBe('1.00');
-    hook.rerender({ value: util.bn(123), onChangeValue });
+    hook.rerender({ value: bn(123), onChangeValue });
     expect(hook.result.current.value).toBe('123.00');
     expect(onChangeValue.mock.calls.length).toBe(4);
   });
@@ -252,7 +249,7 @@ describe('useCoinCardInputBehaviour', () => {
     simulateTypingInInput('12345678912345678');
     simulateBlur();
     expect(hook.result.current.value).toBe('12,345,678,912,345,678.00');
-    hook.rerender({ value: util.bn(40000), onChangeValue });
+    hook.rerender({ value: bn(40000), onChangeValue });
     expect(hook.result.current.value).toBe('40,000.00');
   });
 });

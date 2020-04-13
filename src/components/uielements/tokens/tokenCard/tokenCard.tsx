@@ -2,7 +2,7 @@ import React from 'react';
 import { sortBy as _sortBy } from 'lodash';
 
 import BigNumber from 'bignumber.js';
-import { util } from 'asgardex-common';
+import { bn, formatBN } from '@thorchain/asgardex-util';
 import { TokenCardWrapper } from './tokenCard.style';
 
 import Label from '../../label';
@@ -41,7 +41,7 @@ const TokenCard: React.FC<Props> = (props: Props): JSX.Element => {
     asset = 'bnb',
     assetData = [],
     amount = tokenAmount(0),
-    price = util.bn(0),
+    price = bn(0),
     priceIndex,
     unit = 'RUNE',
     slip,
@@ -58,10 +58,10 @@ const TokenCard: React.FC<Props> = (props: Props): JSX.Element => {
     ...otherProps
   } = props;
 
-  const slipValue = slip ? `slip ${util.formatBN(slip, 2)}%` : Nothing;
+  const slipValue = slip ? `slip ${formatBN(slip, 2)}%` : Nothing;
   // formula: amount * price
   const priceResult = amount.amount().multipliedBy(price);
-  const priceValue = `${unit} ${util.formatBN(priceResult)}`;
+  const priceValue = `${unit} ${formatBN(priceResult)}`;
   const tokenSelectDataTest = `${dataTest}-select`;
   const sortedAssetData = _sortBy(assetData, ['asset']);
 

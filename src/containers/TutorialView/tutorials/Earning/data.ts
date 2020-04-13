@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-import { util } from 'asgardex-common';
+import { bn } from '@thorchain/asgardex-util';
 import * as calc from '../../../Pool/calc';
 import { Maybe } from '../../../../types/bepswap';
 import { TokenAmount } from '../../../../types/token';
@@ -23,8 +23,8 @@ export const data: EarningCalcData = {
   WT: tokenAmount(4400000),
   VWR: tokenAmount(88000),
   SS: tokenAmount(50),
-  Pr: util.bn(0.04),
-  Pt: util.bn(0.02),
+  Pr: bn(0.04),
+  Pt: bn(0.02),
 };
 
 export const getVr = (rValue: Maybe<TokenAmount>): TokenAmount =>

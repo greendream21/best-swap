@@ -1,5 +1,5 @@
 import { mocked } from 'ts-jest/utils';
-import { binance } from 'asgardex-common';
+import { TransferResult, BinanceClient } from '@thorchain/asgardex-binance';
 import {
   CreatePoolErrorMsg,
   confirmWithdraw,
@@ -10,7 +10,7 @@ import {
 } from './utils';
 import { tokenAmount } from '../../helpers/tokenHelper';
 
-const transferResponseMock: binance.TransferResult = {
+const transferResponseMock: TransferResult = {
   result: [{ code: 1, hash: 'hash', log: 'log', ok: true }],
 };
 
@@ -28,7 +28,7 @@ const mockClient = jest.fn(() => Promise.resolve({
 
 describe('pool/utils/', () => {
   describe('binance transfers', () => {
-    let bncClient: binance.BinanceClient;
+    let bncClient: BinanceClient;
     beforeAll(async () => {
       bncClient = await mockClient();
     });
