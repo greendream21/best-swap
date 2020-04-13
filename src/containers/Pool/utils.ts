@@ -1,5 +1,6 @@
 import BigNumber from 'bignumber.js';
-import { binance, util } from 'asgardex-common';
+import { BinanceClient, Address, TransferResult, MultiTransfer, getTxHashFromMemo, TransferEvent } from '@thorchain/asgardex-binance';
+import { bn, fixedBN, bnOrZero, validBNOrZero, isValidBN } from '@thorchain/asgardex-util';
 import {
   getStakeMemo,
   getCreateMemo,
@@ -40,8 +41,8 @@ export const getCalcResult = (
   runePrice: BigNumber,
   tValue: TokenAmount,
 ): CalcResult => {
-  let R = util.bn(10000);
-  let T = util.bn(10);
+  let R = bn(10000);
+  let T = bn(10);
   let ratio: Maybe<BigNumber> = Nothing;
   let symbolTo: Maybe<string> = Nothing;
   let poolUnits: Maybe<BigNumber> = Nothing;
@@ -64,16 +65,16 @@ export const getCalcResult = (
     const { symbol } = getAssetFromString(asset);
 
     if (symbol && symbol.toLowerCase() === tokenName.toLowerCase()) {
-      R = util.bn(runeStakedTotal || 0);
-      T = util.bn(assetStakedTotal || 0);
+      R = bn(runeStakedTotal || 0);
+      T = bn(assetStakedTotal || 0);
       // formula: 1 / (R / T)
       const a = R.div(T);
       // Ratio does need more than 2 decimal places
-      ratio = util.bn(1)
+      ratio = bn(1)
         .div(a)
         .decimalPlaces(2);
       symbolTo = symbol;
-      poolUnits = util.bn(poolDataUnits || 0);
+      poolUnits = bn(poolDataUnits || 0);
     }
   });
 
@@ -83,23 +84,23 @@ export const getCalcResult = (
   const t = tBase.amount();
 
   // formula: (R / T) * runePrice
-  const poolPrice = util.fixedBN(R.div(T).multipliedBy(runePrice));
+  const poolPrice = fixedBN(R.div(T).multipliedBy(runePrice));
   // formula: (runePrice * (r + R)) / (t + T)
   const a = r.plus(R).multipliedBy(runePrice);
   const aa = t.plus(T);
-  const newPrice = util.fixedBN(a.dividedBy(aa));
+  const newPrice = fixedBN(a.dividedBy(aa));
   // formula: runePrice * (1 + (r / R + t / T) / 2) * R
   const b = r.dividedBy(R); // r / R
   const bb = t.dividedBy(T); // t / T
   const bbb = b.plus(bb); // (r / R + t / T)
   const bbbb = bbb.dividedBy(2).plus(1); // (1 + (r / R + t / T) / 2)
-  const newDepth = util.fixedBN(runePrice.multipliedBy(bbbb).multipliedBy(R));
+  const newDepth = fixedBN(runePrice.multipliedBy(bbbb).multipliedBy(R));
   // formula: ((r / (r + R) + t / (t + T)) / 2) * 100
   const c = r.plus(R); // (r + R)
   const cc = t.plus(T); // (t + T)
   const ccc = r.dividedBy(c); // r / (r + R)
   const cccc = t.dividedBy(cc); // (t / (t + T))
-  const share = util.fixedBN(
+  const share = fixedBN(
     ccc
       .plus(cccc)
       .div(2)
@@ -157,22 +158,22 @@ export const getPoolData = (
     poolDetail?.asset,
   );
 
-  const runePrice = util.validBNOrZero(priceIndex?.RUNE);
+  const runePrice = validBNOrZero(priceIndex?.RUNE);
 
-  const poolPrice = util.validBNOrZero(priceIndex[target.toUpperCase()]);
+  const poolPrice = validBNOrZero(priceIndex[target.toUpperCase()]);
   const poolPriceValue = `${basePriceAsset} ${poolPrice.toFixed(2)}`;
 
-  const depthResult = util.bnOrZero(poolDetail?.runeDepth).multipliedBy(runePrice);
+  const depthResult = bnOrZero(poolDetail?.runeDepth).multipliedBy(runePrice);
   const depth = baseAmount(depthResult);
-  const volume24Result = util.bnOrZero(poolDetail?.poolVolume24hr).multipliedBy(
+  const volume24Result = bnOrZero(poolDetail?.poolVolume24hr).multipliedBy(
     runePrice,
   );
   const volume24 = baseAmount(volume24Result);
-  const volumeATResult = util.bnOrZero(poolDetail?.poolVolume).multipliedBy(
+  const volumeATResult = bnOrZero(poolDetail?.poolVolume).multipliedBy(
     runePrice,
   );
   const volumeAT = baseAmount(volumeATResult);
-  const transactionResult = util.bnOrZero(poolDetail?.poolTxAverage).multipliedBy(
+  const transactionResult = bnOrZero(poolDetail?.poolTxAverage).multipliedBy(
     runePrice,
   );
   const transaction = baseAmount(transactionResult);
@@ -259,8 +260,8 @@ export const getCreatePoolCalc = ({
 
   if (!poolAddress) {
     return {
-      poolPrice: util.bn(0),
-      depth: util.bn(0),
+      poolPrice: bn(0),
+      depth: bn(0),
       share: 100,
     };
   }
@@ -271,7 +272,7 @@ export const getCreatePoolCalc = ({
         .amount()
         .div(tokenAmount.amount())
         .multipliedBy(runePrice)
-    : util.bn(0);
+    : bn(0);
   // formula: runePrice * runeAmount
   const depth = runeAmount.amount().multipliedBy(runePrice);
 
@@ -293,8 +294,8 @@ export enum StakeErrorMsg {
 }
 
 export type ConfirmStakeParams = {
-  bncClient: binance.BinanceClient;
-  wallet: binance.Address;
+  bncClient: BinanceClient;
+  wallet: Address;
   runeAmount: TokenAmount;
   tokenAmount: TokenAmount;
   poolAddress: Maybe<string>;
@@ -303,7 +304,7 @@ export type ConfirmStakeParams = {
 
 export const confirmStake = (
   params: ConfirmStakeParams,
-): Promise<binance.TransferResult> => {
+): Promise<TransferResult> => {
   const {
     bncClient,
     wallet,
@@ -313,7 +314,7 @@ export const confirmStake = (
     symbolTo,
   } = params;
 
-  return new Promise<binance.TransferResult>((resolve, reject) => {
+  return new Promise<TransferResult>((resolve, reject) => {
     const runeAmountValue = runeAmount.amount();
     if (!runeAmountValue.isFinite()) {
       return reject(new Error(StakeErrorMsg.INVALID_RUNE_AMOUNT));
@@ -338,7 +339,7 @@ export const confirmStake = (
     if (runeAmountValue.isGreaterThan(0) && tokenAmountValue.isGreaterThan(0)) {
       const memo = getStakeMemo(symbolTo);
 
-      const outputs: binance.MultiTransfer[] = [
+      const outputs: MultiTransfer[] = [
         {
           to: poolAddress,
           coins: [
@@ -356,14 +357,14 @@ export const confirmStake = (
 
       bncClient
         .multiSend(wallet, outputs, memo)
-        .then((response: binance.TransferResult) => resolve(response))
+        .then((response: TransferResult) => resolve(response))
         .catch((error: Error) => reject(error));
     } else if (runeAmountValue.isLessThanOrEqualTo(0) && tokenAmount) {
       const memo = getStakeMemo(symbolTo);
 
       bncClient
         .transfer(wallet, poolAddress, tokenAmountNumber, symbolTo, memo)
-        .then((response: binance.TransferResult) => resolve(response))
+        .then((response: TransferResult) => resolve(response))
         .catch((error: Error) => reject(error));
     } else if (runeAmount && tokenAmountValue.isLessThanOrEqualTo(0)) {
       const memo = getStakeMemo(symbolTo);
@@ -385,7 +386,7 @@ export enum CreatePoolErrorMsg {
 }
 
 type ConfirmCreatePoolParams = {
-  bncClient: binance.BinanceClient;
+  bncClient: BinanceClient;
   wallet: string;
   runeAmount: TokenAmount;
   tokenAmount: TokenAmount;
@@ -394,7 +395,7 @@ type ConfirmCreatePoolParams = {
 };
 export const confirmCreatePool = (
   params: ConfirmCreatePoolParams,
-): Promise<binance.TransferResult> => {
+): Promise<TransferResult> => {
   const {
     bncClient,
     wallet,
@@ -403,14 +404,14 @@ export const confirmCreatePool = (
     poolAddress,
     tokenSymbol,
   } = params;
-  return new Promise<binance.TransferResult>((resolve, reject) => {
+  return new Promise<TransferResult>((resolve, reject) => {
     if (!wallet) {
       return reject(new Error(CreatePoolErrorMsg.MISSING_WALLET));
     }
 
     const runeValue = runeAmount.amount();
     if (
-      !util.isValidBN(runeValue) ||
+      !isValidBN(runeValue) ||
       runeValue.isLessThanOrEqualTo(0) ||
       !runeValue.isFinite()
     ) {
@@ -418,7 +419,7 @@ export const confirmCreatePool = (
     }
     const tokenValue = tokenAmount.amount();
     if (
-      !util.isValidBN(tokenValue) ||
+      !isValidBN(tokenValue) ||
       tokenValue.isLessThanOrEqualTo(0) ||
       !tokenValue.isFinite()
     ) {
@@ -440,7 +441,7 @@ export const confirmCreatePool = (
     const runeAmountNumber = runeAmount.amount().toNumber();
     const tokenAmountNumber = tokenAmount.amount().toNumber();
 
-    const outputs: binance.MultiTransfer[] = [
+    const outputs: MultiTransfer[] = [
       {
         to: poolAddress,
         coins: [
@@ -469,7 +470,7 @@ export enum WithdrawErrorMsg {
 }
 
 type WithdrawParams = {
-  bncClient: binance.BinanceClient;
+  bncClient: BinanceClient;
   wallet: string;
   poolAddress: Maybe<string>;
   symbol: string;
@@ -477,9 +478,9 @@ type WithdrawParams = {
 };
 export const confirmWithdraw = (
   params: WithdrawParams,
-): Promise<binance.TransferResult> => {
+): Promise<TransferResult> => {
   const { bncClient, wallet, poolAddress, symbol, percent } = params;
-  return new Promise<binance.TransferResult>((resolve, reject) => {
+  return new Promise<TransferResult>((resolve, reject) => {
     if (!wallet) {
       return reject(new Error(WithdrawErrorMsg.MISSING_WALLET));
     }
@@ -544,12 +545,12 @@ export const getTxType = (memo?: string) => {
 };
 
 export type WithdrawResultParams = {
-  tx: binance.TransferEvent;
+  tx: TransferEvent;
   hash: string;
 };
 
 export const withdrawResult = ({ tx, hash }: WithdrawResultParams) => {
   const txType = getTxType(tx?.data?.M);
-  const txHash = binance.getTxHashFromMemo(tx);
+  const txHash = getTxHashFromMemo(tx);
   return txType === 'outbound' && hash === txHash;
 };

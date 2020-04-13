@@ -3,9 +3,7 @@ import * as H from 'history';
 import { withRouter, Link, RouteComponentProps } from 'react-router-dom';
 import { Row, Col } from 'antd';
 
-import {
-  util,
-} from 'asgardex-common';
+import { formatBNCurrency, formatBN } from '@thorchain/asgardex-util';
 import { ContentWrapper } from './Earning.style';
 import Centered from '../../../../components/utility/centered';
 import Label from '../../../../components/uielements/label';
@@ -91,7 +89,7 @@ class Earning extends React.Component<Props, State> {
       .multipliedBy(2)
       .multipliedBy(SS.amount())
       .div(100);
-    const VssValueFormatted = util.formatBNCurrency(VssValue);
+    const VssValueFormatted = formatBNCurrency(VssValue);
 
     const Wr = getWr(wss);
     const Wt = getWt(wss);
@@ -166,14 +164,14 @@ class Earning extends React.Component<Props, State> {
             {view === TutorialContent.INTRO && VrFormatted}
             {view === TutorialContent.PLAY &&
               // formula: VWR - rValuePrice
-              util.formatBN(VWR.amount().minus(rValuePrice))}
+              formatBN(VWR.amount().minus(rValuePrice))}
           </Label>
           <Label size="large" color="normal" />
           <Label size="large" color="normal">
             {view === TutorialContent.INTRO && VtFormatted}
             {view === TutorialContent.PLAY &&
               // formula: VWR - tValuePrice
-              util.formatBN(VWR.amount().minus(tValuePrice))}
+              formatBN(VWR.amount().minus(tValuePrice))}
           </Label>
         </Centered>
         <div className="center-text">
@@ -272,7 +270,7 @@ class Earning extends React.Component<Props, State> {
           <Selection onSelect={this.handleChangeWssValue} />
           <InputForm title="PAYOUT:" type="rune" amount={Wr} step={1000} />
           <Label className="payout-price-label" color="gray">
-            {util.formatBNCurrency(rValuePrice)} (USD)
+            {formatBNCurrency(rValuePrice)} (USD)
           </Label>
         </div>
         {this.renderFlow(TutorialContent.PLAY)}

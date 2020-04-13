@@ -1,8 +1,7 @@
 import React, { useMemo } from 'react';
 import { get as _get } from 'lodash';
 
-import { util,
-} from 'asgardex-common';
+import { validBNOrZero, formatBN } from '@thorchain/asgardex-util';
 import FilterMenu from '../../filterMenu';
 import TokenData from '../tokenData';
 
@@ -54,13 +53,13 @@ const TokenMenu: React.FC<Props> = (props: Props): JSX.Element => {
     const ticker = getTickerFormat(data.asset).toUpperCase();
     const price =
       ticker === 'RUNE'
-        ? util.validBNOrZero(priceIndex?.RUNE)
-        : util.validBNOrZero(priceIndex?.ticker);
+        ? validBNOrZero(priceIndex?.RUNE)
+        : validBNOrZero(priceIndex?.ticker);
 
     const node = (
       <TokenData
         asset={tokenName}
-        priceValue={util.formatBN(price)}
+        priceValue={formatBN(price)}
         priceUnit={priceUnit}
         size="small"
         data-test={dataTest}

@@ -1,6 +1,6 @@
 import { Reducer } from 'redux';
 import { initial, success, pending, failure } from '@devexperts/remote-data-ts';
-import { util } from 'asgardex-common';
+import { bn } from '@thorchain/asgardex-util';
 import { getWalletAddress, getKeystore } from '../../helpers/webStorageHelper';
 import { State, User } from './types';
 import {
@@ -28,7 +28,7 @@ const initState: State = {
     {
       asset: 'RUNE-A1F',
       assetValue: tokenAmount(0),
-      price: util.bn(0),
+      price: bn(0),
     },
   ],
   stakeData: initial,

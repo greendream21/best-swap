@@ -1,7 +1,7 @@
 import { Reducer } from 'redux';
 import { initial, success, pending, failure } from '@devexperts/remote-data-ts';
 
-import { util } from 'asgardex-common';
+import { bn } from '@thorchain/asgardex-util';
 import {
   getBNBPoolAddress,
   getPoolAddress,
@@ -63,7 +63,7 @@ const initState: State = {
   runePrice: 0,
   basePriceAsset, // set base price asset as a RUNE
   priceIndex: {
-    RUNE: util.bn(1),
+    RUNE: bn(1),
   },
   error: null,
   poolLoading: false,

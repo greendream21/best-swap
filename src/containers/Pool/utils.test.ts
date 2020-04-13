@@ -1,4 +1,5 @@
-import { binance, util } from 'asgardex-common';
+import { TransferEvent } from '@thorchain/asgardex-binance';
+import { bn } from '@thorchain/asgardex-util';
 import {
   getTxType,
   withdrawResult,
@@ -104,7 +105,7 @@ const poolData: PoolDataMap = {
 describe('pool/utils/', () => {
   describe('witdrawResult', () => {
     it('should validate a withdraw transfer', () => {
-      const tx: binance.TransferEvent = {
+      const tx: TransferEvent = {
         stream: 'transfers',
         data: {
           e: 'outboundTransferInfo',
@@ -165,12 +166,12 @@ describe('pool/utils/', () => {
       const assetA: AssetData = {
         asset: 'A',
         assetValue: tokenAmount(1),
-        price: util.bn(2),
+        price: bn(2),
       };
       const assetB: AssetData = {
         asset: 'B',
         assetValue: tokenAmount(1),
-        price: util.bn(2),
+        price: bn(2),
       };
       const assets: AssetData[] = [assetA, assetB];
       const pools: string[] = ['A.A'];
@@ -182,17 +183,17 @@ describe('pool/utils/', () => {
       const assetA: AssetData = {
         asset: 'RUNE',
         assetValue: tokenAmount(1),
-        price: util.bn(2),
+        price: bn(2),
       };
       const assetB: AssetData = {
         asset: 'RUNE',
         assetValue: tokenAmount(1),
-        price: util.bn(2),
+        price: bn(2),
       };
       const assetC: AssetData = {
         asset: 'C',
         assetValue: tokenAmount(1),
-        price: util.bn(2),
+        price: bn(2),
       };
       const assets: AssetData[] = [assetA, assetB, assetC];
       const pools: string[] = ['A.A'];
@@ -284,8 +285,8 @@ describe('pool/utils/', () => {
       withdrawTxCount: '0',
     };
     const priceIndex: PriceDataIndex = {
-      RUNE: util.bn(1),
-      FSN: util.bn(2),
+      RUNE: bn(1),
+      FSN: bn(2),
     };
     it('returns PoolData for a FSN based pool', () => {
       const expected: PoolData = {
@@ -319,7 +320,7 @@ describe('pool/utils/', () => {
           transaction: baseAmount(0),
           liqFee: baseAmount(0),
           roiAT: baseAmount(0.5),
-          poolPrice: util.bn(1),
+          poolPrice: bn(1),
         },
       };
       const result = getPoolData('RUNE', fsnPoolDetail, priceIndex, 'RUNE');
@@ -379,7 +380,7 @@ describe('pool/utils/', () => {
           transaction: baseAmount(16193),
           liqFee: baseAmount(99800),
           roiAT: baseAmount(999.2768763636363),
-          poolPrice: util.bn(0.09),
+          poolPrice: bn(0.09),
         },
       };
       const result = getPoolData('RUNE', bnbPoolDetail, priceIndex, 'RUNE');
@@ -413,20 +414,20 @@ describe('pool/utils/', () => {
     it('calculates result of staking into RUNE - BNB pool ', () => {
       const poolAddress = 'tbnabc123';
       const runeAmount = tokenAmount(744.568);
-      const runePrice = util.bn(1);
+      const runePrice = bn(1);
       const tAmount = tokenAmount(0.023);
       const expected: CalcResult = {
         poolAddress: 'tbnabc123',
-        ratio: util.bn(0),
+        ratio: bn(0),
         symbolTo: 'BNB',
-        poolUnits: util.bn('2705690593'),
-        poolPrice: util.bn(32650),
-        newPrice: util.bn(32394.72),
-        newDepth: util.bn('81305900000'),
-        share: util.bn(91.97),
-        Pr: util.bn(1),
-        R: util.bn('6530000000'),
-        T: util.bn(200000),
+        poolUnits: bn('2705690593'),
+        poolPrice: bn(32650),
+        newPrice: bn(32394.72),
+        newDepth: bn('81305900000'),
+        share: bn(91.97),
+        Pr: bn(1),
+        R: bn('6530000000'),
+        T: bn(200000),
       };
 
       const result: CalcResult = getCalcResult(
@@ -456,20 +457,20 @@ describe('pool/utils/', () => {
     it('calculates result of staking into RUNE - TCAN pool ', () => {
       const poolAddress = 'tbnabc123';
       const runeAmount = tokenAmount(938.803);
-      const runePrice = util.bn(1);
+      const runePrice = bn(1);
       const tAmount = tokenAmount(49.061);
       const expected = {
         poolAddress: 'tbnabc123',
-        ratio: util.bn('0.05'),
+        ratio: bn('0.05'),
         symbolTo: 'TCAN-014',
-        poolUnits: util.bn('56929542778'),
-        poolPrice: util.bn(19.14),
-        newPrice: util.bn(19.14),
-        newDepth: util.bn('202084405946.38'),
-        share: util.bn(46.46),
-        Pr: util.bn(1),
-        R: util.bn('108204400000'),
-        T: util.bn('5654700000'),
+        poolUnits: bn('56929542778'),
+        poolPrice: bn(19.14),
+        newPrice: bn(19.14),
+        newDepth: bn('202084405946.38'),
+        share: bn(46.46),
+        Pr: bn(1),
+        R: bn('108204400000'),
+        T: bn('5654700000'),
       };
 
       const result: CalcResult = getCalcResult(
@@ -502,15 +503,15 @@ describe('pool/utils/', () => {
       const tokenSymbol = 'TOMOB-1E1';
       const poolAddress = 'tbnb1XXX';
       const runeAmount = tokenAmount(809.29);
-      const runePrice = util.bn(1);
+      const runePrice = bn(1);
       const tAmount = tokenAmount(0.14);
       const expected: CreatePoolCalc = {
         poolAddress: 'tbnb1XXX',
         tokenSymbol: 'TOMOB-1E1',
-        poolPrice: util.bn('5780.64285714285714285714'),
-        depth: util.bn(809.29),
+        poolPrice: bn('5780.64285714285714285714'),
+        depth: bn(809.29),
         share: 100,
-        Pr: util.bn(1),
+        Pr: bn(1),
       };
       const result = getCreatePoolCalc({
         tokenSymbol,
@@ -533,15 +534,15 @@ describe('pool/utils/', () => {
       const tokenSymbol = 'TOMOB-1E1';
       const poolAddress = 'tbnb1XXX';
       const runeAmount = tokenAmount(3237.152);
-      const runePrice = util.bn(1);
+      const runePrice = bn(1);
       const tAmount = tokenAmount(0.559);
       const expected: CreatePoolCalc = {
         poolAddress: 'tbnb1XXX',
         tokenSymbol: 'TOMOB-1E1',
-        poolPrice: util.bn('5790.96958855098389982111'),
-        depth: util.bn(3237.152),
+        poolPrice: bn('5790.96958855098389982111'),
+        depth: bn(3237.152),
         share: 100,
-        Pr: util.bn(1),
+        Pr: bn(1),
       };
       const result = getCreatePoolCalc({
         tokenSymbol,

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { util } from 'asgardex-common';
+import { bnOrZero, formatBN } from '@thorchain/asgardex-util';
 import TxStatus from '../txStatus';
 import { TxInfoWrapper, Seperator, Dash } from './txInfo.style';
 import {
@@ -27,8 +27,8 @@ const TxInfo: React.FC<Props> = (props: Props): JSX.Element => {
     const outData = out?.[0]?.coins?.[0];
     const fee = baseAmount(events?.fee);
     const feeLabel = `${formatBaseAsTokenAmount(fee)} RUNE`;
-    const slipValue = util.bnOrZero(events?.slip).multipliedBy(100);
-    const slipValueLabel = `${util.formatBN(slipValue)}%`;
+    const slipValue = bnOrZero(events?.slip).multipliedBy(100);
+    const slipValueLabel = `${formatBN(slipValue)}%`;
 
     return (
       <TxInfoWrapper className="txInfo-wrapper swap-tx">

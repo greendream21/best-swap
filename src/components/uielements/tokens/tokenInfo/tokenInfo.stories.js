@@ -2,7 +2,7 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { ThemeProvider } from 'styled-components';
 
-import { util } from 'asgardex-common';
+import { bn } from '@thorchain/asgardex-util';
 import AppHolder from '../../../../AppStyle';
 import { defaultTheme } from '../../../../settings';
 
@@ -18,7 +18,7 @@ storiesOf('Components/Tokens/TokenInfo', module).add('default', () => {
           <TokenInfo
             asset="rune"
             target="bnb"
-            trend={util.bn(2.66)}
+            trend={bn(2.66)}
             value="$12000"
             label="Depth"
           />

@@ -1,7 +1,7 @@
 import React, { useMemo, useCallback } from 'react';
 import { get as _get } from 'lodash';
 
-import { util } from 'asgardex-common';
+import { validBNOrZero } from '@thorchain/asgardex-util';
 import FilterMenu from '../../filterMenu';
 import { getTickerFormat } from '../../../../helpers/stringHelper';
 import CoinData from '../coinData';
@@ -53,7 +53,7 @@ const CoinCardMenu: React.FC<Props> = (props: Props): JSX.Element => {
       const tokenName = getTickerFormat(asset);
 
       const ticker = getTickerFormat(asset).toUpperCase();
-      const price = util.validBNOrZero(priceIndex[ticker]);
+      const price = validBNOrZero(priceIndex[ticker]);
 
       const node = (
         <CoinData

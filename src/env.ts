@@ -1,4 +1,4 @@
-import { binance } from 'asgardex-common';
+import { Network } from '@thorchain/asgardex-binance';
 
 const prod_hostnames = ['bepswap.com'];
 const dev_hostnames = ['localhost'];
@@ -21,6 +21,6 @@ export const getNet = (): NET => {
   return NET.DEV;
 };
 
-const BINANCE_NET = isMainnet ? binance.Network.MAINNET : binance.Network.TESTNET;
+const BINANCE_NET = isMainnet ? Network.MAINNET : Network.TESTNET;
 
 export { BINANCE_NET, isDevnet, isTestnet, isMainnet };
