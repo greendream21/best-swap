@@ -7,6 +7,7 @@ import {
   GetTxByAddressAssetPayload,
   GetTxByAddressPayload,
   GetTxByAssetPayload,
+  GetPoolDataPayload,
 } from './types';
 import {
   AssetDetail,
@@ -56,11 +57,6 @@ export const getPoolsFailed = (payload: Error): GetPoolsFailed => ({
   type: GET_POOLS_FAILED,
   payload,
 });
-
-type GetPoolDataPayload = {
-  assets: string[];
-  overrideAllPoolData: boolean;
-};
 
 export const GET_POOL_DATA_REQUEST = 'GET_POOL_DATA_REQUEST';
 export interface GetPoolData {

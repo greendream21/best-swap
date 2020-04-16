@@ -19,6 +19,11 @@ export type PoolDataMap = {
   [symbol: string]: PoolDetail;
 };
 
+export type GetPoolDataPayload = {
+  assets: string[];
+  overrideAllPoolData: boolean;
+};
+
 export type GetStakerPoolDataPayload = {
   asset: string;
   address: string;
