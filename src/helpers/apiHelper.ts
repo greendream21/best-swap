@@ -56,6 +56,10 @@ export const getMidgardDefaultApi = (basePath: string) =>
  * Helper to get `hostname` from url
  */
 export const getHostnameFromUrl = (u: string): Maybe<string> => {
-  const parsed = url.parse(u, true);
-  return parsed?.hostname ?? Nothing;
+  // we do need a runtime check here, TS can't help here, since u could be anything
+  if (typeof u === 'string') {
+    const parsed = url.parse(u, true);
+    return parsed?.hostname ?? Nothing;
+  }
+  return Nothing;
 };
