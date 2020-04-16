@@ -1,9 +1,14 @@
-import { all, takeEvery, put, fork, call } from 'redux-saga/effects';
+import { all, takeEvery, put, fork, call, delay } from 'redux-saga/effects';
 import { push } from 'connected-react-router';
 import { isEmpty as _isEmpty } from 'lodash';
 
 import { AxiosResponse } from 'axios';
-import { Balance, Market, client as binanceClient, Address } from '@thorchain/asgardex-binance';
+import {
+  Balance,
+  Market,
+  client as binanceClient,
+  Address,
+} from '@thorchain/asgardex-binance';
 import { bnOrZero, bn } from '@thorchain/asgardex-util';
 import * as api from '../../helpers/apiHelper';
 
@@ -23,9 +28,18 @@ import {
 } from '../../types/generated/midgard';
 import { getAssetFromString } from '../midgard/utils';
 
-import { baseToToken, baseAmount, tokenAmount } from '../../helpers/tokenHelper';
+import {
+  baseToToken,
+  baseAmount,
+  tokenAmount,
+} from '../../helpers/tokenHelper';
 import { BINANCE_NET, getNet } from '../../env';
-import { getApiBasePath } from '../midgard/saga';
+import {
+  getApiBasePath,
+  MIDGARD_MAX_RETRY,
+  MIDGARD_RETRY_DELAY,
+} from '../midgard/saga';
+import { UnpackPromiseResponse } from '../../types/util';
 
 export function* saveWalletSaga() {
   yield takeEvery(actions.SAVE_WALLET, function*({
@@ -62,7 +76,6 @@ export function* refreshBalance() {
 
       try {
         const markets: { result: Market[] } = yield call(bncClient.getMarkets);
-        // TODO(Veado): token or base amounts?
         const coins = balances.map((coin: Balance) => {
           const market = markets.result.find(
             (market: Market) => market.base_asset_symbol === coin.symbol,
@@ -88,13 +101,15 @@ type StakersAssetDataMap = {
   [symbol: string]: StakersAssetData;
 };
 
-export function* getUserStakeData(payload: {
-  address: Address;
-  assets: string[];
-}) {
+export function* getUserStakeData(
+  payload: {
+    address: Address;
+    assets: string[];
+  },
+  basePath: string,
+) {
   const { address, assets } = payload;
 
-  let basePath: string = yield call(getApiBasePath, getNet());
   let midgardApi = api.getMidgardDefaultApi(basePath);
   // (Request 1) Load list of possible `StakersAssetData`
   const { data }: AxiosResponse<StakersAssetData[]> = yield call(
@@ -118,8 +133,6 @@ export function* getUserStakeData(payload: {
       : {};
 
   // (Request 2) Load list of possible `PoolDetail`
-  // And we do need to check `basePath` again before
-  basePath = yield call(getApiBasePath, getNet());
   midgardApi = api.getMidgardDefaultApi(basePath);
   const { data: poolDataList }: AxiosResponse<PoolDetail[]> = yield call(
     { context: midgardApi, fn: midgardApi.getPoolsData },
@@ -153,25 +166,66 @@ export function* getUserStakeData(payload: {
   return stakeDataList;
 }
 
-export function* refreshStakes() {
-  yield takeEvery(actions.REFRESH_STAKES, function*({
-    payload,
-  }: actions.RefreshStakes) {
-    const address = payload;
-
+function* tryRefreshStakes(address: Address) {
+  for (let i = 0; i < MIDGARD_MAX_RETRY; i++) {
     try {
-      const basePath: string = yield call(getApiBasePath, getNet());
+      const noCache = i > 0;
+      // Unsafe type match of `basePath`: Can't be inferred by `tsc` from a return value of a Generator function - known TS/Generator/Saga issue
+      const basePath: string = yield call(getApiBasePath, getNet(), noCache);
       const midgardApi = api.getMidgardDefaultApi(basePath);
-      const { data }: AxiosResponse<StakersAddressData> = yield call(
-        { context: midgardApi, fn: midgardApi.getStakersAddressData },
+      const fn = midgardApi.getStakersAddressData;
+      const { data }: UnpackPromiseResponse<typeof fn> = yield call(
+        { context: midgardApi, fn },
         address,
       );
+      return data;
+    } catch (error) {
+      if (i < MIDGARD_MAX_RETRY - 1) {
+        yield delay(MIDGARD_RETRY_DELAY);
+      }
+    }
+  }
+  throw new Error('Midgard API request failed to get stakers address data');
+}
 
-      if (data.poolsArray && !_isEmpty(data?.poolsArray)) {
-        const result: StakeData[] = yield call(getUserStakeData, {
+export function* tryGetUserStakeData(address: Address, pools: string[]) {
+  for (let i = 0; i < MIDGARD_MAX_RETRY; i++) {
+    try {
+      const noCache = i > 0;
+      // Unsafe type match of `basePath`: Can't be inferred by `tsc` from a return value of a Generator function - known TS/Generator/Saga issue
+      const basePath: string = yield call(getApiBasePath, getNet(), noCache);
+      // Unsafe: `StakeData[]` can't be inferred by `tsc` from a return value of a Generator function - known TS/Generator/Saga issue
+      const result: StakeData[] = yield call(
+        getUserStakeData,
+        {
           address,
-          assets: data?.poolsArray,
-        });
+          assets: pools,
+        },
+        basePath,
+      );
+      return result;
+    } catch (error) {
+      if (i < MIDGARD_MAX_RETRY - 1) {
+        yield delay(MIDGARD_RETRY_DELAY);
+      }
+    }
+  }
+  throw new Error('Midgard API request failed to get user staked data');
+}
+
+export function* refreshStakes() {
+  yield takeEvery(actions.REFRESH_STAKES, function*({
+    payload: address,
+  }: actions.RefreshStakes) {
+    try {
+      const data: StakersAddressData = yield call(tryRefreshStakes, address);
+
+      if (data?.poolsArray && !_isEmpty(data?.poolsArray)) {
+        const result = yield call(
+          tryGetUserStakeData,
+          address,
+          data.poolsArray,
+        );
         yield put(actions.refreshStakeSuccess(result));
       } else {
         yield put(actions.refreshStakeSuccess([]));
