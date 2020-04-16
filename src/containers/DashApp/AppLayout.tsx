@@ -14,7 +14,6 @@ type Props = {
 const AppLayout: React.FC<Props> = (props: Props): JSX.Element => {
   const { children, 'data-test': dataTest, midgardBasePath } = props;
 
-  RD.isFailure;
   useEffect(() => {
     const ignore = () => {};
     const onFailure = (error: Error) => {
