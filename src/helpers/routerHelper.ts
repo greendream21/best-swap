@@ -15,11 +15,6 @@ const isPage = (path: string, pagePath: string): boolean => {
 };
 
 /**
- * Checks if the current path points to SwapDetail page
- * */
-export const isSwapDetailPage = (path: string): boolean => isPage(path, '/swap/detail/:pair?');
-
-/**
  * Checks if the current path points to Pool page
  * */
 export const isPoolPage = (path: string): boolean => isPage(path, '/pool/:symbol?');
