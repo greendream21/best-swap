@@ -70,7 +70,7 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
         const {
           pool: { asset, target },
         } = record;
-        const URL = `/swap/detail/${asset.toLowerCase()}-${target.toLowerCase()}`;
+        const URL = `/swap/${asset.toLowerCase()}-${target.toLowerCase()}`;
         const dataTest = `swap-button-${target.toLowerCase()}`;
 
         return (

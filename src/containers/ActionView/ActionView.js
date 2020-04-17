@@ -50,11 +50,7 @@ class ActionView extends Component {
     ) {
       routing = '/swap';
     }
-    if (
-      pageView === 'swap-detail' ||
-      pageView === 'swap-landing' ||
-      pageView === 'swap-send'
-    ) {
+    if (pageView === 'swap-detail' || pageView === 'swap-landing') {
       routing = '/swap';
     }
     if (pageView.includes('pools-')) {
@@ -89,9 +85,8 @@ class ActionView extends Component {
           {view === 'faqs-view' && <FaqsView />}
           {view === 'network-view' && <NetworkView />}
           {view === 'swap-view' && <SwapView />}
-          {view === 'swap-detail' && <SwapSend view="detail" info={info} />}
-          {view === 'swap-landing' && <SwapSend view="detail" info={info} />}
-          {view === 'swap-send' && <SwapSend view="send" info={info} />}
+          {view === 'swap-detail' && <SwapSend info={info} />}
+          {view === 'swap-landing' && <SwapSend info={info} />}
           {view === 'pools-view' && <PoolView />}
           {view === 'pools-pool' && <PoolStake symbol={symbol} />}
           {view === 'pools-new' && <PoolCreate symbol={symbol} />}

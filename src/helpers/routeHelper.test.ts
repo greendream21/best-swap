@@ -1,26 +1,10 @@
 import {
-  isSwapDetailPage,
   isPoolPage,
   matchSwapDetailPair,
   matchPoolSymbol,
 } from './routerHelper';
 
 describe('routeHelper', () => {
-  describe('isSwapDetailPagePage', () => {
-    it('should parse url of swap detail page', () => {
-      const result = isSwapDetailPage('/swap/detail');
-      expect(result).toBeTruthy();
-    });
-    it('should parse url of swap detail page with assets', () => {
-      const result = isSwapDetailPage('/swap/detail/fsn-rune');
-      expect(result).toBeTruthy();
-    });
-    it('should not parse url of other pages', () => {
-      const result = isSwapDetailPage('/pools');
-      expect(result).toBeFalsy();
-    });
-  });
-
   describe('isPoolPage', () => {
     it('should parse an url of a pool page', () => {
       const result = isPoolPage('/pool');

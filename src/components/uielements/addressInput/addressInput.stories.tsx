@@ -18,7 +18,10 @@ storiesOf('Components/AddressInput', module).add('default', () => {
             width: '500px',
           }}
         >
-          <AddressInput />
+          <AddressInput
+            onChange={(address: string) => console.log(address)}
+            onStatusChange={(status: boolean) => console.log(status)}
+          />
         </div>
       </AppHolder>
     </ThemeProvider>
