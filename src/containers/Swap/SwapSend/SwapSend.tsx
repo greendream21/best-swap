@@ -88,7 +88,6 @@ import { BINANCE_NET } from '../../../env';
 
 type ComponentProps = {
   info: string;
-  // view: SwapSendView;
   // TÓDO(veado): Add type for WSTransfer based on Binance WS Api
   wsTransfers: FixmeType[];
 };
