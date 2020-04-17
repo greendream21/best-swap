@@ -262,14 +262,12 @@ export function* getTxByAddress() {
   yield takeEvery(actions.GET_TX_BY_ADDRESS, function*({
     payload,
   }: actions.GetTxByAddress) {
-    for (let i = 0; i < MIDGARD_MAX_RETRY; i++) {
-      try {
-        // Can't infer type of `data: InlineResponse200` in a Generator function - known TS/Generator/Saga issue
-        const data = yield call(tryGetTxByAddress, payload);
-        yield put(actions.getTxByAddressSuccess(data));
-      } catch (error) {
-        yield put(actions.getTxByAddressFailed(error));
-      }
+    try {
+      // Can't infer type of `data: InlineResponse200` in a Generator function - known TS/Generator/Saga issue
+      const data = yield call(tryGetTxByAddress, payload);
+      yield put(actions.getTxByAddressSuccess(data));
+    } catch (error) {
+      yield put(actions.getTxByAddressFailed(error));
     }
   });
 }
@@ -344,8 +342,6 @@ function* tryGetTxByAddressAsset(payload: GetTxByAddressAssetPayload) {
     } catch (error) {
       if (i < MIDGARD_MAX_RETRY - 1) {
         yield delay(MIDGARD_RETRY_DELAY);
-      } else {
-        yield put(actions.getTxByAddressAssetFailed(error));
       }
     }
   }
