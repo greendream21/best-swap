@@ -89,7 +89,7 @@ class WalletView extends React.Component<Props, State> {
     const newAssetName = this.getAssetNameByIndex(key);
     const ticker = getTickerFormat(newAssetName);
 
-    const URL = `/swap/detail/${ticker}-rune`;
+    const URL = `/swap/${ticker}-rune`;
     this.props.history.push(URL);
   };
 

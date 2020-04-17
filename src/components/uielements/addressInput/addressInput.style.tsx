@@ -2,6 +2,10 @@ import styled from 'styled-components';
 import { palette } from 'styled-theme';
 import { transition } from '../../../settings/style-util';
 
+type AddressInputWrapperProps = {
+  status: boolean;
+};
+
 export const AddressInputWrapper = styled.div`
   display: flex;
 
@@ -14,8 +18,8 @@ export const AddressInputWrapper = styled.div`
     border: none;
     border-radius: 50%;
     color: #fff;
-    background: ${props =>
-      props.status ? palette('error', 0) : palette('primary', 1)};
+    background: ${({ status }: AddressInputWrapperProps) =>
+      status ? palette('error', 0) : palette('primary', 1)};
     cursor: pointer;
 
     i {

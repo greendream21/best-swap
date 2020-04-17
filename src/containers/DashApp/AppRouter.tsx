@@ -39,7 +39,11 @@ const routes: AppRoute[] = [
     component: asyncComponent(() => import('../pages/Network')),
   },
   {
-    path: 'swap/:view?/:info?',
+    path: 'swap/:info',
+    component: asyncComponent(() => import('../pages/Swap/SwapDetail')),
+  },
+  {
+    path: 'swap/',
     component: asyncComponent(() => import('../pages/Swap')),
   },
   {
