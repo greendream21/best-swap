@@ -2428,9 +2428,10 @@
   resolved "https://registry.yarnpkg.com/@thorchain/asgardex-util/-/asgardex-util-0.1.0.tgz#f0f836d530e4f80dc3fb97bf600779773e5a2d24"
   integrity sha512-anzylv3+31i/r2eijkB78ak1DB+ZCRzNo11CqqmGIfdvdfmAQB16O6kv+tb+D1GikN/PMBDTeRZf8CT5R358Ug==
 
-"@thorchain/byzantine-module@https://gitlab.com/thorchain/byzantine-module.git#ee2e3516abf571e2429f3918536d0a2f1c57ce0f":
-  version "0.1.0"
-  resolved "https://gitlab.com/thorchain/byzantine-module.git#ee2e3516abf571e2429f3918536d0a2f1c57ce0f"
+"@thorchain/byzantine-module@^0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@thorchain/byzantine-module/-/byzantine-module-0.1.1.tgz#540568f28dd72dcf9a56bc119052fe63037f9abc"
+  integrity sha512-P0w3MzDB1CtewbexcBz2GDSdOCf73/oA3u5qPBayq0DLrfXiz4P1+oI2NPTxFAbptkG7k1KsaOfI+xYkz30L+g==
   dependencies:
     axios "^0.19.2"
     lodash.shuffle "^4.2.0"
