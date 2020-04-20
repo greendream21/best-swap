@@ -6,9 +6,9 @@ import { keyBy } from 'lodash';
 import { getBinanceUrl } from '@thorchain/asgardex-binance';
 import ConnectionStatus from '../uielements/connectionStatus';
 
-import { BINANCE_NET } from '../../env';
-import { Maybe, Nothing } from '../../types/bepswap';
-import { getHostnameFromUrl } from '../../helpers/apiHelper';
+import { BINANCE_NET, isDevnet } from '../../env';
+import { Maybe } from '../../types/bepswap';
+import { getHostnameFromUrl, MIDGARD_DEV_API_DEV_IP } from '../../helpers/apiHelper';
 
 type MenuItem = {
   key: string;
@@ -25,6 +25,9 @@ const HeaderSetting: React.FC<Props> = (props: Props): JSX.Element => {
   const { midgardBasePath } = props;
   const [currentItem, setCurrentItem] = useState<string>('');
 
+  // Midgard IP on devnet OR on test|mainnet
+  const midgardUrl = isDevnet ? MIDGARD_DEV_API_DEV_IP : (midgardBasePath && getHostnameFromUrl(midgardBasePath));
+
   const menuItems: MenuItem[] = useMemo(
     () => [
       {
@@ -36,11 +39,11 @@ const HeaderSetting: React.FC<Props> = (props: Props): JSX.Element => {
       {
         key: 'midgard_api',
         label: 'midgard api',
-        url: midgardBasePath ? getHostnameFromUrl(midgardBasePath) : Nothing,
+        url: midgardUrl,
         status: 'green',
       },
     ],
-    [midgardBasePath],
+    [midgardUrl],
   );
   const items = keyBy(menuItems, 'key');
   const { status = 'green' } = items[currentItem] || {};
@@ -86,7 +89,7 @@ const HeaderSetting: React.FC<Props> = (props: Props): JSX.Element => {
                       textTransform: 'lowercase',
                     }}
                   >
-                    {url || ''}
+                    {url || 'unknown'}
                   </span>
                 </Row>
               </div>
