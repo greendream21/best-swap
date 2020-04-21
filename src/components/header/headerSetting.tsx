@@ -1,14 +1,18 @@
 import React, { useState, useMemo } from 'react';
-import { Menu, Dropdown, Icon, Row } from 'antd';
-
+import { Dropdown, Row } from 'antd';
+import { DownOutlined } from '@ant-design/icons';
 import { ClickParam } from 'antd/lib/menu';
 import { keyBy } from 'lodash';
 import { getBinanceUrl } from '@thorchain/asgardex-binance';
+
+import Menu from '../uielements/menu';
 import ConnectionStatus from '../uielements/connectionStatus';
 
 import { BINANCE_NET, isDevnet } from '../../env';
 import { Maybe } from '../../types/bepswap';
 import { getHostnameFromUrl, MIDGARD_DEV_API_DEV_IP } from '../../helpers/apiHelper';
+
+import { ConnectionMenuItem } from './header.style';
 
 type MenuItem = {
   key: string;
@@ -75,11 +79,9 @@ const HeaderSetting: React.FC<Props> = (props: Props): JSX.Element => {
               key={key}
             >
               <ConnectionStatus color={status} />
-              <div>
+              <ConnectionMenuItem>
                 <Row>
-                  <span style={{ paddingLeft: '10px', fontWeight: 'bold' }}>
-                    {label}
-                  </span>
+                  <span className="connection-server-label">{label}</span>
                 </Row>
                 <Row>
                   <span
@@ -92,7 +94,7 @@ const HeaderSetting: React.FC<Props> = (props: Props): JSX.Element => {
                     {url || 'unknown'}
                   </span>
                 </Row>
-              </div>
+              </ConnectionMenuItem>
             </Menu.Item>
           );
         })}
@@ -105,7 +107,7 @@ const HeaderSetting: React.FC<Props> = (props: Props): JSX.Element => {
     <Dropdown overlay={menu} trigger={['click']}>
       <a className="ant-dropdown-link" href="/">
         <ConnectionStatus color={status} />
-        <Icon type="down" />
+        <DownOutlined />
       </a>
     </Dropdown>
   );

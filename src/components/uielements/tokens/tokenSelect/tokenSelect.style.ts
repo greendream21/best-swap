@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components';
 import { palette } from 'styled-theme';
-import { Icon } from 'antd';
+import { CaretDownOutlined } from '@ant-design/icons';
 import { transition } from '../../../../settings/style-util';
 import { cleanTag } from '../../../../helpers/styleHelper';
 
@@ -11,7 +11,7 @@ export const TokenSelectWrapper = styled.div`
 
   width: 216px;
   height: 60px;
-  border: 1px solid ${palette('border', 0)};
+  border: 1px solid ${palette('gray', 0)};
   border-radius: 2px;
   text-transform: uppercase;
   ${transition()};
@@ -21,16 +21,16 @@ export const TokenSelectWrapper = styled.div`
   }
 `;
 
-const IconBase = cleanTag(Icon, ['open']);
+const IconBase = cleanTag(CaretDownOutlined, ['open']);
 export const DropdownIcon = styled(IconBase)`
   transition: transform 0.2s ease-in-out;
   ${({ open }) =>
     open ? 'transform: rotate(180deg);' : 'transform: rotate(0);'}
   font-size: 18px;
 
-  &.caret-down {
+  svg {
     font-size: 22px;
-    color: ${palette('primary', 0)};
+    color: ${palette('gray', 1)};
   }
 `;
 

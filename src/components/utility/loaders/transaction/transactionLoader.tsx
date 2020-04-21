@@ -6,9 +6,7 @@ const TransactionLoader: React.FC = (): JSX.Element => (
     className="transaction-loader"
     height={400}
     width="100%"
-    speed={2}
-    backgroundColor="#F8F9FA"
-    foregroundColor="#ECEEEF"
+    speed={1}
   >
     <rect x="0" y="10" rx="4" ry="4" width="100%" height="60" />
     <rect x="0" y="90" rx="4" ry="4" width="100%" height="60" />

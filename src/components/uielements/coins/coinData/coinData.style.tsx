@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { palette } from 'styled-theme';
 import { Maybe } from '../../../../types/bepswap';
 
 export type CoinDataWrapperSize = 'small' | 'big';
@@ -54,7 +55,7 @@ export const CoinDataWrapper = styled.div`
   .coinData-asset-value,
   .coinData-target-label,
   .coinData-target-value {
-    color: #626d7c;
+    color: ${palette('text', 0)};
   }
 
   .coinData-asset-label {

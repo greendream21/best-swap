@@ -10,11 +10,11 @@ export const SliderWrapper = styled(Slider)`
 
     .ant-slider-rail {
       height: 4px;
-      background: ${palette('background', 8)};
+      background: ${palette('gray', 1)};
     }
 
     .ant-slider-track {
-      background: ${palette('primary', 0)};
+      background: ${palette('gradient', 0)};
     }
 
     .ant-slider-handle {
@@ -23,7 +23,7 @@ export const SliderWrapper = styled(Slider)`
       margin-top: -6px;
       margin-left: -6px;
       border: 3px solid ${palette('success', 0)};
-      background: #fff;
+      background: ${palette('background', 1)};
     }
 
     .ant-slider-dot {
@@ -32,7 +32,7 @@ export const SliderWrapper = styled(Slider)`
 
     &:hover {
       .ant-slider-track {
-        background: ${palette('primary', 1)};
+        background: ${palette('primary', 0)};
       }
     }
   }
@@ -43,4 +43,5 @@ export const SliderLabel = styled.div`
   justify-content: space-between;
   align-items: center;
   font-size: 12px;
+  color: ${palette('text', 0)};
 `;

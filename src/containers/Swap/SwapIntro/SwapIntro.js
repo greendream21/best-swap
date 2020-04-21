@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Row, Col, Icon } from 'antd';
+import { Row, Col } from 'antd';
+import { ArrowRightOutlined } from '@ant-design/icons';
 
 import { ContentWrapper } from './SwapIntro.style';
 import Label from '../../../components/uielements/label';
@@ -71,7 +72,7 @@ class Swap extends Component {
           <Link to="/introduction/pools">
             <Button color="primary" typevalue="outline">
               pools
-              <Icon type="arrow-right" />
+              <ArrowRightOutlined />
             </Button>
           </Link>
         </Row>

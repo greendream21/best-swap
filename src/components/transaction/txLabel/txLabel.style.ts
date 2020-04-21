@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { palette } from 'styled-theme';
 import { media } from '../../../helpers/styleHelper';
 
 export const TxLabelWrapper = styled.div`
@@ -9,7 +10,7 @@ export const TxLabelWrapper = styled.div`
   font-size: 11px;
   letter-spacing: 0.7px;
   text-transform: uppercase;
-  color: #323c47;
+  color: ${palette('text', 0)};
 
   ${media.sm`
     height: 26px;

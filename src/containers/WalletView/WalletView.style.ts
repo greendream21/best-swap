@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { palette } from 'styled-theme';
 import ViewPanel from '../../components/viewPanel';
 
 export const WalletViewWrapper = styled(ViewPanel)`
@@ -17,7 +18,7 @@ export const WalletViewWrapper = styled(ViewPanel)`
   .asset-title-label {
     text-align: center;
     text-transform: uppercase;
-    color: #626d7c;
+    color: ${palette('text', 1)};
   }
 
   .coinList-wrapper {

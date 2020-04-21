@@ -3,7 +3,8 @@ import * as H from 'history';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import { Row, Col, Icon, notification } from 'antd';
+import { Row, Col, notification } from 'antd';
+import { FullscreenExitOutlined, CloseOutlined } from '@ant-design/icons';
 import { crypto } from '@binance-chain/javascript-sdk';
 import { get as _get } from 'lodash';
 
@@ -688,7 +689,11 @@ class PoolCreate extends React.Component<Props, State> {
     const openCreateModal = txStatus.type === 'create' ? txStatus.modal : false;
     const completed = txStatus.value !== null && !txStatus.status;
     const modalTitle = !completed ? 'CREATING POOL' : 'POOL CREATED';
-    const coinCloseIconType = txStatus.status ? 'fullscreen-exit' : 'close';
+    const coinCloseIconType = txStatus.status ? (
+      <FullscreenExitOutlined style={{ color: '#fff' }} />
+    ) : (
+      <CloseOutlined style={{ color: '#fff' }} />
+    );
 
     return (
       <ContentWrapper className="pool-new-wrapper" transparent>
@@ -702,9 +707,7 @@ class PoolCreate extends React.Component<Props, State> {
         </Row>
         <ConfirmModal
           title={modalTitle}
-          closeIcon={
-            <Icon type={coinCloseIconType} style={{ color: '#33CCFF' }} />
-          }
+          closeIcon={coinCloseIconType}
           visible={openCreateModal}
           footer={null}
           onCancel={this.handleCloseModal}

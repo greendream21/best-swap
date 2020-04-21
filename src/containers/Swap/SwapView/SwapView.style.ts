@@ -17,7 +17,6 @@ export const ContentWrapper = styled(ContentView)`
   }
 
   .view-title {
-    padding-top: 10px;
     padding-left: 10px;
   }
 

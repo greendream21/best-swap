@@ -7,7 +7,7 @@ const { Content } = Layout;
 
 export const ContentWrapper = styled(Content)`
   background: ${palette('background', 2)};
-  min-height: 100vh;
+  min-height: calc(100vh - 120px);
   margin-top: ${size('headerHeight', '90px')};
   padding: 10px; /* TODO: add sizes to theme once final */
   ${media.sm`

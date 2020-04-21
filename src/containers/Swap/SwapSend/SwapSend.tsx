@@ -3,7 +3,8 @@ import * as H from 'history';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import { Row, Col, Icon, notification, Popover } from 'antd';
+import { SwapOutlined, LockOutlined, UnlockOutlined } from '@ant-design/icons';
+import { Row, Col, notification } from 'antd';
 import {
   client as binanceClient,
   getPrefix,
@@ -39,6 +40,8 @@ import {
   CardFormItem,
   CardFormItemError,
   SwapStatusPanel,
+  PopoverContent,
+  PopoverContainer,
 } from './SwapSend.style';
 import {
   getTickerFormat,
@@ -773,18 +776,12 @@ class SwapSend extends React.Component<Props, State> {
     return true;
   };
 
+  getPopupContainer = () => {
+    return document.getElementsByClassName('slip-protection')[0] as HTMLElement;
+  };
+
   renderProtectPopoverContent = () => {
-    return (
-      <div
-        style={{
-          fontFamily: 'Roboto, sans-serif',
-          fontSize: '11px',
-          color: '#50E3C2',
-        }}
-      >
-        Protect my price (within 3%)
-      </div>
-    );
+    return <PopoverContent>Protect my price (within 3%)</PopoverContent>;
   };
 
   render() {
@@ -911,7 +908,7 @@ class SwapSend extends React.Component<Props, State> {
             >
               <SwapStatusPanel>
                 <Status title="exchange rate" value={ratioLabel} />
-                <Icon type="swap" onClick={this.handleReversePair} />
+                <SwapOutlined onClick={this.handleReversePair} />
                 <StepBar />
               </SwapStatusPanel>
             </Col>
@@ -985,8 +982,9 @@ class SwapSend extends React.Component<Props, State> {
                   </CardFormHolder>
                   <CardFormHolder className="slip-protection">
                     <CardForm>
-                      <Popover
+                      <PopoverContainer
                         content={this.renderProtectPopoverContent()}
+                        getPopupContainer={this.getPopupContainer}
                         placement="left"
                         visible
                         overlayClassName="protectPrice-popover"
@@ -1001,11 +999,14 @@ class SwapSend extends React.Component<Props, State> {
                           sizevalue="small"
                           typevalue="outline"
                           focused={slipProtection}
-                          style={{ borderColor: '#33CCFF' }}
                         >
-                          <Icon type={slipProtection ? 'lock' : 'unlock'} />
+                          {slipProtection ? (
+                            <LockOutlined />
+                          ) : (
+                            <UnlockOutlined />
+                          )}
                         </Button>
-                      </Popover>
+                      </PopoverContainer>
                     </CardForm>
                   </CardFormHolder>
                 </div>

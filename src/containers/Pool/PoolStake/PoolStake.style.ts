@@ -25,7 +25,7 @@ export const ContentWrapper = styled(ContentView)`
   .stake-status-view {
     ${media.lg`
       padding: 20px 0;
-      border-bottom: 1px solid ${palette('border', 0)};
+      border-bottom: 1px solid ${palette('gray', 0)};
     `}
 
     .stake-pool-col {
@@ -111,7 +111,7 @@ export const ContentWrapper = styled(ContentView)`
           letter-spacing: 2.5px;
         `}
 
-        i {
+        svg {
           ${media.lg`
             padding-right: 8px;
             font-size: 16px;
@@ -241,13 +241,11 @@ export const ContentWrapper = styled(ContentView)`
           height: 100px;
           margin-bottom: 20px;
           border-radius: 50%;
-          background: ${palette('background', 2)};
-          i {
+          background: ${palette('background', 1)};
             svg {
               width: 60px;
               height: 60px;
             }
-          }
         }
 
         .share-info-title {
@@ -255,8 +253,8 @@ export const ContentWrapper = styled(ContentView)`
           text-align: center;
           text-transform: uppercase;
 
-          border: 1px solid ${palette('border', 0)};
-          border-bottom: 3px solid ${palette('primary', 1)};
+          border: 1px solid ${palette('gray', 0)};
+          border-bottom: 3px solid ${palette('primary', 0)};
         }
 
         .your-share-info-wrapper {
@@ -264,7 +262,7 @@ export const ContentWrapper = styled(ContentView)`
           flex-direction: column;
           padding-bottom: 5px;
 
-          border: 1px solid ${palette('border', 0)};
+          border: 1px solid ${palette('gray', 0)};
           border-top: none;
 
           .share-info-row {
@@ -272,11 +270,10 @@ export const ContentWrapper = styled(ContentView)`
             justify-content: space-around;
             align-items: center;
             padding: 10px;
-            border-top: 1px solid ${palette('border', 0)};
+            border-top: 1px solid ${palette('gray', 0)};
           }
 
           .your-share-info {
-
             & > div {
               text-align: center;
             }
@@ -292,7 +289,7 @@ export const ContentWrapper = styled(ContentView)`
               font-size: 20px;
             }
             .your-share-price-label {
-              color: ${palette('text', 4)};
+              color: ${palette('text', 2)};
               ${media.lg`
                 padding: 0;
               `}
@@ -305,7 +302,7 @@ export const ContentWrapper = styled(ContentView)`
         ${media.lg`
           display: flex;
           flex-direction: column;
-          border-top: 1px solid ${palette('border', 0)};
+          border-top: 1px solid ${palette('gray', 0)};
           padding-right: 20px;
           padding-bottom: 10px;
           padding-left: 20px;
@@ -446,8 +443,8 @@ export const ContentWrapper = styled(ContentView)`
   .your-share-wrapper,
   .share-detail-wrapper {
     height: 100%;
-    background: #ffffff;
-    box-shadow: 0px 1px 3px rgba(47, 83, 151, 0.1);
+    background: ${palette('background', 1)};
+    box-shadow: 0px 1px 3px ${palette('gray', 0)};
     border-radius: 3px;
   }
 `;
@@ -475,7 +472,7 @@ export const ConfirmModalContent = styled.div`
     align-items: center;
     width: 100%;
     padding: 30px 0;
-    border-bottom: 1px solid ${palette('border', 0)};
+    border-bottom: 1px solid ${palette('gray', 0)};
 
     .coinData-wrapper {
       padding-left: 0;
@@ -537,12 +534,12 @@ export const ConfirmModalContent = styled.div`
         justify-content: center;
         align-items: center;
 
-        border: 1px solid ${palette('primary', 0)};
+        border: 1px solid ${palette('gradient', 0)};
         border-radius: 6px;
         padding: 1px 4px;
         margin-right: 6px;
         margin-bottom: 16px;
-        color: ${palette('primary', 0)};
+        color: ${palette('gradient', 0)};
         cursor: pointer;
 
         .view-btn {

@@ -8,8 +8,8 @@ export const ContentTitleWrapper = styled.div`
   width: 100%;
   height: 52px;
 
-  background: ${palette('primary', 0)};
-  color: #fff;
+  background: ${palette('gradient', 0)};
+  color: ${palette('text', 3)};
   font-size: ${key('sizes.font.big', '15px')};
   font-weight: 500;
   letter-spacing: 2px;

@@ -1,4 +1,5 @@
 import React, { useCallback, useState, useEffect } from 'react';
+import { palette } from 'styled-theme';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import { ConfirmIcon, RefundIcon } from '../../icons/timerIcons';
 import { TxTimerWrapper } from './txTimer.style';
@@ -43,7 +44,7 @@ const TxTimer: React.FC<Props> = (props): JSX.Element => {
   const isEnd = useCallback(() => {
     // Check of `maxSec` wins over `maxValue`
     if (maxSec > 0 && totalDuration >= maxSec) {
-        return true;
+      return true;
     }
     return value >= maxValue;
   }, [maxSec, value, maxValue, totalDuration]);
@@ -114,10 +115,10 @@ const TxTimer: React.FC<Props> = (props): JSX.Element => {
           strokeWidth={7}
           counterClockwise
           styles={buildStyles({
-            textColor: '#50E3C2',
+            textColor: palette('primary', 0),
             textSize: '14px',
-            pathColor: '#50E3C2',
-            trailColor: '#F2F2F2',
+            pathColor: palette('primary', 0),
+            trailColor: palette('background', 2),
             pathTransition: 'stroke-dashoffset 0.5s linear 0s',
           })}
         />

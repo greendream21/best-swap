@@ -1,7 +1,8 @@
 import React from 'react';
 import * as H from 'history';
 import { withRouter, Link, RouteComponentProps } from 'react-router-dom';
-import { Row, Col, Icon } from 'antd';
+import { Row, Col } from 'antd';
+import { ArrowRightOutlined } from '@ant-design/icons';
 import { formatBNCurrency } from '@thorchain/asgardex-util';
 
 import { ContentWrapper } from './DoubleSwap.style';
@@ -292,7 +293,7 @@ class DoubleSwap extends React.Component<Props, State> {
           <Link to="/tutorial/pool/stake">
             <Button color="primary" typevalue="outline">
               Staking
-              <Icon type="arrow-right" />
+              <ArrowRightOutlined />
             </Button>
           </Link>
         )}

@@ -24,8 +24,8 @@ export const ContentWrapper = styled(ContentView)`
     .token-detail-container,
     .create-detail-wrapper {
       height: 100%;
-      background: #ffffff;
-      box-shadow: 0px 1px 3px rgba(47, 83, 151, 0.1);
+      background: ${palette('background', 1)};
+      box-shadow: 0px 1px 3px ${palette('gray', 1)};
       border-radius: 3px;
     }
 
@@ -71,7 +71,7 @@ export const ContentWrapper = styled(ContentView)`
           padding: 30px;
           margin-top: 60px;
           margin-bottom: 30px;
-          border: 1px solid ${palette('border', 0)};
+          border: 1px solid ${palette('gray', 0)};
 
           .new-token-coin {
             display: flex;
@@ -235,7 +235,7 @@ export const ConfirmModalContent = styled.div`
     align-items: center;
     width: 100%;
     padding: 30px 0;
-    border-bottom: 1px solid ${palette('border', 0)};
+    border-bottom: 1px solid ${palette('gray', 0)};
 
     .coinData-wrapper {
       padding-left: 0;
@@ -297,12 +297,12 @@ export const ConfirmModalContent = styled.div`
         justify-content: center;
         align-items: center;
 
-        border: 1px solid ${palette('primary', 0)};
+        border: 1px solid ${palette('gradient', 0)};
         border-radius: 6px;
         padding: 1px 4px;
         margin-right: 6px;
         margin-bottom: 16px;
-        color: ${palette('primary', 0)};
+        color: ${palette('gradient', 0)};
         cursor: pointer;
 
         .view-btn {

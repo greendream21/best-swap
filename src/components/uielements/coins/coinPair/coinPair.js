@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Icon } from 'antd';
+import { CaretRightOutlined } from '@ant-design/icons';
 
 import { CoinPairWrapper } from './coinPair.style';
 import CoinIcon from '../coinIcon';
@@ -14,7 +14,7 @@ class CoinPair extends Component {
         <div className="coin-data">
           <CoinIcon type={from} />
         </div>
-        <Icon className="arrow-icon" type="caret-right" />
+        <CaretRightOutlined className="arrow-icon" />
         <div className="coin-data">
           <CoinIcon type={to} />
         </div>

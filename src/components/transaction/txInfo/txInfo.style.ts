@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { palette } from 'styled-theme';
 import { media } from '../../../helpers/styleHelper';
 
 export const TxInfoWrapper = styled.div`
@@ -52,7 +53,7 @@ export const Seperator = styled.div`
   width: 0px;
   height: 30px;
   margin: 0 6px;
-  border-left: 1px solid #e6e7ec;
+  border-left: 1px solid ${palette('gray', 0)};
   ${media.sm`
     height: 40px;
     margin: 0 10px;
@@ -61,7 +62,7 @@ export const Seperator = styled.div`
 
 export const Dash = styled.div`
   width: 0px;
-  border-left: 1px solid #e6e7ec;
+  border-left: 1px solid ${palette('gray', 0)};
   height: 14px;
   margin: 0 10px;
   ${media.sm`

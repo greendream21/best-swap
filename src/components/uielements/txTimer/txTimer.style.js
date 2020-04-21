@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { palette } from 'styled-theme';
 
 export const TxTimerWrapper = styled.div`
   position: relative;
@@ -13,7 +14,7 @@ export const TxTimerWrapper = styled.div`
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: #fff;
+    background-color: ${palette('background', 1)};
 
     width: 100%;
     height: 100%;

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter, Link } from 'react-router-dom';
-import { Icon } from 'antd';
+import { SyncOutlined, SwapOutlined } from '@ant-design/icons';
 
 import { bn, validBNOrZero } from '@thorchain/asgardex-util';
 import Label from '../../../components/uielements/label';
@@ -62,7 +62,7 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
       key: 'swap',
       title: (
         <Button onClick={getPools} typevalue="outline">
-          <Icon type="sync" />
+          <SyncOutlined />
           refresh
         </Button>
       ),
@@ -80,7 +80,7 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
               round="true"
               data-test={dataTest}
             >
-              <Icon type="swap" />
+              <SwapOutlined />
               swap
             </Button>
           </Link>

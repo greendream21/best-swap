@@ -14,4 +14,5 @@ export const Button = styled(UIButton).attrs({
 })`
   min-width: 45px;
   width: 45px;
+  padding: 0px 15px;
 `;

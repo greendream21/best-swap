@@ -2,13 +2,7 @@ import React from 'react';
 import ContentLoader from 'react-content-loader';
 
 const PoolLoader = () => (
-  <ContentLoader
-    height={400}
-    width={1000}
-    speed={2}
-    primarycolor="#F8F9FA"
-    secondarycolor="#ECEEEF"
-  >
+  <ContentLoader height={400} width={1000} speed={1}>
     <rect x="0" y="20" rx="4" ry="4" width="80%" height="65" />
     <rect x="0" y="85" rx="4" ry="4" width="80%" height="65" />
     <rect x="0" y="150" rx="4" ry="4" width="80%" height="65" />

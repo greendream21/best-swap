@@ -36,6 +36,6 @@ export const TokenDataWrapper = styled.div`
     font-size: 14px;
     font-weight: 500;
     text-transform: uppercase;
-    color: ${palette('text', 3)};
+    color: ${palette('text', 2)};
   }
 `;
