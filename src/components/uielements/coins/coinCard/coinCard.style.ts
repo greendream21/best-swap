@@ -1,7 +1,8 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
 import { palette } from 'styled-theme';
-import { Icon, Divider } from 'antd';
+import { Divider } from 'antd';
+import { CaretDownOutlined } from '@ant-design/icons';
 import { DividerProps } from 'antd/lib/divider';
 import Label from '../../label';
 import { cleanTag } from '../../../../helpers/styleHelper';
@@ -26,9 +27,9 @@ export const CardBorderWrapper = styled.div`
   display: flex;
   flex-direction: column;
 
-  border: 1px solid ${palette('border', 0)};
+  border: 1px solid ${palette('gray', 0)};
   border-radius: 3px;
-  background-color: #fff;
+  background-color: ${palette('background', 1)};
 `;
 
 export const CardTopRow = styled.div`
@@ -45,16 +46,16 @@ export const AssetCardFooter = styled.div`
   align-items: center;
 `;
 
-const IconBase = cleanTag(Icon, ['open']);
+const IconBase = cleanTag(CaretDownOutlined, ['open']);
 export const DropdownIcon = styled(IconBase)`
   transition: transform 0.2s ease-in-out;
   ${({ open }) =>
     open ? 'transform: rotate(180deg);' : 'transform: rotate(0);'}
   font-size: 18px;
 
-  &.caret-down {
+  svg {
     font-size: 22px;
-    color: ${palette('primary', 0)};
+    color: ${palette('gray', 1)};
   }
 `;
 
@@ -150,7 +151,7 @@ export const HorizontalDivider = styled<React.SFC<DividerProps & HorizontalDivid
     margin: ${props => (props?.color === 'primary' ? '4px 0' : '2px 0')};
 
     background: ${props =>
-      props?.color === 'primary' ? palette('success', 0) : palette('border', 0)};
+      props?.color === 'primary' ? palette('success', 0) : palette('gray', 0)};
   }
 `;
 

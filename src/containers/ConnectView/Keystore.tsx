@@ -3,7 +3,12 @@ import { connect } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { crypto } from '@binance-chain/javascript-sdk';
 import { FilePicker } from 'react-file-picker';
-import { Row, Icon, Input, Form, Tooltip } from 'antd';
+import { Row, Input, Form, Tooltip } from 'antd';
+import {
+  QuestionCircleOutlined,
+  UploadOutlined,
+  CheckCircleTwoTone,
+} from '@ant-design/icons';
 
 import { getPrefix } from '@thorchain/asgardex-binance';
 import { delay } from '@thorchain/asgardex-util';
@@ -108,7 +113,7 @@ const Keystore: React.FC<Props> = (props: Props): JSX.Element => {
         title="This is the password used to decrypt your encrypted keystore file"
         placement="bottomRight"
       >
-        <Icon type="question-circle" />
+        <QuestionCircleOutlined />
       </Tooltip>
     </div>
   );
@@ -122,28 +127,24 @@ const Keystore: React.FC<Props> = (props: Props): JSX.Element => {
         <FilePicker onChange={onChangeFile} onError={onErrorFile}>
           <div className="file-upload-wrapper">
             <Button color="primary" typevalue="outline">
-              <Icon type="upload" />
+              <UploadOutlined />
               Choose File to Upload
             </Button>
             &nbsp;
             {keystore && !keystoreError && (
-              <Icon
-                type="check-circle"
-                theme="twoTone"
-                twoToneColor="#52c41a"
-              />
+              <CheckCircleTwoTone twoToneColor="#50E3C2" />
             )}
           </div>
         </FilePicker>
         {keystoreError && (
-          <span style={{ color: '#FF4136' }}>{keystoreError}</span>
+          <span style={{ color: '#FF4954' }}>{keystoreError}</span>
         )}
         <FormGroup
           className={invalideStatus ? 'has-error' : ''}
           title={title}
           description="This is the password used to decrypt your encrypted keystore file"
         >
-          <Form onSubmit={unlock}>
+          <Form onFinish={unlock}>
             <Input.Password
               data-test="keystore-password"
               onChange={onPasswordChange}

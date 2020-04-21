@@ -17,7 +17,7 @@ export const CollapseWrapper = styled(Collapse)`
 
   .ant-collapse-header,
   .ant-collapse-content {
-    background-color: ${palette('background', 2)};
+    background-color: ${palette('background', 1)};
     border: none;
     .ant-collapse-content-box {
       padding-left: 28px;
@@ -28,7 +28,7 @@ export const CollapseWrapper = styled(Collapse)`
     margin-bottom: 24px;
     border: none !important;
     border-radius: 4px;
-    background-color: ${palette('background', 2)};
+    background-color: ${palette('background', 1)};
     overflow: hidden;
   }
 `;

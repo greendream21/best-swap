@@ -8,7 +8,7 @@ export const HeaderWrapper = styled.div`
   width: 100%;
   height: ${size('panelHeaderHeight', '10px')};
   margin-top: 3px;
-  border-bottom: 3px solid ${palette('primary', 5)};
+  border-bottom: 3px solid ${palette('gray', 0)};
 
   .label-wrapper {
     display: flex;
@@ -16,7 +16,7 @@ export const HeaderWrapper = styled.div`
     text-transform: uppercase;
     letter-spacing: 2.5px;
 
-    i {
+    svg
       padding: 0 8px;
       font-size: 16px;
     }

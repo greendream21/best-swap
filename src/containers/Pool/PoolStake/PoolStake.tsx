@@ -3,7 +3,13 @@ import * as H from 'history';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter, Link } from 'react-router-dom';
-import { Row, Col, Icon, notification } from 'antd';
+import { Row, Col, notification } from 'antd';
+import {
+  InboxOutlined,
+  InfoOutlined,
+  FullscreenExitOutlined,
+  CloseOutlined,
+} from '@ant-design/icons';
 import { SliderValue } from 'antd/lib/slider';
 import { crypto } from '@binance-chain/javascript-sdk';
 import { get as _get } from 'lodash';
@@ -1240,7 +1246,7 @@ class PoolStake extends React.Component<Props, State> {
           {hasWallet && stakeUnitsBN.isEqualTo(0) && (
             <div className="share-placeholder-wrapper">
               <div className="placeholder-icon">
-                <Icon type="inbox" />
+                <InboxOutlined />
               </div>
               <Label className="placeholder-label">
                 You don&apos;t have any shares in this pool.
@@ -1372,7 +1378,7 @@ class PoolStake extends React.Component<Props, State> {
       <div className="your-share-wrapper">
         <div className="share-placeholder-wrapper">
           <div className="placeholder-icon">
-            <Icon type="info" />
+            <InfoOutlined />
           </div>
           <h2>Loading of staked data for this pool failed.</h2>
           {msg && <p className="placeholder-label">{msg}</p>}
@@ -1419,7 +1425,11 @@ class PoolStake extends React.Component<Props, State> {
       txStatus.type === TxTypes.STAKE ? txStatus.modal : false;
     const openWithdrawModal =
       txStatus.type === TxTypes.WITHDRAW ? txStatus.modal : false;
-    const coinCloseIconType = txStatus.status ? 'fullscreen-exit' : 'close';
+    const coinCloseIconType = txStatus.status ? (
+      <FullscreenExitOutlined style={{ color: '#fff' }} />
+    ) : (
+      <CloseOutlined style={{ color: '#fff' }} />
+    );
 
     const yourShareSpan = hasWallet ? 8 : 24;
 
@@ -1447,7 +1457,7 @@ class PoolStake extends React.Component<Props, State> {
         <Row className="stake-info-view">{this.renderStakeInfo(poolStats)}</Row>
         <Row className="share-view">
           {!stakersAssetData && stakerPoolDataError && (
-            <Col className="your-share-view">
+            <Col className="your-share-view" md={24}>
               {this.renderStakeDataPoolError()}
             </Col>
           )}
@@ -1466,9 +1476,7 @@ class PoolStake extends React.Component<Props, State> {
           <>
             <ConfirmModal
               title={withdrawText}
-              closeIcon={
-                <Icon type={coinCloseIconType} style={{ color: '#33CCFF' }} />
-              }
+              closeIcon={coinCloseIconType}
               visible={openWithdrawModal}
               footer={null}
               onCancel={this.handleCloseModal}
@@ -1477,9 +1485,7 @@ class PoolStake extends React.Component<Props, State> {
             </ConfirmModal>
             <ConfirmModal
               title={stakeTitle}
-              closeIcon={
-                <Icon type={coinCloseIconType} style={{ color: '#33CCFF' }} />
-              }
+              closeIcon={coinCloseIconType}
               visible={openStakeModal}
               footer={null}
               onCancel={this.handleCloseModal}

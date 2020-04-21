@@ -54,7 +54,6 @@ const TokenInput: React.FC<Props> = (props: Props): JSX.Element => {
       <div className="token-input-content" ref={inputRef}>
         <CoinInputAdvanced
           className="token-amount-input"
-          size="default"
           value={amount}
           onChangeValue={onChangeHandler}
           {...inputProps}

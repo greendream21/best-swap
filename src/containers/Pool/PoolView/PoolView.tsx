@@ -3,7 +3,8 @@ import * as H from 'history';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter, Link } from 'react-router-dom';
-import { notification, Icon } from 'antd';
+import { notification } from 'antd';
+import { SyncOutlined, DatabaseOutlined } from '@ant-design/icons';
 
 import Label from '../../../components/uielements/label';
 import AddIcon from '../../../components/uielements/addIcon';
@@ -95,7 +96,7 @@ class PoolView extends React.Component<Props, State> {
           }}
           typevalue="outline"
         >
-          <Icon type="sync" />
+          <SyncOutlined />
           refresh
         </Button>
       ),
@@ -112,7 +113,7 @@ class PoolView extends React.Component<Props, State> {
                 round="true"
                 data-test={dataTest}
               >
-                <Icon type="database" />
+                <DatabaseOutlined />
                 stake
               </Button>
             </Link>

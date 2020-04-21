@@ -27,6 +27,6 @@ describe('FilterDropdown', () => {
     expect(component.find('button')).toHaveLength(2);
   });
   it('has 2 icons for desktop and mobile', () => {
-    expect(component.find('i')).toHaveLength(2);
+    expect(component.find('svg')).toHaveLength(2);
   });
 });

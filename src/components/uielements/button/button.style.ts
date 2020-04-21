@@ -51,11 +51,11 @@ type ColorGroups = {
 
 const colorGroups: ColorGroups = {
   primary: {
-    main: palette('primary', 0),
-    darken: palette('secondary', 0),
-    lighten: palette('secondary', 1),
-    text: palette('primary', 1),
-    borderBottom: palette('primary', 0),
+    main: palette('gradient', 0),
+    darken: palette('gradient', 1),
+    lighten: palette('gradient', 2),
+    text: palette('primary', 0),
+    borderBottom: palette('gradient', 0),
   },
   success: {
     main: palette('success', 0),
@@ -113,11 +113,11 @@ const getThemes = () => {
     ];
 
     value.default = {
-      text: '#fff',
+      text: palette('text', 3),
       border: text,
       background: main,
       action: {
-        text: '#fff',
+        text: palette('text', 3),
         border: darken,
         background: darken,
       },
@@ -129,9 +129,9 @@ const getThemes = () => {
     value.outline = {
       text,
       border: text,
-      background: '#fff',
+      background: palette('background', 1),
       action: {
-        text: '#fff',
+        text: palette('text', 3),
         border: text,
         background: main,
       },
@@ -140,9 +140,9 @@ const getThemes = () => {
       },
     };
     value.ghost = {
-      text: palette('text', 3),
-      border: palette('primary', 5),
-      background: '#fff',
+      text: palette('text', 2),
+      border: palette('gray', 0),
+      background: palette('background', 1),
       action: {
         text: main,
         border: main,
@@ -154,15 +154,15 @@ const getThemes = () => {
     };
     value.normal = {
       text: palette('text', 0),
-      border: palette('border', 0),
-      background: '#fff',
+      border: palette('gray', 0),
+      background: palette('background', 1),
       action: {
         text: palette('text', 0),
-        border: palette('border', 0),
-        background: '#fff',
+        border: palette('gray', 0),
+        background: palette('background', 1),
       },
       focus: {
-        border: palette('border', 0),
+        border: palette('gray', 0),
         borderBottom,
       },
     };
@@ -264,7 +264,7 @@ export const ButtonWrapper = styled(Button)<Props>`
       }
     }
 
-    i {
+    svg {
       display: flex;
       font-size: 18px;
     }

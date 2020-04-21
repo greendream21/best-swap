@@ -16,9 +16,9 @@ export const WalletDrawerWrapper = styled.div`
     height: 30px;
     min-width: 30px;
     border-radius: 50%;
-    border: 1px solid ${palette('primary', 1)};
+    border: 1px solid ${palette('primary', 0)};
     padding: 4px 7px;
-    color: ${palette('primary', 1)};
+    color: ${palette('primary', 0)};
     ${media.sm`
       display: none;
     `}
@@ -31,6 +31,7 @@ export const Drawer = styled(AntdDrawer)`
   .ant-drawer-body {
     height: 100%;
     padding: 24px 12px;
+  background-color: ${palette('background', 1)};
   }
 
   .ant-tabs-bar {
@@ -58,7 +59,7 @@ export const Drawer = styled(AntdDrawer)`
     display: flex;
     align-items: center;
     z-index: 999;
-    border: 0.5px solid #e2ebf0;
+    border: 0.5px solid ${palette('gray', 0)};
     border-radius: 4px;
 
     .copy-btn-wrapper {
@@ -71,7 +72,7 @@ export const Drawer = styled(AntdDrawer)`
       margin-right: 6px;
       font-size: 12px;
       color: ${palette('primary', 0)};
-      background: #f4f5f7;
+      background: ${palette('background', 2)};
       border-radius: 4px;
       cursor: pointer;
     }

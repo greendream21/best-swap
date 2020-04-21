@@ -8,7 +8,7 @@ export const TokenInputWrapper = styled.div`
   min-width: 212px;
   height: 60px;
   padding: 9px;
-  border: 1px solid ${palette('border', 0)};
+  border: 1px solid ${palette('gray', 0)};
   border-radius: 2px;
   text-transform: uppercase;
   ${transition()};
@@ -24,7 +24,7 @@ export const TokenInputWrapper = styled.div`
 
     .token-input-title {
       font-size: 11px;
-      color: ${palette('text', 3)};
+      color: ${palette('text', 2)};
       letter-spacing: 1px;
     }
 
@@ -43,7 +43,7 @@ export const TokenInputWrapper = styled.div`
     .token-amount-label {
       white-space: nowrap;
       font-size: 12px;
-      color: ${palette('text', 3)};
+      color: ${palette('text', 2)};
       letter-spacing: 1px;
       text-align: right;
     }

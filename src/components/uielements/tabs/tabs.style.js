@@ -5,6 +5,8 @@ export const StyledTab = component => styled(component)`
   .ant-tabs-bar {
     width: ${props => (props.action ? 'auto' : '100%')};
     border-bottom-width: ${props => (props.withBorder ? '1px' : '0px')};
+    border-color: ${palette('gray', 0)};
+
     .ant-tabs-nav-container,
     .ant-tabs-nav-wrap,
     .ant-tabs-nav-scroll,
@@ -23,11 +25,11 @@ export const StyledTab = component => styled(component)`
     .ant-tabs-tab a {
       padding-top: 18px;
       letter-spacing: 2.5px;
-      color: ${palette('text', 1)};
+      color: ${palette('text', 0)};
       font-weight: bold;
 
       &:hover {
-        color: ${palette('primary', 1)};
+        color: ${palette('primary', 0)};
       }
     }
 
@@ -39,7 +41,7 @@ export const StyledTab = component => styled(component)`
     .ant-tabs-ink-bar {
       bottom: 0px;
       height: 3px;
-      background: ${palette('primary', 0)};
+      background: ${palette('gradient', 0)};
     }
   }
 
@@ -52,7 +54,7 @@ export const StyledTab = component => styled(component)`
 
   .ant-tabs-nav .ant-tabs-tab-disabled,
   .ant-tabs-nav .ant-tabs-tab-disabled:hover {
-    color: rgba(0, 0, 0, 0.25);
+    color: ${palette('text', 2)};
     cursor: not-allowed;
   }
 `;

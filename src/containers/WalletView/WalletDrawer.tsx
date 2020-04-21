@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Icon, notification } from 'antd';
+import { notification } from 'antd';
+import { WalletOutlined, SyncOutlined } from '@ant-design/icons';
 import { connect } from 'react-redux';
 import copy from 'copy-to-clipboard';
 
@@ -80,7 +81,7 @@ const WalletDrawer: React.FC<Props> = props => {
         onClick={toggleDrawer}
       />
       <div className="wallet-mobile-btn" onClick={toggleDrawer}>
-        <Icon type="wallet" />
+        <WalletOutlined />
       </div>
       <Drawer
         placement="right"
@@ -90,7 +91,7 @@ const WalletDrawer: React.FC<Props> = props => {
         visible={visible}
       >
         <div className="refresh-balance-icon" onClick={onClickRefresh}>
-          <Icon type="sync" spin={refresh} />
+          <SyncOutlined spin={refresh} />
         </div>
         <WalletView status={status} />
         <div className="wallet-drawer-tools">

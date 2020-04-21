@@ -1,7 +1,11 @@
-import React, { useMemo, useState, useEffect } from 'react';
-import { Icon, Popover } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { PlusOutlined, DeleteFilled } from '@ant-design/icons';
 
-import { AddressInputWrapper } from './addressInput.style';
+import {
+  AddressInputWrapper,
+  PopoverContainer,
+  PopoverContent,
+} from './addressInput.style';
 import Input from '../input';
 
 type Props = {
@@ -39,19 +43,15 @@ const AddressInput: React.FC<Props> = (props: Props): JSX.Element => {
     }
   };
 
-  const popoverContent = useMemo(() => {
-    return (
-      <div
-        style={{
-          fontFamily: 'Roboto, sans-serif',
-          fontSize: '11px',
-          color: '#50E3C2',
-        }}
-      >
-        Add Recipient Address
-      </div>
-    );
-  }, []);
+  const getPopupContainer = () => {
+    return document.getElementsByClassName(
+      'addressInput-wrapper',
+    )[0] as HTMLElement;
+  };
+
+  const renderPopoverContent = () => {
+    return <PopoverContent>Add Recipient Address</PopoverContent>;
+  };
 
   return (
     <AddressInputWrapper
@@ -62,8 +62,9 @@ const AddressInput: React.FC<Props> = (props: Props): JSX.Element => {
       {...otherProps}
     >
       {!status && (
-        <Popover
-          content={popoverContent}
+        <PopoverContainer
+          getPopupContainer={getPopupContainer}
+          content={renderPopoverContent()}
           placement="right"
           visible
           overlayClassName="addressInput-popover"
@@ -77,14 +78,14 @@ const AddressInput: React.FC<Props> = (props: Props): JSX.Element => {
             className="addressInput-icon"
             data-test="add-recipient-address-button"
           >
-            <Icon type="plus" />
+            <PlusOutlined />
           </div>
-        </Popover>
+        </PopoverContainer>
       )}
       {status && (
         <>
           <div className="addressInput-icon" onClick={_ => setStatus(false)}>
-            <Icon type="delete" theme="filled" />
+            <DeleteFilled />
           </div>
           <Input
             className="address-input"

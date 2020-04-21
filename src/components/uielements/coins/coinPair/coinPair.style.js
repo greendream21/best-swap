@@ -19,6 +19,6 @@ export const CoinPairWrapper = styled.div`
 
   .arrow-icon {
     margin: 15px 15px;
-    color: ${palette('text', 5)};
+    color: ${palette('text', 2)};
   }
 `;

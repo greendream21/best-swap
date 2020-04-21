@@ -7,7 +7,7 @@ exports[`FilterDropdown Matches the snapshot 1`] = `
   target="_blank"
 >
   <div
-    className="sc-AxjAm iVQVNx txStatus-wrapper"
+    className="sc-AxjAm inSpJf txStatus-wrapper"
   >
     <p
       className="txStatus-type"
@@ -15,7 +15,7 @@ exports[`FilterDropdown Matches the snapshot 1`] = `
       in
     </p>
     <div
-      className="sc-AxirZ hYyDVv tx-status-content"
+      className="sc-AxirZ dGmBIH tx-status-content"
     >
       <p
         className="txStatus-amount"

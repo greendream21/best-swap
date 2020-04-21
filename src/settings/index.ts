@@ -1,6 +1,6 @@
 import themes from './themes';
 
-export const defaultTheme = themes.themedefault;
+export const defaultTheme = themes.lightTheme;
 
 export type CoinType =
   | 'blue'

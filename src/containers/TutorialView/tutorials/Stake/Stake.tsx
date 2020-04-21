@@ -1,7 +1,8 @@
 import React from 'react';
 import * as H from 'history';
 import { withRouter, Link, RouteComponentProps } from 'react-router-dom';
-import { Row, Col, Icon } from 'antd';
+import { Row, Col } from 'antd';
+import { ArrowRightOutlined } from '@ant-design/icons';
 
 import { ContentWrapper } from './Stake.style';
 import Centered from '../../../../components/utility/centered';
@@ -184,7 +185,7 @@ class Stake extends React.Component<Props, State> {
           <Link to="/tutorial/pool/earn">
             <Button color="primary" typevalue="outline">
               Earning
-              <Icon type="arrow-right" />
+              <ArrowRightOutlined />
             </Button>
           </Link>
         )}

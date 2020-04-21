@@ -51,19 +51,38 @@ const AppHolder = styled.div`
   span,
   div,
   img,
+  th,
+  td,
   svg {
     margin-bottom: 0;
     text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     &::selection {
-      background: ${palette('primary', 1)};
-      color: #fff;
+      background: ${palette('primary', 0)};
+      color: ${palette('background', 1)};
     }
   }
 
   section.ant-layout {
-    background: ${palette('background', 2)};
+    background: ${palette('background', 1)};
+  }
+
+  .ant-popover {
+    .ant-popover-arrow {
+      border-color: ${palette('background', 1)};
+    }
+    .ant-popover-inner {
+      background-color: ${palette('background', 1)};
+    }
+  }
+
+  .ant-popover-inner-content {
+    padding: 6px;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    font-family: 'Montserrat';
+    src: url(${normalFont});
   }
 
   .ant-row:not(.ant-form-item) {

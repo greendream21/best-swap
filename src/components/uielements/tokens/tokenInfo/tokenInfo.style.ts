@@ -8,8 +8,8 @@ export const TokenInfoWrapper = styled.div`
   flex-direction: column;
   height: 100px;
   padding: 8px 12px 8px 16px;
-  background: #fff;
-  box-shadow: 0px 1px 3px rgba(47, 83, 151, 0.1);
+  background: ${palette('background', 1)};
+  box-shadow: 0px 1px 3px ${palette('gray', 0)};
   border-radius: 3px;
 
   &:before {
@@ -21,7 +21,7 @@ export const TokenInfoWrapper = styled.div`
     top: 0px;
     border-bottom-left-radius: 3px;
     border-top-left-radius: 3px;
-    background: ${palette('primary', 0)};
+    background: ${palette('gradient', 0)};
   }
 
   .label-wrapper {
@@ -35,7 +35,7 @@ export const TokenInfoWrapper = styled.div`
     text-transform: uppercase;
 
     .pool-label {
-      color: ${palette('text', 8)};
+      color: ${palette('text', 0)};
     }
   }
 `;

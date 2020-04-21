@@ -20,7 +20,7 @@ export const StyledHeader = styled.div`
   > *:last-child {
     margin-right: 0;
   }
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid ${palette('gray', 0)};
   background-color: ${palette('background', 0)};
 
   /* HACK: this override hack should be in the 
@@ -28,12 +28,8 @@ export const StyledHeader = styled.div`
   .ant-dropdown-link {
     display: flex;
     align-items: center;
-    color: ${palette('text', 1)};
+    color: ${palette('text', 0)};
     font-weight: bold;
-    i {
-      padding: 0 5px;
-      font-size: 14px;
-    }
   }
 
   .header-tab-container {
@@ -50,9 +46,10 @@ export const StyledHeader = styled.div`
     }
 
     .ant-tabs-tab {
-      margin-right: 5px;
+      padding-right: 5px;
       ${media.sm`
-        margin-right: 32px;
+        padding-left: 16px;
+        padding-right: 16px;
       `}
     }
   }
@@ -65,8 +62,14 @@ export const LogoWrapper = styled.div`
     margin-right: 20px;
     display: flex;
   `}
-  img {
+  svg {
     max-height: 24px;
+  }
+
+  .intro-btn {
+    min-width: 24px !important;
+    max-height: 24px;
+    border-radius: 50% !important;
   }
 `;
 
@@ -75,7 +78,7 @@ export const HeaderTitle = styled.p`
   ${media.sm`
     display:block;
   `}
-  color: ${palette('text', 1)};
+  color: ${palette('text', 0)};
   font-size: ${key('sizes.font.big', '15px')};
   letter-spacing: 0.9px;
   white-space: nowrap;
@@ -111,9 +114,9 @@ export const HeaderActionButtons = styled.div`
       height: 30px;
       min-width: 30px;
       border-radius: 50%;
-      border: 1px solid ${palette('primary', 1)};
+      border: 1px solid ${palette('primary', 0)};
       padding: 4px 7px;
-      color: ${palette('primary', 1)};
+      color: ${palette('primary', 0)};
       ${media.sm`
         display: none;
       `}
@@ -160,5 +163,21 @@ export const HeaderActionButtons = styled.div`
       text-align: center;
       text-transform: uppercase;
     }
+
+    .anticon-down {
+      margin-left: 8px;
+    }
+  }
+`;
+
+export const ConnectionMenuItem = styled.div`
+  .connection-server-label {
+    padding-left: 10px;
+    font-weight: bold;
+  }
+  .connection-server-url {
+    padding-left: 10px;
+    color: ${palette('text', 2)};
+    text-transform: lowercase;
   }
 `;
