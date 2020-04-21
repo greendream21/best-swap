@@ -156,30 +156,30 @@ export const getCalcResult = (
 
     // CHANGELOG:
     /*
-      balance_rune => runeStakedTotal
-      balance_token => assetStakedTotal
+      balance_rune => runeDepth
+      balance_token => assetDepth
     */
     Object.keys(pools).forEach(key => {
       const poolData = pools[key];
-      const runeStakedTotal = baseAmount(poolData?.runeStakedTotal ?? 0);
-      const assetStakedTotal = baseAmount(poolData?.assetStakedTotal ?? 0);
+      const runeDepth = baseAmount(poolData?.runeDepth ?? 0);
+      const assetDepth = baseAmount(poolData?.assetDepth ?? 0);
       const { symbol = '' } = getAssetFromString(poolData?.asset);
 
       const token = getTickerFormat(symbol);
       if (token.toLowerCase() === from.toLowerCase()) {
-        // formula: assetStakedTotal / BASE_NUMBER
-        X = baseToToken(assetStakedTotal);
-        // formula: runeStakedTotal / BASE_NUMBER
-        Y = baseToToken(runeStakedTotal);
+        // formula: assetDepth / BASE_NUMBER
+        X = baseToToken(assetDepth);
+        // formula: runeDepth / BASE_NUMBER
+        Y = baseToToken(runeDepth);
         result.poolAddressFrom = poolAddress;
         result.symbolFrom = symbol;
       }
 
       if (token.toLowerCase() === to.toLowerCase()) {
-        // formula: runeStakedTotal / BASE_NUMBER
-        R = baseToToken(runeStakedTotal);
-        // formula: assetStakedTotal / BASE_NUMBER
-        Z = baseToToken(assetStakedTotal);
+        // formula: runeDepth / BASE_NUMBER
+        R = baseToToken(runeDepth);
+        // formula: assetDepth / BASE_NUMBER
+        Z = baseToToken(assetDepth);
         result.poolAddressTo = poolAddress;
         result.symbolTo = symbol;
       }
@@ -212,16 +212,16 @@ export const getCalcResult = (
 
     Object.keys(pools).forEach(key => {
       const poolData = pools[key];
-      const runeStakedTotal = baseAmount(poolData?.runeStakedTotal ?? 0);
-      const assetStakedTotal = baseAmount(poolData?.assetStakedTotal ?? 0);
+      const runeDepth = baseAmount(poolData?.runeDepth ?? 0);
+      const assetDepth = baseAmount(poolData?.assetDepth ?? 0);
       const { symbol = '' } = getAssetFromString(poolData?.asset);
 
       const token = getTickerFormat(symbol);
       if (token.toLowerCase() === from.toLowerCase()) {
-        // formula: assetStakedTotal / BASE_NUMBER
-        X = baseToToken(assetStakedTotal);
-        // formula: runeStakedTotal / BASE_NUMBER
-        Y = baseToToken(runeStakedTotal);
+        // formula: assetDepth / BASE_NUMBER
+        X = baseToToken(assetDepth);
+        // formula: runeDepth / BASE_NUMBER
+        Y = baseToToken(runeDepth);
 
         result.poolAddressTo = poolAddress;
         result.symbolFrom = symbol;
@@ -290,14 +290,14 @@ export const getCalcResult = (
 
     Object.keys(pools).forEach(key => {
       const poolData = pools[key];
-      const runeStakedTotal = baseAmount(poolData?.runeStakedTotal ?? 0);
-      const assetStakedTotal = baseAmount(poolData?.assetStakedTotal ?? 0);
+      const runeDepth = baseAmount(poolData?.runeDepth ?? 0);
+      const assetDepth = baseAmount(poolData?.assetDepth ?? 0);
       const { symbol = '' } = getAssetFromString(poolData?.asset);
 
       const ticker = getTickerFormat(symbol);
       if (ticker.toLowerCase() === to.toLowerCase()) {
-        X = baseToToken(runeStakedTotal);
-        Y = baseToToken(assetStakedTotal);
+        X = baseToToken(runeDepth);
+        Y = baseToToken(assetDepth);
 
         result.poolAddressTo = poolAddress;
         result.symbolTo = symbol;

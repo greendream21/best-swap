@@ -49,15 +49,15 @@ export const getCalcResult = (
 
   // CHANGELOG:
   /*
-    balance_rune => runeStakedTotal
-    balance_token => assetStakedTotal
+    balance_rune => runeDepth
+    balance_token => assetDepth
     pool_units => poolUnits
   */
   Object.keys(pools).forEach(key => {
     const poolDetail: PoolDetail = pools[key];
     const {
-      runeStakedTotal,
-      assetStakedTotal,
+      runeDepth,
+      assetDepth,
       poolUnits: poolDataUnits,
       asset = '',
     } = poolDetail;
@@ -65,8 +65,8 @@ export const getCalcResult = (
     const { symbol } = getAssetFromString(asset);
 
     if (symbol && symbol.toLowerCase() === tokenName.toLowerCase()) {
-      R = bn(runeStakedTotal || 0);
-      T = bn(assetStakedTotal || 0);
+      R = bn(runeDepth || 0);
+      T = bn(assetDepth || 0);
       // formula: 1 / (R / T)
       const a = R.div(T);
       // Ratio does need more than 2 decimal places
