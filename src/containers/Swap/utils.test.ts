@@ -1,6 +1,7 @@
 import { TransferEvent, TransferEventData } from '@thorchain/asgardex-binance';
 import { bn } from '@thorchain/asgardex-util';
 import {
+  isValidSwap,
   parseTransfer,
   isOutboundTx,
   isRefundTx,
@@ -113,6 +114,67 @@ const priceIndex = {
   LOK: bn(0.89),
   BNB: bn(0),
 };
+
+const pools: string[] = [
+  'BNB.LOK-3C0',
+  'BNB.BOLT-E42',
+  'BNB.FTM-585',
+  'BNB.BNB',
+  'BNB.TED-DF2',
+  'BNB.TUSDB-000',
+  'BNB.TCAN-014',
+  'BNB.TATIC-E9C',
+  'BNB.FSN-F1B',
+];
+
+describe('swap/utils/isValidSwap', () => {
+  it('should return false for source invalid pair', () => {
+    const sourceInvalidPair: Pair = {
+      source: '',
+      target: 'rune',
+    };
+    expect(isValidSwap(sourceInvalidPair, pools)).toBeFalsy();
+  });
+  it('should return false for target invalid pair', () => {
+    const targetInvalidPair: Pair = {
+      source: 'rune',
+      target: '',
+    };
+    expect(isValidSwap(targetInvalidPair, pools)).toBeFalsy();
+  });
+  it('should return false for invalid pair', () => {
+    const invalidPair: Pair = {
+      source: 'rune',
+      target: 'rune',
+    };
+    expect(isValidSwap(invalidPair, pools)).toBeFalsy();
+  });
+  it('should return false in case the asset is unlisted!', () => {
+    const invalidPair: Pair = {
+      source: 'rune',
+      target: 'btc',
+    }; const invalidPair2: Pair = {
+      source: 'eth',
+      target: 'btc',
+    };
+    expect(isValidSwap(invalidPair, pools)).toBeFalsy();
+    expect(isValidSwap(invalidPair2, pools)).toBeFalsy();
+  });
+  it('should return true for a valid pair', () => {
+    const validPair: Pair = {
+      source: 'rune',
+      target: 'bnb',
+    };
+    expect(isValidSwap(validPair, pools)).toBeTruthy();
+  });
+  it('should return true for a valid pair', () => {
+    const validPair: Pair = {
+      source: 'lok',
+      target: 'tusdb',
+    };
+    expect(isValidSwap(validPair, pools)).toBeTruthy();
+  });
+});
 
 // TODO: Fix unit test
 describe.skip('swap/utils/', () => {
