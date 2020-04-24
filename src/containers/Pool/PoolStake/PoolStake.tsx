@@ -14,7 +14,13 @@ import {
   getHashFromTransfer,
   getPrefix,
 } from '@thorchain/asgardex-binance';
-import { bn, validBNOrZero, delay, bnOrZero, formatBN } from '@thorchain/asgardex-util';
+import {
+  bn,
+  validBNOrZero,
+  delay,
+  bnOrZero,
+  formatBN,
+} from '@thorchain/asgardex-util';
 import { withBinanceTransferWS } from '../../../HOC/websocket/WSBinance';
 
 import Label from '../../../components/uielements/label';
@@ -1438,9 +1444,23 @@ class PoolStake extends React.Component<Props, State> {
 
     const withdrawText = !completed ? 'YOU ARE WITHDRAWING' : 'YOU WITHDRAWN';
 
+    const emptyStakerPoolData: StakersAssetData = {
+      asset: symbol,
+      stakeUnits: '0',
+      runeStaked: '0',
+      assetStaked: '0',
+      poolStaked: '0',
+      runeEarned: '0',
+      assetEarned: '0',
+      poolEarned: '0',
+      runeROI: '0',
+      assetROI: '0',
+      poolROI: '0',
+      dateFirstStaked: 0,
+    };
     const stakersAssetData: Maybe<StakersAssetData> = stakerPoolData
       ? stakerPoolData[symbol]
-      : Nothing;
+      : emptyStakerPoolData;
 
     return (
       <ContentWrapper className="pool-stake-wrapper" transparent>
