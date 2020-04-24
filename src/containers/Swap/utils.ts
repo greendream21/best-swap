@@ -51,6 +51,23 @@ export const validatePair = (
   };
 };
 
+export const isValidSwap = (pair: Pair, pools: string[]) => {
+  const { target = '', source = '' }: Pair = pair;
+  const RUNE = 'rune';
+  const poolTickers = pools.map(poolSymbol => getTickerFormat(poolSymbol));
+  poolTickers.push(RUNE);
+
+  if (target === source || !target || !source) {
+    return false;
+  }
+
+  if (!poolTickers.includes(source) || !poolTickers.includes(target)) {
+    return false;
+  }
+
+  return true;
+};
+
 export const getSwapType = (from: string, to: string) =>
   from.toLowerCase() === 'rune' || to.toLowerCase() === 'rune'
     ? SwapType.SINGLE_SWAP

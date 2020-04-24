@@ -9,6 +9,14 @@ describe('helpers/stringHelper/', () => {
   // getTickerFormat
 
   describe('getTickerFormat', () => {
+    it('should get a ticker from pool and symbol', () => {
+      const result = getTickerFormat('BNB.TUSDB-000');
+      expect(result).toEqual('tusdb');
+    });
+    it('should get a ticker from symbol', () => {
+      const result = getTickerFormat('TUSDB-000');
+      expect(result).toEqual('tusdb');
+    });
     it('should parse a pair ', () => {
       const result = getTickerFormat('STAKE:TUSDB-000');
       expect(result).toEqual('stake:tusdb');
