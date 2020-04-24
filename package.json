@@ -38,7 +38,7 @@
     "@svgr/webpack": "5.1.0",
     "@thorchain/asgardex-binance": "^0.1.0",
     "@thorchain/asgardex-util": "^0.1.0",
-    "@thorchain/byzantine-module": "https://gitlab.com/thorchain/byzantine-module.git#ee2e3516abf571e2429f3918536d0a2f1c57ce0f",
+    "@thorchain/byzantine-module": "^0.1.1",
     "@trustwallet/walletconnect": "^0.1.37",
     "@types/bignumber.js": "^5.0.0",
     "@types/react-content-loader": "^4.0.0",
