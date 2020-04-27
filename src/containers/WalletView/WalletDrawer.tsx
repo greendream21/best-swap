@@ -10,13 +10,17 @@ import Button from '../../components/uielements/button';
 import Label from '../../components/uielements/label';
 import WalletButton from '../../components/uielements/walletButton';
 
-import { WalletDrawerWrapper, Drawer } from './WalletDrawer.style';
+import {
+  WalletDrawerWrapper,
+  Drawer,
+} from './WalletDrawer.style';
 
 import * as walletActions from '../../redux/wallet/actions';
 import { RootState } from '../../redux/store';
 import { User } from '../../redux/wallet/types';
 import { Maybe } from '../../types/bepswap';
 import WalletView from './WalletView';
+import { getAppContainer } from '../../helpers/elementHelper';
 
 type Props = {
   user: Maybe<User>;
@@ -49,7 +53,8 @@ const WalletDrawer: React.FC<Props> = props => {
     if (wallet) {
       copy(wallet);
       notification.open({
-        message: 'Copy successful!',
+        message: 'Address Copy successful!',
+        getContainer: getAppContainer,
       });
     }
   }, [wallet]);

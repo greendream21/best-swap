@@ -3,14 +3,24 @@ import * as H from 'history';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import { Row, Col, notification } from 'antd';
+import { Row, Col, notification, Spin } from 'antd';
 import { FullscreenExitOutlined, CloseOutlined } from '@ant-design/icons';
 import { crypto } from '@binance-chain/javascript-sdk';
 import { get as _get } from 'lodash';
 
 import BigNumber from 'bignumber.js';
-import { client as binanceClient, getPrefix } from '@thorchain/asgardex-binance';
-import { validBNOrZero, formatBN, bnOrZero, formatBNCurrency, bn, delay } from '@thorchain/asgardex-util';
+import {
+  client as binanceClient,
+  getPrefix,
+} from '@thorchain/asgardex-binance';
+import {
+  validBNOrZero,
+  formatBN,
+  bnOrZero,
+  formatBNCurrency,
+  bn,
+  delay,
+} from '@thorchain/asgardex-util';
 
 import Button from '../../../components/uielements/button';
 import Label from '../../../components/uielements/label';
@@ -23,6 +33,7 @@ import TxTimer from '../../../components/uielements/txTimer';
 import StepBar from '../../../components/uielements/stepBar';
 import CoinData from '../../../components/uielements/coins/coinData';
 import PrivateModal from '../../../components/modals/privateModal';
+import { getAppContainer } from '../../../helpers/elementHelper';
 
 import * as appActions from '../../../redux/app/actions';
 import * as midgardActions from '../../../redux/midgard/actions';
@@ -32,6 +43,7 @@ import {
   ContentWrapper,
   ConfirmModal,
   ConfirmModalContent,
+  LoaderWrapper,
 } from './PoolCreate.style';
 import { getTickerFormat, emptyString } from '../../../helpers/stringHelper';
 import {
@@ -43,7 +55,6 @@ import {
 
 import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
 import { MAX_VALUE } from '../../../redux/app/const';
-import TokenDetailLoader from '../../../components/utility/loaders/tokenDetail';
 import { RootState } from '../../../redux/store';
 import { TxStatus, TxTypes } from '../../../redux/app/types';
 import { State as BinanceState } from '../../../redux/binance/types';
@@ -284,6 +295,7 @@ class PoolCreate extends React.Component<Props, State> {
       notification.error({
         message: 'Stake Invalid',
         description: 'You need to enter an amount to stake.',
+        getContainer: getAppContainer,
       });
       this.handleCloseModal();
       this.setState({
@@ -326,6 +338,7 @@ class PoolCreate extends React.Component<Props, State> {
         notification.error({
           message: 'Create Pool Failed',
           description: 'Create Pool information is not valid.',
+          getContainer: getAppContainer,
         });
         this.handleCloseModal();
         this.setState({
@@ -437,6 +450,7 @@ class PoolCreate extends React.Component<Props, State> {
       message: 'Pool Created Successfully!',
       description:
         'It may take a few moments until a new pool appears in the pool list!',
+      getContainer: getAppContainer,
     });
 
     this.props.history.push('/pools');
@@ -583,7 +597,11 @@ class PoolCreate extends React.Component<Props, State> {
             <div className="new-token-coin">
               <CoinIcon type={target} />
             </div>
-            {!binanceToken && <TokenDetailLoader />}
+            {!binanceToken && (
+              <LoaderWrapper>
+                <Spin />
+              </LoaderWrapper>
+            )}
             {binanceToken && (
               <>
                 <Label className="token-name" size="normal">

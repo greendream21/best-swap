@@ -32,3 +32,10 @@ export const WalletViewWrapper = styled(ViewPanel)`
     }
   }
 `;
+
+export const LoaderWrapper = styled.div`
+  text-align: center;
+  border-radius: 4px;
+  margin: 20px 0;
+  height: 100%;
+`;

@@ -40,6 +40,11 @@ export interface ResetTxStatus {
   payload?: Partial<TxStatus>;
 }
 
+export interface SetTheme {
+  type: typeof SET_THEME;
+  payload: string;
+}
+
 export type AppActionsTypes =
   | SetTxTimerType
   | SetTxTimerModal
@@ -48,7 +53,8 @@ export type AppActionsTypes =
   | CountTxTimerValue
   | SetTxTimerStartTime
   | SetTxHash
-  | ResetTxStatus;
+  | ResetTxStatus
+  | SetTheme;
 
 export const SET_TX_TIMER_TYPE = 'SET_TX_TIMER_TYPE';
 export const SET_TX_TIMER_MODAL = 'SET_TX_TIMER_MODAL';
@@ -58,6 +64,8 @@ export const COUNT_TX_TIMER_VALUE = 'COUNT_TX_TIMER_VALUE';
 export const SET_TX_TIMER_START_TIME = 'SET_TX_TIMER_START_TIME';
 export const SET_TX_HASH = 'SET_TX_HASH';
 export const RESET_TX_STATUS = 'RESET_TX_STATUS';
+
+export const SET_THEME = 'SET_THEME';
 
 export const setTxTimerType = (payload: TxTypes): SetTxTimerType => ({
   type: SET_TX_TIMER_TYPE,
@@ -96,5 +104,10 @@ export const setTxHash = (payload: string): SetTxHash => ({
 
 export const resetTxStatus = (payload?: Partial<TxStatus>): ResetTxStatus => ({
   type: RESET_TX_STATUS,
+  payload,
+});
+
+export const setTheme = (payload: string): SetTheme => ({
+  type: SET_THEME,
   payload,
 });

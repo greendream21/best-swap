@@ -9,13 +9,17 @@ import {
   SET_TX_TIMER_START_TIME,
   RESET_TX_STATUS,
   SET_TX_HASH,
+  SET_THEME,
 } from './actions';
 import { MIN_VALUE, MAX_VALUE } from './const';
 import { State } from './types';
+import { getTheme, saveTheme } from '../../helpers/webStorageHelper';
 
+const defaultTheme: string = getTheme();
 const valueInRange = (v: number) => v >= MIN_VALUE && v <= MAX_VALUE;
 
 const initState: State = {
+  themeType: defaultTheme,
   txStatus: {
     modal: false,
     value: 0,
@@ -105,6 +109,15 @@ const reducer: Reducer<State, AppActionsTypes> = (
       return {
         ...state,
         txStatus,
+      };
+    }
+    case SET_THEME: {
+      const { payload } = action;
+      saveTheme(payload);
+
+      return {
+        ...state,
+        themeType: payload,
       };
     }
     default:
