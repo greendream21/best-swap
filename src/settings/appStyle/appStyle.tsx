@@ -1,15 +1,21 @@
-import styled from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
 import { palette, font } from 'styled-theme';
-import { media } from './helpers/styleHelper';
+import { media } from '../../helpers/styleHelper';
 
-import normalFont from './assets/font/Montserrat-Regular.otf';
-import lightFont from './assets/font/Montserrat-Light.otf';
-import mediumFont from './assets/font/Montserrat-Medium.otf';
-import boldFont from './assets/font/Montserrat-Bold.otf';
-import italicFont from './assets/font/Montserrat-LightItalic.otf';
-import 'antd/dist/antd.css';
+import normalFont from '../../assets/font/Montserrat-Regular.otf';
+import lightFont from '../../assets/font/Montserrat-Light.otf';
+import mediumFont from '../../assets/font/Montserrat-Medium.otf';
+import boldFont from '../../assets/font/Montserrat-Bold.otf';
+import italicFont from '../../assets/font/Montserrat-LightItalic.otf';
 
-const AppHolder = styled.div`
+const darkStyles = require('antd/dist/antd.dark.css');
+const lightyles = require('antd/dist/antd.css');
+
+export const GlobalStyle = createGlobalStyle`
+  ${({ isLight }: { isLight: boolean }) => (isLight ? lightyles : darkStyles)};
+`;
+
+export const AppHolder = styled.div`
   @font-face {
     font-family: 'Montserrat';
     src: url(${normalFont});
@@ -75,6 +81,20 @@ const AppHolder = styled.div`
     transition: none;
   }
 
+  .ant-notification-notice {
+    background: ${palette('background', 1)};
+    color: ${palette('text', 0)};
+
+    .ant-notification-notice-message {
+      color: ${palette('text', 0)};
+    }
+    .ant-notification-notice-close {
+      svg {
+        color: ${palette('text', 0)} !important;
+      }
+    }
+  }
+
   section.ant-layout {
     background: ${palette('background', 1)};
   }
@@ -116,5 +136,3 @@ const AppHolder = styled.div`
     `}
   }
 `;
-
-export default AppHolder;

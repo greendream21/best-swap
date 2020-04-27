@@ -7,6 +7,7 @@ import { sortBy as _sortBy } from 'lodash';
 
 import * as RD from '@devexperts/remote-data-ts';
 import { WalletViewWrapper } from './WalletView.style';
+import { Loader } from './loader';
 import Tabs from '../../components/uielements/tabs';
 import Label from '../../components/uielements/label';
 import Button from '../../components/uielements/button';
@@ -14,10 +15,6 @@ import CoinList from  '../../components/uielements/coins/coinList';
 import { CoinListDataList } from  '../../components/uielements/coins/coinList/coinList';
 import * as midgardActions from '../../redux/midgard/actions';
 import { getTickerFormat, getPair } from '../../helpers/stringHelper';
-import {
-  AssetLoader,
-  StakeLoader,
-} from '../../components/utility/loaders/wallet';
 import { Maybe, Nothing } from '../../types/bepswap';
 import {
   User,
@@ -105,7 +102,7 @@ class WalletView extends React.Component<Props, State> {
     const { status, loadingAssets, assetData } = this.props;
 
     if (loadingAssets) {
-      return <AssetLoader />;
+      return <Loader />;
     }
 
     if (status === 'connected' && assetData.length === 0) {
@@ -121,7 +118,7 @@ class WalletView extends React.Component<Props, State> {
   renderStakeTitle = (stakeData: StakeDataListLoadingState) =>
     RD.fold(
       () => null, // initial data
-      () => <StakeLoader />, // loading
+      () => <Loader />, // loading
       (error: Error) => <>{error.toString()}</>, // error
       (data: StakeData[]): JSX.Element =>
         data.length > 0 ? (

@@ -1,5 +1,5 @@
 // Transition
-export function transition(timing = 0.3) {
+export function transition(timing = 0.1) {
   return `
       -webkit-transition: all ${timing}s cubic-bezier(0.215, 0.61, 0.355, 1);
       -moz-transition: all ${timing}s cubic-bezier(0.215, 0.61, 0.355, 1);

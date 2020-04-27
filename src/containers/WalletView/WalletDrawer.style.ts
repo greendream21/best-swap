@@ -31,7 +31,7 @@ export const Drawer = styled(AntdDrawer)`
   .ant-drawer-body {
     height: 100%;
     padding: 24px 12px;
-  background-color: ${palette('background', 1)};
+    background-color: ${palette('background', 1)};
   }
 
   .ant-tabs-bar {

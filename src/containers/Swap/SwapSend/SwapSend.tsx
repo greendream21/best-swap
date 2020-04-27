@@ -56,6 +56,7 @@ import {
   validatePair,
 } from '../utils';
 import { withBinanceTransferWS } from '../../../HOC/websocket/WSBinance';
+import { getAppContainer } from '../../../helpers/elementHelper';
 
 import * as appActions from '../../../redux/app/actions';
 import * as midgardActions from '../../../redux/midgard/actions';
@@ -409,10 +410,10 @@ class SwapSend extends React.Component<Props, State> {
     }
 
     if (xValue.amount().isLessThanOrEqualTo(0)) {
-      /* eslint-disable dot-notation */
-      notification['error']({
+      notification.error({
         message: 'Swap Invalid',
         description: 'You need to enter an amount to swap.',
+        getContainer: getAppContainer,
       });
       this.setState({
         dragReset: true,
@@ -521,6 +522,7 @@ class SwapSend extends React.Component<Props, State> {
       notification.warning({
         message: 'Cannot Reverse Swap Direction',
         description: 'Token does not exist in your wallet.',
+        getContainer: getAppContainer,
       });
       return;
     }
@@ -609,7 +611,7 @@ class SwapSend extends React.Component<Props, State> {
           setTxHash(hash);
         }
       } catch (error) {
-        notification['error']({
+        notification.error({
           message: 'Swap Invalid',
           description: `Swap information is not valid: ${error.toString()}`,
         });
@@ -767,6 +769,7 @@ class SwapSend extends React.Component<Props, State> {
         description: `Slip ${formatBN(
           slip,
         )}% is too high, try less than ${maxSlip}%.`,
+        getContainer: getAppContainer,
       });
       this.setState({
         dragReset: true,
@@ -994,18 +997,20 @@ class SwapSend extends React.Component<Props, State> {
                           animation: 'none !important',
                         }}
                       >
-                        <Button
-                          onClick={this.handleSwitchSlipProtection}
-                          sizevalue="small"
-                          typevalue="outline"
-                          focused={slipProtection}
-                        >
-                          {slipProtection ? (
-                            <LockOutlined />
-                          ) : (
-                            <UnlockOutlined />
-                          )}
-                        </Button>
+                        <div>
+                          <Button
+                            onClick={this.handleSwitchSlipProtection}
+                            sizevalue="small"
+                            typevalue="outline"
+                            focused={slipProtection}
+                          >
+                            {slipProtection ? (
+                              <LockOutlined />
+                            ) : (
+                              <UnlockOutlined />
+                            )}
+                          </Button>
+                        </div>
                       </PopoverContainer>
                     </CardForm>
                   </CardFormHolder>

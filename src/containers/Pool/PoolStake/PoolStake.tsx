@@ -28,6 +28,7 @@ import {
   formatBN,
 } from '@thorchain/asgardex-util';
 import { withBinanceTransferWS } from '../../../HOC/websocket/WSBinance';
+import { getAppContainer } from '../../../helpers/elementHelper';
 
 import Label from '../../../components/uielements/label';
 import Status from '../../../components/uielements/status';
@@ -494,6 +495,7 @@ class PoolStake extends React.Component<Props, State> {
           message: 'Stake Invalid',
           description: `${error?.toString() ??
             'Stake information is not valid.'}`,
+          getContainer: getAppContainer,
         });
         this.handleCloseModal();
         this.setState({
@@ -524,6 +526,7 @@ class PoolStake extends React.Component<Props, State> {
       notification.error({
         message: 'Stake Invalid',
         description: 'You need to enter an amount to stake.',
+        getContainer: getAppContainer,
       });
       this.handleCloseModal();
       this.setState({
@@ -687,6 +690,7 @@ class PoolStake extends React.Component<Props, State> {
         notification.error({
           message: 'Withdraw Invalid',
           description: 'Withdraw information is not valid.',
+          getContainer: getAppContainer,
         });
         this.setState({
           dragReset: true,
