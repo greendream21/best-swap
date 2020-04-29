@@ -6,9 +6,10 @@ import { IntlProvider } from 'react-intl';
 import { store as reduxStore, history, RootState } from './redux/store';
 
 import PublicRoutes from './router';
-import { AppHolder, GlobalStyle } from './settings/appStyle';
+import { AppHolder, GlobalStyle, fontConfig } from './settings/appStyle';
 import { lightTheme, darkTheme } from './settings';
 import { LIGHT_THEME } from './settings/themes';
+import WebFontLoader from './components/utility/webfontloader';
 
 const Main = () => {
   const themeType = useSelector((state: RootState) => state.App.themeType);
@@ -27,11 +28,13 @@ const Main = () => {
 
 function App() {
   return (
-    <ReduxProvider store={reduxStore}>
-      <IntlProvider locale={navigator.language}>
-        <Main />
-      </IntlProvider>
-    </ReduxProvider>
+    <WebFontLoader config={fontConfig}>
+      <ReduxProvider store={reduxStore}>
+        <IntlProvider locale={navigator.language}>
+          <Main />
+        </IntlProvider>
+      </ReduxProvider>
+    </WebFontLoader>
   );
 }
 

@@ -18,10 +18,10 @@ export const TxStatusWrapper = styled.div`
       border-top-left-radius: 20px;
       border-bottom-left-radius: 20px;
   `};
-  background: ${palette('gray', 0)};
+  background: ${palette('gray', 1)};
   text-transform: uppercase;
   &:hover {
-    box-shadow: 2px 2px 4px 1px ${palette('gray', 1)};
+    box-shadow: 2px 2px 4px 1px ${palette('gray', 2)};
     cursor: pointer;
   }
 

@@ -3,8 +3,6 @@ import { key, palette } from 'styled-theme';
 import { Table } from 'antd';
 
 export const TableWrapper = styled(Table)`
-  border: 1px solid ${palette('gray', 0)};
-
   .ant-table-thead > tr > th {
     height: 70px;
     border-top: none;
@@ -26,6 +24,11 @@ export const TableWrapper = styled(Table)`
   .ant-table-placeholder {
     background-color: ${palette('background', 1)} !important;
     border-color: ${palette('gray', 0)};
+    td {
+      &:hover {
+        background-color: ${palette('background', 1)} !important;
+      }
+    }
 
     .ant-empty-normal {
       color: ${palette('text', 2)};

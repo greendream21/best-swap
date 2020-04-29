@@ -1,15 +1,17 @@
 import styled, { createGlobalStyle } from 'styled-components';
-import { palette, font } from 'styled-theme';
-import { media } from '../../helpers/styleHelper';
+import { palette } from 'styled-theme';
 
-import normalFont from '../../assets/font/Montserrat-Regular.otf';
-import lightFont from '../../assets/font/Montserrat-Light.otf';
-import mediumFont from '../../assets/font/Montserrat-Medium.otf';
-import boldFont from '../../assets/font/Montserrat-Bold.otf';
-import italicFont from '../../assets/font/Montserrat-LightItalic.otf';
+import { media } from '../../helpers/styleHelper';
+import normalFont from '../../assets/font/Exo2-Regular.otf';
 
 const darkStyles = require('antd/dist/antd.dark.css');
 const lightyles = require('antd/dist/antd.css');
+
+export const fontConfig = {
+  custom: {
+    families: ['Exo 2'],
+  },
+};
 
 export const GlobalStyle = createGlobalStyle`
   ${({ isLight }: { isLight: boolean }) => (isLight ? lightyles : darkStyles)};
@@ -17,32 +19,13 @@ export const GlobalStyle = createGlobalStyle`
 
 export const AppHolder = styled.div`
   @font-face {
-    font-family: 'Montserrat';
+    font-family: 'Exo 2';
     src: url(${normalFont});
     font-weight: normal;
-  }
-  @font-face {
-    font-family: 'Montserrat Light';
-    src: url(${lightFont});
-    font-weight: lighter;
-  }
-  @font-face {
-    font-family: 'Montserrat Bold';
-    src: url(${boldFont});
-    font-weight: bold;
-  }
-  @font-face {
-    font-family: 'Montserrat Medium';
-    src: url(${mediumFont});
-    font-weight: medium;
-  }
-  @font-face {
-    font-family: 'Montserrat Italic';
-    src: url(${italicFont});
-    font-weight: italic;
+    font-display: fallback;
   }
 
-  font-family: ${font('primary', 0)};
+  font-family: 'Exo 2';
 
   h1,
   h2,
@@ -101,10 +84,10 @@ export const AppHolder = styled.div`
 
   .ant-popover {
     .ant-popover-arrow {
-      border-color: ${palette('background', 1)};
+      border-color: ${palette('background', 4)};
     }
     .ant-popover-inner {
-      background-color: ${palette('background', 1)};
+      background-color: ${palette('background', 4)};
     }
   }
 
@@ -112,7 +95,7 @@ export const AppHolder = styled.div`
     padding: 6px;
     font-size: 11px;
     letter-spacing: 0.5px;
-    font-family: 'Montserrat';
+    font-family: 'Exo 2';
     src: url(${normalFont});
   }
 

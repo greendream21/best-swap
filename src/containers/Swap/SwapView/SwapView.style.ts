@@ -4,7 +4,7 @@ import ContentView from '../../../components/utility/contentView';
 import { media } from '../../../helpers/styleHelper';
 
 export const ContentWrapper = styled(ContentView)`
-  background-color: ${palette('background', 2)};
+  background-color: ${palette('background', 3)};
   padding: 0;
 
   .content-loader {
