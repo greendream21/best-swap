@@ -10,10 +10,10 @@ export const TrendWrapper = styled.span`
   justify-content: center;
   align-items: center;
   color: ${(props: TrendWrapperProps) =>
-    props.trend ? palette('success', 0) : palette('error', 0)};
+    props.trend ? palette('primary', 1) : palette('error', 0)};
   .label-wrapper {
     padding: 0 3px;
     color: ${(props: TrendWrapperProps) =>
-      props.trend ? palette('success', 0) : palette('error', 0)};
+      props.trend ? palette('primary', 1) : palette('error', 0)};
   }
 `;

@@ -24,7 +24,7 @@ const WalletButton: React.FC<Props> = (props: Props): JSX.Element => {
   const getBtnValue = () => {
     if (!connected) {
       return (
-        <span>
+        <span style={{ display: 'flex', alignItems: 'center' }}>
           <FolderAddFilled
             style={{
               marginRight: '6px',

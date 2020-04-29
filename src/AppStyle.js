@@ -1,42 +1,18 @@
 import styled from 'styled-components';
-import { palette, font } from 'styled-theme';
+import { palette } from 'styled-theme';
 import { media } from './helpers/styleHelper';
 
-import normalFont from './assets/font/Montserrat-Regular.otf';
-import lightFont from './assets/font/Montserrat-Light.otf';
-import mediumFont from './assets/font/Montserrat-Medium.otf';
-import boldFont from './assets/font/Montserrat-Bold.otf';
-import italicFont from './assets/font/Montserrat-LightItalic.otf';
+import normalFont from './assets/font/Exo2-Regular.otf';
 import 'antd/dist/antd.css';
 
 const AppHolder = styled.div`
   @font-face {
-    font-family: 'Montserrat';
+    font-family: 'Exo 2';
     src: url(${normalFont});
     font-weight: normal;
   }
-  @font-face {
-    font-family: 'Montserrat Light';
-    src: url(${lightFont});
-    font-weight: lighter;
-  }
-  @font-face {
-    font-family: 'Montserrat Bold';
-    src: url(${boldFont});
-    font-weight: bold;
-  }
-  @font-face {
-    font-family: 'Montserrat Medium';
-    src: url(${mediumFont});
-    font-weight: medium;
-  }
-  @font-face {
-    font-family: 'Montserrat Italic';
-    src: url(${italicFont});
-    font-weight: italic;
-  }
 
-  font-family: ${font('primary', 0)};
+  font-family: 'Exo 2';
 
   h1,
   h2,

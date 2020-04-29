@@ -20,7 +20,6 @@ export const StyledHeader = styled.div`
   > *:last-child {
     margin-right: 0;
   }
-  border-bottom: 1px solid ${palette('gray', 0)};
   background-color: ${palette('background', 0)};
 
   /* HACK: this override hack should be in the 
@@ -80,7 +79,7 @@ export const HeaderTitle = styled.p`
   `}
   color: ${palette('text', 0)};
   font-size: ${key('sizes.font.big', '15px')};
-  letter-spacing: 0.9px;
+  letter-spacing: 1px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

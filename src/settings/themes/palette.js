@@ -1,27 +1,27 @@
 export const palette = {
   primary: [
-    '#d9f9f2', // 50
-    '#a1eedb', // 100
-    '#50e3c3', // 200 primary
-    '#00d4ab', // 300
-    '#00c699', // 400
-    '#00b988', // 500
-    '#00aa7a', // 600
-    '#009969', // 700
-    '#00885b', // 800
-    '#006a3d', // 900
+    '#e4ffee', // 50
+    '#beffd5', // 100
+    '#8bffb9', // 200
+    '#33ff99', // 300 primary
+    '#00fb7d', // 400
+    '#00f568', // 500
+    '#00e35c', // 600
+    '#00ce4e', // 700
+    '#00bc42', // 800
+    '#00992c', // 900
   ],
   secondary: [
-    '#e0f7ff', // 50
-    '#b0e9fe', // 100
-    '#78dbff', // 200
-    '#33ccff', // 300 secondary
+    '#dff7ff', // 50
+    '#ace9fe', // 100
+    '#70dbfe', // 200
+    '#00ccff', // 300 secondary
     '#00c0ff', // 400
     '#00b4ff', // 500
-    '#00a6f2', // 600
-    '#0093df', // 700
-    '#0081cb', // 800
-    '#0061aa', // 900
+    '#00a6f4', // 600
+    '#0093e1', // 700
+    '#0081cd', // 800
+    '#0061ac', // 900
   ],
   gray: [
     '#f7f7f7', // 50,
@@ -36,15 +36,23 @@ export const palette = {
     '#121212', // 900,
   ],
   dark: [
-    '#edeeef', // 50
-    '#d1d5da', // 100
-    '#b4b9c3', // 200
-    '#969dab', // 300
-    '#7f8899', // 400
-    '#697488', // 500
-    '#5c6677', // 600
-    '#4b5261', // 700
-    '#3b404b', // 800
-    '#282c34', // 900
+    '#F3F4F4', // 50 off-white
+    '#d1d5da', // 100 light grey
+    '#b4b9c2', // 200
+    '#969dab', // 300 medium grey
+    '#a9b3be', // 400
+    '#89939d', // 500
+    '#616b75', // 600 grey
+    '#4e5761', // 700
+    '#303942', // 800 dark grey
+    '#101921', // 900 night black
   ],
 };
+
+const { secondary, primary } = palette;
+
+export const BIFROST_BLUE = secondary[3];
+export const YGGDRASIL_GREEN = primary[3];
+export const MIDGARD_TURQUOISE = '#23DCC8';
+export const FLASH_ORANGE = '#F3BA2F';
+export const SURTR_RED = '#FF4954';

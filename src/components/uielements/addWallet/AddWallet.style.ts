@@ -24,7 +24,7 @@ export const AddWalletWrapper = styled.div`
 
   .connect-wallet-label {
     font-size: 14px;
-    letter-spacing: 0.04em;
+    letter-spacing: 1px;
     text-transform: uppercase;
   }
 `;

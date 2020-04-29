@@ -55,6 +55,6 @@ export const PopoverContent = styled.div`
 export const PopoverContainer = styled(Popover)`
   .ant-popover-arrow,
   .ant-popover-inner {
-    background-color: ${palette('background', 1)} !important;
+    background-color: ${palette('background', 4)} !important;
   }
 `;
