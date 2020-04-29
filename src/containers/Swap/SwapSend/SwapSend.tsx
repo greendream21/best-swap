@@ -19,6 +19,7 @@ import {
 
 import { crypto } from '@binance-chain/javascript-sdk';
 import BigNumber from 'bignumber.js';
+import * as RD from '@devexperts/remote-data-ts';
 
 import Button from '../../../components/uielements/button';
 import Drag from '../../../components/uielements/drag';
@@ -53,11 +54,11 @@ import {
   validatePair,
   isValidSwap,
 } from '../utils';
-import { withBinanceTransferWS } from '../../../HOC/websocket/WSBinance';
 
 import * as appActions from '../../../redux/app/actions';
 import * as midgardActions from '../../../redux/midgard/actions';
 import * as walletActions from '../../../redux/wallet/actions';
+import * as binanceActions from '../../../redux/binance/actions';
 import AddressInput from '../../../components/uielements/addressInput';
 import ContentTitle from '../../../components/uielements/contentTitle';
 import Slider from '../../../components/uielements/slider';
@@ -65,7 +66,6 @@ import StepBar from '../../../components/uielements/stepBar';
 import Trend from '../../../components/uielements/trend';
 import { MAX_VALUE } from '../../../redux/app/const';
 import {
-  FixmeType,
   Maybe,
   Nothing,
   TokenData,
@@ -85,12 +85,11 @@ import { RootState } from '../../../redux/store';
 import { getAssetFromString } from '../../../redux/midgard/utils';
 import { tokenAmount } from '../../../helpers/tokenHelper';
 import { TokenAmount } from '../../../types/token';
-import { BINANCE_NET } from '../../../env';
+import { BINANCE_NET, getNet } from '../../../env';
+import { TransferEventRD } from '../../../redux/binance/types';
 
 type ComponentProps = {
   info: string;
-  // TÓDO(veado): Add type for WSTransfer based on Binance WS Api
-  wsTransfers: FixmeType[];
 };
 
 type ConnectedProps = {
@@ -104,6 +103,7 @@ type ConnectedProps = {
   basePriceAsset: string;
   priceIndex: PriceDataIndex;
   user: Maybe<User>;
+  wsTransferEvent: TransferEventRD;
   setTxTimerModal: typeof appActions.setTxTimerModal;
   setTxTimerStatus: typeof appActions.setTxTimerStatus;
   setTxTimerValue: typeof appActions.setTxTimerValue;
@@ -113,6 +113,8 @@ type ConnectedProps = {
   getPools: typeof midgardActions.getPools;
   getPoolAddress: typeof midgardActions.getPoolAddress;
   refreshBalance: typeof walletActions.refreshBalance;
+  subscribeBinanceTransfers: typeof binanceActions.subscribeBinanceTransfers;
+  unSubscribeBinanceTransfers: typeof binanceActions.unSubscribeBinanceTransfers;
 };
 
 type Props = ComponentProps & ConnectedProps;
@@ -173,31 +175,57 @@ class SwapSend extends React.Component<Props, State> {
   }
 
   componentDidMount() {
-    const { getPools, getPoolAddress } = this.props;
+    const {
+      getPools,
+      getPoolAddress,
+      subscribeBinanceTransfers,
+      user,
+    } = this.props;
 
     getPoolAddress();
     getPools();
+    const wallet = user?.wallet;
+    if (wallet) {
+      subscribeBinanceTransfers({ address: wallet, net: getNet() });
+    }
   }
 
   componentDidUpdate(prevProps: Props) {
     const {
-      wsTransfers,
+      wsTransferEvent,
       txStatus: { hash },
+      user,
+      subscribeBinanceTransfers,
+      unSubscribeBinanceTransfers,
     } = this.props;
 
     const { txResult } = this.state;
-    const length = wsTransfers.length;
-    const lastTx = wsTransfers[length - 1];
 
+    const prevWallet = prevProps?.user?.wallet;
+    const wallet = user?.wallet;
+    // subscribe if wallet has been added for first time
+    if (!prevWallet && wallet) {
+      subscribeBinanceTransfers({ address: wallet, net: getNet() });
+    }
+    // subscribe again if another wallet has been added
+    if (prevWallet && wallet && prevWallet !== wallet) {
+      unSubscribeBinanceTransfers();
+      subscribeBinanceTransfers({ address: wallet, net: getNet() });
+    }
+
+    const currentWsTransferEvent = RD.toNullable(wsTransferEvent);
+    const prevWsTransferEvent = RD.toNullable(prevProps?.wsTransferEvent);
+
+    // check incoming wsTransferEvent
     if (
-      length !== prevProps.wsTransfers.length &&
-      length > 0 &&
+      currentWsTransferEvent &&
+      currentWsTransferEvent !== prevWsTransferEvent &&
       hash !== undefined &&
       txResult === null &&
       !this.isCompleted()
     ) {
       const txResult = getTxResult({
-        tx: lastTx,
+        tx: currentWsTransferEvent,
         hash,
       });
 
@@ -210,8 +238,9 @@ class SwapSend extends React.Component<Props, State> {
   }
 
   componentWillUnmount() {
-    const { resetTxStatus } = this.props;
+    const { resetTxStatus, unSubscribeBinanceTransfers } = this.props;
     resetTxStatus();
+    unSubscribeBinanceTransfers();
   }
 
   isValidRecipient = async () => {
@@ -906,158 +935,160 @@ class SwapSend extends React.Component<Props, State> {
         : 'YOU SWAPPED';
 
       return (
-        <ContentWrapper className="swap-detail-wrapper">
-          <Row>
-            <Col
-              className="swap-status-panel desktop-view"
-              xs={{ span: 0, offset: 0 }}
-              md={{ span: 4 }}
-              lg={{ span: 6 }}
-            >
-              <SwapStatusPanel>
-                <Status title="exchange rate" value={ratioLabel} />
-                <Icon type="swap" onClick={this.handleReversePair} />
-                <StepBar />
-              </SwapStatusPanel>
-            </Col>
-            <Col
-              className="swap-detail-panel"
-              xs={{ span: 24, offset: 0 }}
-              md={{ span: 16, offset: 4 }}
-              lg={{ span: 12, offset: 0 }}
-            >
-              <SwapAssetCard>
-                <ContentTitle>you are swapping</ContentTitle>
-                <TokenCard
-                  title="You are swapping"
-                  inputTitle="swap amount"
-                  asset={swapSource}
-                  assetData={sourceData}
-                  amount={xValue}
-                  price={sourcePrice}
-                  priceIndex={priceIndex}
-                  unit={basePriceAsset}
-                  onChange={this.handleChangeValue}
-                  onChangeAsset={this.handleChangeSource}
-                  onSelect={(amount: number) =>
-                    this.handleSelectSourceAmount(swapSource, amount)}
-                  inputProps={{ 'data-test': 'coincard-source-input' }}
-                  withSearch
-                  data-test="coincard-source"
-                />
-                <Slider
-                  value={percent}
-                  onChange={this.handleChangePercent}
-                  withLabel
-                />
-                <TokenCard
-                  title="You will receive"
-                  inputTitle="swap amount"
-                  inputProps={{
-                    disabled: true,
-                    'data-test': 'coincard-target-input',
-                  }}
-                  asset={swapTarget}
-                  assetData={targetData}
-                  amount={outputAmount}
-                  price={targetPrice}
-                  priceIndex={priceIndex}
-                  unit={basePriceAsset}
-                  slip={slip}
-                  onChangeAsset={this.handleSelectTraget}
-                  withSearch
-                  data-test="coincard-target"
-                />
-                <div className="swaptool-container">
-                  <CardFormHolder>
-                    <CardForm>
-                      <CardFormItem
-                        className={invalidAddress ? 'has-error' : ''}
-                      >
-                        <AddressInput
-                          value={address}
-                          onChange={this.handleChangeAddress}
-                          status={view === SwapSendView.SEND}
-                          onStatusChange={this.handleChangeSwapType}
-                        />
-                      </CardFormItem>
-                    </CardForm>
-                    {invalidAddress && (
-                      <CardFormItemError>
-                        Recipient address is invalid!
-                      </CardFormItemError>
-                    )}
-                  </CardFormHolder>
-                  <CardFormHolder className="slip-protection">
-                    <CardForm>
-                      <Popover
-                        content={this.renderProtectPopoverContent()}
-                        placement="left"
-                        visible
-                        overlayClassName="protectPrice-popover"
-                        overlayStyle={{
-                          padding: '6px',
-                          animationDuration: '0s !important',
-                          animation: 'none !important',
-                        }}
-                      >
-                        <Button
-                          onClick={this.handleSwitchSlipProtection}
-                          sizevalue="small"
-                          typevalue="outline"
-                          focused={slipProtection}
-                          style={{ borderColor: '#33CCFF' }}
+        <>
+          <ContentWrapper className="swap-detail-wrapper">
+            <Row>
+              <Col
+                className="swap-status-panel desktop-view"
+                xs={{ span: 0, offset: 0 }}
+                md={{ span: 4 }}
+                lg={{ span: 6 }}
+              >
+                <SwapStatusPanel>
+                  <Status title="exchange rate" value={ratioLabel} />
+                  <Icon type="swap" onClick={this.handleReversePair} />
+                  <StepBar />
+                </SwapStatusPanel>
+              </Col>
+              <Col
+                className="swap-detail-panel"
+                xs={{ span: 24, offset: 0 }}
+                md={{ span: 16, offset: 4 }}
+                lg={{ span: 12, offset: 0 }}
+              >
+                <SwapAssetCard>
+                  <ContentTitle>you are swapping</ContentTitle>
+                  <TokenCard
+                    title="You are swapping"
+                    inputTitle="swap amount"
+                    asset={swapSource}
+                    assetData={sourceData}
+                    amount={xValue}
+                    price={sourcePrice}
+                    priceIndex={priceIndex}
+                    unit={basePriceAsset}
+                    onChange={this.handleChangeValue}
+                    onChangeAsset={this.handleChangeSource}
+                    onSelect={(amount: number) =>
+                      this.handleSelectSourceAmount(swapSource, amount)}
+                    inputProps={{ 'data-test': 'coincard-source-input' }}
+                    withSearch
+                    data-test="coincard-source"
+                  />
+                  <Slider
+                    value={percent}
+                    onChange={this.handleChangePercent}
+                    withLabel
+                  />
+                  <TokenCard
+                    title="You will receive"
+                    inputTitle="swap amount"
+                    inputProps={{
+                      disabled: true,
+                      'data-test': 'coincard-target-input',
+                    }}
+                    asset={swapTarget}
+                    assetData={targetData}
+                    amount={outputAmount}
+                    price={targetPrice}
+                    priceIndex={priceIndex}
+                    unit={basePriceAsset}
+                    slip={slip}
+                    onChangeAsset={this.handleSelectTraget}
+                    withSearch
+                    data-test="coincard-target"
+                  />
+                  <div className="swaptool-container">
+                    <CardFormHolder>
+                      <CardForm>
+                        <CardFormItem
+                          className={invalidAddress ? 'has-error' : ''}
                         >
-                          <Icon type={slipProtection ? 'lock' : 'unlock'} />
-                        </Button>
-                      </Popover>
-                    </CardForm>
-                  </CardFormHolder>
+                          <AddressInput
+                            value={address}
+                            onChange={this.handleChangeAddress}
+                            status={view === SwapSendView.SEND}
+                            onStatusChange={this.handleChangeSwapType}
+                          />
+                        </CardFormItem>
+                      </CardForm>
+                      {invalidAddress && (
+                        <CardFormItemError>
+                          Recipient address is invalid!
+                        </CardFormItemError>
+                      )}
+                    </CardFormHolder>
+                    <CardFormHolder className="slip-protection">
+                      <CardForm>
+                        <Popover
+                          content={this.renderProtectPopoverContent()}
+                          placement="left"
+                          visible
+                          overlayClassName="protectPrice-popover"
+                          overlayStyle={{
+                            padding: '6px',
+                            animationDuration: '0s !important',
+                            animation: 'none !important',
+                          }}
+                        >
+                          <Button
+                            onClick={this.handleSwitchSlipProtection}
+                            sizevalue="small"
+                            typevalue="outline"
+                            focused={slipProtection}
+                            style={{ borderColor: '#33CCFF' }}
+                          >
+                            <Icon type={slipProtection ? 'lock' : 'unlock'} />
+                          </Button>
+                        </Popover>
+                      </CardForm>
+                    </CardFormHolder>
+                  </div>
+                </SwapAssetCard>
+                <div className="drag-confirm-wrapper">
+                  <Drag
+                    title={dragTitle}
+                    source={swapSource}
+                    target={swapTarget}
+                    reset={dragReset}
+                    onConfirm={this.handleEndDrag}
+                    onDrag={this.handleDrag}
+                  />
                 </div>
-              </SwapAssetCard>
-              <div className="drag-confirm-wrapper">
-                <Drag
-                  title={dragTitle}
-                  source={swapSource}
-                  target={swapTarget}
-                  reset={dragReset}
-                  onConfirm={this.handleEndDrag}
-                  onDrag={this.handleDrag}
-                />
-              </div>
-            </Col>
-          </Row>
-          <SwapModal
-            title={swapTitle}
-            visible={openSwapModal}
-            footer={null}
-            onCancel={this.handleCloseModal}
-          >
-            {this.renderSwapModalContent(
-              swapSource,
-              swapTarget,
-              this.calcResult,
-            )}
-          </SwapModal>
-          <PrivateModal
-            visible={openPrivateModal}
-            validatingPassword={validatingPassword}
-            invalidPassword={invalidPassword}
-            password={password}
-            onChangePassword={this.handleChangePassword}
-            onOk={this.handleConfirmPassword}
-            onCancel={this.handleCancelPrivateModal}
-          />
-          <Modal
-            title="PLEASE ADD WALLET"
-            visible={openWalletAlert}
-            onOk={this.handleConnectWallet}
-            onCancel={this.hideWalletAlert}
-            okText="ADD WALLET"
-          >
-            Please add a wallet to swap tokens.
-          </Modal>
-        </ContentWrapper>
+              </Col>
+            </Row>
+            <SwapModal
+              title={swapTitle}
+              visible={openSwapModal}
+              footer={null}
+              onCancel={this.handleCloseModal}
+            >
+              {this.renderSwapModalContent(
+                swapSource,
+                swapTarget,
+                this.calcResult,
+              )}
+            </SwapModal>
+            <PrivateModal
+              visible={openPrivateModal}
+              validatingPassword={validatingPassword}
+              invalidPassword={invalidPassword}
+              password={password}
+              onChangePassword={this.handleChangePassword}
+              onOk={this.handleConfirmPassword}
+              onCancel={this.handleCancelPrivateModal}
+            />
+            <Modal
+              title="PLEASE ADD WALLET"
+              visible={openWalletAlert}
+              onOk={this.handleConnectWallet}
+              onCancel={this.hideWalletAlert}
+              okText="ADD WALLET"
+            >
+              Please add a wallet to swap tokens.
+            </Modal>
+          </ContentWrapper>
+        </>
       );
     }
   }
@@ -1075,6 +1106,7 @@ export default compose(
       poolData: state.Midgard.poolData,
       priceIndex: state.Midgard.priceIndex,
       basePriceAsset: state.Midgard.basePriceAsset,
+      wsTransferEvent: state.Binance.wsTransferEvent,
     }),
     {
       getPools: midgardActions.getPools,
@@ -1086,8 +1118,9 @@ export default compose(
       resetTxStatus: appActions.resetTxStatus,
       setTxHash: appActions.setTxHash,
       refreshBalance: walletActions.refreshBalance,
+      subscribeBinanceTransfers: binanceActions.subscribeBinanceTransfers,
+      unSubscribeBinanceTransfers: binanceActions.unSubscribeBinanceTransfers,
     },
   ),
   withRouter,
-  withBinanceTransferWS,
 )(SwapSend) as React.ComponentClass<ComponentProps, State>;
