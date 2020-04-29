@@ -5,7 +5,9 @@ import {
   TickerStatistics,
   Market,
   Token,
+  TransferEvent,
 } from '@thorchain/asgardex-binance';
+import { NET } from '../../env';
 
 export const getBinanceTokens = () => ({ type: 'GET_BINANCE_TOKENS' } as const);
 
@@ -72,6 +74,25 @@ export const getBinanceOpenOrdersSuccess = (payload: OrderList) =>
 export const getBinanceOpenOrdersFailed = (payload: Error) =>
   ({ type: 'GET_BINANCE_OPEN_ORDERS_FAILED', payload } as const);
 
+export const wsBinanceError = (payload: Error) =>
+  ({ type: 'WS_BINANCE_ERROR', payload } as const);
+
+export type SubscribeBinanceTransfersPayload = {
+  address: string;
+  net: NET;
+};
+export const subscribeBinanceTransfers = (payload: SubscribeBinanceTransfersPayload) =>
+  ({ type: 'SUBSCRIBE_BINANCE_TRANSFERS', payload } as const);
+
+export const subscribeBinanceTransfersFailed = (error: Error) =>
+  ({ type: 'SUBSCRIBE_BINANCE_TRANSFERS_FAILED', error } as const);
+
+export const unSubscribeBinanceTransfers = () =>
+  ({ type: 'UNSUBSCRIBE_BINANCE_TRANSFERS' } as const);
+
+export const binanceTransfersMessageReceived = (event: TransferEvent) =>
+  ({ type: 'BINANCE_TRANSFERS_MESSAGE_RECEIVED', event } as const);
+
 export type BinanceActionTypes = ReturnType<
   | typeof getBinanceTokens
   | typeof getBinanceTokensSuccess
@@ -91,4 +112,9 @@ export type BinanceActionTypes = ReturnType<
   | typeof getBinanceOpenOrders
   | typeof getBinanceOpenOrdersSuccess
   | typeof getBinanceOpenOrdersFailed
+  | typeof wsBinanceError
+  | typeof subscribeBinanceTransfers
+  | typeof subscribeBinanceTransfersFailed
+  | typeof unSubscribeBinanceTransfers
+  | typeof binanceTransfersMessageReceived
 >;

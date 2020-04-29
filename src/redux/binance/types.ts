@@ -1,5 +1,16 @@
-import { Token, TickerStatistics, Account, TxPage, OrderList, Market } from '@thorchain/asgardex-binance';
+import {
+  Token,
+  TickerStatistics,
+  Account,
+  TxPage,
+  OrderList,
+  Market,
+  TransferEvent,
+} from '@thorchain/asgardex-binance';
+import { RemoteData } from '@devexperts/remote-data-ts';
 import { Maybe } from '../../types/bepswap';
+
+export type TransferEventRD = RemoteData<Error, TransferEvent>;
 
 export type State = {
   tokenList: Token[];
@@ -13,4 +24,6 @@ export type State = {
   loadingToken: boolean;
   loadingMarket: boolean;
   loadingTicker: boolean;
+  wsError: Maybe<Error>;
+  wsTransferEvent: TransferEventRD;
 };
