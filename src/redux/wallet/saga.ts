@@ -42,21 +42,21 @@ import {
 import { UnpackPromiseResponse } from '../../types/util';
 
 export function* saveWalletSaga() {
-  yield takeEvery(actions.SAVE_WALLET, function*({
+  yield takeEvery('SAVE_WALLET', function*({
     payload,
-  }: actions.SaveWallet) {
+  }: ReturnType<typeof actions.saveWallet>) {
     const { wallet, keystore } = payload;
 
     saveWalletAddress(wallet);
     saveKeystore(keystore);
 
     yield put(actions.refreshBalance(wallet));
-    yield put(actions.refreshStake(wallet));
+    yield put(actions.refreshStakes(wallet));
   });
 }
 
 export function* forgetWalletSaga() {
-  yield takeEvery(actions.FORGET_WALLET, function*() {
+  yield takeEvery('FORGET_WALLET', function*() {
     clearWalletAddress();
     clearKeystore();
 
@@ -65,9 +65,9 @@ export function* forgetWalletSaga() {
 }
 
 export function* refreshBalance() {
-  yield takeEvery(actions.REFRESH_BALANCE, function*({
+  yield takeEvery('REFRESH_BALANCE', function*({
     payload,
-  }: actions.RefreshBalance) {
+  }: ReturnType<typeof actions.refreshBalance>) {
     const address = payload;
 
     try {
@@ -214,9 +214,9 @@ export function* tryGetUserStakeData(address: Address, pools: string[]) {
 }
 
 export function* refreshStakes() {
-  yield takeEvery(actions.REFRESH_STAKES, function*({
+  yield takeEvery('REFRESH_STAKES', function*({
     payload: address,
-  }: actions.RefreshStakes) {
+  }: ReturnType<typeof actions.refreshStakes>) {
     try {
       const data: StakersAddressData = yield call(tryRefreshStakes, address);
 
@@ -226,12 +226,12 @@ export function* refreshStakes() {
           address,
           data.poolsArray,
         );
-        yield put(actions.refreshStakeSuccess(result));
+        yield put(actions.refreshStakesSuccess(result));
       } else {
-        yield put(actions.refreshStakeSuccess([]));
+        yield put(actions.refreshStakesSuccess([]));
       }
     } catch (error) {
-      yield put(actions.refreshStakeFailed(error));
+      yield put(actions.refreshStakesFailed(error));
     }
   });
 }

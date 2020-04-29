@@ -1,7 +1,14 @@
 import { all, takeEvery, put, fork, call } from 'redux-saga/effects';
 
 import { Method, AxiosResponse } from 'axios';
-import { Token, Market, TickerStatistics, Account, TxPage, OrderList } from '@thorchain/asgardex-binance';
+import {
+  Token,
+  Market,
+  TickerStatistics,
+  Account,
+  TxPage,
+  OrderList,
+} from '@thorchain/asgardex-binance';
 import * as actions from './actions';
 import {
   getBinanceTestnetURL,
@@ -15,7 +22,7 @@ import { getTokenName } from '../../helpers/assetHelper';
 const LIMIT = 1000;
 
 export function* getBinanceTokens() {
-  yield takeEvery(actions.GET_BINANCE_TOKENS, function*() {
+  yield takeEvery('GET_BINANCE_TOKENS', function*() {
     const params = {
       method: 'get' as Method,
       url: getBinanceTestnetURL(`tokens?limit=${LIMIT}`),
@@ -23,10 +30,7 @@ export function* getBinanceTokens() {
     };
 
     try {
-      const { data }: AxiosResponse<Token[]> = yield call(
-        axiosRequest,
-        params,
-      );
+      const { data }: AxiosResponse<Token[]> = yield call(axiosRequest, params);
 
       yield put(actions.getBinanceTokensSuccess(data));
     } catch (error) {
@@ -36,7 +40,7 @@ export function* getBinanceTokens() {
 }
 
 export function* getBinanceMarkets() {
-  yield takeEvery(actions.GET_BINANCE_MARKETS, function*() {
+  yield takeEvery('GET_BINANCE_MARKETS', function*() {
     const params = {
       method: 'get' as Method,
       url: getBinanceTestnetURL(`markets?limit=${LIMIT}`),
@@ -57,9 +61,9 @@ export function* getBinanceMarkets() {
 }
 
 export function* getBinanceTicker() {
-  yield takeEvery(actions.GET_BINANCE_TICKER, function*({
+  yield takeEvery('GET_BINANCE_TICKER', function*({
     payload,
-  }: actions.GetBinanceTicker) {
+  }: ReturnType<typeof actions.getBinanceTicker>) {
     const ticker = getTickerFormat(payload);
     const tokenName = getTokenName(ticker);
 
@@ -83,9 +87,9 @@ export function* getBinanceTicker() {
 }
 
 export function* getBinanceAccount() {
-  yield takeEvery(actions.GET_BINANCE_ACCOUNT, function*({
+  yield takeEvery('GET_BINANCE_ACCOUNT', function*({
     payload,
-  }: actions.GetBinanceAccount) {
+  }: ReturnType<typeof actions.getBinanceAccount>) {
     const params = {
       method: 'get' as Method,
       url: getBinanceTestnetURL(`account/${payload}`),
@@ -103,9 +107,9 @@ export function* getBinanceAccount() {
 }
 
 export function* getBinanceTransactions() {
-  yield takeEvery(actions.GET_BINANCE_TRANSACTIONS, function*({
+  yield takeEvery('GET_BINANCE_TRANSACTIONS', function*({
     payload,
-  }: actions.GetBinanceTransactions) {
+  }: ReturnType<typeof actions.getBinanceTransactions>) {
     const { address, symbol, startTime, endTime, limit } = payload;
 
     const params = {
@@ -117,10 +121,7 @@ export function* getBinanceTransactions() {
     };
 
     try {
-      const { data }: AxiosResponse<TxPage> = yield call(
-        axiosRequest,
-        params,
-      );
+      const { data }: AxiosResponse<TxPage> = yield call(axiosRequest, params);
 
       yield put(actions.getBinanceTransactionsSuccess(data));
     } catch (error) {
@@ -130,9 +131,9 @@ export function* getBinanceTransactions() {
 }
 
 export function* getBinanceOpenOrders() {
-  yield takeEvery(actions.GET_BINANCE_OPEN_ORDERS, function*({
+  yield takeEvery('GET_BINANCE_OPEN_ORDERS', function*({
     payload,
-  }: actions.GetBinanceOpenOrders) {
+  }: ReturnType<typeof actions.getBinanceOpenOrders>) {
     const { address, symbol } = payload;
 
     const params = {

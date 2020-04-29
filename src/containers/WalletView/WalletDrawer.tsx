@@ -26,7 +26,7 @@ type Props = {
   user: Maybe<User>;
   forgetWallet: typeof walletActions.forgetWallet;
   refreshBalance: typeof walletActions.refreshBalance;
-  refreshStake: typeof walletActions.refreshStake;
+  refreshStakes: typeof walletActions.refreshStakes;
 };
 
 const WalletDrawer: React.FC<Props> = props => {
@@ -34,16 +34,16 @@ const WalletDrawer: React.FC<Props> = props => {
   const [refresh, setRefresh] = useState(false);
   const history = useHistory();
 
-  const { user, refreshBalance, refreshStake } = props;
+  const { user, refreshBalance, refreshStakes } = props;
   const wallet = user ? user.wallet : null;
 
   const toggleDrawer = useCallback(() => {
     if (wallet && visible === false) {
       refreshBalance(wallet);
-      refreshStake(wallet);
+      refreshStakes(wallet);
     }
     setVisible(!visible);
-  }, [refreshBalance, refreshStake, visible, wallet]);
+  }, [refreshBalance, refreshStakes, visible, wallet]);
 
   const onClose = () => {
     setVisible(false);
@@ -62,13 +62,13 @@ const WalletDrawer: React.FC<Props> = props => {
   const onClickRefresh = useCallback(async () => {
     if (wallet) {
       refreshBalance(wallet);
-      refreshStake(wallet);
+      refreshStakes(wallet);
     }
 
     setRefresh(true);
     await delay(1000);
     setRefresh(false);
-  }, [refreshBalance, refreshStake, wallet]);
+  }, [refreshBalance, refreshStakes, wallet]);
 
   const handleGotoTransaction = () => {
     onClose();
@@ -141,7 +141,7 @@ export default connect(
   }),
   {
     refreshBalance: walletActions.refreshBalance,
-    refreshStake: walletActions.refreshStake,
+    refreshStakes: walletActions.refreshStakes,
     forgetWallet: walletActions.forgetWallet,
   },
 )(WalletDrawer);
