@@ -120,7 +120,7 @@ type ConnectedProps = {
   setTxTimerValue: typeof appActions.setTxTimerValue;
   setTxHash: typeof appActions.setTxHash;
   resetTxStatus: typeof appActions.resetTxStatus;
-  refreshStake: typeof walletActions.refreshStake;
+  refreshStakes: typeof walletActions.refreshStakes;
 };
 
 type Props = ComponentProps & ConnectedProps;
@@ -203,7 +203,7 @@ class PoolStake extends React.Component<Props, State> {
       wsTransfers,
       user,
       txStatus: { type, hash },
-      refreshStake,
+      refreshStakes,
       symbol,
     } = this.props;
     const { txResult } = this.state;
@@ -230,7 +230,7 @@ class PoolStake extends React.Component<Props, State> {
         if (type === TxTypes.STAKE) {
           if (transferHash === hash) {
             // Just refresh stakes after update
-            refreshStake(wallet);
+            refreshStakes(wallet);
           }
         }
 
@@ -245,7 +245,7 @@ class PoolStake extends React.Component<Props, State> {
               txResult: true,
             });
             // refresh stakes after update
-            refreshStake(wallet);
+            refreshStakes(wallet);
           }
         }
       }
@@ -1568,7 +1568,7 @@ export default compose(
       setTxTimerValue: appActions.setTxTimerValue,
       setTxHash: appActions.setTxHash,
       resetTxStatus: appActions.resetTxStatus,
-      refreshStake: walletActions.refreshStake,
+      refreshStakes: walletActions.refreshStakes,
     },
   ),
   withRouter,
