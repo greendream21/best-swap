@@ -15,9 +15,9 @@ import { crypto } from '@binance-chain/javascript-sdk';
 import { get as _get } from 'lodash';
 
 import BigNumber from 'bignumber.js';
+import * as RD from '@devexperts/remote-data-ts';
 import {
   client as binanceClient,
-  getHashFromTransfer,
   getPrefix,
 } from '@thorchain/asgardex-binance';
 import {
@@ -27,7 +27,6 @@ import {
   bnOrZero,
   formatBN,
 } from '@thorchain/asgardex-util';
-import { withBinanceTransferWS } from '../../../HOC/websocket/WSBinance';
 import { getAppContainer } from '../../../helpers/elementHelper';
 
 import Label from '../../../components/uielements/label';
@@ -45,6 +44,7 @@ import PrivateModal from '../../../components/modals/privateModal';
 import * as appActions from '../../../redux/app/actions';
 import * as midgardActions from '../../../redux/midgard/actions';
 import * as walletActions from '../../../redux/wallet/actions';
+import * as binanceActions from '../../../redux/binance/actions';
 
 import {
   ContentWrapper,
@@ -86,7 +86,8 @@ import {
   baseAmount,
   baseToToken,
 } from '../../../helpers/tokenHelper';
-import { BINANCE_NET } from '../../../env';
+import { BINANCE_NET, getNet } from '../../../env';
+import { TransferEventRD } from '../../../redux/binance/types';
 
 const { TabPane } = Tabs;
 
@@ -101,6 +102,7 @@ type ConnectedProps = {
   history: H.History;
   txStatus: TxStatus;
   user: Maybe<User>;
+  wsTransferEvent: TransferEventRD;
   assetData: AssetData[];
   poolAddress: Maybe<string>;
   poolData: PoolDataMap;
@@ -121,6 +123,8 @@ type ConnectedProps = {
   setTxHash: typeof appActions.setTxHash;
   resetTxStatus: typeof appActions.resetTxStatus;
   refreshStakes: typeof walletActions.refreshStakes;
+  subscribeBinanceTransfers: typeof binanceActions.subscribeBinanceTransfers;
+  unSubscribeBinanceTransfers: typeof binanceActions.unSubscribeBinanceTransfers;
 };
 
 type Props = ComponentProps & ConnectedProps;
@@ -191,40 +195,68 @@ class PoolStake extends React.Component<Props, State> {
   }
 
   componentDidMount() {
-    const { getPoolAddress, getPools } = this.props;
+    const {
+      getPoolAddress,
+      getPools,
+      user,
+      subscribeBinanceTransfers,
+    } = this.props;
 
     getPoolAddress();
     getPools();
     this.getStakerInfo();
+    const wallet = user?.wallet;
+    if (wallet) {
+      subscribeBinanceTransfers({ address: wallet, net: getNet() });
+    }
   }
 
   componentDidUpdate(prevProps: Props) {
     const {
-      wsTransfers,
+      wsTransferEvent,
       user,
       txStatus: { type, hash },
       refreshStakes,
       symbol,
+      subscribeBinanceTransfers,
+      unSubscribeBinanceTransfers,
     } = this.props;
+
     const { txResult } = this.state;
-    const length = wsTransfers.length;
-    const wallet = user ? user.wallet : null;
+
+    const prevWallet = prevProps?.user?.wallet;
+    const wallet = user?.wallet;
+    // subscribe if wallet has been added for first time
+    if (!prevWallet && wallet) {
+      subscribeBinanceTransfers({ address: wallet, net: getNet() });
+    }
+    // subscribe again if another wallet has been added
+    if (prevWallet && wallet && prevWallet !== wallet) {
+      unSubscribeBinanceTransfers();
+      subscribeBinanceTransfers({ address: wallet, net: getNet() });
+    }
 
     if (prevProps.symbol !== symbol) {
       // stakerPoolData needs to be updated
       this.getStakerInfo();
     }
 
+    const currentWsTransferEvent = RD.toNullable(wsTransferEvent);
+    const prevWsTransferEvent = RD.toNullable(prevProps?.wsTransferEvent);
+
     if (
-      length !== prevProps.wsTransfers.length &&
-      length > 0 &&
+      currentWsTransferEvent &&
+      currentWsTransferEvent !== prevWsTransferEvent &&
       hash !== undefined &&
       !txResult
     ) {
-      const lastTx = wsTransfers[length - 1];
-      const transferHash = getHashFromTransfer(lastTx);
-
       if (wallet) {
+        // TODO(Veado) `getHashFromTransfer` needs to be fixed
+        // see https://gitlab.com/thorchain/bepswap/asgardex-common/-/issues/6
+        // const transferHash = getHashFromTransfer(currentWsTransferEvent);
+        // At the meantime we can get hash as following
+        const transferHash = currentWsTransferEvent?.data?.H;
+
         // Currently we do a different handling for `stake` + `withdraw`
         // See https://thorchain.slack.com/archives/CL5B4M4BC/p1579816500171200
         if (type === TxTypes.STAKE) {
@@ -236,7 +268,7 @@ class PoolStake extends React.Component<Props, State> {
 
         if (type === TxTypes.WITHDRAW) {
           const txResult = withdrawResult({
-            tx: lastTx,
+            tx: currentWsTransferEvent,
             hash,
           } as WithdrawResultParams);
 
@@ -253,8 +285,9 @@ class PoolStake extends React.Component<Props, State> {
   }
 
   componentWillUnmount() {
-    const { resetTxStatus } = this.props;
+    const { resetTxStatus, unSubscribeBinanceTransfers } = this.props;
     resetTxStatus();
+    unSubscribeBinanceTransfers();
   }
 
   getStakerInfo = () => {
@@ -1557,6 +1590,7 @@ export default compose(
       stakerPoolData: state.Midgard.stakerPoolData,
       stakerPoolDataLoading: state.Midgard.stakerPoolDataLoading,
       stakerPoolDataError: state.Midgard.stakerPoolDataError,
+      wsTransferEvent: state.Binance.wsTransferEvent,
     }),
     {
       getPools: midgardActions.getPools,
@@ -1569,8 +1603,9 @@ export default compose(
       setTxHash: appActions.setTxHash,
       resetTxStatus: appActions.resetTxStatus,
       refreshStakes: walletActions.refreshStakes,
+      subscribeBinanceTransfers: binanceActions.subscribeBinanceTransfers,
+      unSubscribeBinanceTransfers: binanceActions.unSubscribeBinanceTransfers,
     },
   ),
   withRouter,
-  withBinanceTransferWS,
 )(PoolStake) as React.ComponentClass<ComponentProps, State>;

@@ -20,6 +20,7 @@ import {
 
 import { crypto } from '@binance-chain/javascript-sdk';
 import BigNumber from 'bignumber.js';
+import * as RD from '@devexperts/remote-data-ts';
 
 import Button from '../../../components/uielements/button';
 import Drag from '../../../components/uielements/drag';
@@ -55,12 +56,12 @@ import {
   getTxResult,
   validatePair,
 } from '../utils';
-import { withBinanceTransferWS } from '../../../HOC/websocket/WSBinance';
 import { getAppContainer } from '../../../helpers/elementHelper';
 
 import * as appActions from '../../../redux/app/actions';
 import * as midgardActions from '../../../redux/midgard/actions';
 import * as walletActions from '../../../redux/wallet/actions';
+import * as binanceActions from '../../../redux/binance/actions';
 import AddressInput from '../../../components/uielements/addressInput';
 import ContentTitle from '../../../components/uielements/contentTitle';
 import Slider from '../../../components/uielements/slider';
@@ -68,7 +69,6 @@ import StepBar from '../../../components/uielements/stepBar';
 import Trend from '../../../components/uielements/trend';
 import { MAX_VALUE } from '../../../redux/app/const';
 import {
-  FixmeType,
   Maybe,
   Nothing,
   TokenData,
@@ -88,12 +88,11 @@ import { RootState } from '../../../redux/store';
 import { getAssetFromString } from '../../../redux/midgard/utils';
 import { tokenAmount } from '../../../helpers/tokenHelper';
 import { TokenAmount } from '../../../types/token';
-import { BINANCE_NET } from '../../../env';
+import { BINANCE_NET, getNet } from '../../../env';
+import { TransferEventRD } from '../../../redux/binance/types';
 
 type ComponentProps = {
   info: string;
-  // TÓDO(veado): Add type for WSTransfer based on Binance WS Api
-  wsTransfers: FixmeType[];
 };
 
 type ConnectedProps = {
@@ -106,6 +105,7 @@ type ConnectedProps = {
   basePriceAsset: string;
   priceIndex: PriceDataIndex;
   user: Maybe<User>;
+  wsTransferEvent: TransferEventRD;
   setTxTimerModal: typeof appActions.setTxTimerModal;
   setTxTimerStatus: typeof appActions.setTxTimerStatus;
   setTxTimerValue: typeof appActions.setTxTimerValue;
@@ -115,6 +115,8 @@ type ConnectedProps = {
   getPools: typeof midgardActions.getPools;
   getPoolAddress: typeof midgardActions.getPoolAddress;
   refreshBalance: typeof walletActions.refreshBalance;
+  subscribeBinanceTransfers: typeof binanceActions.subscribeBinanceTransfers;
+  unSubscribeBinanceTransfers: typeof binanceActions.unSubscribeBinanceTransfers;
 };
 
 type Props = ComponentProps & ConnectedProps;
@@ -175,31 +177,57 @@ class SwapSend extends React.Component<Props, State> {
   }
 
   componentDidMount() {
-    const { getPools, getPoolAddress } = this.props;
+    const {
+      getPools,
+      getPoolAddress,
+      subscribeBinanceTransfers,
+      user,
+    } = this.props;
 
     getPoolAddress();
     getPools();
+    const wallet = user?.wallet;
+    if (wallet) {
+      subscribeBinanceTransfers({ address: wallet, net: getNet() });
+    }
   }
 
   componentDidUpdate(prevProps: Props) {
     const {
-      wsTransfers,
+      wsTransferEvent,
       txStatus: { hash },
+      user,
+      subscribeBinanceTransfers,
+      unSubscribeBinanceTransfers,
     } = this.props;
 
     const { txResult } = this.state;
-    const length = wsTransfers.length;
-    const lastTx = wsTransfers[length - 1];
 
+    const prevWallet = prevProps?.user?.wallet;
+    const wallet = user?.wallet;
+    // subscribe if wallet has been added for first time
+    if (!prevWallet && wallet) {
+      subscribeBinanceTransfers({ address: wallet, net: getNet() });
+    }
+    // subscribe again if another wallet has been added
+    if (prevWallet && wallet && prevWallet !== wallet) {
+      unSubscribeBinanceTransfers();
+      subscribeBinanceTransfers({ address: wallet, net: getNet() });
+    }
+
+    const currentWsTransferEvent = RD.toNullable(wsTransferEvent);
+    const prevWsTransferEvent = RD.toNullable(prevProps?.wsTransferEvent);
+
+    // check incoming wsTransferEvent
     if (
-      length !== prevProps.wsTransfers.length &&
-      length > 0 &&
+      currentWsTransferEvent &&
+      currentWsTransferEvent !== prevWsTransferEvent &&
       hash !== undefined &&
       txResult === null &&
       !this.isCompleted()
     ) {
       const txResult = getTxResult({
-        tx: lastTx,
+        tx: currentWsTransferEvent,
         hash,
       });
 
@@ -212,8 +240,9 @@ class SwapSend extends React.Component<Props, State> {
   }
 
   componentWillUnmount() {
-    const { resetTxStatus } = this.props;
+    const { resetTxStatus, unSubscribeBinanceTransfers } = this.props;
     resetTxStatus();
+    unSubscribeBinanceTransfers();
   }
 
   isValidRecipient = async () => {
@@ -1075,6 +1104,7 @@ export default compose(
       poolData: state.Midgard.poolData,
       priceIndex: state.Midgard.priceIndex,
       basePriceAsset: state.Midgard.basePriceAsset,
+      wsTransferEvent: state.Binance.wsTransferEvent,
     }),
     {
       getPools: midgardActions.getPools,
@@ -1086,8 +1116,9 @@ export default compose(
       resetTxStatus: appActions.resetTxStatus,
       setTxHash: appActions.setTxHash,
       refreshBalance: walletActions.refreshBalance,
+      subscribeBinanceTransfers: binanceActions.subscribeBinanceTransfers,
+      unSubscribeBinanceTransfers: binanceActions.unSubscribeBinanceTransfers,
     },
   ),
   withRouter,
-  withBinanceTransferWS,
 )(SwapSend) as React.ComponentClass<ComponentProps, State>;
