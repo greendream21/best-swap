@@ -1,20 +1,7 @@
 import { Reducer } from 'redux';
+import { initial, pending, success, failure } from '@devexperts/remote-data-ts';
 import { State } from './types';
-import {
-  BinanceActionTypes,
-  GET_BINANCE_TOKENS,
-  GET_BINANCE_TOKENS_SUCCESS,
-  GET_BINANCE_TOKENS_FAILED,
-  GET_BINANCE_ACCOUNT_SUCCESS,
-  GET_BINANCE_TRANSACTIONS_SUCCESS,
-  GET_BINANCE_OPEN_ORDERS_SUCCESS,
-  GET_BINANCE_MARKETS,
-  GET_BINANCE_MARKETS_SUCCESS,
-  GET_BINANCE_MARKETS_FAILED,
-  GET_BINANCE_TICKER,
-  GET_BINANCE_TICKER_SUCCESS,
-  GET_BINANCE_TICKER_FAILED,
-} from './actions';
+import { BinanceActionTypes } from './actions';
 import { Nothing } from '../../types/bepswap';
 
 const initState: State = {
@@ -29,6 +16,8 @@ const initState: State = {
   loadingToken: false,
   loadingMarket: false,
   loadingTicker: false,
+  wsError: Nothing,
+  wsTransferEvent: initial,
 };
 
 const reducer: Reducer<State, BinanceActionTypes> = (
@@ -36,78 +25,103 @@ const reducer: Reducer<State, BinanceActionTypes> = (
   action,
 ) => {
   switch (action.type) {
-    case GET_BINANCE_TOKENS:
+    case 'GET_BINANCE_TOKENS':
       return {
         ...state,
         loadingToken: true,
         error: null,
       };
-    case GET_BINANCE_TOKENS_SUCCESS:
+    case 'GET_BINANCE_TOKENS_SUCCESS':
       return {
         ...state,
         loadingToken: false,
         tokenList: action.payload,
       };
-    case GET_BINANCE_TOKENS_FAILED:
+    case 'GET_BINANCE_TOKENS_FAILED':
       return {
         ...state,
         loadingToken: false,
         error: action.payload,
       };
-    case GET_BINANCE_MARKETS:
+    case 'GET_BINANCE_MARKETS':
       return {
         ...state,
         loadingMarket: true,
         error: null,
       };
-    case GET_BINANCE_MARKETS_SUCCESS:
+    case 'GET_BINANCE_MARKETS_SUCCESS':
       return {
         ...state,
         loadingMarket: false,
         marketList: action.payload,
       };
-    case GET_BINANCE_MARKETS_FAILED:
+    case 'GET_BINANCE_MARKETS_FAILED':
       return {
         ...state,
         loadingMarket: false,
         error: action.payload,
       };
-    case GET_BINANCE_TICKER:
+    case 'GET_BINANCE_TICKER':
       return {
         ...state,
         loadingTicker: true,
         error: null,
       };
-    case GET_BINANCE_TICKER_SUCCESS:
+    case 'GET_BINANCE_TICKER_SUCCESS':
       return {
         ...state,
         ticker: action.payload[0] || Nothing,
         loadingTicker: false,
       };
-    case GET_BINANCE_TICKER_FAILED:
+    case 'GET_BINANCE_TICKER_FAILED':
       return {
         ...state,
         loadingTicker: false,
         error: action.payload,
       };
-    case GET_BINANCE_ACCOUNT_SUCCESS:
+    case 'GET_BINANCE_ACCOUNT_SUCCESS':
       return {
         ...state,
         account: action.payload,
         accountSequence: action.payload.sequence || Nothing,
         error: null,
       };
-    case GET_BINANCE_TRANSACTIONS_SUCCESS:
+    case 'GET_BINANCE_TRANSACTIONS_SUCCESS':
       return {
         ...state,
         transactions: action.payload,
         error: null,
       };
-    case GET_BINANCE_OPEN_ORDERS_SUCCESS:
+    case 'GET_BINANCE_OPEN_ORDERS_SUCCESS':
       return {
         ...state,
         openOrders: action.payload,
         error: Nothing,
+      };
+    case 'WS_BINANCE_ERROR':
+      return {
+        ...state,
+        wsError: action.payload,
+      };
+    case 'SUBSCRIBE_BINANCE_TRANSFERS':
+      return {
+        ...state,
+        wsTransferEvent: pending,
+      };
+    case 'SUBSCRIBE_BINANCE_TRANSFERS_FAILED':
+      return {
+        ...state,
+        wsTransferEvent: failure(action.error),
+      };
+    case 'UNSUBSCRIBE_BINANCE_TRANSFERS':
+      return {
+        ...state,
+        wsTransferEvent: initial,
+      };
+    case 'BINANCE_TRANSFERS_MESSAGE_RECEIVED':
+      return {
+        ...state,
+        wsTransferEvent: success(action.event),
       };
     default:
       return state;
