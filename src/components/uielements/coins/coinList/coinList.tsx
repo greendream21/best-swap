@@ -80,6 +80,7 @@ export const CoinList: React.FC<Props> = (props: Props): JSX.Element => {
               return <Fragment key={asset} />;
             }
 
+            const isPriceValid = !!priceIndex[tokenName.toUpperCase()];
             const isSelected = selected && selected.includes(coinData);
             const activeClass = isSelected ? 'active' : '';
 
@@ -97,6 +98,7 @@ export const CoinList: React.FC<Props> = (props: Props): JSX.Element => {
                   targetValue={targetValue}
                   price={price}
                   priceUnit={unit}
+                  priceValid={isPriceValid}
                   size={size}
                   type={type}
                 />
