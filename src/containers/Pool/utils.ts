@@ -161,7 +161,7 @@ export const getPoolData = (
   const runePrice = validBNOrZero(priceIndex?.RUNE);
 
   const poolPrice = validBNOrZero(priceIndex[target.toUpperCase()]);
-  const poolPriceValue = `${basePriceAsset} ${poolPrice.toFixed(2)}`;
+  const poolPriceValue = `${basePriceAsset} ${poolPrice.toFixed(3)}`;
 
   const depthResult = bnOrZero(poolDetail?.runeDepth).multipliedBy(runePrice);
   const depth = baseAmount(depthResult);

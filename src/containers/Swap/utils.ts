@@ -73,7 +73,7 @@ export const getSwapData = (
     const runePrice = validBNOrZero(priceIndex?.RUNE);
 
     const poolPrice = validBNOrZero(priceIndex[target.toUpperCase()]);
-    const poolPriceString = `${basePriceAsset} ${poolPrice.toFixed(2)}`;
+    const poolPriceString = `${basePriceAsset} ${poolPrice.toFixed(3)}`;
 
     // formula: poolInfo.runeDepth * runePrice
     const depth = bn(poolInfo?.runeDepth ?? 0).multipliedBy(runePrice);
