@@ -17,6 +17,7 @@ type Props = {
   targetValue?: Maybe<TokenAmount>;
   price?: BigNumber;
   priceUnit?: string;
+  priceValid?: boolean;
   size?: CoinDataWrapperSize;
   className?: string;
   type?: CoinDataWrapperType | undefined;
@@ -30,13 +31,14 @@ const CoinData: React.FC<Props> = (props: Props): JSX.Element => {
     targetValue = Nothing,
     price = bn(0),
     priceUnit = 'RUNE',
+    priceValid = true,
     size = 'small',
     className = '',
     type = 'normal',
     ...otherProps
   } = props;
 
-  const priceLabel = `${priceUnit.toUpperCase()} ${formatBN(price)}`;
+  const priceLabel = priceValid ? `${priceUnit.toUpperCase()} ${formatBN(price)}` : 'NOT LISTED';
 
   return (
     <CoinDataWrapper
@@ -59,7 +61,7 @@ const CoinData: React.FC<Props> = (props: Props): JSX.Element => {
           type="normal"
           weight="600"
         >
-          {`${asset} ${target ? ':' : ''}${type !== 'normal' ? '/ ' : ''}`}
+          {`${asset} ${target ? ':' : ''}`}
         </Label>
         {assetValue && (
           <Label
