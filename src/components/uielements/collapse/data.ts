@@ -1,7 +1,12 @@
 const answer =
   'You Swap by sending assets into a pool.\n The pool calculates the correct swap amount and sends it back to you.';
 
-export const faqs = [
+export type Faq = {
+  question: string,
+  answer: string,
+};
+
+export const faqs: Faq[] = [
   {
     question: 'How do I Sawp?',
     answer:
