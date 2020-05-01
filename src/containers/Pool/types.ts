@@ -24,7 +24,7 @@ export type PoolDataRaw = {
   volume24: BaseAmount;
   transaction: BaseAmount;
   liqFee: BaseAmount;
-  roiAT: BaseAmount;
+  roiAT: number;
   poolPrice: BigNumber;
 };
 
@@ -36,7 +36,7 @@ export type PoolData = {
   volumeAT: BaseAmount;
   transaction: BaseAmount;
   liqFee: BaseAmount;
-  roiAT: BaseAmount;
+  roiAT: number;
   totalSwaps: number;
   totalStakers: number;
   values: PoolDataValues;

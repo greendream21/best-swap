@@ -1,6 +1,19 @@
 import BigNumber from 'bignumber.js';
-import { BinanceClient, Address, TransferResult, MultiTransfer, getTxHashFromMemo, TransferEvent } from '@thorchain/asgardex-binance';
-import { bn, fixedBN, bnOrZero, validBNOrZero, isValidBN } from '@thorchain/asgardex-util';
+import {
+  BinanceClient,
+  Address,
+  TransferResult,
+  MultiTransfer,
+  getTxHashFromMemo,
+  TransferEvent,
+} from '@thorchain/asgardex-binance';
+import {
+  bn,
+  fixedBN,
+  bnOrZero,
+  validBNOrZero,
+  isValidBN,
+} from '@thorchain/asgardex-util';
 import {
   getStakeMemo,
   getCreateMemo,
@@ -179,7 +192,7 @@ export const getPoolData = (
   const transaction = baseAmount(transactionResult);
 
   const roiATResult = poolDetail?.poolROI ?? 0;
-  const roiAT = baseAmount(roiATResult);
+  const roiAT = Number((Number(roiATResult) * 100).toFixed(2));
   const liqFeeResult = poolDetail?.poolFeeAverage ?? 0;
   const liqFee = baseAmount(liqFeeResult);
 
@@ -194,7 +207,7 @@ export const getPoolData = (
     transaction,
   )}`;
   const liqFeeValue = `${formatBaseAsTokenAmount(liqFee)}%`;
-  const roiAtValue = `${formatBaseAsTokenAmount(roiAT)}% pa`;
+  const roiAtValue = `${roiAT}% pa`;
 
   return {
     asset,

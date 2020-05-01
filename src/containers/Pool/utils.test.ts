@@ -298,7 +298,7 @@ describe.skip('pool/utils/', () => {
         volumeAT: baseAmount(0),
         transaction: baseAmount(0),
         liqFee: baseAmount(0),
-        roiAT: baseAmount(0.5),
+        roiAT: 0.5,
         totalSwaps: 0,
         totalStakers: 1,
         values: {
@@ -320,7 +320,7 @@ describe.skip('pool/utils/', () => {
           volume24: baseAmount(0),
           transaction: baseAmount(0),
           liqFee: baseAmount(0),
-          roiAT: baseAmount(0.5),
+          roiAT: 0.5,
           poolPrice: bn(1),
         },
       };
@@ -336,7 +336,7 @@ describe.skip('pool/utils/', () => {
         expected.transaction.amount(),
       );
       expect(result.liqFee.amount()).toEqual(expected.liqFee.amount());
-      expect(result.roiAT.amount()).toEqual(expected.roiAT.amount());
+      expect(result.roiAT).toEqual(expected.roiAT);
       expect(result.totalSwaps).toEqual(expected.totalSwaps);
       expect(result.totalStakers).toEqual(expected.totalStakers);
       expect(result.values).toEqual(expected.values);
@@ -345,7 +345,7 @@ describe.skip('pool/utils/', () => {
       expect(rRaw.volume24.amount()).toEqual(eRaw.volume24.amount());
       expect(rRaw.transaction.amount()).toEqual(eRaw.transaction.amount());
       expect(rRaw.liqFee.amount()).toEqual(eRaw.liqFee.amount());
-      expect(rRaw.roiAT.amount()).toEqual(eRaw.roiAT.amount());
+      expect(rRaw.roiAT).toEqual(eRaw.roiAT);
       // Unsafe, just to test all props again (in case we might forget to test a new property in the future)
       expect(result.toString()).toEqual(expected.toString());
     });
@@ -358,7 +358,7 @@ describe.skip('pool/utils/', () => {
         volumeAT: baseAmount(32387),
         transaction: baseAmount(16193),
         liqFee: baseAmount(99800),
-        roiAT: baseAmount(999.2768763636363),
+        roiAT: 999.2768763636363,
         totalSwaps: 1,
         totalStakers: 1,
         values: {
@@ -380,7 +380,7 @@ describe.skip('pool/utils/', () => {
           volume24: baseAmount(0),
           transaction: baseAmount(16193),
           liqFee: baseAmount(99800),
-          roiAT: baseAmount(999.2768763636363),
+          roiAT: 999.2768763636363,
           poolPrice: bn(0.09),
         },
       };
@@ -396,7 +396,7 @@ describe.skip('pool/utils/', () => {
         expected.transaction.amount(),
       );
       expect(result.liqFee.amount()).toEqual(expected.liqFee.amount());
-      expect(result.roiAT.amount()).toEqual(expected.roiAT.amount());
+      expect(result.roiAT).toEqual(expected.roiAT);
       expect(result.totalSwaps).toEqual(expected.totalSwaps);
       expect(result.totalStakers).toEqual(expected.totalStakers);
       expect(result.values).toEqual(expected.values);
@@ -405,7 +405,7 @@ describe.skip('pool/utils/', () => {
       expect(rRaw.volume24.amount()).toEqual(eRaw.volume24.amount());
       expect(rRaw.transaction.amount()).toEqual(eRaw.transaction.amount());
       expect(rRaw.liqFee.amount()).toEqual(eRaw.liqFee.amount());
-      expect(rRaw.roiAT.amount()).toEqual(eRaw.roiAT.amount());
+      expect(rRaw.roiAT).toEqual(eRaw.roiAT);
       // Unsafe, just to test all props again (in case we might forget to test a new property in the future)
       expect(result.toString()).toEqual(expected.toString());
     });
