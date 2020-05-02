@@ -183,7 +183,7 @@ export const getPoolData = (
   const liqFeeResult = poolDetail?.poolFeeAverage ?? 0;
   const liqFee = baseAmount(liqFeeResult);
 
-  const totalSwaps = Number(poolDetail?.swappersCount ?? 0);
+  const totalSwaps = Number(poolDetail?.swappingTxCount ?? 0);
   const totalStakers = Number(poolDetail?.stakersCount ?? 0);
 
   const depthValue = `${basePriceAsset} ${formatBaseAsTokenAmount(depth)}`;
