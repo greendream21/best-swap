@@ -780,7 +780,7 @@ class SwapSend extends React.Component<Props, State> {
                     FINISH
                   </Button>
                 )}
-                <a href={txURL} target="_blank" rel="noopener noreferrer">
+                <a className="view-tx" href={txURL} target="_blank" rel="noopener noreferrer">
                   VIEW TRANSACTION
                 </a>
               </div>
