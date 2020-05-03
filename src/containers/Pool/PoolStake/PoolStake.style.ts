@@ -197,10 +197,6 @@ export const ContentWrapper = styled(ContentView)`
           justify-content: center;
         `}
 
-        &:first-child {
-          margin-bottom: 8px;
-        }
-
         .label-title {
           font-size: 15px;
           text-align: center;
@@ -242,10 +238,13 @@ export const ContentWrapper = styled(ContentView)`
           margin-bottom: 20px;
           border-radius: 50%;
           background: ${palette('background', 1)};
-            svg {
-              width: 60px;
-              height: 60px;
+          svg {
+            width: 60px;
+            height: 60px;
+            path {
+              fill: ${palette('gray', 1)};
             }
+          }
         }
 
         .share-info-title {

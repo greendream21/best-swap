@@ -68,7 +68,7 @@ export const TxStatusContent = styled.div`
 export const Seperator = styled.div`
   width: 1px;
   height: 20px;
-  border-left: 1px solid ${palette('border', 0)};
+  border-left: 1px solid ${palette('gray', 2)};
   margin: 0 2px;
   ${media.sm`
     margin: 0 15px;

@@ -104,7 +104,7 @@ const WalletDrawer: React.FC<Props> = props => {
             className="forget-btn"
             data-test="wallet-forget-button"
             typevalue="outline"
-            color="primary"
+            color="warning"
             onClick={props.forgetWallet}
           >
             FORGET
@@ -113,7 +113,7 @@ const WalletDrawer: React.FC<Props> = props => {
             className="transaction-btn"
             data-test="wallet-transaction-button"
             typevalue="outline"
-            color="warning"
+            color="primary"
             onClick={handleGotoTransaction}
           >
             transactions

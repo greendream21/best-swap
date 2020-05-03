@@ -64,6 +64,12 @@ export const AppHolder = styled.div`
     transition: none;
   }
 
+  .ant-spin.ant-spin-spinning {
+    .ant-spin-dot-item {
+      background-color: ${palette('primary', 0)};
+    }
+  }
+
   .ant-notification-notice {
     background: ${palette('background', 1)};
     color: ${palette('text', 0)};
