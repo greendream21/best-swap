@@ -277,7 +277,12 @@ export const SwapModalContent = styled.div`
         .view-btn {
           width: 300px;
           height: 40px;
-          margin: 24px 0;
+          margin-top: 24px;
+        }
+
+        a.view-tx {
+          margin-top: 24px;
+          color: ${palette('primary', 0)};
         }
       }
 

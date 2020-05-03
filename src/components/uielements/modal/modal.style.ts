@@ -10,6 +10,7 @@ export const ModalWrapper = styled(Modal)`
     padding: 10px 14px;
     text-align: center;
     background: ${palette('gradient', 0)};
+    border: none;
     text-transform: uppercase;
     letter-spacing: 1.5px;
     .ant-modal-title {
@@ -23,6 +24,10 @@ export const ModalWrapper = styled(Modal)`
 
     .ant-input-prefix {
       color: ${palette('gray', 0)};
+    }
+    .ant-form-item-extra,
+    .ant-form-explain {
+      color: ${palette('text', 2)};
     }
   }
   .ant-modal-close {
@@ -52,6 +57,7 @@ export const ModalWrapper = styled(Modal)`
     border: none;
     border-radius: 0px;
     background: ${palette('background', 1)};
+    color: ${palette('text', 2)};
 
     &:first-child {
       border-right: 1px solid ${palette('gray', 0)};
