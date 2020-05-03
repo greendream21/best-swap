@@ -53,7 +53,7 @@ export const Seperator = styled.div`
   width: 0px;
   height: 30px;
   margin: 0 6px;
-  border-left: 1px solid ${palette('gray', 0)};
+  border-left: 1px solid ${palette('gray', 1)};
   ${media.sm`
     height: 40px;
     margin: 0 10px;
@@ -62,7 +62,7 @@ export const Seperator = styled.div`
 
 export const Dash = styled.div`
   width: 0px;
-  border-left: 1px solid ${palette('gray', 0)};
+  border-left: 1px solid ${palette('gray', 1)};
   height: 14px;
   margin: 0 10px;
   ${media.sm`

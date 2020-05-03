@@ -22,8 +22,8 @@ const TxStatus: React.FC<Props> = (props: Props): JSX.Element => {
   const { type, data, round, txID } = props;
   const txURL = txID ? TESTNET_TX_BASE_URL + txID : '#';
 
-  return (
-    <a href={txURL} target="_blank" rel="noopener noreferrer">
+  const renderTxStatus = () => {
+    return (
       <TxStatusWrapper className="txStatus-wrapper" round={round}>
         <p className="txStatus-type">{type}</p>
         {data.map((txDetail: Coin, index) => {
@@ -40,8 +40,16 @@ const TxStatus: React.FC<Props> = (props: Props): JSX.Element => {
           );
         })}
       </TxStatusWrapper>
-    </a>
-  );
+    );
+  };
+  if (txID) {
+    return (
+      <a href={txURL} target="_blank" rel="noopener noreferrer">
+        {renderTxStatus()}
+      </a>
+    );
+  }
+  return renderTxStatus();
 };
 
 export default TxStatus;

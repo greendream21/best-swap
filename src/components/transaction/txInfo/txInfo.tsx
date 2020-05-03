@@ -3,10 +3,7 @@ import React from 'react';
 import { bnOrZero, formatBN } from '@thorchain/asgardex-util';
 import TxStatus from '../txStatus';
 import { TxInfoWrapper, Seperator, Dash } from './txInfo.style';
-import {
-  TxDetails,
-  TxDetailsTypeEnum,
-} from '../../../types/generated/midgard';
+import { TxDetails, TxDetailsTypeEnum } from '../../../types/generated/midgard';
 import {
   formatBaseAsTokenAmount,
   baseAmount,
@@ -64,18 +61,14 @@ const TxInfo: React.FC<Props> = (props: Props): JSX.Element => {
 
   // withdraw tx
   if (type === TxDetailsTypeEnum.Unstake) {
-    const inData = _in?.coins?.[0];
-    const outData = out?.[0]?.coins;
+    const outData1 = out?.[0]?.coins?.[0];
+    const outData2 = out?.[1]?.coins?.[0];
+    const outData = outData1 && outData2 ? [outData1, outData2] : [];
 
     return (
       <TxInfoWrapper className="txInfo-wrapper withdraw-tx">
         <div className="txInfo-main-data">
-          <TxStatus
-            type="in"
-            data={inData ? [inData] : []}
-            txID={_in?.txID}
-            round="left"
-          />
+          <TxStatus type="in" data={[]} round="left" />
           <Seperator />
           <TxStatus
             type="out"
@@ -83,12 +76,6 @@ const TxInfo: React.FC<Props> = (props: Props): JSX.Element => {
             txID={out?.[0]?.txID}
             round="right"
           />
-        </div>
-        <div className="txInfo-extra-data">
-          <div className="tx-event-label left-margin">
-            <p className="tx-event-title">WITHDRAW FEE</p>
-            <p className="tx-event-value">{events?.fee ?? 0} RUNE</p>
-          </div>
         </div>
       </TxInfoWrapper>
     );
@@ -98,23 +85,14 @@ const TxInfo: React.FC<Props> = (props: Props): JSX.Element => {
   if (type === TxDetailsTypeEnum.Stake) {
     const inData1 = _in?.coins?.[0];
     const inData2 = _in?.coins?.[1];
+    const inData = inData1 && inData2 ? [inData1, inData2] : [];
 
     return (
-      <TxInfoWrapper className="txInfo-wrapper withdraw-tx">
+      <TxInfoWrapper className="txInfo-wrapper stake-tx">
         <div className="txInfo-main-data">
-          <TxStatus
-            type="in"
-            data={inData1 ? [inData1] : []}
-            txID={_in?.txID}
-            round="left"
-          />
+          <TxStatus type="in" data={inData} txID={_in?.txID} round="left" />
           <Seperator />
-          <TxStatus
-            type="out"
-            data={inData2 ? [inData2] : []}
-            txID={out?.[0]?.txID}
-            round="right"
-          />
+          <TxStatus type="out" data={[]} round="right" />
         </div>
       </TxInfoWrapper>
     );

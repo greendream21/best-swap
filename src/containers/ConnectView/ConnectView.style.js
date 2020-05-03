@@ -105,7 +105,7 @@ export const ContentWrapper = styled(ContentView)`
       align-items: center;
       width: 90%;
       padding: 60px 10px;
-      border: 1px solid ${palette('border', 0)};
+      border: 1px solid ${palette('gray', 0)};
       border-radius: 4px;
 
       ${media.sm`
