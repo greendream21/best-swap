@@ -3,7 +3,6 @@ import styled from 'styled-components';
 
 import { StatusWrapper, StatusDirection } from './status.style';
 import Label from '../label';
-import StatusLoader from './statusLoader';
 
 const NoWrapLabel = styled(Label)`
   white-space: nowrap;
@@ -29,14 +28,13 @@ const Status: React.FC<Props> = (props: Props): JSX.Element => {
     ...otherProps
   } = props;
 
-  const isHorizontal = direction === 'horizontal';
   return (
     <StatusWrapper
       className={`status-wrapper ${className}`}
       direction={direction}
       {...otherProps}
     >
-      {loading && <StatusLoader direction={direction} width={isHorizontal ? 150 : undefined} height={isHorizontal ? 30 : undefined} />}
+      {loading && '...'}
       {!loading && (
         <>
           <NoWrapLabel className="status-title" size="normal" color="gray">
