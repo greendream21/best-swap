@@ -88,7 +88,7 @@ const Connector = props => {
           <img src="/assets/img/step1.svg" alt="Step 1" />
         </Col>
         <Col span={8}>
-          <Label weght="bold">Enter PIN Code</Label>
+          <Label weight="bold">Enter PIN Code</Label>
         </Col>
         <Col>
           <img
@@ -104,7 +104,7 @@ const Connector = props => {
         </Col>
         <Col span={8}>
           <Row>
-            <Label weight="bol">Open Binance Chain</Label>
+            <Label weight="bold">Open Binance Chain</Label>
           </Row>
         </Col>
         <Col>
