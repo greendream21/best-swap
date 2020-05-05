@@ -1,21 +1,18 @@
-import styled, { createGlobalStyle } from 'styled-components';
+import styled from 'styled-components';
 import { palette } from 'styled-theme';
 
 import { media } from '../../helpers/styleHelper';
 import normalFont from '../../assets/font/Exo2-Regular.otf';
 
-const darkStyles = require('antd/dist/antd.dark.css');
-const lightyles = require('antd/dist/antd.css');
+import 'antd/dist/antd.dark.css';
+import 'antd/dist/antd.css';
+
 
 export const fontConfig = {
   custom: {
     families: ['Exo 2'],
   },
 };
-
-export const GlobalStyle = createGlobalStyle`
-  ${({ isLight }: { isLight: boolean }) => (isLight ? lightyles : darkStyles)};
-`;
 
 export const AppHolder = styled.div`
   @font-face {
