@@ -3,7 +3,6 @@ import { palette } from 'styled-theme';
 import { media } from './helpers/styleHelper';
 
 import normalFont from './assets/font/Exo2-Regular.otf';
-import 'antd/dist/antd.css';
 
 const AppHolder = styled.div`
   @font-face {

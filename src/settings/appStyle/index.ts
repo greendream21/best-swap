@@ -1,3 +1,3 @@
-import { AppHolder, GlobalStyle, fontConfig } from './appStyle';
+import { AppHolder, fontConfig } from './appStyle';
 
-export { AppHolder, GlobalStyle, fontConfig };
+export { AppHolder, fontConfig };
