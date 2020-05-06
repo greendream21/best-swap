@@ -1,10 +1,11 @@
 import { cloneDeep } from 'lodash';
 import lightTheme from './light';
 import { palette, BIFROST_BLUE } from './palette';
+import { Theme } from './type';
 
 const { dark } = palette;
 
-const darkTheme = cloneDeep(lightTheme);
+const darkTheme: Theme = cloneDeep(lightTheme);
 
 darkTheme.palette = {
   ...darkTheme.palette,
