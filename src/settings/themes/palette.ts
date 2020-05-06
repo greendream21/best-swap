@@ -1,4 +1,6 @@
-export const palette = {
+import { Palette } from './type';
+
+export const palette: Palette = {
   primary: [
     '#e4ffee', // 50
     '#beffd5', // 100
