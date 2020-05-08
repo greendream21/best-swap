@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
-import './settings/themes/global.css';
+import './settings/appStyle/global.css';
 import { DEFAULT_BN_FORMAT } from './settings/constants';
 
 // Set default format - it can be updated in future (i18n)
