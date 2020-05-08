@@ -148,11 +148,26 @@ export function* getUserStakeData(
       if (userStakerData && poolData.asset) {
         const price = poolData?.price ?? 0;
         const { symbol = '', ticker = '' } = getAssetFromString(poolData.asset);
+        const { poolUnits, assetDepth, runeDepth } = poolData;
+        const { stakeUnits } = userStakerData;
+
+        const poolUnitsBN = bnOrZero(poolUnits);
+        const assetDepthBN = bnOrZero(assetDepth);
+        const runeDepthBN = bnOrZero(runeDepth);
+        const stakeUnitsBN = bnOrZero(stakeUnits);
+
+        const runeShare = poolUnitsBN
+          ? runeDepthBN.multipliedBy(stakeUnitsBN).div(poolUnitsBN)
+          : bn(0);
+        const assetShare = poolUnitsBN
+          ? assetDepthBN.multipliedBy(stakeUnitsBN).div(poolUnitsBN)
+          : bn(0);
+
         const stakeData: StakeData = {
           targetSymbol: symbol,
           target: ticker.toLowerCase(),
-          targetValue: baseToToken(baseAmount(userStakerData?.assetStaked)),
-          assetValue: baseToToken(baseAmount(userStakerData?.runeStaked)),
+          targetValue: baseToToken(baseAmount(assetShare)),
+          assetValue: baseToToken(baseAmount(runeShare)),
           asset: 'rune',
           price,
         } as StakeData;
