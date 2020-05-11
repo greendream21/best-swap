@@ -213,6 +213,9 @@
   },
   "jest": {
     "preset": "ts-jest",
+    "globals": {
+      "$COMMIT_HASH": true
+    },
     "collectCoverageFrom": [
       "src/**/*.{js,jsx,ts,tsx}",
       "!src/**/*.d.ts"
