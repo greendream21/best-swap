@@ -8,9 +8,9 @@ import { getBinanceUrl } from '@thorchain/asgardex-binance';
 import Menu from '../uielements/menu';
 import ConnectionStatus from '../uielements/connectionStatus';
 
-import { BINANCE_NET, isDevnet } from '../../env';
+import { BINANCE_NET } from '../../env';
 import { Maybe } from '../../types/bepswap';
-import { getHostnameFromUrl, MIDGARD_DEV_API_DEV_IP } from '../../helpers/apiHelper';
+import { getHostnameFromUrl } from '../../helpers/apiHelper';
 
 import { ConnectionMenuItem } from './header.style';
 
@@ -29,8 +29,8 @@ const HeaderSetting: React.FC<Props> = (props: Props): JSX.Element => {
   const { midgardBasePath } = props;
   const [currentItem, setCurrentItem] = useState<string>('');
 
-  // Midgard IP on devnet OR on test|mainnet
-  const midgardUrl = isDevnet ? MIDGARD_DEV_API_DEV_IP : (midgardBasePath && getHostnameFromUrl(midgardBasePath));
+  // Midgard IP on devnet OR on test|chaos|mainnet
+  const midgardUrl = (midgardBasePath && getHostnameFromUrl(midgardBasePath)) || '';
 
   const menuItems: MenuItem[] = useMemo(
     () => [

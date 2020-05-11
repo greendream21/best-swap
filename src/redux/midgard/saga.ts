@@ -24,9 +24,20 @@ export const MIDGARD_MAX_RETRY = 3;
 export const MIDGARD_RETRY_DELAY = 1000; // ms
 
 export function* getApiBasePath(net: NET, noCache = false) {
+  // dev
   if (net === NET.DEV) {
-    return api.getMidgardBasePathByIP(api.MIDGARD_DEV_API_DEV_IP);
+    const basePath: string = api.getMidgardBasePathByIP(api.MIDGARD_DEV_API_DEV_IP);
+    yield put(actions.getApiBasePathSuccess(basePath));
+    return basePath;
   }
+  // test- | chaosnet
+  if (net === NET.TEST || net === NET.CHAOS) {
+    const basePath: string = api.MIDGARD_TEST_API;
+    yield put(actions.getApiBasePathSuccess(basePath));
+    return basePath;
+  }
+
+  // mainnet uses `byz`
 
   try {
     yield put(actions.getApiBasePathPending());

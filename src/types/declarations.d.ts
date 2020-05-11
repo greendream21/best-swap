@@ -4,8 +4,6 @@ declare module '@binance-chain/javascript-sdk'
 declare module 'react-file-picker'
 declare module 'styled-theme'
 
-declare let $COMMIT_HASH: string;
-
 declare module '*.otf';
 declare module '*.png';
 declare module '*.svg' {
