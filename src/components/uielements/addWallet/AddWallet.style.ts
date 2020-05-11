@@ -15,18 +15,17 @@ export const AddWalletWrapper = styled.div`
     height: 100px;
     margin-bottom: 20px;
     border-radius: 50%;
-    background: ${palette('background', 2)};
-    i {
-      svg {
-        width: 60px;
-        height: 60px;
-      }
+    background: ${palette('background', 1)};
+    svg {
+      width: 60px;
+      height: 60px;
+      fill: ${palette('gray', 1)};
     }
   }
 
   .connect-wallet-label {
     font-size: 14px;
-    letter-spacing: 0.04em;
+    letter-spacing: 1px;
     text-transform: uppercase;
   }
 `;

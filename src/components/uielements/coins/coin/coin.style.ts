@@ -11,7 +11,7 @@ export const CoinWrapper = styled.div`
   width: ${(props: CoinWrapperProps) => (props.size === 'small' ? '32px' : '40px')};
   height: ${(props: CoinWrapperProps) => (props.size === 'small' ? '32px' : '40px')};
   border-radius: 50%;
-  box-shadow: 0px 4px 5px ${palette('primary', 3)};
+  box-shadow: 0px 2px 4px ${palette('secondary', 1)};
 
   .coinIcon-wrapper {
     width: 100%;
@@ -40,8 +40,8 @@ export const CoinsWrapper = styled.div`
     height: ${(props: CoinsWrapperProps) => (props.size === 'small' ? '32px' : '40px')};
     position: relative;
     border-radius: 50%;
-    box-shadow: 0px 4px 5px ${palette('primary', 3)};
-    background-color: #fff;
+    box-shadow: 0px 2px 4px ${palette('secondary', 1)};
+    background-color: ${palette('background', 1)};
 
     .coinIcon-wrapper {
       width: 100%;
@@ -56,7 +56,7 @@ export const CoinsWrapper = styled.div`
   .dynamic-bottom,
   .dynamic-over {
     position: relative;
-    box-shadow: 0px 4px 5px ${palette('primary', 3)};
+    box-shadow: 0px 2px 4px ${palette('secondary', 1)};
   }
 
   .coin-over,

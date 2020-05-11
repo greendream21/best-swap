@@ -3,7 +3,15 @@ import { size, key, palette } from 'styled-theme';
 import { Layout } from 'antd';
 import { media } from '../../helpers/styleHelper';
 
-export const FooterItem = styled.div``;
+export const FooterItem = styled.div`
+  .footer-logo {
+    #Thorchain_logo-copy {
+      > :not(:first-child) {
+        fill: ${palette('text', 1)};
+      }
+    }
+  }
+`;
 
 export const FooterContainer = styled(Layout.Footer).attrs({
   style: { padding: 0 },
@@ -40,7 +48,6 @@ export const StyledFooter = styled.div`
     padding: 0 30px;
   `}
 
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
   background-color: ${palette('background', 0)};
 
   /* TODO: Refactor these to avoid using classnames */
@@ -58,9 +65,9 @@ export const StyledFooter = styled.div`
 
 
     a {
-      font-family: 'Montserrat Bold';
       font-size: ${key('sizes.font.normal', '12px')};
-      color: ${palette('text', 6)};
+      font-weight: bold;
+      color: ${palette('text', 1)};
       letter-spacing: 1px;
       cursor: pointer;
       padding-left: 50px;
@@ -77,7 +84,7 @@ export const StyledFooter = styled.div`
 
     a {
       font-size: 18px;
-      color: ${palette('text', 6)};
+      color: ${palette('text', 1)};
       cursor: pointer;
     }
   }

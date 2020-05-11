@@ -2,13 +2,7 @@ import React from 'react';
 import ContentLoader from 'react-content-loader';
 
 export const AssetLoader = () => (
-  <ContentLoader
-    height={300}
-    width={300}
-    speed={2}
-    primarycolor="#F8F9FA"
-    secondarycolor="#ECEEEF"
-  >
+  <ContentLoader height={300} width={300} speed={2}>
     <circle cx="32" cy="46" r="18" />
     <rect x="60" y="30" rx="2" ry="2" width="60" height="14" />
     <rect x="60" y="50" rx="2" ry="2" width="60" height="14" />
@@ -25,13 +19,7 @@ export const AssetLoader = () => (
 );
 
 export const StakeLoader = () => (
-  <ContentLoader
-    height={400}
-    width={300}
-    speed={2}
-    primarycolor="#F8F9FA"
-    secondarycolor="#ECEEEF"
-  >
+  <ContentLoader height={400} width={300} speed={2}>
     <circle cx="32" cy="46" r="18" />
     <circle cx="50" cy="46" r="18" />
     <rect x="80" y="40" rx="2" ry="2" width="80" height="14" />

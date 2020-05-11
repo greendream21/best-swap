@@ -3,7 +3,13 @@ import * as H from 'history';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter, Link } from 'react-router-dom';
-import { Row, Col, Icon, notification } from 'antd';
+import { Row, Col, notification } from 'antd';
+import {
+  InboxOutlined,
+  InfoOutlined,
+  FullscreenExitOutlined,
+  CloseOutlined,
+} from '@ant-design/icons';
 import { SliderValue } from 'antd/lib/slider';
 import { crypto } from '@binance-chain/javascript-sdk';
 import { get as _get } from 'lodash';
@@ -21,6 +27,7 @@ import {
   bnOrZero,
   formatBN,
 } from '@thorchain/asgardex-util';
+import { getAppContainer } from '../../../helpers/elementHelper';
 
 import Label from '../../../components/uielements/label';
 import Status from '../../../components/uielements/status';
@@ -115,7 +122,7 @@ type ConnectedProps = {
   setTxTimerValue: typeof appActions.setTxTimerValue;
   setTxHash: typeof appActions.setTxHash;
   resetTxStatus: typeof appActions.resetTxStatus;
-  refreshStake: typeof walletActions.refreshStake;
+  refreshStakes: typeof walletActions.refreshStakes;
   subscribeBinanceTransfers: typeof binanceActions.subscribeBinanceTransfers;
   unSubscribeBinanceTransfers: typeof binanceActions.unSubscribeBinanceTransfers;
 };
@@ -209,7 +216,7 @@ class PoolStake extends React.Component<Props, State> {
       wsTransferEvent,
       user,
       txStatus: { type, hash },
-      refreshStake,
+      refreshStakes,
       symbol,
       subscribeBinanceTransfers,
       unSubscribeBinanceTransfers,
@@ -255,7 +262,7 @@ class PoolStake extends React.Component<Props, State> {
         if (type === TxTypes.STAKE) {
           if (transferHash === hash) {
             // Just refresh stakes after update
-            refreshStake(wallet);
+            refreshStakes(wallet);
           }
         }
 
@@ -270,7 +277,7 @@ class PoolStake extends React.Component<Props, State> {
               txResult: true,
             });
             // refresh stakes after update
-            refreshStake(wallet);
+            refreshStakes(wallet);
           }
         }
       }
@@ -521,6 +528,7 @@ class PoolStake extends React.Component<Props, State> {
           message: 'Stake Invalid',
           description: `${error?.toString() ??
             'Stake information is not valid.'}`,
+          getContainer: getAppContainer,
         });
         this.handleCloseModal();
         this.setState({
@@ -551,6 +559,7 @@ class PoolStake extends React.Component<Props, State> {
       notification.error({
         message: 'Stake Invalid',
         description: 'You need to enter an amount to stake.',
+        getContainer: getAppContainer,
       });
       this.handleCloseModal();
       this.setState({
@@ -714,6 +723,7 @@ class PoolStake extends React.Component<Props, State> {
         notification.error({
           message: 'Withdraw Invalid',
           description: 'Withdraw information is not valid.',
+          getContainer: getAppContainer,
         });
         this.setState({
           dragReset: true,
@@ -945,7 +955,6 @@ class PoolStake extends React.Component<Props, State> {
       totalSwaps,
       totalStakers,
       roiAT,
-      liqFee,
     } = poolStats;
 
     const attrs = [
@@ -973,7 +982,7 @@ class PoolStake extends React.Component<Props, State> {
       {
         key: 'roi',
         title: 'All Time RoI',
-        value: `${formatBaseAsTokenAmount(roiAT)}% pa`,
+        value: `${roiAT}% pa`,
       },
     ];
 
@@ -987,7 +996,6 @@ class PoolStake extends React.Component<Props, State> {
             target={target}
             value={value}
             label={title}
-            trend={baseToToken(liqFee).amount()}
             loading={loading}
           />
         </Col>
@@ -997,13 +1005,13 @@ class PoolStake extends React.Component<Props, State> {
 
   renderShareDetail = (
     _: PoolData,
-    calcResult: CalcResult,
     stakersAssetData: StakersAssetData,
+    calcResult: CalcResult,
   ) => {
     const { symbol, priceIndex, basePriceAsset, assets } = this.props;
     const {
       runeAmount,
-      tokenAmount: tAmount,
+      tokenAmount,
       runePercent,
       widthdrawPercentage,
       dragReset,
@@ -1025,33 +1033,27 @@ class PoolStake extends React.Component<Props, State> {
       };
     });
 
-    const { R, T, poolUnits = 0 } = calcResult;
-
     // withdraw values
     const withdrawRate: number = (widthdrawPercentage || 50) / 100;
-    const { stakeUnits = '0' } = stakersAssetData;
-    const stakeUnitsBN = bn(stakeUnits);
+    const { stakeUnits }: StakersAssetData = stakersAssetData;
 
-    const value =
-      // avoid divison by zero
-      poolUnits && poolUnits.isGreaterThan(0)
-        ? // formula: ((withdrawRate * stakeUnits) / poolUnits) * R
-          bn(withdrawRate)
-            .multipliedBy(stakeUnitsBN)
-            .div(poolUnits)
-            .multipliedBy(R)
-        : bn(0);
-    const runeBaseAmount = baseAmount(value);
-    // formula: (withdrawRate * stakeUnits) / poolUnits) * T
-    const tokenValue =
-      // avoid divison by zero
-      poolUnits && poolUnits.isGreaterThan(0)
-        ? bn(withdrawRate)
-            .multipliedBy(stakeUnitsBN)
-            .div(poolUnits)
-            .multipliedBy(T)
-        : bn(0);
+    const { R, T, poolUnits } = calcResult;
+
+    const stakeUnitsBN = bnOrZero(stakeUnits);
+
+    const runeShare = poolUnits
+      ? R.multipliedBy(stakeUnitsBN).div(poolUnits)
+      : bn(0);
+    const assetShare = poolUnits
+      ? T.multipliedBy(stakeUnitsBN).div(poolUnits)
+      : bn(0);
+
+    const assetValue = bn(withdrawRate).multipliedBy(runeShare);
+    const runeBaseAmount = baseAmount(assetValue);
+
+    const tokenValue = bn(withdrawRate).multipliedBy(assetShare);
     const tokenBaseAmount = baseAmount(tokenValue);
+
     this.withdrawData = {
       runeValue: runeBaseAmount,
       tokenValue: tokenBaseAmount,
@@ -1109,7 +1111,7 @@ class PoolStake extends React.Component<Props, State> {
                   data-test="coin-card-stake-coin-target"
                   asset={target}
                   assetData={tokensData}
-                  amount={tAmount}
+                  amount={tokenAmount}
                   price={tokenPrice}
                   priceIndex={priceIndex}
                   unit={basePriceAsset}
@@ -1204,71 +1206,51 @@ class PoolStake extends React.Component<Props, State> {
     const wallet = user ? user.wallet : null;
     const hasWallet = wallet !== null;
 
-    const { poolUnits, R, T } = calcResult;
+    const { R, T, poolUnits } = calcResult;
     const source = 'rune';
     const target = getTickerFormat(symbol);
 
     const runePrice = validBNOrZero(priceIndex?.RUNE);
-    const tokenPrice = _get(priceIndex, target.toUpperCase(), 0);
+    const assetPrice = _get(priceIndex, target.toUpperCase(), 0);
 
     const {
       stakeUnits,
-      runeStaked,
-      assetStaked,
+      runeEarned,
+      assetEarned,
     }: StakersAssetData = stakersAssetData;
     const stakeUnitsBN = bnOrZero(stakeUnits);
-    const runeStakedBN = bnOrZero(runeStaked);
-    const assetStakedBN = bnOrZero(assetStaked);
+    const runeEarnedBN = bnOrZero(runeEarned);
+    const assetEarnedBN = bnOrZero(assetEarned);
     const loading = this.isLoading() || poolUnits === undefined;
 
-    let poolShare: BigNumber | undefined;
-    let runeShare: BaseAmount | undefined;
-    let runeStakedShare: BaseAmount | undefined;
-    let assetStakedShare: BaseAmount | undefined;
-    let tokensShare: BaseAmount | undefined;
-    let runeSharePriceLabel = '';
-    let tokenSharePriceLabel = '';
+    const poolShare = poolUnits
+      ? stakeUnitsBN.div(poolUnits).multipliedBy(100)
+      : 0;
 
-    if (stakeUnitsBN.isGreaterThan(0) && poolUnits) {
-      // formula: (stakeUnits / poolUnits) * 100)
-      poolShare = stakeUnitsBN.div(poolUnits).multipliedBy(100);
-      // formula: (R * stakeUnits) / poolUnits);
-      const runeShareValue: BigNumber = R.multipliedBy(stakeUnitsBN).div(
-        poolUnits,
-      );
-      runeStakedShare = baseAmount(
-        runeStakedBN.multipliedBy(poolShare).div(100),
-      );
-      assetStakedShare = baseAmount(
-        assetStakedBN.multipliedBy(poolShare).div(100),
-      );
-      runeShare = baseAmount(runeShareValue);
+    const runeShare = poolUnits
+      ? R.multipliedBy(stakeUnitsBN).div(poolUnits)
+      : bn(0);
+    const assetShare = poolUnits
+      ? T.multipliedBy(stakeUnitsBN).div(poolUnits)
+      : bn(0);
+    const runeStakedShare = formatBaseAsTokenAmount(baseAmount(runeShare));
+    const assetStakedShare = formatBaseAsTokenAmount(baseAmount(assetShare));
+    const runeEarnedAmount = formatBaseAsTokenAmount(baseAmount(runeEarned));
+    const assetEarnedAmount = formatBaseAsTokenAmount(baseAmount(assetEarned));
 
-      const runeSharePrice: BaseAmount = baseAmount(
-        runeShare.amount().multipliedBy(runePrice),
-      );
-      runeSharePriceLabel = formatBaseAsTokenAmount(runeSharePrice);
-      // formula: (T * stakeUnits) / poolUnits)
-      const tokensShareValue: BigNumber = T.multipliedBy(stakeUnitsBN).div(
-        poolUnits,
-      );
-      tokensShare = baseAmount(tokensShareValue);
-      const tokenSharePrice: BaseAmount = baseAmount(
-        tokensShare.amount().multipliedBy(tokenPrice),
-      );
-      tokenSharePriceLabel = formatBaseAsTokenAmount(tokenSharePrice);
-    }
-    const runeEarned: BaseAmount = baseAmount(stakersAssetData.runeEarned || 0);
-    const runeEarnedAmount: BaseAmount = baseAmount(
-      runeEarned.amount().multipliedBy(runePrice),
+    const runeStakedPrice = formatBaseAsTokenAmount(
+      baseAmount(runeShare.multipliedBy(runePrice)),
     );
-    const runeEarnedAmountLabel = formatBaseAsTokenAmount(runeEarnedAmount);
-
-    const assetEarned = baseAmount(stakersAssetData.assetEarned || 0);
-    const assetEarnedAmount: BaseAmount = baseAmount(
-      assetEarned.amount().multipliedBy(tokenPrice),
+    const assetStakedPrice = formatBaseAsTokenAmount(
+      baseAmount(assetShare.multipliedBy(assetPrice)),
     );
-    const assetEarnedAmountLabel = formatBaseAsTokenAmount(assetEarnedAmount);
+
+    const runeEarnedPrice = formatBaseAsTokenAmount(
+      baseAmount(runeEarnedBN.multipliedBy(runePrice)),
+    );
+    const assetEarnedPrice = formatBaseAsTokenAmount(
+      baseAmount(assetEarnedBN.multipliedBy(assetPrice)),
+    );
 
     const hasStake = hasWallet && stakeUnitsBN.isGreaterThan(0);
 
@@ -1279,7 +1261,7 @@ class PoolStake extends React.Component<Props, State> {
           {hasWallet && stakeUnitsBN.isEqualTo(0) && (
             <div className="share-placeholder-wrapper">
               <div className="placeholder-icon">
-                <Icon type="inbox" />
+                <InboxOutlined />
               </div>
               <Label className="placeholder-label">
                 You don&apos;t have any shares in this pool.
@@ -1296,11 +1278,7 @@ class PoolStake extends React.Component<Props, State> {
                   <div className="your-share-info">
                     <Status
                       title={source.toUpperCase()}
-                      value={
-                        runeStakedShare
-                          ? formatBaseAsTokenAmount(runeStakedShare)
-                          : '...'
-                      }
+                      value={runeStakedShare}
                       loading={loading}
                     />
                     <Label
@@ -1309,19 +1287,13 @@ class PoolStake extends React.Component<Props, State> {
                       color="gray"
                       loading={loading}
                     >
-                      {runeShare
-                        ? `${basePriceAsset} ${runeSharePriceLabel}`
-                        : ''}
+                      {`${basePriceAsset} ${runeStakedPrice}`}
                     </Label>
                   </div>
                   <div className="your-share-info">
                     <Status
                       title={target.toUpperCase()}
-                      value={
-                        assetStakedShare
-                          ? formatBaseAsTokenAmount(assetStakedShare)
-                          : '...'
-                      }
+                      value={assetStakedShare}
                       loading={loading}
                     />
 
@@ -1331,9 +1303,7 @@ class PoolStake extends React.Component<Props, State> {
                       color="gray"
                       loading={loading}
                     >
-                      {tokensShare
-                        ? `${basePriceAsset} ${tokenSharePriceLabel}`
-                        : ''}
+                      {`${basePriceAsset} ${assetStakedPrice}`}
                     </Label>
                   </div>
                 </div>
@@ -1369,7 +1339,7 @@ class PoolStake extends React.Component<Props, State> {
                 <div className="your-share-info">
                   <Status
                     title={source.toUpperCase()}
-                    value={runeEarnedAmountLabel}
+                    value={runeEarnedAmount}
                     loading={loading}
                   />
                   <Label
@@ -1378,13 +1348,13 @@ class PoolStake extends React.Component<Props, State> {
                     color="gray"
                     loading={loading}
                   >
-                    {basePriceAsset} {runeEarnedAmountLabel}
+                    {basePriceAsset} {runeEarnedPrice}
                   </Label>
                 </div>
                 <div className="your-share-info">
                   <Status
                     title={target.toUpperCase()}
-                    value={assetEarnedAmountLabel}
+                    value={assetEarnedAmount}
                     loading={loading}
                   />
                   <Label
@@ -1393,7 +1363,7 @@ class PoolStake extends React.Component<Props, State> {
                     color="gray"
                     loading={loading}
                   >
-                    {basePriceAsset} {assetEarnedAmountLabel}
+                    {basePriceAsset} {assetEarnedPrice}
                   </Label>
                 </div>
               </div>
@@ -1411,7 +1381,7 @@ class PoolStake extends React.Component<Props, State> {
       <div className="your-share-wrapper">
         <div className="share-placeholder-wrapper">
           <div className="placeholder-icon">
-            <Icon type="info" />
+            <InfoOutlined />
           </div>
           <h2>Loading of staked data for this pool failed.</h2>
           {msg && <p className="placeholder-label">{msg}</p>}
@@ -1458,7 +1428,11 @@ class PoolStake extends React.Component<Props, State> {
       txStatus.type === TxTypes.STAKE ? txStatus.modal : false;
     const openWithdrawModal =
       txStatus.type === TxTypes.WITHDRAW ? txStatus.modal : false;
-    const coinCloseIconType = txStatus.status ? 'fullscreen-exit' : 'close';
+    const coinCloseIconType = txStatus.status ? (
+      <FullscreenExitOutlined style={{ color: '#fff' }} />
+    ) : (
+      <CloseOutlined style={{ color: '#fff' }} />
+    );
 
     const yourShareSpan = hasWallet ? 8 : 24;
 
@@ -1500,7 +1474,7 @@ class PoolStake extends React.Component<Props, State> {
         <Row className="stake-info-view">{this.renderStakeInfo(poolStats)}</Row>
         <Row className="share-view">
           {!stakersAssetData && stakerPoolDataError && (
-            <Col className="your-share-view">
+            <Col className="your-share-view" md={24}>
               {this.renderStakeDataPoolError()}
             </Col>
           )}
@@ -1511,7 +1485,7 @@ class PoolStake extends React.Component<Props, State> {
           )}
           {stakersAssetData && hasWallet && (
             <Col className="share-detail-view" span={24} lg={16}>
-              {this.renderShareDetail(poolStats, calcResult, stakersAssetData)}
+              {this.renderShareDetail(poolStats, stakersAssetData, calcResult)}
             </Col>
           )}
         </Row>
@@ -1519,9 +1493,7 @@ class PoolStake extends React.Component<Props, State> {
           <>
             <ConfirmModal
               title={withdrawText}
-              closeIcon={
-                <Icon type={coinCloseIconType} style={{ color: '#33CCFF' }} />
-              }
+              closeIcon={coinCloseIconType}
               visible={openWithdrawModal}
               footer={null}
               onCancel={this.handleCloseModal}
@@ -1530,9 +1502,7 @@ class PoolStake extends React.Component<Props, State> {
             </ConfirmModal>
             <ConfirmModal
               title={stakeTitle}
-              closeIcon={
-                <Icon type={coinCloseIconType} style={{ color: '#33CCFF' }} />
-              }
+              closeIcon={coinCloseIconType}
               visible={openStakeModal}
               footer={null}
               onCancel={this.handleCloseModal}
@@ -1591,7 +1561,7 @@ export default compose(
       setTxTimerValue: appActions.setTxTimerValue,
       setTxHash: appActions.setTxHash,
       resetTxStatus: appActions.resetTxStatus,
-      refreshStake: walletActions.refreshStake,
+      refreshStakes: walletActions.refreshStakes,
       subscribeBinanceTransfers: binanceActions.subscribeBinanceTransfers,
       unSubscribeBinanceTransfers: binanceActions.unSubscribeBinanceTransfers,
     },

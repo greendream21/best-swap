@@ -6,8 +6,8 @@ export const IconWrapper = styled.div`
   height: 20px;
   border: none;
   border-radius: 50%;
-  color: #fff;
-  background: ${palette('primary', 1)};
+  color: ${palette('text', 3)};
+  background: ${palette('primary', 0)};
   cursor: pointer;
 
   span {
@@ -17,7 +17,7 @@ export const IconWrapper = styled.div`
     font-size: 20px;
     &::selection {
       background-color: transparent;
-      color: #fff;
+      color: ${palette('text', 3)};
     }
   }
 `;

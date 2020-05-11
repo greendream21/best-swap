@@ -1,4 +1,6 @@
 import styled from 'styled-components';
+import { palette } from 'styled-theme';
+
 import Button from '../../button';
 // import { ButtonWrapperProps } from '../../button/button.style';
 import { Props as ButtonProps } from '../../button/button';
@@ -16,6 +18,7 @@ export const CoinButtonWrapper = styled(Button).attrs({
   width: 166px;
   padding: 0 10px;
   flex-direction: column;
+  background: ${palette('background', 1)} !important;
 
   .coinButton-content {
     display: flex;

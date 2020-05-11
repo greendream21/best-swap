@@ -3,11 +3,11 @@ import * as H from 'history';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter, Link } from 'react-router-dom';
-import { notification, Icon } from 'antd';
+import { notification } from 'antd';
+import { SyncOutlined, DatabaseOutlined } from '@ant-design/icons';
 
 import Label from '../../../components/uielements/label';
 import AddIcon from '../../../components/uielements/addIcon';
-import PoolLoader from '../../../components/utility/loaders/pool';
 import CoinPair from '../../../components/uielements/coins/coinPair';
 import Table from '../../../components/uielements/table';
 import Button from '../../../components/uielements/button';
@@ -16,6 +16,7 @@ import { ContentWrapper } from './PoolView.style';
 import { getCreatePoolTokens, getPoolData } from '../utils';
 import { PoolData } from '../types';
 import { getTickerFormat } from '../../../helpers/stringHelper';
+import { getAppContainer } from '../../../helpers/elementHelper';
 import * as midgardActions from '../../../redux/midgard/actions';
 import { RootState } from '../../../redux/store';
 import { AssetData, User } from '../../../redux/wallet/types';
@@ -65,6 +66,7 @@ class PoolView extends React.Component<Props, State> {
       notification.warning({
         message: 'Create Pool Failed',
         description: 'Please connect your wallet to add a new pool.',
+        getContainer: getAppContainer,
       });
     } else {
       const possibleTokens = getCreatePoolTokens(assetData, pools);
@@ -78,13 +80,14 @@ class PoolView extends React.Component<Props, State> {
         notification.warning({
           message: 'Create Pool Failed',
           description: 'You cannot create a new pool.',
+          getContainer: getAppContainer,
         });
       }
     }
   };
 
   renderPoolTable = (swapViewData: FixmeType, view: ViewType) => {
-    const { getPools } = this.props;
+    const { getPools, loading } = this.props;
 
     const buttonCol = {
       key: 'stake',
@@ -95,7 +98,7 @@ class PoolView extends React.Component<Props, State> {
           }}
           typevalue="outline"
         >
-          <Icon type="sync" />
+          <SyncOutlined />
           refresh
         </Button>
       ),
@@ -112,7 +115,7 @@ class PoolView extends React.Component<Props, State> {
                 round="true"
                 data-test={dataTest}
               >
-                <Icon type="database" />
+                <DatabaseOutlined />
                 stake
               </Button>
             </Link>
@@ -204,7 +207,14 @@ class PoolView extends React.Component<Props, State> {
     };
     const columns = columnData[view] || desktopColumns;
 
-    return <Table columns={columns} dataSource={swapViewData} rowKey="key" />;
+    return (
+      <Table
+        columns={columns}
+        dataSource={swapViewData}
+        loading={loading}
+        rowKey="key"
+      />
+    );
   };
 
   renderPoolList = (view: ViewType) => {
@@ -235,27 +245,20 @@ class PoolView extends React.Component<Props, State> {
   };
 
   render() {
-    const { loading } = this.props;
-
     return (
       <ContentWrapper className="pool-view-wrapper">
-        {loading && <PoolLoader />}
-        {!loading && (
-          <>
-            <div className="pool-list-view desktop-view">
-              {this.renderPoolList(ViewType.DESKTOP)}
-            </div>
-            <div className="pool-list-view mobile-view">
-              {this.renderPoolList(ViewType.MOBILE)}
-            </div>
-            <div className="add-new-pool" onClick={this.handleNewPool}>
-              <AddIcon />
-              <Label size="normal" weight="bold" color="normal">
-                ADD NEW POOL
-              </Label>
-            </div>
-          </>
-        )}
+        <div className="pool-list-view desktop-view">
+          {this.renderPoolList(ViewType.DESKTOP)}
+        </div>
+        <div className="pool-list-view mobile-view">
+          {this.renderPoolList(ViewType.MOBILE)}
+        </div>
+        <div className="add-new-pool" onClick={this.handleNewPool}>
+          <AddIcon />
+          <Label size="normal" weight="bold" color="normal">
+            ADD NEW POOL
+          </Label>
+        </div>
       </ContentWrapper>
     );
   }

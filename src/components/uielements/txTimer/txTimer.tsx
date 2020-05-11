@@ -43,7 +43,7 @@ const TxTimer: React.FC<Props> = (props): JSX.Element => {
   const isEnd = useCallback(() => {
     // Check of `maxSec` wins over `maxValue`
     if (maxSec > 0 && totalDuration >= maxSec) {
-        return true;
+      return true;
     }
     return value >= maxValue;
   }, [maxSec, value, maxValue, totalDuration]);
@@ -114,10 +114,10 @@ const TxTimer: React.FC<Props> = (props): JSX.Element => {
           strokeWidth={7}
           counterClockwise
           styles={buildStyles({
-            textColor: '#50E3C2',
+            textColor: '#23DCC8',
             textSize: '14px',
-            pathColor: '#50E3C2',
-            trailColor: '#F2F2F2',
+            pathColor: '#23DCC8',
+            trailColor: '#F3F4F4',
             pathTransition: 'stroke-dashoffset 0.5s linear 0s',
           })}
         />

@@ -20,13 +20,13 @@ export const CoinListWrapper = styled.div`
     height: ${(props: CoinListWrapperProps) =>
       props.size === 'small' ? '54px' : '74px'};
     padding: 0 20px;
-    background-color: #fff;
+    background-color: ${palette('background', 1)};
     cursor: pointer;
     ${transition()};
 
     &.active,
     &:hover {
-      background-color: ${palette('primary', 3)};
+      background-color: ${palette('secondary', 1)};
     }
   }
 `;

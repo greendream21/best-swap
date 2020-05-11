@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Icon } from 'antd';
+import { CheckOutlined } from '@ant-design/icons';
 import DynamicCoin from '../dynamicCoin';
 
 import { CoinIconWrapper } from './coinIcon.style';
@@ -20,7 +20,7 @@ class CoinIcon extends Component {
     if (type === 'confirm') {
       return (
         <div className="confirm-circle">
-          <Icon type="check" />
+          <CheckOutlined />
         </div>
       );
     }

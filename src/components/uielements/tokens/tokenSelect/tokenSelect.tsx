@@ -32,7 +32,6 @@ const DropdownCarret: React.FC<DropdownCarretProps> = (
       <DropdownIcon
         open={open}
         className={className}
-        type="caret-down"
         onClick={onClick}
       />
     </DropdownIconHolder>

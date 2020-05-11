@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Icon, Row, Col, message, InputNumber } from 'antd';
+import { Row, Col, message, InputNumber } from 'antd';
+import { ArrowRightOutlined } from '@ant-design/icons';
 import { ledger, crypto } from '@binance-chain/javascript-sdk';
 import u2f_transport from '@ledgerhq/hw-transport-u2f';
 
@@ -24,7 +25,7 @@ const Connector = props => {
   const ledgerConnect = async () => {
     setConnecting(true);
     message.success(
-      <Label style={{ color: '#50E3C2' }}>Please approve on your ledger</Label>,
+      <Label color="primary">Please approve on your ledger</Label>,
       5,
     );
 
@@ -87,7 +88,7 @@ const Connector = props => {
           <img src="/assets/img/step1.svg" alt="Step 1" />
         </Col>
         <Col span={8}>
-          <Label weght="bold">Enter PIN Code</Label>
+          <Label weight="bold">Enter PIN Code</Label>
         </Col>
         <Col>
           <img
@@ -103,7 +104,7 @@ const Connector = props => {
         </Col>
         <Col span={8}>
           <Row>
-            <Label weight="bol">Open Binance Chain</Label>
+            <Label weight="bold">Open Binance Chain</Label>
           </Row>
         </Col>
         <Col>
@@ -160,7 +161,7 @@ const Connector = props => {
             loading={connecting}
             round="true"
           >
-            Connect to Ledger <Icon type="arrow-right" />
+            Connect to Ledger <ArrowRightOutlined />
           </Button>
         </Col>
       </Row>

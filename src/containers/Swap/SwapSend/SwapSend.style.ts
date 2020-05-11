@@ -1,5 +1,6 @@
 import styled from 'styled-components';
-import { Icon } from 'antd';
+import { Popover } from 'antd';
+import Icon from '@ant-design/icons';
 import { palette } from 'styled-theme';
 import ContentView from '../../../components/utility/contentView';
 import Modal from '../../../components/uielements/modal';
@@ -38,18 +39,18 @@ export const ArrowContainer = styled(BaseArrowContainer)`
     align-items: center;
     width: 54px;
     height: 40px;
-    border: 1px solid ${palette('primary', 0)};
+    border: 1px solid ${palette('gradient', 0)};
     border-radius: 5px;
     cursor: pointer;
 
-    i {
-      color: ${palette('primary', 0)};
+    svg {
+      color: ${palette('gradient', 0)};
       ${transition()}
     }
 
     &:hover {
-      i {
-        color: #fff;
+      svg {
+        color: ${palette('text', 3)};
       }
     }
   }
@@ -126,13 +127,6 @@ export const ContentWrapper = styled(ContentView)`
   }
 `;
 
-export const CardFormArrowIcon = styled.div`
-  &:before {
-    content: '⮑';
-  }
-  color: #ccc;
-`;
-
 export const CardFormHolder = styled.div`
   padding-top: 10px;
   margin: 10px 0;
@@ -142,6 +136,11 @@ export const CardFormHolder = styled.div`
   }
 
   &.slip-protection {
+    .ant-popover-arrow {
+      border-bottom: none;
+      border-left: none;
+    }
+
     .slip-input {
       width: 50px;
       margin: 0 8px;
@@ -151,16 +150,19 @@ export const CardFormHolder = styled.div`
       width: 21px;
       height: 21px;
       min-width: 0px;
+      padding-top: 2px;
       padding-left: 4px;
       padding-right: 4px;
       border-radius: 50%;
 
-      i {
+      svg {
         font-size: 15px;
       }
     }
   }
 `;
+
+export const PopoverContainer = styled(Popover)``;
 
 export const CardForm = styled.div`
   display: flex;
@@ -222,7 +224,7 @@ export const SwapModalContent = styled.div`
     align-items: center;
     width: 100%;
     padding: 30px 0;
-    border-bottom: 1px solid ${palette('border', 0)};
+    border-bottom: 1px solid ${palette('gray', 0)};
 
     .timer-container {
       display: flex;
@@ -250,6 +252,9 @@ export const SwapModalContent = styled.div`
   }
 
   .swap-info-wrapper {
+    display: flex;
+    flex-direction: column;
+
     padding: 20px 0;
     .hash-address {
       display: flex;
@@ -261,18 +266,23 @@ export const SwapModalContent = styled.div`
         justify-content: center;
         align-items: center;
 
-        border: 1px solid ${palette('primary', 0)};
+        border: 1px solid ${palette('gradient', 0)};
         border-radius: 6px;
         padding: 1px 4px;
         margin-right: 6px;
         margin-bottom: 16px;
-        color: ${palette('primary', 0)};
+        color: ${palette('gradient', 0)};
         cursor: pointer;
 
         .view-btn {
           width: 300px;
           height: 40px;
-          margin: 24px 0;
+          margin-top: 24px;
+        }
+
+        a.view-tx {
+          margin-top: 24px;
+          color: ${palette('primary', 0)};
         }
       }
 
@@ -292,14 +302,19 @@ export const SwapStatusPanel = styled.div`
   margin-left: auto;
   margin-right: 10px;
 
-  i {
+  svg {
     transform: rotate(-90deg);
     font-size: 24px;
-    color: ${palette('primary', 1)};
+    color: ${palette('primary', 0)};
     cursor: pointer;
 
     &:hover {
       font-size: 26px;
     }
   }
+`;
+
+export const PopoverContent = styled.div`
+  font-size: '11px';
+  color: ${palette('primary', 0)};
 `;

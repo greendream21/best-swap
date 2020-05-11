@@ -1,6 +1,7 @@
 // TODO (Rudi): conflicts with prettier
 /* eslint-disable operator-linebreak */
 import styled, { css } from 'styled-components';
+import { palette } from 'styled-theme';
 import {
   provideResponsiveShow,
   media,
@@ -13,7 +14,7 @@ const Row = styled.div`
   justify-content: space-between;
   height: 80px;
   border-radius: 4px;
-  background-color: #fff;
+  background-color: ${palette('background', 1)};
   padding: 0 20px;
 
   .status-wrapper {

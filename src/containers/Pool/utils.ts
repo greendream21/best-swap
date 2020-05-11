@@ -1,6 +1,19 @@
 import BigNumber from 'bignumber.js';
-import { BinanceClient, Address, TransferResult, MultiTransfer, getTxHashFromMemo, TransferEvent } from '@thorchain/asgardex-binance';
-import { bn, fixedBN, bnOrZero, validBNOrZero, isValidBN } from '@thorchain/asgardex-util';
+import {
+  BinanceClient,
+  Address,
+  TransferResult,
+  MultiTransfer,
+  getTxHashFromMemo,
+  TransferEvent,
+} from '@thorchain/asgardex-binance';
+import {
+  bn,
+  fixedBN,
+  bnOrZero,
+  validBNOrZero,
+  isValidBN,
+} from '@thorchain/asgardex-util';
 import {
   getStakeMemo,
   getCreateMemo,
@@ -161,7 +174,7 @@ export const getPoolData = (
   const runePrice = validBNOrZero(priceIndex?.RUNE);
 
   const poolPrice = validBNOrZero(priceIndex[target.toUpperCase()]);
-  const poolPriceValue = `${basePriceAsset} ${poolPrice.toFixed(2)}`;
+  const poolPriceValue = `${basePriceAsset} ${poolPrice.toFixed(3)}`;
 
   const depthResult = bnOrZero(poolDetail?.runeDepth).multipliedBy(runePrice);
   const depth = baseAmount(depthResult);
@@ -179,11 +192,15 @@ export const getPoolData = (
   const transaction = baseAmount(transactionResult);
 
   const roiATResult = poolDetail?.poolROI ?? 0;
-  const roiAT = baseAmount(roiATResult);
+  const roiAT = Number((Number(roiATResult) * 100).toFixed(2));
+
+  const poolROI12Data = poolDetail?.poolROI12 ?? 0;
+  const poolROI12 = bn(poolROI12Data).multipliedBy(100);
+
   const liqFeeResult = poolDetail?.poolFeeAverage ?? 0;
   const liqFee = baseAmount(liqFeeResult);
 
-  const totalSwaps = Number(poolDetail?.swappersCount ?? 0);
+  const totalSwaps = Number(poolDetail?.swappingTxCount ?? 0);
   const totalStakers = Number(poolDetail?.stakersCount ?? 0);
 
   const depthValue = `${basePriceAsset} ${formatBaseAsTokenAmount(depth)}`;
@@ -194,7 +211,7 @@ export const getPoolData = (
     transaction,
   )}`;
   const liqFeeValue = `${formatBaseAsTokenAmount(liqFee)}%`;
-  const roiAtValue = `${formatBaseAsTokenAmount(roiAT)}% pa`;
+  const roiAtValue = `${roiAT}% pa`;
 
   return {
     asset,
@@ -205,6 +222,7 @@ export const getPoolData = (
     transaction,
     liqFee,
     roiAT,
+    poolROI12,
     totalSwaps,
     totalStakers,
     values: {

@@ -13,5 +13,5 @@ export const HeaderWrapper = styled.div`
   `}
 
   margin-top: 3px;
-  border-bottom: 3px solid ${palette('primary', 5)};
+  border-bottom: 3px solid ${palette('gray', 0)};
 `;

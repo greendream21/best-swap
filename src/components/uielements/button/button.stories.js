@@ -2,7 +2,8 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { text, radios, boolean } from '@storybook/addon-knobs';
 import styled, { ThemeProvider } from 'styled-components';
-import { Row, Icon } from 'antd';
+import { Row } from 'antd';
+import { ArrowRightOutlined } from '@ant-design/icons';
 
 import AppHolder from '../../../AppStyle';
 import { defaultTheme } from '../../../settings';
@@ -101,7 +102,7 @@ storiesOf('Components/Button', module)
               </Button>
               <Button sizevalue="big" color="primary" typevalue="ghost">
                 Primary Ghost Big
-                <Icon type="arrow-right" />
+                <ArrowRightOutlined />
               </Button>
               <Button
                 sizevalue="big"
@@ -121,7 +122,7 @@ storiesOf('Components/Button', module)
               </Button>
               <Button sizevalue="big" color="success" typevalue="ghost">
                 success Ghost
-                <Icon type="arrow-right" />
+                <ArrowRightOutlined />
               </Button>
               <Button
                 sizevalue="big"
@@ -141,7 +142,7 @@ storiesOf('Components/Button', module)
               </Button>
               <Button sizevalue="big" color="warning" typevalue="ghost">
                 warning Ghost
-                <Icon type="arrow-right" />
+                <ArrowRightOutlined />
               </Button>
               <Button
                 sizevalue="big"
@@ -161,7 +162,7 @@ storiesOf('Components/Button', module)
               </Button>
               <Button sizevalue="big" color="error" typevalue="ghost">
                 Error Ghost
-                <Icon type="arrow-right" />
+                <ArrowRightOutlined />
               </Button>
               <Button sizevalue="big" color="error" typevalue="normal" focused>
                 Error Normal

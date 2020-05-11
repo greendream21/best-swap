@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icon } from 'antd';
+import { ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
 import BigNumber from 'bignumber.js';
 import { bn, isValidBN, formatBN } from '@thorchain/asgardex-util';
 import Label from '../label';
@@ -11,12 +11,12 @@ type Props = {
 const Trend: React.FC<Props> = (props: Props): JSX.Element => {
   const { amount = bn(0), ...otherProps } = props;
   const trend = isValidBN(amount) && amount.isGreaterThanOrEqualTo(0);
-  const trendIcon = trend ? 'arrow-up' : 'arrow-down';
+  const trendIcon = trend ? <ArrowUpOutlined /> : <ArrowDownOutlined />;
   const trendVal = `${formatBN(amount)}%`;
 
   return (
     <TrendWrapper trend={trend} {...otherProps}>
-      <Icon type={trendIcon} />
+      {trendIcon}
       <Label>{trendVal}</Label>
     </TrendWrapper>
   );

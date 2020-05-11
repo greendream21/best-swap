@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Icon } from 'antd';
+import { LeftOutlined, SyncOutlined } from '@ant-design/icons';
 
 import Label from '../label';
 import { HeaderWrapper } from './viewHeader.style';
@@ -42,7 +42,7 @@ class ViewHeader extends Component {
       <HeaderWrapper {...otherProps}>
         {back && (
           <Label color="primary" weight="bold" onClick={onBack}>
-            <Icon type="left" />
+            <LeftOutlined />
             <span>Back</span>
           </Label>
         )}
@@ -54,7 +54,7 @@ class ViewHeader extends Component {
         {actionText && (
           <Label onClick={this.handleRefresh} color="primary" weight="bold">
             <span>{actionText}</span>
-            <Icon type="sync" spin={loading} />
+            <SyncOutlined spin={loading} />
           </Label>
         )}
       </HeaderWrapper>

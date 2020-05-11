@@ -24,9 +24,20 @@ export const MIDGARD_MAX_RETRY = 3;
 export const MIDGARD_RETRY_DELAY = 1000; // ms
 
 export function* getApiBasePath(net: NET, noCache = false) {
+  // dev
   if (net === NET.DEV) {
-    return api.getMidgardBasePathByIP(api.MIDGARD_DEV_API_DEV_IP);
+    const basePath: string = api.getMidgardBasePathByIP(api.MIDGARD_DEV_API_DEV_IP);
+    yield put(actions.getApiBasePathSuccess(basePath));
+    return basePath;
   }
+  // test- | chaosnet
+  if (net === NET.TEST || net === NET.CHAOS) {
+    const basePath: string = api.MIDGARD_TEST_API;
+    yield put(actions.getApiBasePathSuccess(basePath));
+    return basePath;
+  }
+
+  // mainnet uses `byz`
 
   try {
     yield put(actions.getApiBasePathPending());
@@ -86,7 +97,7 @@ function* tryGetPools() {
 }
 
 export function* getPools() {
-  yield takeEvery(actions.GET_POOLS_REQUEST, function*() {
+  yield takeEvery('GET_POOLS_REQUEST', function*() {
     try {
       // Unsafe: Can't infer type of `GetPoolsResult` in a Generator function - known TS/Generator/Saga issue
       const { poolAssets, assetDetails }: GetPoolsResult = yield call(
@@ -137,9 +148,9 @@ function* tryGetPoolData(assets: string[]) {
 }
 
 export function* getPoolData() {
-  yield takeEvery(actions.GET_POOL_DATA_REQUEST, function*({
+  yield takeEvery('GET_POOL_DATA_REQUEST', function*({
     payload,
-  }: actions.GetPoolData) {
+  }: ReturnType<typeof actions.getPoolData>) {
     const { assets, overrideAllPoolData } = payload;
     try {
       const data = yield call(tryGetPoolData, assets);
@@ -185,9 +196,9 @@ function* tryGetStakerPoolData(payload: GetStakerPoolDataPayload) {
 }
 
 export function* getStakerPoolData() {
-  yield takeEvery(actions.GET_STAKER_POOL_DATA_REQUEST, function*({
+  yield takeEvery('GET_STAKER_POOL_DATA_REQUEST', function*({
     payload,
-  }: actions.GetStakerPoolData) {
+  }: ReturnType<typeof actions.getStakerPoolData>) {
     try {
       const data = yield call(tryGetStakerPoolData, payload);
       yield put(actions.getStakerPoolDataSuccess(data));
@@ -220,7 +231,7 @@ function* tryGetPoolAddressRequest() {
 }
 
 export function* getPoolAddress() {
-  yield takeEvery(actions.GET_POOL_ADDRESSES_REQUEST, function*() {
+  yield takeEvery('GET_POOL_ADDRESSES_REQUEST', function*() {
     try {
       const data = yield call(tryGetPoolAddressRequest);
       yield put(actions.getPoolAddressSuccess(data));
@@ -259,9 +270,9 @@ function* tryGetTxByAddress(payload: GetTxByAddressPayload) {
 }
 
 export function* getTxByAddress() {
-  yield takeEvery(actions.GET_TX_BY_ADDRESS, function*({
+  yield takeEvery('GET_TX_BY_ADDRESS', function*({
     payload,
-  }: actions.GetTxByAddress) {
+  }: ReturnType<typeof actions.getTxByAddress>) {
     try {
       // Can't infer type of `data: InlineResponse200` in a Generator function - known TS/Generator/Saga issue
       const data = yield call(tryGetTxByAddress, payload);
@@ -304,9 +315,9 @@ function* tryTxByAddressTxId(payload: GetTxByAddressTxIdPayload) {
 }
 
 export function* getTxByAddressTxId() {
-  yield takeEvery(actions.GET_TX_BY_ADDRESS_TXID, function*({
+  yield takeEvery('GET_TX_BY_ADDRESS_TXID', function*({
     payload,
-  }: actions.GetTxByAddressTxId) {
+  }: ReturnType<typeof actions.getTxByAddressTxId>) {
     try {
       // Can't infer type of `data: InlineResponse200` in a Generator function - known TS/Generator/Saga issue
       const data = yield call(tryTxByAddressTxId, payload);
@@ -351,9 +362,9 @@ function* tryGetTxByAddressAsset(payload: GetTxByAddressAssetPayload) {
 }
 
 export function* getTxByAddressAsset() {
-  yield takeEvery(actions.GET_TX_BY_ADDRESS_ASSET, function*({
+  yield takeEvery('GET_TX_BY_ADDRESS_ASSET', function*({
     payload,
-  }: actions.GetTxByAddressAsset) {
+  }: ReturnType<typeof actions.getTxByAddressAsset>) {
     try {
       const data = yield call(tryGetTxByAddressAsset, payload);
       yield put(actions.getTxByAddressAssetSuccess(data));
@@ -396,9 +407,9 @@ function* tryGetTxByAsset(payload: GetTxByAssetPayload) {
 }
 
 export function* getTxByAsset() {
-  yield takeEvery(actions.GET_TX_BY_ASSET, function*({
+  yield takeEvery('GET_TX_BY_ASSET', function*({
     payload,
-  }: actions.GetTxByAsset) {
+  }: ReturnType<typeof actions.getTxByAsset>) {
     try {
       const data = yield call(tryGetTxByAsset, payload);
       yield put(actions.getTxByAssetSuccess(data));
@@ -409,9 +420,9 @@ export function* getTxByAsset() {
 }
 
 export function* setBasePriceAsset() {
-  yield takeEvery(actions.SET_BASE_PRICE_ASSET, function*({
+  yield takeEvery('SET_BASE_PRICE_ASSET', function*({
     payload,
-  }: actions.SetBasePriceAsset) {
+  }: ReturnType<typeof actions.setBasePriceAsset>) {
     yield call(saveBasePriceAsset, payload);
   });
 }

@@ -10,13 +10,13 @@ import { validBNOrZero, bn, isValidBN } from '@thorchain/asgardex-util';
 import { getSwapMemo } from '../../helpers/memoHelper';
 import { getTickerFormat } from '../../helpers/stringHelper';
 import {
-  DoubleSwapCalcData,
   getZValue,
   getPx,
   getPz,
   getSlip,
   getFee,
   SingleSwapCalcData,
+  DoubleSwapCalcData,
 } from './calc';
 import { PriceDataIndex, PoolDataMap } from '../../redux/midgard/types';
 import { PoolDetail } from '../../types/generated/midgard';
@@ -38,12 +38,14 @@ export const validatePair = (
   sourceInfo: AssetPair[],
   targetInfo: AssetPair[],
 ) => {
-  const { target = '', source = '' }: Pair = pair;
+  const { source = '', target = '' }: Pair = pair;
+  const poolAssets = targetInfo.map(data => getTickerFormat(data.asset));
+  const sourceData = sourceInfo.filter((data: AssetPair) => {
+    const ticker = getTickerFormat(data.asset);
+    return ticker !== source?.toLowerCase() && poolAssets.includes(ticker);
+  });
   const targetData = targetInfo.filter(
     (data: AssetPair) => getTickerFormat(data.asset) !== target?.toLowerCase(),
-  );
-  const sourceData = sourceInfo.filter(
-    (data: AssetPair) => getTickerFormat(data.asset) !== source?.toLowerCase(),
   );
   return {
     sourceData,
@@ -90,7 +92,7 @@ export const getSwapData = (
     const runePrice = validBNOrZero(priceIndex?.RUNE);
 
     const poolPrice = validBNOrZero(priceIndex[target.toUpperCase()]);
-    const poolPriceString = `${basePriceAsset} ${poolPrice.toFixed(2)}`;
+    const poolPriceString = `${basePriceAsset} ${poolPrice.toFixed(3)}`;
 
     // formula: poolInfo.runeDepth * runePrice
     const depth = bn(poolInfo?.runeDepth ?? 0).multipliedBy(runePrice);

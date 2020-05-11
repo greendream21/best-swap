@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { withRouter, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Icon } from 'antd';
+import { LeftOutlined } from '@ant-design/icons';
 
 import { ActionViewWrapper, BackLink } from './ActionView.style';
 import { SwapIntro, SwapView, SwapSend } from '../Swap';
@@ -62,7 +62,7 @@ class ActionView extends Component {
     return (
       <Link to={routing}>
         <BackLink>
-          <Icon type="left" />
+          <LeftOutlined />
           <span>{backTitle}</span>
         </BackLink>
       </Link>

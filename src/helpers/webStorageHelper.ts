@@ -1,8 +1,10 @@
+import { ThemeType } from '@thorchain/asgardex-theme';
 import { FixmeType } from '../types/bepswap';
 
 export const WALLET_ADDRESS = 'WALLET_ADDRESS';
 export const KEY_STORE = 'KEY_STORE';
 export const BASE_PRICE_ASSET = 'BASE_PRICE_ASSET';
+export const THEME_TYPE = 'THEME_TYPE';
 
 export const saveWalletAddress = (address: string) => {
   sessionStorage.setItem(WALLET_ADDRESS, address);
@@ -42,4 +44,12 @@ export const saveBasePriceAsset = (asset: string) => {
 
 export const getBasePriceAsset = () => {
   return sessionStorage.getItem(BASE_PRICE_ASSET);
+};
+
+export const saveTheme = (themeType: string) => {
+  localStorage.setItem(THEME_TYPE, themeType);
+};
+
+export const getTheme = () => {
+  return localStorage.getItem(THEME_TYPE) || ThemeType.LIGHT;
 };

@@ -4,30 +4,45 @@ import { Modal } from 'antd';
 
 export const ModalWrapper = styled(Modal)`
   text-transform: uppercase;
+  border-color: ${palette('gray', 0)};
+
   .ant-modal-header {
     padding: 10px 14px;
     text-align: center;
-    background: ${palette('primary', 0)};
+    background: ${palette('gradient', 0)};
+    border: none;
     text-transform: uppercase;
     letter-spacing: 1.5px;
     .ant-modal-title {
-      color: #fff;
+      color: ${palette('text', 3)};
     }
   }
   .ant-modal-body {
     padding: 46px 32px;
+    background: ${palette('background', 1)};
+    border-color: ${palette('gray', 0)};
+
+    .ant-input-prefix {
+      color: ${palette('gray', 0)};
+    }
+    .ant-form-item-extra,
+    .ant-form-explain {
+      color: ${palette('text', 2)};
+    }
   }
   .ant-modal-close {
     .ant-modal-close-x {
       width: 44px;
       height: 48px;
       line-height: 48px;
-      color: #fff;
+      color: ${palette('text', 3)};
     }
   }
   .ant-modal-footer {
     height: 46px;
     padding: 0;
+    background: ${palette('background', 1)};
+    border-color: ${palette('gray', 0)};
     & > div {
       display: flex;
       flex-direction: row;
@@ -41,24 +56,26 @@ export const ModalWrapper = styled(Modal)`
     height: 100%;
     border: none;
     border-radius: 0px;
+    background: ${palette('background', 1)};
+    color: ${palette('text', 2)};
+
     &:first-child {
-      border-right: 1px solid #d3dbe7;
+      border-right: 1px solid ${palette('gray', 0)};
     }
     &:hover,
     &:active,
     &:focus {
-      color: ${palette('primary', 1)};
+      color: ${palette('primary', 0)};
     }
 
     &.ant-btn-primary {
-      background: #fff;
-      color: ${palette('primary', 1)};
-      border-color: ${palette('primary', 0)};
+      color: ${palette('primary', 0)};
+      border-color: ${palette('gray', 0)};
       &:hover,
       &:active,
       &:focus {
-        background-color: ${palette('secondary', 0)};
-        border-color: ${palette('secondary', 0)};
+        background-color: ${palette('gradient', 1)};
+        border-color: ${palette('gray', 1)};
       }
     }
   }

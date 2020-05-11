@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Icon } from 'antd';
+import { CheckOutlined } from '@ant-design/icons';
 import { IconWrapper } from './confirmIcon.style';
 
 class ConfirmIcon extends Component {
@@ -8,7 +8,7 @@ class ConfirmIcon extends Component {
     const { className, ...otherProps } = this.props;
     return (
       <IconWrapper className={className} {...otherProps}>
-        <Icon type="check" />
+        <CheckOutlined />
       </IconWrapper>
     );
   }

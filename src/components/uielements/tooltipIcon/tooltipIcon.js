@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Icon } from 'antd';
+import { InfoOutlined } from '@ant-design/icons';
 
 import { TooltipIconWrapper } from './tooltipIcon.style';
 import Button from '../button';
@@ -20,7 +20,7 @@ class TooltipIcon extends Component {
         {...props}
       >
         <Button>
-          <Icon type="info" />
+          <InfoOutlined />
         </Button>
       </TooltipIconWrapper>
     );
