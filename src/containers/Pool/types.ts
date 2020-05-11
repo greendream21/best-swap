@@ -37,6 +37,7 @@ export type PoolData = {
   transaction: BaseAmount;
   liqFee: BaseAmount;
   roiAT: number;
+  poolROI12: BigNumber;
   totalSwaps: number;
   totalStakers: number;
   values: PoolDataValues;
