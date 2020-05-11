@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { palette } from 'styled-theme';
 import { RoundValue } from './txStatus';
 import { media } from '../../../helpers/styleHelper';
 
@@ -17,10 +18,10 @@ export const TxStatusWrapper = styled.div`
       border-top-left-radius: 20px;
       border-bottom-left-radius: 20px;
   `};
-  background: #e6e7ec;
+  background: ${palette('gray', 1)};
   text-transform: uppercase;
   &:hover {
-    box-shadow: 2px 2px 4px 1px #aab5c4;
+    box-shadow: 2px 2px 4px 1px ${palette('gray', 2)};
     cursor: pointer;
   }
 
@@ -35,7 +36,7 @@ export const TxStatusWrapper = styled.div`
     font-size: 10px;
     letter-spacing: 0.7px;
     padding-right: 6px;
-    color: #aab5c4;
+    color: ${palette('text', 2)};
     ${media.sm`
       font-size: 12px;
       letter-spacing: 1px;
@@ -52,7 +53,7 @@ export const TxStatusContent = styled.div`
 
   .txStatus-amount,
   .txStatus-asset {
-    color: #606b7a;
+    color: ${palette('text', 0)};
     font-size: 13px;
     letter-spacing: 0.7px;
     padding: 0 2px;
@@ -67,7 +68,7 @@ export const TxStatusContent = styled.div`
 export const Seperator = styled.div`
   width: 1px;
   height: 20px;
-  border-left: 1px solid #e6e7ec;
+  border-left: 1px solid ${palette('gray', 2)};
   margin: 0 2px;
   ${media.sm`
     margin: 0 15px;

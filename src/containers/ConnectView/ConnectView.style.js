@@ -9,6 +9,9 @@ export const ContentWrapper = styled(ContentView)`
   ${media.sm`
     padding: 0 30px;
   `}
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   .connect-view-header {
     display: flex;
@@ -51,6 +54,7 @@ export const ContentWrapper = styled(ContentView)`
     padding-bottom: 30px;
 
     .keystore-connect-wrapper {
+      width: 300px;
       .file-upload-wrapper {
         display: flex;
         align-items: center;
@@ -79,7 +83,7 @@ export const ContentWrapper = styled(ContentView)`
           align-items: center;
           .label-wrapper {
             padding: 0;
-            color: ${palette('primary', 1)};
+            color: ${palette('primary', 0)};
           }
         }
 
@@ -101,7 +105,7 @@ export const ContentWrapper = styled(ContentView)`
       align-items: center;
       width: 90%;
       padding: 60px 10px;
-      border: 1px solid rgba(170, 181, 196, 0.3);
+      border: 1px solid ${palette('gray', 0)};
       border-radius: 4px;
 
       ${media.sm`

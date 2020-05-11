@@ -30,6 +30,7 @@ import { getTickerFormat } from '../../helpers/stringHelper';
 import { getTokenName } from '../../helpers/assetHelper';
 import { Maybe, Nothing, FixmeType } from '../../types/bepswap';
 import { NET } from '../../env';
+import { envOrDefault } from '../../helpers/envHelper';
 
 /* /////////////////////////////////////////////////////////////
 // api
@@ -180,13 +181,15 @@ export function* getBinanceOpenOrders() {
 export const WS_MAX_RETRY = 5;
 export const WS_RETRY_DELAY = 300; // ms
 
-const TESTNET_WS_URI =
-  process.env.REACT_APP_BINANCE_TESTNET_WS_URI ||
-  'wss://testnet-dex.binance.org/api/ws';
+const TESTNET_WS_URI = envOrDefault(
+  process.env.REACT_APP_BINANCE_TESTNET_WS_URI,
+  'wss://testnet-dex.binance.org/api/ws',
+);
 
-const MAINET_WS_URI =
-  process.env.REACT_APP_BINANCE_MAINNET_WS_URI ||
-  'wss://dex.binance.org/api/ws';
+const MAINET_WS_URI = envOrDefault(
+  process.env.REACT_APP_BINANCE_MAINNET_WS_URI,
+  'wss://dex.binance.org/api/ws',
+);
 
 function createBinanceTransfersChannel(ws: WebSocket) {
   return eventChannel(emit => {

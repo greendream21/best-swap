@@ -1,7 +1,13 @@
 import React, { useCallback, useMemo } from 'react';
 import { connect } from 'react-redux';
 import { Link, useRouteMatch } from 'react-router-dom';
-import { Button, Tooltip, Icon } from 'antd';
+import { Tooltip } from 'antd';
+import {
+  SwapOutlined,
+  DatabaseFilled,
+  WalletOutlined,
+  QuestionOutlined,
+} from '@ant-design/icons';
 
 import * as RD from '@devexperts/remote-data-ts';
 import Tabs from '../uielements/tabs';
@@ -13,6 +19,8 @@ import HeaderSetting from './headerSetting';
 import WalletDrawer from '../../containers/WalletView/WalletDrawer';
 
 import * as appActions from '../../redux/app/actions';
+import Button from '../uielements/button';
+import ThemeSwitch from '../uielements/themeSwitch';
 import WalletButton from '../uielements/walletButton';
 import BasePriceSelector from './basePriceSelector';
 import { MAX_VALUE } from '../../redux/app/const';
@@ -43,7 +51,13 @@ type ComponentProps = {
 type Props = ConnectedProps & ComponentProps;
 
 const Header: React.FC<Props> = (props: Props): JSX.Element => {
-  const { setTxTimerModal, setTxTimerStatus, txStatus, user, midgardBasePath } = props;
+  const {
+    setTxTimerModal,
+    setTxTimerStatus,
+    txStatus,
+    user,
+    midgardBasePath,
+  } = props;
   const { status, value, type } = txStatus;
   const wallet: Maybe<string> = user ? user.wallet : Nothing;
 
@@ -77,7 +91,7 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
     const swapTab = (
       <Link to="/swap">
         <span>
-          <Icon type="swap" />
+          <SwapOutlined />
           swap
         </span>
       </Link>
@@ -85,7 +99,7 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
     const poolsTab = (
       <Link to="/pools">
         <span>
-          <Icon type="database" theme="filled" />
+          <DatabaseFilled />
           stake
         </span>
       </Link>
@@ -107,11 +121,17 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
         <Link to="/">
           <Logo name="bepswap" type="long" />
         </Link>
-        <Link to="/introduction">
-          <Tooltip title="Introduction?">
-            <Button shape="circle" size="small" icon="question" />
-          </Tooltip>
-        </Link>
+        <Tooltip title="Introduction?">
+          <Link to="/introduction">
+            <Button
+              className="intro-btn"
+              typevalue="outline"
+              shape="circle"
+              size="small"
+              icon={<QuestionOutlined />}
+            />
+          </Link>
+        </Tooltip>
       </LogoWrapper>
       {renderHeader}
       <HeaderActionButtons>
@@ -127,11 +147,12 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
         {!wallet && (
           <Link to="/connect">
             <div className="wallet-mobile-btn">
-              <Icon type="wallet" />
+              <WalletOutlined />
             </div>
           </Link>
         )}
         {wallet && <WalletDrawer />}
+        <ThemeSwitch />
         <BasePriceSelector />
         <HeaderSetting midgardBasePath={midgardBasePath} />
         {wallet && (

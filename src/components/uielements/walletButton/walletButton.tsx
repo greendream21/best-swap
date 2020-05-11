@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icon } from 'antd';
+import { FolderAddFilled } from '@ant-design/icons';
 
 import Button from '../button';
 import { Props as ButtonProps } from '../button/button';
@@ -24,12 +24,9 @@ const WalletButton: React.FC<Props> = (props: Props): JSX.Element => {
   const getBtnValue = () => {
     if (!connected) {
       return (
-        <span>
-          <Icon
-            type="folder-add"
-            theme="filled"
+        <span style={{ display: 'flex', alignItems: 'center' }}>
+          <FolderAddFilled
             style={{
-              display: 'inline',
               marginRight: '6px',
               top: '1px',
               position: 'relative',

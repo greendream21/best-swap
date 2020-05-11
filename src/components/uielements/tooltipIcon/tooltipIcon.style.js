@@ -15,6 +15,6 @@ export const TooltipIconWrapper = styled(Tooltip)`
   border-radius: 50% !important;
 
   &:hover {
-    box-shadow: 0px 0px 4px 2px ${palette('secondary', 2)};
+    box-shadow: 0px 0px 4px 2px ${palette('primary', 0)};
   }
 `;

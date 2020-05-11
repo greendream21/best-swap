@@ -42,21 +42,21 @@ import {
 import { UnpackPromiseResponse } from '../../types/util';
 
 export function* saveWalletSaga() {
-  yield takeEvery(actions.SAVE_WALLET, function*({
+  yield takeEvery('SAVE_WALLET', function*({
     payload,
-  }: actions.SaveWallet) {
+  }: ReturnType<typeof actions.saveWallet>) {
     const { wallet, keystore } = payload;
 
     saveWalletAddress(wallet);
     saveKeystore(keystore);
 
     yield put(actions.refreshBalance(wallet));
-    yield put(actions.refreshStake(wallet));
+    yield put(actions.refreshStakes(wallet));
   });
 }
 
 export function* forgetWalletSaga() {
-  yield takeEvery(actions.FORGET_WALLET, function*() {
+  yield takeEvery('FORGET_WALLET', function*() {
     clearWalletAddress();
     clearKeystore();
 
@@ -65,9 +65,9 @@ export function* forgetWalletSaga() {
 }
 
 export function* refreshBalance() {
-  yield takeEvery(actions.REFRESH_BALANCE, function*({
+  yield takeEvery('REFRESH_BALANCE', function*({
     payload,
-  }: actions.RefreshBalance) {
+  }: ReturnType<typeof actions.refreshBalance>) {
     const address = payload;
 
     try {
@@ -148,11 +148,26 @@ export function* getUserStakeData(
       if (userStakerData && poolData.asset) {
         const price = poolData?.price ?? 0;
         const { symbol = '', ticker = '' } = getAssetFromString(poolData.asset);
+        const { poolUnits, assetDepth, runeDepth } = poolData;
+        const { stakeUnits } = userStakerData;
+
+        const poolUnitsBN = bnOrZero(poolUnits);
+        const assetDepthBN = bnOrZero(assetDepth);
+        const runeDepthBN = bnOrZero(runeDepth);
+        const stakeUnitsBN = bnOrZero(stakeUnits);
+
+        const runeShare = poolUnitsBN
+          ? runeDepthBN.multipliedBy(stakeUnitsBN).div(poolUnitsBN)
+          : bn(0);
+        const assetShare = poolUnitsBN
+          ? assetDepthBN.multipliedBy(stakeUnitsBN).div(poolUnitsBN)
+          : bn(0);
+
         const stakeData: StakeData = {
           targetSymbol: symbol,
           target: ticker.toLowerCase(),
-          targetValue: baseToToken(baseAmount(userStakerData?.assetStaked)),
-          assetValue: baseToToken(baseAmount(userStakerData?.runeStaked)),
+          targetValue: baseToToken(baseAmount(assetShare)),
+          assetValue: baseToToken(baseAmount(runeShare)),
           asset: 'rune',
           price,
         } as StakeData;
@@ -214,9 +229,9 @@ export function* tryGetUserStakeData(address: Address, pools: string[]) {
 }
 
 export function* refreshStakes() {
-  yield takeEvery(actions.REFRESH_STAKES, function*({
+  yield takeEvery('REFRESH_STAKES', function*({
     payload: address,
-  }: actions.RefreshStakes) {
+  }: ReturnType<typeof actions.refreshStakes>) {
     try {
       const data: StakersAddressData = yield call(tryRefreshStakes, address);
 
@@ -226,12 +241,12 @@ export function* refreshStakes() {
           address,
           data.poolsArray,
         );
-        yield put(actions.refreshStakeSuccess(result));
+        yield put(actions.refreshStakesSuccess(result));
       } else {
-        yield put(actions.refreshStakeSuccess([]));
+        yield put(actions.refreshStakesSuccess([]));
       }
     } catch (error) {
-      yield put(actions.refreshStakeFailed(error));
+      yield put(actions.refreshStakesFailed(error));
     }
   });
 }

@@ -9,11 +9,11 @@ export const DragWrapper = styled.div`
   align-items: center;
   width: 244px;
   height: 40px;
-  border: 1px solid ${palette('primary', 1)};
+  border: 1px solid ${palette('primary', 0)};
   ${props => props.success && `border: 1px solid ${palette('success', 0)}`};
 
   border-radius: 20px;
-  background-color: #fff;
+  background-color: ${palette('background', 1)};
   ${props => props.dragging && boxShadow('0px 0px 4px 1px #50E3C2')};
   ${props => props.success && boxShadow('0px 0px 4px 1px #50E3C2')};
 
@@ -31,7 +31,7 @@ export const DragWrapper = styled.div`
       height: 100%;
     }
     div {
-      i {
+      svg {
         font-size: 18px;
       }
     }

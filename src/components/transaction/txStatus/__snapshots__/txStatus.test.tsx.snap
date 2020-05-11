@@ -1,32 +1,26 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`FilterDropdown Matches the snapshot 1`] = `
-<a
-  href="#"
-  rel="noopener noreferrer"
-  target="_blank"
+<div
+  className="sc-AxjAm inSpJf txStatus-wrapper"
 >
+  <p
+    className="txStatus-type"
+  >
+    in
+  </p>
   <div
-    className="sc-AxjAm iVQVNx txStatus-wrapper"
+    className="sc-AxirZ dGmBIH tx-status-content"
   >
     <p
-      className="txStatus-type"
+      className="txStatus-amount"
     >
-      in
+      0.00
     </p>
-    <div
-      className="sc-AxirZ hYyDVv tx-status-content"
-    >
-      <p
-        className="txStatus-amount"
-      >
-        0.00
-      </p>
-      <p
-        className="txStatus-asset"
-      />
-      
-    </div>
+    <p
+      className="txStatus-asset"
+    />
+    
   </div>
-</a>
+</div>
 `;

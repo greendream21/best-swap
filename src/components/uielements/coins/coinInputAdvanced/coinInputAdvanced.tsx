@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-
-import { InputSizes } from 'antd/lib/input/Input';
+import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import BigNumber from 'bignumber.js';
 import { bn, isValidBN } from '@thorchain/asgardex-util';
 import { CoinInputAdvancedView } from './coinInputAdvanced.view';
@@ -147,7 +146,7 @@ type Props = {
   onChangeValue: (value: BigNumber) => void;
   onFocus?: () => void;
   className?: string;
-  size?: typeof InputSizes[number];
+  size?: SizeType;
   minimumFractionDigits?: number;
   disabled?: boolean;
   'data-test'?: string;
@@ -159,7 +158,7 @@ export const CoinInputAdvanced: React.FC<Props> = ({
   onFocus,
   className = '',
   minimumFractionDigits = 2,
-  size = 'default',
+  size,
   ...otherProps
 }: Props): JSX.Element => {
   return (

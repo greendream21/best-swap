@@ -43,5 +43,6 @@ export type TxStatus = {
  * State of reducer
  */
 export type State = {
+  themeType: string;
   readonly txStatus: TxStatus;
 };

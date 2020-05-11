@@ -7,11 +7,11 @@ import { logoData } from './data';
 class Logo extends Component {
   render() {
     const { name, type, ...otherProps } = this.props;
-    const logoURL = logoData[name][type];
+    const LogoIcon = logoData[name][type];
 
     return (
       <LogoWrapper className="logo-wrapper" {...otherProps}>
-        <img src={logoURL} alt="bepswap-logo" />
+        <LogoIcon />
       </LogoWrapper>
     );
   }

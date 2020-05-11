@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react';
-import { Form, Icon } from 'antd';
+import { Form } from 'antd';
+import { LockOutlined } from '@ant-design/icons';
 
 import Input from '../../uielements/input';
 import { StyledModal } from './privateModal.style';
@@ -45,7 +46,7 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
       okText="CONFIRM"
       cancelText="CANCEL"
     >
-      <Form onSubmit={onOk} autoComplete="off">
+      <Form onFinish={onOk} autoComplete="off">
         <Form.Item
           className={invalidPassword ? 'has-error' : ''}
           extra={validatingPassword ? 'Validating password ...' : ''}
@@ -57,7 +58,7 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
             sizevalue="big"
             value={password}
             onChange={onChangePasswordHandler}
-            prefix={<Icon type="lock" />}
+            prefix={<LockOutlined />}
             autoComplete="off"
           />
           {invalidPassword && (

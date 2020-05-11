@@ -11,12 +11,12 @@ export const StepBarWrapper = styled.div`
     width: 9px;
     height: 9px;
     border-radius: 50%;
-    background: ${palette('background', 8)};
+    background: ${palette('gray', 1)};
   }
 
   .step-bar-line {
     width: 5px;
     ${props => `height: ${props.size}px;`};
-    border-right: 1px solid ${palette('background', 8)};
+    border-right: 1px solid ${palette('gray', 1)};
   }
 `;

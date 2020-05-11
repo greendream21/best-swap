@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import { LabelWrapper } from './label.style';
-import LabelLoader from '../../utility/loaders/label';
 
 class Label extends Component {
   render() {
@@ -10,7 +9,7 @@ class Label extends Component {
 
     return (
       <LabelWrapper className={`label-wrapper ${className}`} {...props}>
-        {loading && <LabelLoader />}
+        {loading && '...'}
         {!loading && children}
       </LabelWrapper>
     );

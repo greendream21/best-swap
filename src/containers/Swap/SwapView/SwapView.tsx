@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter, Link } from 'react-router-dom';
-import { Icon } from 'antd';
+import { SyncOutlined, SwapOutlined } from '@ant-design/icons';
 
 import { bn, validBNOrZero } from '@thorchain/asgardex-util';
 import Label from '../../../components/uielements/label';
@@ -11,7 +11,6 @@ import CoinPair from '../../../components/uielements/coins/coinPair';
 import Trend from '../../../components/uielements/trend';
 import Button from '../../../components/uielements/button';
 import Table from '../../../components/uielements/table';
-import SwapLoader from '../../../components/utility/loaders/swap';
 
 import { getSwapData } from '../utils';
 import { SwapTableRowType, SwapCardType } from './types';
@@ -62,7 +61,7 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
       key: 'swap',
       title: (
         <Button onClick={getPools} typevalue="outline">
-          <Icon type="sync" />
+          <SyncOutlined />
           refresh
         </Button>
       ),
@@ -80,7 +79,7 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
               round="true"
               data-test={dataTest}
             >
-              <Icon type="swap" />
+              <SwapOutlined />
               swap
             </Button>
           </Link>
@@ -177,7 +176,14 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
     };
     const columns = columnData[view] || desktopColumns;
 
-    return <Table columns={columns} dataSource={swapViewData} rowKey="key" />;
+    return (
+      <Table
+        columns={columns}
+        dataSource={swapViewData}
+        loading={loading}
+        rowKey="key"
+      />
+    );
   };
 
   const renderSwapList = (view: ViewType) => {
@@ -225,23 +231,18 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
 
   return (
     <ContentWrapper className="swap-view-wrapper">
-      {loading && <SwapLoader />}
-      {!loading && (
-        <>
-          <div className="view-title">
-            <Label size="normal" weight="bold" color="normal">
-              CHOOSE BASE PAIR
-            </Label>
-          </div>
-          <div className="asset-button-group">{renderAssets()}</div>
-          <div className="swap-list-view desktop-view">
-            {renderSwapList(ViewType.DESKTOP)}
-          </div>
-          <div className="swap-list-view mobile-view">
-            {renderSwapList(ViewType.MOBILE)}
-          </div>
-        </>
-      )}
+      <div className="view-title">
+        <Label size="normal" weight="bold" color="normal">
+          CHOOSE BASE PAIR
+        </Label>
+      </div>
+      <div className="asset-button-group">{renderAssets()}</div>
+      <div className="swap-list-view desktop-view">
+        {renderSwapList(ViewType.DESKTOP)}
+      </div>
+      <div className="swap-list-view mobile-view">
+        {renderSwapList(ViewType.MOBILE)}
+      </div>
     </ContentWrapper>
   );
 };

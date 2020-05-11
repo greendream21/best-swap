@@ -24,80 +24,80 @@ import { tokenAmount, baseAmount } from '../../helpers/tokenHelper';
 
 const bnbPoolInfo: PoolDetail = {
   asset: 'BNB.BNB',
-  assetDepth: '-12500',
-  assetROI: '184467440737094.38',
-  assetStakedTotal: '100000',
-  buyAssetCount: '0',
-  buyFeeAverage: '0',
-  buyFeesTotal: '0',
-  buySlipAverage: '0',
-  buyTxAverage: '0',
-  buyVolume: '0',
-  poolDepth: '200000',
-  poolFeeAverage: '0',
-  poolFeesTotal: '0',
-  poolROI: '92233720368547.19',
-  poolROI12: '92233720368547.19',
-  poolSlipAverage: '0',
-  poolStakedTotal: '0',
-  poolTxAverage: '0',
-  poolUnits: '50000',
-  poolVolume: '0',
+  assetDepth: '2224480142',
+  assetROI: '0.030997470337411938',
+  assetStakedTotal: '2157600000',
+  buyAssetCount: '292',
+  buyFeeAverage: '7060697414.182593',
+  buyFeesTotal: '2061723644941',
+  buySlipAverage: '0.020423287763786567',
+  buyTxAverage: '2847231178.710591',
+  buyVolume: '831391504183',
+  poolDepth: '752064535802',
+  poolFeeAverage: '6440609693.924242',
+  poolFeesTotal: '2125401198995',
+  poolROI: '0.6120802254729578',
+  poolROI12: '0.6093876217266438',
+  poolSlipAverage: '0.031693333633081765',
+  poolStakedTotal: '536183263953',
+  poolTxAverage: '4979658580.63162',
+  poolUnits: '201288130514',
+  poolVolume: '1391790523992',
   poolVolume24hr: '0',
-  price: '5.421010862427526e-15',
-  runeDepth: '100000',
-  runeROI: '0',
-  runeStakedTotal: '0',
-  sellAssetCount: '0',
-  sellFeeAverage: '0',
-  sellFeesTotal: '0',
-  sellSlipAverage: '0',
-  sellTxAverage: '0',
-  sellVolume: '0',
-  stakeTxCount: '1',
-  stakersCount: '1',
-  stakingTxCount: '1',
+  price: '169.04276230711346',
+  runeDepth: '376032267901',
+  runeROI: '1.1931629806085038',
+  runeStakedTotal: '171456600000',
+  sellAssetCount: '38',
+  sellFeeAverage: '1675725106.6842105',
+  sellFeesTotal: '63677554054',
+  sellSlipAverage: '0.11829473873398169',
+  sellTxAverage: '21365679669.077423',
+  sellVolume: '560399019809',
+  stakeTxCount: '12',
+  stakersCount: '4',
+  stakingTxCount: '12',
   status: PoolDetailStatusEnum.Enabled,
-  swappersCount: '0',
-  swappingTxCount: '0',
+  swappersCount: '4',
+  swappingTxCount: '330',
   withdrawTxCount: '0',
 };
 
 const lokPoolInfo: PoolDetail = {
   asset: 'BNB.LOK-3C0',
-  assetDepth: '4283400000',
+  assetDepth: '18796629752',
   assetROI: '0',
-  assetStakedTotal: '4283400000',
+  assetStakedTotal: '18796629752',
   buyAssetCount: '0',
   buyFeeAverage: '0',
   buyFeesTotal: '0',
   buySlipAverage: '0',
-  buyTxAverage: '0',
+  buyTxAverage: '-0',
   buyVolume: '0',
-  poolDepth: '7644800000',
+  poolDepth: '471588800000',
   poolFeeAverage: '0',
   poolFeesTotal: '0',
   poolROI: '0',
   poolROI12: '0',
   poolSlipAverage: '0',
-  poolStakedTotal: '7644800000',
+  poolStakedTotal: '471588800000',
   poolTxAverage: '0',
-  poolUnits: '4052900000',
+  poolUnits: '104855161669',
   poolVolume: '0',
   poolVolume24hr: '0',
-  price: '0.8923752159499463',
-  runeDepth: '3822400000',
+  price: '12.54450415372527',
+  runeDepth: '235794400000',
   runeROI: '0',
-  runeStakedTotal: '3822400000',
+  runeStakedTotal: '235794400000',
   sellAssetCount: '0',
   sellFeeAverage: '0',
   sellFeesTotal: '0',
   sellSlipAverage: '0',
   sellTxAverage: '0',
   sellVolume: '0',
-  stakeTxCount: '1',
-  stakersCount: '1',
-  stakingTxCount: '1',
+  stakeTxCount: '6',
+  stakersCount: '2',
+  stakingTxCount: '6',
   status: PoolDetailStatusEnum.Enabled,
   swappersCount: '0',
   swappingTxCount: '0',
@@ -127,57 +127,113 @@ const pools: string[] = [
   'BNB.FSN-F1B',
 ];
 
-describe('swap/utils/isValidSwap', () => {
-  it('should return false for source invalid pair', () => {
-    const sourceInvalidPair: Pair = {
-      source: '',
-      target: 'rune',
-    };
-    expect(isValidSwap(sourceInvalidPair, pools)).toBeFalsy();
+describe('swap/utils/', () => {
+  describe('isValidSwap', () => {
+    it('should return false for source invalid pair', () => {
+      const sourceInvalidPair: Pair = {
+        source: '',
+        target: 'rune',
+      };
+      expect(isValidSwap(sourceInvalidPair, pools)).toBeFalsy();
+    });
+    it('should return false for target invalid pair', () => {
+      const targetInvalidPair: Pair = {
+        source: 'rune',
+        target: '',
+      };
+      expect(isValidSwap(targetInvalidPair, pools)).toBeFalsy();
+    });
+    it('should return false for invalid pair', () => {
+      const invalidPair: Pair = {
+        source: 'rune',
+        target: 'rune',
+      };
+      expect(isValidSwap(invalidPair, pools)).toBeFalsy();
+    });
+    it('should return false in case the asset is unlisted!', () => {
+      const invalidPair: Pair = {
+        source: 'rune',
+        target: 'btc',
+      };
+      const invalidPair2: Pair = {
+        source: 'eth',
+        target: 'btc',
+      };
+      expect(isValidSwap(invalidPair, pools)).toBeFalsy();
+      expect(isValidSwap(invalidPair2, pools)).toBeFalsy();
+    });
+    it('should return true for a valid pair', () => {
+      const validPair: Pair = {
+        source: 'rune',
+        target: 'bnb',
+      };
+      expect(isValidSwap(validPair, pools)).toBeTruthy();
+    });
+    it('should return true for a valid pair', () => {
+      const validPair: Pair = {
+        source: 'lok',
+        target: 'tusdb',
+      };
+      expect(isValidSwap(validPair, pools)).toBeTruthy();
+    });
   });
-  it('should return false for target invalid pair', () => {
-    const targetInvalidPair: Pair = {
-      source: 'rune',
-      target: '',
-    };
-    expect(isValidSwap(targetInvalidPair, pools)).toBeFalsy();
-  });
-  it('should return false for invalid pair', () => {
-    const invalidPair: Pair = {
-      source: 'rune',
-      target: 'rune',
-    };
-    expect(isValidSwap(invalidPair, pools)).toBeFalsy();
-  });
-  it('should return false in case the asset is unlisted!', () => {
-    const invalidPair: Pair = {
-      source: 'rune',
-      target: 'btc',
-    }; const invalidPair2: Pair = {
-      source: 'eth',
-      target: 'btc',
-    };
-    expect(isValidSwap(invalidPair, pools)).toBeFalsy();
-    expect(isValidSwap(invalidPair2, pools)).toBeFalsy();
-  });
-  it('should return true for a valid pair', () => {
-    const validPair: Pair = {
-      source: 'rune',
-      target: 'bnb',
-    };
-    expect(isValidSwap(validPair, pools)).toBeTruthy();
-  });
-  it('should return true for a valid pair', () => {
-    const validPair: Pair = {
-      source: 'lok',
-      target: 'tusdb',
-    };
-    expect(isValidSwap(validPair, pools)).toBeTruthy();
-  });
-});
 
-// TODO: Fix unit test
-describe.skip('swap/utils/', () => {
+  describe('validatePair', () => {
+    it('should filter source and target data', () => {
+      const assetInfo: AssetPair[] = [
+        { asset: 'BNB.BNB' },
+        { asset: 'BNB.BOLT-E42' },
+        { asset: 'BNB.FTM-585' },
+        { asset: 'BNB.LOK-3C0' },
+        { asset: 'BNB.BTC' },
+        { asset: 'BNB.ETH' },
+      ];
+
+      const poolInfo: AssetPair[] = [
+        { asset: 'BNB.BNB' },
+        { asset: 'BNB.BOLT-E42' },
+        { asset: 'BNB.LOK-3C0' },
+      ];
+      const pair = { source: 'rune', target: 'bnb' };
+
+      const result = validatePair(pair, assetInfo, poolInfo);
+      const expected = {
+        sourceData: [
+          { asset: 'BNB.BNB' },
+          { asset: 'BNB.BOLT-E42' },
+          { asset: 'BNB.LOK-3C0' },
+        ],
+        targetData: [{ asset: 'BNB.BOLT-E42' }, { asset: 'BNB.LOK-3C0' }],
+      };
+      expect(result).toEqual(expected);
+    });
+
+    it('shouldnt filter anything from empty pair', () => {
+      const assetInfo: AssetPair[] = [
+        { asset: 'BNB.BNB' },
+        { asset: 'BNB.BOLT-E42' },
+        { asset: 'BNB.FTM-585' },
+        { asset: 'BNB.LOK-3C0' },
+        { asset: 'BNB.BTC' },
+        { asset: 'BNB.ETH' },
+      ];
+
+      const poolInfo: AssetPair[] = [
+        { asset: 'BNB.BNB' },
+        { asset: 'BNB.BOLT-E42' },
+        { asset: 'BNB.LOK-3C0' },
+      ];
+      const pair = { source: '', target: '' };
+
+      const result = validatePair(pair, assetInfo, poolInfo);
+      const expected = {
+        sourceData: poolInfo,
+        targetData: poolInfo,
+      };
+      expect(result).toEqual(expected);
+    });
+  });
+
   describe('isOutboundTx', () => {
     it('should find an outbound tx ', () => {
       const transferEvent = {
@@ -354,48 +410,6 @@ describe.skip('swap/utils/', () => {
     });
   });
 
-  describe('validatePair', () => {
-    it('should filter source and target data', () => {
-      const pair = { source: 'A', target: 'B' };
-      const sources: AssetPair[] = [
-        { asset: 'A-B' },
-        { asset: 'B-C' },
-        { asset: 'C-D' },
-      ];
-      const targets: AssetPair[] = [
-        { asset: 'A-B' },
-        { asset: 'B-C' },
-        { asset: 'C-D' },
-      ];
-      const result = validatePair(pair, sources, targets);
-      const expected = {
-        sourceData: [{ asset: 'B-C' }, { asset: 'C-D' }],
-        targetData: [{ asset: 'A-B' }, { asset: 'C-D' }],
-      };
-      expect(result).toEqual(expected);
-    });
-
-    it('should not filter anything if values of pair are unknown', () => {
-      const pair: Pair = { source: Nothing, target: Nothing };
-      const sources: AssetPair[] = [
-        { asset: 'A-B' },
-        { asset: 'B-C' },
-        { asset: 'C-D' },
-      ];
-      const targets: AssetPair[] = [
-        { asset: 'A-B' },
-        { asset: 'B-C' },
-        { asset: 'C-D' },
-      ];
-      const result = validatePair(pair, sources, targets);
-      const expected = {
-        sourceData: [...sources],
-        targetData: [...targets],
-      };
-      expect(result).toEqual(expected);
-    });
-  });
-
   describe('getSwapType', () => {
     it('returns sigle swap type', () => {
       const expected = 'single_swap';
@@ -418,11 +432,11 @@ describe.skip('swap/utils/', () => {
 
     it('returns swap data for a `LOK-3C0` pool', () => {
       const expected = {
-        depth: 'RUNE 38.22',
+        depth: 'RUNE 2,357.94',
         pool: { asset: 'rune', target: 'LOK' },
-        poolPrice: 'RUNE 0.89',
+        poolPrice: 'RUNE 0.890',
         raw: {
-          depth: bn('3822400000'),
+          depth: bn('235794400000'),
           slip: bn(0),
           trade: bn(0),
           transaction: bn(0),
@@ -442,20 +456,20 @@ describe.skip('swap/utils/', () => {
 
     it('returns swap data for a `BNB` pool', () => {
       const expected = {
-        depth: 'RUNE 0.00',
+        depth: 'RUNE 3,760.32',
         pool: { asset: 'rune', target: 'BNB' },
-        poolPrice: 'RUNE 0.00',
+        poolPrice: 'RUNE 0.000',
         raw: {
-          depth: bn('100000'),
-          slip: bn(0),
-          trade: bn(0),
-          transaction: bn(0),
+          depth: bn('376032267901'),
+          slip: bn(0.031693333633081765),
+          trade: bn(330),
+          transaction: bn(4979658580.63162),
           volume: bn(0),
           poolPrice: bn(0),
         },
-        slip: '0',
-        trade: '0',
-        transaction: 'RUNE 0.00',
+        slip: '0.031693333633081765',
+        trade: '330',
+        transaction: 'RUNE 49.80',
         volume: 'RUNE 0.00',
       };
 
@@ -483,13 +497,13 @@ describe.skip('swap/utils/', () => {
       const to = 'bnb';
       const expected: CalcResult = {
         Px: bn(1),
-        fee: tokenAmount(0.001),
-        lim: baseAmount(0),
-        outputAmount: tokenAmount(0),
-        outputPrice: bn(100000),
+        fee: tokenAmount(0.0149273),
+        lim: baseAmount(544475),
+        outputAmount: tokenAmount(0.56131472),
+        outputPrice: bn(178.03053227763760049641),
         poolAddressTo: 'address',
         poolAddressFrom: Nothing,
-        slip: bn(0),
+        slip: bn(5.389413716466187631),
         symbolFrom: 'RUNE-A1F',
         symbolTo: 'BNB',
       };
@@ -509,10 +523,12 @@ describe.skip('swap/utils/', () => {
       expect(result?.outputAmount.amount()).toEqual(
         expected.outputAmount.amount(),
       );
-      expect(result?.outputPrice).toEqual(expected.outputPrice);
+      expect(result?.outputPrice.toFixed(5)).toEqual(
+        expected.outputPrice.toFixed(5),
+      );
       expect(result?.poolAddressTo).toEqual(expected.poolAddressTo);
       expect(result?.poolAddressFrom).toEqual(expected.poolAddressFrom);
-      expect(result?.slip).toEqual(expected.slip);
+      expect(result?.slip.toFixed(5)).toEqual(expected.slip.toFixed(5));
       expect(result?.symbolFrom).toEqual(expected.symbolFrom);
       expect(result?.symbolTo).toEqual(expected.symbolTo);
     });
@@ -520,14 +536,14 @@ describe.skip('swap/utils/', () => {
       const from = 'lok';
       const to = 'rune';
       const expected: CalcResult = {
-        Px: bn('0.2114251131383284092'),
-        fee: tokenAmount('18.73582991719004922921'),
-        lim: baseAmount('778454623'),
-        outputAmount: tokenAmount('8.02530538672918568684'),
-        outputPrice: bn('0.99999999989169020862'),
+        Px: bn('6.3322188335020546053'),
+        fee: tokenAmount('284.34798923'),
+        lim: baseAmount('51844403581'),
+        outputAmount: tokenAmount('534.47838743'),
+        outputPrice: bn('1.00000000000152525393'),
         poolAddressFrom: Nothing,
         poolAddressTo: 'address',
-        slip: bn('1011.951723887787235647'),
+        slip: bn('134.705545606424204104'),
         symbolFrom: 'LOK-3C0',
         symbolTo: 'RUNE-A1F',
       };
@@ -557,13 +573,13 @@ describe.skip('swap/utils/', () => {
       const from = 'lok';
       const to = 'bnb';
       const expected: CalcResult = {
-        Px: bn('0.2114251131383284092'),
-        fee: tokenAmount('0.001'),
-        outputAmount: tokenAmount(0),
-        outputPrice: bn('8025.30539'),
+        Px: bn('6.3322188335020546053'),
+        fee: tokenAmount('0.34451071'),
+        outputAmount: tokenAmount(2.42380508),
+        outputPrice: bn('216.67937336595058369301'),
         poolAddressFrom: 'address',
         poolAddressTo: 'address',
-        slip: bn(100),
+        slip: bn(23.340828117376259007),
         symbolFrom: 'LOK-3C0',
         symbolTo: 'BNB',
         lim: Nothing,
@@ -586,7 +602,7 @@ describe.skip('swap/utils/', () => {
       expect(result?.outputPrice).toEqual(expected.outputPrice);
       expect(result?.poolAddressTo).toEqual(expected.poolAddressTo);
       expect(result?.poolAddressFrom).toEqual(expected.poolAddressFrom);
-      expect(result?.slip).toEqual(expected.slip);
+      expect(result?.slip.toFixed(5)).toEqual(expected.slip.toFixed(5));
       expect(result?.symbolFrom).toEqual(expected.symbolFrom);
       expect(result?.symbolTo).toEqual(expected.symbolTo);
     });

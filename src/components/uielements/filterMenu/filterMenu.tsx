@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useMemo } from 'react';
-import { Icon } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
 import { ClickParam } from 'antd/lib/menu';
 import { Menu, MenuItem } from './filterMenu.style';
 
@@ -64,7 +64,7 @@ const FilterMenu: React.FC<Props> = ({
             onChange={handleSearchChanged}
             placeholder={placeholder}
             typevalue="ghost"
-            suffix={<Icon type="search" />}
+            suffix={<SearchOutlined />}
           />
         </Menu.Item>
       )}

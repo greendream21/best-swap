@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { key } from 'styled-theme';
+import { palette, key } from 'styled-theme';
 
 export const ContentViewWrapper = styled.div`
   display: flex;
@@ -11,5 +11,6 @@ export const ContentViewWrapper = styled.div`
   padding-left: ${key('sizes.gutter.horizontal', '30px')};
   padding-right: ${key('sizes.gutter.horizontal', '30px')};
 
-  background: ${props => (props.transparent ? 'transparent' : '#fff')};
+  background: ${props =>
+    props.transparent ? 'transparent' : palette('background', 1)};
 `;

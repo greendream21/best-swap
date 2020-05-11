@@ -7,7 +7,7 @@ export const ContentWrapper = styled(ContentView)`
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  background-color: ${palette('background', 2)};
+  background-color: ${palette('background', 3)};
   padding: 0;
 
   .content-loader {

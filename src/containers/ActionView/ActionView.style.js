@@ -12,7 +12,7 @@ export const HeaderAction = styled.div`
   align-items: center;
   font-size: ${key('sizes.font.label', '11px')};
   font-weight: bold;
-  color: ${palette('primary', 0)};
+  color: ${palette('gradient', 0)};
   text-transform: uppercase;
   letter-spacing: 2.5px;
   cursor: pointer;
@@ -36,11 +36,11 @@ export const BackLink = styled.div`
   `}
   cursor: pointer;
 
-  i {
+  svg {
     margin-right: 6px;
     font-size: 22px;
     font-weight: bold;
-    color: ${palette('primary', 1)};
+    color: ${palette('primary', 0)};
   }
 
   span {
@@ -48,6 +48,6 @@ export const BackLink = styled.div`
     font-weight: 500;
     letter-spacing: 1px;
     text-transform: uppercase;
-    color: ${palette('primary', 1)};
+    color: ${palette('primary', 0)};
   }
 `;

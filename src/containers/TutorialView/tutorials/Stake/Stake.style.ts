@@ -11,7 +11,7 @@ export const ContentWrapper = styled.div`
 
   .intro-text {
     padding: 20px 20px !important;
-    border-right: 1px solid ${palette('border', 0)};
+    border-right: 1px solid ${palette('gray', 0)};
 
     .label-wrapper {
       padding: 6px 0;
