@@ -298,6 +298,7 @@ describe('pool/utils/', () => {
         transaction: baseAmount(0),
         liqFee: baseAmount(0),
         roiAT: 50,
+        poolROI12: bn(50),
         totalSwaps: 0,
         totalStakers: 1,
         values: {
@@ -358,6 +359,7 @@ describe('pool/utils/', () => {
         transaction: baseAmount(16193),
         liqFee: baseAmount(99800),
         roiAT: 99927.69,
+        poolROI12: bn(50),
         totalSwaps: 1,
         totalStakers: 1,
         values: {

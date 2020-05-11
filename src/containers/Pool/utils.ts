@@ -193,6 +193,10 @@ export const getPoolData = (
 
   const roiATResult = poolDetail?.poolROI ?? 0;
   const roiAT = Number((Number(roiATResult) * 100).toFixed(2));
+
+  const poolROI12Data = poolDetail?.poolROI12 ?? 0;
+  const poolROI12 = bn(poolROI12Data).multipliedBy(100);
+
   const liqFeeResult = poolDetail?.poolFeeAverage ?? 0;
   const liqFee = baseAmount(liqFeeResult);
 
@@ -218,6 +222,7 @@ export const getPoolData = (
     transaction,
     liqFee,
     roiAT,
+    poolROI12,
     totalSwaps,
     totalStakers,
     values: {
