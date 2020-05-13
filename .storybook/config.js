@@ -6,8 +6,10 @@ import { addDecorator } from '@storybook/react/dist/client/preview';
 import { withKnobs } from '@storybook/addon-knobs';
 
 import { ThemeProvider } from 'styled-components';
-import { defaultTheme } from '../src/settings';
+import { lightTheme, darkTheme } from '../src/settings';
 import { AppHolder } from '../src/settings/appStyle';
+
+import { withThemes } from '@react-theming/storybook-addon';
 
 import 'antd/dist/antd.css';
 import './global.css';
@@ -18,11 +20,13 @@ addDecorator(story => (
     <Route path="/" component={() => story()} />
   </Router>
 ));
-addDecorator(story => (
-  <ThemeProvider theme={defaultTheme}>
-    <AppHolder>{story()}</AppHolder>
-  </ThemeProvider>
-));
+
+const providerFn = ({ theme, children }) => (<ThemeProvider theme={theme}>
+     <AppHolder>{children}</AppHolder>
+   </ThemeProvider>
+   )
+
+addDecorator(withThemes(null, [lightTheme, darkTheme], { providerFn }));
 
 const req = require.context('../src', true, /\.stories\.(js|ts|tsx)$/);
 
