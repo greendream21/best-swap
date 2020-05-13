@@ -1,4 +1,7 @@
 const path = require('path');
+const GitRevisionPlugin = require('git-revision-webpack-plugin');
+const webpack = require('webpack');
+
 module.exports = {
   module: {
     rules: [
@@ -37,4 +40,9 @@ module.exports = {
   resolve: {
     extensions: ['.tsx', '.ts', '.js', '.jsx'],
   },
+  plugins: [
+    new webpack.DefinePlugin({
+      $COMMIT_HASH: JSON.stringify(new GitRevisionPlugin().commithash()),
+    }),
+  ],
 };

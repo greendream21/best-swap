@@ -193,7 +193,7 @@ export const getCalcResult = (
       }
 
       if (token.toLowerCase() === to.toLowerCase()) {
-        // formula: runeDepth / BASE_NUMBER
+      // formula: runeDepth / BASE_NUMBER
         R = baseToToken(runeDepth);
         // formula: assetDepth / BASE_NUMBER
         Z = baseToToken(assetDepth);
