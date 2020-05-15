@@ -1,21 +1,25 @@
 import { Maybe } from '../types/bepswap';
 
+const getAssetFormat = (symbol: Maybe<string>) => {
+  return `BNB.${symbol}`;
+};
+
 export const getSwapMemo = (
   symbol: Maybe<string>,
   addr: string,
   sliplimit = '',
 ) => {
-  return `SWAP:${symbol}:${addr}:${sliplimit}`;
+  return `SWAP:${getAssetFormat(symbol)}:${addr}:${sliplimit}`;
 };
 
 export const getStakeMemo = (symbol: string) => {
-  return `STAKE:${symbol}`;
+  return `STAKE:${getAssetFormat(symbol)}`;
 };
 
 export const getCreateMemo = (symbol: string) => {
-  return `STAKE:${symbol}`;
+  return `STAKE:${getAssetFormat(symbol)}`;
 };
 
 export const getWithdrawMemo = (symbol: string, percent: number) => {
-  return `WITHDRAW:${symbol}:${percent}`;
+  return `WITHDRAW:${getAssetFormat(symbol)}:${percent}`;
 };
