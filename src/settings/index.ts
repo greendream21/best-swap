@@ -1,8 +1,8 @@
 import themes from '@thorchain/asgardex-theme';
 
-export const defaultTheme = themes.light;
-export const lightTheme = themes.light;
-export const darkTheme = themes.dark;
+export const lightTheme = { name: 'Light', ...themes.light };
+export const darkTheme = { name: 'Dark', ...themes.dark };
+export const defaultTheme = lightTheme;
 
 export type CoinType =
   | 'blue'

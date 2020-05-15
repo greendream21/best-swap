@@ -1,9 +1,7 @@
 import BigNumber from 'bignumber.js';
 import {
   TransferResult,
-  TransferEventData,
   TransferEvent,
-  getTxHashFromMemo,
   BinanceClient,
 } from '@thorchain/asgardex-binance';
 import { validBNOrZero, bn, isValidBN } from '@thorchain/asgardex-util';
@@ -195,7 +193,7 @@ export const getCalcResult = (
       }
 
       if (token.toLowerCase() === to.toLowerCase()) {
-        // formula: runeDepth / BASE_NUMBER
+      // formula: runeDepth / BASE_NUMBER
         R = baseToToken(runeDepth);
         // formula: assetDepth / BASE_NUMBER
         Z = baseToToken(assetDepth);
@@ -492,22 +490,23 @@ export const parseTransfer = (tx?: Pick<TransferEvent, 'data'>) => {
   };
 };
 
-export const isOutboundTx = (tx?: { data?: Pick<TransferEventData, 'M'> }) =>
-  tx?.data?.M?.toUpperCase().includes('OUTBOUND') ?? false;
-
-export const isRefundTx = (tx?: { data?: Pick<TransferEventData, 'M'> }) =>
-  tx?.data?.M?.toUpperCase().includes('REFUND') ?? false;
-
 export const getTxResult = ({
+  pair,
   tx,
-  hash,
+  address,
 }: {
+  pair: Pair;
   tx: TransferEvent;
-  hash: string;
+  address?: string;
 }) => {
-  const { txToken, txAmount } = parseTransfer(tx);
+  const { txToken, txAmount, txTo } = parseTransfer(tx);
+  const { source, target } = pair;
 
-  if (isRefundTx(tx) && getTxHashFromMemo(tx) === hash) {
+  const IS_IN_TX = address && txTo === address;
+  const IS_REFUND = IS_IN_TX && getTickerFormat(txToken) === source;
+  const IS_OUTBOUND = IS_IN_TX && getTickerFormat(txToken) === target;
+
+  if (IS_REFUND) {
     return {
       type: 'refund',
       amount: txAmount,
@@ -515,7 +514,7 @@ export const getTxResult = ({
     };
   }
 
-  if (isOutboundTx(tx) && getTxHashFromMemo(tx) === hash) {
+  if (IS_OUTBOUND) {
     return {
       type: 'success',
       amount: txAmount,
