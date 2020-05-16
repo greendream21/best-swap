@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { connect } from 'react-redux';
 import { Link, useRouteMatch } from 'react-router-dom';
 import { Tooltip } from 'antd';
@@ -11,23 +11,19 @@ import {
 
 import * as RD from '@devexperts/remote-data-ts';
 import Tabs from '../uielements/tabs';
-import TxView from '../uielements/txView';
 import Logo from '../uielements/logo';
 
 import { StyledHeader, LogoWrapper, HeaderActionButtons } from './header.style';
 import HeaderSetting from './headerSetting';
 import WalletDrawer from '../../containers/WalletView/WalletDrawer';
 
-import * as appActions from '../../redux/app/actions';
 import Button from '../uielements/button';
 import ThemeSwitch from '../uielements/themeSwitch';
 import WalletButton from '../uielements/walletButton';
 import BasePriceSelector from './basePriceSelector';
-import { MAX_VALUE } from '../../redux/app/const';
 import { Maybe, Nothing } from '../../types/bepswap';
 import { RootState } from '../../redux/store';
 import { User } from '../../redux/wallet/types';
-import { TxStatus } from '../../redux/app/types';
 
 const { TabPane } = Tabs;
 
@@ -38,9 +34,6 @@ enum TAB_KEY {
 
 type ConnectedProps = {
   user: Maybe<User>;
-  setTxTimerModal: typeof appActions.setTxTimerModal;
-  setTxTimerStatus: typeof appActions.setTxTimerStatus;
-  txStatus: TxStatus;
   midgardBasePath: Maybe<string>;
 };
 
@@ -52,30 +45,15 @@ type Props = ConnectedProps & ComponentProps;
 
 const Header: React.FC<Props> = (props: Props): JSX.Element => {
   const {
-    setTxTimerModal,
-    setTxTimerStatus,
-    txStatus,
     user,
     midgardBasePath,
   } = props;
-  const { status, value, type } = txStatus;
   const wallet: Maybe<string> = user ? user.wallet : Nothing;
 
   const matchSwap = useRouteMatch('/swap');
   const matchPools = useRouteMatch('/pools');
   const matchPool = useRouteMatch('/pool');
 
-  const handleClickTxView = useCallback(() => {
-    setTxTimerModal(true);
-  }, [setTxTimerModal]);
-
-  const handleEndTxView = useCallback(() => {
-    // Update `status` from here if modal is hided (not running)
-    // to avoid unexptected UX issues within modal (it's final icon won't be visible)
-    if (!txStatus.modal) {
-      setTxTimerStatus(false);
-    }
-  }, [txStatus, setTxTimerStatus]);
 
   const activeKey: Maybe<TAB_KEY> = useMemo(() => {
     if (matchSwap) {
@@ -155,16 +133,6 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
         <ThemeSwitch />
         <BasePriceSelector />
         <HeaderSetting midgardBasePath={midgardBasePath} />
-        {wallet && (
-          <TxView
-            status={status}
-            value={value}
-            maxValue={MAX_VALUE}
-            className={type === undefined ? 'disabled' : ''}
-            onClick={type !== undefined ? handleClickTxView : undefined}
-            onEnd={handleEndTxView}
-          />
-        )}
       </HeaderActionButtons>
     </StyledHeader>
   );
@@ -172,12 +140,7 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
 
 export default connect(
   (state: RootState) => ({
-    txStatus: state.App.txStatus,
     user: state.Wallet.user,
     midgardBasePath: RD.toNullable(state.Midgard.apiBasePath),
   }),
-  {
-    setTxTimerModal: appActions.setTxTimerModal,
-    setTxTimerStatus: appActions.setTxTimerStatus,
-  },
 )(Header);
