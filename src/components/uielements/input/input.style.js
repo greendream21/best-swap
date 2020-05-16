@@ -44,6 +44,7 @@ export const InputWrapper = styled(Input)`
     color: ${palette('text', 0)};
     input,
     input:-internal-autofill-selected {
+      color: ${palette('text', 0)};
       background: ${palette('background', 1)};
     }
 
