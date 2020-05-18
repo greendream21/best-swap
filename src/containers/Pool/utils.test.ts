@@ -1,7 +1,6 @@
 import { TransferEvent } from '@thorchain/asgardex-binance';
 import { bn } from '@thorchain/asgardex-util';
 import {
-  getTxType,
   withdrawResult,
   getCreatePoolTokens,
   getPoolData,
@@ -129,35 +128,10 @@ describe('pool/utils/', () => {
       };
       const result = withdrawResult({
         tx,
-        hash:
-          '0C48D82F045B5AABD02663551D19CE18D2266E966ABD3A4D5ACBD3762C8EC692',
+        symbol: 'TUSDB-000',
+        address: 'tbnb13egw96d95lldrhwu56dttrpn2fth6cs0axzaad',
       });
       expect(result).toBeTruthy();
-    });
-  });
-
-  describe('getTxType', () => {
-    it('should be stake ', () => {
-      const memo = 'STAKE:TUSDB-000';
-      const result = getTxType(memo);
-      expect(result).toEqual('stake');
-    });
-
-    it('should be withdraw ', () => {
-      const memo = 'WITHDRAW:BNB-000';
-      const result = getTxType(memo);
-      expect(result).toEqual('withdraw');
-    });
-
-    it('should be unknown', () => {
-      const memo = 'XXX:YYY:ZZZ';
-      const result = getTxType(memo);
-      expect(result).toEqual('unknown');
-    });
-
-    it('should be unknown by a missing memo', () => {
-      const result = getTxType(undefined);
-      expect(result).toEqual('unknown');
     });
   });
 
