@@ -30,6 +30,7 @@ export const TxLabelWrapper = styled.div`
   .tx-label-icon {
     display: flex;
     justify-content: center;
+    align-items: center;
 
     width: 20px;
     height: 20px;
