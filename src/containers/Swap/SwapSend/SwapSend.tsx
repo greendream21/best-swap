@@ -496,6 +496,9 @@ class SwapSend extends React.Component<Props, State> {
       this.handleCompleted();
     } else {
       setTxTimerModal(false);
+
+      // Finish the tx timer as we no longer minimize modal to txView in the header
+      this.handleEndTxTimer();
     }
   };
 
