@@ -661,6 +661,8 @@ class PoolStake extends React.Component<Props, State> {
     const { setTxTimerModal } = this.props;
 
     setTxTimerModal(false);
+
+    this.handleEndTxTimer();
   };
 
   handleSelectTraget = (asset: string) => {
