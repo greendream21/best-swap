@@ -1,6 +1,10 @@
 import React from 'react';
+import {
+  SwapOutlined,
+  DoubleRightOutlined,
+  ImportOutlined,
+} from '@ant-design/icons';
 
-import { SwapIcon, StakeIcon, WithdrawIcon } from '../../icons/txIcons';
 import { TxLabelWrapper } from './txLabel.style';
 import { TxDetailsTypeEnum } from '../../../types/generated/midgard';
 
@@ -11,28 +15,28 @@ type Props = {
 const TxLabel: React.FC<Props> = (props: Props): JSX.Element => {
   const { type } = props;
   let label = '';
-  let TxIcon = SwapIcon;
+  let TxIcon = <SwapOutlined />;
 
   if (type === TxDetailsTypeEnum.Swap) {
     label = 'swap';
-    TxIcon = SwapIcon;
+    TxIcon = <SwapOutlined />;
   }
 
   if (type === TxDetailsTypeEnum.Unstake) {
     label = 'withdraw';
-    TxIcon = WithdrawIcon;
+    TxIcon = <ImportOutlined />;
   }
 
   if (type === TxDetailsTypeEnum.Stake) {
     label = 'stake';
-    TxIcon = StakeIcon;
+    TxIcon = <DoubleRightOutlined />;
   }
 
   return (
     <TxLabelWrapper className="txLabel-wrapper">
       <p>{label}</p>
       <div className="tx-label-icon">
-        <TxIcon />
+        {TxIcon}
       </div>
     </TxLabelWrapper>
   );
