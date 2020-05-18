@@ -68,8 +68,6 @@ const TxInfo: React.FC<Props> = (props: Props): JSX.Element => {
     return (
       <TxInfoWrapper className="txInfo-wrapper withdraw-tx">
         <div className="txInfo-main-data">
-          <TxStatus type="in" data={[]} round="left" />
-          <Seperator />
           <TxStatus
             type="out"
             data={outData || []}
@@ -91,8 +89,6 @@ const TxInfo: React.FC<Props> = (props: Props): JSX.Element => {
       <TxInfoWrapper className="txInfo-wrapper stake-tx">
         <div className="txInfo-main-data">
           <TxStatus type="in" data={inData} txID={_in?.txID} round="left" />
-          <Seperator />
-          <TxStatus type="out" data={[]} round="right" />
         </div>
       </TxInfoWrapper>
     );

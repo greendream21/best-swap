@@ -428,6 +428,8 @@ class PoolCreate extends React.Component<Props, State> {
     const { setTxTimerModal } = this.props;
 
     setTxTimerModal(false);
+
+    this.handleEndTxTimer();
   };
 
   handleChangeTxValue = () => {
