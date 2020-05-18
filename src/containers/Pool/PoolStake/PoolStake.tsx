@@ -269,7 +269,8 @@ class PoolStake extends React.Component<Props, State> {
         if (type === TxTypes.WITHDRAW) {
           const txResult = withdrawResult({
             tx: currentWsTransferEvent,
-            hash,
+            symbol,
+            address: wallet,
           } as WithdrawResultParams);
 
           if (txResult) {

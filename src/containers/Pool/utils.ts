@@ -4,7 +4,6 @@ import {
   Address,
   TransferResult,
   MultiTransfer,
-  getTxHashFromMemo,
   TransferEvent,
 } from '@thorchain/asgardex-binance';
 import {
@@ -522,53 +521,42 @@ export const confirmWithdraw = (
   });
 };
 
-export const getTxType = (memo?: string) => {
-  let txType = 'unknown';
+export const parseTransfer = (tx?: Pick<TransferEvent, 'data'>) => {
+  const txHash = tx?.data?.H;
+  const txMemo = tx?.data?.M;
+  const txFrom = tx?.data?.f;
+  const t = tx?.data?.t ?? [];
+  const txTo = t[0]?.o;
+  const c = t[0]?.c ?? [];
+  const txAmount = c[0]?.A;
+  const txToken = c[0]?.a;
 
-  if (memo) {
-    const str = memo.toLowerCase();
-
-    const memoTypes = [
-      {
-        type: 'stake',
-        memos: ['stake', 'st', '+'],
-      },
-      {
-        type: 'withdraw',
-        memos: ['withdraw', 'wd', '-'],
-      },
-      {
-        type: 'outbound',
-        memos: ['outbound'],
-      },
-    ];
-
-    memoTypes.forEach(memoData => {
-      const { type, memos } = memoData;
-      let matched = false;
-
-      memos.forEach(memoText => {
-        if (str.includes(`${memoText}:`)) {
-          matched = true;
-        }
-      });
-
-      if (matched) {
-        txType = type;
-      }
-    });
-  }
-
-  return txType;
+  return {
+    txHash,
+    txMemo,
+    txFrom,
+    txTo,
+    txToken,
+    txAmount,
+  };
 };
 
 export type WithdrawResultParams = {
   tx: TransferEvent;
-  hash: string;
+  symbol: string;
+  address: string;
 };
 
-export const withdrawResult = ({ tx, hash }: WithdrawResultParams) => {
-  const txType = getTxType(tx?.data?.M);
-  const txHash = getTxHashFromMemo(tx);
-  return txType === 'outbound' && hash === txHash;
+export const withdrawResult = ({
+  tx,
+  symbol,
+  address,
+}: WithdrawResultParams) => {
+  const { txToken, txTo } = parseTransfer(tx);
+
+  const IS_IN_TX = address && txTo === address;
+  const IS_WITHDRAW =
+    IS_IN_TX && symbol.toLowerCase() === txToken.toLowerCase();
+
+  return IS_WITHDRAW;
 };
