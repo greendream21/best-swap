@@ -10,6 +10,11 @@ import {
   Address,
 } from '@thorchain/asgardex-binance';
 import { bnOrZero, bn } from '@thorchain/asgardex-util';
+import {
+  baseToToken,
+  baseAmount,
+  tokenAmount,
+} from '@thorchain/asgardex-token';
 import * as api from '../../helpers/apiHelper';
 
 import {
@@ -28,11 +33,6 @@ import {
 } from '../../types/generated/midgard';
 import { getAssetFromString } from '../midgard/utils';
 
-import {
-  baseToToken,
-  baseAmount,
-  tokenAmount,
-} from '../../helpers/tokenHelper';
 import { BINANCE_NET, getNet } from '../../env';
 import {
   getApiBasePath,

@@ -4,6 +4,7 @@ import { sortBy as _sortBy } from 'lodash';
 
 import BigNumber from 'bignumber.js';
 import { bn, delay, formatBN } from '@thorchain/asgardex-util';
+import { TokenAmount, tokenAmount } from '@thorchain/asgardex-token';
 import Label from '../../label';
 import Selection from '../../selection';
 import CoinInputAdvanced from '../coinInputAdvanced';
@@ -27,8 +28,6 @@ import {
 import Ref from '../../../../helpers/event/ref';
 import clickedInNode from '../../../../helpers/event/clickedInNode';
 import { PriceDataIndex } from '../../../../redux/midgard/types';
-import { TokenAmount } from '../../../../types/token';
-import { tokenAmount } from '../../../../helpers/tokenHelper';
 import { FixmeType, AssetPair } from '../../../../types/bepswap';
 
 type DropdownCarretProps = {

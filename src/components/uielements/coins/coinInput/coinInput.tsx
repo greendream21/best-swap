@@ -2,12 +2,12 @@ import React from 'react';
 
 import BigNumber from 'bignumber.js';
 import { formatBN } from '@thorchain/asgardex-util';
+import { TokenAmount } from '@thorchain/asgardex-token';
 import { CoinInputWrapper } from './coinInput.style';
 import { CoinType } from '../../../../settings';
 import CoinButton from '../coinButton';
 import InputNumber from '../../inputNumber';
 import Label from '../../label';
-import { TokenAmount } from '../../../../types/token';
 
 type Props = {
   title: string;

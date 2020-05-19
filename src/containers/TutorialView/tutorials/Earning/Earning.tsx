@@ -4,6 +4,10 @@ import { withRouter, Link, RouteComponentProps } from 'react-router-dom';
 import { Row, Col } from 'antd';
 
 import { formatBNCurrency, formatBN } from '@thorchain/asgardex-util';
+import { TokenAmount, tokenAmount,
+  formatTokenAmountCurrency,
+  formatTokenAmount,
+} from '@thorchain/asgardex-token';
 import { ContentWrapper } from './Earning.style';
 import Centered from '../../../../components/utility/centered';
 import Label from '../../../../components/uielements/label';
@@ -20,12 +24,6 @@ import {
 
 import { data, getVr, getSS, getVss, getWr, getWt } from './data';
 import { TutorialContent } from '../../types';
-import { TokenAmount } from '../../../../types/token';
-import {
-  tokenAmount,
-  formatTokenAmountCurrency,
-  formatTokenAmount,
-} from '../../../../helpers/tokenHelper';
 
 type ComponentProps = {
   view?: string;

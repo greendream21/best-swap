@@ -1,7 +1,7 @@
 import { RemoteData } from '@devexperts/remote-data-ts';
 import BigNumber from 'bignumber.js';
+import { TokenAmount } from '@thorchain/asgardex-token';
 import { FixmeType, Maybe, Address } from '../../types/bepswap';
-import { TokenAmount } from '../../types/token';
 
 export interface User {
   /**

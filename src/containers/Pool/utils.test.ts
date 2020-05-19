@@ -1,5 +1,6 @@
 import { TransferEvent } from '@thorchain/asgardex-binance';
 import { bn } from '@thorchain/asgardex-util';
+import { tokenAmount, baseAmount } from '@thorchain/asgardex-token';
 import {
   withdrawResult,
   getCreatePoolTokens,
@@ -16,7 +17,6 @@ import {
   PoolDetailStatusEnum,
 } from '../../types/generated/midgard';
 import { PriceDataIndex, PoolDataMap } from '../../redux/midgard/types';
-import { tokenAmount, baseAmount } from '../../helpers/tokenHelper';
 
 const poolData: PoolDataMap = {
   BNB: {

@@ -1,9 +1,8 @@
 import { bn } from '@thorchain/asgardex-util';
+import { TokenAmount, tokenAmount } from '@thorchain/asgardex-token';
 import { StakeCalcData } from '../../../Pool/calc';
 import * as calc from '../../../Pool/calc';
 import { Maybe } from '../../../../types/bepswap';
-import { tokenAmount } from '../../../../helpers/tokenHelper';
-import { TokenAmount } from '../../../../types/token';
 
 export const data: StakeCalcData = {
   R: tokenAmount(1000000),

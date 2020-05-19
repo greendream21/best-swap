@@ -1,13 +1,13 @@
 import React from 'react';
 
 import { bnOrZero, formatBN } from '@thorchain/asgardex-util';
-import TxStatus from '../txStatus';
-import { TxInfoWrapper, Seperator, Dash } from './txInfo.style';
-import { TxDetails, TxDetailsTypeEnum } from '../../../types/generated/midgard';
 import {
   formatBaseAsTokenAmount,
   baseAmount,
-} from '../../../helpers/tokenHelper';
+} from '@thorchain/asgardex-token';
+import TxStatus from '../txStatus';
+import { TxInfoWrapper, Seperator, Dash } from './txInfo.style';
+import { TxDetails, TxDetailsTypeEnum } from '../../../types/generated/midgard';
 
 type Props = {
   data: TxDetails;

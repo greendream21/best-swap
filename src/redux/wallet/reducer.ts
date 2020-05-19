@@ -1,13 +1,13 @@
 import { Reducer } from 'redux';
 import { initial, success, pending, failure } from '@devexperts/remote-data-ts';
 import { bn } from '@thorchain/asgardex-util';
+import { tokenAmount } from '@thorchain/asgardex-token';
 import { getWalletAddress, getKeystore } from '../../helpers/webStorageHelper';
 import { State, User } from './types';
 import {
   WalletActionsTypes,
 } from './actions';
 import { Nothing } from '../../types/bepswap';
-import { tokenAmount } from '../../helpers/tokenHelper';
 
 const wallet = getWalletAddress();
 const keystore = getKeystore();

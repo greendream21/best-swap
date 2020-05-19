@@ -1,9 +1,8 @@
 import BigNumber from 'bignumber.js';
 import { bn } from '@thorchain/asgardex-util';
+import { TokenAmount, tokenAmount } from '@thorchain/asgardex-token';
 import * as calc from '../../../Pool/calc';
 import { Maybe } from '../../../../types/bepswap';
-import { TokenAmount } from '../../../../types/token';
-import { tokenAmount } from '../../../../helpers/tokenHelper';
 
 export type EarningCalcData = {
   R: TokenAmount;
