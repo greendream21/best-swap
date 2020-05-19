@@ -1,12 +1,12 @@
 import React from 'react';
 
-import { TxStatusWrapper, TxStatusContent, Seperator } from './txStatus.style';
-import { Coin } from '../../../types/generated/midgard';
-import { getAssetFromString } from '../../../redux/midgard/utils';
 import {
   formatBaseAsTokenAmount,
   baseAmount,
-} from '../../../helpers/tokenHelper';
+} from '@thorchain/asgardex-token';
+import { TxStatusWrapper, TxStatusContent, Seperator } from './txStatus.style';
+import { Coin } from '../../../types/generated/midgard';
+import { getAssetFromString } from '../../../redux/midgard/utils';
 import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
 
 export type RoundValue = 'left' | 'right';

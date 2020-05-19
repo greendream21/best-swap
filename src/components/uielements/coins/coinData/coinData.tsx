@@ -2,12 +2,11 @@ import React from 'react';
 
 import BigNumber from 'bignumber.js';
 import { bn, formatBN } from '@thorchain/asgardex-util';
+import { TokenAmount, formatTokenAmount } from '@thorchain/asgardex-token';
 import { CoinDataWrapper, CoinDataWrapperType, CoinDataWrapperSize } from './coinData.style';
 import Coin from '../coin';
 import Label from '../../label';
 import { Maybe, Nothing } from '../../../../types/bepswap';
-import { TokenAmount } from '../../../../types/token';
-import { formatTokenAmount } from '../../../../helpers/tokenHelper';
 
 type Props = {
   'data-test'?: string;

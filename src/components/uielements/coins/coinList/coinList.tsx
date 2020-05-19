@@ -3,6 +3,7 @@ import BigNumber from 'bignumber.js';
 
 import { Scrollbars } from 'react-custom-scrollbars';
 import { validBNOrZero } from '@thorchain/asgardex-util';
+import { TokenAmount } from '@thorchain/asgardex-token';
 import { CoinListWrapper, CoinListWrapperSize } from './coinList.style';
 import CoinData from '../coinData';
 import { getTickerFormat } from '../../../../helpers/stringHelper';
@@ -10,7 +11,6 @@ import { Maybe, Nothing } from '../../../../types/bepswap';
 import { StakeOrAssetData, isStakeData } from '../../../../redux/wallet/types';
 import { PriceDataIndex } from '../../../../redux/midgard/types';
 import { CoinDataWrapperType } from '../coinData/coinData.style';
-import { TokenAmount } from '../../../../types/token';
 
 // This does not work anymore
 // export type CoinListDataList = AssetData[] | StakeData[]

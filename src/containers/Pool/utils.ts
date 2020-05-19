@@ -14,6 +14,12 @@ import {
   isValidBN,
 } from '@thorchain/asgardex-util';
 import {
+  TokenAmount,
+  tokenToBase,
+  baseAmount,
+  formatBaseAsTokenAmount,
+} from '@thorchain/asgardex-token';
+import {
   getStakeMemo,
   getCreateMemo,
   getWithdrawMemo,
@@ -23,12 +29,6 @@ import { PoolDataMap, PriceDataIndex } from '../../redux/midgard/types';
 import { PoolDetail, AssetDetail } from '../../types/generated/midgard';
 import { getAssetFromString } from '../../redux/midgard/utils';
 import { Maybe, Nothing } from '../../types/bepswap';
-import {
-  tokenToBase,
-  baseAmount,
-  formatBaseAsTokenAmount,
-} from '../../helpers/tokenHelper';
-import { TokenAmount } from '../../types/token';
 import { PoolData } from './types';
 
 export type CalcResult = {

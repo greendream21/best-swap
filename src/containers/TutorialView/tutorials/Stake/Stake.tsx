@@ -4,6 +4,10 @@ import { withRouter, Link, RouteComponentProps } from 'react-router-dom';
 import { Row, Col } from 'antd';
 import { ArrowRightOutlined } from '@ant-design/icons';
 
+import { TokenAmount, tokenAmount,
+  formatTokenAmount,
+  formatTokenAmountCurrency,
+} from '@thorchain/asgardex-token';
 import { ContentWrapper } from './Stake.style';
 import Centered from '../../../../components/utility/centered';
 import Label from '../../../../components/uielements/label';
@@ -15,12 +19,6 @@ import { orbGreenIcon, arrowGreenIcon } from '../../../../components/icons';
 
 import { data, getVr, getSS, getVss } from './data';
 import { TutorialContent } from '../../types';
-import { TokenAmount } from '../../../../types/token';
-import {
-  tokenAmount,
-  formatTokenAmount,
-  formatTokenAmountCurrency,
-} from '../../../../helpers/tokenHelper';
 
 const { R, T, Pr, Pt } = data;
 

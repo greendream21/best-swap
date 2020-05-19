@@ -1,5 +1,6 @@
 import { TransferEvent, TransferEventData } from '@thorchain/asgardex-binance';
 import { bn } from '@thorchain/asgardex-util';
+import { tokenAmount, baseAmount } from '@thorchain/asgardex-token';
 import {
   isValidSwap,
   parseTransfer,
@@ -18,7 +19,6 @@ import {
 import { Nothing, Pair, AssetPair, SwapType } from '../../types/bepswap';
 import { PoolDataMap } from '../../redux/midgard/types';
 import { CalcResult } from './SwapSend/types';
-import { tokenAmount, baseAmount } from '../../helpers/tokenHelper';
 
 const bnbPoolInfo: PoolDetail = {
   asset: 'BNB.BNB',

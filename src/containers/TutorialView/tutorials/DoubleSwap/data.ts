@@ -1,9 +1,8 @@
 import { bn } from '@thorchain/asgardex-util';
+import { TokenAmount, tokenAmount } from '@thorchain/asgardex-token';
 import { DoubleSwapCalcData } from '../../../Swap/calc';
 import * as calc from '../../../Swap/calc';
 import { Maybe } from '../../../../types/bepswap';
-import { tokenAmount } from '../../../../helpers/tokenHelper';
-import { TokenAmount } from '../../../../types/token';
 
 export const data: DoubleSwapCalcData = {
   X: tokenAmount(1000),

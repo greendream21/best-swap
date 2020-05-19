@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
+import { TokenAmount, BaseAmount } from '@thorchain/asgardex-token';
 import { Maybe } from '../../../types/bepswap';
-import { TokenAmount, BaseAmount } from '../../../types/token';
 
 export enum SwapSendView {
   DETAIL = 'detail',

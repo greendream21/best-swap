@@ -5,6 +5,10 @@ import { Row, Col } from 'antd';
 import { ArrowRightOutlined } from '@ant-design/icons';
 import { formatBNCurrency } from '@thorchain/asgardex-util';
 
+import { TokenAmount, tokenAmount,
+  formatTokenAmount,
+  formatTokenAmountCurrency,
+} from '@thorchain/asgardex-token';
 import { ContentWrapper } from './DoubleSwap.style';
 import Centered from '../../../../components/utility/centered';
 import Label from '../../../../components/uielements/label';
@@ -31,12 +35,6 @@ import {
 } from './data';
 import { Nothing } from '../../../../types/bepswap';
 import { TutorialContent } from '../../types';
-import {
-  tokenAmount,
-  formatTokenAmount,
-  formatTokenAmountCurrency,
-} from '../../../../helpers/tokenHelper';
-import { TokenAmount } from '../../../../types/token';
 
 const { X, Y, Z, R, Py, Pr } = data;
 

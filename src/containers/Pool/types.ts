@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 
-import { BaseAmount } from '../../types/token';
+import { BaseAmount } from '@thorchain/asgardex-token';
 
 export type PoolInfoType = {
   asset: string;

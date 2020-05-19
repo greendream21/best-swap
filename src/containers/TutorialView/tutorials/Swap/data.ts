@@ -2,8 +2,7 @@
 
 import BigNumber from 'bignumber.js';
 import { bn } from '@thorchain/asgardex-util';
-import { TokenAmount } from '../../../../types/token';
-import { tokenAmount } from '../../../../helpers/tokenHelper';
+import { TokenAmount, tokenAmount } from '@thorchain/asgardex-token';
 
 type SwapCalcData = {
   X: TokenAmount

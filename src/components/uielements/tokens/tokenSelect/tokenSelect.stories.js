@@ -1,8 +1,8 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 
+import { tokenAmount } from '@thorchain/asgardex-token';
 import TokenSelect from './tokenSelect';
-import { tokenAmount } from '../../../../helpers/tokenHelper';
 
 storiesOf('Components/Tokens/TokenSelect', module).add('default', () => {
   return (

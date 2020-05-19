@@ -22,6 +22,7 @@ import { crypto } from '@binance-chain/javascript-sdk';
 import BigNumber from 'bignumber.js';
 import * as RD from '@devexperts/remote-data-ts';
 
+import { TokenAmount, tokenAmount } from '@thorchain/asgardex-token';
 import Button from '../../../components/uielements/button';
 import Drag from '../../../components/uielements/drag';
 import TokenCard from '../../../components/uielements/tokens/tokenCard';
@@ -87,8 +88,6 @@ import {
 } from '../../../redux/midgard/types';
 import { RootState } from '../../../redux/store';
 import { getAssetFromString } from '../../../redux/midgard/utils';
-import { tokenAmount } from '../../../helpers/tokenHelper';
-import { TokenAmount } from '../../../types/token';
 import { BINANCE_NET, getNet } from '../../../env';
 import { TransferEventRD } from '../../../redux/binance/types';
 

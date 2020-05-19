@@ -1,5 +1,6 @@
 import { mocked } from 'ts-jest/utils';
 import { TransferResult, BinanceClient } from '@thorchain/asgardex-binance';
+import { tokenAmount } from '@thorchain/asgardex-token';
 import {
   CreatePoolErrorMsg,
   confirmWithdraw,
@@ -8,7 +9,6 @@ import {
   confirmStake,
   StakeErrorMsg,
 } from './utils';
-import { tokenAmount } from '../../helpers/tokenHelper';
 
 const transferResponseMock: TransferResult = {
   result: [{ code: 1, hash: 'hash', log: 'log', ok: true }],
