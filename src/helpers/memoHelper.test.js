@@ -15,15 +15,17 @@ describe('helpers/memoHelper/', () => {
 
   describe('getStakeMemo', () => {
     it('should create a memo for the stake tx', () => {
-      const result = getStakeMemo('BNB');
-      expect(result).toEqual('STAKE:BNB.BNB');
+      const address = 'tbnb123456';
+      const result = getStakeMemo('BNB', address);
+      expect(result).toEqual(`STAKE:${address}:BNB.BNB`);
     });
   });
 
   describe('getCreateMemo', () => {
     it('should create a memo for the creating pool', () => {
-      const result = getCreateMemo('TUSDB');
-      expect(result).toEqual('STAKE:BNB.TUSDB');
+      const address = 'tbnb123456';
+      const result = getCreateMemo('TUSDB', address);
+      expect(result).toEqual(`STAKE:${address}:BNB.TUSDB`);
     });
   });
 
