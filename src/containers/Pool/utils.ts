@@ -21,7 +21,6 @@ import {
 } from '@thorchain/asgardex-token';
 import {
   getStakeMemo,
-  getCreateMemo,
   getWithdrawMemo,
 } from '../../helpers/memoHelper';
 import { getTickerFormat } from '../../helpers/stringHelper';
@@ -451,7 +450,7 @@ export const confirmCreatePool = (
       return reject(new Error(CreatePoolErrorMsg.MISSING_TOKEN_SYMBOL));
     }
 
-    const memo = getCreateMemo(tokenSymbol, wallet);
+    const memo = getStakeMemo(tokenSymbol, wallet);
 
     // We have to convert BNs back into numbers needed by Binance JS SDK
     // We are safe here, since we have already checked that amounts of RUNE and toke are valid numbers
