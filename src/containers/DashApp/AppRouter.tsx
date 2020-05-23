@@ -19,10 +19,6 @@ const routes: AppRoute[] = [
     component: asyncComponent(() => import('../pages/Home')),
   },
   {
-    path: 'tutorial/:type?/:view?/:content?',
-    component: asyncComponent(() => import('../pages/Tutorial')),
-  },
-  {
     path: 'connect',
     component: asyncComponent(() => import('../pages/Connect')),
   },

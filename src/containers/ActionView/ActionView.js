@@ -12,7 +12,6 @@ import TransactionView from '../TransactionView';
 import ConnectView from '../ConnectView';
 import FaqsView from '../FaqsView';
 import NetworkView from '../NetworkView';
-import TutorialView from '../TutorialView';
 
 import * as walletActions from '../../redux/wallet/actions';
 
@@ -79,7 +78,6 @@ class ActionView extends Component {
         <ActionViewWrapper>
           {view === 'intro-swap' && <SwapIntro />}
           {view === 'intro-pools' && <PoolIntro />}
-          {view === 'tutorial' && <TutorialView />}
           {view === 'connect-view' && <ConnectView />}
           {/* {view === 'stats-view' && <StatsView />} */}
           {view === 'faqs-view' && <FaqsView />}
