@@ -3,6 +3,7 @@ import { sortBy as _sortBy } from 'lodash';
 
 import BigNumber from 'bignumber.js';
 import { bn, formatBN } from '@thorchain/asgardex-util';
+import { TokenAmount, tokenAmount } from '@thorchain/asgardex-token';
 import { TokenCardWrapper } from './tokenCard.style';
 
 import Label from '../../label';
@@ -10,8 +11,6 @@ import TokenSelect from '../tokenSelect';
 import TokenInput from '../tokenInput';
 import { AssetPair, Nothing } from '../../../../types/bepswap';
 import { PriceDataIndex } from '../../../../redux/midgard/types';
-import { TokenAmount } from '../../../../types/token';
-import { tokenAmount } from '../../../../helpers/tokenHelper';
 import { TokenInputProps } from '../tokenInput/types';
 
 type Props = {

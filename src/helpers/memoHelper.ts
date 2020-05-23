@@ -12,12 +12,8 @@ export const getSwapMemo = (
   return `SWAP:${getAssetFormat(symbol)}:${addr}:${sliplimit}`;
 };
 
-export const getStakeMemo = (symbol: string) => {
-  return `STAKE:${getAssetFormat(symbol)}`;
-};
-
-export const getCreateMemo = (symbol: string) => {
-  return `STAKE:${getAssetFormat(symbol)}`;
+export const getStakeMemo = (symbol: string, address: string) => {
+  return `STAKE:${getAssetFormat(symbol)}:${address}`;
 };
 
 export const getWithdrawMemo = (symbol: string, percent: number) => {

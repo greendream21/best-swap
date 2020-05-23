@@ -2598,7 +2598,14 @@
   dependencies:
     polished "^3.4.3"
 
-"@thorchain/asgardex-util@^0.1.0":
+"@thorchain/asgardex-token@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@thorchain/asgardex-token/-/asgardex-token-0.1.0.tgz#9d3d2ad5dfb748aa7717b63f08cf2b16ac825b74"
+  integrity sha512-Af2PiLUQciAH+oQeztWPmFUuQAAmtdFgZR9ejkq+p2H1hRc7/Qm/JczPGApfn+4YbINmYcuaQ/P1dztoJn64tg==
+  dependencies:
+    "@thorchain/asgardex-util" "*"
+
+"@thorchain/asgardex-util@*", "@thorchain/asgardex-util@^0.1.0":
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/@thorchain/asgardex-util/-/asgardex-util-0.1.0.tgz#f0f836d530e4f80dc3fb97bf600779773e5a2d24"
   integrity sha512-anzylv3+31i/r2eijkB78ak1DB+ZCRzNo11CqqmGIfdvdfmAQB16O6kv+tb+D1GikN/PMBDTeRZf8CT5R358Ug==

@@ -1,4 +1,5 @@
 import { bn } from '@thorchain/asgardex-util';
+import { tokenAmount } from '@thorchain/asgardex-token';
 import {
   getYValue,
   getZValue,
@@ -9,7 +10,6 @@ import {
   DoubleSwapCalcData,
   SingleSwapCalcData,
 } from './calc';
-import { tokenAmount } from '../../helpers/tokenHelper';
 
 const doubleSwapCalcData: DoubleSwapCalcData = {
   X: tokenAmount(1000000),

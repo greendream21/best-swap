@@ -5,6 +5,13 @@ import {
   BinanceClient,
 } from '@thorchain/asgardex-binance';
 import { validBNOrZero, bn, isValidBN } from '@thorchain/asgardex-util';
+import { TokenAmount,
+  tokenAmount,
+  baseToToken,
+  baseAmount,
+  tokenToBase,
+  formatBaseAsTokenAmount,
+} from '@thorchain/asgardex-token';
 import { getSwapMemo } from '../../helpers/memoHelper';
 import { getTickerFormat } from '../../helpers/stringHelper';
 import {
@@ -22,14 +29,6 @@ import { Nothing, Maybe, SwapType, Pair, AssetPair } from '../../types/bepswap';
 import { CalcResult } from './SwapSend/types';
 import { getAssetFromString } from '../../redux/midgard/utils';
 import { SwapCardType } from './SwapView/types';
-import {
-  tokenAmount,
-  baseToToken,
-  baseAmount,
-  tokenToBase,
-  formatBaseAsTokenAmount,
-} from '../../helpers/tokenHelper';
-import { TokenAmount } from '../../types/token';
 
 export const validatePair = (
   pair: Pair,

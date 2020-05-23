@@ -22,6 +22,7 @@ import {
   delay,
 } from '@thorchain/asgardex-util';
 
+import { TokenAmount, tokenAmount } from '@thorchain/asgardex-token';
 import Button from '../../../components/uielements/button';
 import Label from '../../../components/uielements/label';
 import Status from '../../../components/uielements/status';
@@ -62,8 +63,6 @@ import { PriceDataIndex, PoolDataMap } from '../../../redux/midgard/types';
 import { Maybe, AssetPair } from '../../../types/bepswap';
 import { User, AssetData } from '../../../redux/wallet/types';
 
-import { TokenAmount } from '../../../types/token';
-import { tokenAmount } from '../../../helpers/tokenHelper';
 import { AssetDetail } from '../../../types/generated/midgard';
 import { BINANCE_NET } from '../../../env';
 

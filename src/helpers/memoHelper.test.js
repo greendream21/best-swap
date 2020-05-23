@@ -1,9 +1,4 @@
-import {
-  getSwapMemo,
-  getStakeMemo,
-  getCreateMemo,
-  getWithdrawMemo,
-} from './memoHelper';
+import { getSwapMemo, getStakeMemo, getWithdrawMemo } from './memoHelper';
 
 describe('helpers/memoHelper/', () => {
   describe('getSwapMemo', () => {
@@ -14,16 +9,10 @@ describe('helpers/memoHelper/', () => {
   });
 
   describe('getStakeMemo', () => {
-    it('should create a memo for the stake tx', () => {
-      const result = getStakeMemo('BNB');
-      expect(result).toEqual('STAKE:BNB.BNB');
-    });
-  });
-
-  describe('getCreateMemo', () => {
     it('should create a memo for the creating pool', () => {
-      const result = getCreateMemo('TUSDB');
-      expect(result).toEqual('STAKE:BNB.TUSDB');
+      const address = 'tbnb123456';
+      const result = getStakeMemo('TUSDB', address);
+      expect(result).toEqual(`STAKE:BNB.TUSDB:${address}`);
     });
   });
 

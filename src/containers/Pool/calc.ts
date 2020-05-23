@@ -1,7 +1,6 @@
 import BigNumber from 'bignumber.js';
+import { TokenAmount, tokenAmount } from '@thorchain/asgardex-token';
 import { Maybe } from '../../types/bepswap';
-import { TokenAmount } from '../../types/token';
-import { tokenAmount } from '../../helpers/tokenHelper';
 
 export type StakeCalcData = {
   R: TokenAmount;

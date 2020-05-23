@@ -27,6 +27,11 @@ import {
   bnOrZero,
   formatBN,
 } from '@thorchain/asgardex-util';
+import { TokenAmount, BaseAmount, tokenAmount,
+  formatBaseAsTokenAmount,
+  baseAmount,
+  baseToToken,
+} from '@thorchain/asgardex-token';
 import { getAppContainer } from '../../../helpers/elementHelper';
 
 import Label from '../../../components/uielements/label';
@@ -79,13 +84,6 @@ import {
 } from '../../../redux/midgard/types';
 import { StakersAssetData } from '../../../types/generated/midgard';
 import { getAssetFromString } from '../../../redux/midgard/utils';
-import { TokenAmount, BaseAmount } from '../../../types/token';
-import {
-  tokenAmount,
-  formatBaseAsTokenAmount,
-  baseAmount,
-  baseToToken,
-} from '../../../helpers/tokenHelper';
 import { BINANCE_NET, getNet } from '../../../env';
 import { TransferEventRD } from '../../../redux/binance/types';
 
