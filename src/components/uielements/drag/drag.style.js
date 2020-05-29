@@ -23,7 +23,7 @@ export const DragWrapper = styled.div`
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    cursor: pointer;
+    cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
 
     img,
     div {
@@ -43,9 +43,14 @@ export const DragWrapper = styled.div`
     z-index: 500;
     ${props => props.missed && 'transition: all .8s'};
 
+    opacity: ${props => (props.disabled ? '0.5' : '1')};
+
     &:hover {
-      ${boxShadow('0px 0px 4px 1px #50E3C2')};
-      ${props => props.success && boxShadow('0px 0px 4px 1px #50E3C2')};
+      ${props => !props.disabled && boxShadow('0px 0px 4px 1px #50E3C2')};
+      ${props =>
+        !props.disabled &&
+        props.success &&
+        boxShadow('0px 0px 4px 1px #50E3C2')};
     }
 
     ${props => props.success && boxShadow('0px 0px 4px 1px #50E3C2')};

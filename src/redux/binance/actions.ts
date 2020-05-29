@@ -8,6 +8,11 @@ import {
   TransferEvent,
 } from '@thorchain/asgardex-binance';
 import { NET } from '../../env';
+import { TransferFeesRD } from './types';
+
+/* /////////////////////////////////////////////////////////////
+// api
+///////////////////////////////////////////////////////////// */
 
 export const getBinanceTokens = () => ({ type: 'GET_BINANCE_TOKENS' } as const);
 
@@ -74,6 +79,18 @@ export const getBinanceOpenOrdersSuccess = (payload: OrderList) =>
 export const getBinanceOpenOrdersFailed = (payload: Error) =>
   ({ type: 'GET_BINANCE_OPEN_ORDERS_FAILED', payload } as const);
 
+
+export const getBinanceFees = (net: NET) =>
+  ({ type: 'GET_BINANCE_FEES', net } as const);
+
+export const getBinanceTransferFeesResult = (result: TransferFeesRD) =>
+  ({ type: 'GET_BINANCE_TRANSFER_FEES_RESULT', result } as const);
+
+
+/* /////////////////////////////////////////////////////////////
+// ws
+///////////////////////////////////////////////////////////// */
+
 export const wsBinanceError = (payload: Error) =>
   ({ type: 'WS_BINANCE_ERROR', payload } as const);
 
@@ -112,6 +129,8 @@ export type BinanceActionTypes = ReturnType<
   | typeof getBinanceOpenOrders
   | typeof getBinanceOpenOrdersSuccess
   | typeof getBinanceOpenOrdersFailed
+  | typeof getBinanceFees
+  | typeof getBinanceTransferFeesResult
   | typeof wsBinanceError
   | typeof subscribeBinanceTransfers
   | typeof subscribeBinanceTransfersFailed
