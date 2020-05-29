@@ -150,6 +150,7 @@ class Drag extends Component {
       title,
       className,
       onConfirm,
+      disabled: disabledProp,
       ...props
     } = this.props;
     const { pos, overlap, success, missed, dragging } = this.state;
@@ -171,10 +172,12 @@ class Drag extends Component {
           overlap={overlap}
           success={success}
           missed={missed}
+          disabled={disabledProp}
           dragging={dragging}
           {...props}
         >
           <Draggable
+            disabled={disabledProp}
             position={pos}
             axis="x"
             bounds={dragBounds}
@@ -203,6 +206,7 @@ class Drag extends Component {
 Drag.propTypes = {
   source: PropTypes.string.isRequired,
   target: PropTypes.string.isRequired,
+  disabled: PropTypes.bool,
   title: PropTypes.string,
   reset: PropTypes.bool,
   onConfirm: PropTypes.func,
