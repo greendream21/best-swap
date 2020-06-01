@@ -14,7 +14,8 @@ export const getAssetFromAssetData = (
     const { asset } = data;
     if (!acc) {
       const tokenName = getTickerFormat(asset);
-      if (tokenName && tokenName === source.toLowerCase()) {
+      const assetName = getTickerFormat(source);
+      if (tokenName && tokenName === assetName.toLowerCase()) {
         return data;
       }
     }
