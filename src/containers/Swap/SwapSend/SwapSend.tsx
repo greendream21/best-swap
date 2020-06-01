@@ -29,7 +29,6 @@ import {
   BaseAmount,
   baseAmount,
 } from '@thorchain/asgardex-token';
-import Paragraph from 'antd/lib/typography/Paragraph';
 import Text from 'antd/lib/typography/Text';
 import Button from '../../../components/uielements/button';
 import Drag from '../../../components/uielements/drag';
@@ -52,6 +51,7 @@ import {
   SwapStatusPanel,
   PopoverContent,
   PopoverContainer,
+  FeeParagraph,
 } from './SwapSend.style';
 import {
   getTickerFormat,
@@ -937,11 +937,11 @@ class SwapSend extends React.Component<Props, State> {
   /**
    * Checks whether fee is covered by amounts of BNB in users wallet
    */
-  bnbFeeIsNotCovered = () => {
+  bnbFeeIsNotCovered = (): boolean => {
     const { assetData } = this.props;
     const bnbAmount = bnbBaseAmount(assetData);
     const fee = this.bnbFeeAmount();
-    return bnbAmount && fee && bnbAmount.amount().isLessThan(fee.amount());
+    return !!bnbAmount && !!fee && bnbAmount.amount().isLessThan(fee.amount());
   };
 
   /**
@@ -960,7 +960,7 @@ class SwapSend extends React.Component<Props, State> {
 
     const txtLoading = <Text>Fee: ...</Text>;
     return (
-      <Paragraph style={{ paddingTop: '10px' }}>
+      <FeeParagraph>
         {RD.fold(
           () => txtLoading,
           () => txtLoading,
@@ -968,6 +968,12 @@ class SwapSend extends React.Component<Props, State> {
           (fees: TransferFees) => (
             <>
               <Text>Fee: {formatBnbAmount(fees.single)}</Text>
+              {this.considerBnb() && (
+                <Text>
+                  {' '}
+                  (It will be substructed from your entered BNB value)
+                </Text>
+              )}
               {bnbAmount && this.bnbFeeIsNotCovered() && (
                 <>
                   <br />
@@ -981,7 +987,7 @@ class SwapSend extends React.Component<Props, State> {
             </>
           ),
         )(transferFees)}
-      </Paragraph>
+      </FeeParagraph>
     );
   };
 

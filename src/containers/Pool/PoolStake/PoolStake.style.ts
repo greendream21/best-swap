@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { palette, key } from 'styled-theme';
 
+import Paragraph from 'antd/lib/typography/Paragraph';
 import ContentView from '../../../components/utility/contentView';
 import Modal from '../../../components/uielements/modal';
 import UnstyledTabs from '../../../components/uielements/tabs';
@@ -596,4 +597,11 @@ export const PopoverContainer = styled.div`
 export const PopoverContent = styled.div`
   font-size: '11px';
   color: ${palette('primary', 0)};
+`;
+
+export const FeeParagraph = styled(Paragraph)`
+  padding-top: 10px;
+  & > * {
+    color: ${palette('text', 1)};
+  }
 `;
