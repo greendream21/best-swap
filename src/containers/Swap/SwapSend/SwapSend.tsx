@@ -89,14 +89,11 @@ import { SwapSendView, CalcResult } from './types';
 import { User, AssetData } from '../../../redux/wallet/types';
 import { TxStatus, TxTypes } from '../../../redux/app/types';
 
-import {
-  AssetDetailMap,
-  PriceDataIndex,
-  PoolDataMap,
-} from '../../../redux/midgard/types';
+import { PriceDataIndex, PoolDataMap } from '../../../redux/midgard/types';
 import { RootState } from '../../../redux/store';
 import { getAssetFromString } from '../../../redux/midgard/utils';
 import { BINANCE_NET, getNet } from '../../../env';
+import { PoolDetailStatusEnum } from '../../../types/generated/midgard';
 import {
   TransferEventRD,
   TransferFeesRD,
@@ -116,7 +113,6 @@ type ConnectedProps = {
   txStatus: TxStatus;
   assetData: AssetData[];
   poolAddress: string;
-  assets: AssetDetailMap;
   poolData: PoolDataMap;
   pools: string[];
   basePriceAsset: string;
@@ -993,7 +989,7 @@ class SwapSend extends React.Component<Props, State> {
     const {
       info,
       txStatus,
-      assets: tokenInfo,
+      poolData,
       pools,
       assetData,
       priceIndex,
@@ -1020,7 +1016,7 @@ class SwapSend extends React.Component<Props, State> {
     if (
       !swapPair.source ||
       !swapPair.target ||
-      !Object.keys(tokenInfo).length ||
+      !Object.keys(poolData).length ||
       !isValidSwap(swapPair, pools)
     ) {
       this.props.history.push('/swap'); // redirect if swap is invalid
@@ -1029,17 +1025,26 @@ class SwapSend extends React.Component<Props, State> {
 
     const { source: swapSource, target: swapTarget } = swapPair;
 
-    const tokensData: TokenData[] = Object.keys(tokenInfo).map(tokenName => {
-      const tokenData = tokenInfo[tokenName];
-      const assetStr = tokenData?.asset;
-      const asset = assetStr ? getAssetFromString(assetStr) : null;
-      const price = bnOrZero(tokenData?.priceRune);
+    const tokensData: TokenData[] = Object.keys(poolData).reduce(
+      (result: TokenData[], tokenName: string) => {
+        const tokenData = poolData[tokenName];
+        const assetStr = tokenData?.asset;
+        const asset = assetStr ? getAssetFromString(assetStr) : null;
+        const price = bnOrZero(tokenData?.price);
 
-      return {
-        asset: asset?.symbol ?? '',
-        price,
-      };
-    });
+        if (
+          tokenData.status &&
+          tokenData.status === PoolDetailStatusEnum.Enabled
+        ) {
+          result.push({
+            asset: asset?.symbol ?? '',
+            price,
+          });
+        }
+        return result;
+      },
+      [],
+    );
 
     const runePrice = validBNOrZero(priceIndex?.RUNE);
 
@@ -1266,7 +1271,6 @@ export default compose(
       user: state.Wallet.user,
       assetData: state.Wallet.assetData,
       poolAddress: state.Midgard.poolAddress,
-      assets: state.Midgard.assets,
       poolData: state.Midgard.poolData,
       pools: state.Midgard.pools,
       priceIndex: state.Midgard.priceIndex,
