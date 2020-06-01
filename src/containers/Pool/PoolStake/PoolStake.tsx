@@ -3,12 +3,14 @@ import * as H from 'history';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter, Link } from 'react-router-dom';
-import { Row, Col, notification } from 'antd';
+import { Row, Col, notification, Popover } from 'antd';
 import {
   InboxOutlined,
   InfoOutlined,
   FullscreenExitOutlined,
   CloseOutlined,
+  LockOutlined,
+  UnlockOutlined,
 } from '@ant-design/icons';
 import { SliderValue } from 'antd/lib/slider';
 import { crypto } from '@binance-chain/javascript-sdk';
@@ -61,6 +63,8 @@ import {
   Tabs,
   ConfirmModal,
   ConfirmModalContent,
+  PopoverContent,
+  PopoverContainer,
 } from './PoolStake.style';
 import {
   WithdrawResultParams,
@@ -159,6 +163,7 @@ type State = {
   tokenPercent: number;
   txResult: boolean;
   widthdrawPercentage: number;
+  selectRatio: boolean;
 };
 
 type StakeData = {
@@ -204,6 +209,7 @@ class PoolStake extends React.Component<Props, State> {
       tokenPercent: 0,
       txResult: false,
       widthdrawPercentage: 0,
+      selectRatio: false,
     };
   }
 
@@ -335,7 +341,7 @@ class PoolStake extends React.Component<Props, State> {
    */
   handleChangeTokenAmount = (tokenName: string) => (value: BigNumber) => {
     const { assetData, symbol } = this.props;
-    const { fR, fT } = this.state;
+    const { fR, fT, selectRatio } = this.state;
 
     const sourceAsset = getAssetFromAssetData(
       assetData,
@@ -363,6 +369,18 @@ class PoolStake extends React.Component<Props, State> {
       .multipliedBy(balance);
     const valueAsToken = tokenAmount(value);
 
+    if (!selectRatio) {
+      if (tokenName === 'rune') {
+        this.setState({
+          runeAmount: valueAsToken,
+        });
+      } else if (tokenName !== 'rune') {
+        this.setState({
+          tokenAmount: valueAsToken,
+        });
+      }
+      return;
+    }
     if (tokenName === 'rune') {
       const data = this.getData();
       const ratio = data?.ratio ?? 1;
@@ -384,11 +402,24 @@ class PoolStake extends React.Component<Props, State> {
           tokenAmount: tokenAmount(tokenAmountBN),
         });
       }
-    } else if (totalAmount.isLessThan(valueAsToken.amount())) {
-      this.setState({
-        tokenAmount: tokenAmount(totalAmount),
-        tokenPercent: 100,
-      });
+    } else if (tokenName !== 'rune') {
+      const data = this.getData();
+      const ratio = data?.ratio ?? 1;
+      // formula: newValue / ratio
+      const tokenValue = valueAsToken.amount().dividedBy(ratio);
+
+      console.log('here');
+      if (totalAmount.isLessThan(valueAsToken.amount())) {
+        this.setState({
+          runeAmount: tokenAmount(tokenValue),
+          tokenAmount: tokenAmount(totalAmount),
+        });
+      } else {
+        this.setState({
+          runeAmount: tokenAmount(tokenValue),
+          tokenAmount: valueAsToken,
+        });
+      }
     } else {
       this.setState({
         tokenAmount: valueAsToken,
@@ -408,7 +439,6 @@ class PoolStake extends React.Component<Props, State> {
 
     const selectedToken = getAssetFromAssetData(assetData, tokenName);
     const targetToken = getAssetFromAssetData(assetData, symbol);
-
     if (!selectedToken || !targetToken) {
       return;
     }
@@ -842,6 +872,18 @@ class PoolStake extends React.Component<Props, State> {
     this.getStakerInfo();
   };
 
+  getPopupContainer = () => {
+    return document.getElementsByClassName(
+      'stake-ratio-select',
+    )[0] as HTMLElement;
+  };
+
+  handleSwitchSelectRatio = () => {
+    this.setState(prevState => ({
+      selectRatio: !prevState.selectRatio,
+    }));
+  };
+
   renderStakeModalContent = (completed: boolean) => {
     const {
       txStatus: { status, value, startTime, hash },
@@ -1141,6 +1183,7 @@ class PoolStake extends React.Component<Props, State> {
       runePercent,
       widthdrawPercentage,
       dragReset,
+      selectRatio,
     } = this.state;
 
     const source = 'rune';
@@ -1230,6 +1273,33 @@ class PoolStake extends React.Component<Props, State> {
                   onChange={this.handleChangePercent('rune')}
                   withLabel
                 />
+                <PopoverContainer className="stake-ratio-select">
+                  <Popover
+                    content={
+                      <PopoverContent>Select the ratio for me</PopoverContent>
+                    }
+                    getPopupContainer={this.getPopupContainer}
+                    placement="right"
+                    visible
+                    overlayClassName="stake-ratio-select-popover"
+                    overlayStyle={{
+                      padding: '6px',
+                      animationDuration: '0s !important',
+                      animation: 'none !important',
+                    }}
+                  >
+                    <div>
+                      <Button
+                        onClick={this.handleSwitchSelectRatio}
+                        sizevalue="small"
+                        typevalue="outline"
+                        focused={selectRatio}
+                      >
+                        {selectRatio ? <LockOutlined /> : <UnlockOutlined />}
+                      </Button>
+                    </div>
+                  </Popover>
+                </PopoverContainer>
               </div>
               <div className="coin-card-wrapper">
                 <CoinCard
