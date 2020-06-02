@@ -109,8 +109,7 @@ export const getSwapData = (
     const transactionAsString = `${basePriceAsset} ${formatBaseAsTokenAmount(
       baseAmount(transaction),
     )}`;
-    // formula: poolInfo.poolSlipAverage * runePrice
-    const slip = bn(poolInfo?.poolSlipAverage ?? 0).multipliedBy(runePrice);
+    const slip = bn(poolInfo?.poolSlipAverage ?? 0).multipliedBy(100);
     const slipAsString = slip.toString();
     const trade = bn(poolInfo?.swappingTxCount ?? 0);
     const tradeAsString = trade.toString();
