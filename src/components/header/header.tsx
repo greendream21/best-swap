@@ -1,12 +1,10 @@
 import React, { useMemo } from 'react';
 import { connect } from 'react-redux';
 import { Link, useRouteMatch } from 'react-router-dom';
-import { Tooltip } from 'antd';
 import {
   SwapOutlined,
   DatabaseFilled,
   WalletOutlined,
-  QuestionOutlined,
 } from '@ant-design/icons';
 
 import * as RD from '@devexperts/remote-data-ts';
@@ -17,7 +15,6 @@ import { StyledHeader, LogoWrapper, HeaderActionButtons } from './header.style';
 import HeaderSetting from './headerSetting';
 import WalletDrawer from '../../containers/WalletView/WalletDrawer';
 
-import Button from '../uielements/button';
 import ThemeSwitch from '../uielements/themeSwitch';
 import WalletButton from '../uielements/walletButton';
 import BasePriceSelector from './basePriceSelector';
@@ -99,17 +96,6 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
         <Link to="/">
           <Logo name="bepswap" type="long" />
         </Link>
-        <Tooltip title="Introduction?">
-          <Link to="/introduction">
-            <Button
-              className="intro-btn"
-              typevalue="outline"
-              shape="circle"
-              size="small"
-              icon={<QuestionOutlined />}
-            />
-          </Link>
-        </Tooltip>
       </LogoWrapper>
       {renderHeader}
       <HeaderActionButtons>

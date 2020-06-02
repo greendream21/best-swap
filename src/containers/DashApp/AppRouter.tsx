@@ -15,10 +15,6 @@ const routes: AppRoute[] = [
     component: asyncComponent(() => import('../pages/Swap/SwapLanding')),
   },
   {
-    path: 'introduction/:view?',
-    component: asyncComponent(() => import('../pages/Home')),
-  },
-  {
     path: 'connect',
     component: asyncComponent(() => import('../pages/Connect')),
   },
