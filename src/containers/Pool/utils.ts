@@ -19,10 +19,7 @@ import {
   baseAmount,
   formatBaseAsTokenAmount,
 } from '@thorchain/asgardex-token';
-import {
-  getStakeMemo,
-  getWithdrawMemo,
-} from '../../helpers/memoHelper';
+import { getStakeMemo, getWithdrawMemo } from '../../helpers/memoHelper';
 import { getTickerFormat } from '../../helpers/stringHelper';
 import { PoolDataMap, PriceDataIndex } from '../../redux/midgard/types';
 import { PoolDetail, AssetDetail } from '../../types/generated/midgard';
@@ -195,7 +192,10 @@ export const getPoolData = (
   const poolROI12Data = poolDetail?.poolROI12 ?? 0;
   const poolROI12 = bn(poolROI12Data).multipliedBy(100);
 
-  const liqFeeResult = poolDetail?.poolFeeAverage ?? 0;
+  // poolFeeAverage * runePrice
+  const liqFeeResult = bnOrZero(poolDetail?.poolFeeAverage).multipliedBy(
+    runePrice,
+  );
   const liqFee = baseAmount(liqFeeResult);
 
   const totalSwaps = Number(poolDetail?.swappingTxCount ?? 0);
@@ -208,7 +208,7 @@ export const getPoolData = (
   const transactionValue = `${basePriceAsset} ${formatBaseAsTokenAmount(
     transaction,
   )}`;
-  const liqFeeValue = `${formatBaseAsTokenAmount(liqFee)}%`;
+  const liqFeeValue = `${basePriceAsset} ${formatBaseAsTokenAmount(liqFee)}`;
   const roiAtValue = `${roiAT}% pa`;
 
   return {
