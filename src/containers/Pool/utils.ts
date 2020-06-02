@@ -506,11 +506,13 @@ export const confirmWithdraw = (
 
     const memo = getWithdrawMemo(symbol, percent * 100);
 
-    // Fee
+    // Minimum amount to send memo on-chain
     const amount = 0.00000001;
     bncClient
       .transfer(wallet, poolAddress, amount, 'RUNE-A1F', memo)
       .then(response => resolve(response))
+      // If first tx ^ fails (e.g. there is no RUNE available)
+      // another tx w/ same memo will be sent, but by using BNB now
       .catch(() => {
         bncClient
           .transfer(wallet, poolAddress, amount, 'BNB', memo)

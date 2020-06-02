@@ -28,6 +28,7 @@ import {
   baseToToken,
   BaseAmount,
   baseAmount,
+  tokenToBase,
 } from '@thorchain/asgardex-token';
 import Text from 'antd/lib/typography/Text';
 import Button from '../../../components/uielements/button';
@@ -327,7 +328,7 @@ class SwapSend extends React.Component<Props, State> {
     const feeAsToken = baseToToken(fee);
     const feeAsTokenBN = feeAsToken.amount();
     // substract fee  - for BNB source only
-    if (this.considerBnb()) {
+    if (this.subtractBnbFee()) {
       totalAmount = totalAmount.isGreaterThan(feeAsTokenBN)
         ? totalAmount.minus(feeAsTokenBN)
         : bn(0);
@@ -915,6 +916,27 @@ class SwapSend extends React.Component<Props, State> {
     return source?.toUpperCase() === 'BNB';
   };
 
+
+  /**
+   * Check whether to substract BNB fee from entered BNB amount
+   */
+  subtractBnbFee = (): boolean => {
+    if (this.considerBnb()) {
+      const { xValue } = this.state;
+      const { assetData } = this.props;
+      // (1) BNB amount in wallet
+      const bnbInWallet = bnbBaseAmount(assetData) || baseAmount(0);
+      // (2) BNB amount entered in input
+      const bnbEntered = tokenToBase(xValue);
+      // difference (1) - (2) as BigNumber
+      const bnbDiff = bnbInWallet.amount().minus(bnbEntered.amount());
+      const fee = this.bnbFeeAmount();
+      return !!fee && bnbDiff.isGreaterThan(0) && bnbDiff.isLessThan(fee.amount());
+    }
+
+    return false;
+  };
+
   /**
    * Check to consider special cases for RUNE
    */
@@ -968,7 +990,7 @@ class SwapSend extends React.Component<Props, State> {
           (fees: TransferFees) => (
             <>
               <Text>Fee: {formatBnbAmount(fees.single)}</Text>
-              {this.considerBnb() && (
+              {this.subtractBnbFee() && (
                 <Text>
                   {' '}
                   (It will be substructed from your entered BNB value)
