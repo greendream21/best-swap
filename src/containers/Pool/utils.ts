@@ -82,8 +82,7 @@ export const getCalcResult = (
       const a = R.div(T);
       // Ratio does need more than 2 decimal places
       ratio = bn(1)
-        .div(a)
-        .decimalPlaces(2);
+        .div(a);
       symbolTo = symbol;
       poolUnits = bn(poolDataUnits || 0);
     }

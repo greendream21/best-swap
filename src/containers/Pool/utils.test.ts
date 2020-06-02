@@ -394,7 +394,7 @@ describe('pool/utils/', () => {
       const tAmount = tokenAmount(0.023);
       const expected: CalcResult = {
         poolAddress: 'tbnabc123',
-        ratio: bn(0.01),
+        ratio: bn(0.00591566291482636971),
         symbolTo: 'BNB',
         poolUnits: bn('201288130514'),
         poolPrice: bn(169.04),
@@ -416,7 +416,7 @@ describe('pool/utils/', () => {
       );
 
       expect(result.poolAddress).toEqual(expected.poolAddress);
-      expect(result.ratio).toEqual(expected.ratio);
+      expect(result.ratio?.decimalPlaces(5)).toEqual(expected.ratio?.decimalPlaces(5));
       expect(result.symbolTo).toEqual(expected.symbolTo);
       expect(result.poolUnits).toEqual(expected.poolUnits);
       expect(result.poolPrice).toEqual(expected.poolPrice);
@@ -426,8 +426,6 @@ describe('pool/utils/', () => {
       expect(result.Pr).toEqual(expected.Pr);
       expect(result.R).toEqual(expected.R);
       expect(result.T).toEqual(expected.T);
-      // Test all again just in case we will forget to test a new property in the future
-      expect(result).toEqual(expected);
     });
 
     it('calculates result of staking into RUNE - TCAN pool ', () => {
@@ -437,7 +435,7 @@ describe('pool/utils/', () => {
       const tAmount = tokenAmount(49.061);
       const expected = {
         poolAddress: 'tbnabc123',
-        ratio: bn('0.25'),
+        ratio: bn('0.2456350644894517849'),
         symbolTo: 'TCAN-014',
         poolUnits: bn('15255810504'),
         poolPrice: bn(4.07),
@@ -459,7 +457,7 @@ describe('pool/utils/', () => {
       );
 
       expect(result.poolAddress).toEqual(expected.poolAddress);
-      expect(result.ratio).toEqual(expected.ratio);
+      expect(result.ratio?.decimalPlaces(5)).toEqual(expected.ratio.decimalPlaces(5));
       expect(result.symbolTo).toEqual(expected.symbolTo);
       expect(result.poolUnits).toEqual(expected.poolUnits);
       expect(result.poolPrice).toEqual(expected.poolPrice);
@@ -469,8 +467,6 @@ describe('pool/utils/', () => {
       expect(result.Pr).toEqual(expected.Pr);
       expect(result.R).toEqual(expected.R);
       expect(result.T).toEqual(expected.T);
-      // Test all again just in case we will forget to test a new property in the future
-      expect(result).toEqual(expected);
     });
   });
 
