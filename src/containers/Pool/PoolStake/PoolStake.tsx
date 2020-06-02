@@ -36,6 +36,7 @@ import {
   formatBaseAsTokenAmount,
   baseAmount,
   baseToToken,
+  tokenToBase,
 } from '@thorchain/asgardex-token';
 import Text from 'antd/lib/typography/Text';
 import { getAppContainer } from '../../../helpers/elementHelper';
@@ -552,9 +553,8 @@ class PoolStake extends React.Component<Props, State> {
       // fee transformation: BaseAmount -> TokenAmount -> BigNumber
       const fee = this.bnbFeeAmount() || baseAmount(0);
       const feeAsTokenAmount = baseToToken(fee).amount();
-      // Special case: Substract fee from BNB amount before sending it
-      // Note: All validation for this already happened in `handleStake`
-      if (this.considerBnb()) {
+      // Special case: Substract fee from BNB amount to cover fees
+      if (this.subtractBnbFee()) {
         const amountToStake = tokenAmountToStake
           .amount()
           .minus(feeAsTokenAmount);
@@ -1117,12 +1117,32 @@ class PoolStake extends React.Component<Props, State> {
   considerBnbFee = (): boolean => {
     const { tokenAmount, selectedShareDetailTab } = this.state;
 
-    // For withdrawing, it's same as `considerBnb`
-    if (selectedShareDetailTab === ShareDetailTabKeys.WITHDRAW) {
-      return this.considerBnb();
-    }
+    // For withdrawing, we always consider a bnb fee
+    if (selectedShareDetailTab === ShareDetailTabKeys.WITHDRAW) { return this.considerBnb(); }
+
     // For staking, an amount of BNB needs to be entered as well
     return this.considerBnb() && tokenAmount.amount().isGreaterThan(0);
+  };
+
+    /**
+   * Check whether to substract BNB fee from entered BNB amount
+   */
+  subtractBnbFee = (): boolean => {
+    const { tokenAmount, selectedShareDetailTab } = this.state;
+    // Ignore withdrawing, since we deal with percent values only and can't substract fees from these values
+    if (this.considerBnb() && selectedShareDetailTab !== ShareDetailTabKeys.WITHDRAW) {
+      const { assetData } = this.props;
+      // (1) BNB amount in wallet
+      const bnbInWallet = bnbBaseAmount(assetData) || baseAmount(0);
+      // (2) BNB amount entered in token input
+      const bnbEntered = tokenToBase(tokenAmount);
+      // difference (1) - (2) as BigNumber
+      const bnbDiff = bnbInWallet.amount().minus(bnbEntered.amount());
+      const fee = this.bnbFeeAmount();
+      return !!fee && bnbDiff.isGreaterThan(0) && bnbDiff.isLessThan(fee.amount());
+    }
+
+    return false;
   };
 
   /**
@@ -1133,17 +1153,16 @@ class PoolStake extends React.Component<Props, State> {
     const { transferFees } = this.props;
     const { runeAmount, tokenAmount, selectedShareDetailTab } = this.state;
     const fees = RD.toNullable(transferFees);
-    // To withdraw we will have two transactions and need two single fees
+    // To withdraw we will always have a `single` transaction fee
     if (selectedShareDetailTab === ShareDetailTabKeys.WITHDRAW) {
-      const fee = fees?.single;
-      return fee ? baseAmount(fee.amount().multipliedBy(2)) : Nothing;
+      return fees?.single ?? Nothing;
     }
 
-    // For staking, whether it's a single or multi fee depending on entered values
+    // For staking, check whether it's a `single` or `multi` fee depending on entered values
     return runeAmount.amount().isGreaterThan(0) &&
       tokenAmount.amount().isGreaterThan(0)
-      ? fees?.multi
-      : fees?.single;
+      ? (fees?.multi ?? Nothing)
+      : (fees?.single ?? Nothing);
   };
 
   /**
@@ -1182,7 +1201,7 @@ class PoolStake extends React.Component<Props, State> {
             return (
               <>
                 {fee && <Text>Fee: {formatBnbAmount(fee)}</Text>}
-                {this.considerBnbFee() && (
+                {this.subtractBnbFee() && (
                   <Text>
                     {' '}
                     (It will be substructed from BNB amount)
