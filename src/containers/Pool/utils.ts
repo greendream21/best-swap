@@ -22,8 +22,9 @@ import {
 import { getStakeMemo, getWithdrawMemo } from '../../helpers/memoHelper';
 import { getTickerFormat } from '../../helpers/stringHelper';
 import { PoolDataMap, PriceDataIndex } from '../../redux/midgard/types';
-import { PoolDetail, AssetDetail } from '../../types/generated/midgard';
+import { PoolDetail } from '../../types/generated/midgard';
 import { getAssetFromString } from '../../redux/midgard/utils';
+import { AssetData } from '../../redux/wallet/types';
 import { Maybe, Nothing } from '../../types/bepswap';
 import { PoolData } from './types';
 
@@ -78,8 +79,7 @@ export const getCalcResult = (
       // formula: 1 / (R / T)
       const a = R.div(T);
       // Ratio does need more than 2 decimal places
-      ratio = bn(1)
-        .div(a);
+      ratio = bn(1).div(a);
       symbolTo = symbol;
       poolUnits = bn(poolDataUnits || 0);
     }
@@ -130,12 +130,12 @@ export const getCalcResult = (
 };
 
 export const getCreatePoolTokens = (
-  assetData: AssetDetail[],
+  assetData: AssetData[],
   pools: string[],
-): AssetDetail[] => {
-  return assetData.filter(data => {
+): AssetData[] => {
+  return assetData.filter((data: AssetData) => {
     let unique = true;
-
+    const isSmallAmount = data.assetValue.amount().isLessThan(0.01);
     if (getTickerFormat(data.asset) === 'rune') {
       return false;
     }
@@ -147,7 +147,7 @@ export const getCreatePoolTokens = (
       }
     });
 
-    return unique;
+    return unique && !isSmallAmount;
   });
 };
 
