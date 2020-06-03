@@ -188,15 +188,27 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
   };
 
   const pageContent = (data: TxDetails[], count: number, loading: boolean) => {
-    // const filteredData = data.filter(eventData => eventData.type === filter);
+    const filteredData = data.filter(eventData => {
+      if (
+        eventData.type &&
+        [
+          TxDetailsTypeEnum.Swap,
+          TxDetailsTypeEnum.Stake,
+          TxDetailsTypeEnum.Unstake,
+        ].includes(eventData.type)
+      ) {
+        return true;
+      }
+      return false;
+    });
 
     return (
       <ContentWrapper>
         <ContentWrapper className="transaction-view-wrapper desktop-view">
-          {renderTxTable(data, ViewType.DESKTOP, loading)}
+          {renderTxTable(filteredData, ViewType.DESKTOP, loading)}
         </ContentWrapper>
         <ContentWrapper className="transaction-view-wrapper mobile-view">
-          {renderTxTable(data, ViewType.MOBILE, loading)}
+          {renderTxTable(filteredData, ViewType.MOBILE, loading)}
         </ContentWrapper>
         {count ? (
           <StyledPagination
