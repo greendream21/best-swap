@@ -136,7 +136,7 @@ describe('pool/utils/', () => {
   });
 
   describe('getCreatePoolTokens', () => {
-    it('should filter pool assets ', () => {
+    it('should filter pool assets and the asset with small amount ', () => {
       const assetA: AssetData = {
         asset: 'A',
         assetValue: tokenAmount(1),
@@ -147,13 +147,18 @@ describe('pool/utils/', () => {
         assetValue: tokenAmount(1),
         price: bn(2),
       };
-      const assets: AssetData[] = [assetA, assetB];
+      const assetWithSmallAmount: AssetData = {
+        asset: 'C',
+        assetValue: tokenAmount(0.005),
+        price: bn(2),
+      };
+      const assets: AssetData[] = [assetA, assetB, assetWithSmallAmount];
       const pools: string[] = ['A.A'];
       const result = getCreatePoolTokens(assets, pools);
       const expected = [assetB];
       expect(result).toEqual(expected);
     });
-    it('should filter `RUNE` assets ', () => {
+    it('should exclude `RUNE`  asset', () => {
       const assetA: AssetData = {
         asset: 'RUNE',
         assetValue: tokenAmount(1),
@@ -416,7 +421,9 @@ describe('pool/utils/', () => {
       );
 
       expect(result.poolAddress).toEqual(expected.poolAddress);
-      expect(result.ratio?.decimalPlaces(5)).toEqual(expected.ratio?.decimalPlaces(5));
+      expect(result.ratio?.decimalPlaces(5)).toEqual(
+        expected.ratio?.decimalPlaces(5),
+      );
       expect(result.symbolTo).toEqual(expected.symbolTo);
       expect(result.poolUnits).toEqual(expected.poolUnits);
       expect(result.poolPrice).toEqual(expected.poolPrice);
@@ -457,7 +464,9 @@ describe('pool/utils/', () => {
       );
 
       expect(result.poolAddress).toEqual(expected.poolAddress);
-      expect(result.ratio?.decimalPlaces(5)).toEqual(expected.ratio.decimalPlaces(5));
+      expect(result.ratio?.decimalPlaces(5)).toEqual(
+        expected.ratio.decimalPlaces(5),
+      );
       expect(result.symbolTo).toEqual(expected.symbolTo);
       expect(result.poolUnits).toEqual(expected.poolUnits);
       expect(result.poolPrice).toEqual(expected.poolPrice);

@@ -63,7 +63,6 @@ import { PriceDataIndex, PoolDataMap } from '../../../redux/midgard/types';
 import { Maybe, AssetPair } from '../../../types/bepswap';
 import { User, AssetData } from '../../../redux/wallet/types';
 
-import { AssetDetail } from '../../../types/generated/midgard';
 import { BINANCE_NET } from '../../../env';
 
 type ComponentProps = {
@@ -475,8 +474,8 @@ class PoolCreate extends React.Component<Props, State> {
 
     const runePrice = validBNOrZero(priceIndex?.RUNE);
     const tokensData = getCreatePoolTokens(assetData, pools);
-    // AssetDetail[] -> AssetPair[]
-    const coinDardData = tokensData.map<AssetPair>((detail: AssetDetail) => ({
+    // AssetData[] -> AssetPair[]
+    const coinDardData = tokensData.map<AssetPair>((detail: AssetData) => ({
       asset: detail.asset || '',
     }));
 
