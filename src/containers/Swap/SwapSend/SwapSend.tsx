@@ -791,7 +791,7 @@ class SwapSend extends React.Component<Props, State> {
 
     const { slip, outputAmount } = calcResult;
 
-    const Px = validBNOrZero(priceIndex?.RUNE);
+    const Px = validBNOrZero(priceIndex[swapSource.toUpperCase()]);
     const tokenPrice = validBNOrZero(priceIndex[swapTarget.toUpperCase()]);
 
     const priceFrom: BigNumber = Px.multipliedBy(xValue.amount());
@@ -799,9 +799,6 @@ class SwapSend extends React.Component<Props, State> {
 
     const refunded = txResult?.type === 'refund' ?? false;
     const amountBN = bnOrZero(txResult?.amount);
-    const targetToken = txResult
-      ? getTickerFormat(txResult?.token)
-      : swapTarget;
     const assetAmount = txResult ? tokenAmount(amountBN) : outputAmount;
 
     let priceTo;
@@ -842,7 +839,7 @@ class SwapSend extends React.Component<Props, State> {
               />
               <CoinData
                 data-test="swapmodal-coin-data-receive"
-                asset={targetToken}
+                asset={swapTarget}
                 assetValue={assetAmount}
                 price={priceTo}
                 priceUnit={basePriceAsset}
@@ -916,7 +913,6 @@ class SwapSend extends React.Component<Props, State> {
     return source?.toUpperCase() === 'BNB';
   };
 
-
   /**
    * Check whether to substract BNB fee from entered BNB amount
    */
@@ -931,7 +927,9 @@ class SwapSend extends React.Component<Props, State> {
       // difference (1) - (2) as BigNumber
       const bnbDiff = bnbInWallet.amount().minus(bnbEntered.amount());
       const fee = this.bnbFeeAmount();
-      return !!fee && bnbDiff.isGreaterThan(0) && bnbDiff.isLessThan(fee.amount());
+      return (
+        !!fee && bnbDiff.isGreaterThan(0) && bnbDiff.isLessThan(fee.amount())
+      );
     }
 
     return false;
