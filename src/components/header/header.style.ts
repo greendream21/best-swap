@@ -64,12 +64,6 @@ export const LogoWrapper = styled.div`
   svg {
     max-height: 24px;
   }
-
-  .intro-btn {
-    min-width: 24px !important;
-    max-height: 24px;
-    border-radius: 50% !important;
-  }
 `;
 
 export const HeaderTitle = styled.p`
