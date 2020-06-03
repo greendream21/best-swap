@@ -493,19 +493,17 @@ class SwapSend extends React.Component<Props, State> {
       return;
     }
 
-    // Validate RUNE amount consider fees
-    if (this.considerRune()) {
-      if (xValue.amount().isLessThanOrEqualTo(tokenAmount(1).amount())) {
+    // Validate RUNE value of swap to cover network transactionFee
+    if (this.runeFeeIsNotCovered(xValue.amount())) {
         notification.error({
-          message: 'Invalid RUNE value',
-          description: 'Swap amount must exceed 1 RUNE to cover network fees.',
+          message: 'Invalid amount',
+          description: 'Swap value must exceed 1 RUNE to cover network fees.',
           getContainer: getAppContainer,
         });
         this.setState({
           dragReset: true,
         });
         return;
-      }
     }
 
     // Validate BNB amount to consider fees
@@ -936,12 +934,14 @@ class SwapSend extends React.Component<Props, State> {
   };
 
   /**
-   * Check to consider special cases for RUNE
+   * Check to ensure THORChain transactionFee (currently 1 RUNE)
+   * https://gitlab.com/thorchain/thornode/-/blob/master/constants/constants.go#L42
+   * @todo get current transactionFee from thornode constants endpoint eg :1317/thorchain/constants
    */
-  considerRune = (): boolean => {
-    const { info } = this.props;
+  runeFeeIsNotCovered = (amount: BigNumber): boolean => {
+    const { info, priceIndex } = this.props;
     const { source }: Pair = getPair(info);
-    return source?.toUpperCase() === 'RUNE';
+    return source ? bn(priceIndex[source.toUpperCase()]).multipliedBy(amount).isLessThanOrEqualTo(1) : true;
   };
 
   /**
