@@ -72,7 +72,9 @@ class ConnectView extends Component {
                 <TabPane
                   key={tab.value}
                   tab={tab.label}
-                  disabled={tab.value === 'walletconnect'}
+                  disabled={
+                    tab.value === 'walletconnect' || tab.value === 'ledger'
+                  }
                 />
               );
             })}
