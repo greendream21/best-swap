@@ -1118,19 +1118,24 @@ class PoolStake extends React.Component<Props, State> {
     const { tokenAmount, selectedShareDetailTab } = this.state;
 
     // For withdrawing, we always consider a bnb fee
-    if (selectedShareDetailTab === ShareDetailTabKeys.WITHDRAW) { return this.considerBnb(); }
+    if (selectedShareDetailTab === ShareDetailTabKeys.WITHDRAW) {
+      return this.considerBnb();
+    }
 
     // For staking, an amount of BNB needs to be entered as well
     return this.considerBnb() && tokenAmount.amount().isGreaterThan(0);
   };
 
-    /**
+  /**
    * Check whether to substract BNB fee from entered BNB amount
    */
   subtractBnbFee = (): boolean => {
     const { tokenAmount, selectedShareDetailTab } = this.state;
     // Ignore withdrawing, since we deal with percent values only and can't substract fees from these values
-    if (this.considerBnb() && selectedShareDetailTab !== ShareDetailTabKeys.WITHDRAW) {
+    if (
+      this.considerBnb() &&
+      selectedShareDetailTab !== ShareDetailTabKeys.WITHDRAW
+    ) {
       const { assetData } = this.props;
       // (1) BNB amount in wallet
       const bnbInWallet = bnbBaseAmount(assetData) || baseAmount(0);
@@ -1139,7 +1144,9 @@ class PoolStake extends React.Component<Props, State> {
       // difference (1) - (2) as BigNumber
       const bnbDiff = bnbInWallet.amount().minus(bnbEntered.amount());
       const fee = this.bnbFeeAmount();
-      return !!fee && bnbDiff.isGreaterThan(0) && bnbDiff.isLessThan(fee.amount());
+      return (
+        !!fee && bnbDiff.isGreaterThan(0) && bnbDiff.isLessThan(fee.amount())
+      );
     }
 
     return false;
@@ -1161,8 +1168,8 @@ class PoolStake extends React.Component<Props, State> {
     // For staking, check whether it's a `single` or `multi` fee depending on entered values
     return runeAmount.amount().isGreaterThan(0) &&
       tokenAmount.amount().isGreaterThan(0)
-      ? (fees?.multi ?? Nothing)
-      : (fees?.single ?? Nothing);
+      ? fees?.multi ?? Nothing
+      : fees?.single ?? Nothing;
   };
 
   /**
@@ -1202,10 +1209,7 @@ class PoolStake extends React.Component<Props, State> {
               <>
                 {fee && <Text>Fee: {formatBnbAmount(fee)}</Text>}
                 {this.subtractBnbFee() && (
-                  <Text>
-                    {' '}
-                    (It will be substructed from BNB amount)
-                  </Text>
+                  <Text> (It will be substructed from BNB amount)</Text>
                 )}
                 {bnbAmount && this.bnbFeeIsNotCovered() && (
                   <>
@@ -1316,7 +1320,10 @@ class PoolStake extends React.Component<Props, State> {
             <div className="stake-card-wrapper">
               <div className="coin-card-wrapper">
                 <CoinCard
-                  inputProps={{ 'data-test': 'stake-coin-input-rune' }}
+                  inputProps={{
+                    'data-test': 'stake-coin-input-rune',
+                    tabIndex: '0',
+                  }}
                   data-test="coin-card-stake-coin-rune"
                   asset={source}
                   amount={runeAmount}
@@ -1329,6 +1336,7 @@ class PoolStake extends React.Component<Props, State> {
                   value={runePercent}
                   onChange={this.handleChangePercent('rune')}
                   withLabel
+                  tabIndex="0"
                 />
                 <PopoverContainer className="stake-ratio-select">
                   <Popover
@@ -1351,6 +1359,7 @@ class PoolStake extends React.Component<Props, State> {
                         sizevalue="small"
                         typevalue="outline"
                         focused={selectRatio}
+                        tabIndex={-1}
                       >
                         {selectRatio ? <LockOutlined /> : <UnlockOutlined />}
                       </Button>
@@ -1362,6 +1371,7 @@ class PoolStake extends React.Component<Props, State> {
                 <CoinCard
                   inputProps={{
                     'data-test': 'stake-coin-input-target',
+                    tabIndex: '0',
                   }}
                   data-test="coin-card-stake-coin-target"
                   asset={target}
