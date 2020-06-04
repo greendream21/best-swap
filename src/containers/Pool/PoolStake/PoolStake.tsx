@@ -216,7 +216,7 @@ class PoolStake extends React.Component<Props, State> {
       tokenPercent: 0,
       txResult: false,
       widthdrawPercentage: 0,
-      selectRatio: false,
+      selectRatio: true,
       selectedShareDetailTab: ShareDetailTabKeys.ADD,
     };
   }
