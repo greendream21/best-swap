@@ -478,7 +478,12 @@ class PoolCreate extends React.Component<Props, State> {
       asset: detail.asset || '',
     }));
 
-    const tokenPrice = priceIndex[target.toUpperCase()] || 0;
+    const tokenPrice = validBNOrZero(
+      runeAmount
+        .amount()
+        .multipliedBy(runePrice)
+        .dividedBy(tokenAmount.amount()),
+    );
 
     const { poolPrice, depth, share } = this.getData();
 
