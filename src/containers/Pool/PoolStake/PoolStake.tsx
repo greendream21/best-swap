@@ -1336,7 +1336,7 @@ class PoolStake extends React.Component<Props, State> {
                   value={runePercent}
                   onChange={this.handleChangePercent('rune')}
                   withLabel
-                  tabIndex="0"
+                  tabIndex="-1"
                 />
                 <PopoverContainer className="stake-ratio-select">
                   <Popover
