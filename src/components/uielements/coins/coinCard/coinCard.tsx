@@ -79,6 +79,7 @@ type Props = {
   children: React.ReactNode;
   inputProps: {
     'data-test': string;
+    tabIndex: string;
   };
   'data-test': string;
 };
@@ -110,7 +111,7 @@ class CoinCard extends React.Component<Props, State> {
     max: 1000000,
     disabled: false,
     children: null,
-    inputProps: { 'data-test': '' },
+    inputProps: { 'data-test': '', tabIndex: '0' },
   };
 
   constructor(props: Props) {
@@ -286,7 +287,9 @@ class CoinCard extends React.Component<Props, State> {
                   <HorizontalDivider color="primary" />
                   <AssetCardFooter>
                     <FooterLabel>
-                      {`${unit} ${formatBN(amount.amount().multipliedBy(price))}`}
+                      {`${unit} ${formatBN(
+                        amount.amount().multipliedBy(price),
+                      )}`}
                     </FooterLabel>
                     {slip !== undefined && (
                       <FooterLabel
