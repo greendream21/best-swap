@@ -104,6 +104,7 @@ import {
   getAssetFromAssetData,
   bnbBaseAmount,
 } from '../../../helpers/walletHelper';
+import TooltipIcon from '../../../components/uielements/tooltipIcon';
 
 const { TabPane } = Tabs;
 
@@ -1303,6 +1304,9 @@ class PoolStake extends React.Component<Props, State> {
 
     const disableDrag = this.bnbFeeIsNotCovered();
 
+    const withdrawDisabled = true;
+    const dragText = withdrawDisabled ? '24hr cooldown' : 'drag to withdraw';
+
     return (
       <div className="share-detail-wrapper">
         <Tabs withBorder onChange={this.shareDetailTabsChangedHandler}>
@@ -1454,14 +1458,23 @@ class PoolStake extends React.Component<Props, State> {
               {this.renderFee()}
               <div className="drag-container">
                 <Drag
-                  title="Drag to withdraw"
+                  title={dragText}
                   source="blue"
                   target="confirm"
                   reset={dragReset}
-                  disabled={disableDrag}
+                  disabled={disableDrag || withdrawDisabled}
                   onConfirm={this.handleWithdraw}
                   onDrag={this.handleDrag}
                 />
+                <div className="cooldown-info">
+                  <Label>
+                    You must wait n hours until you can withdraw again.
+                  </Label>
+                  <TooltipIcon
+                    text="To prevent denial of service attacks on the network, you must wait 24hrs after each staking event to withdraw assets. Withdrawal requests from your address will be ignored until 24hrs has elapsed."
+                    placement="topLeft"
+                  />
+                </div>
               </div>
             </div>
           </TabPane>

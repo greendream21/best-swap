@@ -159,9 +159,18 @@ export const ContentWrapper = styled(ContentView)`
         }
         .drag-container {
           display: flex;
+          flex-direction: column;
           justify-content: center;
           align-items: center;
           padding-top: 20px;
+
+          .cooldown-info {
+            display: flex;
+            align-items: center;
+            .label-wrapper {
+              margin-right: 8px;
+            }
+          }
         }
       }
     }
