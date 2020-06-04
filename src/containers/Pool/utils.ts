@@ -208,7 +208,7 @@ export const getPoolData = (
     transaction,
   )}`;
   const liqFeeValue = `${basePriceAsset} ${formatBaseAsTokenAmount(liqFee)}`;
-  const roiAtValue = `${roiAT}% pa`;
+  const roiAtValue = `${roiAT}% APR`;
 
   return {
     asset,

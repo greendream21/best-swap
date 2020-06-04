@@ -1082,7 +1082,7 @@ class PoolStake extends React.Component<Props, State> {
       {
         key: 'roi',
         title: 'All Time RoI',
-        value: `${roiAT}% pa`,
+        value: `${roiAT}% APR`,
       },
     ];
 
