@@ -291,7 +291,7 @@ describe('pool/utils/', () => {
           volume24: 'RUNE 0.00',
           transaction: 'RUNE 0.00',
           liqFee: 'RUNE 0.00',
-          roiAT: '50% pa',
+          roiAT: '50% APR',
           poolPrice: 'RUNE 2.000',
         },
         raw: {
@@ -352,7 +352,7 @@ describe('pool/utils/', () => {
           volume24: 'RUNE 0.00',
           transaction: 'RUNE 0.00',
           liqFee: 'RUNE 0.00',
-          roiAT: '99927.69% pa',
+          roiAT: '99927.69% APR',
           poolPrice: 'RUNE 0.000',
         },
         raw: {
