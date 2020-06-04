@@ -63,6 +63,7 @@ const FilterMenu: React.FC<Props> = ({
             value={searchTerm}
             onChange={handleSearchChanged}
             placeholder={placeholder}
+            sizevalue="big"
             typevalue="ghost"
             suffix={<SearchOutlined />}
           />

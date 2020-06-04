@@ -17,6 +17,8 @@ export const Menu = styled(AntdMenu)`
   border: 1px solid ${palette('gray', 0)};
 
   .ant-input-suffix {
+    display: flex;
+    align-items: center;
     color: ${palette('text', 0)};
   }
 `;
