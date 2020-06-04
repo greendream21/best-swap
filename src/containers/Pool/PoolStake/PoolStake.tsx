@@ -1799,7 +1799,7 @@ class PoolStake extends React.Component<Props, State> {
               onCancel={this.hideWalletAlert}
               okText="ADD WALLET"
             >
-              Please add a wallet to stake.
+              <Label>Please add a wallet to swap tokens.</Label>
             </Modal>
           </>
         )}

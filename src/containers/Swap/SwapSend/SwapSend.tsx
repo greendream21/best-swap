@@ -32,6 +32,7 @@ import {
 } from '@thorchain/asgardex-token';
 import Text from 'antd/lib/typography/Text';
 import Button from '../../../components/uielements/button';
+import Label from '../../../components/uielements/label';
 import Drag from '../../../components/uielements/drag';
 import TokenCard from '../../../components/uielements/tokens/tokenCard';
 import CoinData from '../../../components/uielements/coins/coinData';
@@ -1282,7 +1283,7 @@ class SwapSend extends React.Component<Props, State> {
             onCancel={this.hideWalletAlert}
             okText="ADD WALLET"
           >
-            Please add a wallet to swap tokens.
+            <Label>Please add a wallet to swap tokens.</Label>
           </Modal>
         </ContentWrapper>
       );
