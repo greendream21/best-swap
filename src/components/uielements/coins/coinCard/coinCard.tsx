@@ -3,7 +3,7 @@ import { Dropdown } from 'antd';
 import { sortBy as _sortBy } from 'lodash';
 
 import BigNumber from 'bignumber.js';
-import { bn, delay, formatBN } from '@thorchain/asgardex-util';
+import { bn, delay, formatBN, validBNOrZero } from '@thorchain/asgardex-util';
 import { TokenAmount, tokenAmount } from '@thorchain/asgardex-token';
 import Label from '../../label';
 import Selection from '../../selection';
@@ -288,7 +288,7 @@ class CoinCard extends React.Component<Props, State> {
                   <AssetCardFooter>
                     <FooterLabel>
                       {`${unit} ${formatBN(
-                        amount.amount().multipliedBy(price),
+                        validBNOrZero(amount.amount().multipliedBy(price)),
                       )}`}
                     </FooterLabel>
                     {slip !== undefined && (
