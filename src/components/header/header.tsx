@@ -41,16 +41,12 @@ type ComponentProps = {
 type Props = ConnectedProps & ComponentProps;
 
 const Header: React.FC<Props> = (props: Props): JSX.Element => {
-  const {
-    user,
-    midgardBasePath,
-  } = props;
+  const { user, midgardBasePath } = props;
   const wallet: Maybe<string> = user ? user.wallet : Nothing;
 
   const matchSwap = useRouteMatch('/swap');
   const matchPools = useRouteMatch('/pools');
   const matchPool = useRouteMatch('/pool');
-
 
   const activeKey: Maybe<TAB_KEY> = useMemo(() => {
     if (matchSwap) {
@@ -96,6 +92,7 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
         <Link to="/">
           <Logo name="bepswap" type="long" />
         </Link>
+        <HeaderSetting midgardBasePath={midgardBasePath} />
       </LogoWrapper>
       {renderHeader}
       <HeaderActionButtons>
@@ -118,15 +115,12 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
         {wallet && <WalletDrawer />}
         <ThemeSwitch />
         <BasePriceSelector />
-        <HeaderSetting midgardBasePath={midgardBasePath} />
       </HeaderActionButtons>
     </StyledHeader>
   );
 };
 
-export default connect(
-  (state: RootState) => ({
-    user: state.Wallet.user,
-    midgardBasePath: RD.toNullable(state.Midgard.apiBasePath),
-  }),
-)(Header);
+export default connect((state: RootState) => ({
+  user: state.Wallet.user,
+  midgardBasePath: RD.toNullable(state.Midgard.apiBasePath),
+}))(Header);
