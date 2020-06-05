@@ -16,7 +16,7 @@ import * as midgardActions from '../../../redux/midgard/actions';
 import { PriceDataIndex, PoolDataMap } from '../../../redux/midgard/types';
 import { FixmeType, Maybe, ViewType, Nothing } from '../../../types/bepswap';
 
-import { ContentWrapper } from './SwapView.style';
+import { ContentWrapper, ActionHeader } from './SwapView.style';
 import { RootState } from '../../../redux/store';
 import { getAssetFromString } from '../../../redux/midgard/utils';
 import { PoolInfoType } from '../../Pool/types';
@@ -62,10 +62,12 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
     const btnCol = {
       key: 'swap',
       title: (
-        <Button onClick={getPools} typevalue="outline">
-          <SyncOutlined />
-          refresh
-        </Button>
+        <ActionHeader>
+          <Button onClick={getPools} typevalue="outline">
+            <SyncOutlined />
+            refresh
+          </Button>
+        </ActionHeader>
       ),
       render: (text: string, record: SwapTableRowType) => {
         const {
