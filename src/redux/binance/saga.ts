@@ -8,7 +8,7 @@ import {
   take,
 } from 'redux-saga/effects';
 
-import { Method, AxiosResponse } from 'axios';
+import { Method, AxiosResponse, AxiosRequestConfig } from 'axios';
 import {
   Token,
   Market,
@@ -25,7 +25,7 @@ import {
   getBinanceTestnetURL,
   getBinanceMainnetURL,
   getHeaders,
-  axiosRequest,
+  binanceRequest as axiosRequest,
 } from '../../helpers/apiHelper';
 import { getTickerFormat } from '../../helpers/stringHelper';
 import { getTokenName } from '../../helpers/assetHelper';
@@ -45,7 +45,7 @@ export const BINANCE_RETRY_DELAY = 1000; // ms
 
 export function* getBinanceTokens() {
   yield takeEvery('GET_BINANCE_TOKENS', function*() {
-    const params = {
+    const params: AxiosRequestConfig = {
       method: 'get' as Method,
       url: getBinanceTestnetURL(`tokens?limit=${LIMIT}`),
       headers: getHeaders(),
@@ -63,7 +63,7 @@ export function* getBinanceTokens() {
 
 export function* getBinanceMarkets() {
   yield takeEvery('GET_BINANCE_MARKETS', function*() {
-    const params = {
+    const params: AxiosRequestConfig = {
       method: 'get' as Method,
       url: getBinanceTestnetURL(`markets?limit=${LIMIT}`),
       headers: getHeaders(),
@@ -207,17 +207,17 @@ export function* getBinanceFees() {
   yield takeEvery('GET_BINANCE_FEES', function*({
     net,
   }: ReturnType<typeof actions.getBinanceFees>) {
-      try {
-        const data = yield call(tryGetBinanceFees, net);
-        // parse fees
-        const fees = getTransferFeeds(data);
-        const result = fees
-          ? success(fees)
-          : failure(new Error(`No feeds for transfers defined in ${data}`));
-        yield put(actions.getBinanceTransferFeesResult(result));
-      } catch (error) {
-        yield put(actions.getBinanceTransferFeesResult(failure(error)));
-      }
+    try {
+      const data = yield call(tryGetBinanceFees, net);
+      // parse fees
+      const fees = getTransferFeeds(data);
+      const result = fees
+        ? success(fees)
+        : failure(new Error(`No feeds for transfers defined in ${data}`));
+      yield put(actions.getBinanceTransferFeesResult(result));
+    } catch (error) {
+      yield put(actions.getBinanceTransferFeesResult(failure(error)));
+    }
   });
 }
 

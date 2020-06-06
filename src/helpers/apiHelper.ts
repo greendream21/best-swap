@@ -1,5 +1,7 @@
 import * as url from 'url';
-import axios from 'axios';
+import axios, { AxiosInstance } from 'axios';
+import rateLimit from 'axios-rate-limit';
+
 import { DefaultApi } from '../types/generated/midgard';
 import { Maybe, Nothing } from '../types/bepswap';
 import { envOrDefault } from './envHelper';
@@ -39,6 +41,14 @@ export const getBinanceMainnetURL = (url: string) =>
 const defaultAxios = axios.create();
 
 export const axiosRequest = defaultAxios.request;
+
+// create axios request for binance with api rate limit (1 request per second)
+const binanceAxios = rateLimit(axios.create(), {
+  maxRequests: 1,
+  perMilliseconds: 1000,
+}) as AxiosInstance;
+
+export const binanceRequest = binanceAxios.request;
 
 export const getHeaders = () => ({
   Accept: 'application/json',
