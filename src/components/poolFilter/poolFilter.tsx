@@ -31,12 +31,13 @@ const PoolFilter: React.FC<Props> = (props: Props): JSX.Element => {
 
   const renderPopoverContent = () => (
     <PopoverContent>
-      Pools don't immediately become enabled on THORChain and new pools must
-      participate in a liquidity competition which is held every 50000 blocks
-      (approximately 3 days). The pool with the most liquidity measured in RUNE
-      wins and becomes enabled. During the competition phase, liquidity can be
-      added & withdrawn from the pending pools, however users cannot swap across
-      these pools.
+      Pools don't immediately become enabled on THORChain and must
+      participate in a liquidity competition to become enabled.
+
+      Every 50k blocks (approx 3 days), the pool with the most
+      liquidity wins & becomes enabled.
+
+      During this time swapping is disabled but liquidity can be added & withdrawn.
     </PopoverContent>
   );
 
