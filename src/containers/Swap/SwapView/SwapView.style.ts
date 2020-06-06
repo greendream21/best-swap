@@ -49,3 +49,10 @@ export const ContentWrapper = styled(ContentView)`
     }
   }
 `;
+
+export const ActionHeader = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+`;
