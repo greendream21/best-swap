@@ -19,7 +19,7 @@ describe('PoolFilter', () => {
   it('has 2 buttons for enabled and bootstraped status', () => {
     expect(component.find('button')).toHaveLength(2);
   });
-  it('has 2 icons', () => {
-    expect(component.find('svg')).toHaveLength(2);
+  it('has 3 icons', () => {
+    expect(component.find('svg')).toHaveLength(3);
   });
 });
