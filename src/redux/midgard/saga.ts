@@ -268,7 +268,6 @@ export function* getTxByAddress() {
     payload,
   }: ReturnType<typeof actions.getTxByAddress>) {
     try {
-      // Can't infer type of `data: InlineResponse200` in a Generator function - known TS/Generator/Saga issue
       const data = yield call(tryGetTxByAddress, payload);
       yield put(actions.getTxByAddressSuccess(data));
     } catch (error) {
@@ -313,7 +312,6 @@ export function* getTxByAddressTxId() {
     payload,
   }: ReturnType<typeof actions.getTxByAddressTxId>) {
     try {
-      // Can't infer type of `data: InlineResponse200` in a Generator function - known TS/Generator/Saga issue
       const data = yield call(tryTxByAddressTxId, payload);
       yield put(actions.getTxByAddressTxIdSuccess(data));
     } catch (error) {

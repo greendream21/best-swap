@@ -16,7 +16,7 @@ import {
 } from './TransactionView.style';
 import {
   TxDetails,
-  InlineResponse200,
+  InlineResponse2001,
   TxDetailsTypeEnum,
 } from '../../types/generated/midgard';
 import { ViewType, Maybe } from '../../types/bepswap';
@@ -32,7 +32,7 @@ type ComponentProps = {};
 type ConnectedProps = {
   user: Maybe<User>;
   txData: TxDetailData;
-  txCurData: Maybe<InlineResponse200>;
+  txCurData: Maybe<InlineResponse2001>;
   getTxByAddress: typeof midgardActions.getTxByAddress;
 };
 
@@ -242,7 +242,7 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
             {(error?.message ?? false) && <p>{error.message}</p>}
           </ContentWrapper>
         ),
-        (data: InlineResponse200): JSX.Element => {
+        (data: InlineResponse2001): JSX.Element => {
           const { count = 0, txs = [] } = data;
 
           return pageContent(txs, count, false);

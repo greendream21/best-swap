@@ -7,7 +7,7 @@ import {
   StakersAssetData,
   ThorchainEndpoints,
   ThorchainEndpoint,
-  InlineResponse200,
+  InlineResponse2001,
   TxDetailsTypeEnum,
 } from '../../types/generated/midgard';
 
@@ -71,7 +71,7 @@ export type GetTxByAssetPayload = {
   type?: TxDetailType;
 };
 
-export type TxDetailData = RemoteData<Error, InlineResponse200>;
+export type TxDetailData = RemoteData<Error, InlineResponse2001>;
 
 export type ApiBasePathRD = RemoteData<Error, string>;
 
@@ -92,6 +92,6 @@ export type State = {
   error: Maybe<Error>;
   poolLoading: boolean;
   txData: TxDetailData;
-  txCurData: Maybe<InlineResponse200>;
+  txCurData: Maybe<InlineResponse2001>;
   apiBasePath: ApiBasePathRD;
 };
