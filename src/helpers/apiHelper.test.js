@@ -1,9 +1,7 @@
 import {
-  Protocol,
   getBinanceMainnetURL,
   getBinanceTestnetURL,
   getHeaders,
-  getMidgardBasePathByIP,
   getHostnameFromUrl,
 } from './apiHelper';
 
@@ -29,22 +27,6 @@ describe('helpers/apiHelper', () => {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       });
-    });
-  });
-  describe('getMidgardBasePathByIP', () => {
-    it('creates a http base path by default', () => {
-      const result = getMidgardBasePathByIP('121.0.0.1');
-      expect(result).toEqual('http://121.0.0.1:8080');
-    });
-  });
-  describe('getMidgardBasePathByIP', () => {
-    it('creates a http base path ', () => {
-      const result = getMidgardBasePathByIP('121.0.0.1', Protocol.HTTP);
-      expect(result).toEqual('http://121.0.0.1:8080');
-    });
-    it('creates a https base path ', () => {
-      const result = getMidgardBasePathByIP('121.0.0.3', Protocol.HTTPS);
-      expect(result).toEqual('https://121.0.0.3:8080');
     });
   });
   describe('getHostnameFromUrl', () => {
