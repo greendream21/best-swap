@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { palette, key } from 'styled-theme';
+import { InfoCircleOutlined } from '@ant-design/icons';
 
 import Paragraph from 'antd/lib/typography/Paragraph';
 import ContentView from '../../../components/utility/contentView';
@@ -603,14 +604,20 @@ export const PopoverContainer = styled.div`
   }
 `;
 
-export const PopoverContent = styled.div`
-  font-size: '11px';
-  color: ${palette('primary', 0)};
-`;
-
 export const FeeParagraph = styled(Paragraph)`
   padding-top: 10px;
   & > * {
     color: ${palette('text', 1)};
   }
+`;
+
+export const PopoverContent = styled.div`
+  width: 300px;
+  font-size: '11px';
+  color: ${palette('text', 0)};
+`;
+
+export const PopoverIcon = styled(InfoCircleOutlined)`
+  color: ${palette('primary', 0)};
+  margin: 0 10px;
 `;

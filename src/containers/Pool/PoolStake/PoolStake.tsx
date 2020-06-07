@@ -63,9 +63,10 @@ import {
   Tabs,
   ConfirmModal,
   ConfirmModalContent,
-  PopoverContent,
   PopoverContainer,
   FeeParagraph,
+  PopoverContent,
+  PopoverIcon,
 } from './PoolStake.style';
 import {
   WithdrawResultParams,
@@ -104,7 +105,6 @@ import {
   getAssetFromAssetData,
   bnbBaseAmount,
 } from '../../../helpers/walletHelper';
-import TooltipIcon from '../../../components/uielements/tooltipIcon';
 
 const { TabPane } = Tabs;
 
@@ -1233,6 +1233,18 @@ class PoolStake extends React.Component<Props, State> {
   shareDetailTabsChangedHandler = (activeKey: ShareDetailTabKeys) =>
     this.setState({ selectedShareDetailTab: activeKey });
 
+  getCooldownPopupContainer = () => {
+    return document.getElementsByClassName('cooldown-info')[0] as HTMLElement;
+  };
+
+  renderPopoverContent = () => (
+    <PopoverContent>
+      To prevent denial of service attacks on the network, you must wait 24hrs
+      after each staking event to withdraw assets. Withdrawal requests from your
+      address will be ignored until 24hrs has elapsed.
+    </PopoverContent>
+  );
+
   renderShareDetail = (
     _: PoolData,
     stakersAssetData: StakersAssetData,
@@ -1470,10 +1482,19 @@ class PoolStake extends React.Component<Props, State> {
                   <Label>
                     You must wait n hours until you can withdraw again.
                   </Label>
-                  <TooltipIcon
-                    text="To prevent denial of service attacks on the network, you must wait 24hrs after each staking event to withdraw assets. Withdrawal requests from your address will be ignored until 24hrs has elapsed."
-                    placement="topLeft"
-                  />
+                  <Popover
+                    content={this.renderPopoverContent}
+                    getPopupContainer={this.getCooldownPopupContainer}
+                    placement="bottomRight"
+                    overlayClassName="pool-filter-info"
+                    overlayStyle={{
+                      padding: '6px',
+                      animationDuration: '0s !important',
+                      animation: 'none !important',
+                    }}
+                  >
+                    <PopoverIcon />
+                  </Popover>
                 </div>
               </div>
             </div>
