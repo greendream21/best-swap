@@ -11,8 +11,9 @@ import AddIcon from '../../../components/uielements/addIcon';
 import CoinPair from '../../../components/uielements/coins/coinPair';
 import Table from '../../../components/uielements/table';
 import Button from '../../../components/uielements/button';
+import PoolFilter from '../../../components/poolFilter';
 
-import { ContentWrapper } from './PoolView.style';
+import { ContentWrapper, ActionHeader } from './PoolView.style';
 import { getCreatePoolTokens, getPoolData } from '../utils';
 import { PoolData } from '../types';
 import { getTickerFormat } from '../../../helpers/stringHelper';
@@ -23,6 +24,7 @@ import { AssetData, User } from '../../../redux/wallet/types';
 import { PoolDataMap, PriceDataIndex } from '../../../redux/midgard/types';
 import { getAssetFromString } from '../../../redux/midgard/utils';
 import { ViewType, FixmeType, Maybe } from '../../../types/bepswap';
+import { PoolDetailStatusEnum } from '../../../types/generated/midgard/api';
 
 type ComponentProps = {
   loading: boolean;
@@ -40,6 +42,7 @@ type ConnectedProps = {
 
 type State = {
   activeAsset: string;
+  poolStatus: PoolDetailStatusEnum;
 };
 
 type Props = ComponentProps & ConnectedProps;
@@ -49,6 +52,7 @@ class PoolView extends React.Component<Props, State> {
     super(props);
     this.state = {
       activeAsset: 'rune',
+      poolStatus: PoolDetailStatusEnum.Enabled,
     };
   }
 
@@ -56,6 +60,12 @@ class PoolView extends React.Component<Props, State> {
     const { getPools } = this.props;
     getPools();
   }
+
+  selectPoolStatus = (poolStatus: PoolDetailStatusEnum) => {
+    this.setState({
+      poolStatus,
+    });
+  };
 
   handleNewPool = () => {
     const { assetData, pools, user } = this.props;
@@ -92,15 +102,17 @@ class PoolView extends React.Component<Props, State> {
     const buttonCol = {
       key: 'stake',
       title: (
-        <Button
-          onClick={() => {
-            getPools();
-          }}
-          typevalue="outline"
-        >
-          <SyncOutlined />
-          refresh
-        </Button>
+        <ActionHeader>
+          <Button
+            onClick={() => {
+              getPools();
+            }}
+            typevalue="outline"
+          >
+            <SyncOutlined />
+            refresh
+          </Button>
+        </ActionHeader>
       ),
       render: (text: string, record: { symbol?: string }) => {
         const { symbol } = record;
@@ -219,7 +231,7 @@ class PoolView extends React.Component<Props, State> {
 
   renderPoolList = (view: ViewType) => {
     const { pools, poolData, priceIndex, basePriceAsset } = this.props;
-    const { activeAsset } = this.state;
+    const { activeAsset, poolStatus } = this.state;
 
     let key = 0;
     const stakeViewData = pools.reduce((result, pool) => {
@@ -234,19 +246,31 @@ class PoolView extends React.Component<Props, State> {
       );
 
       if (stakeCardData.target !== activeAsset) {
-        result.push({ ...stakeCardData, raw, key });
+        result.push({
+          ...stakeCardData,
+          raw,
+          key,
+          status: poolInfo?.status ?? null,
+        });
         key += 1;
       }
 
       return result;
     }, [] as FixmeType[]);
 
-    return this.renderPoolTable(stakeViewData, view);
+    const filteredData = stakeViewData.filter(
+      poolData => poolData.status === poolStatus,
+    );
+
+    return this.renderPoolTable(filteredData, view);
   };
 
   render() {
+    const { poolStatus } = this.state;
+
     return (
       <ContentWrapper className="pool-view-wrapper">
+        <PoolFilter selected={poolStatus} onClick={this.selectPoolStatus} />
         <div className="pool-list-view desktop-view">
           {this.renderPoolList(ViewType.DESKTOP)}
         </div>

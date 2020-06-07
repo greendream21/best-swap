@@ -114,6 +114,7 @@
     "jsx-a11y/no-static-element-interactions": 0,
     "jsx-a11y/click-events-have-key-events": 0,
     "jsx-a11y/no-noninteractive-element-interactions": 0,
+    "jsx-a11y/tabindex-no-positive": 0,
     "@typescript-eslint/ban-ts-ignore": "off",
     "@typescript-eslint/camelcase": "off",
     "@typescript-eslint/no-empty-function": "off",

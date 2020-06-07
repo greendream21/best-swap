@@ -19,14 +19,12 @@ import {
   baseAmount,
   formatBaseAsTokenAmount,
 } from '@thorchain/asgardex-token';
-import {
-  getStakeMemo,
-  getWithdrawMemo,
-} from '../../helpers/memoHelper';
+import { getStakeMemo, getWithdrawMemo } from '../../helpers/memoHelper';
 import { getTickerFormat } from '../../helpers/stringHelper';
 import { PoolDataMap, PriceDataIndex } from '../../redux/midgard/types';
-import { PoolDetail, AssetDetail } from '../../types/generated/midgard';
+import { PoolDetail } from '../../types/generated/midgard';
 import { getAssetFromString } from '../../redux/midgard/utils';
+import { AssetData } from '../../redux/wallet/types';
 import { Maybe, Nothing } from '../../types/bepswap';
 import { PoolData } from './types';
 
@@ -81,9 +79,7 @@ export const getCalcResult = (
       // formula: 1 / (R / T)
       const a = R.div(T);
       // Ratio does need more than 2 decimal places
-      ratio = bn(1)
-        .div(a)
-        .decimalPlaces(2);
+      ratio = bn(1).div(a);
       symbolTo = symbol;
       poolUnits = bn(poolDataUnits || 0);
     }
@@ -134,12 +130,12 @@ export const getCalcResult = (
 };
 
 export const getCreatePoolTokens = (
-  assetData: AssetDetail[],
+  assetData: AssetData[],
   pools: string[],
-): AssetDetail[] => {
-  return assetData.filter(data => {
+): AssetData[] => {
+  return assetData.filter((data: AssetData) => {
     let unique = true;
-
+    const isSmallAmount = data.assetValue.amount().isLessThan(0.01);
     if (getTickerFormat(data.asset) === 'rune') {
       return false;
     }
@@ -151,7 +147,7 @@ export const getCreatePoolTokens = (
       }
     });
 
-    return unique;
+    return unique && !isSmallAmount;
   });
 };
 
@@ -195,7 +191,10 @@ export const getPoolData = (
   const poolROI12Data = poolDetail?.poolROI12 ?? 0;
   const poolROI12 = bn(poolROI12Data).multipliedBy(100);
 
-  const liqFeeResult = poolDetail?.poolFeeAverage ?? 0;
+  // poolFeeAverage * runePrice
+  const liqFeeResult = bnOrZero(poolDetail?.poolFeeAverage).multipliedBy(
+    runePrice,
+  );
   const liqFee = baseAmount(liqFeeResult);
 
   const totalSwaps = Number(poolDetail?.swappingTxCount ?? 0);
@@ -208,8 +207,8 @@ export const getPoolData = (
   const transactionValue = `${basePriceAsset} ${formatBaseAsTokenAmount(
     transaction,
   )}`;
-  const liqFeeValue = `${formatBaseAsTokenAmount(liqFee)}%`;
-  const roiAtValue = `${roiAT}% pa`;
+  const liqFeeValue = `${basePriceAsset} ${formatBaseAsTokenAmount(liqFee)}`;
+  const roiAtValue = `${roiAT}% APR`;
 
   return {
     asset,
@@ -506,11 +505,13 @@ export const confirmWithdraw = (
 
     const memo = getWithdrawMemo(symbol, percent * 100);
 
-    // Fee
+    // Minimum amount to send memo on-chain
     const amount = 0.00000001;
     bncClient
       .transfer(wallet, poolAddress, amount, 'RUNE-A1F', memo)
       .then(response => resolve(response))
+      // If first tx ^ fails (e.g. there is no RUNE available)
+      // another tx w/ same memo will be sent, but by using BNB now
       .catch(() => {
         bncClient
           .transfer(wallet, poolAddress, amount, 'BNB', memo)

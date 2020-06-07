@@ -4,9 +4,7 @@ import { connect } from 'react-redux';
 import { withRouter, Link } from 'react-router-dom';
 import { SyncOutlined, SwapOutlined } from '@ant-design/icons';
 
-import { bn, validBNOrZero } from '@thorchain/asgardex-util';
-import Label from '../../../components/uielements/label';
-import CoinButton from '../../../components/uielements/coins/coinButton';
+import { bn } from '@thorchain/asgardex-util';
 import CoinPair from '../../../components/uielements/coins/coinPair';
 import Trend from '../../../components/uielements/trend';
 import Button from '../../../components/uielements/button';
@@ -18,10 +16,12 @@ import * as midgardActions from '../../../redux/midgard/actions';
 import { PriceDataIndex, PoolDataMap } from '../../../redux/midgard/types';
 import { FixmeType, Maybe, ViewType, Nothing } from '../../../types/bepswap';
 
-import { ContentWrapper } from './SwapView.style';
+import { ContentWrapper, ActionHeader } from './SwapView.style';
 import { RootState } from '../../../redux/store';
 import { getAssetFromString } from '../../../redux/midgard/utils';
 import { PoolInfoType } from '../../Pool/types';
+import { PoolDetailStatusEnum } from '../../../types/generated/midgard/api';
+import PoolFilter from '../../../components/poolFilter';
 
 type ComponentProps = {};
 
@@ -46,7 +46,9 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
     getPools,
   } = props;
 
-  const [activeAsset, setActiveAsset] = useState('rune');
+  const [poolStatus, selectPoolStatus] = useState<PoolDetailStatusEnum>(
+    PoolDetailStatusEnum.Enabled,
+  );
 
   useEffect(() => {
     getPools();
@@ -60,10 +62,12 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
     const btnCol = {
       key: 'swap',
       title: (
-        <Button onClick={getPools} typevalue="outline">
-          <SyncOutlined />
-          refresh
-        </Button>
+        <ActionHeader>
+          <Button onClick={getPools} typevalue="outline">
+            <SyncOutlined />
+            refresh
+          </Button>
+        </ActionHeader>
       ),
       render: (text: string, record: SwapTableRowType) => {
         const {
@@ -78,6 +82,7 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
               style={{ margin: 'auto' }}
               round="true"
               data-test={dataTest}
+              disabled={poolStatus === PoolDetailStatusEnum.Bootstrapped}
             >
               <SwapOutlined />
               swap
@@ -199,44 +204,28 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
         basePriceAsset,
       );
 
-      if (swapCardData && swapCardData.pool.target !== activeAsset) {
-        result.push({ ...swapCardData, key });
+      if (swapCardData) {
+        result.push({
+          ...swapCardData,
+          key,
+          status: poolInfo?.status ?? Nothing,
+        });
         key += 1;
       }
 
       return result;
     }, []);
 
-    return renderSwapTable(swapViewData, view);
-  };
-
-  const renderAssets = () => {
-    const asset = 'rune';
-    const runePrice = validBNOrZero(priceIndex?.RUNE);
-
-    return (
-      <CoinButton
-        cointype={asset}
-        onClick={() => {
-          setActiveAsset(asset);
-        }}
-        focused={asset === activeAsset}
-        disabled={asset !== 'rune'} // enable only rune for base pair
-        price={runePrice}
-        priceUnit={basePriceAsset}
-        key={0}
-      />
+    const filteredData = swapViewData.filter(
+      poolData => poolData.status === poolStatus,
     );
+
+    return renderSwapTable(filteredData, view);
   };
 
   return (
     <ContentWrapper className="swap-view-wrapper">
-      <div className="view-title">
-        <Label size="normal" weight="bold" color="normal">
-          CHOOSE BASE PAIR
-        </Label>
-      </div>
-      <div className="asset-button-group">{renderAssets()}</div>
+      <PoolFilter selected={poolStatus} onClick={selectPoolStatus} />
       <div className="swap-list-view desktop-view">
         {renderSwapList(ViewType.DESKTOP)}
       </div>

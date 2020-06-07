@@ -18,7 +18,6 @@ import {
   formatBN,
   bnOrZero,
   formatBNCurrency,
-  bn,
   delay,
 } from '@thorchain/asgardex-util';
 
@@ -63,7 +62,6 @@ import { PriceDataIndex, PoolDataMap } from '../../../redux/midgard/types';
 import { Maybe, AssetPair } from '../../../types/bepswap';
 import { User, AssetData } from '../../../redux/wallet/types';
 
-import { AssetDetail } from '../../../types/generated/midgard';
 import { BINANCE_NET } from '../../../env';
 
 type ComponentProps = {
@@ -475,12 +473,17 @@ class PoolCreate extends React.Component<Props, State> {
 
     const runePrice = validBNOrZero(priceIndex?.RUNE);
     const tokensData = getCreatePoolTokens(assetData, pools);
-    // AssetDetail[] -> AssetPair[]
-    const coinDardData = tokensData.map<AssetPair>((detail: AssetDetail) => ({
+    // AssetData[] -> AssetPair[]
+    const coinDardData = tokensData.map<AssetPair>((detail: AssetData) => ({
       asset: detail.asset || '',
     }));
 
-    const tokenPrice = priceIndex[target.toUpperCase()] || 0;
+    const tokenPrice = validBNOrZero(
+      runeAmount
+        .amount()
+        .multipliedBy(runePrice)
+        .dividedBy(tokenAmount.amount()),
+    );
 
     const { poolPrice, depth, share } = this.getData();
 
@@ -644,6 +647,8 @@ class PoolCreate extends React.Component<Props, State> {
     const target = getTickerFormat(symbol);
     const runePrice = validBNOrZero(priceIndex?.RUNE);
 
+    const totalPrice = runeAmount.amount().multipliedBy(runePrice);
+
     const completed = hash && !status;
     const txURL = TESTNET_TX_BASE_URL + hash;
 
@@ -667,14 +672,14 @@ class PoolCreate extends React.Component<Props, State> {
                 data-test="stakeconfirm-coin-data-source"
                 asset={source}
                 assetValue={runeAmount}
-                price={runeAmount.amount().multipliedBy(runePrice)}
+                price={totalPrice}
                 priceUnit={basePriceAsset}
               />
               <CoinData
                 data-test="stakeconfirm-coin-data-target"
                 asset={target}
                 assetValue={tokenAmount}
-                price={bn(0)}
+                price={totalPrice}
                 priceUnit={basePriceAsset}
               />
             </div>

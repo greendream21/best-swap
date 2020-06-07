@@ -12,6 +12,7 @@ const initState: State = {
   accountSequence: Nothing,
   transactions: Nothing,
   openOrders: Nothing,
+  transferFees: initial,
   error: Nothing,
   loadingToken: false,
   loadingMarket: false,
@@ -96,6 +97,18 @@ const reducer: Reducer<State, BinanceActionTypes> = (
       return {
         ...state,
         openOrders: action.payload,
+        error: Nothing,
+      };
+    case 'GET_BINANCE_FEES':
+      return {
+        ...state,
+        transferFees: pending,
+        error: Nothing,
+      };
+    case 'GET_BINANCE_TRANSFER_FEES_RESULT':
+      return {
+        ...state,
+        transferFees: action.result,
         error: Nothing,
       };
     case 'WS_BINANCE_ERROR':
