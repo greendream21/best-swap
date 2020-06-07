@@ -1,10 +1,6 @@
 import React from 'react';
 
 import { bnOrZero, formatBN } from '@thorchain/asgardex-util';
-import {
-  formatBaseAsTokenAmount,
-  baseAmount,
-} from '@thorchain/asgardex-token';
 import TxStatus from '../txStatus';
 import { TxInfoWrapper, Seperator, Dash } from './txInfo.style';
 import { TxDetails, TxDetailsTypeEnum } from '../../../types/generated/midgard';
@@ -22,8 +18,6 @@ const TxInfo: React.FC<Props> = (props: Props): JSX.Element => {
   if (type === TxDetailsTypeEnum.Swap) {
     const inData = _in?.coins?.[0];
     const outData = out?.[0]?.coins?.[0];
-    const fee = baseAmount(events?.fee);
-    const feeLabel = `${formatBaseAsTokenAmount(fee)} RUNE`;
     const slipValue = bnOrZero(events?.slip).multipliedBy(100);
     const slipValueLabel = `${formatBN(slipValue)}%`;
 
@@ -45,10 +39,6 @@ const TxInfo: React.FC<Props> = (props: Props): JSX.Element => {
           />
         </div>
         <div className="txInfo-extra-data">
-          <div className="tx-event-label left-margin">
-            <p className="tx-event-title">FEE</p>
-            <p className="tx-event-value">{feeLabel}</p>
-          </div>
           <Dash />
           <div className="tx-event-label">
             <p className="tx-event-title">SLIP</p>

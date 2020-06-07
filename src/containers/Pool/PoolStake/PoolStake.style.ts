@@ -1,5 +1,7 @@
 import styled from 'styled-components';
 import { palette, key } from 'styled-theme';
+
+import Paragraph from 'antd/lib/typography/Paragraph';
 import ContentView from '../../../components/utility/contentView';
 import Modal from '../../../components/uielements/modal';
 import UnstyledTabs from '../../../components/uielements/tabs';
@@ -560,5 +562,46 @@ export const Tabs = styled(UnstyledTabs)`
   padding-top: 10px !important;
   .ant-tabs-tabpane {
     padding: 0 20px;
+  }
+`;
+
+export const PopoverContainer = styled.div`
+  padding: 10px 0;
+
+  &.stake-ratio-select {
+    .ant-popover-arrow {
+      border-top: none;
+      border-right: none;
+    }
+
+    .ant-popover-open {
+      width: 20px;
+    }
+
+    button {
+      width: 21px;
+      height: 21px;
+      min-width: 0px;
+      padding-top: 2px;
+      padding-left: 4px;
+      padding-right: 4px;
+      border-radius: 50%;
+
+      svg {
+        font-size: 15px;
+      }
+    }
+  }
+`;
+
+export const PopoverContent = styled.div`
+  font-size: '11px';
+  color: ${palette('primary', 0)};
+`;
+
+export const FeeParagraph = styled(Paragraph)`
+  padding-top: 10px;
+  & > * {
+    color: ${palette('text', 1)};
   }
 `;

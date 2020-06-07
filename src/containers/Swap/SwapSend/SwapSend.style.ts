@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { Popover } from 'antd';
 import Icon from '@ant-design/icons';
 import { palette } from 'styled-theme';
+import Paragraph from 'antd/lib/typography/Paragraph';
 import ContentView from '../../../components/utility/contentView';
 import Modal from '../../../components/uielements/modal';
 import { media, cleanTag } from '../../../helpers/styleHelper';
@@ -317,4 +318,11 @@ export const SwapStatusPanel = styled.div`
 export const PopoverContent = styled.div`
   font-size: '11px';
   color: ${palette('primary', 0)};
+`;
+
+export const FeeParagraph = styled(Paragraph)`
+  padding-top: 10px;
+  & > * {
+    color: ${palette('text', 1)};
+  }
 `;

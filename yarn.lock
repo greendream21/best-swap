@@ -4115,6 +4115,11 @@ axios-mock-adapter@^1.17.0:
     fast-deep-equal "^3.1.1"
     is-buffer "^2.0.3"
 
+axios-rate-limit@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/axios-rate-limit/-/axios-rate-limit-1.2.1.tgz#1c27d79923d5d0d7774044cd94b34996d1b6a757"
+  integrity sha512-SBhBSDkqhimykrQf39KQ6aoXJC4kEvVhz9N2FIk0rdzZpP9PubvR9AyXzvUnTPAMj863LJKKywHrPfDpeZ0WLQ==
+
 axios@^0.19.0, axios@^0.19.2:
   version "0.19.2"
   resolved "https://registry.yarnpkg.com/axios/-/axios-0.19.2.tgz#3ea36c5d8818d0d5f8a8a97a6d36b86cdc00cb27"

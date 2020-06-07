@@ -65,10 +65,10 @@ export const LogoWrapper = styled.div`
     max-height: 24px;
   }
 
-  .intro-btn {
-    min-width: 24px !important;
-    max-height: 24px;
-    border-radius: 50% !important;
+  .ant-dropdown-link {
+    .anticon-down {
+      margin-left: 8px;
+    }
   }
 `;
 

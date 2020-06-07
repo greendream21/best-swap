@@ -22,8 +22,17 @@ import { crypto } from '@binance-chain/javascript-sdk';
 import BigNumber from 'bignumber.js';
 import * as RD from '@devexperts/remote-data-ts';
 
-import { TokenAmount, tokenAmount } from '@thorchain/asgardex-token';
+import {
+  TokenAmount,
+  tokenAmount,
+  baseToToken,
+  BaseAmount,
+  baseAmount,
+  tokenToBase,
+} from '@thorchain/asgardex-token';
+import Text from 'antd/lib/typography/Text';
 import Button from '../../../components/uielements/button';
+import Label from '../../../components/uielements/label';
 import Drag from '../../../components/uielements/drag';
 import TokenCard from '../../../components/uielements/tokens/tokenCard';
 import CoinData from '../../../components/uielements/coins/coinData';
@@ -44,6 +53,7 @@ import {
   SwapStatusPanel,
   PopoverContent,
   PopoverContainer,
+  FeeParagraph,
 } from './SwapSend.style';
 import {
   getTickerFormat,
@@ -81,15 +91,20 @@ import { SwapSendView, CalcResult } from './types';
 import { User, AssetData } from '../../../redux/wallet/types';
 import { TxStatus, TxTypes } from '../../../redux/app/types';
 
-import {
-  AssetDetailMap,
-  PriceDataIndex,
-  PoolDataMap,
-} from '../../../redux/midgard/types';
+import { PriceDataIndex, PoolDataMap } from '../../../redux/midgard/types';
 import { RootState } from '../../../redux/store';
 import { getAssetFromString } from '../../../redux/midgard/utils';
 import { BINANCE_NET, getNet } from '../../../env';
-import { TransferEventRD } from '../../../redux/binance/types';
+import { PoolDetailStatusEnum } from '../../../types/generated/midgard';
+import {
+  TransferEventRD,
+  TransferFeesRD,
+  TransferFees,
+} from '../../../redux/binance/types';
+import {
+  getAssetFromAssetData,
+  bnbBaseAmount,
+} from '../../../helpers/walletHelper';
 
 type ComponentProps = {
   info: string;
@@ -100,7 +115,6 @@ type ConnectedProps = {
   txStatus: TxStatus;
   assetData: AssetData[];
   poolAddress: string;
-  assets: AssetDetailMap;
   poolData: PoolDataMap;
   pools: string[];
   basePriceAsset: string;
@@ -116,6 +130,8 @@ type ConnectedProps = {
   getPools: typeof midgardActions.getPools;
   getPoolAddress: typeof midgardActions.getPoolAddress;
   refreshBalance: typeof walletActions.refreshBalance;
+  getBinanceFees: typeof binanceActions.getBinanceFees;
+  transferFees: TransferFeesRD;
   subscribeBinanceTransfers: typeof binanceActions.subscribeBinanceTransfers;
   unSubscribeBinanceTransfers: typeof binanceActions.unSubscribeBinanceTransfers;
 };
@@ -147,11 +163,6 @@ type TxResult = {
 };
 
 class SwapSend extends React.Component<Props, State> {
-  /**
-   * Calculated result
-   */
-  calcResult: Maybe<CalcResult> = Nothing;
-
   static readonly defaultProps: Partial<Props> = {
     info: '',
   };
@@ -182,14 +193,19 @@ class SwapSend extends React.Component<Props, State> {
       getPools,
       getPoolAddress,
       subscribeBinanceTransfers,
+      transferFees,
+      getBinanceFees,
       user,
     } = this.props;
-
+    const net = getNet();
     getPoolAddress();
     getPools();
+    if (RD.isInitial(transferFees)) {
+      getBinanceFees(net);
+    }
     const wallet = user?.wallet;
     if (wallet) {
-      subscribeBinanceTransfers({ address: wallet, net: getNet() });
+      subscribeBinanceTransfers({ address: wallet, net });
     }
   }
 
@@ -261,6 +277,30 @@ class SwapSend extends React.Component<Props, State> {
     return !txStatus.status && (txResult !== Nothing || timerFinished);
   };
 
+  calcResult = (): Maybe<CalcResult> => {
+    const { poolData, poolAddress, info, priceIndex } = this.props;
+
+    const { xValue } = this.state;
+
+    const swapPair: Pair = getPair(info);
+
+    if (!swapPair.source || !swapPair.target) {
+      return Nothing;
+    }
+
+    const { source, target } = swapPair;
+    const runePrice = validBNOrZero(priceIndex?.RUNE);
+
+    return getCalcResult(
+      source,
+      target,
+      poolData,
+      poolAddress,
+      xValue,
+      runePrice,
+    );
+  };
+
   handleChangePassword = (password: string) => {
     this.setState({
       password,
@@ -279,34 +319,35 @@ class SwapSend extends React.Component<Props, State> {
     const { info } = this.props;
 
     const { assetData } = this.props;
-    const { source }: Pair = getPair(info);
+    const { source = '' }: Pair = getPair(info);
 
-    const sourceAsset = assetData.find(data => {
-      const { asset } = data;
-      const tokenName = getTickerFormat(asset);
-      if (tokenName === source) {
-        return true;
-      }
-      return false;
-    });
+    const sourceAsset = getAssetFromAssetData(assetData, source);
 
-    const totalAmount = sourceAsset?.assetValue.amount() ?? bn(0);
+    let totalAmount = sourceAsset?.assetValue.amount() ?? bn(0);
+    // fee transformation: BaseAmount -> TokenAmount -> BigNumber
+    const fee = this.bnbFeeAmount() || baseAmount(0);
+    const feeAsToken = baseToToken(fee);
+    const feeAsTokenBN = feeAsToken.amount();
+    // substract fee  - for BNB source only
+    if (this.subtractBnbFee()) {
+      totalAmount = totalAmount.isGreaterThan(feeAsTokenBN)
+        ? totalAmount.minus(feeAsTokenBN)
+        : bn(0);
+    }
     // formula (totalAmount * percent) / 100
     const newValue = totalAmount.multipliedBy(percent).div(100);
 
     if (totalAmount.isLessThan(newValue)) {
       this.setState({
         xValue: tokenAmount(totalAmount),
+        percent,
       });
     } else {
       this.setState({
         xValue: tokenAmount(newValue),
+        percent,
       });
     }
-
-    this.setState({
-      percent,
-    });
   };
 
   handleChangeValue = (value: BigNumber) => {
@@ -325,14 +366,7 @@ class SwapSend extends React.Component<Props, State> {
     const { assetData } = this.props;
     const { source }: Pair = getPair(info);
 
-    const sourceAsset = assetData.find(data => {
-      const { asset } = data;
-      const tokenName = getTickerFormat(asset);
-      if (tokenName === source) {
-        return true;
-      }
-      return false;
-    });
+    const sourceAsset = getAssetFromAssetData(assetData, source);
 
     const totalAmount = sourceAsset?.assetValue.amount() ?? bn(0);
 
@@ -427,14 +461,19 @@ class SwapSend extends React.Component<Props, State> {
     });
   };
 
+  /**
+   * Handler for moving drag slider to the end
+   *
+   * That's the point we do first validation
+   *
+   */
   handleEndDrag = async () => {
     const { user } = this.props;
     const { xValue, view } = this.state;
     const wallet = user ? user.wallet : null;
     const keystore = user ? user.keystore : null;
 
-    // validation
-
+    // Validate existing wallet
     if (!wallet) {
       this.setState({
         openWalletAlert: true,
@@ -442,6 +481,7 @@ class SwapSend extends React.Component<Props, State> {
       return;
     }
 
+    // Validate amount to swap
     if (xValue.amount().isLessThanOrEqualTo(0)) {
       notification.error({
         message: 'Swap Invalid',
@@ -454,6 +494,38 @@ class SwapSend extends React.Component<Props, State> {
       return;
     }
 
+    // Validate RUNE value of swap to cover network transactionFee
+    if (this.runeFeeIsNotCovered(xValue.amount())) {
+      notification.error({
+        message: 'Invalid amount',
+        description: 'Swap value must exceed 1 RUNE to cover network fees.',
+        getContainer: getAppContainer,
+      });
+      this.setState({
+        dragReset: true,
+      });
+      return;
+    }
+
+    // Validate BNB amount to consider fees
+    if (this.considerBnb()) {
+      const fee = this.bnbFeeAmount() || baseAmount(0);
+      // fee transformation: BaseAmount -> TokenAmount -> BigNumber
+      const feeAsTokenAmount = baseToToken(fee).amount();
+      if (xValue.amount().isLessThanOrEqualTo(feeAsTokenAmount)) {
+        notification.error({
+          message: 'Invalid BNB value',
+          description: 'Not enough BNB to cover the fee for this transaction.',
+          getContainer: getAppContainer,
+        });
+        this.setState({
+          dragReset: true,
+        });
+        return;
+      }
+    }
+
+    // Validate address to send to
     const isValidRecipient = await this.isValidRecipient();
     if (view === SwapSendView.SEND && !isValidRecipient) {
       this.setState({
@@ -463,7 +535,9 @@ class SwapSend extends React.Component<Props, State> {
       return;
     }
 
-    if (this.calcResult && this.validateSlip(this.calcResult.slip)) {
+    // Validate calculation + slip
+    const calcResult = this.calcResult();
+    if (calcResult && this.validateSlip(calcResult.slip)) {
       if (keystore) {
         this.handleOpenPrivateModal();
       } else if (wallet) {
@@ -621,8 +695,19 @@ class SwapSend extends React.Component<Props, State> {
     const { user, info, setTxHash, resetTxStatus } = this.props;
     const { xValue, address, slipProtection } = this.state;
     const { source = '', target = '' }: Pair = getPair(info);
+    const calcResult = this.calcResult();
+    if (user && source && target && calcResult) {
+      let tokenAmountToSwap = xValue;
+      const fee = this.bnbFeeAmount() || baseAmount(0);
+      // fee transformation: BaseAmount -> TokenAmount -> BigNumber
+      const feeAsTokenAmount = baseToToken(fee).amount();
+      // Special case: Substract fee from BNB amount before sending it
+      // Note: All validation for that already happened in `handleEndDrag`
+      if (this.considerBnb()) {
+        const amountToSwap = tokenAmountToSwap.amount().minus(feeAsTokenAmount);
+        tokenAmountToSwap = tokenAmount(amountToSwap);
+      }
 
-    if (user && source && target && this.calcResult) {
       this.setState({
         txResult: null,
       });
@@ -635,8 +720,8 @@ class SwapSend extends React.Component<Props, State> {
           user.wallet,
           source,
           target,
-          this.calcResult,
-          xValue,
+          calcResult,
+          tokenAmountToSwap,
           slipProtection,
           address,
         );
@@ -663,14 +748,7 @@ class SwapSend extends React.Component<Props, State> {
   handleSelectSourceAmount = (source: string, amount: number) => {
     const { assetData } = this.props;
 
-    const sourceAsset = assetData.find(data => {
-      const { asset } = data;
-      const tokenName = getTickerFormat(asset);
-      if (tokenName === source) {
-        return true;
-      }
-      return false;
-    });
+    const sourceAsset = getAssetFromAssetData(assetData, source);
 
     if (!sourceAsset) {
       return;
@@ -712,7 +790,7 @@ class SwapSend extends React.Component<Props, State> {
 
     const { slip, outputAmount } = calcResult;
 
-    const Px = validBNOrZero(priceIndex?.RUNE);
+    const Px = validBNOrZero(priceIndex[swapSource.toUpperCase()]);
     const tokenPrice = validBNOrZero(priceIndex[swapTarget.toUpperCase()]);
 
     const priceFrom: BigNumber = Px.multipliedBy(xValue.amount());
@@ -720,9 +798,6 @@ class SwapSend extends React.Component<Props, State> {
 
     const refunded = txResult?.type === 'refund' ?? false;
     const amountBN = bnOrZero(txResult?.amount);
-    const targetToken = txResult
-      ? getTickerFormat(txResult?.token)
-      : swapTarget;
     const assetAmount = txResult ? tokenAmount(amountBN) : outputAmount;
 
     let priceTo;
@@ -763,7 +838,7 @@ class SwapSend extends React.Component<Props, State> {
               />
               <CoinData
                 data-test="swapmodal-coin-data-receive"
-                asset={targetToken}
+                asset={swapTarget}
                 assetValue={assetAmount}
                 price={priceTo}
                 priceUnit={basePriceAsset}
@@ -828,14 +903,125 @@ class SwapSend extends React.Component<Props, State> {
     return <PopoverContent>Protect my price (within 3%)</PopoverContent>;
   };
 
+  /**
+   * Check to consider special cases for BNB
+   */
+  considerBnb = (): boolean => {
+    const { info } = this.props;
+    const { source }: Pair = getPair(info);
+    return source?.toUpperCase() === 'BNB';
+  };
+
+  /**
+   * Check whether to substract BNB fee from entered BNB amount
+   */
+  subtractBnbFee = (): boolean => {
+    if (this.considerBnb()) {
+      const { xValue } = this.state;
+      const { assetData } = this.props;
+      // (1) BNB amount in wallet
+      const bnbInWallet = bnbBaseAmount(assetData) || baseAmount(0);
+      // (2) BNB amount entered in input
+      const bnbEntered = tokenToBase(xValue);
+      // difference (1) - (2) as BigNumber
+      const bnbDiff = bnbInWallet.amount().minus(bnbEntered.amount());
+      const fee = this.bnbFeeAmount();
+      return (
+        !!fee && bnbDiff.isGreaterThan(0) && bnbDiff.isLessThan(fee.amount())
+      );
+    }
+
+    return false;
+  };
+
+  /**
+   * Check to ensure THORChain transactionFee (currently 1 RUNE)
+   * https://gitlab.com/thorchain/thornode/-/blob/master/constants/constants.go#L42
+   * @todo get current transactionFee from thornode constants endpoint eg :1317/thorchain/constants
+   */
+  runeFeeIsNotCovered = (amount: BigNumber): boolean => {
+    const { info, priceIndex } = this.props;
+    const { source }: Pair = getPair(info);
+    return source
+      ? bn(priceIndex[source.toUpperCase()])
+          .multipliedBy(amount)
+          .isLessThanOrEqualTo(1)
+      : true;
+  };
+
+  /**
+   * BNB fee in BaseAmount
+   * Returns Nothing if fee is not available
+   */
+  bnbFeeAmount = (): Maybe<BaseAmount> => {
+    const { transferFees } = this.props;
+    const fees = RD.toNullable(transferFees);
+    return fees?.single;
+  };
+
+  /**
+   * Checks whether fee is covered by amounts of BNB in users wallet
+   */
+  bnbFeeIsNotCovered = (): boolean => {
+    const { assetData } = this.props;
+    const bnbAmount = bnbBaseAmount(assetData);
+    const fee = this.bnbFeeAmount();
+    return !!bnbAmount && !!fee && bnbAmount.amount().isLessThan(fee.amount());
+  };
+
+  /**
+   * Renders fee
+   */
+  renderFee = () => {
+    const { transferFees, assetData } = this.props;
+    const bnbAmount = bnbBaseAmount(assetData);
+
+    // Helper to format BNB amounts properly (we can't use `formatTokenAmountCurrency`)
+    // TODO (@Veado) Update `formatTokenAmountCurrency` of `asgardex-token` (now in `asgardex-util`) to accept decimals
+    const formatBnbAmount = (value: BaseAmount) => {
+      const token = baseToToken(value);
+      return `${token.amount().toString()} BNB`;
+    };
+
+    const txtLoading = <Text>Fee: ...</Text>;
+    return (
+      <FeeParagraph>
+        {RD.fold(
+          () => txtLoading,
+          () => txtLoading,
+          (_: Error) => <Text>Error: Fee could not be loaded</Text>,
+          (fees: TransferFees) => (
+            <>
+              <Text>Fee: {formatBnbAmount(fees.single)}</Text>
+              {this.subtractBnbFee() && (
+                <Text>
+                  {' '}
+                  (It will be substructed from your entered BNB value)
+                </Text>
+              )}
+              {bnbAmount && this.bnbFeeIsNotCovered() && (
+                <>
+                  <br />
+                  <Text type="danger" style={{ paddingTop: '10px' }}>
+                    You have {formatBnbAmount(bnbAmount)} in your wallet,
+                    that&lsquo;s not enought to cover the fee for this
+                    transaction.
+                  </Text>
+                </>
+              )}
+            </>
+          ),
+        )(transferFees)}
+      </FeeParagraph>
+    );
+  };
+
   render() {
     const {
       info,
       txStatus,
-      assets: tokenInfo,
       poolData,
       pools,
-      poolAddress,
       assetData,
       priceIndex,
       basePriceAsset,
@@ -861,7 +1047,7 @@ class SwapSend extends React.Component<Props, State> {
     if (
       !swapPair.source ||
       !swapPair.target ||
-      !Object.keys(tokenInfo).length ||
+      !Object.keys(poolData).length ||
       !isValidSwap(swapPair, pools)
     ) {
       this.props.history.push('/swap'); // redirect if swap is invalid
@@ -870,17 +1056,26 @@ class SwapSend extends React.Component<Props, State> {
 
     const { source: swapSource, target: swapTarget } = swapPair;
 
-    const tokensData: TokenData[] = Object.keys(tokenInfo).map(tokenName => {
-      const tokenData = tokenInfo[tokenName];
-      const assetStr = tokenData?.asset;
-      const asset = assetStr ? getAssetFromString(assetStr) : null;
-      const price = bnOrZero(tokenData?.priceRune);
+    const tokensData: TokenData[] = Object.keys(poolData).reduce(
+      (result: TokenData[], tokenName: string) => {
+        const tokenData = poolData[tokenName];
+        const assetStr = tokenData?.asset;
+        const asset = assetStr ? getAssetFromString(assetStr) : null;
+        const price = bnOrZero(tokenData?.price);
 
-      return {
-        asset: asset?.symbol ?? '',
-        price,
-      };
-    });
+        if (
+          tokenData.status &&
+          tokenData.status === PoolDetailStatusEnum.Enabled
+        ) {
+          result.push({
+            asset: asset?.symbol ?? '',
+            price,
+          });
+        }
+        return result;
+      },
+      [],
+    );
 
     const runePrice = validBNOrZero(priceIndex?.RUNE);
 
@@ -901,22 +1096,13 @@ class SwapSend extends React.Component<Props, State> {
 
     const openSwapModal = txStatus.type === 'swap' ? txStatus.modal : false;
 
-    // calculation
-    this.calcResult = getCalcResult(
-      swapSource,
-      swapTarget,
-      poolData,
-      poolAddress,
-      xValue,
-      runePrice,
-    );
-
-    if (!this.calcResult) {
+    const calcResult = this.calcResult();
+    if (!calcResult) {
       // ^ It should never be happen in theory, but who knows...
       // Todo(veado): Should we display an error message in this case?
       return <></>;
     } else {
-      const { slip, outputAmount, outputPrice } = this.calcResult;
+      const { slip, outputAmount, outputPrice } = calcResult;
       const sourcePriceBN = bn(priceIndex[swapSource.toUpperCase()]);
       const sourcePrice = isValidBN(sourcePriceBN)
         ? sourcePriceBN
@@ -929,9 +1115,8 @@ class SwapSend extends React.Component<Props, State> {
       const ratio = !targetPrice.isEqualTo(bn(0))
         ? sourcePrice.div(targetPrice)
         : bn(0);
-
       const ratioLabel = `1 ${swapSource.toUpperCase()} = ${ratio.toFixed(
-        2,
+        3,
       )} ${swapTarget.toUpperCase()}`;
 
       // swap modal
@@ -943,6 +1128,8 @@ class SwapSend extends React.Component<Props, State> {
         : refunded
         ? 'TOKEN REFUNDED'
         : 'YOU SWAPPED';
+
+      const disableDrag = this.bnbFeeIsNotCovered();
 
       return (
         <ContentWrapper className="swap-detail-wrapper">
@@ -1007,6 +1194,9 @@ class SwapSend extends React.Component<Props, State> {
                   withSearch
                   data-test="coincard-target"
                 />
+
+                {this.renderFee()}
+
                 <div className="swaptool-container">
                   <CardFormHolder>
                     <CardForm>
@@ -1066,6 +1256,7 @@ class SwapSend extends React.Component<Props, State> {
                   source={swapSource}
                   target={swapTarget}
                   reset={dragReset}
+                  disabled={disableDrag}
                   onConfirm={this.handleEndDrag}
                   onDrag={this.handleDrag}
                 />
@@ -1078,11 +1269,7 @@ class SwapSend extends React.Component<Props, State> {
             footer={null}
             onCancel={this.handleCloseModal}
           >
-            {this.renderSwapModalContent(
-              swapSource,
-              swapTarget,
-              this.calcResult,
-            )}
+            {this.renderSwapModalContent(swapSource, swapTarget, calcResult)}
           </SwapModal>
           <PrivateModal
             visible={openPrivateModal}
@@ -1100,7 +1287,7 @@ class SwapSend extends React.Component<Props, State> {
             onCancel={this.hideWalletAlert}
             okText="ADD WALLET"
           >
-            Please add a wallet to swap tokens.
+            <Label>Please add a wallet to swap tokens.</Label>
           </Modal>
         </ContentWrapper>
       );
@@ -1115,11 +1302,11 @@ export default compose(
       user: state.Wallet.user,
       assetData: state.Wallet.assetData,
       poolAddress: state.Midgard.poolAddress,
-      assets: state.Midgard.assets,
       poolData: state.Midgard.poolData,
       pools: state.Midgard.pools,
       priceIndex: state.Midgard.priceIndex,
       basePriceAsset: state.Midgard.basePriceAsset,
+      transferFees: state.Binance.transferFees,
       wsTransferEvent: state.Binance.wsTransferEvent,
     }),
     {
@@ -1132,6 +1319,7 @@ export default compose(
       resetTxStatus: appActions.resetTxStatus,
       setTxHash: appActions.setTxHash,
       refreshBalance: walletActions.refreshBalance,
+      getBinanceFees: binanceActions.getBinanceFees,
       subscribeBinanceTransfers: binanceActions.subscribeBinanceTransfers,
       unSubscribeBinanceTransfers: binanceActions.unSubscribeBinanceTransfers,
     },

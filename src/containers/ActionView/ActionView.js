@@ -6,8 +6,8 @@ import PropTypes from 'prop-types';
 import { LeftOutlined } from '@ant-design/icons';
 
 import { ActionViewWrapper, BackLink } from './ActionView.style';
-import { SwapIntro, SwapView, SwapSend } from '../Swap';
-import { PoolIntro, PoolView, PoolStake, PoolCreate } from '../Pool';
+import { SwapView, SwapSend } from '../Swap';
+import { PoolView, PoolStake, PoolCreate } from '../Pool';
 import TransactionView from '../TransactionView';
 import ConnectView from '../ConnectView';
 import FaqsView from '../FaqsView';
@@ -76,8 +76,6 @@ class ActionView extends Component {
       <>
         {this.renderBack()}
         <ActionViewWrapper>
-          {view === 'intro-swap' && <SwapIntro />}
-          {view === 'intro-pools' && <PoolIntro />}
           {view === 'connect-view' && <ConnectView />}
           {/* {view === 'stats-view' && <StatsView />} */}
           {view === 'faqs-view' && <FaqsView />}

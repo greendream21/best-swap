@@ -8,7 +8,7 @@ import {
   take,
 } from 'redux-saga/effects';
 
-import { Method, AxiosResponse } from 'axios';
+import { Method, AxiosResponse, AxiosRequestConfig } from 'axios';
 import {
   Token,
   Market,
@@ -19,28 +19,33 @@ import {
   TransferEvent,
 } from '@thorchain/asgardex-binance';
 import { eventChannel, END } from 'redux-saga';
+import { failure, success } from '@devexperts/remote-data-ts';
 import * as actions from './actions';
 import {
   getBinanceTestnetURL,
   getBinanceMainnetURL,
   getHeaders,
-  axiosRequest,
+  binanceRequest as axiosRequest,
 } from '../../helpers/apiHelper';
 import { getTickerFormat } from '../../helpers/stringHelper';
 import { getTokenName } from '../../helpers/assetHelper';
 import { Maybe, Nothing, FixmeType } from '../../types/bepswap';
 import { NET } from '../../env';
 import { envOrDefault } from '../../helpers/envHelper';
+import { Fees } from './types';
+import { getTransferFeeds } from '../../helpers/binanceHelper';
 
 /* /////////////////////////////////////////////////////////////
 // api
 ///////////////////////////////////////////////////////////// */
 
 const LIMIT = 1000;
+export const BINANCE_MAX_RETRY = 5;
+export const BINANCE_RETRY_DELAY = 1000; // ms
 
 export function* getBinanceTokens() {
   yield takeEvery('GET_BINANCE_TOKENS', function*() {
-    const params = {
+    const params: AxiosRequestConfig = {
       method: 'get' as Method,
       url: getBinanceTestnetURL(`tokens?limit=${LIMIT}`),
       headers: getHeaders(),
@@ -58,7 +63,7 @@ export function* getBinanceTokens() {
 
 export function* getBinanceMarkets() {
   yield takeEvery('GET_BINANCE_MARKETS', function*() {
-    const params = {
+    const params: AxiosRequestConfig = {
       method: 'get' as Method,
       url: getBinanceTestnetURL(`markets?limit=${LIMIT}`),
       headers: getHeaders(),
@@ -170,6 +175,48 @@ export function* getBinanceOpenOrders() {
       yield put(actions.getBinanceOpenOrdersSuccess(data));
     } catch (error) {
       yield put(actions.getBinanceOpenOrdersFailed(error));
+    }
+  });
+}
+
+function* tryGetBinanceFees(net: NET) {
+  const endpoint = 'fees';
+  const url =
+    net === NET.MAIN
+      ? getBinanceMainnetURL(endpoint)
+      : getBinanceTestnetURL(endpoint);
+  const params = {
+    method: 'get' as Method,
+    url,
+    headers: getHeaders(),
+  };
+  for (let i = 0; i < BINANCE_MAX_RETRY; i++) {
+    try {
+      const { data }: AxiosResponse<Fees> = yield call(axiosRequest, params);
+      return data;
+    } catch (error) {
+      if (i < BINANCE_MAX_RETRY - 1) {
+        yield delay(BINANCE_RETRY_DELAY);
+      }
+    }
+  }
+  throw new Error('Binance API request failed to get data of fees');
+}
+
+export function* getBinanceFees() {
+  yield takeEvery('GET_BINANCE_FEES', function*({
+    net,
+  }: ReturnType<typeof actions.getBinanceFees>) {
+    try {
+      const data = yield call(tryGetBinanceFees, net);
+      // parse fees
+      const fees = getTransferFeeds(data);
+      const result = fees
+        ? success(fees)
+        : failure(new Error(`No feeds for transfers defined in ${data}`));
+      yield put(actions.getBinanceTransferFeesResult(result));
+    } catch (error) {
+      yield put(actions.getBinanceTransferFeesResult(failure(error)));
     }
   });
 }
@@ -315,6 +362,7 @@ export default function* rootSaga() {
     fork(getBinanceAccount),
     fork(getBinanceTransactions),
     fork(getBinanceOpenOrders),
+    fork(getBinanceFees),
     fork(subscribeBinanceTransfers),
     fork(unSubscribeBinanceTransfers),
   ]);

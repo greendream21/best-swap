@@ -5,7 +5,8 @@ import {
   BinanceClient,
 } from '@thorchain/asgardex-binance';
 import { validBNOrZero, bn, isValidBN } from '@thorchain/asgardex-util';
-import { TokenAmount,
+import {
+  TokenAmount,
   tokenAmount,
   baseToToken,
   baseAmount,
@@ -108,8 +109,7 @@ export const getSwapData = (
     const transactionAsString = `${basePriceAsset} ${formatBaseAsTokenAmount(
       baseAmount(transaction),
     )}`;
-    // formula: poolInfo.poolSlipAverage * runePrice
-    const slip = bn(poolInfo?.poolSlipAverage ?? 0).multipliedBy(runePrice);
+    const slip = bn(poolInfo?.poolSlipAverage ?? 0).multipliedBy(100);
     const slipAsString = slip.toString();
     const trade = bn(poolInfo?.swappingTxCount ?? 0);
     const tradeAsString = trade.toString();
@@ -192,7 +192,7 @@ export const getCalcResult = (
       }
 
       if (token.toLowerCase() === to.toLowerCase()) {
-      // formula: runeDepth / BASE_NUMBER
+        // formula: runeDepth / BASE_NUMBER
         R = baseToToken(runeDepth);
         // formula: assetDepth / BASE_NUMBER
         Z = baseToToken(assetDepth);
