@@ -16,11 +16,6 @@ export const BINANCE_MAINNET_URL = envOrDefault(
   'https://dex.binance.org/api/v1',
 );
 
-export const MIDGARD_DEV_API_DEV_IP = envOrDefault(
-  process.env.REACT_APP_MIDGARD_DEV_API_DEV_IP,
-  '159.89.252.210',
-);
-
 export const MIDGARD_TEST_API = envOrDefault(
   process.env.REACT_APP_MIDGARD_TEST_API,
   'https://midgard.bepswap.com',
@@ -56,16 +51,6 @@ export const getHeaders = () => ({
 });
 
 export type TestnetSeedData = string[];
-
-export enum Protocol {
-  HTTP = 'http',
-  HTTPS = 'https',
-}
-/**
- * Helper to create basePath for Midgard by given IP
- */
-export const getMidgardBasePathByIP = (ip: string, protocol = Protocol.HTTP) =>
-  `${protocol}://${ip}:8080`;
 
 /**
  * Helper to get `DefaultApi` instance for Midgard
