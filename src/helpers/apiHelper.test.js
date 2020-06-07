@@ -7,12 +7,6 @@ import {
   getHostnameFromUrl,
 } from './apiHelper';
 
-jest.mock('axios', () => ({
-  create: jest.fn(() => ({
-    request: jest.fn(() => {}),
-  })),
-}));
-
 describe('helpers/apiHelper', () => {
   describe('getBinanceTestnetURL', () => {
     it('should return a valid value', () => {

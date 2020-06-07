@@ -13,7 +13,7 @@ import Table from '../../../components/uielements/table';
 import Button from '../../../components/uielements/button';
 import PoolFilter from '../../../components/poolFilter';
 
-import { ContentWrapper } from './PoolView.style';
+import { ContentWrapper, ActionHeader } from './PoolView.style';
 import { getCreatePoolTokens, getPoolData } from '../utils';
 import { PoolData } from '../types';
 import { getTickerFormat } from '../../../helpers/stringHelper';
@@ -102,15 +102,17 @@ class PoolView extends React.Component<Props, State> {
     const buttonCol = {
       key: 'stake',
       title: (
-        <Button
-          onClick={() => {
-            getPools();
-          }}
-          typevalue="outline"
-        >
-          <SyncOutlined />
-          refresh
-        </Button>
+        <ActionHeader>
+          <Button
+            onClick={() => {
+              getPools();
+            }}
+            typevalue="outline"
+          >
+            <SyncOutlined />
+            refresh
+          </Button>
+        </ActionHeader>
       ),
       render: (text: string, record: { symbol?: string }) => {
         const { symbol } = record;

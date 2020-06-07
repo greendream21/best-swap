@@ -64,6 +64,12 @@ export const LogoWrapper = styled.div`
   svg {
     max-height: 24px;
   }
+
+  .ant-dropdown-link {
+    .anticon-down {
+      margin-left: 8px;
+    }
+  }
 `;
 
 export const HeaderTitle = styled.p`
