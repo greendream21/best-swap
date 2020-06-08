@@ -8,10 +8,18 @@ import PropTypes from 'prop-types';
 
 import asyncComponent from './helpers/AsyncFunc';
 
-const routes = [
+const maintenanceRoute = [
+  {
+    path: '',
+    component: asyncComponent(() => import('./containers/pages/500')),
+  },
+];
+
+const publicRoutes = [
   {
     path: '',
     component: asyncComponent(() => import('./containers/DashApp')),
+    exact: true,
   },
   {
     exact: true,
@@ -24,6 +32,11 @@ const routes = [
     component: asyncComponent(() => import('./containers/pages/500')),
   },
 ];
+
+const routes =
+  process.env.REACT_APP_WEBSITE_STATUS === 'maintenance'
+    ? maintenanceRoute
+    : publicRoutes;
 
 const PublicRoutes = props => {
   const { history } = props;
