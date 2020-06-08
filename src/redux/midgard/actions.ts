@@ -8,6 +8,7 @@ import {
   GetTxByAddressPayload,
   GetTxByAssetPayload,
   GetPoolDataPayload,
+  ThorchainData,
 } from './types';
 import {
   AssetDetail,
@@ -53,6 +54,9 @@ export const getStakerPoolDataSuccess = (payload: StakersAssetData[]) =>
 
 export const getStakerPoolDataFailed = (payload: Error) =>
   ({ type: 'GET_STAKER_POOL_DATA_FAILED', payload } as const);
+
+export const getThorchainDataSuccess = (payload: ThorchainData) =>
+  ({ type: 'GET_THORCHAIN_DATA_SUCCESS', payload } as const);
 
 export const getPoolAddress = () =>
   ({ type: 'GET_POOL_ADDRESSES_REQUEST' } as const);
@@ -152,4 +156,5 @@ export type MidgardActionTypes = ReturnType<
   | typeof getApiBasePathPending
   | typeof getApiBasePathFailed
   | typeof getApiBasePathSuccess
+  | typeof getThorchainDataSuccess
 >;

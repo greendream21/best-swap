@@ -92,6 +92,7 @@ import {
   StakerPoolData,
   PoolDataMap,
   PriceDataIndex,
+  ThorchainData,
 } from '../../../redux/midgard/types';
 import { StakersAssetData } from '../../../types/generated/midgard';
 import { getAssetFromString } from '../../../redux/midgard/utils';
@@ -135,6 +136,7 @@ type ConnectedProps = {
   priceIndex: PriceDataIndex;
   basePriceAsset: string;
   poolLoading: boolean;
+  thorchainData: ThorchainData;
   getPools: typeof midgardActions.getPools;
   getPoolAddress: typeof midgardActions.getPoolAddress;
   getStakerPoolData: typeof midgardActions.getStakerPoolData;
@@ -1234,14 +1236,15 @@ class PoolStake extends React.Component<Props, State> {
     this.setState({ selectedShareDetailTab: activeKey });
 
   getCooldownPopupContainer = () => {
-    return document.getElementsByClassName('cooldown-info')[0] as HTMLElement;
+    return document.getElementsByClassName(
+      'share-detail-wrapper',
+    )[0] as HTMLElement;
   };
 
   renderPopoverContent = () => (
     <PopoverContent>
-      To prevent denial of service attacks on the network, you must wait 24hrs
-      after each staking event to withdraw assets. Withdrawal requests from your
-      address will be ignored until 24hrs has elapsed.
+      To prevent attacks on the network, you must wait approx 24hrs (17280
+      blocks) after each staking event to withdraw assets.
     </PopoverContent>
   );
 
@@ -1250,7 +1253,13 @@ class PoolStake extends React.Component<Props, State> {
     stakersAssetData: StakersAssetData,
     calcResult: CalcResult,
   ) => {
-    const { symbol, priceIndex, basePriceAsset, assets } = this.props;
+    const {
+      symbol,
+      priceIndex,
+      basePriceAsset,
+      assets,
+      thorchainData,
+    } = this.props;
     const {
       runeAmount,
       tokenAmount,
@@ -1316,7 +1325,31 @@ class PoolStake extends React.Component<Props, State> {
 
     const disableDrag = this.bnbFeeIsNotCovered();
 
-    const withdrawDisabled = true;
+    // unstake cooldown
+    const heightLastStaked = bnOrZero(stakersAssetData?.heightLastStaked);
+    const currentBlockHeight = bnOrZero(thorchainData.lastBlock?.thorchain);
+    const stakeLockUpBlocks = bnOrZero(
+      thorchainData.constants?.int_64_values?.StakeLockUpBlocks,
+    );
+    const totalBlocksToUnlock: BigNumber = heightLastStaked.plus(
+      stakeLockUpBlocks,
+    );
+    const remainingBlocks: BigNumber = totalBlocksToUnlock.minus(
+      currentBlockHeight,
+    );
+
+    const withdrawDisabled = remainingBlocks.toNumber() > 0;
+
+    let remainingTimeString = '';
+    if (withdrawDisabled) {
+      const remainingSeconds = remainingBlocks.multipliedBy(5).toNumber();
+      const remainingHours =
+        (remainingSeconds - (remainingSeconds % 3600)) / 3600;
+      const remainingMinutes =
+        ((remainingSeconds % 3600) - (remainingSeconds % 60)) / 60;
+      remainingTimeString = `${remainingHours} Hours ${remainingMinutes} Minutes`;
+    }
+
     const dragText = withdrawDisabled ? '24hr cooldown' : 'drag to withdraw';
 
     return (
@@ -1478,24 +1511,27 @@ class PoolStake extends React.Component<Props, State> {
                   onConfirm={this.handleWithdraw}
                   onDrag={this.handleDrag}
                 />
-                <div className="cooldown-info">
-                  <Label>
-                    You must wait n hours until you can withdraw again.
-                  </Label>
-                  <Popover
-                    content={this.renderPopoverContent}
-                    getPopupContainer={this.getCooldownPopupContainer}
-                    placement="bottomRight"
-                    overlayClassName="pool-filter-info"
-                    overlayStyle={{
-                      padding: '6px',
-                      animationDuration: '0s !important',
-                      animation: 'none !important',
-                    }}
-                  >
-                    <PopoverIcon />
-                  </Popover>
-                </div>
+                {!!withdrawDisabled && (
+                  <div className="cooldown-info">
+                    <Label>
+                      You must wait {remainingTimeString} until you can withdraw
+                      again.
+                    </Label>
+                    <Popover
+                      content={this.renderPopoverContent}
+                      getPopupContainer={this.getCooldownPopupContainer}
+                      placement="bottomLeft"
+                      overlayClassName="pool-filter-info"
+                      overlayStyle={{
+                        padding: '6px',
+                        animationDuration: '0s !important',
+                        animation: 'none !important',
+                      }}
+                    >
+                      <PopoverIcon />
+                    </Popover>
+                  </div>
+                )}
               </div>
             </div>
           </TabPane>
@@ -1859,6 +1895,7 @@ export default compose(
       stakerPoolDataError: state.Midgard.stakerPoolDataError,
       transferFees: state.Binance.transferFees,
       wsTransferEvent: state.Binance.wsTransferEvent,
+      thorchainData: state.Midgard.thorchain,
     }),
     {
       getPools: midgardActions.getPools,

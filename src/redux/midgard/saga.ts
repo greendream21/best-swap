@@ -1,6 +1,7 @@
 import { all, takeEvery, put, fork, call, delay } from 'redux-saga/effects';
 import { isEmpty as _isEmpty } from 'lodash';
 import byzantine from '@thorchain/byzantine-module';
+import { axiosRequest } from '../../helpers/apiHelper';
 import * as actions from './actions';
 import * as api from '../../helpers/apiHelper';
 
@@ -189,13 +190,42 @@ function* tryGetStakerPoolData(payload: GetStakerPoolDataPayload) {
   throw new Error('Midgard API request failed to get stakers pool data');
 }
 
+const getThorchainBaseURL = () => {
+  // TODO: hardcode the thorchain url for temporarly
+  // return `${api.MIDGARD_TEST_API}:1317/thorchain`;
+  return 'http://54.90.0.151:1317/thorchain';
+};
+
+const getThorchainConstants = () => {
+  return axiosRequest({
+    url: `${getThorchainBaseURL()}/constants`,
+    method: 'GET',
+  });
+};
+
+const getThorchainLastBlock = () => {
+  return axiosRequest({
+    url: `${getThorchainBaseURL()}/lastblock`,
+    method: 'GET',
+  });
+};
+
 export function* getStakerPoolData() {
   yield takeEvery('GET_STAKER_POOL_DATA_REQUEST', function*({
     payload,
   }: ReturnType<typeof actions.getStakerPoolData>) {
     try {
       const data = yield call(tryGetStakerPoolData, payload);
+      const { data: constants } = yield call(getThorchainConstants);
+      const { data: lastBlock } = yield call(getThorchainLastBlock);
+
       yield put(actions.getStakerPoolDataSuccess(data));
+      yield put(
+        actions.getThorchainDataSuccess({
+          constants,
+          lastBlock,
+        }),
+      );
     } catch (error) {
       yield put(actions.getStakerPoolDataFailed(error));
     }

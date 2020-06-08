@@ -169,7 +169,7 @@ export const ContentWrapper = styled(ContentView)`
             display: flex;
             align-items: center;
             .label-wrapper {
-              margin-right: 8px;
+              margin-right: 4px;
             }
           }
         }

@@ -1,6 +1,6 @@
 import { RemoteData } from '@devexperts/remote-data-ts';
 import BigNumber from 'bignumber.js';
-import { Maybe } from '../../types/bepswap';
+import { Maybe, FixmeType } from '../../types/bepswap';
 import {
   AssetDetail,
   PoolDetail,
@@ -37,9 +37,12 @@ export type PriceDataIndex = {
   [symbol: string]: BigNumber;
 };
 
-export type TxDetailType = TxDetailsTypeEnum.Swap
- | TxDetailsTypeEnum.Stake | TxDetailsTypeEnum.Unstake
- | TxDetailsTypeEnum.Add | TxDetailsTypeEnum.Refund;
+export type TxDetailType =
+  | TxDetailsTypeEnum.Swap
+  | TxDetailsTypeEnum.Stake
+  | TxDetailsTypeEnum.Unstake
+  | TxDetailsTypeEnum.Add
+  | TxDetailsTypeEnum.Refund;
 
 export type GetTxByAddressPayload = {
   address: string;
@@ -75,6 +78,11 @@ export type TxDetailData = RemoteData<Error, InlineResponse2001>;
 
 export type ApiBasePathRD = RemoteData<Error, string>;
 
+export type ThorchainData = {
+  constants?: FixmeType;
+  lastBlock?: FixmeType;
+};
+
 export type State = {
   assets: AssetDetailMap;
   assetArray: AssetDetail[];
@@ -94,4 +102,5 @@ export type State = {
   txData: TxDetailData;
   txCurData: Maybe<InlineResponse2001>;
   apiBasePath: ApiBasePathRD;
+  thorchain: ThorchainData;
 };
