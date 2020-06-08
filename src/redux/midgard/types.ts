@@ -1,13 +1,13 @@
 import { RemoteData } from '@devexperts/remote-data-ts';
 import BigNumber from 'bignumber.js';
-import { Maybe } from '../../types/bepswap';
+import { Maybe, FixmeType } from '../../types/bepswap';
 import {
   AssetDetail,
   PoolDetail,
   StakersAssetData,
   ThorchainEndpoints,
   ThorchainEndpoint,
-  InlineResponse200,
+  InlineResponse2001,
   TxDetailsTypeEnum,
 } from '../../types/generated/midgard';
 
@@ -37,9 +37,12 @@ export type PriceDataIndex = {
   [symbol: string]: BigNumber;
 };
 
-export type TxDetailType = TxDetailsTypeEnum.Swap
- | TxDetailsTypeEnum.Stake | TxDetailsTypeEnum.Unstake
- | TxDetailsTypeEnum.Add | TxDetailsTypeEnum.Refund;
+export type TxDetailType =
+  | TxDetailsTypeEnum.Swap
+  | TxDetailsTypeEnum.Stake
+  | TxDetailsTypeEnum.Unstake
+  | TxDetailsTypeEnum.Add
+  | TxDetailsTypeEnum.Refund;
 
 export type GetTxByAddressPayload = {
   address: string;
@@ -71,9 +74,14 @@ export type GetTxByAssetPayload = {
   type?: TxDetailType;
 };
 
-export type TxDetailData = RemoteData<Error, InlineResponse200>;
+export type TxDetailData = RemoteData<Error, InlineResponse2001>;
 
 export type ApiBasePathRD = RemoteData<Error, string>;
+
+export type ThorchainData = {
+  constants?: FixmeType;
+  lastBlock?: FixmeType;
+};
 
 export type State = {
   assets: AssetDetailMap;
@@ -92,6 +100,7 @@ export type State = {
   error: Maybe<Error>;
   poolLoading: boolean;
   txData: TxDetailData;
-  txCurData: Maybe<InlineResponse200>;
+  txCurData: Maybe<InlineResponse2001>;
   apiBasePath: ApiBasePathRD;
+  thorchain: ThorchainData;
 };

@@ -37,6 +37,10 @@ const initState: State = {
   txData: initial,
   txCurData: {},
   apiBasePath: initial,
+  thorchain: {
+    constants: {},
+    lastBlock: {},
+  },
 };
 
 const reducer: Reducer<State, MidgardActionTypes> = (
@@ -154,6 +158,12 @@ const reducer: Reducer<State, MidgardActionTypes> = (
           ? { ...state.stakerPoolData, ...newStakerPoolData }
           : newStakerPoolData,
         stakerPoolDataLoading: false,
+      };
+    }
+    case 'GET_THORCHAIN_DATA_SUCCESS': {
+      return {
+        ...state,
+        thorchain: action.payload,
       };
     }
     case 'GET_STAKER_POOL_DATA_FAILED':
