@@ -218,7 +218,7 @@ class PoolStake extends React.Component<Props, State> {
       runePercent: 0,
       tokenPercent: 0,
       txResult: false,
-      widthdrawPercentage: 0,
+      widthdrawPercentage: 50,
       selectRatio: true,
       selectedShareDetailTab: ShareDetailTabKeys.ADD,
     };
@@ -1286,7 +1286,7 @@ class PoolStake extends React.Component<Props, State> {
     });
 
     // withdraw values
-    const withdrawRate: number = (widthdrawPercentage || 50) / 100;
+    const withdrawRate: number = widthdrawPercentage / 100;
     const { stakeUnits }: StakersAssetData = stakersAssetData;
 
     const { R, T, poolUnits } = calcResult;
@@ -1478,7 +1478,7 @@ class PoolStake extends React.Component<Props, State> {
               }}
               defaultValue={50}
               max={100}
-              min={1}
+              min={0}
             />
             <div className="stake-withdraw-info-wrapper">
               <Label className="label-title" size="normal" weight="bold">
