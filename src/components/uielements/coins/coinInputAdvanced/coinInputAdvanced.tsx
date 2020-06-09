@@ -6,7 +6,10 @@ import { CoinInputAdvancedView } from './coinInputAdvanced.view';
 import { emptyString } from '../../../../helpers/stringHelper';
 
 const formatNumber = (value: string, minimumFractionDigits: number) => {
-  return Number(value || 0).toLocaleString(undefined, {
+  const times = 10 ** minimumFractionDigits;
+  const roundedValue = Math.floor(parseFloat(value || '0') * times) / times;
+
+  return Number(roundedValue || 0).toLocaleString(undefined, {
     minimumFractionDigits,
   });
 };
@@ -84,6 +87,7 @@ export function useCoinCardInputBehaviour({
     const isValidNumber = isValidBN(bn(val));
     const validValue =
       isValidNumber || val === emptyString || val === ZERO_DECIMAL;
+
     if (validValue) {
       setTextFieldValue(val);
     }
@@ -94,7 +98,7 @@ export function useCoinCardInputBehaviour({
       ? getOutval()
       : formatStringToBigNumber(getOutval()).toString();
 
-      numberfiedValueStr;
+    numberfiedValueStr;
 
     if (isBroadcastable(numberfiedValueStr)) {
       const valToSend = formatStringToBigNumber(numberfiedValueStr);
