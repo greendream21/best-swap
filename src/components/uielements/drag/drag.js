@@ -189,6 +189,7 @@ class Drag extends Component {
               className="source-asset"
               data-test="source-asset"
               type={source}
+              size="small"
             />
           </Draggable>
           {title && <TitleLabel color="input">{title}</TitleLabel>}
@@ -196,6 +197,7 @@ class Drag extends Component {
             className="target-asset"
             data-test="target-asset"
             type={target}
+            size="small"
           />
         </DragWrapper>
       </div>

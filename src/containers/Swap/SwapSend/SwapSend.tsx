@@ -942,8 +942,10 @@ class SwapSend extends React.Component<Props, State> {
   runeFeeIsNotCovered = (amount: BigNumber): boolean => {
     const { info, priceIndex } = this.props;
     const { source }: Pair = getPair(info);
+    const runePrice = bn(priceIndex.RUNE);
     return source
       ? bn(priceIndex[source.toUpperCase()])
+          .dividedBy(runePrice)
           .multipliedBy(amount)
           .isLessThanOrEqualTo(1)
       : true;
@@ -1166,7 +1168,8 @@ class SwapSend extends React.Component<Props, State> {
                   onChange={this.handleChangeValue}
                   onChangeAsset={this.handleChangeSource}
                   onSelect={(amount: number) =>
-                    this.handleSelectSourceAmount(swapSource, amount)}
+                    this.handleSelectSourceAmount(swapSource, amount)
+                  }
                   inputProps={{ 'data-test': 'coincard-source-input' }}
                   withSearch
                   data-test="coincard-source"
