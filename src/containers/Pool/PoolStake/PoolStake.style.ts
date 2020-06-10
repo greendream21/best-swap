@@ -463,7 +463,7 @@ export const ContentWrapper = styled(ContentView)`
 export const ConfirmModal = styled(Modal)`
   &.ant-modal {
     width: 420px !important;
-
+    z-index: 999999;
     .ant-modal-body {
       padding: 0px;
     }
