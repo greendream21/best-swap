@@ -41,7 +41,6 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
     pools,
     poolData,
     priceIndex,
-    basePriceAsset,
     loading,
     getPools,
   } = props;
@@ -201,7 +200,6 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
         'rune',
         poolInfo,
         priceIndex,
-        basePriceAsset,
       );
 
       if (swapCardData) {

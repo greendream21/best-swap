@@ -1740,7 +1740,6 @@ class PoolStake extends React.Component<Props, State> {
   render() {
     const {
       priceIndex,
-      basePriceAsset,
       poolData,
       stakerPoolData,
       stakerPoolDataError,
@@ -1763,7 +1762,7 @@ class PoolStake extends React.Component<Props, State> {
     symbol = symbol.toUpperCase();
     const poolInfo = poolData[symbol] || {};
 
-    const poolStats = getPoolData('rune', poolInfo, priceIndex, basePriceAsset);
+    const poolStats = getPoolData('rune', poolInfo, priceIndex);
 
     const calcResult = this.getData();
 
