@@ -207,7 +207,7 @@ class PoolView extends React.Component<Props, State> {
       },
       {
         key: 'roiAT',
-        title: 'historical roi',
+        title: 'historical ROI',
         dataIndex: 'roiAT',
         sorter: (a: PoolData, b: PoolData) => a.raw.roiAT - b.raw.roiAT,
         sortDirections: ['descend', 'ascend'],
