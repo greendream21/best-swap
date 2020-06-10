@@ -37,9 +37,11 @@ const Status: React.FC<Props> = (props: Props): JSX.Element => {
       {loading && '...'}
       {!loading && (
         <>
-          <NoWrapLabel className="status-title" size="normal" color="gray">
-            {title}
-          </NoWrapLabel>
+          {title && (
+            <NoWrapLabel className="status-title" size="normal" color="gray">
+              {title}
+            </NoWrapLabel>
+          )}
           <NoWrapLabel className="status-value" size="normal">
             {value}
           </NoWrapLabel>
