@@ -773,7 +773,6 @@ class SwapSend extends React.Component<Props, State> {
 
   handleClickFinish = () => {
     this.handleCompleted();
-    this.props.history.push('/swap');
   };
 
   renderSwapModalContent = (

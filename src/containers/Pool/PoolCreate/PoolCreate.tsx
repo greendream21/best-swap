@@ -451,8 +451,6 @@ class PoolCreate extends React.Component<Props, State> {
         'It may take a few moments until a new pool appears in the pool list!',
       getContainer: getAppContainer,
     });
-
-    this.props.history.push('/pools');
   };
 
   renderAssetView = () => {

@@ -2,7 +2,7 @@ import React from 'react';
 import * as H from 'history';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { withRouter, Link } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import { Row, Col, notification, Popover } from 'antd';
 import {
   InboxOutlined,
@@ -952,11 +952,13 @@ class PoolStake extends React.Component<Props, State> {
           {completed && (
             <div className="hash-address">
               <div className="copy-btn-wrapper">
-                <Link to="/pools">
-                  <Button className="view-btn" color="success">
-                    FINISH
-                  </Button>
-                </Link>
+                <Button
+                  className="view-btn"
+                  color="success"
+                  onClick={this.handleCloseModal}
+                >
+                  FINISH
+                </Button>
                 <a href={txURL} target="_blank" rel="noopener noreferrer">
                   VIEW TRANSACTION
                 </a>
@@ -1029,11 +1031,13 @@ class PoolStake extends React.Component<Props, State> {
               <div className="hash-address">
                 <div className="copy-btn-wrapper">
                   {completed && (
-                    <Link to="/pools">
-                      <Button className="view-btn" color="success">
-                        FINISH
-                      </Button>
-                    </Link>
+                    <Button
+                      className="view-btn"
+                      color="success"
+                      onClick={this.handleCloseModal}
+                    >
+                      FINISH
+                    </Button>
                   )}
                   <a href={txURL} target="_blank" rel="noopener noreferrer">
                     VIEW TRANSACTION
