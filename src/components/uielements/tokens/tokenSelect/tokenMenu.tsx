@@ -17,7 +17,6 @@ const filterFunction = (item: AssetPair, searchTerm: string): boolean => {
 type Props = {
   asset: string;
   priceIndex: PriceDataIndex;
-  priceUnit: string;
   assetData: AssetPair[];
   searchDisable: string[];
   withSearch?: boolean;
@@ -28,7 +27,6 @@ const TokenMenu: React.FC<Props> = (props: Props): JSX.Element => {
   const {
     assetData,
     asset,
-    priceUnit,
     priceIndex,
     withSearch,
     searchDisable,
@@ -60,7 +58,6 @@ const TokenMenu: React.FC<Props> = (props: Props): JSX.Element => {
       <TokenData
         asset={tokenName}
         priceValue={formatBN(price)}
-        priceUnit={priceUnit}
         size="small"
         data-test={dataTest}
       />

@@ -43,7 +43,6 @@ type Props = {
   asset: string;
   price: BigNumber;
   priceIndex: PriceDataIndex;
-  priceUnit?: string;
   withSearch?: boolean;
   searchDisable?: string[];
   onSelect: (_: number) => void;
@@ -146,7 +145,6 @@ class TokenSelect extends React.Component<Props, State> {
       assetData,
       asset,
       priceIndex,
-      priceUnit = 'RUNE',
       withSearch = true,
       searchDisable = [],
       'data-test': dataTest,
@@ -159,7 +157,6 @@ class TokenSelect extends React.Component<Props, State> {
           assetData={assetData}
           asset={asset}
           priceIndex={priceIndex}
-          priceUnit={priceUnit}
           withSearch={withSearch}
           searchDisable={searchDisable}
           onSelect={this.handleChangeAsset}
@@ -170,7 +167,7 @@ class TokenSelect extends React.Component<Props, State> {
   };
 
   render() {
-    const { asset, price, priceUnit = 'RUNE', className = '' } = this.props;
+    const { asset, price, className = '' } = this.props;
     const { openDropdown } = this.state;
 
     return (
@@ -184,7 +181,6 @@ class TokenSelect extends React.Component<Props, State> {
             <TokenData
               asset={asset}
               priceValue={formatBN(price)}
-              priceUnit={priceUnit}
             />
             {this.renderDropDownButton()}
           </TokenSelectWrapper>

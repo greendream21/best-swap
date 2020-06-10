@@ -23,7 +23,7 @@ export const TokenDataWrapper = styled.div`
   .coinData-asset-label {
     margin-right: 12px;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     text-transform: uppercase;
     color: ${palette('text', 0)};
   }
