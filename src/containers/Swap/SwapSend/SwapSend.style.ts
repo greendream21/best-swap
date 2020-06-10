@@ -183,6 +183,8 @@ export const CardFormItem = styled.div`
 
 export const CardFormItemError = styled.div`
   font-size: 12px;
+  color: ${palette('text', 0)};
+  padding-top: 6px;
 `;
 
 export const CardFormItemCloseButton = styled(Icon).attrs({
