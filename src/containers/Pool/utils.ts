@@ -158,7 +158,6 @@ export const getPoolData = (
   from: string,
   poolDetail: PoolDetail,
   priceIndex: PriceDataIndex,
-  basePriceAsset: string,
 ): PoolData => {
   const asset = from;
   const { symbol = '', ticker: target = '' } = getAssetFromString(
@@ -168,7 +167,7 @@ export const getPoolData = (
   const runePrice = validBNOrZero(priceIndex?.RUNE);
 
   const poolPrice = validBNOrZero(priceIndex[target.toUpperCase()]);
-  const poolPriceValue = `${basePriceAsset} ${poolPrice.toFixed(3)}`;
+  const poolPriceValue = `${poolPrice.toFixed(3)}`;
 
   const depthResult = bnOrZero(poolDetail?.runeDepth).multipliedBy(runePrice);
   const depth = baseAmount(depthResult);
@@ -200,14 +199,10 @@ export const getPoolData = (
   const totalSwaps = Number(poolDetail?.swappingTxCount ?? 0);
   const totalStakers = Number(poolDetail?.stakersCount ?? 0);
 
-  const depthValue = `${basePriceAsset} ${formatBaseAsTokenAmount(depth)}`;
-  const volume24Value = `${basePriceAsset} ${formatBaseAsTokenAmount(
-    volume24,
-  )}`;
-  const transactionValue = `${basePriceAsset} ${formatBaseAsTokenAmount(
-    transaction,
-  )}`;
-  const liqFeeValue = `${basePriceAsset} ${formatBaseAsTokenAmount(liqFee)}`;
+  const depthValue = `${formatBaseAsTokenAmount(depth)}`;
+  const volume24Value = `${formatBaseAsTokenAmount(volume24)}`;
+  const transactionValue = `${formatBaseAsTokenAmount(transaction)}`;
+  const liqFeeValue = `${formatBaseAsTokenAmount(liqFee)}`;
   const roiAtValue = `${roiAT}% APR`;
 
   return {

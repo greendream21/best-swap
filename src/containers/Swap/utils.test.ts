@@ -397,13 +397,12 @@ describe('swap/utils/', () => {
 
   describe('getSwapData', () => {
     const from = 'rune';
-    const basePriceAsset = 'RUNE';
 
     it('returns swap data for a `LOK-3C0` pool', () => {
       const expected = {
-        depth: 'RUNE 2,357.94',
+        depth: '2,357.94',
         pool: { asset: 'rune', target: 'LOK' },
-        poolPrice: 'RUNE 0.890',
+        poolPrice: '0.890',
         raw: {
           depth: bn('235794400000'),
           slip: bn(0),
@@ -414,20 +413,20 @@ describe('swap/utils/', () => {
         },
         slip: '0',
         trade: '0',
-        transaction: 'RUNE 0.00',
-        volume: 'RUNE 0.00',
+        transaction: '0.00',
+        volume: '0.00',
       };
 
       expect(
-        getSwapData(from, lokPoolInfo, priceIndex, basePriceAsset),
+        getSwapData(from, lokPoolInfo, priceIndex),
       ).toEqual(expected);
     });
 
     it('returns swap data for a `BNB` pool', () => {
       const expected = {
-        depth: 'RUNE 3,760.32',
+        depth: '3,760.32',
         pool: { asset: 'rune', target: 'BNB' },
-        poolPrice: 'RUNE 0.000',
+        poolPrice: '0.000',
         raw: {
           depth: bn('376032267901'),
           slip: bn('3.1693333633081765'),
@@ -438,11 +437,11 @@ describe('swap/utils/', () => {
         },
         slip: '3.1693333633081765',
         trade: '330',
-        transaction: 'RUNE 49.80',
-        volume: 'RUNE 0.00',
+        transaction: '49.80',
+        volume: '0.00',
       };
 
-      const result = getSwapData(from, bnbPoolInfo, priceIndex, basePriceAsset);
+      const result = getSwapData(from, bnbPoolInfo, priceIndex);
       expect(result?.depth).toEqual(expected.depth);
       expect(result).toEqual(expected);
     });
@@ -450,7 +449,7 @@ describe('swap/utils/', () => {
     it('returns null', () => {
       const expected = null;
 
-      expect(getSwapData(from, Nothing, priceIndex, basePriceAsset)).toEqual(
+      expect(getSwapData(from, Nothing, priceIndex)).toEqual(
         expected,
       );
     });

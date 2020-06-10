@@ -80,7 +80,6 @@ export const getSwapData = (
   from: string,
   poolInfo: Maybe<PoolDetail>,
   priceIndex: PriceDataIndex,
-  basePriceAsset: string,
 ): Maybe<SwapCardType> => {
   const asset = from;
 
@@ -90,23 +89,19 @@ export const getSwapData = (
     const runePrice = validBNOrZero(priceIndex?.RUNE);
 
     const poolPrice = validBNOrZero(priceIndex[target.toUpperCase()]);
-    const poolPriceString = `${basePriceAsset} ${poolPrice.toFixed(3)}`;
+    const poolPriceString = `${poolPrice.toFixed(3)}`;
 
     // formula: poolInfo.runeDepth * runePrice
     const depth = bn(poolInfo?.runeDepth ?? 0).multipliedBy(runePrice);
-    const depthAsString = `${basePriceAsset} ${formatBaseAsTokenAmount(
-      baseAmount(depth),
-    )}`;
+    const depthAsString = `${formatBaseAsTokenAmount(baseAmount(depth))}`;
     // formula: poolInfo.poolVolume24hr * runePrice
     const volume = bn(poolInfo?.poolVolume24hr ?? 0).multipliedBy(runePrice);
-    const volumeAsString = `${basePriceAsset} ${formatBaseAsTokenAmount(
-      baseAmount(volume),
-    )}`;
+    const volumeAsString = `${formatBaseAsTokenAmount(baseAmount(volume))}`;
     // formula: poolInfo.poolTxAverage * runePrice
     const transaction = bn(poolInfo?.poolTxAverage ?? 0).multipliedBy(
       runePrice,
     );
-    const transactionAsString = `${basePriceAsset} ${formatBaseAsTokenAmount(
+    const transactionAsString = `${formatBaseAsTokenAmount(
       baseAmount(transaction),
     )}`;
     const slip = bn(poolInfo?.poolSlipAverage ?? 0).multipliedBy(100);
