@@ -1168,8 +1168,7 @@ class SwapSend extends React.Component<Props, State> {
                   onChange={this.handleChangeValue}
                   onChangeAsset={this.handleChangeSource}
                   onSelect={(amount: number) =>
-                    this.handleSelectSourceAmount(swapSource, amount)
-                  }
+                    this.handleSelectSourceAmount(swapSource, amount)}
                   inputProps={{ 'data-test': 'coincard-source-input' }}
                   withSearch
                   data-test="coincard-source"
