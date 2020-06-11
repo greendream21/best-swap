@@ -67,12 +67,6 @@ export const getCalcResult = (
   let symbolTo: Maybe<string> = Nothing;
   let poolUnits: Maybe<BigNumber> = Nothing;
 
-  // CHANGELOG:
-  /*
-    balance_rune => runeDepth
-    balance_token => assetDepth
-    pool_units => poolUnits
-  */
   Object.keys(pools).forEach(key => {
     const poolDetail: PoolDetail = pools[key];
     const {
@@ -217,6 +211,10 @@ export const getPoolData = (
   const roiAtValue = `${roiAT}% APR`;
 
   return {
+    pool: {
+      asset,
+      target,
+    },
     asset,
     target,
     depth,
@@ -228,6 +226,7 @@ export const getPoolData = (
     poolROI12,
     totalSwaps,
     totalStakers,
+    poolPrice,
     values: {
       pool: {
         asset,
@@ -241,14 +240,6 @@ export const getPoolData = (
       liqFee: liqFeeValue,
       roiAT: roiAtValue,
       poolPrice: poolPriceValue,
-    },
-    raw: {
-      depth,
-      volume24,
-      transaction,
-      liqFee,
-      roiAT,
-      poolPrice,
     },
   };
 };

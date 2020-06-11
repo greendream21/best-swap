@@ -42,30 +42,4 @@ describe.skip('Wallet', () => {
 
     cy.get('.ant-drawer-mask').click();
   });
-
-  it('should show the empty wallet message', () => {
-    cy.visit('/connect');
-    cy.uploadWallet('empty');
-
-    cy.visit('/swap');
-
-    cy.get('[data-test="wallet-draw-button"]').click();
-
-    cy.contains("Looks like you don't have anything in your wallet");
-
-    cy.get('.ant-drawer-mask').click();
-
-    cy.get(
-      '.swap-list-view.desktop-view [data-test="swap-button-bnb"]',
-    ).click();
-    cy.get('[data-test="coincard-source-input"]').type('1000{enter}');
-
-    cy.get('[data-test="coincard-source-input"]')
-      .invoke('val')
-      .should('equal', '0.00');
-
-    cy.dragAndDrop('[data-test="source-asset"]', '[data-test="target-asset"]');
-
-    cy.contains('Swap Invalid');
-  });
 });

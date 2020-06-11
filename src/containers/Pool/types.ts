@@ -19,16 +19,8 @@ export type PoolDataValues = {
   poolPrice: string;
 };
 
-export type PoolDataRaw = {
-  depth: BaseAmount;
-  volume24: BaseAmount;
-  transaction: BaseAmount;
-  liqFee: BaseAmount;
-  roiAT: number;
-  poolPrice: BigNumber;
-};
-
 export type PoolData = {
+  pool: PoolInfoType;
   asset: string;
   target: string;
   depth: BaseAmount;
@@ -40,6 +32,6 @@ export type PoolData = {
   poolROI12: BigNumber;
   totalSwaps: number;
   totalStakers: number;
+  poolPrice: BigNumber;
   values: PoolDataValues;
-  raw: PoolDataRaw;
 };

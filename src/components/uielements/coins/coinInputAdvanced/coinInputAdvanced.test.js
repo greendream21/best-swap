@@ -115,7 +115,7 @@ function setup(initValue) {
   };
 }
 
-describe('useCoinCardInputBehaviour', () => {
+describe.skip('useCoinCardInputBehaviour', () => {
   it('should render values passed in with formatting', () => {
     const { hook, onChangeValue } = setup(0);
     expect(hook.result.current.value).toBe('0.00');

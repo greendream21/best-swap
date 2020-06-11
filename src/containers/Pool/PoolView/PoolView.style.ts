@@ -57,3 +57,10 @@ export const ActionHeader = styled.div`
   align-items: center;
   width: 100%;
 `;
+
+export const ActionColumn = styled.div`
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+`;

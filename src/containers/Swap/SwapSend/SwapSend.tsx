@@ -654,7 +654,7 @@ class SwapSend extends React.Component<Props, State> {
     pair: Pair,
   ) => {
     if (!targetInfo.length) {
-      this.props.history.push('/swap');
+      this.props.history.push('/pools');
     }
 
     return validatePair(pair, sourceInfo, targetInfo);
@@ -1048,7 +1048,7 @@ class SwapSend extends React.Component<Props, State> {
       !Object.keys(poolData).length ||
       !isValidSwap(swapPair, pools)
     ) {
-      this.props.history.push('/swap'); // redirect if swap is invalid
+      this.props.history.push('/pools'); // redirect to pool view if swap is invalid
       return '';
     }
 
