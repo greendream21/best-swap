@@ -6,10 +6,7 @@ import { CoinInputAdvancedView } from './coinInputAdvanced.view';
 import { emptyString } from '../../../../helpers/stringHelper';
 
 const formatNumber = (value: string, minimumFractionDigits: number) => {
-  const times = 10 ** minimumFractionDigits;
-  const roundedValue = Math.floor(parseFloat(value || '0') * times) / times;
-
-  return Number(roundedValue || 0).toLocaleString(undefined, {
+  return Number(value || 0).toLocaleString(undefined, {
     minimumFractionDigits,
   });
 };

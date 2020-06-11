@@ -9,6 +9,8 @@ import {
   CalcResult,
   getCreatePoolCalc,
   CreatePoolCalc,
+  getRoundedDownBN,
+  roundedDownAmount,
 } from './utils';
 import { PoolData } from './types';
 import { AssetData } from '../../redux/wallet/types';
@@ -102,7 +104,7 @@ const poolData: PoolDataMap = {
 };
 
 // TODO: Fix unit test
-describe.skip('pool/utils/', () => {
+describe('pool/utils/', () => {
   describe('witdrawResult', () => {
     it('should validate a withdraw transfer', () => {
       const tx: TransferEvent = {
@@ -541,6 +543,39 @@ describe.skip('pool/utils/', () => {
       expect(result.Pr).toEqual(expected.Pr);
       // Test all again, just in case of other properties in the future
       expect(result).toEqual(expected);
+    });
+  });
+
+  describe('getRoundedDownBN', () => {
+    const number = '3.3467';
+    const bigNumber = bn(number);
+
+    it('round down big number with 2 decimal point as default', () => {
+      const expected = '3.34';
+      expect(getRoundedDownBN(bigNumber)).toEqual(expected);
+    });
+
+    it('round down big number with 3 decimal point', () => {
+      const expected = '3.346';
+      expect(getRoundedDownBN(bigNumber, 3)).toEqual(expected);
+    });
+
+    it('round down big number and work with tokenAmount', () => {
+      const expected = '3.34';
+      const roundedBN = getRoundedDownBN(bigNumber);
+      const resultAmount = tokenAmount(bn(roundedBN));
+      expect(resultAmount.amount()).toEqual(bn(expected));
+    });
+  });
+
+  describe('roundedDownAmount', () => {
+    const number = '3.3467';
+    const bigNumber = bn(number);
+
+    it('round down big number and equal with tokenAmount', () => {
+      const expected = '3.34';
+      const resultAmount = roundedDownAmount(bigNumber);
+      expect(resultAmount.amount()).toEqual(bn(expected));
     });
   });
 });
