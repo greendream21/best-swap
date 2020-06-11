@@ -7,8 +7,8 @@ export type CoinDataWrapperType = 'wallet' | 'normal';
 
 type CoinDataWrapperProps = {
   size: CoinDataWrapperSize;
-  type: CoinDataWrapperType
-  target?: Maybe<string>
+  type: CoinDataWrapperType;
+  target?: Maybe<string>;
 };
 
 export const CoinDataWrapper = styled.div`
@@ -23,17 +23,20 @@ export const CoinDataWrapper = styled.div`
   }
 
   .coinData-coin-avatar {
-    margin-right: ${(props: CoinDataWrapperProps) => (props.target ? '0px' : '12px')};
+    margin-right: ${(props: CoinDataWrapperProps) =>
+      props.target ? '0px' : '12px'};
   }
 
   .coinData-asset-info {
-    margin-left: ${(props: CoinDataWrapperProps) => (props.target ? '0px' : '4px')} !important;
+    margin-left: ${(props: CoinDataWrapperProps) =>
+      props.target ? '0px' : '4px'} !important;
   }
 
   .coinData-asset-info,
   .coinData-target-info {
     display: flex;
-    flex-direction: ${(props: CoinDataWrapperProps) => (props.type === 'normal' ? 'column' : 'row')};
+    flex-direction: ${(props: CoinDataWrapperProps) =>
+      props.type === 'normal' ? 'column' : 'row'};
     margin: 0 4px;
   }
 
@@ -41,6 +44,7 @@ export const CoinDataWrapper = styled.div`
     display: flex;
     flex-grow: 1;
     justify-content: flex-end;
+    text-align: right;
 
     ${(props: CoinDataWrapperProps) => props.size === 'big' && 'height: 32px;'}
     .label-wrapper {
@@ -59,6 +63,7 @@ export const CoinDataWrapper = styled.div`
   }
 
   .coinData-asset-label {
-    margin-right: ${(props: CoinDataWrapperProps) => (props.type !== 'normal' ? '4px' : 0)};
+    margin-right: ${(props: CoinDataWrapperProps) =>
+      props.type !== 'normal' ? '4px' : 0};
   }
 `;
