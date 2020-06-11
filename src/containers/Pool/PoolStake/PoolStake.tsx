@@ -1441,7 +1441,6 @@ class PoolStake extends React.Component<Props, State> {
                 />
               </div>
             </div>
-            {this.renderFee()}
             <div className="stake-share-info-wrapper">
               <div className="share-status-wrapper">
                 <Drag

@@ -46,9 +46,7 @@ const CoinData: React.FC<Props> = (props: Props): JSX.Element => {
       ? price.multipliedBy(assetValue?.amount() ?? 0)
       : price.multipliedBy(targetValue?.amount() ?? 0);
 
-  const priceLabel = priceValid
-    ? `${priceUnit.toUpperCase()} ${formatBN(totalPrice)}`
-    : 'NOT LISTED';
+  const priceLabel = priceValid ? `${priceUnit.toUpperCase()}` : 'NOT LISTED';
 
   return (
     <CoinDataWrapper
@@ -58,45 +56,62 @@ const CoinData: React.FC<Props> = (props: Props): JSX.Element => {
       className={`coinData-wrapper ${className}`}
       {...otherProps}
     >
-      <Coin
-        className="coinData-coin-avatar"
-        type={asset}
-        over={target}
-        size={size}
-      />
-      <div className="coinData-asset-info" data-test="coin-data-asset-info">
-        <Label
-          className="coinData-asset-label"
-          data-test="coin-data-asset-label"
-          type="normal"
-          weight="600"
-        >
-          {`${asset} ${target ? ':' : ''}`}
-        </Label>
-        {assetValue && (
-          <Label
-            className="coinData-asset-value"
-            data-test="coin-data-asset-value"
-            type="normal"
-            weight="600"
-          >
-            {formatTokenAmount(assetValue)}
-          </Label>
-        )}
-      </div>
-      {target && (
-        <div className="coinData-target-info">
-          <Label className="coinData-target-label" type="normal" weight="600">
-            {target}
-          </Label>
-          {targetValue && (
-            <Label className="coinData-target-value" type="normal" weight="600">
-              {formatTokenAmount(targetValue)}
+      <div className="coinData-content">
+        <Coin
+          className="coinData-coin-avatar"
+          type={asset}
+          over={target}
+          size={size}
+        />
+        <div className="coinData-info-wrapper">
+          <div className="coinData-asset-info" data-test="coin-data-asset-info">
+            <Label
+              className="coinData-asset-label"
+              data-test="coin-data-asset-label"
+              type="normal"
+              weight="600"
+            >
+              {asset}
             </Label>
+            {assetValue && (
+              <Label
+                className="coinData-asset-value"
+                data-test="coin-data-asset-value"
+                type="normal"
+                weight="600"
+              >
+                {formatTokenAmount(assetValue)}
+              </Label>
+            )}
+          </div>
+          {target && (
+            <div className="coinData-target-info">
+              <Label
+                className="coinData-target-label"
+                type="normal"
+                weight="600"
+              >
+                {target}
+              </Label>
+              {targetValue && (
+                <Label
+                  className="coinData-target-value"
+                  type="normal"
+                  weight="600"
+                >
+                  {formatTokenAmount(targetValue)}
+                </Label>
+              )}
+            </div>
           )}
         </div>
-      )}
+      </div>
       <div className="asset-price-info">
+        {priceValid && (
+          <Label size="small" color="gray" weight="bold">
+            {formatBN(totalPrice)}
+          </Label>
+        )}
         <Label size="small" color="gray" weight="bold">
           {priceLabel}
         </Label>
