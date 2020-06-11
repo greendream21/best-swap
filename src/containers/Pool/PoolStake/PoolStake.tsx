@@ -1813,7 +1813,6 @@ class PoolStake extends React.Component<Props, State> {
       poolROI: '0',
       dateFirstStaked: 0,
     };
-
     const stakersAssetData: Maybe<StakersAssetData> = stakerPoolData
       ? stakerPoolData[symbol]
       : emptyStakerPoolData;
