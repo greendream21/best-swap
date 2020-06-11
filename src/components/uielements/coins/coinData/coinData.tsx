@@ -3,7 +3,11 @@ import React from 'react';
 import BigNumber from 'bignumber.js';
 import { bn, formatBN } from '@thorchain/asgardex-util';
 import { TokenAmount, formatTokenAmount } from '@thorchain/asgardex-token';
-import { CoinDataWrapper, CoinDataWrapperType, CoinDataWrapperSize } from './coinData.style';
+import {
+  CoinDataWrapper,
+  CoinDataWrapperType,
+  CoinDataWrapperSize,
+} from './coinData.style';
 import Coin from '../coin';
 import Label from '../../label';
 import { Maybe, Nothing } from '../../../../types/bepswap';
@@ -37,7 +41,14 @@ const CoinData: React.FC<Props> = (props: Props): JSX.Element => {
     ...otherProps
   } = props;
 
-  const priceLabel = priceValid ? `${priceUnit.toUpperCase()} ${formatBN(price)}` : 'NOT LISTED';
+  const totalPrice =
+    type === 'wallet'
+      ? price.multipliedBy(assetValue?.amount() ?? 0)
+      : price.multipliedBy(targetValue?.amount() ?? 0);
+
+  const priceLabel = priceValid
+    ? `${priceUnit.toUpperCase()} ${formatBN(totalPrice)}`
+    : 'NOT LISTED';
 
   return (
     <CoinDataWrapper
