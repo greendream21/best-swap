@@ -3,6 +3,7 @@ import { Dropdown } from 'antd';
 import {
   DatabaseOutlined,
   SwapOutlined,
+  RetweetOutlined,
   DoubleRightOutlined,
   ImportOutlined,
   CaretDownOutlined,
@@ -15,6 +16,7 @@ import { TxDetailsTypeEnum } from '../../types/generated/midgard';
 import { Menu, DesktopButton, MobileButton } from './filterDropdown.style';
 
 export type FilterValue =
+  | TxDetailsTypeEnum.DoubleSwap
   | TxDetailsTypeEnum.Swap
   | TxDetailsTypeEnum.Stake
   | TxDetailsTypeEnum.Unstake
@@ -46,6 +48,11 @@ const FilterDropdown: React.FC<Props> = (props: Props): JSX.Element => {
       icon: <SwapOutlined />,
       title: 'SWAP',
       key: TxDetailsTypeEnum.Swap,
+    },
+    {
+      icon: <RetweetOutlined />,
+      title: 'DOUBLE SWAP',
+      key: TxDetailsTypeEnum.DoubleSwap,
     },
     {
       icon: <DoubleRightOutlined />,

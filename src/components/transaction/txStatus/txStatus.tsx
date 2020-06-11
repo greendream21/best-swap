@@ -1,9 +1,6 @@
 import React from 'react';
 
-import {
-  formatBaseAsTokenAmount,
-  baseAmount,
-} from '@thorchain/asgardex-token';
+import { formatBaseAsTokenAmount, baseAmount } from '@thorchain/asgardex-token';
 import { TxStatusWrapper, TxStatusContent, Seperator } from './txStatus.style';
 import { Coin } from '../../../types/generated/midgard';
 import { getAssetFromString } from '../../../redux/midgard/utils';

@@ -41,14 +41,13 @@ export type TxDetailType =
   | TxDetailsTypeEnum.Swap
   | TxDetailsTypeEnum.Stake
   | TxDetailsTypeEnum.Unstake
-  | TxDetailsTypeEnum.Add
-  | TxDetailsTypeEnum.Refund;
+  | TxDetailsTypeEnum.DoubleSwap;
 
 export type GetTxByAddressPayload = {
   address: string;
   offset: number;
   limit: number;
-  type?: TxDetailType;
+  type?: string;
 };
 
 export type GetTxByAddressTxIdPayload = {
@@ -56,7 +55,7 @@ export type GetTxByAddressTxIdPayload = {
   txId: string;
   offset: number;
   limit: number;
-  type?: TxDetailType;
+  type?: string;
 };
 
 export type GetTxByAddressAssetPayload = {
@@ -64,14 +63,14 @@ export type GetTxByAddressAssetPayload = {
   asset: string;
   offset: number;
   limit: number;
-  type?: TxDetailType;
+  type?: string;
 };
 
 export type GetTxByAssetPayload = {
   asset: string;
   offset: number;
   limit: number;
-  type?: TxDetailType;
+  type?: string;
 };
 
 export type TxDetailData = RemoteData<Error, InlineResponse2001>;
