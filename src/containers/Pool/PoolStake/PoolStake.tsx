@@ -76,6 +76,7 @@ import {
   CalcResult,
   getPoolData,
   withdrawResult,
+  roundedDownAmount,
 } from '../utils';
 import { PoolData } from '../types';
 import { getTickerFormat, emptyString } from '../../../helpers/stringHelper';
@@ -378,7 +379,7 @@ class PoolStake extends React.Component<Props, State> {
     const totalTokenAmount = targetToken.assetValue
       .amount()
       .multipliedBy(balance);
-    const valueAsToken = tokenAmount(value);
+    const valueAsToken = roundedDownAmount(value);
 
     if (!selectRatio) {
       if (tokenName === 'rune') {
@@ -403,14 +404,14 @@ class PoolStake extends React.Component<Props, State> {
 
       if (totalAmount.isLessThan(valueAsToken.amount())) {
         this.setState({
-          runeAmount: tokenAmount(totalAmount),
-          tokenAmount: tokenAmount(tokenAmountBN),
+          runeAmount: roundedDownAmount(totalAmount),
+          tokenAmount: roundedDownAmount(tokenAmountBN),
           runePercent: 100,
         });
       } else {
         this.setState({
           runeAmount: valueAsToken,
-          tokenAmount: tokenAmount(tokenAmountBN),
+          tokenAmount: roundedDownAmount(tokenAmountBN),
         });
       }
     } else if (tokenName !== 'rune') {
@@ -422,12 +423,12 @@ class PoolStake extends React.Component<Props, State> {
       console.log('here');
       if (totalAmount.isLessThan(valueAsToken.amount())) {
         this.setState({
-          runeAmount: tokenAmount(tokenValue),
-          tokenAmount: tokenAmount(totalAmount),
+          runeAmount: roundedDownAmount(tokenValue),
+          tokenAmount: roundedDownAmount(totalAmount),
         });
       } else {
         this.setState({
-          runeAmount: tokenAmount(tokenValue),
+          runeAmount: roundedDownAmount(tokenValue),
           tokenAmount: valueAsToken,
         });
       }
