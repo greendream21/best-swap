@@ -1000,6 +1000,7 @@ export enum TxDetailsStatusEnum {
     * @enum {string}
     */
 export enum TxDetailsTypeEnum {
+    DoubleSwap = 'doubleSwap',
     Swap = 'swap',
     Stake = 'stake',
     Unstake = 'unstake',
@@ -1383,11 +1384,11 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * @param {string} [address] Address of sender or recipient of any in/out tx in event
          * @param {string} [txid] ID of any in/out tx in event
          * @param {string} [asset] Any asset used in event (CHAIN.SYMBOL)
-         * @param {'swap' | 'stake' | 'unstake' | 'add' | 'refund'} [type] Requested type of events
+         * @param {string} [type] One or more comma separated unique types of event
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getTxDetails(offset: number, limit: number, address?: string, txid?: string, asset?: string, type?: 'swap' | 'stake' | 'unstake' | 'add' | 'refund', options: any = {}): RequestArgs {
+        getTxDetails(offset: number, limit: number, address?: string, txid?: string, asset?: string, type?: string, options: any = {}): RequestArgs {
             // verify required parameter 'offset' is not null or undefined
             if (offset === null || offset === undefined) {
                 throw new RequiredError('offset','Required parameter offset was null or undefined when calling getTxDetails.');
@@ -1607,11 +1608,11 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {string} [address] Address of sender or recipient of any in/out tx in event
          * @param {string} [txid] ID of any in/out tx in event
          * @param {string} [asset] Any asset used in event (CHAIN.SYMBOL)
-         * @param {'swap' | 'stake' | 'unstake' | 'add' | 'refund'} [type] Requested type of events
+         * @param {string} [type] One or more comma separated unique types of event
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getTxDetails(offset: number, limit: number, address?: string, txid?: string, asset?: string, type?: 'swap' | 'stake' | 'unstake' | 'add' | 'refund', options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001> {
+        getTxDetails(offset: number, limit: number, address?: string, txid?: string, asset?: string, type?: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001> {
             const localVarAxiosArgs = DefaultApiAxiosParamCreator(configuration).getTxDetails(offset, limit, address, txid, asset, type, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
@@ -1739,11 +1740,11 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {string} [address] Address of sender or recipient of any in/out tx in event
          * @param {string} [txid] ID of any in/out tx in event
          * @param {string} [asset] Any asset used in event (CHAIN.SYMBOL)
-         * @param {'swap' | 'stake' | 'unstake' | 'add' | 'refund'} [type] Requested type of events
+         * @param {string} [type] One or more comma separated unique types of event
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getTxDetails(offset: number, limit: number, address?: string, txid?: string, asset?: string, type?: 'swap' | 'stake' | 'unstake' | 'add' | 'refund', options?: any): AxiosPromise<InlineResponse2001> {
+        getTxDetails(offset: number, limit: number, address?: string, txid?: string, asset?: string, type?: string, options?: any): AxiosPromise<InlineResponse2001> {
             return DefaultApiFp(configuration).getTxDetails(offset, limit, address, txid, asset, type, options)(axios, basePath);
         },
     };
@@ -1890,12 +1891,12 @@ export class DefaultApi extends BaseAPI {
      * @param {string} [address] Address of sender or recipient of any in/out tx in event
      * @param {string} [txid] ID of any in/out tx in event
      * @param {string} [asset] Any asset used in event (CHAIN.SYMBOL)
-     * @param {'swap' | 'stake' | 'unstake' | 'add' | 'refund'} [type] Requested type of events
+     * @param {string} [type] One or more comma separated unique types of event
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public getTxDetails(offset: number, limit: number, address?: string, txid?: string, asset?: string, type?: 'swap' | 'stake' | 'unstake' | 'add' | 'refund', options?: any) {
+    public getTxDetails(offset: number, limit: number, address?: string, txid?: string, asset?: string, type?: string, options?: any) {
         return DefaultApiFp(this.configuration).getTxDetails(offset, limit, address, txid, asset, type, options)(this.axios, this.basePath);
     }
 
