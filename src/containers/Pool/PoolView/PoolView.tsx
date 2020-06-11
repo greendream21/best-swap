@@ -190,22 +190,6 @@ class PoolView extends React.Component<Props, State> {
         sortDirections: ['descend', 'ascend'],
       },
       {
-        key: 'transaction',
-        title: 'avg. transaction',
-        dataIndex: 'transaction',
-        sorter: (a: PoolData, b: PoolData) =>
-          a.raw.transaction.amount().minus(b.raw.transaction.amount()),
-        sortDirections: ['descend', 'ascend'],
-      },
-      {
-        key: 'liqFee',
-        title: 'avg. liq fee',
-        dataIndex: 'liqFee',
-        sorter: (a: PoolData, b: PoolData) =>
-          a.raw.liqFee.amount().minus(b.raw.liqFee.amount()),
-        sortDirections: ['descend', 'ascend'],
-      },
-      {
         key: 'roiAT',
         title: 'historical ROI',
         dataIndex: 'roiAT',
