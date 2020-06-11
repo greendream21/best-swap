@@ -14,7 +14,7 @@ import { getSwapData } from '../utils';
 import { SwapTableRowType, SwapCardType } from './types';
 import * as midgardActions from '../../../redux/midgard/actions';
 import { PriceDataIndex, PoolDataMap } from '../../../redux/midgard/types';
-import { FixmeType, Maybe, ViewType, Nothing } from '../../../types/bepswap';
+import { FixmeType, Maybe, ViewType, Nothing  } from '../../../types/bepswap';
 
 import { ContentWrapper, ActionHeader } from './SwapView.style';
 import { RootState } from '../../../redux/store';
@@ -22,6 +22,8 @@ import { getAssetFromString } from '../../../redux/midgard/utils';
 import { PoolInfoType } from '../../Pool/types';
 import { PoolDetailStatusEnum } from '../../../types/generated/midgard/api';
 import PoolFilter from '../../../components/poolFilter';
+import { User } from '../../../redux/wallet/types';
+
 
 type ComponentProps = {};
 
@@ -32,6 +34,7 @@ type ConnectedProps = {
   basePriceAsset: string;
   loading: boolean;
   getPools: typeof midgardActions.getPools;
+  user: Maybe<User>;
 };
 
 type Props = ComponentProps & ConnectedProps;
@@ -43,7 +46,10 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
     priceIndex,
     loading,
     getPools,
+    user,
   } = props;
+
+  const wallet: Maybe<string> = user ? user.wallet : Nothing;
 
   const [poolStatus, selectPoolStatus] = useState<PoolDetailStatusEnum>(
     PoolDetailStatusEnum.Enabled,
@@ -52,7 +58,7 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
   useEffect(() => {
     getPools();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [wallet]);
 
   const renderSwapTable = (
     swapViewData: SwapTableRowType[],
@@ -242,6 +248,7 @@ export default compose(
       priceIndex: state.Midgard.priceIndex,
       basePriceAsset: state.Midgard.basePriceAsset,
       loading: state.Midgard.poolLoading,
+      user: state.Wallet.user,
     }),
     {
       getPools: midgardActions.getPools,
