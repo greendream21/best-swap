@@ -49,7 +49,9 @@ export const CoinDataWrapper = styled.div`
   }
 
   .asset-price-info {
-    display: flex;
+    /* TODO: hide price information for temporarely */
+    display: none;
+    /* display: flex; */
     flex-wrap: wrap;
     justify-content: flex-end;
     text-align: right;
