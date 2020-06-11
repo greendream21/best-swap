@@ -1131,9 +1131,6 @@ class SwapSend extends React.Component<Props, State> {
 
       const slipValue = slip ? `SLIP ${formatBN(slip, 2)}%` : Nothing;
 
-      const sourceAsset = getAssetFromAssetData(assetData, swapSource);
-      const totalAmount = sourceAsset?.assetValue.amount().toNumber();
-
       return (
         <ContentWrapper className="swap-detail-wrapper">
           <SwapAssetCard>
@@ -1156,7 +1153,6 @@ class SwapSend extends React.Component<Props, State> {
                   inputProps={{ 'data-test': 'coincard-source-input' }}
                   withSearch
                   data-test="coincard-source"
-                  status={`balance: ${totalAmount}${swapSource}`}
                 />
                 <SliderSwapWrapper>
                   <div className="slider">
@@ -1187,7 +1183,6 @@ class SwapSend extends React.Component<Props, State> {
                   onChangeAsset={this.handleSelectTarget}
                   withSearch
                   data-test="coincard-target"
-                  showPrice
                 />
 
                 <div className="swaptool-container">
