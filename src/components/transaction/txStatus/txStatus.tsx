@@ -5,6 +5,7 @@ import { TxStatusWrapper, TxStatusContent, Seperator } from './txStatus.style';
 import { Coin } from '../../../types/generated/midgard';
 import { getAssetFromString } from '../../../redux/midgard/utils';
 import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
+import Label from '../../uielements/label';
 
 export type RoundValue = 'left' | 'right';
 
@@ -36,6 +37,7 @@ const TxStatus: React.FC<Props> = (props: Props): JSX.Element => {
             </TxStatusContent>
           );
         })}
+        {!data.length && <Label color="gray">PENDING</Label>}
       </TxStatusWrapper>
     );
   };
