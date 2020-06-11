@@ -31,6 +31,10 @@ export const WalletViewWrapper = styled(ViewPanel)`
       padding-bottom: 10px;
     }
   }
+
+  .asset-price-info {
+    display: none !important;
+  }
 `;
 
 export const LoaderWrapper = styled.div`
