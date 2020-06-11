@@ -4,14 +4,13 @@ import {
   TransferEvent,
   BinanceClient,
 } from '@thorchain/asgardex-binance';
-import { validBNOrZero, bn, isValidBN } from '@thorchain/asgardex-util';
+import { bn, isValidBN } from '@thorchain/asgardex-util';
 import {
   TokenAmount,
   tokenAmount,
   baseToToken,
   baseAmount,
   tokenToBase,
-  formatBaseAsTokenAmount,
 } from '@thorchain/asgardex-token';
 import { getSwapMemo } from '../../helpers/memoHelper';
 import { getTickerFormat } from '../../helpers/stringHelper';
@@ -24,12 +23,10 @@ import {
   SingleSwapCalcData,
   DoubleSwapCalcData,
 } from './calc';
-import { PriceDataIndex, PoolDataMap } from '../../redux/midgard/types';
-import { PoolDetail } from '../../types/generated/midgard';
+import { PoolDataMap } from '../../redux/midgard/types';
 import { Nothing, Maybe, SwapType, Pair, AssetPair } from '../../types/bepswap';
 import { CalcResult } from './SwapSend/types';
 import { getAssetFromString } from '../../redux/midgard/utils';
-import { SwapCardType } from './SwapView/types';
 
 export const validatePair = (
   pair: Pair,
@@ -72,67 +69,6 @@ export const getSwapType = (from: string, to: string) =>
   from.toLowerCase() === 'rune' || to.toLowerCase() === 'rune'
     ? SwapType.SINGLE_SWAP
     : SwapType.DOUBLE_SWAP;
-
-// TODO(Chris): merge duplicated functions from swap and pool utils
-// TODO(Chris): Refactor utils
-
-export const getSwapData = (
-  from: string,
-  poolInfo: Maybe<PoolDetail>,
-  priceIndex: PriceDataIndex,
-): Maybe<SwapCardType> => {
-  const asset = from;
-
-  if (poolInfo) {
-    const { ticker: target = '' } = getAssetFromString(poolInfo?.asset);
-
-    const runePrice = validBNOrZero(priceIndex?.RUNE);
-
-    const poolPrice = validBNOrZero(priceIndex[target.toUpperCase()]);
-    const poolPriceString = `${poolPrice.toFixed(3)}`;
-
-    // formula: poolInfo.runeDepth * runePrice
-    const depth = bn(poolInfo?.runeDepth ?? 0).multipliedBy(runePrice);
-    const depthAsString = `${formatBaseAsTokenAmount(baseAmount(depth))}`;
-    // formula: poolInfo.poolVolume24hr * runePrice
-    const volume = bn(poolInfo?.poolVolume24hr ?? 0).multipliedBy(runePrice);
-    const volumeAsString = `${formatBaseAsTokenAmount(baseAmount(volume))}`;
-    // formula: poolInfo.poolTxAverage * runePrice
-    const transaction = bn(poolInfo?.poolTxAverage ?? 0).multipliedBy(
-      runePrice,
-    );
-    const transactionAsString = `${formatBaseAsTokenAmount(
-      baseAmount(transaction),
-    )}`;
-    const slip = bn(poolInfo?.poolSlipAverage ?? 0).multipliedBy(100);
-    const slipAsString = slip.toString();
-    const trade = bn(poolInfo?.swappingTxCount ?? 0);
-    const tradeAsString = trade.toString();
-
-    return {
-      pool: {
-        asset,
-        target,
-      },
-      poolPrice: poolPriceString,
-      depth: depthAsString,
-      volume: volumeAsString,
-      transaction: transactionAsString,
-      slip: slipAsString,
-      trade: tradeAsString,
-      raw: {
-        depth,
-        volume,
-        transaction,
-        slip,
-        trade,
-        poolPrice,
-      },
-    };
-  } else {
-    return Nothing;
-  }
-};
 
 export const getCalcResult = (
   from: string,

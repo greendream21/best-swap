@@ -274,6 +274,10 @@ describe('pool/utils/', () => {
       const expected: PoolData = {
         asset: 'RUNE',
         target: 'FSN',
+        pool: {
+          asset: 'RUNE',
+          target: 'FSN',
+        },
         depth: baseAmount(200000),
         volume24: baseAmount(0),
         volumeAT: baseAmount(0),
@@ -283,6 +287,7 @@ describe('pool/utils/', () => {
         poolROI12: bn(50),
         totalSwaps: 0,
         totalStakers: 1,
+        poolPrice: bn(1),
         values: {
           pool: {
             asset: 'RUNE',
@@ -297,18 +302,8 @@ describe('pool/utils/', () => {
           roiAT: '50% APR',
           poolPrice: '2.000',
         },
-        raw: {
-          depth: baseAmount(200000),
-          volume24: baseAmount(0),
-          transaction: baseAmount(0),
-          liqFee: baseAmount(0),
-          roiAT: 50,
-          poolPrice: bn(1),
-        },
       };
       const result = getPoolData('RUNE', fsnPoolDetail, priceIndex);
-      const rRaw = result.raw;
-      const eRaw = expected.raw;
 
       expect(result.asset).toEqual(expected.asset);
       expect(result.target).toEqual(expected.target);
@@ -323,11 +318,11 @@ describe('pool/utils/', () => {
       expect(result.totalStakers).toEqual(expected.totalStakers);
       expect(result.values).toEqual(expected.values);
 
-      expect(rRaw.depth.amount()).toEqual(eRaw.depth.amount());
-      expect(rRaw.volume24.amount()).toEqual(eRaw.volume24.amount());
-      expect(rRaw.transaction.amount()).toEqual(eRaw.transaction.amount());
-      expect(rRaw.liqFee.amount()).toEqual(eRaw.liqFee.amount());
-      expect(rRaw.roiAT).toEqual(eRaw.roiAT);
+      expect(result.depth.amount()).toEqual(expected.depth.amount());
+      expect(result.volume24.amount()).toEqual(expected.volume24.amount());
+      expect(result.transaction.amount()).toEqual(expected.transaction.amount());
+      expect(result.liqFee.amount()).toEqual(expected.liqFee.amount());
+      expect(result.roiAT).toEqual(expected.roiAT);
       // Unsafe, just to test all props again (in case we might forget to test a new property in the future)
       expect(result.toString()).toEqual(expected.toString());
     });
@@ -335,6 +330,10 @@ describe('pool/utils/', () => {
       const expected: PoolData = {
         asset: 'RUNE',
         target: 'BNB',
+        pool: {
+          asset: 'RUNE',
+          target: 'BNB',
+        },
         depth: baseAmount(199999799),
         volume24: baseAmount(0),
         volumeAT: baseAmount(32387),
@@ -344,6 +343,7 @@ describe('pool/utils/', () => {
         poolROI12: bn(50),
         totalSwaps: 1,
         totalStakers: 1,
+        poolPrice: bn(0.09),
         values: {
           pool: {
             asset: 'RUNE',
@@ -358,18 +358,8 @@ describe('pool/utils/', () => {
           roiAT: '99927.69% APR',
           poolPrice: '0.000',
         },
-        raw: {
-          depth: baseAmount(199999799),
-          volume24: baseAmount(0),
-          transaction: baseAmount(16193),
-          liqFee: baseAmount(99800),
-          roiAT: 99927.69,
-          poolPrice: bn(0.09),
-        },
       };
       const result = getPoolData('RUNE', bnbPoolDetail, priceIndex);
-      const rRaw = result.raw;
-      const eRaw = expected.raw;
 
       expect(result.asset).toEqual(expected.asset);
       expect(result.target).toEqual(expected.target);
@@ -384,11 +374,11 @@ describe('pool/utils/', () => {
       expect(result.totalStakers).toEqual(expected.totalStakers);
       expect(result.values).toEqual(expected.values);
 
-      expect(rRaw.depth.amount()).toEqual(eRaw.depth.amount());
-      expect(rRaw.volume24.amount()).toEqual(eRaw.volume24.amount());
-      expect(rRaw.transaction.amount()).toEqual(eRaw.transaction.amount());
-      expect(rRaw.liqFee.amount()).toEqual(eRaw.liqFee.amount());
-      expect(rRaw.roiAT).toEqual(eRaw.roiAT);
+      expect(result.depth.amount()).toEqual(expected.depth.amount());
+      expect(result.volume24.amount()).toEqual(expected.volume24.amount());
+      expect(result.transaction.amount()).toEqual(expected.transaction.amount());
+      expect(result.liqFee.amount()).toEqual(expected.liqFee.amount());
+      expect(result.roiAT).toEqual(expected.roiAT);
       // Unsafe, just to test all props again (in case we might forget to test a new property in the future)
       expect(result.toString()).toEqual(expected.toString());
     });

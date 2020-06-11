@@ -1,14 +1,9 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
-import { Link, useRouteMatch } from 'react-router-dom';
-import {
-  SwapOutlined,
-  DatabaseFilled,
-  WalletOutlined,
-} from '@ant-design/icons';
+import { Link } from 'react-router-dom';
+import { WalletOutlined } from '@ant-design/icons';
 
 import * as RD from '@devexperts/remote-data-ts';
-import Tabs from '../uielements/tabs';
 import Logo from '../uielements/logo';
 
 import { StyledHeader, LogoWrapper, HeaderActionButtons } from './header.style';
@@ -21,13 +16,6 @@ import BasePriceSelector from './basePriceSelector';
 import { Maybe, Nothing } from '../../types/bepswap';
 import { RootState } from '../../redux/store';
 import { User } from '../../redux/wallet/types';
-
-const { TabPane } = Tabs;
-
-enum TAB_KEY {
-  SWAP = 'swap',
-  POOLS = 'pools',
-}
 
 type ConnectedProps = {
   user: Maybe<User>;
@@ -44,48 +32,6 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
   const { user, midgardBasePath } = props;
   const wallet: Maybe<string> = user ? user.wallet : Nothing;
 
-  const matchSwap = useRouteMatch('/swap');
-  const matchPools = useRouteMatch('/pools');
-  const matchPool = useRouteMatch('/pool');
-
-  const activeKey: Maybe<TAB_KEY> = useMemo(() => {
-    if (matchSwap) {
-      return TAB_KEY.SWAP;
-    } else if (matchPools || matchPool) {
-      return TAB_KEY.POOLS;
-    } else {
-      return Nothing;
-    }
-  }, [matchPool, matchPools, matchSwap]);
-
-  const renderHeader = useMemo(() => {
-    const swapTab = (
-      <Link to="/swap">
-        <span>
-          <SwapOutlined />
-          swap
-        </span>
-      </Link>
-    );
-    const poolsTab = (
-      <Link to="/pools">
-        <span>
-          <DatabaseFilled />
-          stake
-        </span>
-      </Link>
-    );
-
-    return (
-      <div className="header-tab-container">
-        <Tabs data-test="action-tabs" activeKey={activeKey} action>
-          <TabPane tab={swapTab} key={TAB_KEY.SWAP} />
-          <TabPane tab={poolsTab} key={TAB_KEY.POOLS} />
-        </Tabs>
-      </div>
-    );
-  }, [activeKey]);
-
   return (
     <StyledHeader>
       <LogoWrapper>
@@ -94,7 +40,6 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
         </Link>
         <HeaderSetting midgardBasePath={midgardBasePath} />
       </LogoWrapper>
-      {renderHeader}
       <HeaderActionButtons>
         {!wallet && (
           <Link to="/connect">

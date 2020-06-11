@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import { LeftOutlined } from '@ant-design/icons';
 
 import { ActionViewWrapper, BackLink } from './ActionView.style';
-import { SwapView, SwapSend } from '../Swap';
+import { SwapSend } from '../Swap';
 import { PoolView, PoolStake, PoolCreate } from '../Pool';
 import TransactionView from '../TransactionView';
 import ConnectView from '../ConnectView';
@@ -40,26 +40,10 @@ class ActionView extends Component {
     if (view === 'view') return '';
 
     const pageView = this.getView();
-    let routing = '';
-
-    if (
-      pageView === 'connect-view' ||
-      pageView === 'stats-view' ||
-      pageView === 'faqs-view'
-    ) {
-      routing = '/swap';
-    }
-    if (pageView === 'swap-detail' || pageView === 'swap-landing') {
-      routing = '/swap';
-    }
-    if (pageView.includes('pools-')) {
-      routing = '/pools';
-    }
-
     const backTitle = pageView === 'swap-landing' ? 'See all pools' : 'Back';
 
     return (
-      <Link to={routing}>
+      <Link to="/pools">
         <BackLink>
           <LeftOutlined />
           <span>{backTitle}</span>
@@ -80,7 +64,6 @@ class ActionView extends Component {
           {/* {view === 'stats-view' && <StatsView />} */}
           {view === 'faqs-view' && <FaqsView />}
           {view === 'network-view' && <NetworkView />}
-          {view === 'swap-view' && <SwapView />}
           {view === 'swap-detail' && <SwapSend info={info} />}
           {view === 'swap-landing' && <SwapSend info={info} />}
           {view === 'pools-view' && <PoolView />}

@@ -7,7 +7,6 @@ import {
   getTxResult,
   validatePair,
   getSwapType,
-  getSwapData,
   getCalcResult,
   validateSwap,
   SwapErrorMsg,
@@ -105,12 +104,6 @@ const lokPoolInfo: PoolDetail = {
 const poolData: PoolDataMap = {
   BNB: bnbPoolInfo,
   'LOK-3C0': lokPoolInfo,
-};
-
-const priceIndex = {
-  RUNE: bn(1),
-  LOK: bn(0.89),
-  BNB: bn(0),
 };
 
 const pools: string[] = [
@@ -392,66 +385,6 @@ describe('swap/utils/', () => {
 
       expect(getSwapType('BOLT', 'BNB')).toEqual(expected);
       expect(getSwapType('BNB', 'USDT')).toEqual(expected);
-    });
-  });
-
-  describe('getSwapData', () => {
-    const from = 'rune';
-
-    it('returns swap data for a `LOK-3C0` pool', () => {
-      const expected = {
-        depth: '2,357.94',
-        pool: { asset: 'rune', target: 'LOK' },
-        poolPrice: '0.890',
-        raw: {
-          depth: bn('235794400000'),
-          slip: bn(0),
-          trade: bn(0),
-          transaction: bn(0),
-          volume: bn(0),
-          poolPrice: bn(0.89),
-        },
-        slip: '0',
-        trade: '0',
-        transaction: '0.00',
-        volume: '0.00',
-      };
-
-      expect(
-        getSwapData(from, lokPoolInfo, priceIndex),
-      ).toEqual(expected);
-    });
-
-    it('returns swap data for a `BNB` pool', () => {
-      const expected = {
-        depth: '3,760.32',
-        pool: { asset: 'rune', target: 'BNB' },
-        poolPrice: '0.000',
-        raw: {
-          depth: bn('376032267901'),
-          slip: bn('3.1693333633081765'),
-          trade: bn(330),
-          transaction: bn(4979658580.63162),
-          volume: bn(0),
-          poolPrice: bn(0),
-        },
-        slip: '3.1693333633081765',
-        trade: '330',
-        transaction: '49.80',
-        volume: '0.00',
-      };
-
-      const result = getSwapData(from, bnbPoolInfo, priceIndex);
-      expect(result?.depth).toEqual(expected.depth);
-      expect(result).toEqual(expected);
-    });
-
-    it('returns null', () => {
-      const expected = null;
-
-      expect(getSwapData(from, Nothing, priceIndex)).toEqual(
-        expected,
-      );
     });
   });
 
