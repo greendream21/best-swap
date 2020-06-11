@@ -153,28 +153,12 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
         sortDirections: ['descend', 'ascend'],
       },
       {
-        key: 'transaction',
-        title: 'avg. transaction',
-        dataIndex: 'transaction',
-        sorter: (a: SwapTableRowType, b: SwapTableRowType) =>
-          a.raw.transaction.minus(b.raw.transaction),
-        sortDirections: ['descend', 'ascend'],
-      },
-      {
         key: 'slip',
         title: 'avg. slip',
         dataIndex: 'slip',
         render: (slip: string) => <Trend amount={bn(slip)} />,
         sorter: (a: SwapTableRowType, b: SwapTableRowType) =>
           a.raw.slip.minus(b.raw.slip),
-        sortDirections: ['descend', 'ascend'],
-      },
-      {
-        key: 'trade',
-        title: 'no. of trades',
-        dataIndex: 'trade',
-        sorter: (a: SwapTableRowType, b: SwapTableRowType) =>
-          a.raw.trade.minus(b.raw.trade),
         sortDirections: ['descend', 'ascend'],
       },
       btnCol,
