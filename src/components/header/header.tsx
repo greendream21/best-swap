@@ -1,6 +1,6 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { connect } from 'react-redux';
-import { Link, useRouteMatch } from 'react-router-dom';
+import { Link, useHistory, useRouteMatch } from 'react-router-dom';
 import {
   SwapOutlined,
   DatabaseFilled,
@@ -43,6 +43,7 @@ type Props = ConnectedProps & ComponentProps;
 const Header: React.FC<Props> = (props: Props): JSX.Element => {
   const { user, midgardBasePath } = props;
   const wallet: Maybe<string> = user ? user.wallet : Nothing;
+  const history = useHistory();
 
   const matchSwap = useRouteMatch('/swap');
   const matchPools = useRouteMatch('/pools');
@@ -58,33 +59,45 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
     }
   }, [matchPool, matchPools, matchSwap]);
 
-  const renderHeader = useMemo(() => {
+  const handleChangeTab = useCallback(
+    (key: TAB_KEY) => {
+      if (key === TAB_KEY.SWAP) {
+        history.push('/swap');
+      } else if (key === TAB_KEY.POOLS) {
+        history.push('/pools');
+      }
+    },
+    [history],
+  );
+
+  const renderHeader = () => {
     const swapTab = (
-      <Link to="/swap">
-        <span>
-          <SwapOutlined />
-          swap
-        </span>
-      </Link>
+      <span>
+        <SwapOutlined />
+        swap
+      </span>
     );
     const poolsTab = (
-      <Link to="/pools">
-        <span>
-          <DatabaseFilled />
-          stake
-        </span>
-      </Link>
+      <span>
+        <DatabaseFilled />
+        stake
+      </span>
     );
 
     return (
       <div className="header-tab-container">
-        <Tabs data-test="action-tabs" activeKey={activeKey} action>
+        <Tabs
+          data-test="action-tabs"
+          activeKey={activeKey}
+          action
+          onChange={handleChangeTab}
+        >
           <TabPane tab={swapTab} key={TAB_KEY.SWAP} />
           <TabPane tab={poolsTab} key={TAB_KEY.POOLS} />
         </Tabs>
       </div>
     );
-  }, [activeKey]);
+  };
 
   return (
     <StyledHeader>
