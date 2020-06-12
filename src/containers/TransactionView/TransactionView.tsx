@@ -5,6 +5,7 @@ import * as RD from '@devexperts/remote-data-ts';
 import { FormattedDate, FormattedTime } from 'react-intl';
 
 import Table from '../../components/uielements/table';
+import Label from '../../components/uielements/label';
 import FilterDropdown from '../../components/filterDropdown';
 import TxLabel from '../../components/transaction/txLabel';
 import TxInfo from '../../components/transaction/txInfo';
@@ -229,8 +230,8 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
         },
         (error: Error) => (
           <ContentWrapper className="transaction-view-wrapper center-align">
-            <h2>Loading of transaction history data failed.</h2>
-            {(error?.message ?? false) && <p>{error.message}</p>}
+            <Label size="big">Loading of transaction history data failed.</Label>
+            {!!error?.message && <Label size="small">{error.message}</Label>}
           </ContentWrapper>
         ),
         (data: InlineResponse2001): JSX.Element => {
