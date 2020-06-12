@@ -3,7 +3,7 @@ import * as H from 'history';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter, Link, useHistory } from 'react-router-dom';
-import { notification } from 'antd';
+import { notification, Row, Col } from 'antd';
 import {
   SyncOutlined,
   SwapOutlined,
@@ -12,7 +12,7 @@ import {
 
 import Label from '../../../components/uielements/label';
 import AddIcon from '../../../components/uielements/addIcon';
-import CoinPair from '../../../components/uielements/coins/coinPair';
+import CoinIcon from '../../../components/uielements/coins/coinIcon';
 import Table from '../../../components/uielements/table';
 import Button from '../../../components/uielements/button';
 import PoolFilter from '../../../components/poolFilter';
@@ -157,8 +157,12 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         key: 'pool',
         title: 'pool',
         dataIndex: 'pool',
-        render: ({ asset, target }: { asset: string; target: string }) => (
-          <CoinPair from={asset} to={target} />
+        render: ({ target }: { target: string }) => (
+          <Row>
+            <Col xs={24} style={{ display:'flex', justifyContent:'center' }}>
+              <CoinIcon type={target}  />
+            </Col>
+          </Row>
         ),
       },
       buttonCol,
@@ -168,8 +172,12 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         key: 'pool',
         title: 'pool',
         dataIndex: 'pool',
-        render: ({ asset, target }: { asset: string; target: string }) => (
-          <CoinPair from={asset} to={target} />
+        render: ({ target }: { target: string }) =>  (
+          <Row>
+            <Col xs={24} style={{ display:'flex', justifyContent:'center' }}>
+              <CoinIcon type={target}  />
+            </Col>
+          </Row>
         ),
       },
       {
