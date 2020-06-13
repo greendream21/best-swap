@@ -1,8 +1,10 @@
-import React from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+
+import React, { useState, useEffect, useCallback } from 'react';
 import * as H from 'history';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
+import { withRouter, useHistory } from 'react-router-dom';
 import { Row, Col, notification, Popover } from 'antd';
 import {
   InboxOutlined,
@@ -106,15 +108,11 @@ import {
   getAssetFromAssetData,
   bnbBaseAmount,
 } from '../../../helpers/walletHelper';
+import { ShareDetailTabKeys, WithdrawData } from './types';
 
 const { TabPane } = Tabs;
 
-enum ShareDetailTabKeys {
-  ADD = 'add',
-  WITHDRAW = 'withdraw',
-}
-
-type ComponentProps = {
+export type ComponentProps = {
   symbol: string;
   info: FixmeType; // PropTypes.object,
   history: H.History;
@@ -155,127 +153,115 @@ type ConnectedProps = {
 
 type Props = ComponentProps & ConnectedProps;
 
-type State = {
-  dragReset: boolean;
-  openWalletAlert: boolean;
-  openPrivateModal: boolean;
-  password: string;
-  invalidPassword: boolean;
-  validatingPassword: boolean;
-  runeAmount: TokenAmount;
-  tokenAmount: TokenAmount;
-  runePercent: number;
-  txResult: boolean;
-  widthdrawPercentage: number;
-  selectRatio: boolean;
-  selectedShareDetailTab: ShareDetailTabKeys;
-};
+const PoolStake: React.FC<Props> = (props: Props) => {
+  const {
+    transferFees,
+    user,
+    symbol,
+    assets,
+    assetData,
+    poolData,
+    poolAddress,
+    poolLoading,
+    stakerPoolData,
+    stakerPoolDataLoading,
+    stakerPoolDataError,
+    priceIndex,
+    basePriceAsset,
+    thorchainData,
+    txStatus,
+    wsTransferEvent,
+    refreshStakes,
+    getPoolAddress,
+    getPools,
+    getBinanceFees,
+    getStakerPoolData,
+    countTxTimerValue,
+    resetTxStatus,
+    setTxHash,
+    setTxTimerModal,
+    setTxTimerStatus,
+    setTxTimerValue,
+    unSubscribeBinanceTransfers,
+    subscribeBinanceTransfers,
+  } = props;
 
-type StakeData = {
-  fromAddr: string;
-  toAddr: string;
-  toToken: string;
-  runeAmount: BigNumber;
-  tokenAmount: BigNumber;
-};
+  const history = useHistory();
 
-type WithdrawData = {
-  runeValue: BaseAmount;
-  tokenValue: BaseAmount;
-  tokenPrice: BigNumber;
-  percentage: number;
-};
+  const [selectedShareDetailTab, setSelectedShareDetailTab] = useState<
+    ShareDetailTabKeys
+  >(ShareDetailTabKeys.ADD);
 
-class PoolStake extends React.Component<Props, State> {
-  hash: Maybe<string> = Nothing;
+  const [password, setPassword] = useState<string>('');
+  const [invalidPassword, setInvalidPassword] = useState<boolean>(false);
+  const [validatingPassword, setValidatingPassword] = useState(false);
 
-  type: Maybe<TxTypes> = Nothing;
+  const [widthdrawPercentage, setWithdrawPercentage] = useState(50);
+  const [selectRatio, setSelectRatio] = useState<boolean>(true);
+  const [runeAmount, setRuneAmount] = useState<TokenAmount>(tokenAmount(0));
+  const [targetAmount, setTargetAmount] = useState<TokenAmount>(tokenAmount(0));
+  const [runePercent, setRunePercent] = useState<number>(0);
 
-  stakeData: Maybe<StakeData> = Nothing;
+  const [dragReset, setDragReset] = useState<boolean>(true);
+  const [txResult, setTxResult] = useState<boolean>(false);
 
-  withdrawData: Maybe<WithdrawData> = Nothing;
+  const [openWalletAlert, setOpenWalletAlert] = useState(false);
+  const [openPrivateModal, setOpenPrivateModal] = useState(false);
 
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      dragReset: true,
-      openWalletAlert: false,
-      openPrivateModal: false,
-      password: emptyString,
-      invalidPassword: false,
-      validatingPassword: false,
-      runeAmount: tokenAmount(0),
-      tokenAmount: tokenAmount(0),
-      runePercent: 0,
-      txResult: false,
-      widthdrawPercentage: 50,
-      selectRatio: true,
-      selectedShareDetailTab: ShareDetailTabKeys.ADD,
-    };
-  }
+  const [txType, setTxType] = useState<TxTypes>();
 
-  componentDidMount() {
-    const {
-      getPoolAddress,
-      getPools,
-      getBinanceFees,
-      transferFees,
-      user,
-      subscribeBinanceTransfers,
-    } = this.props;
+  let withdrawData: Maybe<WithdrawData> = Nothing;
 
+  const getStakerInfo = useCallback(() => {
+    if (user) {
+      getStakerPoolData({ asset: symbol, address: user.wallet });
+    }
+  }, [getStakerPoolData, symbol, user]);
+
+  useEffect(() => {
     getPoolAddress();
     getPools();
+    getStakerInfo();
+
     const net = getNet();
     if (RD.isInitial(transferFees)) {
       getBinanceFees(net);
     }
-    this.getStakerInfo();
+
     const wallet = user?.wallet;
     if (wallet) {
       subscribeBinanceTransfers({ address: wallet, net });
     }
-  }
 
-  componentDidUpdate(prevProps: Props) {
-    const {
-      wsTransferEvent,
-      user,
-      txStatus: { type, hash },
-      refreshStakes,
-      symbol,
-      subscribeBinanceTransfers,
-      unSubscribeBinanceTransfers,
-    } = this.props;
+    return () => {
+      resetTxStatus();
+      unSubscribeBinanceTransfers();
+    };
 
-    const { txResult } = this.state;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-    const prevWallet = prevProps?.user?.wallet;
+  // stakerPoolData needs to be updated
+  useEffect(() => {
+    getStakerInfo();
+  }, [symbol, getStakerInfo]);
+
+  // user wallet change
+  useEffect(() => {
     const wallet = user?.wallet;
-    // subscribe if wallet has been added for first time
-    if (!prevWallet && wallet) {
-      subscribeBinanceTransfers({ address: wallet, net: getNet() });
-    }
     // subscribe again if another wallet has been added
-    if (prevWallet && wallet && prevWallet !== wallet) {
+    if (wallet) {
       unSubscribeBinanceTransfers();
       subscribeBinanceTransfers({ address: wallet, net: getNet() });
     }
+  }, [user?.wallet, subscribeBinanceTransfers, unSubscribeBinanceTransfers]);
 
-    if (prevProps.symbol !== symbol) {
-      // stakerPoolData needs to be updated
-      this.getStakerInfo();
-    }
+  // wsTransferEvent is updated
+  useEffect(() => {
+    const { type, hash } = txStatus;
 
     const currentWsTransferEvent = RD.toNullable(wsTransferEvent);
-    const prevWsTransferEvent = RD.toNullable(prevProps?.wsTransferEvent);
-
-    if (
-      currentWsTransferEvent &&
-      currentWsTransferEvent !== prevWsTransferEvent &&
-      hash !== undefined &&
-      !txResult
-    ) {
+    if (currentWsTransferEvent && hash !== undefined && !txResult) {
       if (wallet) {
         // TODO(Veado) `getHashFromTransfer` needs to be fixed
         // see https://gitlab.com/thorchain/bepswap/asgardex-common/-/issues/6
@@ -300,50 +286,45 @@ class PoolStake extends React.Component<Props, State> {
           } as WithdrawResultParams);
 
           if (txResult) {
-            this.setState({
-              txResult: true,
-            });
+            setTxResult(true);
             // refresh stakes after update
             refreshStakes(wallet);
           }
         }
       }
     }
-  }
+  }, [RD.toNullable(wsTransferEvent)]);
 
-  componentWillUnmount() {
-    const { resetTxStatus, unSubscribeBinanceTransfers } = this.props;
-    resetTxStatus();
-    unSubscribeBinanceTransfers();
-  }
-
-  getStakerInfo = () => {
-    const { getStakerPoolData, symbol, user } = this.props;
-    if (user) {
-      getStakerPoolData({ asset: symbol, address: user.wallet });
-    }
-  };
-
-  isLoading = () => {
-    const { poolLoading, stakerPoolDataLoading } = this.props;
-
+  const isLoading = useCallback(() => {
     return poolLoading && stakerPoolDataLoading;
-  };
+  }, [poolLoading, stakerPoolDataLoading]);
 
-  handleChangePassword = (password: string) => {
-    this.setState({
-      password,
-      invalidPassword: false,
-    });
+  const handleChangePassword = useCallback(
+    (password: string) => {
+      setPassword(password);
+      setInvalidPassword(false);
+    },
+    [setPassword, setInvalidPassword],
+  );
+
+  const getData = (): CalcResult => {
+    const runePrice = validBNOrZero(priceIndex?.RUNE);
+    const calcResult = getCalcResult(
+      symbol,
+      poolData,
+      poolAddress,
+      runeAmount,
+      runePrice,
+      targetAmount,
+    );
+
+    return calcResult;
   };
 
   /**
    * Handler for setting token amounts in input fields
    */
-  handleChangeTokenAmount = (tokenName: string) => (value: BigNumber) => {
-    const { assetData, symbol } = this.props;
-    const { selectRatio } = this.state;
-
+  const handleChangeTokenAmount = (tokenName: string) => (value: BigNumber) => {
     const sourceAsset = getAssetFromAssetData(
       assetData,
       tokenName.toLowerCase(),
@@ -366,18 +347,14 @@ class PoolStake extends React.Component<Props, State> {
 
     if (!selectRatio) {
       if (tokenName === 'rune') {
-        this.setState({
-          runeAmount: valueAsToken,
-        });
+        setRuneAmount(valueAsToken);
       } else if (tokenName !== 'rune') {
-        this.setState({
-          tokenAmount: valueAsToken,
-        });
+        setTargetAmount(valueAsToken);
       }
       return;
     }
     if (tokenName === 'rune') {
-      const data = this.getData();
+      const data = getData();
       const ratio = data?.ratio ?? 1;
       // formula: newValue * ratio
       const tokenValue = valueAsToken.amount().multipliedBy(ratio);
@@ -386,38 +363,28 @@ class PoolStake extends React.Component<Props, State> {
         : totalTokenAmount;
 
       if (totalSourceAmount.isLessThan(valueAsToken.amount())) {
-        this.setState({
-          runeAmount: tokenAmount(totalSourceAmount),
-          tokenAmount: tokenAmount(tokenAmountBN),
-          runePercent: 100,
-        });
+        setRuneAmount(tokenAmount(totalSourceAmount));
+        setTargetAmount(tokenAmount(tokenAmountBN));
+        setRunePercent(100);
       } else {
-        this.setState({
-          runeAmount: valueAsToken,
-          tokenAmount: tokenAmount(tokenAmountBN),
-        });
+        setRuneAmount(valueAsToken);
+        setTargetAmount(tokenAmount(tokenAmountBN));
       }
     } else if (tokenName !== 'rune') {
-      const data = this.getData();
+      const data = getData();
       const ratio = data?.ratio ?? 1;
       // formula: newValue / ratio
       const tokenValue = valueAsToken.amount().dividedBy(ratio);
 
       if (totalSourceAmount.isLessThan(valueAsToken.amount())) {
-        this.setState({
-          runeAmount: tokenAmount(tokenValue),
-          tokenAmount: tokenAmount(totalSourceAmount),
-        });
+        setRuneAmount(tokenAmount(tokenValue));
+        setTargetAmount(tokenAmount(totalSourceAmount));
       } else {
-        this.setState({
-          runeAmount: tokenAmount(tokenValue),
-          tokenAmount: valueAsToken,
-        });
+        setRuneAmount(tokenAmount(tokenValue));
+        setTargetAmount(valueAsToken);
       }
     } else {
-      this.setState({
-        tokenAmount: valueAsToken,
-      });
+      setTargetAmount(valueAsToken);
     }
   };
 
@@ -427,9 +394,7 @@ class PoolStake extends React.Component<Props, State> {
    * Note: Don't consider any fees in this function, since it sets values for tokenAmount,
    * which triggers `handleChangeTokenAmount` where all calculations for fees are happen
    */
-  handleChangePercent = (tokenName: string) => (amount: number) => {
-    const { assetData, symbol } = this.props;
-
+  const handleChangePercent = (tokenName: string) => (amount: number) => {
     const selectedToken = getAssetFromAssetData(assetData, tokenName);
     const targetToken = getAssetFromAssetData(assetData, symbol);
     if (!selectedToken || !targetToken) {
@@ -441,7 +406,7 @@ class PoolStake extends React.Component<Props, State> {
     const value = totalAmount.multipliedBy(amount).div(100);
 
     if (tokenName === 'rune') {
-      const data = this.getData();
+      const data = getData();
       const ratio = data?.ratio ?? 1;
       // formula: value * ratio);
       const tokenValue = value.multipliedBy(ratio);
@@ -449,66 +414,193 @@ class PoolStake extends React.Component<Props, State> {
         ? tokenValue
         : totalTokenAmount;
 
-      this.setState({
-        runeAmount: tokenAmount(value),
-        tokenAmount: tokenAmount(tokenAmountBN),
-        runePercent: amount,
-      });
+      setRuneAmount(tokenAmount(value));
+      setTargetAmount(tokenAmount(tokenAmountBN));
+      setRunePercent(amount);
     } else {
-      this.setState({
-        tokenAmount: tokenAmount(value),
-      });
+      setTargetAmount(tokenAmount(value));
     }
   };
 
-  handleDrag = () => {
-    this.setState({
-      dragReset: false,
-    });
+  const handleEndTxTimer = useCallback(() => {
+    setTxTimerStatus(false);
+    setDragReset(true);
+
+    // get staker info again after finished
+    getStakerInfo();
+  }, [setTxTimerModal, setDragReset, getStakerInfo, setTxTimerStatus]);
+
+  const handleOpenPrivateModal = useCallback(() => {
+    setOpenPrivateModal(true);
+    setPassword(emptyString);
+    setInvalidPassword(false);
+  }, [setOpenPrivateModal, setPassword, setInvalidPassword]);
+
+  const handleCancelPrivateModal = useCallback(() => {
+    setOpenPrivateModal(false);
+    setDragReset(true);
+  }, [setOpenPrivateModal, setDragReset]);
+
+  const handleCloseModal = useCallback(() => {
+    setTxTimerModal(false);
+    handleEndTxTimer();
+  }, [setTxTimerModal, handleEndTxTimer]);
+
+  const handleDrag = useCallback(() => {
+    setDragReset(false);
+  }, [setDragReset]);
+
+  const handleStartTimer = useCallback(
+    (type: TxTypes) => {
+      resetTxStatus({
+        type,
+        modal: true,
+        status: true,
+        startTime: Date.now(),
+      });
+    },
+    [resetTxStatus],
+  );
+
+  const handleSelectTraget = useCallback(
+    (asset: string) => {
+      const URL = `/pool/${asset}`;
+      setRuneAmount(tokenAmount(0));
+      setTargetAmount(tokenAmount(0));
+      setRunePercent(0);
+      history.push(URL);
+    },
+    [history],
+  );
+
+  /**
+   * BNB fee in BaseAmount
+   * Returns Nothing if fee is not available
+   */
+  const bnbFeeAmount = (): Maybe<BaseAmount> => {
+    const fees = RD.toNullable(transferFees);
+    // To withdraw we will always have a `single` transaction fee
+    if (selectedShareDetailTab === ShareDetailTabKeys.WITHDRAW) {
+      return fees?.single ?? Nothing;
+    }
+
+    // For staking, check whether it's a `single` or `multi` fee depending on entered values
+    return runeAmount.amount().isGreaterThan(0) &&
+      targetAmount.amount().isGreaterThan(0)
+      ? fees?.multi ?? Nothing
+      : fees?.single ?? Nothing;
   };
 
-  getData = (): CalcResult => {
-    const { symbol, poolData, priceIndex, poolAddress } = this.props;
-    const { runeAmount, tokenAmount } = this.state;
-    const runePrice = validBNOrZero(priceIndex?.RUNE);
+  /**
+   * Check whether to substract BNB fee from entered BNB amount
+   */
+  const subtractBnbFee = (): boolean => {
+    // Ignore withdrawing, since we deal with percent values only and can't substract fees from these values
+    if (
+      symbol.toUpperCase() === 'BNB' &&
+      selectedShareDetailTab !== ShareDetailTabKeys.WITHDRAW
+    ) {
+      // (1) BNB amount in wallet
+      const bnbInWallet = bnbBaseAmount(assetData) || baseAmount(0);
+      // (2) BNB amount entered in token input
+      const bnbEntered = tokenToBase(targetAmount);
+      // difference (1) - (2) as BigNumber
+      const bnbDiff = bnbInWallet.amount().minus(bnbEntered.amount());
+      const fee = bnbFeeAmount();
+      return (
+        !!fee && bnbDiff.isGreaterThan(0) && bnbDiff.isLessThan(fee.amount())
+      );
+    }
+    return false;
+  };
 
-    const calcResult = getCalcResult(
-      symbol,
-      poolData,
-      poolAddress,
-      runeAmount,
-      runePrice,
-      tokenAmount,
+  /**
+   * Check to consider BNB fee
+   */
+  const considerBnbFee = (): boolean => {
+    // For withdrawing, we always consider a bnb fee
+    if (selectedShareDetailTab === ShareDetailTabKeys.WITHDRAW) {
+      return symbol.toUpperCase() === 'BNB';
+    }
+
+    // For staking, an amount of BNB needs to be entered as well
+    return (
+      symbol.toUpperCase() === 'BNB' && targetAmount.amount().isGreaterThan(0)
     );
-
-    return calcResult;
   };
 
-  handleConfirmStake = async () => {
-    const { user, setTxHash } = this.props;
-    const { runeAmount, tokenAmount: tokenAmountToStake } = this.state;
+  /**
+   * Checks whether fee is covered by amounts of BNB in users wallet
+   */
+  const bnbFeeIsNotCovered = (): boolean => {
+    const bnbAmount = bnbBaseAmount(assetData);
+    const fee = bnbFeeAmount();
+    return !!bnbAmount && !!fee && bnbAmount.amount().isLessThan(fee.amount());
+  };
 
+  /**
+   * Renders fee
+   */
+  const renderFee = () => {
+    const bnbAmount = bnbBaseAmount(assetData);
+
+    // Helper to format BNB amounts properly (we can't use `formatTokenAmountCurrency`)
+    // TODO (@Veado) Update `formatTokenAmountCurrency` of `asgardex-token` (now in `asgardex-util`) to accept decimals
+    const formatBnbAmount = (value: BaseAmount) => {
+      const token = baseToToken(value);
+      return `${token.amount().toString()} BNB`;
+    };
+
+    const txtLoading = <Text>Fee: ...</Text>;
+    return (
+      <FeeParagraph style={{ paddingTop: '10px' }}>
+        {RD.fold(
+          () => txtLoading,
+          () => txtLoading,
+          (_: Error) => <Text>Error: Fee could not be loaded</Text>,
+          (_: TransferFees) => {
+            const fee = bnbFeeAmount();
+            return (
+              <>
+                {fee && <Text>Fee: {formatBnbAmount(fee)}</Text>}
+                {subtractBnbFee() && (
+                  <Text> (It will be substructed from BNB amount)</Text>
+                )}
+                {bnbAmount && bnbFeeIsNotCovered() && (
+                  <>
+                    <br />
+                    <Text type="danger" style={{ paddingTop: '10px' }}>
+                      You have {formatBnbAmount(bnbAmount)} in your wallet,
+                      that&lsquo;s not enought to cover the fee for this
+                      transaction.
+                    </Text>
+                  </>
+                )}
+              </>
+            );
+          },
+        )(transferFees)}
+      </FeeParagraph>
+    );
+  };
+
+  const handleConfirmStake = async () => {
     if (user) {
       const { wallet } = user;
-      let newTokenAmountToStake = tokenAmountToStake;
+      let newTokenAmountToStake = targetAmount;
       // fee transformation: BaseAmount -> TokenAmount -> BigNumber
-      const fee = this.bnbFeeAmount() || baseAmount(0);
+      const fee = bnbFeeAmount() || baseAmount(0);
       const feeAsTokenAmount = baseToToken(fee).amount();
       // Special case: Substract fee from BNB amount to cover fees
-      if (this.subtractBnbFee()) {
-        const amountToStake = tokenAmountToStake
-          .amount()
-          .minus(feeAsTokenAmount);
+      if (subtractBnbFee()) {
+        const amountToStake = targetAmount.amount().minus(feeAsTokenAmount);
         newTokenAmountToStake = tokenAmount(amountToStake);
       }
 
-      this.handleStartTimer(TxTypes.STAKE);
+      handleStartTimer(TxTypes.STAKE);
+      setTxResult(false);
 
-      this.setState({
-        txResult: false,
-      });
-
-      const data = this.getData();
+      const data = getData();
       const bncClient = await binanceClient(BINANCE_NET);
 
       try {
@@ -531,10 +623,8 @@ class PoolStake extends React.Component<Props, State> {
             'Stake information is not valid.'}`,
           getContainer: getAppContainer,
         });
-        this.handleCloseModal();
-        this.setState({
-          dragReset: true,
-        });
+        handleCloseModal();
+        setDragReset(true);
         console.error(error); // eslint-disable-line no-console
       }
     }
@@ -543,194 +633,66 @@ class PoolStake extends React.Component<Props, State> {
   /**
    * Handler to run first validation of data before staking
    */
-  handleStake = () => {
-    const { user } = this.props;
-    const { runeAmount, tokenAmount } = this.state;
+  const handleStake = () => {
     const wallet = user ? user.wallet : null;
     const keystore = user ? user.keystore : null;
 
     // Validata existing wallet
     if (!wallet) {
-      this.setState({
-        openWalletAlert: true,
-      });
+      setOpenWalletAlert(true);
       return;
     }
 
     // Validate amounts to stake
     if (
       runeAmount.amount().isLessThanOrEqualTo(0) &&
-      tokenAmount.amount().isLessThanOrEqualTo(0)
+      targetAmount.amount().isLessThanOrEqualTo(0)
     ) {
       notification.error({
         message: 'Stake Invalid',
         description: 'You need to enter an amount to stake.',
         getContainer: getAppContainer,
       });
-      this.handleCloseModal();
-      this.setState({
-        dragReset: true,
-      });
+      handleCloseModal();
+      setDragReset(true);
       return;
     }
 
     // Validate BNB amount to swap to consider fees
     // to substract fee from amount before sending it
-    if (this.considerBnbFee()) {
-      const fee = this.bnbFeeAmount() || baseAmount(0);
+    if (considerBnbFee()) {
+      const fee = bnbFeeAmount() || baseAmount(0);
       // fee transformation: BaseAmount -> TokenAmount -> BigNumber
       const feeAsTokenAmount = baseToToken(fee).amount();
-      if (tokenAmount.amount().isLessThanOrEqualTo(feeAsTokenAmount)) {
+      if (targetAmount.amount().isLessThanOrEqualTo(feeAsTokenAmount)) {
         notification.error({
           message: 'Invalid BNB value',
           description: 'Not enough BNB to cover the fee for this transaction.',
           getContainer: getAppContainer,
         });
-        this.setState({
-          dragReset: true,
-        });
+        setDragReset(true);
         return;
       }
     }
 
     // Validate keystore
     if (keystore) {
-      this.type = TxTypes.STAKE;
-      this.handleOpenPrivateModal();
+      setTxType(TxTypes.STAKE);
+      handleOpenPrivateModal();
       return;
     }
 
-    this.handleConfirmStake();
+    handleConfirmStake();
   };
 
-  handleConnectWallet = () => {
-    this.setState({
-      openWalletAlert: false,
-    });
-
-    this.props.history.push('/connect');
-  };
-
-  hideWalletAlert = () => {
-    this.setState({
-      openWalletAlert: false,
-      dragReset: true,
-    });
-  };
-
-  handleStartTimer = (type: TxTypes) => {
-    const { resetTxStatus } = this.props;
-    resetTxStatus({
-      type,
-      modal: true,
-      status: true,
-      startTime: Date.now(),
-    });
-  };
-
-  handleConfirmPassword = async () => {
-    const { user } = this.props;
-    const { password } = this.state;
-
-    if (user) {
-      const { keystore, wallet } = user;
-
-      this.setState({ validatingPassword: true });
-      // Short delay to render latest state changes of `validatingPassword`
-      await delay(2000);
-
-      try {
-        const privateKey = crypto.getPrivateKeyFromKeyStore(keystore, password);
-        const bncClient = await binanceClient(BINANCE_NET);
-        await bncClient.setPrivateKey(privateKey);
-        const address = crypto.getAddressFromPrivateKey(
-          privateKey,
-          getPrefix(BINANCE_NET),
-        );
-        if (wallet && wallet === address) {
-          if (this.type === TxTypes.STAKE) {
-            this.handleConfirmStake();
-          } else if (this.type === TxTypes.WITHDRAW) {
-            this.handleConfirmWithdraw();
-          }
-        }
-
-        this.setState({
-          validatingPassword: false,
-          openPrivateModal: false,
-        });
-      } catch (error) {
-        this.setState({
-          validatingPassword: false,
-          invalidPassword: true,
-        });
-        console.error(error); // eslint-disable-line no-console
-      }
-    }
-  };
-
-  handleOpenPrivateModal = () => {
-    this.setState({
-      openPrivateModal: true,
-      password: emptyString,
-      invalidPassword: false,
-    });
-  };
-
-  handleCancelPrivateModal = () => {
-    this.setState({
-      openPrivateModal: false,
-      dragReset: true,
-    });
-  };
-
-  handleCloseModal = () => {
-    const { setTxTimerModal } = this.props;
-
-    setTxTimerModal(false);
-
-    this.handleEndTxTimer();
-  };
-
-  handleSelectTraget = (asset: string) => {
-    const URL = `/pool/${asset}`;
-
-    this.props.history.push(URL);
-  };
-
-  handleWithdraw = () => {
-    const { user } = this.props;
-    const wallet = user ? user.wallet : null;
-    const keystore = user ? user.keystore : null;
-
-    if (!wallet) {
-      this.setState({
-        openWalletAlert: true,
-      });
-      return;
-    }
-
-    if (keystore) {
-      this.type = TxTypes.WITHDRAW;
-      this.handleOpenPrivateModal();
-    } else if (wallet) {
-      this.handleConfirmWithdraw();
-    }
-  };
-
-  handleConfirmWithdraw = async () => {
-    const { symbol, poolAddress, user, setTxHash } = this.props;
-    const { widthdrawPercentage } = this.state;
+  const handleConfirmWithdraw = async () => {
     const withdrawRate = (widthdrawPercentage || 50) / 100;
 
     if (user) {
       const { wallet } = user;
 
-      this.handleStartTimer(TxTypes.WITHDRAW);
-
-      this.setState({
-        txResult: false,
-      });
+      handleStartTimer(TxTypes.WITHDRAW);
+      setTxResult(false);
 
       const bncClient = await binanceClient(BINANCE_NET);
 
@@ -754,21 +716,77 @@ class PoolStake extends React.Component<Props, State> {
           description: 'Withdraw information is not valid.',
           getContainer: getAppContainer,
         });
-        this.setState({
-          dragReset: true,
-        });
+        setDragReset(true);
         console.error(error); // eslint-disable-line no-console
       }
     }
   };
 
-  handleChangeTxValue = () => {
-    const {
-      countTxTimerValue,
-      setTxTimerValue,
-      txStatus: { value, type, hash },
-    } = this.props;
-    const { txResult } = this.state;
+  const handleWithdraw = () => {
+    const wallet = user ? user.wallet : null;
+    const keystore = user ? user.keystore : null;
+
+    if (!wallet) {
+      setOpenWalletAlert(true);
+      return;
+    }
+
+    if (keystore) {
+      setTxType(TxTypes.WITHDRAW);
+      handleOpenPrivateModal();
+    } else if (wallet) {
+      handleConfirmWithdraw();
+    }
+  };
+
+  const handleConfirmPassword = async () => {
+    if (user) {
+      const { keystore, wallet } = user;
+
+      setValidatingPassword(true);
+      // Short delay to render latest state changes of `validatingPassword`
+      await delay(2000);
+
+      try {
+        const privateKey = crypto.getPrivateKeyFromKeyStore(keystore, password);
+        const bncClient = await binanceClient(BINANCE_NET);
+        await bncClient.setPrivateKey(privateKey);
+        const address = crypto.getAddressFromPrivateKey(
+          privateKey,
+          getPrefix(BINANCE_NET),
+        );
+        console.log('confirm', txType);
+        if (wallet && wallet === address) {
+          if (txType === TxTypes.STAKE) {
+            handleConfirmStake();
+          } else if (txType === TxTypes.WITHDRAW) {
+            handleConfirmWithdraw();
+          }
+        }
+
+        setValidatingPassword(false);
+        setOpenPrivateModal(false);
+      } catch (error) {
+        setValidatingPassword(false);
+        setInvalidPassword(true);
+        console.error(error); // eslint-disable-line no-console
+      }
+    }
+  };
+
+  const handleConnectWallet = useCallback(() => {
+    setOpenWalletAlert(false);
+
+    history.push('/connect');
+  }, [setOpenWalletAlert, history]);
+
+  const hideWalletAlert = useCallback(() => {
+    setOpenWalletAlert(false);
+    setDragReset(true);
+  }, [setOpenWalletAlert, setDragReset]);
+
+  const handleChangeTxValue = () => {
+    const { value, type, hash } = txStatus;
 
     // Count handling depends on `type`
     if (type === TxTypes.WITHDRAW) {
@@ -810,36 +828,31 @@ class PoolStake extends React.Component<Props, State> {
     }
   };
 
-  handleEndTxTimer = () => {
-    const { setTxTimerStatus } = this.props;
-    setTxTimerStatus(false);
-    this.setState({
-      dragReset: true,
-    });
-    // get staker info again after finished
-    this.getStakerInfo();
-  };
-
-  getPopupContainer = () => {
+  const getPopupContainer = () => {
     return document.getElementsByClassName(
       'stake-ratio-select',
     )[0] as HTMLElement;
   };
 
-  handleSwitchSelectRatio = () => {
-    this.setState(prevState => ({
-      selectRatio: !prevState.selectRatio,
-    }));
+  const getCooldownPopupContainer = () => {
+    return document.getElementsByClassName(
+      'share-detail-wrapper',
+    )[0] as HTMLElement;
   };
 
-  renderStakeModalContent = (completed: boolean) => {
-    const {
-      txStatus: { status, value, startTime, hash },
-      symbol,
-      priceIndex,
-      basePriceAsset,
-    } = this.props;
-    const { runeAmount, tokenAmount } = this.state;
+  const renderPopoverContent = () => (
+    <PopoverContent>
+      To prevent attacks on the network, you must wait approx 24hrs (17280
+      blocks) after each staking event to withdraw assets.
+    </PopoverContent>
+  );
+
+  const handleSwitchSelectRatio = () => {
+    setSelectRatio(!selectRatio);
+  };
+
+  const renderStakeModalContent = (completed: boolean) => {
+    const { status, value, startTime, hash } = txStatus;
 
     const source = 'rune';
     const target = getTickerFormat(symbol);
@@ -862,8 +875,8 @@ class PoolStake extends React.Component<Props, State> {
               value={value}
               maxValue={MAX_VALUE}
               startTime={startTime}
-              onChange={this.handleChangeTxValue}
-              onEnd={this.handleEndTxTimer}
+              onChange={handleChangeTxValue}
+              onEnd={handleEndTxTimer}
             />
           </div>
           <div className="coin-data-wrapper">
@@ -879,7 +892,7 @@ class PoolStake extends React.Component<Props, State> {
               <CoinData
                 data-test="stakeconfirm-coin-data-target"
                 asset={target}
-                assetValue={tokenAmount}
+                assetValue={targetAmount}
                 price={targetPrice}
                 priceUnit={basePriceAsset}
               />
@@ -893,7 +906,7 @@ class PoolStake extends React.Component<Props, State> {
                 <Button
                   className="view-btn"
                   color="success"
-                  onClick={this.handleCloseModal}
+                  onClick={handleCloseModal}
                 >
                   FINISH
                 </Button>
@@ -908,13 +921,8 @@ class PoolStake extends React.Component<Props, State> {
     );
   };
 
-  renderWithdrawModalContent = (txSent: boolean, completed: boolean) => {
-    const {
-      txStatus: { status, value, startTime, hash },
-      symbol,
-      priceIndex,
-      basePriceAsset,
-    } = this.props;
+  const renderWithdrawModalContent = (txSent: boolean, completed: boolean) => {
+    const { status, value, startTime, hash } = txStatus;
 
     const source = 'rune';
     const target = getTickerFormat(symbol);
@@ -923,11 +931,11 @@ class PoolStake extends React.Component<Props, State> {
     const tokenPrice = validBNOrZero(priceIndex[target.toUpperCase()]);
     const txURL = TESTNET_TX_BASE_URL + hash;
 
-    if (!this.withdrawData) {
+    if (!withdrawData) {
       // Avoid to render anything if we don't have needed data for calculation
       return <></>;
     } else {
-      const { runeValue, tokenValue } = this.withdrawData;
+      const { runeValue, tokenValue } = withdrawData;
 
       const sourceTokenAmount = baseToToken(runeValue);
       const sourcePrice = sourceTokenAmount.amount().multipliedBy(runePrice);
@@ -942,8 +950,8 @@ class PoolStake extends React.Component<Props, State> {
                 value={value}
                 maxValue={MAX_VALUE}
                 startTime={startTime}
-                onChange={this.handleChangeTxValue}
-                onEnd={this.handleEndTxTimer}
+                onChange={handleChangeTxValue}
+                onEnd={handleEndTxTimer}
               />
             </div>
             <div className="coin-data-wrapper">
@@ -972,7 +980,7 @@ class PoolStake extends React.Component<Props, State> {
                     <Button
                       className="view-btn"
                       color="success"
-                      onClick={this.handleCloseModal}
+                      onClick={handleCloseModal}
                     >
                       FINISH
                     </Button>
@@ -989,11 +997,10 @@ class PoolStake extends React.Component<Props, State> {
     }
   };
 
-  renderStakeInfo = (poolStats: PoolData) => {
-    const { symbol, basePriceAsset } = this.props;
+  const renderStakeInfo = (poolStats: PoolData) => {
     const source = 'rune';
     const target = getTickerFormat(symbol);
-    const loading = this.isLoading();
+    const loading = isLoading();
 
     const {
       depth,
@@ -1050,169 +1057,11 @@ class PoolStake extends React.Component<Props, State> {
     });
   };
 
-  /**
-   * Check to consider special cases for BNB
-   */
-  considerBnb = (): boolean => {
-    const { symbol } = this.props;
-    return symbol.toUpperCase() === 'BNB';
-  };
-
-  /**
-   * Check to consider BNB fee
-   */
-  considerBnbFee = (): boolean => {
-    const { tokenAmount, selectedShareDetailTab } = this.state;
-
-    // For withdrawing, we always consider a bnb fee
-    if (selectedShareDetailTab === ShareDetailTabKeys.WITHDRAW) {
-      return this.considerBnb();
-    }
-
-    // For staking, an amount of BNB needs to be entered as well
-    return this.considerBnb() && tokenAmount.amount().isGreaterThan(0);
-  };
-
-  /**
-   * Check whether to substract BNB fee from entered BNB amount
-   */
-  subtractBnbFee = (): boolean => {
-    const { tokenAmount, selectedShareDetailTab } = this.state;
-    // Ignore withdrawing, since we deal with percent values only and can't substract fees from these values
-    if (
-      this.considerBnb() &&
-      selectedShareDetailTab !== ShareDetailTabKeys.WITHDRAW
-    ) {
-      const { assetData } = this.props;
-      // (1) BNB amount in wallet
-      const bnbInWallet = bnbBaseAmount(assetData) || baseAmount(0);
-      // (2) BNB amount entered in token input
-      const bnbEntered = tokenToBase(tokenAmount);
-      // difference (1) - (2) as BigNumber
-      const bnbDiff = bnbInWallet.amount().minus(bnbEntered.amount());
-      const fee = this.bnbFeeAmount();
-      return (
-        !!fee && bnbDiff.isGreaterThan(0) && bnbDiff.isLessThan(fee.amount())
-      );
-    }
-
-    return false;
-  };
-
-  /**
-   * BNB fee in BaseAmount
-   * Returns Nothing if fee is not available
-   */
-  bnbFeeAmount = (): Maybe<BaseAmount> => {
-    const { transferFees } = this.props;
-    const { runeAmount, tokenAmount, selectedShareDetailTab } = this.state;
-    const fees = RD.toNullable(transferFees);
-    // To withdraw we will always have a `single` transaction fee
-    if (selectedShareDetailTab === ShareDetailTabKeys.WITHDRAW) {
-      return fees?.single ?? Nothing;
-    }
-
-    // For staking, check whether it's a `single` or `multi` fee depending on entered values
-    return runeAmount.amount().isGreaterThan(0) &&
-      tokenAmount.amount().isGreaterThan(0)
-      ? fees?.multi ?? Nothing
-      : fees?.single ?? Nothing;
-  };
-
-  /**
-   * Checks whether fee is covered by amounts of BNB in users wallet
-   */
-  bnbFeeIsNotCovered = (): boolean => {
-    const { assetData } = this.props;
-    const bnbAmount = bnbBaseAmount(assetData);
-    const fee = this.bnbFeeAmount();
-    return !!bnbAmount && !!fee && bnbAmount.amount().isLessThan(fee.amount());
-  };
-
-  /**
-   * Renders fee
-   */
-  renderFee = () => {
-    const { transferFees, assetData } = this.props;
-    const bnbAmount = bnbBaseAmount(assetData);
-
-    // Helper to format BNB amounts properly (we can't use `formatTokenAmountCurrency`)
-    // TODO (@Veado) Update `formatTokenAmountCurrency` of `asgardex-token` (now in `asgardex-util`) to accept decimals
-    const formatBnbAmount = (value: BaseAmount) => {
-      const token = baseToToken(value);
-      return `${token.amount().toString()} BNB`;
-    };
-
-    const txtLoading = <Text>Fee: ...</Text>;
-    return (
-      <FeeParagraph style={{ paddingTop: '10px' }}>
-        {RD.fold(
-          () => txtLoading,
-          () => txtLoading,
-          (_: Error) => <Text>Error: Fee could not be loaded</Text>,
-          (_: TransferFees) => {
-            const fee = this.bnbFeeAmount();
-            return (
-              <>
-                {fee && <Text>Fee: {formatBnbAmount(fee)}</Text>}
-                {this.subtractBnbFee() && (
-                  <Text> (It will be substructed from BNB amount)</Text>
-                )}
-                {bnbAmount && this.bnbFeeIsNotCovered() && (
-                  <>
-                    <br />
-                    <Text type="danger" style={{ paddingTop: '10px' }}>
-                      You have {formatBnbAmount(bnbAmount)} in your wallet,
-                      that&lsquo;s not enought to cover the fee for this
-                      transaction.
-                    </Text>
-                  </>
-                )}
-              </>
-            );
-          },
-        )(transferFees)}
-      </FeeParagraph>
-    );
-  };
-
-  shareDetailTabsChangedHandler = (activeKey: ShareDetailTabKeys) =>
-    this.setState({ selectedShareDetailTab: activeKey });
-
-  getCooldownPopupContainer = () => {
-    return document.getElementsByClassName(
-      'share-detail-wrapper',
-    )[0] as HTMLElement;
-  };
-
-  renderPopoverContent = () => (
-    <PopoverContent>
-      To prevent attacks on the network, you must wait approx 24hrs (17280
-      blocks) after each staking event to withdraw assets.
-    </PopoverContent>
-  );
-
-  renderShareDetail = (
+  const renderShareDetail = (
     _: PoolData,
     stakersAssetData: StakersAssetData,
     calcResult: CalcResult,
   ) => {
-    const {
-      symbol,
-      priceIndex,
-      basePriceAsset,
-      assets,
-      thorchainData,
-    } = this.props;
-    const {
-      runeAmount,
-      tokenAmount,
-      runePercent,
-      widthdrawPercentage,
-      dragReset,
-      selectRatio,
-    } = this.state;
-
     const source = 'rune';
     const target = getTickerFormat(symbol);
 
@@ -1250,7 +1099,7 @@ class PoolStake extends React.Component<Props, State> {
     const tokenValue = bn(withdrawRate).multipliedBy(assetShare);
     const tokenBaseAmount = baseAmount(tokenValue);
 
-    this.withdrawData = {
+    withdrawData = {
       runeValue: runeBaseAmount,
       tokenValue: tokenBaseAmount,
       tokenPrice,
@@ -1267,7 +1116,7 @@ class PoolStake extends React.Component<Props, State> {
       .amount()
       .multipliedBy(tokenPrice);
 
-    const disableDrag = this.bnbFeeIsNotCovered();
+    const disableDrag = bnbFeeIsNotCovered();
 
     // unstake cooldown
     const heightLastStaked = bnOrZero(stakersAssetData?.heightLastStaked);
@@ -1298,7 +1147,7 @@ class PoolStake extends React.Component<Props, State> {
 
     return (
       <div className="share-detail-wrapper">
-        <Tabs withBorder onChange={this.shareDetailTabsChangedHandler}>
+        <Tabs withBorder onChange={setSelectedShareDetailTab}>
           <TabPane tab="Add" key={ShareDetailTabKeys.ADD}>
             <Row>
               <Col span={24} lg={12}>
@@ -1323,11 +1172,11 @@ class PoolStake extends React.Component<Props, State> {
                   price={runePrice}
                   priceIndex={priceIndex}
                   unit={basePriceAsset}
-                  onChange={this.handleChangeTokenAmount('rune')}
+                  onChange={handleChangeTokenAmount('rune')}
                 />
                 <Slider
                   value={runePercent}
-                  onChange={this.handleChangePercent('rune')}
+                  onChange={handleChangePercent('rune')}
                   withLabel
                   tabIndex="-1"
                 />
@@ -1336,7 +1185,7 @@ class PoolStake extends React.Component<Props, State> {
                     content={
                       <PopoverContent>Select the ratio for me</PopoverContent>
                     }
-                    getPopupContainer={this.getPopupContainer}
+                    getPopupContainer={getPopupContainer}
                     placement="right"
                     visible
                     overlayClassName="stake-ratio-select-popover"
@@ -1348,7 +1197,7 @@ class PoolStake extends React.Component<Props, State> {
                   >
                     <div>
                       <Button
-                        onClick={this.handleSwitchSelectRatio}
+                        onClick={handleSwitchSelectRatio}
                         sizevalue="small"
                         typevalue="outline"
                         focused={selectRatio}
@@ -1369,12 +1218,12 @@ class PoolStake extends React.Component<Props, State> {
                   data-test="coin-card-stake-coin-target"
                   asset={target}
                   assetData={tokensData}
-                  amount={tokenAmount}
+                  amount={targetAmount}
                   price={tokenPrice}
                   priceIndex={priceIndex}
                   unit={basePriceAsset}
-                  onChangeAsset={this.handleSelectTraget}
-                  onChange={this.handleChangeTokenAmount(target)}
+                  onChangeAsset={handleSelectTraget}
+                  onChange={handleChangeTokenAmount(target)}
                   withSearch
                 />
               </div>
@@ -1387,8 +1236,8 @@ class PoolStake extends React.Component<Props, State> {
                   target="confirm"
                   reset={dragReset}
                   disabled={disableDrag}
-                  onConfirm={this.handleStake}
-                  onDrag={this.handleDrag}
+                  onConfirm={handleStake}
+                  onDrag={handleDrag}
                 />
               </div>
             </div>
@@ -1417,7 +1266,7 @@ class PoolStake extends React.Component<Props, State> {
             </div>
             <Slider
               onChange={(value: SliderValue) => {
-                this.setState({ widthdrawPercentage: value as number });
+                setWithdrawPercentage(value as number);
               }}
               defaultValue={50}
               max={100}
@@ -1443,7 +1292,7 @@ class PoolStake extends React.Component<Props, State> {
                   />
                 </div>
               </div>
-              {this.renderFee()}
+              {renderFee()}
               <div className="drag-container">
                 <Drag
                   title={dragText}
@@ -1451,8 +1300,8 @@ class PoolStake extends React.Component<Props, State> {
                   target="confirm"
                   reset={dragReset}
                   disabled={disableDrag || withdrawDisabled}
-                  onConfirm={this.handleWithdraw}
-                  onDrag={this.handleDrag}
+                  onConfirm={handleWithdraw}
+                  onDrag={handleDrag}
                 />
                 {!!withdrawDisabled && (
                   <div className="cooldown-info">
@@ -1461,8 +1310,8 @@ class PoolStake extends React.Component<Props, State> {
                       again.
                     </Label>
                     <Popover
-                      content={this.renderPopoverContent}
-                      getPopupContainer={this.getCooldownPopupContainer}
+                      content={renderPopoverContent}
+                      getPopupContainer={getCooldownPopupContainer}
                       placement="bottomLeft"
                       overlayClassName="pool-filter-info"
                       overlayStyle={{
@@ -1483,12 +1332,10 @@ class PoolStake extends React.Component<Props, State> {
     );
   };
 
-  renderYourShare = (
+  const renderYourShare = (
     calcResult: CalcResult,
     stakersAssetData: StakersAssetData,
   ) => {
-    const { symbol, user, priceIndex, basePriceAsset } = this.props;
-
     const wallet = user ? user.wallet : null;
     const hasWallet = wallet !== null;
 
@@ -1507,7 +1354,7 @@ class PoolStake extends React.Component<Props, State> {
     const stakeUnitsBN = bnOrZero(stakeUnits);
     const runeEarnedBN = bnOrZero(runeEarned);
     const assetEarnedBN = bnOrZero(assetEarned);
-    const loading = this.isLoading() || poolUnits === undefined;
+    const loading = isLoading() || poolUnits === undefined;
 
     const poolShare = poolUnits
       ? stakeUnitsBN.div(poolUnits).multipliedBy(100)
@@ -1660,9 +1507,8 @@ class PoolStake extends React.Component<Props, State> {
     );
   };
 
-  renderStakeDataPoolError = () => {
-    const { stakerPoolDataError: error } = this.props;
-    const msg: Maybe<string> = error?.message ?? Nothing;
+  const renderStakeDataPoolError = () => {
+    const msg: Maybe<string> = stakerPoolDataError?.message ?? Nothing;
     return (
       <div className="your-share-wrapper">
         <div className="share-placeholder-wrapper">
@@ -1680,144 +1526,125 @@ class PoolStake extends React.Component<Props, State> {
     );
   };
 
-  render() {
-    const {
-      priceIndex,
-      poolData,
-      stakerPoolData,
-      stakerPoolDataError,
-      txStatus,
-      user,
-    } = this.props;
-    const {
-      openPrivateModal,
-      openWalletAlert,
-      password,
-      invalidPassword,
-      txResult,
-      validatingPassword,
-    } = this.state;
+  const wallet = user ? user.wallet : null;
+  const hasWallet = wallet !== null;
 
-    const wallet = user ? user.wallet : null;
-    const hasWallet = wallet !== null;
+  const tokenSymbol = symbol.toUpperCase();
+  const poolInfo = poolData[tokenSymbol] || {};
 
-    let { symbol } = this.props;
-    symbol = symbol.toUpperCase();
-    const poolInfo = poolData[symbol] || {};
+  const poolStats = getPoolData('rune', poolInfo, priceIndex);
 
-    const poolStats = getPoolData('rune', poolInfo, priceIndex);
+  const calcResult = getData();
 
-    const calcResult = this.getData();
+  const openStakeModal =
+    txStatus.type === TxTypes.STAKE ? txStatus.modal : false;
+  const openWithdrawModal =
+    txStatus.type === TxTypes.WITHDRAW ? txStatus.modal : false;
+  const coinCloseIconType = txStatus.status ? (
+    <FullscreenExitOutlined style={{ color: '#fff' }} />
+  ) : (
+    <CloseOutlined style={{ color: '#fff' }} />
+  );
 
-    const openStakeModal =
-      txStatus.type === TxTypes.STAKE ? txStatus.modal : false;
-    const openWithdrawModal =
-      txStatus.type === TxTypes.WITHDRAW ? txStatus.modal : false;
-    const coinCloseIconType = txStatus.status ? (
-      <FullscreenExitOutlined style={{ color: '#fff' }} />
-    ) : (
-      <CloseOutlined style={{ color: '#fff' }} />
-    );
+  const yourShareSpan = hasWallet ? 8 : 24;
 
-    const yourShareSpan = hasWallet ? 8 : 24;
+  // stake confirmation modal
 
-    // stake confirmation modal
+  const txSent = txStatus.hash !== undefined;
 
-    const txSent = txStatus.hash !== undefined;
+  // TODO(veado): Completed depends on `txStatus.type`, too (no txResult for `stake` atm)
+  const completed =
+    txStatus.type === TxTypes.STAKE
+      ? txSent && !txStatus.status
+      : txResult && !txStatus.status;
+  const stakeTitle = !completed ? 'YOU ARE STAKING' : 'YOU STAKED';
 
-    // TODO(veado): Completed depends on `txStatus.type`, too (no txResult for `stake` atm)
-    const completed =
-      txStatus.type === TxTypes.STAKE
-        ? txSent && !txStatus.status
-        : txResult && !txStatus.status;
-    const stakeTitle = !completed ? 'YOU ARE STAKING' : 'YOU STAKED';
+  // withdraw confirmation modal
 
-    // withdraw confirmation modal
+  const withdrawText = !completed ? 'YOU ARE WITHDRAWING' : 'YOU WITHDRAWN';
 
-    const withdrawText = !completed ? 'YOU ARE WITHDRAWING' : 'YOU WITHDRAWN';
+  const emptyStakerPoolData: StakersAssetData = {
+    asset: tokenSymbol,
+    stakeUnits: '0',
+    runeStaked: '0',
+    assetStaked: '0',
+    poolStaked: '0',
+    runeEarned: '0',
+    assetEarned: '0',
+    poolEarned: '0',
+    runeROI: '0',
+    assetROI: '0',
+    poolROI: '0',
+    dateFirstStaked: 0,
+  };
 
-    const emptyStakerPoolData: StakersAssetData = {
-      asset: symbol,
-      stakeUnits: '0',
-      runeStaked: '0',
-      assetStaked: '0',
-      poolStaked: '0',
-      runeEarned: '0',
-      assetEarned: '0',
-      poolEarned: '0',
-      runeROI: '0',
-      assetROI: '0',
-      poolROI: '0',
-      dateFirstStaked: 0,
-    };
-    const stakersAssetData: Maybe<StakersAssetData> = stakerPoolData
-      ? stakerPoolData[symbol]
-      : emptyStakerPoolData;
+  const stakersAssetData: Maybe<StakersAssetData> = stakerPoolData
+    ? stakerPoolData[tokenSymbol]
+    : emptyStakerPoolData;
 
-    return (
-      <ContentWrapper className="pool-stake-wrapper" transparent>
-        <Row className="stake-info-view">{this.renderStakeInfo(poolStats)}</Row>
-        <Row className="share-view">
-          {!stakersAssetData && stakerPoolDataError && (
-            <Col className="your-share-view" md={24}>
-              {this.renderStakeDataPoolError()}
-            </Col>
-          )}
-          {stakersAssetData && (
-            <Col className="your-share-view" span={24} lg={yourShareSpan}>
-              {this.renderYourShare(calcResult, stakersAssetData)}
-            </Col>
-          )}
-          {stakersAssetData && hasWallet && (
-            <Col className="share-detail-view" span={24} lg={16}>
-              {this.renderShareDetail(poolStats, stakersAssetData, calcResult)}
-            </Col>
-          )}
-        </Row>
-        {hasWallet && (
-          <>
-            <ConfirmModal
-              title={withdrawText}
-              closeIcon={coinCloseIconType}
-              visible={openWithdrawModal}
-              footer={null}
-              onCancel={this.handleCloseModal}
-            >
-              {this.renderWithdrawModalContent(txSent, completed)}
-            </ConfirmModal>
-            <ConfirmModal
-              title={stakeTitle}
-              closeIcon={coinCloseIconType}
-              visible={openStakeModal}
-              footer={null}
-              onCancel={this.handleCloseModal}
-            >
-              {this.renderStakeModalContent(completed)}
-            </ConfirmModal>
-            <PrivateModal
-              visible={openPrivateModal}
-              validatingPassword={validatingPassword}
-              invalidPassword={invalidPassword}
-              password={password}
-              onChangePassword={this.handleChangePassword}
-              onOk={this.handleConfirmPassword}
-              onCancel={this.handleCancelPrivateModal}
-            />
-            <Modal
-              title="PLEASE ADD WALLET"
-              visible={openWalletAlert}
-              onOk={this.handleConnectWallet}
-              onCancel={this.hideWalletAlert}
-              okText="ADD WALLET"
-            >
-              <Label>Please add a wallet to swap tokens.</Label>
-            </Modal>
-          </>
+  return (
+    <ContentWrapper className="pool-stake-wrapper" transparent>
+      <Row className="stake-info-view">{renderStakeInfo(poolStats)}</Row>
+      <Row className="share-view">
+        {!stakersAssetData && stakerPoolDataError && (
+          <Col className="your-share-view" md={24}>
+            {renderStakeDataPoolError()}
+          </Col>
         )}
-      </ContentWrapper>
-    );
-  }
-}
+        {stakersAssetData && (
+          <Col className="your-share-view" span={24} lg={yourShareSpan}>
+            {renderYourShare(calcResult, stakersAssetData)}
+          </Col>
+        )}
+        {stakersAssetData && hasWallet && (
+          <Col className="share-detail-view" span={24} lg={16}>
+            {renderShareDetail(poolStats, stakersAssetData, calcResult)}
+          </Col>
+        )}
+      </Row>
+      {hasWallet && (
+        <>
+          <ConfirmModal
+            title={withdrawText}
+            closeIcon={coinCloseIconType}
+            visible={openWithdrawModal}
+            footer={null}
+            onCancel={handleCloseModal}
+          >
+            {renderWithdrawModalContent(txSent, completed)}
+          </ConfirmModal>
+          <ConfirmModal
+            title={stakeTitle}
+            closeIcon={coinCloseIconType}
+            visible={openStakeModal}
+            footer={null}
+            onCancel={handleCloseModal}
+          >
+            {renderStakeModalContent(completed)}
+          </ConfirmModal>
+          <PrivateModal
+            visible={openPrivateModal}
+            validatingPassword={validatingPassword}
+            invalidPassword={invalidPassword}
+            password={password}
+            onChangePassword={handleChangePassword}
+            onOk={handleConfirmPassword}
+            onCancel={handleCancelPrivateModal}
+          />
+          <Modal
+            title="PLEASE ADD WALLET"
+            visible={openWalletAlert}
+            onOk={handleConnectWallet}
+            onCancel={hideWalletAlert}
+            okText="ADD WALLET"
+          >
+            <Label>Please add a wallet to swap tokens.</Label>
+          </Modal>
+        </>
+      )}
+    </ContentWrapper>
+  );
+};
 
 export default compose(
   connect(
@@ -1855,4 +1682,4 @@ export default compose(
     },
   ),
   withRouter,
-)(PoolStake) as React.ComponentClass<ComponentProps, State>;
+)(PoolStake);
