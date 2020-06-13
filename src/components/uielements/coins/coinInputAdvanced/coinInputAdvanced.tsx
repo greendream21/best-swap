@@ -110,9 +110,14 @@ export function useCoinCardInputBehaviour({
 
       // (Rudi) only broadcast when we are broadcasting a new value
       // We can't compare BigNumbers directly, since they are immutable
+
       if (!broadcastRef.current.isEqualTo(valToSend)) {
         broadcastRef.current = valToSend;
-        onChangeValue(valToSend);
+
+        // trigger onChange event only if input has focus (Chris)
+        if (focus) {
+          onChangeValue(valToSend);
+        }
       }
     }
   }, [focus, getOutval, onChangeValue, setTextFieldValue, textFieldValue]);
