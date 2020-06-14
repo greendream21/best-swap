@@ -116,10 +116,10 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         </ActionHeader>
       ),
       render: (text: string, record: PoolData) => {
-        const { asset, target } = record;
+        const { asset, target, values } = record;
         if (target) {
           const swapUrl = `/swap/${asset.toLowerCase()}-${target.toLowerCase()}`;
-          const stakeUrl = `/pool/${target.toUpperCase()}`;
+          const stakeUrl = `/pool/${values.symbol.toUpperCase()}`;
           const dataTest = `stake-button-${target.toLowerCase()}`;
 
           return (
