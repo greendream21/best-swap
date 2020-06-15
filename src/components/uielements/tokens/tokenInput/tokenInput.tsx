@@ -28,6 +28,7 @@ const TokenInput: React.FC<Props> = (props: Props): JSX.Element => {
     ...otherProps
   } = props;
 
+  const { disabled = false } = inputProps;
   const inputRef = useRef<FixmeType>();
 
   const onChangeHandler = useCallback(
@@ -45,6 +46,7 @@ const TokenInput: React.FC<Props> = (props: Props): JSX.Element => {
     <TokenInputWrapper
       className={`tokenInput-wrapper ${className}`}
       onClick={handleClickWrapper}
+      disabled={disabled}
       {...otherProps}
     >
       <div className="token-input-header">

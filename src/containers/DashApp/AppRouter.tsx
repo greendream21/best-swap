@@ -36,7 +36,7 @@ const routes: AppRoute[] = [
   },
   {
     path: 'swap/',
-    component: asyncComponent(() => import('../pages/Swap')),
+    component: asyncComponent(() => import('../pages/Swap/SwapLanding')),
   },
   {
     path: 'pools',

@@ -28,7 +28,7 @@
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook -o ./build/storybook",
     "generate:types": "yarn clean:types:midgard && yarn generate:types:midgard",
-    "generate:types:midgard": "openapi-generator generate -i http://159.89.252.210:8080/v1/swagger.json -g typescript-axios -o ./src/types/generated/midgard --reserved-words-mappings in=in",
+    "generate:types:midgard": "openapi-generator generate -i https://midgard.bepswap.com/v1/swagger.json -g typescript-axios -o ./src/types/generated/midgard --reserved-words-mappings in=in",
     "clean:types:midgard": "rm -rf ./src/types/generated/midgard"
   },
   "dependencies": {
@@ -80,6 +80,7 @@
     "jest-environment-jsdom-fourteen": "1.0.1",
     "jest-resolve": "^25.1.4",
     "jest-watch-typeahead": "0.4.2",
+    "js-levenshtein": "^1.1.6",
     "lodash": "^4.17.15",
     "mini-css-extract-plugin": "0.9.0",
     "node-sass": "^4.13.1",

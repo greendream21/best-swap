@@ -22,6 +22,11 @@ const TxLabel: React.FC<Props> = (props: Props): JSX.Element => {
     TxIcon = <SwapOutlined />;
   }
 
+  if (type === TxDetailsTypeEnum.DoubleSwap) {
+    label = 'swap';
+    TxIcon = <SwapOutlined />;
+  }
+
   if (type === TxDetailsTypeEnum.Unstake) {
     label = 'withdraw';
     TxIcon = <ImportOutlined />;

@@ -5,15 +5,16 @@ import { bn, isValidBN } from '@thorchain/asgardex-util';
 import { CoinInputAdvancedView } from './coinInputAdvanced.view';
 import { emptyString } from '../../../../helpers/stringHelper';
 
-const formatNumber = (value: string, minimumFractionDigits: number) => {
-  return Number(value || 0).toLocaleString(undefined, {
-    minimumFractionDigits,
-  });
-};
+// const formatNumber = (value: string, minimumFractionDigits: number) => {
+//   return Number(value || 0).toLocaleString(undefined, {
+//     minimumFractionDigits,
+//   });
+// };
 
 function formatStringToBigNumber(value: string): BigNumber {
   // (Rudi) This will have a localisation problem
   const cleanValue = value.replace(/,/g, '');
+
   return bn(cleanValue);
 }
 
@@ -44,7 +45,6 @@ export function useCoinCardInputBehaviour({
   amount,
   onChangeValue,
   onFocus,
-  minimumFractionDigits = 2,
 }: BehaviorProps) {
   // Note: Amount could be undefined|null, since we have not migrated everything to TS yet, so check it here
   const valueAsString = !!amount && isValidBN(amount) ? amount.toString() : '0';
@@ -58,8 +58,9 @@ export function useCoinCardInputBehaviour({
   const getOutval = useCallback(() => {
     const txtValue =
       textFieldValue !== undefined ? textFieldValue : valueAsString; // (Rudi) allows for empty string ''
-    return focus ? txtValue : formatNumber(txtValue, minimumFractionDigits);
-  }, [focus, minimumFractionDigits, textFieldValue, valueAsString]);
+
+    return txtValue;
+  }, [textFieldValue, valueAsString]);
 
   const handleFocus = useCallback(
     event => {
@@ -84,6 +85,7 @@ export function useCoinCardInputBehaviour({
     const isValidNumber = isValidBN(bn(val));
     const validValue =
       isValidNumber || val === emptyString || val === ZERO_DECIMAL;
+
     if (validValue) {
       setTextFieldValue(val);
     }
@@ -93,8 +95,6 @@ export function useCoinCardInputBehaviour({
     const numberfiedValueStr = focus
       ? getOutval()
       : formatStringToBigNumber(getOutval()).toString();
-
-      numberfiedValueStr;
 
     if (isBroadcastable(numberfiedValueStr)) {
       const valToSend = formatStringToBigNumber(numberfiedValueStr);
@@ -110,9 +110,14 @@ export function useCoinCardInputBehaviour({
 
       // (Rudi) only broadcast when we are broadcasting a new value
       // We can't compare BigNumbers directly, since they are immutable
+
       if (!broadcastRef.current.isEqualTo(valToSend)) {
         broadcastRef.current = valToSend;
-        onChangeValue(valToSend);
+
+        // trigger onChange event only if input has focus (Chris)
+        if (focus) {
+          onChangeValue(valToSend);
+        }
       }
     }
   }, [focus, getOutval, onChangeValue, setTextFieldValue, textFieldValue]);

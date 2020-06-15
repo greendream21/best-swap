@@ -1,7 +1,6 @@
 import {
   isPoolPage,
   matchSwapDetailPair,
-  matchPoolSymbol,
 } from './routerHelper';
 
 describe('routeHelper', () => {
@@ -13,10 +12,6 @@ describe('routeHelper', () => {
     it('should parse an url pool page and symbol', () => {
       const result = isPoolPage('/pool/TCAN-014');
       expect(result).toBeTruthy();
-    });
-    it('should not parse url pools page', () => {
-      const result = isPoolPage('/swap');
-      expect(result).toBeFalsy();
     });
   });
 
@@ -32,17 +27,6 @@ describe('routeHelper', () => {
     });
     it('should not match a pair at pool page', () => {
       const result = matchSwapDetailPair('/pool');
-      expect(result).toBeNothing();
-    });
-  });
-
-  describe('matchPoolSymbol', () => {
-    it('should match symbol of current pool', () => {
-      const result = matchPoolSymbol('/pool/fsn-rune');
-      expect(result).toEqual('fsn-rune');
-    });
-    it('should not match a pool symbol at other pages', () => {
-      const result = matchPoolSymbol('/swap');
       expect(result).toBeNothing();
     });
   });

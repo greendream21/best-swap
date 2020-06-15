@@ -11,14 +11,8 @@ export const TokenSelectWrapper = styled.div`
 
   width: 216px;
   height: 60px;
-  border: 1px solid ${palette('gray', 0)};
-  border-radius: 2px;
   text-transform: uppercase;
   ${transition()};
-
-  &:hover {
-    border-color: ${palette('success', 0)};
-  }
 `;
 
 const IconBase = cleanTag(CaretDownOutlined, ['open']);
@@ -29,14 +23,13 @@ export const DropdownIcon = styled(IconBase)`
   font-size: 18px;
 
   svg {
-    font-size: 22px;
-    color: ${palette('gray', 1)};
+    font-size: 14px;
+    color: ${palette('text', 1)};
   }
 `;
 
 export const DropdownIconHolder = styled.div`
   transition: transform 0.2s ease-in-out;
-  padding-top: 5px;
 `;
 
 export const TokenDropdownButton = styled.button`

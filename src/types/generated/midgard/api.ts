@@ -42,19 +42,99 @@ export interface AssetDetail {
      * @type {string}
      * @memberof AssetDetail
      */
-    logo?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof AssetDetail
-     */
-    name?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof AssetDetail
-     */
     priceRune?: string;
+}
+/**
+ * 
+ * @export
+ * @interface BlockRewards
+ */
+export interface BlockRewards {
+    /**
+     * 
+     * @type {string}
+     * @memberof BlockRewards
+     */
+    blockReward?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof BlockRewards
+     */
+    bondReward?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof BlockRewards
+     */
+    stakeReward?: string;
+}
+/**
+ * 
+ * @export
+ * @interface BondMetrics
+ */
+export interface BondMetrics {
+    /**
+     * Average bond of active nodes
+     * @type {string}
+     * @memberof BondMetrics
+     */
+    averageActiveBond?: string;
+    /**
+     * Average bond of standby nodes
+     * @type {string}
+     * @memberof BondMetrics
+     */
+    averageStandbyBond?: string;
+    /**
+     * Maxinum bond of active nodes
+     * @type {string}
+     * @memberof BondMetrics
+     */
+    maximumActiveBond?: string;
+    /**
+     * Maximum bond of standby nodes
+     * @type {string}
+     * @memberof BondMetrics
+     */
+    maximumStandbyBond?: string;
+    /**
+     * Median bond of active nodes
+     * @type {string}
+     * @memberof BondMetrics
+     */
+    medianActiveBond?: string;
+    /**
+     * Median bond of standby nodes
+     * @type {string}
+     * @memberof BondMetrics
+     */
+    medianStandbyBond?: string;
+    /**
+     * Minumum bond of active nodes
+     * @type {string}
+     * @memberof BondMetrics
+     */
+    minimumActiveBond?: string;
+    /**
+     * Minumum bond of standby nodes
+     * @type {string}
+     * @memberof BondMetrics
+     */
+    minimumStandbyBond?: string;
+    /**
+     * Total bond of active nodes
+     * @type {string}
+     * @memberof BondMetrics
+     */
+    totalActiveBond?: string;
+    /**
+     * Total bond of standby nodes
+     * @type {string}
+     * @memberof BondMetrics
+     */
+    totalStandbyBond?: string;
 }
 /**
  * 
@@ -127,14 +207,39 @@ export interface Gas {
 export interface InlineResponse200 {
     /**
      * 
+     * @type {boolean}
+     * @memberof InlineResponse200
+     */
+    catchingUp?: boolean;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof InlineResponse200
+     */
+    database?: boolean;
+    /**
+     * 
      * @type {number}
      * @memberof InlineResponse200
+     */
+    scannerHeight?: number;
+}
+/**
+ * 
+ * @export
+ * @interface InlineResponse2001
+ */
+export interface InlineResponse2001 {
+    /**
+     * 
+     * @type {number}
+     * @memberof InlineResponse2001
      */
     count?: number;
     /**
      * 
      * @type {Array<TxDetails>}
-     * @memberof InlineResponse200
+     * @memberof InlineResponse2001
      */
     txs?: Array<TxDetails>;
 }
@@ -150,6 +255,110 @@ export interface ModelError {
      * @memberof ModelError
      */
     error: string;
+}
+/**
+ * 
+ * @export
+ * @interface NetworkInfo
+ */
+export interface NetworkInfo {
+    /**
+     * Array of Active Bonds
+     * @type {Array<string>}
+     * @memberof NetworkInfo
+     */
+    activeBonds?: Array<string>;
+    /**
+     * Number of Active Nodes
+     * @type {number}
+     * @memberof NetworkInfo
+     */
+    activeNodeCount?: number;
+    /**
+     * 
+     * @type {BlockRewards}
+     * @memberof NetworkInfo
+     */
+    blockRewards?: BlockRewards;
+    /**
+     * 
+     * @type {BondMetrics}
+     * @memberof NetworkInfo
+     */
+    bondMetrics?: BondMetrics;
+    /**
+     * 
+     * @type {string}
+     * @memberof NetworkInfo
+     */
+    bondingROI?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof NetworkInfo
+     */
+    nextChurnHeight?: string;
+    /**
+     * The remaining time of pool activation (in seconds)
+     * @type {number}
+     * @memberof NetworkInfo
+     */
+    poolActivationCountdown?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof NetworkInfo
+     */
+    poolShareFactor?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof NetworkInfo
+     */
+    stakingROI?: string;
+    /**
+     * Array of Standby Bonds
+     * @type {Array<string>}
+     * @memberof NetworkInfo
+     */
+    standbyBonds?: Array<string>;
+    /**
+     * Number of Standby Nodes
+     * @type {number}
+     * @memberof NetworkInfo
+     */
+    standbyNodeCount?: number;
+    /**
+     * Total left in Reserve
+     * @type {string}
+     * @memberof NetworkInfo
+     */
+    totalReserve?: string;
+    /**
+     * Total Rune Staked in Pools
+     * @type {string}
+     * @memberof NetworkInfo
+     */
+    totalStaked?: string;
+}
+/**
+ * 
+ * @export
+ * @interface NodeKey
+ */
+export interface NodeKey {
+    /**
+     * ed25519 public key
+     * @type {string}
+     * @memberof NodeKey
+     */
+    ed25519?: string;
+    /**
+     * secp256k1 public key
+     * @type {string}
+     * @memberof NodeKey
+     */
+    secp256k1?: string;
 }
 /**
  * 
@@ -490,6 +699,12 @@ export interface StakersAssetData {
      */
     dateFirstStaked?: number;
     /**
+     * 
+     * @type {number}
+     * @memberof StakersAssetData
+     */
+    heightLastStaked?: number;
+    /**
      * Total value of earnings (in RUNE).
      * @type {string}
      * @memberof StakersAssetData
@@ -785,6 +1000,7 @@ export enum TxDetailsStatusEnum {
     * @enum {string}
     */
 export enum TxDetailsTypeEnum {
+    DoubleSwap = 'doubleSwap',
     Swap = 'swap',
     Stake = 'stake',
     Unstake = 'unstake',
@@ -803,7 +1019,7 @@ export enum TxDetailsTypeEnum {
 export const DefaultApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * Detailed information about a specific asset. Returns enough information to display a unique asset in various user interfaces, including latest price. The logo is sourced from an internal database.
+         * Detailed information about a specific asset. Returns enough information to display a unique asset in various user interfaces, including latest price.
          * @summary Get Asset Information
          * @param {string} asset One or more comma separated unique asset (CHAIN.SYMBOL)
          * @param {*} [options] Override http request option.
@@ -848,6 +1064,64 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          */
         getHealth(options: any = {}): RequestArgs {
             const localVarPath = `/v1/health`;
+            const localVarUrlObj = globalImportUrl.parse(localVarPath, true);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarUrlObj.query = {...localVarUrlObj.query, ...localVarQueryParameter, ...options.query};
+            // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
+            delete localVarUrlObj.search;
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...options.headers};
+
+            return {
+                url: globalImportUrl.format(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Returns an object containing Network data
+         * @summary Get Network Data
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getNetworkData(options: any = {}): RequestArgs {
+            const localVarPath = `/v1/network`;
+            const localVarUrlObj = globalImportUrl.parse(localVarPath, true);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarUrlObj.query = {...localVarUrlObj.query, ...localVarQueryParameter, ...options.query};
+            // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
+            delete localVarUrlObj.search;
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...options.headers};
+
+            return {
+                url: globalImportUrl.format(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Returns an object containing Node public keys
+         * @summary Get Node public keys
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getNodes(options: any = {}): RequestArgs {
+            const localVarPath = `/v1/nodes`;
             const localVarUrlObj = globalImportUrl.parse(localVarPath, true);
             let baseOptions;
             if (configuration) {
@@ -1110,11 +1384,11 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * @param {string} [address] Address of sender or recipient of any in/out tx in event
          * @param {string} [txid] ID of any in/out tx in event
          * @param {string} [asset] Any asset used in event (CHAIN.SYMBOL)
-         * @param {'swap' | 'stake' | 'unstake' | 'add' | 'refund'} [type] Requested type of events
+         * @param {string} [type] One or more comma separated unique types of event
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getTxDetails(offset: number, limit: number, address?: string, txid?: string, asset?: string, type?: 'swap' | 'stake' | 'unstake' | 'add' | 'refund', options: any = {}): RequestArgs {
+        getTxDetails(offset: number, limit: number, address?: string, txid?: string, asset?: string, type?: string, options: any = {}): RequestArgs {
             // verify required parameter 'offset' is not null or undefined
             if (offset === null || offset === undefined) {
                 throw new RequiredError('offset','Required parameter offset was null or undefined when calling getTxDetails.');
@@ -1128,7 +1402,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             let baseOptions;
             if (configuration) {
                 baseOptions = configuration.baseOptions;
-            }  
+            }
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
@@ -1179,7 +1453,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 export const DefaultApiFp = function(configuration?: Configuration) {
     return {
         /**
-         * Detailed information about a specific asset. Returns enough information to display a unique asset in various user interfaces, including latest price. The logo is sourced from an internal database.
+         * Detailed information about a specific asset. Returns enough information to display a unique asset in various user interfaces, including latest price.
          * @summary Get Asset Information
          * @param {string} asset One or more comma separated unique asset (CHAIN.SYMBOL)
          * @param {*} [options] Override http request option.
@@ -1198,8 +1472,34 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getHealth(options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<void> {
+        getHealth(options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse200> {
             const localVarAxiosArgs = DefaultApiAxiosParamCreator(configuration).getHealth(options);
+            return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
+                const axiosRequestArgs = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
+                return axios.request(axiosRequestArgs);
+            };
+        },
+        /**
+         * Returns an object containing Network data
+         * @summary Get Network Data
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getNetworkData(options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<NetworkInfo> {
+            const localVarAxiosArgs = DefaultApiAxiosParamCreator(configuration).getNetworkData(options);
+            return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
+                const axiosRequestArgs = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
+                return axios.request(axiosRequestArgs);
+            };
+        },
+        /**
+         * Returns an object containing Node public keys
+         * @summary Get Node public keys
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getNodes(options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<NodeKey>> {
+            const localVarAxiosArgs = DefaultApiAxiosParamCreator(configuration).getNodes(options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
                 return axios.request(axiosRequestArgs);
@@ -1308,11 +1608,11 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {string} [address] Address of sender or recipient of any in/out tx in event
          * @param {string} [txid] ID of any in/out tx in event
          * @param {string} [asset] Any asset used in event (CHAIN.SYMBOL)
-         * @param {'swap' | 'stake' | 'unstake' | 'add' | 'refund'} [type] Requested type of events
+         * @param {string} [type] One or more comma separated unique types of event
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getTxDetails(offset: number, limit: number, address?: string, txid?: string, asset?: string, type?: 'swap' | 'stake' | 'unstake' | 'add' | 'refund', options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse200> {
+        getTxDetails(offset: number, limit: number, address?: string, txid?: string, asset?: string, type?: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001> {
             const localVarAxiosArgs = DefaultApiAxiosParamCreator(configuration).getTxDetails(offset, limit, address, txid, asset, type, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
@@ -1329,7 +1629,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
 export const DefaultApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
     return {
         /**
-         * Detailed information about a specific asset. Returns enough information to display a unique asset in various user interfaces, including latest price. The logo is sourced from an internal database.
+         * Detailed information about a specific asset. Returns enough information to display a unique asset in various user interfaces, including latest price.
          * @summary Get Asset Information
          * @param {string} asset One or more comma separated unique asset (CHAIN.SYMBOL)
          * @param {*} [options] Override http request option.
@@ -1344,8 +1644,26 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getHealth(options?: any): AxiosPromise<void> {
+        getHealth(options?: any): AxiosPromise<InlineResponse200> {
             return DefaultApiFp(configuration).getHealth(options)(axios, basePath);
+        },
+        /**
+         * Returns an object containing Network data
+         * @summary Get Network Data
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getNetworkData(options?: any): AxiosPromise<NetworkInfo> {
+            return DefaultApiFp(configuration).getNetworkData(options)(axios, basePath);
+        },
+        /**
+         * Returns an object containing Node public keys
+         * @summary Get Node public keys
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getNodes(options?: any): AxiosPromise<Array<NodeKey>> {
+            return DefaultApiFp(configuration).getNodes(options)(axios, basePath);
         },
         /**
          * Returns an array containing all the assets supported on BEPSwap pools
@@ -1422,11 +1740,11 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {string} [address] Address of sender or recipient of any in/out tx in event
          * @param {string} [txid] ID of any in/out tx in event
          * @param {string} [asset] Any asset used in event (CHAIN.SYMBOL)
-         * @param {'swap' | 'stake' | 'unstake' | 'add' | 'refund'} [type] Requested type of events
+         * @param {string} [type] One or more comma separated unique types of event
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getTxDetails(offset: number, limit: number, address?: string, txid?: string, asset?: string, type?: 'swap' | 'stake' | 'unstake' | 'add' | 'refund', options?: any): AxiosPromise<InlineResponse200> {
+        getTxDetails(offset: number, limit: number, address?: string, txid?: string, asset?: string, type?: string, options?: any): AxiosPromise<InlineResponse2001> {
             return DefaultApiFp(configuration).getTxDetails(offset, limit, address, txid, asset, type, options)(axios, basePath);
         },
     };
@@ -1440,7 +1758,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
  */
 export class DefaultApi extends BaseAPI {
     /**
-     * Detailed information about a specific asset. Returns enough information to display a unique asset in various user interfaces, including latest price. The logo is sourced from an internal database.
+     * Detailed information about a specific asset. Returns enough information to display a unique asset in various user interfaces, including latest price.
      * @summary Get Asset Information
      * @param {string} asset One or more comma separated unique asset (CHAIN.SYMBOL)
      * @param {*} [options] Override http request option.
@@ -1460,6 +1778,28 @@ export class DefaultApi extends BaseAPI {
      */
     public getHealth(options?: any) {
         return DefaultApiFp(this.configuration).getHealth(options)(this.axios, this.basePath);
+    }
+
+    /**
+     * Returns an object containing Network data
+     * @summary Get Network Data
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getNetworkData(options?: any) {
+        return DefaultApiFp(this.configuration).getNetworkData(options)(this.axios, this.basePath);
+    }
+
+    /**
+     * Returns an object containing Node public keys
+     * @summary Get Node public keys
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getNodes(options?: any) {
+        return DefaultApiFp(this.configuration).getNodes(options)(this.axios, this.basePath);
     }
 
     /**
@@ -1551,12 +1891,12 @@ export class DefaultApi extends BaseAPI {
      * @param {string} [address] Address of sender or recipient of any in/out tx in event
      * @param {string} [txid] ID of any in/out tx in event
      * @param {string} [asset] Any asset used in event (CHAIN.SYMBOL)
-     * @param {'swap' | 'stake' | 'unstake' | 'add' | 'refund'} [type] Requested type of events
+     * @param {string} [type] One or more comma separated unique types of event
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public getTxDetails(offset: number, limit: number, address?: string, txid?: string, asset?: string, type?: 'swap' | 'stake' | 'unstake' | 'add' | 'refund', options?: any) {
+    public getTxDetails(offset: number, limit: number, address?: string, txid?: string, asset?: string, type?: string, options?: any) {
         return DefaultApiFp(this.configuration).getTxDetails(offset, limit, address, txid, asset, type, options)(this.axios, this.basePath);
     }
 

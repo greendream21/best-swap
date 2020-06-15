@@ -11,12 +11,47 @@ import { transition } from '../../../settings/style-util';
 export const SwapAssetCard = styled.div`
   display: flex;
   flex-direction: column;
+  margin: auto;
+  width: 100%;
+  max-width: 600px;
 
   .swaptool-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+    display: none;
+  }
+
+  .drag-confirm-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-top: 20px;
+  }
+
+  ${media.lg`
+    max-width: 800px;
+  `}
+
+  .swap-content {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding: 0 20px;
+    align-items: center;
+    margin: 0px auto;
+    .desktop-view {
+      display: none;
+      ${media.lg`
+        display: block;
+      `}
+    }
+    ${media.sm`
+      margin-top: 40px;
+      margin-bottom: 20px;
+    `}
   }
 `;
 
@@ -63,24 +98,6 @@ export const ContentWrapper = styled(ContentView)`
     padding: 48px 0;
   `}
 
-  .ant-row {
-    display: flex;
-    flex-grow: 1;
-    ${media.xs`
-      flex-direction: column;
-    `}
-    ${media.sm`
-      flex-direction: row;
-    `}
-
-    .desktop-view {
-      display: none;
-      ${media.lg`
-        display: block;
-      `}
-    }
-  }
-
   .swap-detail-panel {
     display: flex;
     flex-direction: column;
@@ -93,14 +110,6 @@ export const ContentWrapper = styled(ContentView)`
       .btn-wrapper {
         width: calc(50% - 10px);
       }
-    }
-
-    .drag-confirm-wrapper {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      padding-top: 20px;
     }
   }
 
@@ -183,6 +192,8 @@ export const CardFormItem = styled.div`
 
 export const CardFormItemError = styled.div`
   font-size: 12px;
+  color: ${palette('text', 0)};
+  padding-top: 6px;
 `;
 
 export const CardFormItemCloseButton = styled(Icon).attrs({
@@ -298,10 +309,11 @@ export const SwapStatusPanel = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 200px;
-  margin-top: 120px;
-  margin-left: auto;
-  margin-right: 10px;
+  margin: auto 10px;
+
+  .slip-ratio-labels {
+    margin-left: 18px;
+  }
 
   svg {
     transform: rotate(-90deg);
@@ -322,7 +334,36 @@ export const PopoverContent = styled.div`
 
 export const FeeParagraph = styled(Paragraph)`
   padding-top: 10px;
+  text-align: center;
   & > * {
-    color: ${palette('text', 1)};
+    color: ${palette('text', 2)};
   }
+`;
+
+export const SliderSwapWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  padding-left: 10px;
+  align-items: center;
+  margin-top: 20px;
+  padding-bottom: 20px;
+  height: 80px;
+  .slider {
+    flex-grow: 1;
+    align-self: baseline;
+  }
+  .swap-wrapper {
+    width: 60px;
+    text-align: center;
+    .swap-outlined {
+      font-size: 22px;
+      transform: rotate(90deg);
+      color: ${palette('success', 0)};
+    }
+  }
+  ${media.sm`
+    .swap-wrapper {
+      width: 170px;
+    }  
+  `}
 `;

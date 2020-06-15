@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { palette, key } from 'styled-theme';
+import { InfoCircleOutlined } from '@ant-design/icons';
 
 import Paragraph from 'antd/lib/typography/Paragraph';
 import ContentView from '../../../components/utility/contentView';
@@ -159,9 +160,18 @@ export const ContentWrapper = styled(ContentView)`
         }
         .drag-container {
           display: flex;
+          flex-direction: column;
           justify-content: center;
           align-items: center;
           padding-top: 20px;
+
+          .cooldown-info {
+            display: flex;
+            align-items: center;
+            .label-wrapper {
+              margin-right: 4px;
+            }
+          }
         }
       }
     }
@@ -453,7 +463,7 @@ export const ContentWrapper = styled(ContentView)`
 export const ConfirmModal = styled(Modal)`
   &.ant-modal {
     width: 420px !important;
-
+    z-index: 999999;
     .ant-modal-body {
       padding: 0px;
     }
@@ -594,14 +604,20 @@ export const PopoverContainer = styled.div`
   }
 `;
 
-export const PopoverContent = styled.div`
-  font-size: '11px';
-  color: ${palette('primary', 0)};
-`;
-
 export const FeeParagraph = styled(Paragraph)`
   padding-top: 10px;
   & > * {
     color: ${palette('text', 1)};
   }
+`;
+
+export const PopoverContent = styled.div`
+  width: 300px;
+  font-size: '11px';
+  color: ${palette('text', 0)};
+`;
+
+export const PopoverIcon = styled(InfoCircleOutlined)`
+  color: ${palette('primary', 0)};
+  margin: 0 10px;
 `;

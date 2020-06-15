@@ -4,7 +4,7 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { SwapOutlined, LockOutlined, UnlockOutlined } from '@ant-design/icons';
-import { Row, Col, notification } from 'antd';
+import { Row, notification } from 'antd';
 import {
   client as binanceClient,
   getPrefix,
@@ -36,7 +36,6 @@ import Label from '../../../components/uielements/label';
 import Drag from '../../../components/uielements/drag';
 import TokenCard from '../../../components/uielements/tokens/tokenCard';
 import CoinData from '../../../components/uielements/coins/coinData';
-import Status from '../../../components/uielements/status';
 import TxTimer from '../../../components/uielements/txTimer';
 import Modal from '../../../components/uielements/modal';
 import PrivateModal from '../../../components/modals/privateModal';
@@ -54,6 +53,7 @@ import {
   PopoverContent,
   PopoverContainer,
   FeeParagraph,
+  SliderSwapWrapper,
 } from './SwapSend.style';
 import {
   getTickerFormat,
@@ -605,7 +605,7 @@ class SwapSend extends React.Component<Props, State> {
     }
   };
 
-  handleSelectTraget = (asset: string) => {
+  handleSelectTarget = (asset: string) => {
     const { info } = this.props;
     const { source, target }: Pair = getPair(info);
     const selectedToken = getTickerFormat(asset);
@@ -654,7 +654,7 @@ class SwapSend extends React.Component<Props, State> {
     pair: Pair,
   ) => {
     if (!targetInfo.length) {
-      this.props.history.push('/swap');
+      this.props.history.push('/pools');
     }
 
     return validatePair(pair, sourceInfo, targetInfo);
@@ -773,7 +773,6 @@ class SwapSend extends React.Component<Props, State> {
 
   handleClickFinish = () => {
     this.handleCompleted();
-    this.props.history.push('/swap');
   };
 
   renderSwapModalContent = (
@@ -980,7 +979,7 @@ class SwapSend extends React.Component<Props, State> {
     // TODO (@Veado) Update `formatTokenAmountCurrency` of `asgardex-token` (now in `asgardex-util`) to accept decimals
     const formatBnbAmount = (value: BaseAmount) => {
       const token = baseToToken(value);
-      return `${token.amount().toString()} BNB`;
+      return `${token.amount().toString()} BNB + 1 RUNE`;
     };
 
     const txtLoading = <Text>Fee: ...</Text>;
@@ -1024,7 +1023,6 @@ class SwapSend extends React.Component<Props, State> {
       pools,
       assetData,
       priceIndex,
-      basePriceAsset,
     } = this.props;
     const {
       dragReset,
@@ -1050,7 +1048,7 @@ class SwapSend extends React.Component<Props, State> {
       !Object.keys(poolData).length ||
       !isValidSwap(swapPair, pools)
     ) {
-      this.props.history.push('/swap'); // redirect if swap is invalid
+      this.props.history.push('/pools'); // redirect to pool view if swap is invalid
       return '';
     }
 
@@ -1131,38 +1129,23 @@ class SwapSend extends React.Component<Props, State> {
 
       const disableDrag = this.bnbFeeIsNotCovered();
 
+      const slipValue = slip ? `SLIP ${formatBN(slip, 2)}%` : Nothing;
+
       return (
         <ContentWrapper className="swap-detail-wrapper">
-          <Row>
-            <Col
-              className="swap-status-panel desktop-view"
-              xs={{ span: 0, offset: 0 }}
-              md={{ span: 4 }}
-              lg={{ span: 6 }}
-            >
-              <SwapStatusPanel>
-                <Status title="exchange rate" value={ratioLabel} />
-                <SwapOutlined onClick={this.handleReversePair} />
-                <StepBar />
-              </SwapStatusPanel>
-            </Col>
-            <Col
-              className="swap-detail-panel"
-              xs={{ span: 24, offset: 0 }}
-              md={{ span: 16, offset: 4 }}
-              lg={{ span: 12, offset: 0 }}
-            >
-              <SwapAssetCard>
-                <ContentTitle>you are swapping</ContentTitle>
+          <SwapAssetCard>
+            <ContentTitle>
+              swapping {swapSource} &gt;&gt; {swapTarget}
+            </ContentTitle>
+            <div className="swap-content">
+              <div className="swap-detail-panel">
                 <TokenCard
-                  title="You are swapping"
-                  inputTitle="swap amount"
+                  inputTitle="input"
                   asset={swapSource}
                   assetData={sourceData}
                   amount={xValue}
                   price={sourcePrice}
                   priceIndex={priceIndex}
-                  unit={basePriceAsset}
                   onChange={this.handleChangeValue}
                   onChangeAsset={this.handleChangeSource}
                   onSelect={(amount: number) =>
@@ -1171,14 +1154,23 @@ class SwapSend extends React.Component<Props, State> {
                   withSearch
                   data-test="coincard-source"
                 />
-                <Slider
-                  value={percent}
-                  onChange={this.handleChangePercent}
-                  withLabel
-                />
+                <SliderSwapWrapper>
+                  <div className="slider">
+                    <Slider
+                      value={percent}
+                      onChange={this.handleChangePercent}
+                      withLabel
+                    />
+                  </div>
+                  <div className="swap-wrapper">
+                    <SwapOutlined
+                      className="swap-outlined"
+                      onClick={this.handleReversePair}
+                    />
+                  </div>
+                </SliderSwapWrapper>
                 <TokenCard
-                  title="You will receive"
-                  inputTitle="swap amount"
+                  inputTitle="output"
                   inputProps={{
                     disabled: true,
                     'data-test': 'coincard-target-input',
@@ -1188,14 +1180,10 @@ class SwapSend extends React.Component<Props, State> {
                   amount={outputAmount}
                   price={targetPrice}
                   priceIndex={priceIndex}
-                  unit={basePriceAsset}
-                  slip={slip}
-                  onChangeAsset={this.handleSelectTraget}
+                  onChangeAsset={this.handleSelectTarget}
                   withSearch
                   data-test="coincard-target"
                 />
-
-                {this.renderFee()}
 
                 <div className="swaptool-container">
                   <CardFormHolder>
@@ -1249,20 +1237,31 @@ class SwapSend extends React.Component<Props, State> {
                     </CardForm>
                   </CardFormHolder>
                 </div>
-              </SwapAssetCard>
-              <div className="drag-confirm-wrapper">
-                <Drag
-                  title={dragTitle}
-                  source={swapSource}
-                  target={swapTarget}
-                  reset={dragReset}
-                  disabled={disableDrag}
-                  onConfirm={this.handleEndDrag}
-                  onDrag={this.handleDrag}
-                />
               </div>
-            </Col>
-          </Row>
+              <div className="desktop-view">
+                <SwapStatusPanel>
+                  <StepBar size={170} />
+                  <div className="slip-ratio-labels">
+                    <Label>{ratioLabel}</Label>
+                    <Label>{slipValue}</Label>
+                  </div>
+                </SwapStatusPanel>
+              </div>
+            </div>
+            <div className="drag-confirm-wrapper">
+              <Drag
+                title={dragTitle}
+                source={swapSource}
+                target={swapTarget}
+                reset={dragReset}
+                disabled={disableDrag}
+                onConfirm={this.handleEndDrag}
+                onDrag={this.handleDrag}
+              />
+            </div>
+            {this.renderFee()}
+          </SwapAssetCard>
+
           <SwapModal
             title={swapTitle}
             visible={openSwapModal}

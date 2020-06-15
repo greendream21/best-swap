@@ -49,6 +49,41 @@ const TxInfo: React.FC<Props> = (props: Props): JSX.Element => {
     );
   }
 
+  // double swap tx
+  if (type === TxDetailsTypeEnum.DoubleSwap) {
+    const inData = _in?.coins?.[0];
+    const outData = out?.[0]?.coins?.[0];
+    const slipValue = bnOrZero(events?.slip).multipliedBy(100);
+    const slipValueLabel = `${formatBN(slipValue)}%`;
+
+    return (
+      <TxInfoWrapper className="txInfo-wrapper swap-tx">
+        <div className="txInfo-main-data">
+          <TxStatus
+            type="in"
+            data={inData ? [inData] : []}
+            txID={_in?.txID}
+            round="left"
+          />
+          <Seperator />
+          <TxStatus
+            type="out"
+            data={outData ? [outData] : []}
+            txID={out?.[0]?.txID}
+            round="right"
+          />
+        </div>
+        <div className="txInfo-extra-data">
+          <Dash />
+          <div className="tx-event-label">
+            <p className="tx-event-title">SLIP</p>
+            <p className="tx-event-value">{slipValueLabel}</p>
+          </div>
+        </div>
+      </TxInfoWrapper>
+    );
+  }
+
   // withdraw tx
   if (type === TxDetailsTypeEnum.Unstake) {
     const outData1 = out?.[0]?.coins?.[0];

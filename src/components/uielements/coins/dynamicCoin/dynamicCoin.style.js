@@ -23,6 +23,8 @@ export const DynamicCoinWrapper = styled.div`
   height: ${props => sizes[props.size]};
   min-width: ${props => sizes[props.size]};
   min-height: ${props => sizes[props.size]};
+  max-width: ${props => sizes[props.size]};
+  max-height: ${props => sizes[props.size]};
   border-radius: 50%;
   font-size: ${props => fontSizes[props.size]};
   font-weight: bold;
