@@ -2,14 +2,13 @@ import React from 'react';
 import { sortBy as _sortBy } from 'lodash';
 
 import BigNumber from 'bignumber.js';
-import { bn, formatBN } from '@thorchain/asgardex-util';
+import { bn, formatBNCurrency } from '@thorchain/asgardex-util';
 import { TokenAmount, tokenAmount } from '@thorchain/asgardex-token';
 import { TokenCardWrapper } from './tokenCard.style';
 
-import Label from '../../label';
 import TokenSelect from '../tokenSelect';
 import TokenInput from '../tokenInput';
-import { AssetPair, Nothing } from '../../../../types/bepswap';
+import { AssetPair } from '../../../../types/bepswap';
 import { PriceDataIndex } from '../../../../redux/midgard/types';
 import { TokenInputProps } from '../tokenInput/types';
 
@@ -19,9 +18,7 @@ type Props = {
   amount: TokenAmount;
   price: BigNumber;
   priceIndex: PriceDataIndex;
-  unit: string;
-  slip?: BigNumber;
-  title: string;
+  status?: string;
   inputTitle: string;
   searchDisable?: string[];
   withSearch: boolean;
@@ -33,6 +30,7 @@ type Props = {
   dataTestInput?: string;
   'data-test': string;
   inputProps: TokenInputProps;
+  showPrice?: boolean;
 };
 
 const TokenCard: React.FC<Props> = (props: Props): JSX.Element => {
@@ -42,9 +40,8 @@ const TokenCard: React.FC<Props> = (props: Props): JSX.Element => {
     amount = tokenAmount(0),
     price = bn(0),
     priceIndex,
-    unit = 'RUNE',
-    slip,
-    title = '',
+    status = '',
+    showPrice = false,
     inputTitle = '',
     withSearch = false,
     searchDisable = [],
@@ -57,10 +54,9 @@ const TokenCard: React.FC<Props> = (props: Props): JSX.Element => {
     ...otherProps
   } = props;
 
-  const slipValue = slip ? `slip ${formatBN(slip, 2)}%` : Nothing;
   // formula: amount * price
   const priceResult = amount.amount().multipliedBy(price);
-  const priceValue = `${unit} ${formatBN(priceResult)}`;
+  const priceValue = `${formatBNCurrency(priceResult)}`;
   const tokenSelectDataTest = `${dataTest}-select`;
   const sortedAssetData = _sortBy(assetData, ['asset']);
 
@@ -69,21 +65,19 @@ const TokenCard: React.FC<Props> = (props: Props): JSX.Element => {
       className={`tokenCard-wrapper ${className}`}
       {...otherProps}
     >
-      {title && <Label className="title-label">{title}</Label>}
       <div className="token-card-content">
         <TokenInput
           title={inputTitle}
-          status={slipValue}
           amount={amount.amount()}
           onChange={onChange}
-          label={priceValue}
+          label={showPrice ? priceValue : ''}
           inputProps={inputProps}
+          status={status}
         />
         <TokenSelect
           asset={asset}
           price={price}
           priceIndex={priceIndex}
-          priceUnit={unit}
           assetData={sortedAssetData}
           withSearch={withSearch}
           searchDisable={searchDisable}

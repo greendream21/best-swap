@@ -1,6 +1,7 @@
 import { all, takeEvery, put, fork, call, delay } from 'redux-saga/effects';
 import { isEmpty as _isEmpty } from 'lodash';
 import byzantine from '@thorchain/byzantine-module';
+import { axiosRequest } from '../../helpers/apiHelper';
 import * as actions from './actions';
 import * as api from '../../helpers/apiHelper';
 
@@ -24,14 +25,8 @@ export const MIDGARD_MAX_RETRY = 3;
 export const MIDGARD_RETRY_DELAY = 1000; // ms
 
 export function* getApiBasePath(net: NET, noCache = false) {
-  // dev
-  if (net === NET.DEV) {
-    const basePath: string = api.getMidgardBasePathByIP(api.MIDGARD_DEV_API_DEV_IP);
-    yield put(actions.getApiBasePathSuccess(basePath));
-    return basePath;
-  }
-  // test- | chaosnet
-  if (net === NET.TEST || net === NET.CHAOS) {
+  // dev | test- | chaosnet
+  if (net === NET.TEST || net === NET.CHAOS || net === NET.DEV) {
     const basePath: string = api.MIDGARD_TEST_API;
     yield put(actions.getApiBasePathSuccess(basePath));
     return basePath;
@@ -195,13 +190,42 @@ function* tryGetStakerPoolData(payload: GetStakerPoolDataPayload) {
   throw new Error('Midgard API request failed to get stakers pool data');
 }
 
+const getThorchainBaseURL = () => {
+  // TODO: hardcode the thorchain url for temporarly
+  // return `${api.MIDGARD_TEST_API}:1317/thorchain`;
+  return 'http://54.90.0.151:1317/thorchain';
+};
+
+const getThorchainConstants = () => {
+  return axiosRequest({
+    url: `${getThorchainBaseURL()}/constants`,
+    method: 'GET',
+  });
+};
+
+const getThorchainLastBlock = () => {
+  return axiosRequest({
+    url: `${getThorchainBaseURL()}/lastblock`,
+    method: 'GET',
+  });
+};
+
 export function* getStakerPoolData() {
   yield takeEvery('GET_STAKER_POOL_DATA_REQUEST', function*({
     payload,
   }: ReturnType<typeof actions.getStakerPoolData>) {
     try {
       const data = yield call(tryGetStakerPoolData, payload);
+      const { data: constants } = yield call(getThorchainConstants);
+      const { data: lastBlock } = yield call(getThorchainLastBlock);
+
       yield put(actions.getStakerPoolDataSuccess(data));
+      yield put(
+        actions.getThorchainDataSuccess({
+          constants,
+          lastBlock,
+        }),
+      );
     } catch (error) {
       yield put(actions.getStakerPoolDataFailed(error));
     }
@@ -274,7 +298,6 @@ export function* getTxByAddress() {
     payload,
   }: ReturnType<typeof actions.getTxByAddress>) {
     try {
-      // Can't infer type of `data: InlineResponse200` in a Generator function - known TS/Generator/Saga issue
       const data = yield call(tryGetTxByAddress, payload);
       yield put(actions.getTxByAddressSuccess(data));
     } catch (error) {
@@ -319,7 +342,6 @@ export function* getTxByAddressTxId() {
     payload,
   }: ReturnType<typeof actions.getTxByAddressTxId>) {
     try {
-      // Can't infer type of `data: InlineResponse200` in a Generator function - known TS/Generator/Saga issue
       const data = yield call(tryTxByAddressTxId, payload);
       yield put(actions.getTxByAddressTxIdSuccess(data));
     } catch (error) {

@@ -8,13 +8,14 @@ import {
   GetTxByAddressPayload,
   GetTxByAssetPayload,
   GetPoolDataPayload,
+  ThorchainData,
 } from './types';
 import {
   AssetDetail,
   PoolDetail,
   StakersAssetData,
   ThorchainEndpoints,
-  InlineResponse200,
+  InlineResponse2001,
 } from '../../types/generated/midgard';
 
 export type SetAssetsPayload = {
@@ -54,6 +55,9 @@ export const getStakerPoolDataSuccess = (payload: StakersAssetData[]) =>
 export const getStakerPoolDataFailed = (payload: Error) =>
   ({ type: 'GET_STAKER_POOL_DATA_FAILED', payload } as const);
 
+export const getThorchainDataSuccess = (payload: ThorchainData) =>
+  ({ type: 'GET_THORCHAIN_DATA_SUCCESS', payload } as const);
+
 export const getPoolAddress = () =>
   ({ type: 'GET_POOL_ADDRESSES_REQUEST' } as const);
 
@@ -75,7 +79,7 @@ export const setPriceIndex = (payload: PriceDataIndex) =>
 export const getTxByAddress = (payload: GetTxByAddressPayload) =>
   ({ type: 'GET_TX_BY_ADDRESS', payload } as const);
 
-export const getTxByAddressSuccess = (payload: InlineResponse200) =>
+export const getTxByAddressSuccess = (payload: InlineResponse2001) =>
   ({ type: 'GET_TX_BY_ADDRESS_SUCCESS', payload } as const);
 
 export const getTxByAddressFailed = (payload: Error) =>
@@ -85,7 +89,7 @@ export const getTxByAddressFailed = (payload: Error) =>
 export const getTxByAddressTxId = (payload: GetTxByAddressTxIdPayload) =>
   ({ type: 'GET_TX_BY_ADDRESS_TXID', payload } as const);
 
-export const getTxByAddressTxIdSuccess = (payload: InlineResponse200) =>
+export const getTxByAddressTxIdSuccess = (payload: InlineResponse2001) =>
   ({ type: 'GET_TX_BY_ADDRESS_TXID_SUCCESS', payload } as const);
 
 export const getTxByAddressTxIdFailed = (payload: Error) =>
@@ -95,7 +99,7 @@ export const getTxByAddressTxIdFailed = (payload: Error) =>
 export const getTxByAddressAsset = (payload: GetTxByAddressAssetPayload) =>
   ({ type: 'GET_TX_BY_ADDRESS_ASSET', payload } as const);
 
-export const getTxByAddressAssetSuccess = (payload: InlineResponse200) =>
+export const getTxByAddressAssetSuccess = (payload: InlineResponse2001) =>
   ({ type: 'GET_TX_BY_ADDRESS_ASSET_SUCCESS', payload } as const);
 
 export const getTxByAddressAssetFailed = (payload: Error) =>
@@ -105,7 +109,7 @@ export const getTxByAddressAssetFailed = (payload: Error) =>
 export const getTxByAsset = (payload: GetTxByAssetPayload) =>
   ({ type: 'GET_TX_BY_ASSET', payload } as const);
 
-export const getTxByAssetSuccess = (payload: InlineResponse200) =>
+export const getTxByAssetSuccess = (payload: InlineResponse2001) =>
   ({ type: 'GET_TX_BY_ASSET_SUCCESS', payload } as const);
 
 export const getTxByAssetFailed = (payload: Error) =>
@@ -152,4 +156,5 @@ export type MidgardActionTypes = ReturnType<
   | typeof getApiBasePathPending
   | typeof getApiBasePathFailed
   | typeof getApiBasePathSuccess
+  | typeof getThorchainDataSuccess
 >;

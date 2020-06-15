@@ -3,7 +3,11 @@ import React from 'react';
 import BigNumber from 'bignumber.js';
 import { bn, formatBN } from '@thorchain/asgardex-util';
 import { TokenAmount, formatTokenAmount } from '@thorchain/asgardex-token';
-import { CoinDataWrapper, CoinDataWrapperType, CoinDataWrapperSize } from './coinData.style';
+import {
+  CoinDataWrapper,
+  CoinDataWrapperType,
+  CoinDataWrapperSize,
+} from './coinData.style';
 import Coin from '../coin';
 import Label from '../../label';
 import { Maybe, Nothing } from '../../../../types/bepswap';
@@ -37,7 +41,12 @@ const CoinData: React.FC<Props> = (props: Props): JSX.Element => {
     ...otherProps
   } = props;
 
-  const priceLabel = priceValid ? `${priceUnit.toUpperCase()} ${formatBN(price)}` : 'NOT LISTED';
+  const totalPrice =
+    type === 'wallet'
+      ? price.multipliedBy(assetValue?.amount() ?? 0)
+      : price.multipliedBy(targetValue?.amount() ?? 0);
+
+  const priceLabel = priceValid ? `${priceUnit.toUpperCase()}` : 'NOT LISTED';
 
   return (
     <CoinDataWrapper
@@ -47,45 +56,62 @@ const CoinData: React.FC<Props> = (props: Props): JSX.Element => {
       className={`coinData-wrapper ${className}`}
       {...otherProps}
     >
-      <Coin
-        className="coinData-coin-avatar"
-        type={asset}
-        over={target}
-        size={size}
-      />
-      <div className="coinData-asset-info" data-test="coin-data-asset-info">
-        <Label
-          className="coinData-asset-label"
-          data-test="coin-data-asset-label"
-          type="normal"
-          weight="600"
-        >
-          {`${asset} ${target ? ':' : ''}`}
-        </Label>
-        {assetValue && (
-          <Label
-            className="coinData-asset-value"
-            data-test="coin-data-asset-value"
-            type="normal"
-            weight="600"
-          >
-            {formatTokenAmount(assetValue)}
-          </Label>
-        )}
-      </div>
-      {target && (
-        <div className="coinData-target-info">
-          <Label className="coinData-target-label" type="normal" weight="600">
-            {target}
-          </Label>
-          {targetValue && (
-            <Label className="coinData-target-value" type="normal" weight="600">
-              {formatTokenAmount(targetValue)}
+      <div className="coinData-content">
+        <Coin
+          className="coinData-coin-avatar"
+          type={asset}
+          over={target}
+          size={size}
+        />
+        <div className="coinData-info-wrapper">
+          <div className="coinData-asset-info" data-test="coin-data-asset-info">
+            <Label
+              className="coinData-asset-label"
+              data-test="coin-data-asset-label"
+              type="normal"
+              weight="600"
+            >
+              {asset}
             </Label>
+            {assetValue && (
+              <Label
+                className="coinData-asset-value"
+                data-test="coin-data-asset-value"
+                type="normal"
+                weight="600"
+              >
+                {formatTokenAmount(assetValue)}
+              </Label>
+            )}
+          </div>
+          {target && (
+            <div className="coinData-target-info">
+              <Label
+                className="coinData-target-label"
+                type="normal"
+                weight="600"
+              >
+                {target}
+              </Label>
+              {targetValue && (
+                <Label
+                  className="coinData-target-value"
+                  type="normal"
+                  weight="600"
+                >
+                  {formatTokenAmount(targetValue)}
+                </Label>
+              )}
+            </div>
           )}
         </div>
-      )}
+      </div>
       <div className="asset-price-info">
+        {priceValid && (
+          <Label size="small" color="gray" weight="bold">
+            {formatBN(totalPrice)}
+          </Label>
+        )}
         <Label size="small" color="gray" weight="bold">
           {priceLabel}
         </Label>
