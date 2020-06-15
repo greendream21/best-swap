@@ -60,7 +60,13 @@ export const ActionHeader = styled.div`
 
 export const ActionColumn = styled.div`
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
   align-items: center;
-  width: 100%;
+
+  .action-column-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 250px;
+  }
 `;
