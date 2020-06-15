@@ -35,7 +35,7 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
   return (
     <StyledHeader>
       <LogoWrapper>
-        <Link to="/">
+        <Link to="/pools">
           <Logo name="bepswap" type="long" />
         </Link>
         <HeaderSetting midgardBasePath={midgardBasePath} />
