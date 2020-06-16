@@ -136,17 +136,18 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
                     stake
                   </Button>
                 </Link>
-                <Link to={swapUrl}>
-                  <Button
-                    style={{ margin: 'auto' }}
-                    round="true"
-                    data-test={dataTest}
-                    disabled={poolStatus === PoolDetailStatusEnum.Bootstrapped}
-                  >
-                    <SwapOutlined />
-                    swap
-                  </Button>
-                </Link>
+                {poolStatus !== PoolDetailStatusEnum.Bootstrapped && (
+                  <Link to={swapUrl}>
+                    <Button
+                      style={{ margin: 'auto' }}
+                      round="true"
+                      data-test={dataTest}
+                    >
+                      <SwapOutlined />
+                      swap
+                    </Button>
+                  </Link>
+                )}
               </div>
             </ActionColumn>
           );
@@ -161,8 +162,8 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         dataIndex: 'pool',
         render: ({ target }: { target: string }) => (
           <Row>
-            <Col xs={24} style={{ display:'flex', justifyContent:'center' }}>
-              <CoinIcon type={target}  />
+            <Col xs={24} style={{ display: 'flex', justifyContent: 'center' }}>
+              <CoinIcon type={target} />
             </Col>
           </Row>
         ),
@@ -174,10 +175,10 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         key: 'pool',
         title: 'pool',
         dataIndex: 'pool',
-        render: ({ target }: { target: string }) =>  (
+        render: ({ target }: { target: string }) => (
           <Row>
-            <Col xs={24} style={{ display:'flex', justifyContent:'center' }}>
-              <CoinIcon type={target}  />
+            <Col xs={24} style={{ display: 'flex', justifyContent: 'center' }}>
+              <CoinIcon type={target} />
             </Col>
           </Row>
         ),
