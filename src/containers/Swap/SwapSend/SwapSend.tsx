@@ -941,11 +941,13 @@ class SwapSend extends React.Component<Props, State> {
   runeFeeIsNotCovered = (amount: BigNumber): boolean => {
     const { info, priceIndex } = this.props;
     const { source }: Pair = getPair(info);
-    return source
-      ? bn(priceIndex[source.toUpperCase()])
+    if (!source) return true;
+
+    const runePrice = priceIndex.RUNE;
+    return bn(priceIndex[source.toUpperCase()])
+          .dividedBy(runePrice)
           .multipliedBy(amount)
-          .isLessThanOrEqualTo(1)
-      : true;
+          .isLessThanOrEqualTo(1);
   };
 
   /**
