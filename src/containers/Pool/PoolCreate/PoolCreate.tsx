@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import * as H from 'history';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
+import { withRouter, useHistory } from 'react-router-dom';
 import { Row, Col, notification, Spin } from 'antd';
 import { FullscreenExitOutlined, CloseOutlined } from '@ant-design/icons';
 import { crypto } from '@binance-chain/javascript-sdk';
@@ -45,7 +45,7 @@ import {
   ConfirmModalContent,
   LoaderWrapper,
 } from './PoolCreate.style';
-import { getTickerFormat, emptyString } from '../../../helpers/stringHelper';
+import { getTickerFormat } from '../../../helpers/stringHelper';
 import {
   confirmCreatePool,
   getCreatePoolTokens,
@@ -105,46 +105,60 @@ type State = {
   fT: number; // fine tuning balance of token (set by "adjust balance" slider, which will come back in the future)
 };
 
-class PoolCreate extends React.Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      dragReset: true,
-      openPrivateModal: false,
-      password: emptyString,
-      invalidPassword: false,
-      validatingPassword: false,
-      runeAmount: tokenAmount(0),
-      tokenAmount: tokenAmount(0),
-      fR: 1,
-      fT: 1,
-    };
-  }
+const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
+  const {
+    symbol,
+    user,
+    poolAddress,
+    priceIndex,
+    basePriceAsset,
+    assetData,
+    binanceData,
+    txStatus,
+    pools,
+    getPools,
+    getPoolAddress,
+    getBinanceMarkets,
+    getBinanceTokens,
+    getStakerPoolData,
+    resetTxStatus,
+    setTxTimerModal,
+    setTxTimerStatus,
+    setTxHash,
+    countTxTimerValue,
+  } = props;
 
-  componentDidMount() {
-    const {
-      getPools,
-      getPoolAddress,
-      getBinanceMarkets,
-      getBinanceTokens,
-    } = this.props;
+  const history = useHistory();
 
+  const [dragReset, setDragReset] = useState(true);
+  const [openPrivateModal, setOpenPrivateModal] = useState(false);
+  const [password, setPassword] = useState('');
+  const [invalidPassword, setInvalidPassword] = useState(false);
+  const [validatingPassword, setValidatingPassword] = useState(false);
+
+  const [runeAmount, setRuneAmount] = useState<TokenAmount>(tokenAmount(0));
+  const [targetAmount, setTargetAmount] = useState<TokenAmount>(tokenAmount(0));
+
+  const getStakerData = useCallback(() => {
+    if (user) {
+      getStakerPoolData({ asset: symbol, address: user.wallet });
+    }
+  }, [user, symbol, getStakerPoolData]);
+
+  useEffect(() => {
     getPools();
     getPoolAddress();
-    this.getStakerData();
     getBinanceTokens();
     getBinanceMarkets();
-  }
+    getStakerData();
 
-  componentWillUnmount() {
-    const { resetTxStatus } = this.props;
-    resetTxStatus();
-  }
+    return () => {
+      resetTxStatus();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  getData = (): CreatePoolCalc => {
-    const { symbol, poolAddress, priceIndex } = this.props;
-    const { runeAmount, tokenAmount } = this.state;
-
+  const getData = useCallback((): CreatePoolCalc => {
     const runePrice = validBNOrZero(priceIndex?.RUNE);
 
     return getCreatePoolCalc({
@@ -152,29 +166,108 @@ class PoolCreate extends React.Component<Props, State> {
       poolAddress,
       runeAmount,
       runePrice,
-      tokenAmount,
+      tokenAmount: targetAmount,
     });
+  }, [symbol, poolAddress, priceIndex, runeAmount, targetAmount]);
+
+  const handleChangePassword = useCallback(
+    (password: string) => {
+      setPassword(password);
+      setInvalidPassword(false);
+    },
+    [setPassword, setInvalidPassword],
+  );
+
+  const handleStartTimer = useCallback(() => {
+    resetTxStatus({
+      type: TxTypes.CREATE,
+      modal: true,
+      status: true,
+      startTime: Date.now(),
+    });
+  }, [resetTxStatus]);
+
+  const handleEndTxTimer = useCallback(() => {
+    setTxTimerStatus(false);
+    setDragReset(true);
+  }, [setTxTimerStatus, setDragReset]);
+
+  const handleChangeTxValue = () => {
+    // ATM we just count a `quarter` w/o any other checks
+    // See https://gitlab.com/thorchain/bepswap/bepswap-web-ui/issues/281
+    countTxTimerValue(25);
   };
 
-  getStakerData = () => {
-    const { getStakerPoolData, symbol, user } = this.props;
+  const handleCloseModal = useCallback(() => {
+    setTxTimerModal(false);
+    handleEndTxTimer();
+  }, [setTxTimerModal, handleEndTxTimer]);
 
+  const handleFinishTx = () => {
+    notification.open({
+      message: 'Pool Created Successfully!',
+      description:
+        'It may take a few moments until a new pool appears in the pool list!',
+      getContainer: getAppContainer,
+    });
+
+    handleCloseModal();
+  };
+
+  const handleOpenPrivateModal = () => {
+    setPassword('');
+    setInvalidPassword(false);
+    setOpenPrivateModal(true);
+  };
+
+  const handleCancelPrivateModal = useCallback(() => {
+    setOpenPrivateModal(false);
+    setDragReset(true);
+  }, [setOpenPrivateModal, setDragReset]);
+
+  const handleConfirmPassword = async () => {
     if (user) {
-      getStakerPoolData({ asset: symbol, address: user.wallet });
+      setValidatingPassword(true);
+      // Short delay to render latest state changes of `validatingPassword`
+      await delay(200);
+
+      try {
+        const privateKey = crypto.getPrivateKeyFromKeyStore(
+          user.keystore,
+          password,
+        );
+        const bncClient = await binanceClient(BINANCE_NET);
+        await bncClient.setPrivateKey(privateKey);
+        const address = crypto.getAddressFromPrivateKey(
+          privateKey,
+          getPrefix(BINANCE_NET),
+        );
+        if (user.wallet === address) {
+          handleConfirmCreate();
+        }
+
+        setValidatingPassword(false);
+        setOpenPrivateModal(false);
+      } catch (error) {
+        setValidatingPassword(false);
+        setInvalidPassword(true);
+        console.error(error); // eslint-disable-line no-console
+      }
     }
   };
 
-  handleChangePassword = (password: string) => {
-    this.setState({
-      password,
-      invalidPassword: false,
-    });
+  const handleDrag = useCallback(() => {
+    setDragReset(false);
+  }, [setDragReset]);
+
+  const handleSelectTraget = (asset: string) => {
+    const URL = `/pool/${asset}/new`;
+    history.push(URL);
   };
 
-  handleChangeTokenAmount = (tokenName: string) => (amount: BigNumber) => {
-    const { assetData, symbol } = this.props;
-    const { fR, fT } = this.state;
-
+  const handleChangeTokenAmount = (tokenName: string) => (
+    amount: BigNumber,
+  ) => {
     const source = getTickerFormat(tokenName);
 
     const sourceAsset = assetData.find(data => {
@@ -198,40 +291,23 @@ class PoolCreate extends React.Component<Props, State> {
       return;
     }
 
-    const balance = tokenName === 'rune' ? fR : fT;
-
-    // Fine tuning of amout by using "adjust balance" slider
-    // This slider has been remove, but will come back in the future
-    const totalAmount: BigNumber = sourceAsset.assetValue
-      .amount()
-      .multipliedBy(balance);
+    const totalAmount: BigNumber = sourceAsset.assetValue.amount();
 
     const newValue = tokenAmount(amount);
     if (tokenName === 'rune') {
       if (totalAmount.isLessThan(newValue.amount())) {
-        this.setState({
-          runeAmount: tokenAmount(totalAmount),
-        });
+        setRuneAmount(tokenAmount(totalAmount));
       } else {
-        this.setState({
-          runeAmount: newValue,
-        });
+        setRuneAmount(newValue);
       }
     } else if (totalAmount.isLessThan(newValue.amount())) {
-      this.setState({
-        tokenAmount: tokenAmount(totalAmount),
-      });
+      setTargetAmount(tokenAmount(totalAmount));
     } else {
-      this.setState({
-        tokenAmount: newValue,
-      });
+      setTargetAmount(newValue);
     }
   };
 
-  handleSelectTokenAmount = (tokenName: string) => (amount: number) => {
-    const { assetData, symbol } = this.props;
-    const { fR, fT } = this.state;
-
+  const handleSelectTokenAmount = (tokenName: string) => (amount: number) => {
     const selectedToken = assetData.find(data => {
       const { asset } = data;
       const ticker = getTickerFormat(asset);
@@ -253,76 +329,29 @@ class PoolCreate extends React.Component<Props, State> {
       return;
     }
 
-    const balance = tokenName === 'rune' ? fR : fT;
     const totalAmount = selectedToken.assetValue.amount();
-    // Fine tuning of amout by using "adjust balance" slider
-    // This slider has been remove, but will come back in the future
-    // formula ((totalAmount * amount) / 100) * balance;
-    const newValueBN = totalAmount
-      .multipliedBy(amount)
-      .div(100)
-      .multipliedBy(balance);
+    const newValueBN = totalAmount.multipliedBy(amount).div(100);
     const newValue = tokenAmount(newValueBN);
 
     if (tokenName === 'rune') {
-      this.setState({
-        runeAmount: newValue,
-      });
+      setRuneAmount(newValue);
     } else {
-      this.setState({
-        tokenAmount: newValue,
-      });
+      setTargetAmount(newValue);
     }
   };
 
-  handleCreatePool = () => {
-    const { user } = this.props;
-    const wallet = user ? user.wallet : null;
-    const keystore = user ? user.keystore : null;
-    const { runeAmount, tokenAmount } = this.state;
-
-    if (!wallet) {
-      return;
-    }
-
-    if (
-      runeAmount.amount().isLessThanOrEqualTo(0) ||
-      tokenAmount.amount().isLessThanOrEqualTo(0)
-    ) {
-      notification.error({
-        message: 'Stake Invalid',
-        description: 'You need to enter an amount to stake.',
-        getContainer: getAppContainer,
-      });
-      this.handleCloseModal();
-      this.setState({
-        dragReset: true,
-      });
-      return;
-    }
-
-    if (keystore) {
-      this.handleOpenPrivateModal();
-    } else if (wallet) {
-      this.handleConfirmCreate();
-    }
-  };
-
-  handleConfirmCreate = async () => {
-    const { user, setTxHash } = this.props;
-    const { runeAmount, tokenAmount } = this.state;
-
+  const handleConfirmCreate = async () => {
     if (user) {
       // start timer modal
-      this.handleStartTimer();
+      handleStartTimer();
       const bncClient = await binanceClient(BINANCE_NET);
       try {
-        const { poolAddress, tokenSymbol } = this.getData();
+        const { poolAddress, tokenSymbol } = getData();
         const { result } = await confirmCreatePool({
           bncClient,
           wallet: user.wallet,
           runeAmount,
-          tokenAmount,
+          tokenAmount: targetAmount,
           poolAddress,
           tokenSymbol,
         });
@@ -337,135 +366,43 @@ class PoolCreate extends React.Component<Props, State> {
           description: 'Create Pool information is not valid.',
           getContainer: getAppContainer,
         });
-        this.handleCloseModal();
-        this.setState({
-          dragReset: true,
-        });
+        handleCloseModal();
+        setDragReset(true);
         console.error(error); // eslint-disable-line no-console
       }
     }
   };
 
-  handleOpenPrivateModal = () => {
-    this.setState({
-      password: emptyString,
-      invalidPassword: false,
-      openPrivateModal: true,
-    });
-  };
+  const handleCreatePool = () => {
+    const wallet = user ? user.wallet : null;
+    const keystore = user ? user.keystore : null;
 
-  handleCancelPrivateModal = () => {
-    this.setState({
-      openPrivateModal: false,
-      dragReset: true,
-    });
-  };
+    if (!wallet) {
+      return;
+    }
 
-  handleConfirmPassword = async () => {
-    const { user } = this.props;
-    const { password } = this.state;
+    if (
+      runeAmount.amount().isLessThanOrEqualTo(0) ||
+      targetAmount.amount().isLessThanOrEqualTo(0)
+    ) {
+      notification.error({
+        message: 'Stake Invalid',
+        description: 'You need to enter an amount to stake.',
+        getContainer: getAppContainer,
+      });
+      handleCloseModal();
+      setDragReset(true);
+      return;
+    }
 
-    if (user) {
-      this.setState({ validatingPassword: true });
-      // Short delay to render latest state changes of `validatingPassword`
-      await delay(200);
-
-      try {
-        const privateKey = crypto.getPrivateKeyFromKeyStore(
-          user.keystore,
-          password,
-        );
-        const bncClient = await binanceClient(BINANCE_NET);
-        await bncClient.setPrivateKey(privateKey);
-        const address = crypto.getAddressFromPrivateKey(
-          privateKey,
-          getPrefix(BINANCE_NET),
-        );
-        if (user.wallet === address) {
-          this.handleConfirmCreate();
-        }
-
-        this.setState({
-          validatingPassword: false,
-          openPrivateModal: false,
-        });
-      } catch (error) {
-        this.setState({
-          validatingPassword: false,
-          invalidPassword: true,
-        });
-        console.error(error); // eslint-disable-line no-console
-      }
+    if (keystore) {
+      handleOpenPrivateModal();
+    } else if (wallet) {
+      handleConfirmCreate();
     }
   };
 
-  handleDrag = () => {
-    this.setState({
-      dragReset: false,
-    });
-  };
-
-  handleSelectTraget = (asset: string) => {
-    const URL = `/pool/${asset}/new`;
-
-    this.props.history.push(URL);
-  };
-
-  handleStartTimer = () => {
-    const { resetTxStatus } = this.props;
-    resetTxStatus({
-      type: TxTypes.CREATE,
-      modal: true,
-      status: true,
-      startTime: Date.now(),
-    });
-  };
-
-  handleCloseModal = () => {
-    const { setTxTimerModal } = this.props;
-
-    setTxTimerModal(false);
-
-    this.handleEndTxTimer();
-  };
-
-  handleChangeTxValue = () => {
-    const { countTxTimerValue } = this.props;
-    // ATM we just count a `quarter` w/o any other checks
-    // See https://gitlab.com/thorchain/bepswap/bepswap-web-ui/issues/281
-    countTxTimerValue(25);
-  };
-
-  handleEndTxTimer = () => {
-    const { setTxTimerStatus } = this.props;
-    setTxTimerStatus(false);
-    this.setState({
-      dragReset: true,
-    });
-  };
-
-  handleFinishTx = () => {
-    notification.open({
-      message: 'Pool Created Successfully!',
-      description:
-        'It may take a few moments until a new pool appears in the pool list!',
-      getContainer: getAppContainer,
-    });
-  };
-
-  renderAssetView = () => {
-    const { symbol, priceIndex, basePriceAsset, assetData, pools } = this.props;
-
-    const {
-      runeAmount,
-      tokenAmount,
-      dragReset,
-      openPrivateModal,
-      invalidPassword,
-      validatingPassword,
-      password,
-    } = this.state;
-
+  const renderAssetView = () => {
     const source = 'rune';
     const target = getTickerFormat(symbol);
 
@@ -480,10 +417,10 @@ class PoolCreate extends React.Component<Props, State> {
       runeAmount
         .amount()
         .multipliedBy(runePrice)
-        .dividedBy(tokenAmount.amount()),
+        .dividedBy(targetAmount.amount()),
     );
 
-    const { poolPrice, depth, share } = this.getData();
+    const { poolPrice, depth, share } = getData();
 
     const poolAttrs = [
       {
@@ -517,20 +454,20 @@ class PoolCreate extends React.Component<Props, State> {
             price={runePrice}
             priceIndex={priceIndex}
             unit={basePriceAsset}
-            onChange={this.handleChangeTokenAmount('rune')}
-            onSelect={this.handleSelectTokenAmount('rune')}
+            onChange={handleChangeTokenAmount('rune')}
+            onSelect={handleSelectTokenAmount('rune')}
             withSelection
           />
           <CoinCard
             asset={target}
             assetData={coinDardData}
-            amount={tokenAmount}
+            amount={targetAmount}
             price={tokenPrice}
             priceIndex={priceIndex}
             unit={basePriceAsset}
-            onChangeAsset={this.handleSelectTraget}
-            onChange={this.handleChangeTokenAmount(target)}
-            onSelect={this.handleSelectTokenAmount(target)}
+            onChangeAsset={handleSelectTraget}
+            onChange={handleChangeTokenAmount(target)}
+            onSelect={handleSelectTokenAmount(target)}
             withSelection
             withSearch
           />
@@ -547,8 +484,8 @@ class PoolCreate extends React.Component<Props, State> {
               source="blue"
               target="confirm"
               reset={dragReset}
-              onConfirm={this.handleCreatePool}
-              onDrag={this.handleDrag}
+              onConfirm={handleCreatePool}
+              onDrag={handleDrag}
             />
           </div>
         </div>
@@ -557,21 +494,18 @@ class PoolCreate extends React.Component<Props, State> {
           validatingPassword={validatingPassword}
           invalidPassword={invalidPassword}
           password={password}
-          onChangePassword={this.handleChangePassword}
-          onOk={this.handleConfirmPassword}
-          onCancel={this.handleCancelPrivateModal}
+          onChangePassword={handleChangePassword}
+          onOk={handleConfirmPassword}
+          onCancel={handleCancelPrivateModal}
         />
       </div>
     );
   };
 
-  renderTokenDetails = () => {
-    const {
-      symbol,
-      binanceData: { tokenList, marketList },
-    } = this.props;
-    const target = getTickerFormat(symbol);
+  const renderTokenDetails = () => {
+    const { tokenList, marketList } = binanceData;
 
+    const target = getTickerFormat(symbol);
     const title = 'TOKEN DETAILS';
 
     const binanceToken = tokenList.find(token => token.symbol === symbol);
@@ -632,14 +566,8 @@ class PoolCreate extends React.Component<Props, State> {
     );
   };
 
-  renderStakeModalContent = () => {
-    const {
-      txStatus: { status, value, startTime, hash },
-      symbol,
-      priceIndex,
-      basePriceAsset,
-    } = this.props;
-    const { runeAmount, tokenAmount } = this.state;
+  const renderStakeModalContent = () => {
+    const { status, value, startTime, hash } = txStatus;
 
     const source = 'rune';
     const target = getTickerFormat(symbol);
@@ -659,8 +587,8 @@ class PoolCreate extends React.Component<Props, State> {
               value={value}
               maxValue={MAX_VALUE}
               startTime={startTime}
-              onChange={this.handleChangeTxValue}
-              onEnd={this.handleEndTxTimer}
+              onChange={handleChangeTxValue}
+              onEnd={handleEndTxTimer}
             />
           </div>
           <div className="coin-data-wrapper">
@@ -676,7 +604,7 @@ class PoolCreate extends React.Component<Props, State> {
               <CoinData
                 data-test="stakeconfirm-coin-data-target"
                 asset={target}
-                assetValue={tokenAmount}
+                assetValue={targetAmount}
                 price={totalPrice}
                 priceUnit={basePriceAsset}
               />
@@ -690,7 +618,7 @@ class PoolCreate extends React.Component<Props, State> {
                 <Button
                   className="view-btn"
                   color="success"
-                  onClick={this.handleFinishTx}
+                  onClick={handleFinishTx}
                 >
                   FINISH
                 </Button>
@@ -705,41 +633,37 @@ class PoolCreate extends React.Component<Props, State> {
     );
   };
 
-  render() {
-    const { txStatus } = this.props;
+  const openCreateModal = txStatus.type === 'create' ? txStatus.modal : false;
+  const completed = txStatus.value !== null && !txStatus.status;
+  const modalTitle = !completed ? 'CREATING POOL' : 'POOL CREATED';
+  const coinCloseIconType = txStatus.status ? (
+    <FullscreenExitOutlined style={{ color: '#fff' }} />
+  ) : (
+    <CloseOutlined style={{ color: '#fff' }} />
+  );
 
-    const openCreateModal = txStatus.type === 'create' ? txStatus.modal : false;
-    const completed = txStatus.value !== null && !txStatus.status;
-    const modalTitle = !completed ? 'CREATING POOL' : 'POOL CREATED';
-    const coinCloseIconType = txStatus.status ? (
-      <FullscreenExitOutlined style={{ color: '#fff' }} />
-    ) : (
-      <CloseOutlined style={{ color: '#fff' }} />
-    );
-
-    return (
-      <ContentWrapper className="pool-new-wrapper" transparent>
-        <Row className="pool-new-row">
-          <Col className="token-details-view" span={24} lg={8}>
-            {this.renderTokenDetails()}
-          </Col>
-          <Col className="add-asset-view" span={24} lg={16}>
-            {this.renderAssetView()}
-          </Col>
-        </Row>
-        <ConfirmModal
-          title={modalTitle}
-          closeIcon={coinCloseIconType}
-          visible={openCreateModal}
-          footer={null}
-          onCancel={this.handleCloseModal}
-        >
-          {this.renderStakeModalContent()}
-        </ConfirmModal>
-      </ContentWrapper>
-    );
-  }
-}
+  return (
+    <ContentWrapper className="pool-new-wrapper" transparent>
+      <Row className="pool-new-row">
+        <Col className="token-details-view" span={24} lg={8}>
+          {renderTokenDetails()}
+        </Col>
+        <Col className="add-asset-view" span={24} lg={16}>
+          {renderAssetView()}
+        </Col>
+      </Row>
+      <ConfirmModal
+        title={modalTitle}
+        closeIcon={coinCloseIconType}
+        visible={openCreateModal}
+        footer={null}
+        onCancel={handleCloseModal}
+      >
+        {renderStakeModalContent()}
+      </ConfirmModal>
+    </ContentWrapper>
+  );
+};
 
 export default compose(
   connect(
@@ -768,4 +692,4 @@ export default compose(
     },
   ),
   withRouter,
-)(PoolCreate) as React.ComponentClass<ComponentProps, State>;
+)(PoolCreate);

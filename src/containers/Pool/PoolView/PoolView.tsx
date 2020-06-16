@@ -124,28 +124,30 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
 
           return (
             <ActionColumn>
-              <Link to={stakeUrl}>
-                <Button
-                  style={{ margin: 'auto' }}
-                  round="true"
-                  typevalue="outline"
-                  data-test={dataTest}
-                >
-                  <DatabaseOutlined />
-                  stake
-                </Button>
-              </Link>
-              <Link to={swapUrl}>
-                <Button
-                  style={{ margin: 'auto' }}
-                  round="true"
-                  data-test={dataTest}
-                  disabled={poolStatus === PoolDetailStatusEnum.Bootstrapped}
-                >
-                  <SwapOutlined />
-                  swap
-                </Button>
-              </Link>
+              <div className="action-column-wrapper">
+                <Link to={stakeUrl}>
+                  <Button
+                    style={{ margin: 'auto' }}
+                    round="true"
+                    typevalue="outline"
+                    data-test={dataTest}
+                  >
+                    <DatabaseOutlined />
+                    stake
+                  </Button>
+                </Link>
+                <Link to={swapUrl}>
+                  <Button
+                    style={{ margin: 'auto' }}
+                    round="true"
+                    data-test={dataTest}
+                    disabled={poolStatus === PoolDetailStatusEnum.Bootstrapped}
+                  >
+                    <SwapOutlined />
+                    swap
+                  </Button>
+                </Link>
+              </div>
             </ActionColumn>
           );
         }
