@@ -10,9 +10,8 @@ describe('helpers/memoHelper/', () => {
 
   describe('getStakeMemo', () => {
     it('should create a memo for the creating pool', () => {
-      const address = 'tbnb123456';
-      const result = getStakeMemo('TUSDB', address);
-      expect(result).toEqual(`STAKE:BNB.TUSDB:${address}`);
+      const result = getStakeMemo('TUSDB');
+      expect(result).toEqual('STAKE:BNB.TUSDB');
     });
   });
 
