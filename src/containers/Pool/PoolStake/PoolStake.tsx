@@ -347,9 +347,18 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
     if (!selectRatio) {
       if (tokenName === 'rune') {
-        setRuneAmount(valueAsToken);
+        if (totalSourceAmount.isLessThan(valueAsToken.amount())) {
+          setRuneAmount(tokenAmount(totalSourceAmount));
+          setRunePercent(100);
+        } else {
+          setRuneAmount(valueAsToken);
+        }
       } else if (tokenName !== 'rune') {
-        setTargetAmount(valueAsToken);
+        if (totalSourceAmount.isLessThan(valueAsToken.amount())) {
+          setTargetAmount(tokenAmount(totalSourceAmount));
+        } else {
+          setTargetAmount(valueAsToken);
+        }
       }
       return;
     }
