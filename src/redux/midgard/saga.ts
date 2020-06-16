@@ -192,8 +192,7 @@ function* tryGetStakerPoolData(payload: GetStakerPoolDataPayload) {
 
 const getThorchainBaseURL = () => {
   // TODO: hardcode the thorchain url for temporarly
-  // return `${api.MIDGARD_TEST_API}:1317/thorchain`;
-  return 'http://54.90.0.151:1317/thorchain';
+  return 'https://midgard.bepswap.com/v1/thorchain';
 };
 
 const getThorchainConstants = () => {
