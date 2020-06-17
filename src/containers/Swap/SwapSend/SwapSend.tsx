@@ -635,8 +635,10 @@ class SwapSend extends React.Component<Props, State> {
       });
       return;
     }
-
     if (source && target) {
+      this.setState({
+        xValue: tokenAmount(0),
+      });
       const URL = `/swap/${target}-${source}`;
       this.props.history.push(URL);
     } else {
@@ -762,12 +764,22 @@ class SwapSend extends React.Component<Props, State> {
   };
 
   handleCompleted = () => {
-    const { resetTxStatus } = this.props;
+    const {
+      resetTxStatus,
+      refreshBalance,
+      user,
+    } = this.props;
     this.setState({
       xValue: tokenAmount(0),
       timerFinished: false,
     });
     resetTxStatus();
+
+    const wallet = user?.wallet;
+    if (wallet) {
+      console.log('refresh balance');
+      refreshBalance(wallet);
+    }
   };
 
   handleClickFinish = () => {
@@ -945,9 +957,9 @@ class SwapSend extends React.Component<Props, State> {
 
     const runePrice = priceIndex.RUNE;
     return bn(priceIndex[source.toUpperCase()])
-          .dividedBy(runePrice)
-          .multipliedBy(amount)
-          .isLessThanOrEqualTo(1);
+      .dividedBy(runePrice)
+      .multipliedBy(amount)
+      .isLessThanOrEqualTo(1);
   };
 
   /**
