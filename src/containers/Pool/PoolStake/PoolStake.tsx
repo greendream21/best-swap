@@ -212,6 +212,31 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
   let withdrawData: Maybe<WithdrawData> = Nothing;
 
+  const tokenSymbol = symbol.toUpperCase();
+
+  const emptyStakerPoolData: StakersAssetData = {
+    asset: tokenSymbol,
+    stakeUnits: '0',
+    runeStaked: '0',
+    assetStaked: '0',
+    poolStaked: '0',
+    runeEarned: '0',
+    assetEarned: '0',
+    poolEarned: '0',
+    runeROI: '0',
+    assetROI: '0',
+    poolROI: '0',
+    dateFirstStaked: 0,
+  };
+
+  const stakersAssetData: Maybe<StakersAssetData> = stakerPoolData
+    ? stakerPoolData[tokenSymbol]
+    : emptyStakerPoolData;
+
+  const { stakeUnits }: StakersAssetData = stakersAssetData;
+  const stakeUnitsBN = bnOrZero(stakeUnits);
+  const disableWithdraw = stakeUnitsBN.isEqualTo(0);
+
   const getStakerInfo = useCallback(() => {
     if (user) {
       getStakerPoolData({ asset: symbol, address: user.wallet });
@@ -298,6 +323,12 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   const isLoading = useCallback(() => {
     return poolLoading && stakerPoolDataLoading;
   }, [poolLoading, stakerPoolDataLoading]);
+
+  useEffect(() => {
+    if (disableWithdraw) {
+      setSelectedShareDetailTab(ShareDetailTabKeys.ADD);
+    }
+  }, [disableWithdraw]);
 
   const handleChangePassword = useCallback(
     (password: string) => {
@@ -1080,11 +1111,8 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
     // withdraw values
     const withdrawRate: number = widthdrawPercentage / 100;
-    const { stakeUnits }: StakersAssetData = stakersAssetData;
 
     const { R, T, poolUnits } = calcResult;
-
-    const stakeUnitsBN = bnOrZero(stakeUnits);
 
     const runeShare = poolUnits
       ? R.multipliedBy(stakeUnitsBN).div(poolUnits)
@@ -1106,7 +1134,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       percentage: widthdrawPercentage,
     };
 
-    const disableWithdraw = stakeUnitsBN.isEqualTo(0);
+
     const sourceTokenAmount = baseToToken(runeBaseAmount);
     const sourcePrice = baseToToken(runeBaseAmount)
       .amount()
@@ -1147,7 +1175,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
     return (
       <div className="share-detail-wrapper">
-        <Tabs withBorder onChange={setSelectedShareDetailTab}>
+        <Tabs withBorder onChange={setSelectedShareDetailTab} activeKey={selectedShareDetailTab}>
           <TabPane tab="Add" key={ShareDetailTabKeys.ADD}>
             <Row>
               <Col span={24} lg={12}>
@@ -1529,7 +1557,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   const wallet = user ? user.wallet : null;
   const hasWallet = wallet !== null;
 
-  const tokenSymbol = symbol.toUpperCase();
   const poolInfo = poolData[tokenSymbol] || {};
 
   const poolStats = getPoolData('rune', poolInfo, priceIndex);
@@ -1562,25 +1589,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   // withdraw confirmation modal
 
   const withdrawText = !completed ? 'YOU ARE WITHDRAWING' : 'YOU WITHDRAWN';
-
-  const emptyStakerPoolData: StakersAssetData = {
-    asset: tokenSymbol,
-    stakeUnits: '0',
-    runeStaked: '0',
-    assetStaked: '0',
-    poolStaked: '0',
-    runeEarned: '0',
-    assetEarned: '0',
-    poolEarned: '0',
-    runeROI: '0',
-    assetROI: '0',
-    poolROI: '0',
-    dateFirstStaked: 0,
-  };
-
-  const stakersAssetData: Maybe<StakersAssetData> = stakerPoolData
-    ? stakerPoolData[tokenSymbol]
-    : emptyStakerPoolData;
 
   return (
     <ContentWrapper className="pool-stake-wrapper" transparent>
