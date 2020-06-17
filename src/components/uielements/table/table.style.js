@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { key, palette } from 'styled-theme';
 import { Table } from 'antd';
+import { darken } from 'polished';
 
 export const TableWrapper = styled(Table)`
   .ant-table-thead > tr > th {
@@ -14,7 +15,8 @@ export const TableWrapper = styled(Table)`
     text-transform: uppercase;
     text-align: center;
     &:hover {
-      background-color: ${palette('background', 2)} !important;
+      background-color: ${props =>
+        darken(0.05, props.theme.palette.background[2])} !important;
     }
 
     .ant-table-column-title {
@@ -63,6 +65,7 @@ export const TableWrapper = styled(Table)`
   .ant-table-tbody
     > tr:hover:not(.ant-table-expanded-row):not(.ant-table-row-selected)
     > td {
-    background: ${palette('background', 2)};
+    background-color: ${props =>
+      darken(0.05, props.theme.palette.background[2])} !important;
   }
 `;
