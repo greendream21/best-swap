@@ -23,7 +23,7 @@ const TxLabel: React.FC<Props> = (props: Props): JSX.Element => {
   }
 
   if (type === TxDetailsTypeEnum.DoubleSwap) {
-    label = 'swap';
+    label = 'double swap';
     TxIcon = <SwapOutlined />;
   }
 

@@ -236,7 +236,6 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
         ),
         (data: InlineResponse2001): JSX.Element => {
           const { count = 0, txs = [] } = data;
-
           return pageContent(txs, count, false);
         },
       )(txData);
