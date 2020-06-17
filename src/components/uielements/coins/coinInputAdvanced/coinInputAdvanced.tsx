@@ -13,8 +13,7 @@ import { emptyString } from '../../../../helpers/stringHelper';
 
 function formatStringToBigNumber(value: string): BigNumber {
   // (Rudi) This will have a localisation problem
-  const cleanValue = value.replace(/,/g, '');
-
+  const cleanValue = value.replace(/,/g, '') || 0;
   return bn(cleanValue);
 }
 
@@ -23,7 +22,6 @@ export function isBroadcastable(value: string) {
     typeof value === 'string' &&
     value !== undefined &&
     value !== null &&
-    value !== '' &&
     isValidBN(formatStringToBigNumber(value)) &&
     !value.match(/\.$/)
   );
