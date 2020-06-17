@@ -65,7 +65,7 @@ export const ActionColumn = styled.div`
 
   .action-column-wrapper {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
     align-items: center;
     width: 250px;
   }
