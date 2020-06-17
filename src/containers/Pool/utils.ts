@@ -349,7 +349,7 @@ export const confirmStake = (
     const runeAmountNumber = runeAmountValue.toNumber();
     const tokenAmountNumber = tokenAmountValue.toNumber();
     if (runeAmountValue.isGreaterThan(0) && tokenAmountValue.isGreaterThan(0)) {
-      const memo = getStakeMemo(symbolTo, wallet);
+      const memo = getStakeMemo(symbolTo);
 
       const outputs: MultiTransfer[] = [
         {
@@ -372,14 +372,14 @@ export const confirmStake = (
         .then((response: TransferResult) => resolve(response))
         .catch((error: Error) => reject(error));
     } else if (runeAmountValue.isLessThanOrEqualTo(0) && tokenAmount) {
-      const memo = getStakeMemo(symbolTo, wallet);
+      const memo = getStakeMemo(symbolTo);
 
       bncClient
         .transfer(wallet, poolAddress, tokenAmountNumber, symbolTo, memo)
         .then((response: TransferResult) => resolve(response))
         .catch((error: Error) => reject(error));
     } else if (runeAmount && tokenAmountValue.isLessThanOrEqualTo(0)) {
-      const memo = getStakeMemo(symbolTo, wallet);
+      const memo = getStakeMemo(symbolTo);
 
       bncClient
         .transfer(wallet, poolAddress, runeAmountNumber, 'RUNE-A1F', memo)
@@ -446,7 +446,7 @@ export const confirmCreatePool = (
       return reject(new Error(CreatePoolErrorMsg.MISSING_TOKEN_SYMBOL));
     }
 
-    const memo = getStakeMemo(tokenSymbol, wallet);
+    const memo = getStakeMemo(tokenSymbol);
 
     // We have to convert BNs back into numbers needed by Binance JS SDK
     // We are safe here, since we have already checked that amounts of RUNE and toke are valid numbers
