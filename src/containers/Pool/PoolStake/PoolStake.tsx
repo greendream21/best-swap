@@ -210,6 +210,24 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
   const [txType, setTxType] = useState<TxTypes>();
 
+  const tokenSymbol = symbol.toUpperCase();
+  const emptyStakerPoolData: StakersAssetData = {
+    asset: tokenSymbol,
+    stakeUnits: '0',
+    runeStaked: '0',
+    assetStaked: '0',
+    poolStaked: '0',
+    runeEarned: '0',
+    assetEarned: '0',
+    poolEarned: '0',
+    runeROI: '0',
+    assetROI: '0',
+    poolROI: '0',
+    dateFirstStaked: 0,
+  };
+
+  const [stakersAssetData, setStakersAssetData] = useState<StakersAssetData>(emptyStakerPoolData);
+
   let withdrawData: Maybe<WithdrawData> = Nothing;
 
   const getStakerInfo = useCallback(() => {
@@ -217,6 +235,15 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       getStakerPoolData({ asset: symbol, address: user.wallet });
     }
   }, [getStakerPoolData, symbol, user]);
+
+  useEffect(() => {
+    if (stakerPoolData) {
+      setStakersAssetData(stakerPoolData[tokenSymbol]);
+    } else if (stakerPoolDataError) {
+      setStakersAssetData(emptyStakerPoolData);
+      setSelectedShareDetailTab(ShareDetailTabKeys.ADD);
+    }
+  }, [stakerPoolData, stakerPoolDataError]);
 
   useEffect(() => {
     getPoolAddress();
@@ -1147,7 +1174,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
     return (
       <div className="share-detail-wrapper">
-        <Tabs withBorder onChange={setSelectedShareDetailTab}>
+        <Tabs withBorder onChange={setSelectedShareDetailTab} activeKey={selectedShareDetailTab}>
           <TabPane tab="Add" key={ShareDetailTabKeys.ADD}>
             <Row>
               <Col span={24} lg={12}>
@@ -1529,7 +1556,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   const wallet = user ? user.wallet : null;
   const hasWallet = wallet !== null;
 
-  const tokenSymbol = symbol.toUpperCase();
   const poolInfo = poolData[tokenSymbol] || {};
 
   const poolStats = getPoolData('rune', poolInfo, priceIndex);
@@ -1562,25 +1588,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   // withdraw confirmation modal
 
   const withdrawText = !completed ? 'YOU ARE WITHDRAWING' : 'YOU WITHDRAWN';
-
-  const emptyStakerPoolData: StakersAssetData = {
-    asset: tokenSymbol,
-    stakeUnits: '0',
-    runeStaked: '0',
-    assetStaked: '0',
-    poolStaked: '0',
-    runeEarned: '0',
-    assetEarned: '0',
-    poolEarned: '0',
-    runeROI: '0',
-    assetROI: '0',
-    poolROI: '0',
-    dateFirstStaked: 0,
-  };
-
-  const stakersAssetData: Maybe<StakersAssetData> = stakerPoolData
-    ? stakerPoolData[tokenSymbol]
-    : emptyStakerPoolData;
 
   return (
     <ContentWrapper className="pool-stake-wrapper" transparent>
