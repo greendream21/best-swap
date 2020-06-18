@@ -144,6 +144,7 @@ type ConnectedProps = {
   setTxTimerValue: typeof appActions.setTxTimerValue;
   setTxHash: typeof appActions.setTxHash;
   resetTxStatus: typeof appActions.resetTxStatus;
+  refreshBalance: typeof walletActions.refreshBalance;
   refreshStakes: typeof walletActions.refreshStakes;
   getBinanceFees: typeof binanceActions.getBinanceFees;
   transferFees: TransferFeesRD;
@@ -171,6 +172,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     thorchainData,
     txStatus,
     wsTransferEvent,
+    refreshBalance,
     refreshStakes,
     getPoolAddress,
     getPools,
@@ -226,7 +228,9 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     dateFirstStaked: 0,
   };
 
-  const [stakersAssetData, setStakersAssetData] = useState<StakersAssetData>(emptyStakerPoolData);
+  const [stakersAssetData, setStakersAssetData] = useState<StakersAssetData>(
+    emptyStakerPoolData,
+  );
 
   let withdrawData: Maybe<WithdrawData> = Nothing;
 
@@ -283,6 +287,17 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     }
   }, [user?.wallet, subscribeBinanceTransfers, unSubscribeBinanceTransfers]);
 
+  const refreshStakerData = useCallback(() => {
+    // get staker info again after finished
+    getStakerInfo();
+
+    if (user) {
+      const wallet = user.wallet;
+      refreshStakes(wallet);
+      refreshBalance(wallet);
+    }
+  }, [getStakerInfo, refreshBalance, refreshStakes, user]);
+
   // wsTransferEvent is updated
   useEffect(() => {
     const { type, hash } = txStatus;
@@ -301,7 +316,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
         if (type === TxTypes.STAKE) {
           if (transferHash === hash) {
             // Just refresh stakes after update
-            refreshStakes(wallet);
+            refreshStakerData();
           }
         }
 
@@ -315,12 +330,12 @@ const PoolStake: React.FC<Props> = (props: Props) => {
           if (txResult) {
             setTxResult(true);
             // refresh stakes after update
-            refreshStakes(wallet);
+            refreshStakerData();
           }
         }
       }
     }
-  }, [RD.toNullable(wsTransferEvent)]);
+  }, [RD.toNullable(wsTransferEvent), refreshStakerData]);
 
   const isLoading = useCallback(() => {
     return poolLoading && stakerPoolDataLoading;
@@ -462,9 +477,13 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     setTxTimerStatus(false);
     setDragReset(true);
 
-    // get staker info again after finished
-    getStakerInfo();
-  }, [setTxTimerModal, setDragReset, getStakerInfo, setTxTimerStatus]);
+    // refresh staker data after tx is finished
+    refreshStakerData();
+
+    // set rune and target token amount as 0 after stake
+    setRuneAmount(tokenAmount(0));
+    setTargetAmount(tokenAmount(0));
+  }, [setDragReset, setTxTimerStatus]);
 
   const handleOpenPrivateModal = useCallback(() => {
     setOpenPrivateModal(true);
@@ -480,7 +499,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   const handleCloseModal = useCallback(() => {
     setTxTimerModal(false);
     handleEndTxTimer();
-  }, [setTxTimerModal, handleEndTxTimer]);
+  }, [setTxTimerModal, handleEndTxTimer, refreshStakerData]);
 
   const handleDrag = useCallback(() => {
     setDragReset(false);
@@ -734,6 +753,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
       try {
         const percent = withdrawRate * 100;
+
         const { result } = await confirmWithdraw({
           bncClient,
           wallet,
@@ -767,6 +787,18 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       return;
     }
 
+    const runeValue = withdrawData?.runeValue ?? baseAmount(0);
+    const runeAmount = baseToToken(runeValue);
+
+    if (runeAmount.amount().isLessThanOrEqualTo(1)) {
+      notification.error({
+        message: 'Invalid amount',
+        description: 'Withdraw amount must exceed 1 RUNE to cover network fees.',
+        getContainer: getAppContainer,
+      });
+      return;
+    }
+
     if (keystore) {
       setTxType(TxTypes.WITHDRAW);
       handleOpenPrivateModal();
@@ -791,7 +823,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
           privateKey,
           getPrefix(BINANCE_NET),
         );
-        console.log('confirm', txType);
         if (wallet && wallet === address) {
           if (txType === TxTypes.STAKE) {
             handleConfirmStake();
@@ -1184,7 +1215,11 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
     return (
       <div className="share-detail-wrapper">
-        <Tabs withBorder onChange={setSelectedShareDetailTab} activeKey={selectedShareDetailTab}>
+        <Tabs
+          withBorder
+          onChange={setSelectedShareDetailTab}
+          activeKey={selectedShareDetailTab}
+        >
           <TabPane tab="Add" key={ShareDetailTabKeys.ADD}>
             <Row>
               <Col span={24} lg={12}>
@@ -1692,6 +1727,7 @@ export default compose(
       setTxTimerValue: appActions.setTxTimerValue,
       setTxHash: appActions.setTxHash,
       resetTxStatus: appActions.resetTxStatus,
+      refreshBalance: walletActions.refreshBalance,
       refreshStakes: walletActions.refreshStakes,
       getBinanceFees: binanceActions.getBinanceFees,
       subscribeBinanceTransfers: binanceActions.subscribeBinanceTransfers,

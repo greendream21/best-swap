@@ -1104,8 +1104,6 @@ class SwapSend extends React.Component<Props, State> {
       pair,
     );
 
-    const dragTitle = 'Drag to swap';
-
     const openSwapModal = txStatus.type === 'swap' ? txStatus.modal : false;
 
     const calcResult = this.calcResult();
@@ -1266,7 +1264,7 @@ class SwapSend extends React.Component<Props, State> {
             </div>
             <div className="drag-confirm-wrapper">
               <Drag
-                title={dragTitle}
+                title="Drag to swap"
                 source={swapSource}
                 target={swapTarget}
                 reset={dragReset}
