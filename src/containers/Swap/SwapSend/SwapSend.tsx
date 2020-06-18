@@ -1115,6 +1115,7 @@ class SwapSend extends React.Component<Props, State> {
       return <></>;
     } else {
       const { slip, outputAmount, outputPrice } = calcResult;
+
       const sourcePriceBN = bn(priceIndex[swapSource.toUpperCase()]);
       const sourcePrice = isValidBN(sourcePriceBN)
         ? sourcePriceBN
