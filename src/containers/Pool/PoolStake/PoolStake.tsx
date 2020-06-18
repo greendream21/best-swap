@@ -144,6 +144,7 @@ type ConnectedProps = {
   setTxTimerValue: typeof appActions.setTxTimerValue;
   setTxHash: typeof appActions.setTxHash;
   resetTxStatus: typeof appActions.resetTxStatus;
+  refreshBalance: typeof walletActions.refreshBalance;
   refreshStakes: typeof walletActions.refreshStakes;
   getBinanceFees: typeof binanceActions.getBinanceFees;
   transferFees: TransferFeesRD;
@@ -172,6 +173,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     txStatus,
     wsTransferEvent,
     refreshStakes,
+    refreshBalance,
     getPoolAddress,
     getPools,
     getBinanceFees,
@@ -283,6 +285,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     const wallet = user?.wallet;
     if (wallet) {
       subscribeBinanceTransfers({ address: wallet, net });
+      refreshBalance(wallet);
     }
 
     return () => {
@@ -434,6 +437,8 @@ const PoolStake: React.FC<Props> = (props: Props) => {
         setTargetAmount(tokenAmount(tokenAmountBN));
         setRunePercent(100);
       } else {
+        const percent = valueAsToken.amount().dividedBy(totalSourceAmount).multipliedBy(100);
+        setRunePercent(percent.toNumber());
         setRuneAmount(valueAsToken);
         setTargetAmount(tokenAmount(tokenAmountBN));
       }
@@ -495,6 +500,12 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
     // get staker info again after finished
     getStakerInfo();
+
+    // refresh balance
+    const wallet = user?.wallet;
+    if (wallet) {
+      refreshBalance(wallet);
+    }
   }, [setTxTimerModal, setDragReset, getStakerInfo, setTxTimerStatus]);
 
   const handleOpenPrivateModal = useCallback(() => {
@@ -1719,6 +1730,7 @@ export default compose(
       setTxTimerValue: appActions.setTxTimerValue,
       setTxHash: appActions.setTxHash,
       resetTxStatus: appActions.resetTxStatus,
+      refreshBalance: walletActions.refreshBalance,
       refreshStakes: walletActions.refreshStakes,
       getBinanceFees: binanceActions.getBinanceFees,
       subscribeBinanceTransfers: binanceActions.subscribeBinanceTransfers,
