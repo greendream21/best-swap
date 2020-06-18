@@ -232,27 +232,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
   let withdrawData: Maybe<WithdrawData> = Nothing;
 
-  const tokenSymbol = symbol.toUpperCase();
-
-  const emptyStakerPoolData: StakersAssetData = {
-    asset: tokenSymbol,
-    stakeUnits: '0',
-    runeStaked: '0',
-    assetStaked: '0',
-    poolStaked: '0',
-    runeEarned: '0',
-    assetEarned: '0',
-    poolEarned: '0',
-    runeROI: '0',
-    assetROI: '0',
-    poolROI: '0',
-    dateFirstStaked: 0,
-  };
-
-  const stakersAssetData: Maybe<StakersAssetData> = stakerPoolData
-    ? stakerPoolData[tokenSymbol]
-    : emptyStakerPoolData;
-
   const { stakeUnits }: StakersAssetData = stakersAssetData;
   const stakeUnitsBN = bnOrZero(stakeUnits);
   const disableWithdraw = stakeUnitsBN.isEqualTo(0);
