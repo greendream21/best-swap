@@ -70,6 +70,7 @@ export const getSwapType = (from: string, to: string) =>
     ? SwapType.SINGLE_SWAP
     : SwapType.DOUBLE_SWAP;
 
+// TODO: (Chris) Refactor swap calc method
 export const getCalcResult = (
   from: string,
   to: string,
@@ -91,8 +92,6 @@ export const getCalcResult = (
     symbolFrom: Nothing,
     symbolTo: Nothing,
   };
-
-  const lim = Nothing;
 
   if (swapType === SwapType.DOUBLE_SWAP) {
     let X = tokenAmount(10000); // Input asset
@@ -139,6 +138,9 @@ export const getCalcResult = (
     const Px = getPx(xValue, calcData);
     const Pz = getPz(xValue, calcData);
     const fee = getFee(xValue, calcData);
+
+    const limValue = zValue.amount().multipliedBy(97 / 100);
+    const lim = tokenToBase(tokenAmount(limValue));
 
     return {
       ...result,
@@ -208,9 +210,7 @@ export const getCalcResult = (
       .multipliedBy(100);
     const slip = bn(slipValue);
     // formula: (1 - 3 / 100) * outputToken * BASE_NUMBER
-    const limValue = bn(1)
-      .minus(3 / 100)
-      .multipliedBy(outputTokenBN);
+    const limValue = outputTokenBN.multipliedBy(97 / 100);
     const lim = tokenToBase(tokenAmount(limValue));
     // formula: (xTimes * Y) / times
     const feeValue = Y.amount()
@@ -281,11 +281,7 @@ export const getCalcResult = (
       : bn(0);
 
     // formula: (1 - 3 / 100) * outputToken * BASE_NUMBER;
-    const third = bn(3).div(bn(100));
-    const limValue = bn(1)
-      .minus(third)
-      .div(100)
-      .multipliedBy(outputTokenBN);
+    const limValue = outputTokenBN.multipliedBy(97 / 100);
     const lim = tokenToBase(tokenAmount(limValue));
     const feeValue = Y.amount()
       .multipliedBy(xTimes)
