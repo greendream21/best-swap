@@ -144,7 +144,6 @@ type ConnectedProps = {
   setTxTimerValue: typeof appActions.setTxTimerValue;
   setTxHash: typeof appActions.setTxHash;
   resetTxStatus: typeof appActions.resetTxStatus;
-  refreshBalance: typeof walletActions.refreshBalance;
   refreshStakes: typeof walletActions.refreshStakes;
   getBinanceFees: typeof binanceActions.getBinanceFees;
   transferFees: TransferFeesRD;
@@ -173,7 +172,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     txStatus,
     wsTransferEvent,
     refreshStakes,
-    refreshBalance,
     getPoolAddress,
     getPools,
     getBinanceFees,
@@ -232,10 +230,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
   let withdrawData: Maybe<WithdrawData> = Nothing;
 
-  const { stakeUnits }: StakersAssetData = stakersAssetData;
-  const stakeUnitsBN = bnOrZero(stakeUnits);
-  const disableWithdraw = stakeUnitsBN.isEqualTo(0);
-
   const getStakerInfo = useCallback(() => {
     if (user) {
       getStakerPoolData({ asset: symbol, address: user.wallet });
@@ -264,7 +258,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     const wallet = user?.wallet;
     if (wallet) {
       subscribeBinanceTransfers({ address: wallet, net });
-      refreshBalance(wallet);
     }
 
     return () => {
@@ -332,12 +325,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   const isLoading = useCallback(() => {
     return poolLoading && stakerPoolDataLoading;
   }, [poolLoading, stakerPoolDataLoading]);
-
-  useEffect(() => {
-    if (disableWithdraw) {
-      setSelectedShareDetailTab(ShareDetailTabKeys.ADD);
-    }
-  }, [disableWithdraw]);
 
   const handleChangePassword = useCallback(
     (password: string) => {
@@ -416,8 +403,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
         setTargetAmount(tokenAmount(tokenAmountBN));
         setRunePercent(100);
       } else {
-        const percent = valueAsToken.amount().dividedBy(totalSourceAmount).multipliedBy(100);
-        setRunePercent(percent.toNumber());
         setRuneAmount(valueAsToken);
         setTargetAmount(tokenAmount(tokenAmountBN));
       }
@@ -479,12 +464,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
     // get staker info again after finished
     getStakerInfo();
-
-    // refresh balance
-    const wallet = user?.wallet;
-    if (wallet) {
-      refreshBalance(wallet);
-    }
   }, [setTxTimerModal, setDragReset, getStakerInfo, setTxTimerStatus]);
 
   const handleOpenPrivateModal = useCallback(() => {
@@ -1137,8 +1116,11 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
     // withdraw values
     const withdrawRate: number = widthdrawPercentage / 100;
+    const { stakeUnits }: StakersAssetData = stakersAssetData;
 
     const { R, T, poolUnits } = calcResult;
+
+    const stakeUnitsBN = bnOrZero(stakeUnits);
 
     const runeShare = poolUnits
       ? R.multipliedBy(stakeUnitsBN).div(poolUnits)
@@ -1160,6 +1142,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       percentage: widthdrawPercentage,
     };
 
+    const disableWithdraw = stakeUnitsBN.isEqualTo(0);
 
     const sourceTokenAmount = baseToToken(runeBaseAmount);
     const sourcePrice = baseToToken(runeBaseAmount)
@@ -1709,7 +1692,6 @@ export default compose(
       setTxTimerValue: appActions.setTxTimerValue,
       setTxHash: appActions.setTxHash,
       resetTxStatus: appActions.resetTxStatus,
-      refreshBalance: walletActions.refreshBalance,
       refreshStakes: walletActions.refreshStakes,
       getBinanceFees: binanceActions.getBinanceFees,
       subscribeBinanceTransfers: binanceActions.subscribeBinanceTransfers,
