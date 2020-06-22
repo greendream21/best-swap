@@ -399,7 +399,7 @@ describe('swap/utils/', () => {
       const expected: CalcResult = {
         Px: bn(1),
         fee: tokenAmount(0.0149273),
-        lim: baseAmount(544475),
+        lim: baseAmount(54447528),
         outputAmount: tokenAmount(0.56131472),
         outputPrice: bn(178.03053227763760049641),
         poolAddressTo: 'address',
@@ -483,7 +483,7 @@ describe('swap/utils/', () => {
         slip: bn(23.340828117376259007),
         symbolFrom: 'LOK-3C0',
         symbolTo: 'BNB',
-        lim: Nothing,
+        lim: baseAmount(235109093),
       };
 
       const result = getCalcResult(
