@@ -2,34 +2,41 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { ConnectedRouter } from 'connected-react-router';
 import { Route } from 'react-router-dom';
+import * as H from 'history';
 import { ConfigProvider } from 'antd';
 import en_US from 'antd/es/locale-provider/en_US'; // same as default `locale` of `antd`
-import PropTypes from 'prop-types';
 
 import asyncComponent from './helpers/AsyncFunc';
+import { RootState } from './redux/store';
 
 const maintenanceRoute = [
   {
     path: '',
-    component: asyncComponent(() => import('./containers/pages/500')),
+    component: asyncComponent(() => import('./containers/500')),
   },
 ];
 
-const publicRoutes = [
+type RouteType = {
+  path: string;
+  exact?: boolean;
+  component: ReturnType<typeof asyncComponent>;
+};
+
+const publicRoutes: RouteType[] = [
   {
     path: '',
-    component: asyncComponent(() => import('./containers/DashApp')),
+    component: asyncComponent(() => import('./containers/App')),
     exact: true,
   },
   {
     exact: true,
     path: '/404',
-    component: asyncComponent(() => import('./containers/pages/404')),
+    component: asyncComponent(() => import('./containers/404')),
   },
   {
     exact: true,
     path: '/500',
-    component: asyncComponent(() => import('./containers/pages/500')),
+    component: asyncComponent(() => import('./containers/500')),
   },
 ];
 
@@ -38,14 +45,18 @@ const routes =
     ? maintenanceRoute
     : publicRoutes;
 
-const PublicRoutes = props => {
+type Props = {
+  history: H.History;
+};
+
+const PublicRoutes = (props: Props) => {
   const { history } = props;
 
   return (
     <ConfigProvider locale={en_US}>
       <ConnectedRouter history={history}>
         <div>
-          {routes.map(singleRoute => {
+          {routes.map((singleRoute: RouteType) => {
             const { exact = false, ...otherProps } = singleRoute;
             return (
               <Route exact={exact} key={singleRoute.path} {...otherProps} />
@@ -57,11 +68,6 @@ const PublicRoutes = props => {
   );
 };
 
-PublicRoutes.propTypes = {
-  user: PropTypes.object, // Maybe<User>
-  history: PropTypes.object,
-};
-
-export default connect(state => ({
+export default connect((state: RootState) => ({
   user: state.Wallet.user,
 }))(PublicRoutes);

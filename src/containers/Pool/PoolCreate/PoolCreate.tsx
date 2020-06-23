@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import * as H from 'history';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { withRouter, useHistory } from 'react-router-dom';
+import { withRouter, useHistory, useParams } from 'react-router-dom';
 import { Row, Col, notification, Spin } from 'antd';
 import { FullscreenExitOutlined, CloseOutlined } from '@ant-design/icons';
 import { crypto } from '@binance-chain/javascript-sdk';
@@ -64,11 +64,7 @@ import { User, AssetData } from '../../../redux/wallet/types';
 
 import { BINANCE_NET } from '../../../env';
 
-type ComponentProps = {
-  symbol: string;
-};
-
-type ConnectedProps = {
+type Props = {
   assetData: AssetData[];
   pools: string[];
   poolAddress: string;
@@ -91,23 +87,8 @@ type ConnectedProps = {
   setTxHash: typeof appActions.setTxHash;
 };
 
-type Props = ComponentProps & ConnectedProps;
-
-type State = {
-  dragReset: boolean;
-  openPrivateModal: boolean;
-  password: string;
-  invalidPassword: boolean;
-  validatingPassword: boolean;
-  runeAmount: TokenAmount;
-  tokenAmount: TokenAmount;
-  fR: number; // fine tune balance of RUNE (set by "adjust balance" slider, which will come back in the future)
-  fT: number; // fine tuning balance of token (set by "adjust balance" slider, which will come back in the future)
-};
-
 const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
   const {
-    symbol,
     user,
     poolAddress,
     priceIndex,
@@ -128,8 +109,6 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
     countTxTimerValue,
   } = props;
 
-  const history = useHistory();
-
   const [dragReset, setDragReset] = useState(true);
   const [openPrivateModal, setOpenPrivateModal] = useState(false);
   const [password, setPassword] = useState('');
@@ -138,6 +117,9 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
 
   const [runeAmount, setRuneAmount] = useState<TokenAmount>(tokenAmount(0));
   const [targetAmount, setTargetAmount] = useState<TokenAmount>(tokenAmount(0));
+
+  const history = useHistory();
+  const { symbol = '' } = useParams();
 
   const getStakerData = useCallback(() => {
     if (user) {

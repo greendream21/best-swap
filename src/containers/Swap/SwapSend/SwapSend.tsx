@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import * as H from 'history';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { withRouter, useHistory } from 'react-router-dom';
+import { withRouter, useHistory, useParams } from 'react-router-dom';
 import { SwapOutlined, LockOutlined, UnlockOutlined } from '@ant-design/icons';
 import { Row, notification } from 'antd';
 import {
@@ -101,11 +101,7 @@ import {
   bnbBaseAmount,
 } from '../../../helpers/walletHelper';
 
-type ComponentProps = {
-  info: string;
-};
-
-type ConnectedProps = {
+type Props = {
   history: H.History;
   txStatus: TxStatus;
   assetData: AssetData[];
@@ -131,8 +127,6 @@ type ConnectedProps = {
   unSubscribeBinanceTransfers: typeof binanceActions.unSubscribeBinanceTransfers;
 };
 
-type Props = ComponentProps & ConnectedProps;
-
 type TxResult = {
   type: string;
   amount: string;
@@ -142,7 +136,6 @@ type TxResult = {
 const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   const {
     user,
-    info,
     transferFees,
     wsTransferEvent,
     txStatus,
@@ -165,6 +158,8 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     subscribeBinanceTransfers,
     unSubscribeBinanceTransfers,
   } = props;
+
+  const { info } = useParams();
 
   const history = useHistory();
   const maxSlip = 30;
