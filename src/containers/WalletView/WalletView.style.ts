@@ -7,6 +7,11 @@ export const WalletViewWrapper = styled(ViewPanel)`
 
   .ant-tabs {
     height: 100%;
+
+    .ant-tabs-nav-scroll {
+      display: flex;
+      justify-content: center;
+    }
     .ant-tabs-content {
       height: 100%;
       .ant-tabs-tabpane {

@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import * as H from 'history';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { withRouter, useHistory } from 'react-router-dom';
+import { withRouter, useHistory, useParams } from 'react-router-dom';
 import { Row, Col, notification, Popover } from 'antd';
 import {
   InboxOutlined,
@@ -87,7 +87,7 @@ import StepBar from '../../../components/uielements/stepBar';
 import { MAX_VALUE } from '../../../redux/app/const';
 import { RootState } from '../../../redux/store';
 import { User, AssetData } from '../../../redux/wallet/types';
-import { FixmeType, Maybe, Nothing, AssetPair } from '../../../types/bepswap';
+import { Maybe, Nothing, AssetPair } from '../../../types/bepswap';
 import { TxStatus, TxTypes } from '../../../redux/app/types';
 import {
   AssetDetailMap,
@@ -112,14 +112,7 @@ import { ShareDetailTabKeys, WithdrawData } from './types';
 
 const { TabPane } = Tabs;
 
-export type ComponentProps = {
-  symbol: string;
-  info: FixmeType; // PropTypes.object,
-  history: H.History;
-  wsTransfers: FixmeType[]; // PropTypes.array.isRequired,
-};
-
-type ConnectedProps = {
+type Props = {
   history: H.History;
   txStatus: TxStatus;
   user: Maybe<User>;
@@ -152,13 +145,10 @@ type ConnectedProps = {
   unSubscribeBinanceTransfers: typeof binanceActions.unSubscribeBinanceTransfers;
 };
 
-type Props = ComponentProps & ConnectedProps;
-
 const PoolStake: React.FC<Props> = (props: Props) => {
   const {
     transferFees,
     user,
-    symbol,
     assets,
     assetData,
     poolData,
@@ -189,6 +179,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   } = props;
 
   const history = useHistory();
+  const { symbol = '' } = useParams();
 
   const [selectedShareDetailTab, setSelectedShareDetailTab] = useState<
     ShareDetailTabKeys
