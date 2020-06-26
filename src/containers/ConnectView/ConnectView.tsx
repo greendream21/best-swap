@@ -65,14 +65,13 @@ const ConnectView: React.FC<Props> = (props: Props): JSX.Element => {
           action
         >
           {tabs.map(tab => {
+            const isDisabled = tab.value === TAB_VALUES.WALLET || tab.value === TAB_VALUES.LEDGER;
+
             return (
               <TabPane
                 key={tab.value}
                 tab={tab.label}
-                disabled={
-                  tab.value === TAB_VALUES.WALLET ||
-                  tab.value === TAB_VALUES.LEDGER
-                }
+                disabled={isDisabled}
               />
             );
           })}

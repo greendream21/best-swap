@@ -3,15 +3,11 @@ import { bn } from '@thorchain/asgardex-util';
 import { tokenAmount, baseAmount } from '@thorchain/asgardex-token';
 import {
   withdrawResult,
-  getCreatePoolTokens,
+  getAvailableTokensToCreate,
   getPoolData,
   getCalcResult,
   CalcResult,
-  getCreatePoolCalc,
-  CreatePoolCalc,
-  getRoundedDownBN,
-  roundedDownAmount,
-} from './utils';
+} from './poolUtils';
 import { PoolData } from './types';
 import { AssetData } from '../../redux/wallet/types';
 import {
@@ -138,7 +134,7 @@ describe('pool/utils/', () => {
     });
   });
 
-  describe('getCreatePoolTokens', () => {
+  describe('getAvailableTokensToCreate', () => {
     it('should filter pool assets and the asset with small amount ', () => {
       const assetA: AssetData = {
         asset: 'A',
@@ -157,7 +153,7 @@ describe('pool/utils/', () => {
       };
       const assets: AssetData[] = [assetA, assetB, assetWithSmallAmount];
       const pools: string[] = ['A.A'];
-      const result = getCreatePoolTokens(assets, pools);
+      const result = getAvailableTokensToCreate(assets, pools);
       const expected = [assetB];
       expect(result).toEqual(expected);
     });
@@ -179,7 +175,7 @@ describe('pool/utils/', () => {
       };
       const assets: AssetData[] = [assetA, assetB, assetC];
       const pools: string[] = ['A.A'];
-      const result = getCreatePoolTokens(assets, pools);
+      const result = getAvailableTokensToCreate(assets, pools);
       const expected = [assetC];
       expect(result).toEqual(expected);
     });
@@ -469,103 +465,6 @@ describe('pool/utils/', () => {
       expect(result.Pr).toEqual(expected.Pr);
       expect(result.R).toEqual(expected.R);
       expect(result.T).toEqual(expected.T);
-    });
-  });
-
-  describe('getCreatePoolCalc', () => {
-    it('calculates data to create a TOMOB-1E1 pool', () => {
-      const tokenSymbol = 'TOMOB-1E1';
-      const poolAddress = 'tbnb1XXX';
-      const runeAmount = tokenAmount(809.29);
-      const runePrice = bn(1);
-      const tAmount = tokenAmount(0.14);
-      const expected: CreatePoolCalc = {
-        poolAddress: 'tbnb1XXX',
-        tokenSymbol: 'TOMOB-1E1',
-        poolPrice: bn('5780.64285714285714285714'),
-        depth: bn(809.29),
-        share: 100,
-        Pr: bn(1),
-      };
-      const result = getCreatePoolCalc({
-        tokenSymbol,
-        poolAddress,
-        runeAmount,
-        runePrice,
-        tokenAmount: tAmount,
-      });
-      expect(result.poolAddress).toEqual(expected.poolAddress);
-      expect(result.tokenSymbol).toEqual(expected.tokenSymbol);
-      expect(result.poolPrice).toEqual(expected.poolPrice);
-      expect(result.depth).toEqual(expected.depth);
-      expect(result.share).toEqual(expected.share);
-      expect(result.Pr).toEqual(expected.Pr);
-      // Test all again, just in case of other properties in the future
-      expect(result).toEqual(expected);
-    });
-
-    it('calculates data to create a TOMOB-1E1 pool again, but with more amounts', () => {
-      const tokenSymbol = 'TOMOB-1E1';
-      const poolAddress = 'tbnb1XXX';
-      const runeAmount = tokenAmount(3237.152);
-      const runePrice = bn(1);
-      const tAmount = tokenAmount(0.559);
-      const expected: CreatePoolCalc = {
-        poolAddress: 'tbnb1XXX',
-        tokenSymbol: 'TOMOB-1E1',
-        poolPrice: bn('5790.96958855098389982111'),
-        depth: bn(3237.152),
-        share: 100,
-        Pr: bn(1),
-      };
-      const result = getCreatePoolCalc({
-        tokenSymbol,
-        poolAddress,
-        runeAmount,
-        runePrice,
-        tokenAmount: tAmount,
-      });
-      expect(result.poolAddress).toEqual(expected.poolAddress);
-      expect(result.tokenSymbol).toEqual(expected.tokenSymbol);
-      expect(result.poolPrice).toEqual(expected.poolPrice);
-      expect(result.depth).toEqual(expected.depth);
-      expect(result.share).toEqual(expected.share);
-      expect(result.Pr).toEqual(expected.Pr);
-      // Test all again, just in case of other properties in the future
-      expect(result).toEqual(expected);
-    });
-  });
-
-  describe('getRoundedDownBN', () => {
-    const number = '3.3467';
-    const bigNumber = bn(number);
-
-    it('round down big number with 2 decimal point as default', () => {
-      const expected = '3.34';
-      expect(getRoundedDownBN(bigNumber)).toEqual(expected);
-    });
-
-    it('round down big number with 3 decimal point', () => {
-      const expected = '3.346';
-      expect(getRoundedDownBN(bigNumber, 3)).toEqual(expected);
-    });
-
-    it('round down big number and work with tokenAmount', () => {
-      const expected = '3.34';
-      const roundedBN = getRoundedDownBN(bigNumber);
-      const resultAmount = tokenAmount(bn(roundedBN));
-      expect(resultAmount.amount()).toEqual(bn(expected));
-    });
-  });
-
-  describe('roundedDownAmount', () => {
-    const number = '3.3467';
-    const bigNumber = bn(number);
-
-    it('round down big number and equal with tokenAmount', () => {
-      const expected = '3.34';
-      const resultAmount = roundedDownAmount(bigNumber);
-      expect(resultAmount.amount()).toEqual(bn(expected));
     });
   });
 });

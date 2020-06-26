@@ -12,8 +12,8 @@ import {
   baseAmount,
   tokenToBase,
 } from '@thorchain/asgardex-token';
-import { getSwapMemo } from '../../helpers/memoHelper';
-import { getTickerFormat } from '../../helpers/stringHelper';
+import { getSwapMemo } from '../memoHelper';
+import { getTickerFormat } from '../stringHelper';
 import {
   getZValue,
   getPx,
@@ -22,10 +22,10 @@ import {
   getFee,
   SingleSwapCalcData,
   DoubleSwapCalcData,
-} from './calc';
+} from '../calculations';
 import { PoolDataMap } from '../../redux/midgard/types';
 import { Nothing, Maybe, SwapType, Pair, AssetPair } from '../../types/bepswap';
-import { CalcResult } from './SwapSend/types';
+import { SwapData } from './types';
 import { getAssetFromString } from '../../redux/midgard/utils';
 
 export const validatePair = (
@@ -70,41 +70,36 @@ export const getSwapType = (from: string, to: string) =>
     ? SwapType.SINGLE_SWAP
     : SwapType.DOUBLE_SWAP;
 
-// TODO: (Chris) Refactor swap calc method
-export const getCalcResult = (
+export const getSwapData = (
   from: string,
   to: string,
   pools: PoolDataMap,
   poolAddress: string,
   xValue: TokenAmount,
   runePrice: BigNumber,
-): Maybe<CalcResult> => {
+): Maybe<SwapData> => {
   const swapType = getSwapType(from, to);
 
+  // TODO: (Chris) FIX hardcoded rune test token symbol
+  const rune = 'RUNE-A1F';
+
   const result: {
-    poolAddressFrom: Maybe<string>;
-    poolAddressTo: Maybe<string>;
-    symbolFrom: Maybe<string>;
-    symbolTo: Maybe<string>;
+    poolAddress: string;
+    symbolFrom: string;
+    symbolTo: string;
   } = {
-    poolAddressFrom: Nothing,
-    poolAddressTo: Nothing,
-    symbolFrom: Nothing,
-    symbolTo: Nothing,
+    poolAddress,
+    symbolFrom: rune,
+    symbolTo: rune,
   };
 
   if (swapType === SwapType.DOUBLE_SWAP) {
-    let X = tokenAmount(10000); // Input asset
-    let Y = tokenAmount(10); // Output asset
-    let R = tokenAmount(10000);
-    let Z = tokenAmount(10);
+    let X = tokenAmount(0); // Input asset
+    let Y = tokenAmount(0); // Output asset
+    let R = tokenAmount(0);
+    let Z = tokenAmount(0);
     const Py = runePrice;
 
-    // CHANGELOG:
-    /*
-      balance_rune => runeDepth
-      balance_token => assetDepth
-    */
     Object.keys(pools).forEach(key => {
       const poolData = pools[key];
       const runeDepth = baseAmount(poolData?.runeDepth ?? 0);
@@ -117,7 +112,6 @@ export const getCalcResult = (
         X = baseToToken(assetDepth);
         // formula: runeDepth / BASE_NUMBER
         Y = baseToToken(runeDepth);
-        result.poolAddressFrom = poolAddress;
         result.symbolFrom = symbol;
       }
 
@@ -126,7 +120,6 @@ export const getCalcResult = (
         R = baseToToken(runeDepth);
         // formula: assetDepth / BASE_NUMBER
         Z = baseToToken(assetDepth);
-        result.poolAddressTo = poolAddress;
         result.symbolTo = symbol;
       }
     });
@@ -154,10 +147,9 @@ export const getCalcResult = (
   }
 
   if (swapType === SwapType.SINGLE_SWAP && to.toLowerCase() === 'rune') {
-    let X = tokenAmount(10);
-    let Y = tokenAmount(10);
+    let X = tokenAmount(0);
+    let Y = tokenAmount(0);
     const Py = runePrice;
-    const rune = 'RUNE-A1F';
 
     Object.keys(pools).forEach(key => {
       const poolData = pools[key];
@@ -172,7 +164,6 @@ export const getCalcResult = (
         // formula: runeDepth / BASE_NUMBER
         Y = baseToToken(runeDepth);
 
-        result.poolAddressTo = poolAddress;
         result.symbolFrom = symbol;
       }
     });
@@ -230,10 +221,9 @@ export const getCalcResult = (
   }
 
   if (swapType === SwapType.SINGLE_SWAP && from.toLowerCase() === 'rune') {
-    let X = tokenAmount(10000);
-    let Y = tokenAmount(10);
+    let X = tokenAmount(0);
+    let Y = tokenAmount(0);
     const Px = bn(runePrice);
-    const rune = 'RUNE-A1F';
 
     Object.keys(pools).forEach(key => {
       const poolData = pools[key];
@@ -245,8 +235,6 @@ export const getCalcResult = (
       if (ticker.toLowerCase() === to.toLowerCase()) {
         X = baseToToken(runeDepth);
         Y = baseToToken(assetDepth);
-
-        result.poolAddressTo = poolAddress;
         result.symbolTo = symbol;
       }
     });
@@ -305,17 +293,16 @@ export enum SwapErrorMsg {
   INVALID_AMOUNT = 'Amount to swap is invalid.',
   MISSING_WALLET = 'Wallet address is missing or invalid.',
   MISSING_SYMBOL = 'Symbol is missing.',
-  MISSING_SYMBOL_TO = 'Symbol to swap to is missing.',
-  MISSING_SYMBOL_FROM = 'Symbol to swap from is missing.',
-  MISSING_ADDRESS_TO = 'Address to swap to is missing.',
-  MISSING_ADDRESS_FROM = 'Address to swap from is missing.',
+  MISSING_SYMBOL_TO = 'Target Symbol is missing.',
+  MISSING_SYMBOL_FROM = 'Input Symbol is missing.',
+  MISSING_ADDRESS = 'Pool Address is missing.',
   MISSING_POOL_ADDRESS = 'Pool address is missing.',
 }
 
 export const validateSwap = (
   wallet: string,
   swapType: SwapType,
-  data: Partial<CalcResult>,
+  data: Partial<SwapData>,
   amount: TokenAmount,
 ): Maybe<SwapErrorMsg> => {
   if (!wallet) {
@@ -336,17 +323,13 @@ export const validateSwap = (
   if (!symbolTo) {
     return SwapErrorMsg.MISSING_SYMBOL_TO;
   }
-  const poolAddressTo = data?.poolAddressTo;
-  if (!poolAddressTo) {
-    return SwapErrorMsg.MISSING_ADDRESS_TO;
+  const poolAddress = data?.poolAddress;
+  if (!poolAddress) {
+    return SwapErrorMsg.MISSING_ADDRESS;
   }
 
   // validate values - needed for double swap only
   if (swapType === SwapType.DOUBLE_SWAP) {
-    const poolAddressFrom = data?.poolAddressFrom;
-    if (!poolAddressFrom) {
-      return SwapErrorMsg.MISSING_ADDRESS_FROM;
-    }
     const symbolFrom = data?.symbolFrom;
     if (!symbolFrom) {
       return SwapErrorMsg.MISSING_SYMBOL_FROM;
@@ -361,7 +344,7 @@ export const confirmSwap = (
   wallet: string,
   from: string,
   to: string,
-  data: CalcResult,
+  data: SwapData,
   amount: TokenAmount,
   protectSlip: boolean,
   destAddr = '',
@@ -374,15 +357,7 @@ export const confirmSwap = (
       return reject(new Error(validationErrorMsg));
     }
 
-    const { poolAddressTo, symbolTo, symbolFrom, lim } = data;
-
-    if (!poolAddressTo) {
-      return reject(new Error(SwapErrorMsg.MISSING_POOL_ADDRESS));
-    }
-
-    if (!symbolFrom) {
-      return reject(new Error(SwapErrorMsg.MISSING_SYMBOL));
-    }
+    const { poolAddress, symbolTo, symbolFrom, lim } = data;
 
     // Check of `validateSwap` before makes sure that we have a valid number here
     const amountNumber = amount.amount().toNumber();
@@ -390,7 +365,7 @@ export const confirmSwap = (
     const limit = protectSlip && lim ? lim.amount().toString() : '';
     const memo = getSwapMemo(symbolTo, destAddr, limit);
 
-    Binance.transfer(wallet, poolAddressTo, amountNumber, symbolFrom, memo)
+    Binance.transfer(wallet, poolAddress, amountNumber, symbolFrom, memo)
       .then((response: TransferResult) => resolve(response))
       .catch((error: Error) => reject(error));
   });

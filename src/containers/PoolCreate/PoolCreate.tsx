@@ -14,6 +14,7 @@ import {
   getPrefix,
 } from '@thorchain/asgardex-binance';
 import {
+  bn,
   validBNOrZero,
   formatBN,
   bnOrZero,
@@ -22,22 +23,23 @@ import {
 } from '@thorchain/asgardex-util';
 
 import { TokenAmount, tokenAmount } from '@thorchain/asgardex-token';
-import Button from '../../../components/uielements/button';
-import Label from '../../../components/uielements/label';
-import Status from '../../../components/uielements/status';
-import CoinIcon from '../../../components/uielements/coins/coinIcon';
-import CoinCard from '../../../components/uielements/coins/coinCard';
-import Drag from '../../../components/uielements/drag';
-import { greyArrowIcon } from '../../../components/icons';
-import TxTimer from '../../../components/uielements/txTimer';
-import StepBar from '../../../components/uielements/stepBar';
-import CoinData from '../../../components/uielements/coins/coinData';
-import PrivateModal from '../../../components/modals/privateModal';
-import { getAppContainer } from '../../../helpers/elementHelper';
+import Button from '../../components/uielements/button';
+import Label from '../../components/uielements/label';
+import Status from '../../components/uielements/status';
+import CoinIcon from '../../components/uielements/coins/coinIcon';
+import CoinCard from '../../components/uielements/coins/coinCard';
+import Drag from '../../components/uielements/drag';
+import { greyArrowIcon } from '../../components/icons';
+import TxTimer from '../../components/uielements/txTimer';
+import StepBar from '../../components/uielements/stepBar';
+import CoinData from '../../components/uielements/coins/coinData';
+import PrivateModal from '../../components/modals/privateModal';
+import { getAppContainer } from '../../helpers/elementHelper';
 
-import * as appActions from '../../../redux/app/actions';
-import * as midgardActions from '../../../redux/midgard/actions';
-import * as binanceActions from '../../../redux/binance/actions';
+import * as appActions from '../../redux/app/actions';
+import * as walletActions from '../../redux/wallet/actions';
+import * as midgardActions from '../../redux/midgard/actions';
+import * as binanceActions from '../../redux/binance/actions';
 
 import {
   ContentWrapper,
@@ -45,24 +47,22 @@ import {
   ConfirmModalContent,
   LoaderWrapper,
 } from './PoolCreate.style';
-import { getTickerFormat } from '../../../helpers/stringHelper';
+import { getTickerFormat } from '../../helpers/stringHelper';
 import {
-  confirmCreatePool,
-  getCreatePoolTokens,
-  getCreatePoolCalc,
-  CreatePoolCalc,
-} from '../utils';
+  createPoolRequest,
+  getAvailableTokensToCreate,
+} from '../../helpers/utils/poolUtils';
 
-import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
-import { MAX_VALUE } from '../../../redux/app/const';
-import { RootState } from '../../../redux/store';
-import { TxStatus, TxTypes } from '../../../redux/app/types';
-import { State as BinanceState } from '../../../redux/binance/types';
-import { PriceDataIndex, PoolDataMap } from '../../../redux/midgard/types';
-import { Maybe, AssetPair } from '../../../types/bepswap';
-import { User, AssetData } from '../../../redux/wallet/types';
+import { TESTNET_TX_BASE_URL } from '../../helpers/apiHelper';
+import { MAX_VALUE } from '../../redux/app/const';
+import { RootState } from '../../redux/store';
+import { TxStatus, TxTypes } from '../../redux/app/types';
+import { State as BinanceState } from '../../redux/binance/types';
+import { PriceDataIndex, PoolDataMap } from '../../redux/midgard/types';
+import { Maybe, AssetPair } from '../../types/bepswap';
+import { User, AssetData } from '../../redux/wallet/types';
 
-import { BINANCE_NET } from '../../../env';
+import { BINANCE_NET } from '../../env';
 
 type Props = {
   assetData: AssetData[];
@@ -72,14 +72,15 @@ type Props = {
   user: Maybe<User>;
   basePriceAsset: string;
   priceIndex: PriceDataIndex;
+  binanceData: BinanceState;
+  history: H.History;
+  txStatus: TxStatus;
+  refreshBalance: typeof walletActions.refreshBalance;
   getPools: typeof midgardActions.getPools;
   getPoolAddress: typeof midgardActions.getPoolAddress;
   getStakerPoolData: typeof midgardActions.getStakerPoolData;
   getBinanceTokens: typeof binanceActions.getBinanceTokens;
   getBinanceMarkets: typeof binanceActions.getBinanceMarkets;
-  binanceData: BinanceState;
-  history: H.History;
-  txStatus: TxStatus;
   setTxTimerModal: typeof appActions.setTxTimerModal;
   setTxTimerStatus: typeof appActions.setTxTimerStatus;
   countTxTimerValue: typeof appActions.countTxTimerValue;
@@ -97,6 +98,7 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
     binanceData,
     txStatus,
     pools,
+    refreshBalance,
     getPools,
     getPoolAddress,
     getBinanceMarkets,
@@ -128,6 +130,11 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
   }, [user, symbol, getStakerPoolData]);
 
   useEffect(() => {
+    const wallet: Maybe<string> = user ? user.wallet : null;
+    if (wallet) {
+      // refresh wallet balance
+      refreshBalance(wallet);
+    }
     getPools();
     getPoolAddress();
     getBinanceTokens();
@@ -139,18 +146,6 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const getData = useCallback((): CreatePoolCalc => {
-    const runePrice = validBNOrZero(priceIndex?.RUNE);
-
-    return getCreatePoolCalc({
-      tokenSymbol: symbol,
-      poolAddress,
-      runeAmount,
-      runePrice,
-      tokenAmount: targetAmount,
-    });
-  }, [symbol, poolAddress, priceIndex, runeAmount, targetAmount]);
 
   const handleChangePassword = useCallback(
     (password: string) => {
@@ -328,14 +323,13 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
       handleStartTimer();
       const bncClient = await binanceClient(BINANCE_NET);
       try {
-        const { poolAddress, tokenSymbol } = getData();
-        const { result } = await confirmCreatePool({
+        const { result } = await createPoolRequest({
           bncClient,
           wallet: user.wallet,
           runeAmount,
           tokenAmount: targetAmount,
           poolAddress,
-          tokenSymbol,
+          tokenSymbol: symbol,
         });
 
         const hash = result && result.length ? result[0].hash : null;
@@ -389,7 +383,7 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
     const target = getTickerFormat(symbol);
 
     const runePrice = validBNOrZero(priceIndex?.RUNE);
-    const tokensData = getCreatePoolTokens(assetData, pools);
+    const tokensData = getAvailableTokensToCreate(assetData, pools);
     // AssetData[] -> AssetPair[]
     const coinDardData = tokensData.map<AssetPair>((detail: AssetData) => ({
       asset: detail.asset || '',
@@ -402,7 +396,19 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
         .dividedBy(targetAmount.amount()),
     );
 
-    const { poolPrice, depth, share } = getData();
+    // formula: (runeAmount / targetAmount) * runePrice)
+    const poolPrice = targetAmount.amount().isGreaterThan(0)
+      ? runeAmount
+          .amount()
+          .div(targetAmount.amount())
+          .multipliedBy(runePrice)
+      : bn(0);
+
+    // formula: runePrice * runeAmount
+    const depth = runeAmount.amount().multipliedBy(runePrice);
+
+    // when creating a new pool, share is 100 %
+    const share = 100;
 
     const poolAttrs = [
       {
@@ -661,6 +667,7 @@ export default compose(
       txStatus: state.App.txStatus,
     }),
     {
+      refreshBalance: walletActions.refreshBalance,
       getPools: midgardActions.getPools,
       getPoolAddress: midgardActions.getPoolAddress,
       getStakerPoolData: midgardActions.getStakerPoolData,

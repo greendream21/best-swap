@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 import { palette } from 'styled-theme';
-import ContentView from '../../../components/utility/contentView';
-import Modal from '../../../components/uielements/modal';
-import { media } from '../../../helpers/styleHelper';
+import ContentView from '../../components/utility/contentView';
+import Modal from '../../components/uielements/modal';
+import { media } from '../../helpers/styleHelper';
 
 export const ContentWrapper = styled(ContentView)`
   padding: 0;

@@ -1,6 +1,17 @@
 import BigNumber from 'bignumber.js';
+import { TokenAmount, BaseAmount } from '@thorchain/asgardex-token';
 
-import { BaseAmount } from '@thorchain/asgardex-token';
+export type SwapData = {
+  poolAddress: string;
+  symbolFrom: string;
+  symbolTo: string;
+  Px: BigNumber;
+  slip: BigNumber;
+  outputAmount: TokenAmount;
+  outputPrice: BigNumber;
+  fee: TokenAmount;
+  lim: BaseAmount;
+};
 
 export type PoolInfoType = {
   asset: string;

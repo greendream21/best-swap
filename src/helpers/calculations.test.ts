@@ -9,7 +9,7 @@ import {
   getSlip,
   DoubleSwapCalcData,
   SingleSwapCalcData,
-} from './calc';
+} from './calculations';
 
 const doubleSwapCalcData: DoubleSwapCalcData = {
   X: tokenAmount(1000000),
