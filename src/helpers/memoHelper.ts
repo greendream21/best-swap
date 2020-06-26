@@ -5,7 +5,7 @@ const getAssetFormat = (symbol: Maybe<string>) => {
 };
 
 export const getSwapMemo = (
-  symbol: Maybe<string>,
+  symbol: string,
   addr: string,
   sliplimit = '',
 ) => {
