@@ -9,6 +9,7 @@ import { delay } from '@thorchain/asgardex-util';
 import Button from '../../components/uielements/button';
 import Label from '../../components/uielements/label';
 import WalletButton from '../../components/uielements/walletButton';
+import WalletView from './WalletView';
 
 import {
   WalletDrawerWrapper,
@@ -19,7 +20,6 @@ import * as walletActions from '../../redux/wallet/actions';
 import { RootState } from '../../redux/store';
 import { User } from '../../redux/wallet/types';
 import { Maybe } from '../../types/bepswap';
-import WalletView from './WalletView';
 import { getAppContainer } from '../../helpers/elementHelper';
 
 type Props = {

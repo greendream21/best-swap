@@ -5,7 +5,7 @@ import themes, { ThemeType } from '@thorchain/asgardex-theme';
 import { IntlProvider } from 'react-intl';
 import { store as reduxStore, history, RootState } from './redux/store';
 
-import PublicRoutes from './router';
+import Routes from './router';
 import { AppHolder, fontConfig } from './settings/appStyle';
 import WebFontLoader from './components/utility/webfontloader';
 
@@ -18,7 +18,7 @@ const Main = () => {
   return (
     <ThemeProvider theme={defaultTheme}>
       <AppHolder id="app-global">
-        <PublicRoutes history={history} />
+        <Routes history={history} />
       </AppHolder>
     </ThemeProvider>
   );
