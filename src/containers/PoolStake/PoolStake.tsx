@@ -41,24 +41,24 @@ import {
   tokenToBase,
 } from '@thorchain/asgardex-token';
 import Text from 'antd/lib/typography/Text';
-import { getAppContainer } from '../../../helpers/elementHelper';
+import { getAppContainer } from '../../helpers/elementHelper';
 
-import Label from '../../../components/uielements/label';
-import Status from '../../../components/uielements/status';
-import CoinCard from '../../../components/uielements/coins/coinCard';
-import CoinData from '../../../components/uielements/coins/coinData';
-import Slider from '../../../components/uielements/slider';
-import TxTimer from '../../../components/uielements/txTimer';
-import Drag from '../../../components/uielements/drag';
-import Modal from '../../../components/uielements/modal';
-import Button from '../../../components/uielements/button';
-import AddWallet from '../../../components/uielements/addWallet';
-import PrivateModal from '../../../components/modals/privateModal';
+import Label from '../../components/uielements/label';
+import Status from '../../components/uielements/status';
+import CoinCard from '../../components/uielements/coins/coinCard';
+import CoinData from '../../components/uielements/coins/coinData';
+import Slider from '../../components/uielements/slider';
+import TxTimer from '../../components/uielements/txTimer';
+import Drag from '../../components/uielements/drag';
+import Modal from '../../components/uielements/modal';
+import Button from '../../components/uielements/button';
+import AddWallet from '../../components/uielements/addWallet';
+import PrivateModal from '../../components/modals/privateModal';
 
-import * as appActions from '../../../redux/app/actions';
-import * as midgardActions from '../../../redux/midgard/actions';
-import * as walletActions from '../../../redux/wallet/actions';
-import * as binanceActions from '../../../redux/binance/actions';
+import * as appActions from '../../redux/app/actions';
+import * as midgardActions from '../../redux/midgard/actions';
+import * as walletActions from '../../redux/wallet/actions';
+import * as binanceActions from '../../redux/binance/actions';
 
 import {
   ContentWrapper,
@@ -72,42 +72,42 @@ import {
 } from './PoolStake.style';
 import {
   WithdrawResultParams,
-  confirmStake,
-  confirmWithdraw,
+  stakeRequest,
+  withdrawRequest,
   getCalcResult,
   CalcResult,
   getPoolData,
   withdrawResult,
-} from '../utils';
-import { PoolData } from '../types';
-import { getTickerFormat, emptyString } from '../../../helpers/stringHelper';
-import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
-import TokenInfo from '../../../components/uielements/tokens/tokenInfo';
-import StepBar from '../../../components/uielements/stepBar';
-import { MAX_VALUE } from '../../../redux/app/const';
-import { RootState } from '../../../redux/store';
-import { User, AssetData } from '../../../redux/wallet/types';
-import { Maybe, Nothing, AssetPair } from '../../../types/bepswap';
-import { TxStatus, TxTypes } from '../../../redux/app/types';
+} from '../../helpers/utils/poolUtils';
+import { PoolData } from '../../helpers/utils/types';
+import { getTickerFormat, emptyString } from '../../helpers/stringHelper';
+import { TESTNET_TX_BASE_URL } from '../../helpers/apiHelper';
+import TokenInfo from '../../components/uielements/tokens/tokenInfo';
+import StepBar from '../../components/uielements/stepBar';
+import { MAX_VALUE } from '../../redux/app/const';
+import { RootState } from '../../redux/store';
+import { User, AssetData } from '../../redux/wallet/types';
+import { Maybe, Nothing, AssetPair } from '../../types/bepswap';
+import { TxStatus, TxTypes } from '../../redux/app/types';
 import {
   AssetDetailMap,
   StakerPoolData,
   PoolDataMap,
   PriceDataIndex,
   ThorchainData,
-} from '../../../redux/midgard/types';
-import { StakersAssetData } from '../../../types/generated/midgard';
-import { getAssetFromString } from '../../../redux/midgard/utils';
-import { BINANCE_NET, getNet } from '../../../env';
+} from '../../redux/midgard/types';
+import { StakersAssetData } from '../../types/generated/midgard';
+import { getAssetFromString } from '../../redux/midgard/utils';
+import { BINANCE_NET, getNet } from '../../env';
 import {
   TransferEventRD,
   TransferFeesRD,
   TransferFees,
-} from '../../../redux/binance/types';
+} from '../../redux/binance/types';
 import {
   getAssetFromAssetData,
   bnbBaseAmount,
-} from '../../../helpers/walletHelper';
+} from '../../helpers/walletHelper';
 import { ShareDetailTabKeys, WithdrawData } from './types';
 
 const { TabPane } = Tabs;
@@ -650,7 +650,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       const bncClient = await binanceClient(BINANCE_NET);
 
       try {
-        const { result } = await confirmStake({
+        const { result } = await stakeRequest({
           bncClient,
           wallet,
           runeAmount,
@@ -745,7 +745,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       try {
         const percent = withdrawRate * 100;
 
-        const { result } = await confirmWithdraw({
+        const { result } = await withdrawRequest({
           bncClient,
           wallet,
           poolAddress,

@@ -3,10 +3,10 @@ import { Popover } from 'antd';
 import Icon from '@ant-design/icons';
 import { palette } from 'styled-theme';
 import Paragraph from 'antd/lib/typography/Paragraph';
-import ContentView from '../../../components/utility/contentView';
-import Modal from '../../../components/uielements/modal';
-import { media, cleanTag } from '../../../helpers/styleHelper';
-import { transition } from '../../../settings/style-util';
+import ContentView from '../../components/utility/contentView';
+import Modal from '../../components/uielements/modal';
+import { media, cleanTag } from '../../helpers/styleHelper';
+import { transition } from '../../settings/style-util';
 
 export const SwapAssetCard = styled.div`
   display: flex;

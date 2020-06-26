@@ -7,17 +7,17 @@ import {
   getTxResult,
   validatePair,
   getSwapType,
-  getCalcResult,
+  getSwapData,
   validateSwap,
   SwapErrorMsg,
-} from './utils';
+} from './swapUtils';
 import {
   PoolDetail,
   PoolDetailStatusEnum,
 } from '../../types/generated/midgard';
-import { Nothing, Pair, AssetPair, SwapType } from '../../types/bepswap';
+import { Pair, AssetPair, SwapType } from '../../types/bepswap';
 import { PoolDataMap } from '../../redux/midgard/types';
-import { CalcResult } from './SwapSend/types';
+import { SwapData } from './types';
 
 const bnbPoolInfo: PoolDetail = {
   asset: 'BNB.BNB',
@@ -388,7 +388,7 @@ describe('swap/utils/', () => {
     });
   });
 
-  describe('getCalcResult', () => {
+  describe('getSwapData', () => {
     const poolAddress = 'address';
     const xValue = tokenAmount(100);
     const runePrice = bn(1);
@@ -396,20 +396,19 @@ describe('swap/utils/', () => {
     it('returns calculated result for single swap type: rune -> bnb', () => {
       const from = 'rune';
       const to = 'bnb';
-      const expected: CalcResult = {
+      const expected: SwapData = {
         Px: bn(1),
         fee: tokenAmount(0.0149273),
         lim: baseAmount(54447528),
         outputAmount: tokenAmount(0.56131472),
         outputPrice: bn(178.03053227763760049641),
-        poolAddressTo: 'address',
-        poolAddressFrom: Nothing,
+        poolAddress: 'address',
         slip: bn(5.389413716466187631),
         symbolFrom: 'RUNE-A1F',
         symbolTo: 'BNB',
       };
 
-      const result = getCalcResult(
+      const result = getSwapData(
         from,
         to,
         poolData,
@@ -427,8 +426,7 @@ describe('swap/utils/', () => {
       expect(result?.outputPrice.toFixed(5)).toEqual(
         expected.outputPrice.toFixed(5),
       );
-      expect(result?.poolAddressTo).toEqual(expected.poolAddressTo);
-      expect(result?.poolAddressFrom).toEqual(expected.poolAddressFrom);
+      expect(result?.poolAddress).toEqual(expected.poolAddress);
       expect(result?.slip.toFixed(5)).toEqual(expected.slip.toFixed(5));
       expect(result?.symbolFrom).toEqual(expected.symbolFrom);
       expect(result?.symbolTo).toEqual(expected.symbolTo);
@@ -436,19 +434,18 @@ describe('swap/utils/', () => {
     it('returns calculated result for single swap type: lok -> rune', () => {
       const from = 'lok';
       const to = 'rune';
-      const expected: CalcResult = {
+      const expected: SwapData = {
         Px: bn('6.3322188335020546053'),
         fee: tokenAmount('284.34798923'),
         lim: baseAmount('51844403581'),
         outputAmount: tokenAmount('534.47838743'),
         outputPrice: bn('1.00000000000152525393'),
-        poolAddressFrom: Nothing,
-        poolAddressTo: 'address',
+        poolAddress: 'address',
         slip: bn('134.705545606424204104'),
         symbolFrom: 'LOK-3C0',
         symbolTo: 'RUNE-A1F',
       };
-      const result = getCalcResult(
+      const result = getSwapData(
         from,
         to,
         poolData,
@@ -464,8 +461,7 @@ describe('swap/utils/', () => {
         expected.outputAmount.amount(),
       );
       expect(result?.outputPrice).toEqual(expected.outputPrice);
-      expect(result?.poolAddressTo).toEqual(expected.poolAddressTo);
-      expect(result?.poolAddressFrom).toEqual(expected.poolAddressFrom);
+      expect(result?.poolAddress).toEqual(expected.poolAddress);
       expect(result?.slip).toEqual(expected.slip);
       expect(result?.symbolFrom).toEqual(expected.symbolFrom);
       expect(result?.symbolTo).toEqual(expected.symbolTo);
@@ -473,20 +469,19 @@ describe('swap/utils/', () => {
     it('returns calculated result for double swap type: lok -> bnb', () => {
       const from = 'lok';
       const to = 'bnb';
-      const expected: CalcResult = {
+      const expected: SwapData = {
         Px: bn('6.3322188335020546053'),
         fee: tokenAmount('0.34451071'),
         outputAmount: tokenAmount(2.42380508),
         outputPrice: bn('216.67937336595058369301'),
-        poolAddressFrom: 'address',
-        poolAddressTo: 'address',
+        poolAddress: 'address',
         slip: bn(23.340828117376259007),
         symbolFrom: 'LOK-3C0',
         symbolTo: 'BNB',
         lim: baseAmount(235109093),
       };
 
-      const result = getCalcResult(
+      const result = getSwapData(
         from,
         to,
         poolData,
@@ -501,8 +496,7 @@ describe('swap/utils/', () => {
         expected.outputAmount.amount(),
       );
       expect(result?.outputPrice).toEqual(expected.outputPrice);
-      expect(result?.poolAddressTo).toEqual(expected.poolAddressTo);
-      expect(result?.poolAddressFrom).toEqual(expected.poolAddressFrom);
+      expect(result?.poolAddress).toEqual(expected.poolAddress);
       expect(result?.slip.toFixed(5)).toEqual(expected.slip.toFixed(5));
       expect(result?.symbolFrom).toEqual(expected.symbolFrom);
       expect(result?.symbolTo).toEqual(expected.symbolTo);
@@ -510,10 +504,9 @@ describe('swap/utils/', () => {
   });
 
   describe('validateSwap', () => {
-    const data: Partial<CalcResult> = {
-      poolAddressFrom: 'value',
+    const data: Partial<SwapData> = {
+      poolAddress: 'value',
       symbolFrom: 'value',
-      poolAddressTo: 'value',
       symbolTo: 'value',
     };
 
@@ -531,10 +524,10 @@ describe('swap/utils/', () => {
         validateSwap(
           'address',
           SwapType.SINGLE_SWAP,
-          { ...data, poolAddressTo: undefined },
+          { ...data, poolAddress: undefined },
           tokenAmount(10),
         ),
-      ).toEqual(SwapErrorMsg.MISSING_ADDRESS_TO);
+      ).toEqual(SwapErrorMsg.MISSING_ADDRESS);
       // invalid symbolTo
       expect(
         validateSwap(
@@ -564,19 +557,19 @@ describe('swap/utils/', () => {
         validateSwap(
           'address',
           SwapType.DOUBLE_SWAP,
-          { ...data, poolAddressTo: undefined },
+          { ...data, poolAddress: undefined },
           tokenAmount(10),
         ),
-      ).toEqual(SwapErrorMsg.MISSING_ADDRESS_TO);
-      // invalid poolAddressFrom
+      ).toEqual(SwapErrorMsg.MISSING_ADDRESS);
+      // invalid poolAddress
       expect(
         validateSwap(
           'address',
           SwapType.DOUBLE_SWAP,
-          { ...data, poolAddressFrom: undefined },
+          { ...data, poolAddress: undefined },
           tokenAmount(10),
         ),
-      ).toEqual(SwapErrorMsg.MISSING_ADDRESS_FROM);
+      ).toEqual(SwapErrorMsg.MISSING_ADDRESS);
       // invalid symbolfrom
       expect(
         validateSwap(

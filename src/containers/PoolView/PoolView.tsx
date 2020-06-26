@@ -10,44 +10,42 @@ import {
   DatabaseOutlined,
 } from '@ant-design/icons';
 
-import Label from '../../../components/uielements/label';
-import AddIcon from '../../../components/uielements/addIcon';
-import CoinIcon from '../../../components/uielements/coins/coinIcon';
-import Table from '../../../components/uielements/table';
-import Button from '../../../components/uielements/button';
-import PoolFilter from '../../../components/poolFilter';
+import Label from '../../components/uielements/label';
+import AddIcon from '../../components/uielements/addIcon';
+import CoinIcon from '../../components/uielements/coins/coinIcon';
+import Table from '../../components/uielements/table';
+import Button from '../../components/uielements/button';
+import PoolFilter from '../../components/poolFilter';
 
 import { ContentWrapper, ActionHeader, ActionColumn } from './PoolView.style';
-import { getCreatePoolTokens, getPoolData } from '../utils';
-import { PoolData } from '../types';
-import { getTickerFormat } from '../../../helpers/stringHelper';
-import { getAppContainer } from '../../../helpers/elementHelper';
-import * as midgardActions from '../../../redux/midgard/actions';
-import { RootState } from '../../../redux/store';
-import { AssetData, User } from '../../../redux/wallet/types';
-import { PoolDataMap, PriceDataIndex } from '../../../redux/midgard/types';
-import { getAssetFromString } from '../../../redux/midgard/utils';
-import { ViewType, Maybe } from '../../../types/bepswap';
-import { PoolDetailStatusEnum } from '../../../types/generated/midgard/api';
+import {
+  getAvailableTokensToCreate,
+  getPoolData,
+} from '../../helpers/utils/poolUtils';
+import { PoolData } from '../../helpers/utils/types';
+import { getTickerFormat } from '../../helpers/stringHelper';
+import { getAppContainer } from '../../helpers/elementHelper';
 
-type ComponentProps = {
-  loading: boolean;
-};
-type ConnectedProps = {
+import * as walletActions from '../../redux/wallet/actions';
+import * as midgardActions from '../../redux/midgard/actions';
+import { RootState } from '../../redux/store';
+import { AssetData, User } from '../../redux/wallet/types';
+import { PoolDataMap, PriceDataIndex } from '../../redux/midgard/types';
+import { getAssetFromString } from '../../redux/midgard/utils';
+import { ViewType, Maybe } from '../../types/bepswap';
+import { PoolDetailStatusEnum } from '../../types/generated/midgard/api';
+
+type Props = {
   history: H.History;
-  getPools: typeof midgardActions.getPools;
   pools: string[];
   poolData: PoolDataMap;
   priceIndex: PriceDataIndex;
   assetData: AssetData[];
   user: Maybe<User>;
+  loading: boolean;
+  refreshBalance: typeof walletActions.refreshBalance;
+  getPools: typeof midgardActions.getPools;
 };
-
-type State = {
-  poolStatus: PoolDetailStatusEnum;
-};
-
-type Props = ComponentProps & ConnectedProps;
 
 const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
   const {
@@ -57,8 +55,10 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     assetData,
     user,
     loading,
+    refreshBalance,
     getPools,
   } = props;
+
   const [poolStatus, selectPoolStatus] = useState<PoolDetailStatusEnum>(
     PoolDetailStatusEnum.Enabled,
   );
@@ -67,6 +67,10 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
   const wallet: Maybe<string> = user ? user.wallet : null;
 
   useEffect(() => {
+    if (wallet) {
+      // refresh wallet balance
+      refreshBalance(wallet);
+    }
     getPools();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wallet]);
@@ -81,7 +85,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         getContainer: getAppContainer,
       });
     } else {
-      const possibleTokens = getCreatePoolTokens(assetData, pools);
+      const possibleTokens = getAvailableTokensToCreate(assetData, pools);
       if (possibleTokens.length) {
         const symbol = possibleTokens[0].asset;
         if (getTickerFormat(symbol) !== 'rune') {
@@ -291,7 +295,8 @@ export default compose(
     }),
     {
       getPools: midgardActions.getPools,
+      refreshBalance: walletActions.refreshBalance,
     },
   ),
   withRouter,
-)(PoolView) as React.ComponentClass<ComponentProps, State>;
+)(PoolView);

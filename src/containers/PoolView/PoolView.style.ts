@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { palette } from 'styled-theme';
-import ContentView from '../../../components/utility/contentView';
-import { media } from '../../../helpers/styleHelper';
+import ContentView from '../../components/utility/contentView';
+import { media } from '../../helpers/styleHelper';
 
 export const ContentWrapper = styled(ContentView)`
   display: flex;

@@ -12,26 +12,26 @@ type AppRoute = {
 const routes: AppRoute[] = [
   {
     path: '',
-    component: asyncComponent(() => import('../Pool/PoolView')),
+    component: asyncComponent(() => import('../PoolView')),
     exact: true,
   },
   {
     path: 'swap/:info',
-    component: asyncComponent(() => import('../Swap/SwapSend')),
+    component: asyncComponent(() => import('../SwapSend')),
   },
   {
     path: 'pools',
-    component: asyncComponent(() => import('../Pool/PoolView')),
+    component: asyncComponent(() => import('../PoolView')),
     exact: true,
   },
   {
     path: 'pool/:symbol/new',
-    component: asyncComponent(() => import('../Pool/PoolCreate')),
+    component: asyncComponent(() => import('../PoolCreate')),
     exact: true,
   },
   {
     path: 'pool/:symbol',
-    component: asyncComponent(() => import('../Pool/PoolStake')),
+    component: asyncComponent(() => import('../PoolStake')),
     exact: true,
   },
   {

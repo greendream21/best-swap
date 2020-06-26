@@ -3,12 +3,12 @@ import { TransferResult, BinanceClient } from '@thorchain/asgardex-binance';
 import { tokenAmount } from '@thorchain/asgardex-token';
 import {
   CreatePoolErrorMsg,
-  confirmWithdraw,
-  confirmCreatePool,
+  withdrawRequest,
+  createPoolRequest,
   WithdrawErrorMsg,
-  confirmStake,
+  stakeRequest,
   StakeErrorMsg,
-} from './utils';
+} from './poolUtils';
 
 const transferResponseMock: TransferResult = {
   result: [{ code: 1, hash: 'hash', log: 'log', ok: true }],
@@ -33,13 +33,13 @@ describe('pool/utils/', () => {
       bncClient = await mockClient();
     });
 
-    describe('confirmWithdraw', () => {
+    describe('withdrawRequest', () => {
       beforeEach(async () => {
         mocked(bncClient.transfer).mockClear();
       });
 
       it('returns result of a transfer', async () => {
-        const response = await confirmWithdraw({
+        const response = await withdrawRequest({
           bncClient,
           wallet: 'abc123',
           poolAddress: 'abc456',
@@ -53,7 +53,7 @@ describe('pool/utils/', () => {
       });
       it('rejects if wallet address is not provided', async () => {
         await expect(
-          confirmWithdraw({
+          withdrawRequest({
             bncClient,
             wallet: '',
             poolAddress: 'abc456',
@@ -64,7 +64,7 @@ describe('pool/utils/', () => {
       });
       it('rejects if pool address is not provided', async () => {
         await expect(
-          confirmWithdraw({
+          withdrawRequest({
             bncClient,
             wallet: 'abc123',
             poolAddress: '',
@@ -75,13 +75,13 @@ describe('pool/utils/', () => {
       });
     });
 
-    describe('confirmCreatePool', () => {
+    describe('createPoolRequest', () => {
       beforeEach(async () => {
         mocked(bncClient.multiSend).mockClear();
       });
 
       it('returns result of a transfer', async () => {
-        const response = await confirmCreatePool({
+        const response = await createPoolRequest({
           bncClient,
           wallet: 'abc123',
           runeAmount: tokenAmount(2),
@@ -97,7 +97,7 @@ describe('pool/utils/', () => {
 
       it('rejects if wallet address is not provided', async () => {
         await expect(
-          confirmCreatePool({
+          createPoolRequest({
             bncClient,
             wallet: '',
             runeAmount: tokenAmount(2),
@@ -110,7 +110,7 @@ describe('pool/utils/', () => {
 
       it('rejects if token amount is not > 0', async () => {
         await expect(
-          confirmCreatePool({
+          createPoolRequest({
             bncClient,
             wallet: 'abc123',
             runeAmount: tokenAmount(2),
@@ -123,7 +123,7 @@ describe('pool/utils/', () => {
 
       it('rejects if pool address is missing', async () => {
         await expect(
-          confirmCreatePool({
+          createPoolRequest({
             bncClient,
             wallet: 'abc123',
             runeAmount: tokenAmount(2),
@@ -136,7 +136,7 @@ describe('pool/utils/', () => {
 
       it('rejects if token symbol is missing', async () => {
         await expect(
-          confirmCreatePool({
+          createPoolRequest({
             bncClient,
             wallet: 'abc123',
             runeAmount: tokenAmount(2),
@@ -148,13 +148,13 @@ describe('pool/utils/', () => {
       });
     });
 
-    describe('confirmStake', () => {
+    describe('stakeRequest', () => {
       beforeEach(async () => {
         mocked(bncClient.transfer).mockClear();
         mocked(bncClient.multiSend).mockClear();
       });
       it('calls `multiSend` to stake', async () => {
-        const response = await confirmStake({
+        const response = await stakeRequest({
           bncClient,
           wallet: 'bnb1',
           runeAmount: tokenAmount(1),
@@ -171,7 +171,7 @@ describe('pool/utils/', () => {
 
       it('rejects in case of an infinity runeAmount', async () => {
         await expect(
-          confirmStake({
+          stakeRequest({
             bncClient,
             wallet: 'bnb1',
             runeAmount: tokenAmount(Number.POSITIVE_INFINITY),
@@ -184,7 +184,7 @@ describe('pool/utils/', () => {
 
       it('rejects in case of an infinity tokenAmount', async () => {
         await expect(
-          confirmStake({
+          stakeRequest({
             bncClient,
             wallet: 'bnb1',
             runeAmount: tokenAmount(1),
@@ -197,7 +197,7 @@ describe('pool/utils/', () => {
 
       it('rejects if pool address is missing', async () => {
         await expect(
-          confirmStake({
+          stakeRequest({
             bncClient,
             wallet: 'bnb1',
             runeAmount: tokenAmount(1),
@@ -210,7 +210,7 @@ describe('pool/utils/', () => {
 
       it('rejects if symbol is missing', async () => {
         await expect(
-          confirmStake({
+          stakeRequest({
             bncClient,
             wallet: 'bnb1',
             runeAmount: tokenAmount(1),

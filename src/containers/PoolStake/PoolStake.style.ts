@@ -3,10 +3,10 @@ import { palette, key } from 'styled-theme';
 import { InfoCircleOutlined } from '@ant-design/icons';
 
 import Paragraph from 'antd/lib/typography/Paragraph';
-import ContentView from '../../../components/utility/contentView';
-import Modal from '../../../components/uielements/modal';
-import UnstyledTabs from '../../../components/uielements/tabs';
-import { media } from '../../../helpers/styleHelper';
+import ContentView from '../../components/utility/contentView';
+import Modal from '../../components/uielements/modal';
+import UnstyledTabs from '../../components/uielements/tabs';
+import { media } from '../../helpers/styleHelper';
 
 // TODO:
 // This needs to be refactored/rewritten pretty badly
