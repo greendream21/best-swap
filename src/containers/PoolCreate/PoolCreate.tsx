@@ -3,7 +3,7 @@ import * as H from 'history';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter, useHistory, useParams } from 'react-router-dom';
-import { Row, Col, notification, Spin } from 'antd';
+import { Row, Col, Spin } from 'antd';
 import { FullscreenExitOutlined, CloseOutlined } from '@ant-design/icons';
 import { crypto } from '@binance-chain/javascript-sdk';
 import { get as _get } from 'lodash';
@@ -34,7 +34,6 @@ import TxTimer from '../../components/uielements/txTimer';
 import StepBar from '../../components/uielements/stepBar';
 import CoinData from '../../components/uielements/coins/coinData';
 import PrivateModal from '../../components/modals/privateModal';
-import { getAppContainer } from '../../helpers/elementHelper';
 
 import * as appActions from '../../redux/app/actions';
 import * as walletActions from '../../redux/wallet/actions';
@@ -63,6 +62,7 @@ import { Maybe, AssetPair } from '../../types/bepswap';
 import { User, AssetData } from '../../redux/wallet/types';
 
 import { BINANCE_NET } from '../../env';
+import showNotification from '../../components/uielements/notification';
 
 type Props = {
   assetData: AssetData[];
@@ -181,11 +181,11 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
   }, [setTxTimerModal, handleEndTxTimer]);
 
   const handleFinishTx = () => {
-    notification.open({
+    showNotification({
+      type: 'open',
       message: 'Pool Created Successfully!',
       description:
         'It may take a few moments until a new pool appears in the pool list!',
-      getContainer: getAppContainer,
     });
 
     handleCloseModal();
@@ -337,10 +337,10 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
           setTxHash(hash);
         }
       } catch (error) {
-        notification.error({
+        showNotification({
+          type: 'error',
           message: 'Create Pool Failed',
           description: 'Create Pool information is not valid.',
-          getContainer: getAppContainer,
         });
         handleCloseModal();
         setDragReset(true);
@@ -361,10 +361,10 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
       runeAmount.amount().isLessThanOrEqualTo(0) ||
       targetAmount.amount().isLessThanOrEqualTo(0)
     ) {
-      notification.error({
+      showNotification({
+        type: 'error',
         message: 'Stake Invalid',
         description: 'You need to enter an amount to stake.',
-        getContainer: getAppContainer,
       });
       handleCloseModal();
       setDragReset(true);
