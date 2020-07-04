@@ -657,7 +657,10 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   }, [setTxTimerStatus, setDragReset, setTimerFinished]);
 
   const handleCompleted = () => {
-    setXValue(xValue);
+    // reset input amount after swap completed
+    setXValue(tokenAmount(0));
+    setPercent(0);
+
     setTimerFinished(false);
     resetTxStatus();
 
