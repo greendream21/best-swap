@@ -367,7 +367,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
 
   const handleChangePercent = (percent: number) => {
     const { source = '' }: Pair = getPair(info);
-
     const sourceAsset = getAssetFromAssetData(assetData, source);
 
     let totalAmount = sourceAsset?.assetValue.amount() ?? bn(0);
