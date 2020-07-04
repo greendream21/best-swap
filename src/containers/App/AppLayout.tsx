@@ -1,11 +1,11 @@
 import React, { ReactNode, useEffect } from 'react';
-import { Layout, notification } from 'antd';
+import { Layout } from 'antd';
 import { connect } from 'react-redux';
 import * as RD from '@devexperts/remote-data-ts';
 import { RootState } from '../../redux/store';
 import { ApiBasePathRD } from '../../redux/midgard/types';
-import { getAppContainer } from '../../helpers/elementHelper';
 import { TransferEventRD } from '../../redux/binance/types';
+import showNotification from '../../components/uielements/notification';
 
 type ComponentProps = {
   children?: ReactNode;
@@ -30,12 +30,12 @@ const AppLayout: React.FC<Props> = (props: Props): JSX.Element => {
   useEffect(() => {
     const ignore = () => {};
     const onFailure = (error: Error) => {
-      notification.error({
+      showNotification({
+        type: 'error',
         message: 'Byzantine Error',
         description: `Getting base path for Midgard API failed. ${error?.toString() ??
           ''}`,
         duration: 10,
-        getContainer: getAppContainer,
       });
     };
     RD.fold(ignore, ignore, onFailure, ignore)(midgardBasePath);
@@ -44,12 +44,12 @@ const AppLayout: React.FC<Props> = (props: Props): JSX.Element => {
   useEffect(() => {
     const ignore = () => {};
     const onFailure = (error: Error) => {
-      notification.error({
+      showNotification({
+        type: 'error',
         message: 'Binance Websocket Error',
         description: `Subscription to transfers failed. ${error?.toString() ??
           ''}`,
         duration: 10,
-        getContainer: getAppContainer,
       });
     };
     RD.fold(ignore, ignore, onFailure, ignore)(wsTransferEvent);
