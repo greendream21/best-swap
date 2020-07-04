@@ -126,3 +126,12 @@ export const ContentWrapper = styled(ContentView)`
     align-items: center;
   }
 `;
+
+export const KeystoreTitle = styled.div`
+  display: flex;
+  align-items: center;
+
+  .label-wrapper {
+    margin-right: 4px;
+  }
+`;
