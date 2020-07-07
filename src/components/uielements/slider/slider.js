@@ -4,7 +4,14 @@ import PropTypes from 'prop-types';
 import { SliderWrapper, SliderLabel } from './slider.style';
 
 const Slider = props => {
-  const { withLabel, tooltipPlacement, className, ...otherProps } = props;
+  const {
+    value,
+    onChange,
+    withLabel,
+    tooltipPlacement,
+    className,
+    ...otherProps
+  } = props;
   const sliderRef = useRef();
 
   const handleAfterChange = () => {
@@ -17,6 +24,8 @@ const Slider = props => {
     <>
       <SliderWrapper
         className={`slider-wrapper ${className}`}
+        value={value}
+        onChange={onChange}
         tooltipPlacement={tooltipPlacement}
         onAfterChange={handleAfterChange}
         ref={sliderRef}
@@ -33,6 +42,12 @@ const Slider = props => {
 };
 
 Slider.propTypes = {
+  value: PropTypes.number,
+  onChange: PropTypes.func,
+  defaultValue: PropTypes.number,
+  min: PropTypes.number,
+  max: PropTypes.number,
+  tabIndex: PropTypes.string,
   withLabel: PropTypes.bool,
   tooltipPlacement: PropTypes.string,
   className: PropTypes.string,
