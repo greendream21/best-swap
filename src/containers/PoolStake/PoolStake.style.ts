@@ -589,16 +589,16 @@ export const PopoverContainer = styled.div`
     }
 
     button {
-      width: 21px;
-      height: 21px;
+      width: 25px;
+      height: 25px;
       min-width: 0px;
       padding-top: 2px;
-      padding-left: 4px;
+      padding-left: 5px;
       padding-right: 4px;
       border-radius: 50%;
 
       svg {
-        font-size: 15px;
+        font-size: 18px;
       }
     }
   }
