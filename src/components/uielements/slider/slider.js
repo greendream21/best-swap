@@ -1,29 +1,36 @@
-import React, { Component } from 'react';
+import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 
 import { SliderWrapper, SliderLabel } from './slider.style';
 
-class Slider extends Component {
-  render() {
-    const { withLabel, tooltipPlacement, className, ...props } = this.props;
+const Slider = props => {
+  const { withLabel, tooltipPlacement, className, ...otherProps } = props;
+  const sliderRef = useRef();
 
-    return (
-      <>
-        <SliderWrapper
-          className={`slider-wrapper ${className}`}
-          tooltipPlacement={tooltipPlacement}
-          {...props}
-        />
-        {withLabel && (
-          <SliderLabel>
-            <span>0%</span>
-            <span>100%</span>
-          </SliderLabel>
-        )}
-      </>
-    );
-  }
-}
+  const handleAfterChange = () => {
+    if (sliderRef.current) {
+      sliderRef.current.blur();
+    }
+  };
+
+  return (
+    <>
+      <SliderWrapper
+        className={`slider-wrapper ${className}`}
+        tooltipPlacement={tooltipPlacement}
+        onAfterChange={handleAfterChange}
+        ref={sliderRef}
+        {...otherProps}
+      />
+      {withLabel && (
+        <SliderLabel>
+          <span>0%</span>
+          <span>100%</span>
+        </SliderLabel>
+      )}
+    </>
+  );
+};
 
 Slider.propTypes = {
   withLabel: PropTypes.bool,
