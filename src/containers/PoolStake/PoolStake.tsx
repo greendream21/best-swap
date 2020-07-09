@@ -1205,6 +1205,8 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
     const dragText = withdrawDisabled ? '24hr cooldown' : 'drag to withdraw';
 
+    const ratioText = selectRatio ? 'Unlock to set the ratio manually' : 'Lock to set the ratio automatically';
+
     return (
       <div className="share-detail-wrapper">
         <Tabs
@@ -1247,7 +1249,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                 <PopoverContainer className="stake-ratio-select">
                   <Popover
                     content={
-                      <PopoverContent>Select the ratio for me</PopoverContent>
+                      <PopoverContent>{ratioText}</PopoverContent>
                     }
                     getPopupContainer={getPopupContainer}
                     placement="right"
@@ -1262,7 +1264,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                     <div>
                       <Button
                         onClick={handleSwitchSelectRatio}
-                        sizevalue="small"
+                        sizevalue="normal"
                         typevalue="outline"
                         focused={selectRatio}
                         tabIndex={-1}
