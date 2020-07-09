@@ -23,7 +23,7 @@ const App: React.FC<Props> = (props: Props): JSX.Element => {
 
   const renderBack = useCallback(() => {
     const { pathname } = location;
-    if (pathname === '' || pathname === '/pools') {
+    if (pathname === '/' || pathname === '/pools') {
       return <></>;
     }
 
