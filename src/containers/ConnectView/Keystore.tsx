@@ -1,5 +1,4 @@
 import React, { useState, useCallback } from 'react';
-import { connect } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { crypto } from '@binance-chain/javascript-sdk';
 import { FilePicker } from 'react-file-picker';
@@ -17,18 +16,14 @@ import { ContentWrapper, KeystoreTitle } from './ConnectView.style';
 import Label from '../../components/uielements/label';
 import Button from '../../components/uielements/button';
 import FormGroup from '../../components/uielements/formGroup';
-
 import * as walletActions from '../../redux/wallet/actions';
+
 import { Maybe, Nothing, FixmeType } from '../../types/bepswap';
 import { BINANCE_NET } from '../../env';
 
-type ConnectedProps = {
+type Props = {
   saveWallet: typeof walletActions.saveWallet;
 };
-
-type ComponentProps = {};
-
-type Props = ComponentProps & ConnectedProps;
 
 const Keystore: React.FC<Props> = (props: Props): JSX.Element => {
   const { saveWallet } = props;
@@ -87,6 +82,7 @@ const Keystore: React.FC<Props> = (props: Props): JSX.Element => {
       );
 
       saveWallet({
+        type: 'keystore',
         wallet: address,
         keystore,
       });
@@ -181,6 +177,4 @@ const Keystore: React.FC<Props> = (props: Props): JSX.Element => {
   );
 };
 
-export default connect(null, {
-  saveWallet: walletActions.saveWallet,
-})(Keystore);
+export default Keystore;

@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
-import { Row, Col, message, InputNumber } from 'antd';
+import { Row, Col, notification, InputNumber } from 'antd';
 import { ArrowRightOutlined } from '@ant-design/icons';
 import { ledger, crypto } from '@binance-chain/javascript-sdk';
 import u2f_transport from '@ledgerhq/hw-transport-u2f';
@@ -9,31 +7,33 @@ import u2f_transport from '@ledgerhq/hw-transport-u2f';
 import { getPrefix } from '@thorchain/asgardex-binance';
 import Label from '../../components/uielements/label';
 import Button from '../../components/uielements/button';
+import { getAppContainer } from '../../helpers/elementHelper';
 
-import * as walletActions from '../../redux/wallet/actions';
 import { BINANCE_NET } from '../../env';
-
-const { saveWallet } = walletActions;
+import * as walletActions from '../../redux/wallet/actions';
 
 ledger.transports.u2f = u2f_transport;
-window.ledger = ledger;
 
-const Connector = props => {
+type Props = {
+  saveWallet: typeof walletActions.saveWallet;
+}
+
+const LedgerConnector = (props: Props) => {
   const [connecting, setConnecting] = useState(false);
   const [ledgerIndex, setLedgerIndex] = useState(0);
 
   const ledgerConnect = async () => {
     setConnecting(true);
-    message.success(
-      <Label color="primary">Please approve on your ledger</Label>,
-      5,
-    );
+    notification.success({
+      message: 'Ledger connecting...',
+      description: 'Please approve on your ledger',
+      getContainer: getAppContainer,
+    });
 
     // use the u2f transport
     const timeout = 50000;
     const transport = await ledger.transports.u2f.create(timeout);
     const app = new ledger.app(transport, 100000, 100000);
-    window.app = app;
 
     // get version
     try {
@@ -47,7 +47,6 @@ const Connector = props => {
     const hdPath = [44, 714, 0, 0, ledgerIndex];
 
     // select which address to use
-    // TODO (Chad): use "bnb" when on mainnet
     const _ = await app.showAddress(getPrefix(BINANCE_NET), hdPath); // results
 
     // get public key
@@ -56,7 +55,6 @@ const Connector = props => {
       pk = (await app.getPublicKey(hdPath)).pk;
 
       // get address from pubkey
-      // TODO: use "bnb" when on mainnet
       const address = crypto.getAddressFromPublicKey(
         pk,
         getPrefix(BINANCE_NET),
@@ -71,7 +69,12 @@ const Connector = props => {
       });
     } catch (err) {
       console.error('pk error', err.message, err.statusCode);
-      message.error('public key error' + err.message);
+
+      notification.error({
+        message: 'Ledger Error',
+        description: 'public key error',
+        getContainer: getAppContainer,
+      });
       setConnecting(false);
     }
   };
@@ -150,8 +153,10 @@ const Connector = props => {
               min={0}
               size="small"
               value={ledgerIndex}
-              onChange={i => {
-                setLedgerIndex(i);
+              onChange={(i: number | undefined) => {
+                if (i) {
+                  setLedgerIndex(i);
+                }
               }}
             />
           </div>
@@ -169,10 +174,4 @@ const Connector = props => {
   );
 };
 
-Connector.propTypes = {
-  saveWallet: PropTypes.func.isRequired,
-};
-
-export default connect(null, {
-  saveWallet,
-})(Connector);
+export default LedgerConnector;
