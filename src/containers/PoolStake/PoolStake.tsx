@@ -15,19 +15,14 @@ import {
   UnlockOutlined,
 } from '@ant-design/icons';
 import { SliderValue } from 'antd/lib/slider';
-import { crypto } from '@binance-chain/javascript-sdk';
 import { get as _get } from 'lodash';
 
 import BigNumber from 'bignumber.js';
 import * as RD from '@devexperts/remote-data-ts';
-import {
-  client as binanceClient,
-  getPrefix,
-} from '@thorchain/asgardex-binance';
+import { client as binanceClient } from '@thorchain/asgardex-binance';
 import {
   bn,
   validBNOrZero,
-  delay,
   bnOrZero,
   formatBN,
 } from '@thorchain/asgardex-util';
@@ -79,7 +74,7 @@ import {
   withdrawResult,
 } from '../../helpers/utils/poolUtils';
 import { PoolData } from '../../helpers/utils/types';
-import { getTickerFormat, emptyString } from '../../helpers/stringHelper';
+import { getTickerFormat } from '../../helpers/stringHelper';
 import { TESTNET_TX_BASE_URL } from '../../helpers/apiHelper';
 import TokenInfo from '../../components/uielements/tokens/tokenInfo';
 import StepBar from '../../components/uielements/stepBar';
@@ -184,10 +179,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   const [selectedShareDetailTab, setSelectedShareDetailTab] = useState<
     ShareDetailTabKeys
   >(ShareDetailTabKeys.ADD);
-
-  const [password, setPassword] = useState<string>('');
-  const [invalidPassword, setInvalidPassword] = useState<boolean>(false);
-  const [validatingPassword, setValidatingPassword] = useState(false);
 
   const [widthdrawPercentage, setWithdrawPercentage] = useState(50);
   const [selectRatio, setSelectRatio] = useState<boolean>(true);
@@ -332,14 +323,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     return poolLoading && stakerPoolDataLoading;
   }, [poolLoading, stakerPoolDataLoading]);
 
-  const handleChangePassword = useCallback(
-    (password: string) => {
-      setPassword(password);
-      setInvalidPassword(false);
-    },
-    [setPassword, setInvalidPassword],
-  );
-
   const getData = (): CalcResult => {
     const runePrice = validBNOrZero(priceIndex?.RUNE);
     const calcResult = getCalcResult(
@@ -478,9 +461,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
   const handleOpenPrivateModal = useCallback(() => {
     setOpenPrivateModal(true);
-    setPassword(emptyString);
-    setInvalidPassword(false);
-  }, [setOpenPrivateModal, setPassword, setInvalidPassword]);
+  }, [setOpenPrivateModal]);
 
   const handleCancelPrivateModal = useCallback(() => {
     setOpenPrivateModal(false);
@@ -799,38 +780,13 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     }
   };
 
-  const handleConfirmPassword = async () => {
-    if (user) {
-      const { keystore, wallet } = user;
-
-      setValidatingPassword(true);
-      // Short delay to render latest state changes of `validatingPassword`
-      await delay(2000);
-
-      try {
-        const privateKey = crypto.getPrivateKeyFromKeyStore(keystore, password);
-        const bncClient = await binanceClient(BINANCE_NET);
-        await bncClient.setPrivateKey(privateKey);
-        const address = crypto.getAddressFromPrivateKey(
-          privateKey,
-          getPrefix(BINANCE_NET),
-        );
-        if (wallet && wallet === address) {
-          if (txType === TxTypes.STAKE) {
-            handleConfirmStake();
-          } else if (txType === TxTypes.WITHDRAW) {
-            handleConfirmWithdraw();
-          }
-        }
-
-        setValidatingPassword(false);
-        setOpenPrivateModal(false);
-      } catch (error) {
-        setValidatingPassword(false);
-        setInvalidPassword(true);
-        console.error(error); // eslint-disable-line no-console
-      }
+  const handleConfirmTransaction = async () => {
+    if (txType === TxTypes.STAKE) {
+      handleConfirmStake();
+    } else if (txType === TxTypes.WITHDRAW) {
+      handleConfirmWithdraw();
     }
+    setOpenPrivateModal(false);
   };
 
   const handleConnectWallet = useCallback(() => {
@@ -1670,11 +1626,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
           </ConfirmModal>
           <PrivateModal
             visible={openPrivateModal}
-            validatingPassword={validatingPassword}
-            invalidPassword={invalidPassword}
-            password={password}
-            onChangePassword={handleChangePassword}
-            onOk={handleConfirmPassword}
+            onOk={handleConfirmTransaction}
             onCancel={handleCancelPrivateModal}
           />
           <Modal

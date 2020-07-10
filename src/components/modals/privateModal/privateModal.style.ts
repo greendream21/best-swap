@@ -8,3 +8,9 @@ export const StyledModal = styled(Modal)`
     }
   }
 `;
+
+export const ModalContent = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;

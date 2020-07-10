@@ -1,30 +1,33 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { crypto } from '@binance-chain/javascript-sdk';
-import { Row, Col } from 'antd';
+// import { crypto } from '@binance-chain/javascript-sdk';
+import { Row } from 'antd';
 import WalletConnect from '@trustwallet/walletconnect';
+import { Account } from '@trustwallet/types';
 import WalletConnectQRCodeModal from '@walletconnect/qrcode-modal';
 
-import { ContentWrapper } from './ConnectView.style';
+import { ContentWrapper, QRCodeWrapper } from './ConnectView.style';
 
 import * as walletActions from '../../redux/wallet/actions';
+import Label from '../../components/uielements/label';
+import { Maybe } from '../../types/bepswap';
 
-const { saveWallet } = walletActions;
+type Props = {
+  saveWallet: typeof walletActions.saveWallet;
+};
 
-const WalletConnectPane = props => {
+const WalletConnectPane = (props: Props) => {
   const walletConnect = async () => {
-    window.mywallet = new WalletConnect({
+    const walletConnector = new WalletConnect({
       bridge: 'https://bridge.walletconnect.org', // Required
     });
-
-    const walletConnector = window.mywallet;
 
     walletConnector.killSession();
 
     // Check if connection is already established
     if (!walletConnector.connected) {
       // create new session
+
       walletConnector.createSession().then(() => {
         // get uri for QR Code modal
         const uri = walletConnector.uri;
@@ -47,16 +50,18 @@ const WalletConnectPane = props => {
 
       walletConnector
         .getAccounts()
-        .then(result => {
+        .then((result: Account[]) => {
           // Returns the accounts
-          const account = result.find(account => account.network === 714);
-          const address = crypto.decodeAddress(account.address);
+          const account: Maybe<Account> = result.find(
+            account => account.network === 714,
+          );
+          // const address = crypto.decodeAddress(account.address);
+          const address = account?.address ?? '';
 
           props.saveWallet({
             type: 'walletconnect',
             wallet: address,
-            walletconnect: walletConnector,
-            account,
+            walletConnector,
           });
         })
         .catch(error => {
@@ -80,40 +85,27 @@ const WalletConnectPane = props => {
       }
 
       // Delete walletConnector
-      props.saveWallet({});
+      props.saveWallet({ type: 'walletconnect', walletConnector: null, wallet: '' });
     });
-  };
-
-  const paneStyle = {
-    backgroundColor: '#48515D',
-    marginLeft: '10px',
-    marginRight: '10px',
-    marginTop: '50px',
-    borderRadius: 5,
-    boxShadow: '0px 0px 5px #50E3C2',
   };
 
   return (
     <ContentWrapper>
       <Row style={{ bottom: 5 }}>
-        <span>
+        <Label>
           Click to scan a QR code and link your mobile wallet using
           WalletConnect.
-        </span>
+        </Label>
       </Row>
 
-      <Row>
-        <Col xs={24} md={3} />
-        <Col xs={24} md={8} style={paneStyle}>
-          <img
-            src="/assets/img/qr-code.svg"
-            alt="qr-code"
-            style={{ margin: 30 }}
-            onClick={() => walletConnect()}
-          />
-        </Col>
-        <Col xs={24} md={13} />
-      </Row>
+      <QRCodeWrapper>
+        <img
+          src="/assets/img/qr-code.svg"
+          alt="qr-code"
+          style={{ margin: 30 }}
+          onClick={() => walletConnect()}
+        />
+      </QRCodeWrapper>
     </ContentWrapper>
   );
 };
@@ -122,6 +114,4 @@ WalletConnectPane.propTypes = {
   saveWallet: PropTypes.func.isRequired,
 };
 
-export default connect(null, {
-  saveWallet,
-})(WalletConnectPane);
+export default WalletConnectPane;

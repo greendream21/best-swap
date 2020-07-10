@@ -9,6 +9,7 @@ import Keystore from './Keystore';
 import WalletConnect from './WalletConnect';
 import Ledger from './Ledger';
 
+import * as walletActions from '../../redux/wallet/actions';
 import * as midgardActions from '../../redux/midgard/actions';
 
 const { TabPane } = Tabs;
@@ -23,11 +24,12 @@ const TAB_VALUES: {
 };
 
 type Props = {
+  saveWallet: typeof walletActions.saveWallet;
   getPools: typeof midgardActions.getPools;
 };
 
 const ConnectView: React.FC<Props> = (props: Props): JSX.Element => {
-  const { getPools } = props;
+  const { getPools, saveWallet } = props;
   const [active, setActive] = useState<TAB_TYPE>(TAB_VALUES.KEYSTORE);
 
   useEffect(() => {
@@ -39,17 +41,17 @@ const ConnectView: React.FC<Props> = (props: Props): JSX.Element => {
     {
       label: 'wallet connect',
       value: TAB_VALUES.WALLET,
-      comp: <WalletConnect {...props} />,
+      comp: <WalletConnect saveWallet={saveWallet} />,
     },
     {
       label: 'ledger',
       value: TAB_VALUES.LEDGER,
-      comp: <Ledger {...props} />,
+      comp: <Ledger saveWallet={saveWallet} />,
     },
     {
       label: 'keystore file',
       value: TAB_VALUES.KEYSTORE,
-      comp: <Keystore {...props} />,
+      comp: <Keystore saveWallet={saveWallet} />,
     },
   ];
 
@@ -65,13 +67,10 @@ const ConnectView: React.FC<Props> = (props: Props): JSX.Element => {
           action
         >
           {tabs.map(tab => {
-            const isDisabled = tab.value === TAB_VALUES.WALLET || tab.value === TAB_VALUES.LEDGER;
-
             return (
               <TabPane
                 key={tab.value}
                 tab={tab.label}
-                disabled={isDisabled}
               />
             );
           })}
@@ -88,4 +87,5 @@ const ConnectView: React.FC<Props> = (props: Props): JSX.Element => {
 
 export default connect(null, {
   getPools: midgardActions.getPools,
+  saveWallet: walletActions.saveWallet,
 })(ConnectView);

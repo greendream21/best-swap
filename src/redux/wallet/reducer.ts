@@ -4,15 +4,16 @@ import { bn } from '@thorchain/asgardex-util';
 import { tokenAmount } from '@thorchain/asgardex-token';
 import { getWalletAddress, getKeystore } from '../../helpers/webStorageHelper';
 import { State, User } from './types';
-import {
-  WalletActionsTypes,
-} from './actions';
+import { WalletActionsTypes } from './actions';
 import { Nothing } from '../../types/bepswap';
 
 const wallet = getWalletAddress();
 const keystore = getKeystore();
 
-const user = wallet ? ({ wallet, keystore } as User) : Nothing;
+const user =
+  wallet && keystore
+    ? ({ wallet, keystore, type: 'keystore' } as User)
+    : Nothing;
 
 const initState: State = {
   user,

@@ -7,17 +7,14 @@ import { SwapOutlined, LockOutlined, UnlockOutlined } from '@ant-design/icons';
 import { Row } from 'antd';
 import {
   client as binanceClient,
-  getPrefix,
 } from '@thorchain/asgardex-binance';
 import {
   validBNOrZero,
   bnOrZero,
   isValidBN,
   bn,
-  delay,
 } from '@thorchain/asgardex-util';
 
-import { crypto } from '@binance-chain/javascript-sdk';
 import BigNumber from 'bignumber.js';
 import * as RD from '@devexperts/remote-data-ts';
 
@@ -160,10 +157,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   const history = useHistory();
   const maxSlip = 30;
   const [address, setAddress] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
-  const [invalidPassword, setInvalidPassword] = useState<boolean>(false);
   const [invalidAddress, setInvalidAddress] = useState<boolean>(false);
-  const [validatingPassword, setValidatingPassword] = useState<boolean>(false);
   const [dragReset, setDragReset] = useState<boolean>(true);
 
   const [openPrivateModal, setOpenPrivateModal] = useState<boolean>(false);
@@ -274,18 +268,9 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     );
   };
 
-  const handleChangePassword = useCallback(
-    (password: string) => {
-      setPassword(password);
-      setInvalidPassword(false);
-    },
-    [setPassword],
-  );
-
   const handleChangeAddress = useCallback(
     (address: string) => {
       setAddress(address);
-      setInvalidAddress(false);
     },
     [setAddress],
   );
@@ -472,41 +457,14 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     }
   };
 
-  const handleConfirmPassword = async () => {
-    if (user) {
-      const { keystore, wallet } = user;
-
-      setValidatingPassword(true);
-      // Short delay to render latest state changes of `validatingPassword`
-      await delay(200);
-
-      try {
-        const privateKey = crypto.getPrivateKeyFromKeyStore(keystore, password);
-        const bncClient = await binanceClient(BINANCE_NET);
-        await bncClient.setPrivateKey(privateKey);
-        const address = crypto.getAddressFromPrivateKey(
-          privateKey,
-          getPrefix(BINANCE_NET),
-        );
-        if (wallet === address) {
-          handleConfirmSwap();
-        }
-
-        setValidatingPassword(false);
-        setOpenPrivateModal(false);
-      } catch (error) {
-        setValidatingPassword(false);
-        setInvalidPassword(true);
-        console.error(error); // eslint-disable-line no-console
-      }
-    }
+  const handleConfirmPassword = () => {
+    handleConfirmSwap();
+    setOpenPrivateModal(false);
   };
 
   const handleOpenPrivateModal = useCallback(() => {
     setOpenPrivateModal(true);
-    setPassword('');
-    setInvalidPassword(false);
-  }, [setOpenPrivateModal, setPassword, setInvalidPassword]);
+  }, [setOpenPrivateModal]);
 
   const handleCancelPrivateModal = useCallback(() => {
     setOpenPrivateModal(false);
@@ -1152,10 +1110,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
         </SwapModal>
         <PrivateModal
           visible={openPrivateModal}
-          validatingPassword={validatingPassword}
-          invalidPassword={invalidPassword}
-          password={password}
-          onChangePassword={handleChangePassword}
           onOk={handleConfirmPassword}
           onCancel={handleCancelPrivateModal}
         />
