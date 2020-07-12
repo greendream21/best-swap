@@ -198,15 +198,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   const emptyStakerPoolData: StakersAssetData = {
     asset: tokenSymbol,
     stakeUnits: '0',
-    runeStaked: '0',
-    assetStaked: '0',
-    poolStaked: '0',
-    runeEarned: '0',
-    assetEarned: '0',
-    poolEarned: '0',
-    runeROI: '0',
-    assetROI: '0',
-    poolROI: '0',
     dateFirstStaked: 0,
   };
 
@@ -1370,12 +1361,8 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
     const {
       stakeUnits,
-      runeEarned,
-      assetEarned,
     }: StakersAssetData = stakersAssetData;
     const stakeUnitsBN = bnOrZero(stakeUnits);
-    const runeEarnedBN = bnOrZero(runeEarned);
-    const assetEarnedBN = bnOrZero(assetEarned);
     const loading = isLoading() || poolUnits === undefined;
 
     const poolShare = poolUnits
@@ -1390,21 +1377,12 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       : bn(0);
     const runeStakedShare = formatBaseAsTokenAmount(baseAmount(runeShare));
     const assetStakedShare = formatBaseAsTokenAmount(baseAmount(assetShare));
-    const runeEarnedAmount = formatBaseAsTokenAmount(baseAmount(runeEarned));
-    const assetEarnedAmount = formatBaseAsTokenAmount(baseAmount(assetEarned));
 
     const runeStakedPrice = formatBaseAsTokenAmount(
       baseAmount(runeShare.multipliedBy(runePrice)),
     );
     const assetStakedPrice = formatBaseAsTokenAmount(
       baseAmount(assetShare.multipliedBy(assetPrice)),
-    );
-
-    const runeEarnedPrice = formatBaseAsTokenAmount(
-      baseAmount(runeEarnedBN.multipliedBy(runePrice)),
-    );
-    const assetEarnedPrice = formatBaseAsTokenAmount(
-      baseAmount(assetEarnedBN.multipliedBy(assetPrice)),
     );
 
     const hasStake = hasWallet && stakeUnitsBN.isGreaterThan(0);
@@ -1484,47 +1462,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
             </>
           )}
         </div>
-        {hasStake && (
-          <div className="your-share-wrapper">
-            <Label className="share-info-title" size="normal">
-              Your total earnings from the pool
-            </Label>
-            <div className="your-share-info-wrapper">
-              <div className="share-info-row">
-                <div className="your-share-info">
-                  <Status
-                    title={source.toUpperCase()}
-                    value={runeEarnedAmount}
-                    loading={loading}
-                  />
-                  <Label
-                    className="your-share-price-label"
-                    size="normal"
-                    color="gray"
-                    loading={loading}
-                  >
-                    {basePriceAsset} {runeEarnedPrice}
-                  </Label>
-                </div>
-                <div className="your-share-info">
-                  <Status
-                    title={target.toUpperCase()}
-                    value={assetEarnedAmount}
-                    loading={loading}
-                  />
-                  <Label
-                    className="your-share-price-label"
-                    size="normal"
-                    color="gray"
-                    loading={loading}
-                  >
-                    {basePriceAsset} {assetEarnedPrice}
-                  </Label>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
       </>
     );
   };
