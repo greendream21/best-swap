@@ -15,6 +15,7 @@ import { verifyPrivateKey } from '../../../helpers/utils/walletUtils';
 
 import { BINANCE_NET } from '../../../env';
 import { FixmeType } from '../../../types/bepswap';
+import showNotification from '../../uielements/notification';
 
 type Props = {
   visible: boolean;
@@ -44,12 +45,26 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [walletType]);
 
-  const handleLedgerVerifySuccess = () => {
+  const handleLedgerVerifySuccess = useCallback(() => {
+    // confirm transaction if ledger is verified
     setValidating(false);
-  };
+    showNotification({
+      type: 'success',
+      message: 'Ledger Successfully Verified!',
+      duration: 10,
+    });
+    if (onOk) onOk();
+  }, [onOk]);
 
   const handleLedgerVerifyFailed = () => {
     console.log('ledger verify failed');
+    setValidating(false);
+    showNotification({
+      type: 'error',
+      message: 'Ledger Verification Failed',
+      description: 'Please verify your ledger again!',
+      duration: 10,
+    });
   };
 
   const verifyLedger = async () => {
@@ -99,9 +114,6 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
       setValidating(true);
       // Short delay to render latest state changes of `validating`
       await delay(200);
-
-      console.log('keystore -->', user?.keystore);
-      console.log('password -->', password);
 
       // verify private key
       const result = await verifyPrivateKey(user?.keystore, password);
