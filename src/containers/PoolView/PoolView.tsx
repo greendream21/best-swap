@@ -3,7 +3,7 @@ import * as H from 'history';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter, Link, useHistory } from 'react-router-dom';
-import { notification, Row, Col } from 'antd';
+import { Row, Col } from 'antd';
 import {
   SyncOutlined,
   SwapOutlined,
@@ -24,7 +24,6 @@ import {
 } from '../../helpers/utils/poolUtils';
 import { PoolData } from '../../helpers/utils/types';
 import { getTickerFormat } from '../../helpers/stringHelper';
-import { getAppContainer } from '../../helpers/elementHelper';
 
 import * as walletActions from '../../redux/wallet/actions';
 import * as midgardActions from '../../redux/midgard/actions';
@@ -34,6 +33,7 @@ import { PoolDataMap, PriceDataIndex } from '../../redux/midgard/types';
 import { getAssetFromString } from '../../redux/midgard/utils';
 import { ViewType, Maybe } from '../../types/bepswap';
 import { PoolDetailStatusEnum } from '../../types/generated/midgard/api';
+import showNotification from '../../components/uielements/notification';
 
 type Props = {
   history: H.History;
@@ -79,10 +79,10 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     const wallet = user ? user.wallet : null;
 
     if (!wallet) {
-      notification.warning({
+      showNotification({
+        type: 'warning',
         message: 'Create Pool Failed',
         description: 'Please connect your wallet to add a new pool.',
-        getContainer: getAppContainer,
       });
     } else {
       const possibleTokens = getAvailableTokensToCreate(assetData, pools);
@@ -93,10 +93,10 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
           history.push(URL);
         }
       } else {
-        notification.warning({
+        showNotification({
+          type: 'warning',
           message: 'Create Pool Failed',
           description: 'You don\'t have available asset to create a new pool.',
-          getContainer: getAppContainer,
         });
       }
     }
@@ -217,6 +217,14 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         dataIndex: ['values', 'volume24'],
         sorter: (a: PoolData, b: PoolData) =>
           a.volume24.amount().minus(b.volume24.amount()),
+        sortDirections: ['descend', 'ascend'],
+      },
+      {
+        key: 'roiAT',
+        title: 'ARP',
+        dataIndex: ['values', 'roiAT'],
+        sorter: (a: PoolData, b: PoolData) =>
+          Number(a.roiAT) - Number(b.roiAT),
         sortDirections: ['descend', 'ascend'],
       },
       buttonCol,

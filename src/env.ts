@@ -14,7 +14,7 @@ enum NET {
   DEV = 'devnet',
   TEST = 'testnet',
   CHAOS = 'chaosnet',
-  MAIN = 'mainnet'
+  MAIN = 'mainnet',
 }
 
 export const getNet = (): NET => {
@@ -25,5 +25,14 @@ export const getNet = (): NET => {
 };
 
 const BINANCE_NET = isMainnet ? Network.MAINNET : Network.TESTNET;
+const CHAIN_ID = isTestnet ? 'Binance-Chain-Nile' : 'Binance-Chain-Tigris';
 
-export { NET, BINANCE_NET, isDevnet, isTestnet, isChaosnet, isMainnet };
+export {
+  NET,
+  BINANCE_NET,
+  CHAIN_ID,
+  isDevnet,
+  isTestnet,
+  isChaosnet,
+  isMainnet,
+};

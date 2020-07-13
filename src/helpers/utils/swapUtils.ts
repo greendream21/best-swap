@@ -290,13 +290,12 @@ export const getSwapData = (
 };
 
 export enum SwapErrorMsg {
-  INVALID_AMOUNT = 'Amount to swap is invalid.',
+  INVALID_AMOUNT = 'Swap amount is invalid.',
   MISSING_WALLET = 'Wallet address is missing or invalid.',
-  MISSING_SYMBOL = 'Symbol is missing.',
-  MISSING_SYMBOL_TO = 'Target Symbol is missing.',
-  MISSING_SYMBOL_FROM = 'Input Symbol is missing.',
+  MISSING_SYMBOL_TO = 'Swap target asset is invalid.',
+  MISSING_SYMBOL_FROM = 'Swap source asset is invalid.',
   MISSING_ADDRESS = 'Pool Address is missing.',
-  MISSING_POOL_ADDRESS = 'Pool address is missing.',
+  MISSING_POOL_ADDRESS = 'Pool Address is missing.',
 }
 
 export const validateSwap = (

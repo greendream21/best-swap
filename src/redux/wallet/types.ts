@@ -7,9 +7,12 @@ export interface User {
   /**
    * Users wallet address
    * */
+  type: 'keystore' | 'walletconnect' | 'ledger';
   wallet: Address;
-  // TODO (veado) What exactly do we put into keystore?
-  keystore: FixmeType;
+  keystore?: FixmeType;
+  ledger?: FixmeType;
+  hdPath?: number [];
+  walletConnector?: FixmeType;
 }
 
 export type EmptyUser = {};

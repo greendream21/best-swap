@@ -1,5 +1,4 @@
 import React, { useState, useCallback } from 'react';
-import { connect } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { crypto } from '@binance-chain/javascript-sdk';
 import { FilePicker } from 'react-file-picker';
@@ -12,23 +11,19 @@ import {
 
 import { getPrefix } from '@thorchain/asgardex-binance';
 import { delay } from '@thorchain/asgardex-util';
-import { ContentWrapper } from './ConnectView.style';
+import { ContentWrapper, KeystoreTitle } from './ConnectView.style';
 
 import Label from '../../components/uielements/label';
 import Button from '../../components/uielements/button';
 import FormGroup from '../../components/uielements/formGroup';
-
 import * as walletActions from '../../redux/wallet/actions';
+
 import { Maybe, Nothing, FixmeType } from '../../types/bepswap';
 import { BINANCE_NET } from '../../env';
 
-type ConnectedProps = {
+type Props = {
   saveWallet: typeof walletActions.saveWallet;
 };
-
-type ComponentProps = {};
-
-type Props = ComponentProps & ConnectedProps;
 
 const Keystore: React.FC<Props> = (props: Props): JSX.Element => {
   const { saveWallet } = props;
@@ -87,6 +82,7 @@ const Keystore: React.FC<Props> = (props: Props): JSX.Element => {
       );
 
       saveWallet({
+        type: 'keystore',
         wallet: address,
         keystore,
       });
@@ -107,15 +103,15 @@ const Keystore: React.FC<Props> = (props: Props): JSX.Element => {
   const ready = (password || '').length > 0 && !keystoreError && !processing;
 
   const title = (
-    <div>
-      Decryption password{' '}
+    <KeystoreTitle>
+      <Label>Decryption password </Label>
       <Tooltip
         title="This is the password used to decrypt your encrypted keystore file"
         placement="bottomRight"
       >
         <QuestionCircleOutlined />
       </Tooltip>
-    </div>
+    </KeystoreTitle>
   );
 
   return (
@@ -136,9 +132,7 @@ const Keystore: React.FC<Props> = (props: Props): JSX.Element => {
             )}
           </div>
         </FilePicker>
-        {keystoreError && (
-          <span style={{ color: '#FF4954' }}>{keystoreError}</span>
-        )}
+        {keystoreError && <Label color="error">{keystoreError}</Label>}
         <FormGroup
           className={invalideStatus ? 'has-error' : ''}
           title={title}
@@ -153,7 +147,9 @@ const Keystore: React.FC<Props> = (props: Props): JSX.Element => {
               disabled={!keystore}
             />
             {invalideStatus && (
-              <div className="ant-form-explain">Password is wrong!</div>
+              <div className="ant-form-explain">
+                <Label color="error">Password is wrong!</Label>
+              </div>
             )}
           </Form>
         </FormGroup>
@@ -181,6 +177,4 @@ const Keystore: React.FC<Props> = (props: Props): JSX.Element => {
   );
 };
 
-export default connect(null, {
-  saveWallet: walletActions.saveWallet,
-})(Keystore);
+export default Keystore;
