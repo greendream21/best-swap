@@ -126,3 +126,25 @@ export const ContentWrapper = styled(ContentView)`
     align-items: center;
   }
 `;
+
+export const QRCodeWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 120px;
+  height: 120px;
+  padding: 20px;
+  margin-top: 50px;
+  border-radius: 5px;
+  box-shadow: ${palette('primary', 0)};
+  background-color: #48515d;
+`;
+
+export const KeystoreTitle = styled.div`
+  display: flex;
+  align-items: center;
+
+  .label-wrapper {
+    margin-right: 4px;
+  }
+`;

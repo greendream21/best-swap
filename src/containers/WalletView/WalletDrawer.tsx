@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
-import { notification } from 'antd';
 import { WalletOutlined, SyncOutlined } from '@ant-design/icons';
 import { connect } from 'react-redux';
 import copy from 'copy-to-clipboard';
@@ -20,7 +19,7 @@ import * as walletActions from '../../redux/wallet/actions';
 import { RootState } from '../../redux/store';
 import { User } from '../../redux/wallet/types';
 import { Maybe } from '../../types/bepswap';
-import { getAppContainer } from '../../helpers/elementHelper';
+import showNotification from '../../components/uielements/notification';
 
 type Props = {
   user: Maybe<User>;
@@ -52,9 +51,9 @@ const WalletDrawer: React.FC<Props> = props => {
   const onCopyWallet = useCallback(() => {
     if (wallet) {
       copy(wallet);
-      notification.open({
+      showNotification({
+        type: 'open',
         message: 'Address Copy successful!',
-        getContainer: getAppContainer,
       });
     }
   }, [wallet]);

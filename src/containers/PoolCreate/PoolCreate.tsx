@@ -3,23 +3,18 @@ import * as H from 'history';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter, useHistory, useParams } from 'react-router-dom';
-import { Row, Col, notification, Spin } from 'antd';
+import { Row, Col, Spin } from 'antd';
 import { FullscreenExitOutlined, CloseOutlined } from '@ant-design/icons';
-import { crypto } from '@binance-chain/javascript-sdk';
 import { get as _get } from 'lodash';
 
 import BigNumber from 'bignumber.js';
-import {
-  client as binanceClient,
-  getPrefix,
-} from '@thorchain/asgardex-binance';
+import { client as binanceClient } from '@thorchain/asgardex-binance';
 import {
   bn,
   validBNOrZero,
   formatBN,
   bnOrZero,
   formatBNCurrency,
-  delay,
 } from '@thorchain/asgardex-util';
 
 import { TokenAmount, tokenAmount } from '@thorchain/asgardex-token';
@@ -34,7 +29,6 @@ import TxTimer from '../../components/uielements/txTimer';
 import StepBar from '../../components/uielements/stepBar';
 import CoinData from '../../components/uielements/coins/coinData';
 import PrivateModal from '../../components/modals/privateModal';
-import { getAppContainer } from '../../helpers/elementHelper';
 
 import * as appActions from '../../redux/app/actions';
 import * as walletActions from '../../redux/wallet/actions';
@@ -63,6 +57,7 @@ import { Maybe, AssetPair } from '../../types/bepswap';
 import { User, AssetData } from '../../redux/wallet/types';
 
 import { BINANCE_NET } from '../../env';
+import showNotification from '../../components/uielements/notification';
 
 type Props = {
   assetData: AssetData[];
@@ -113,9 +108,6 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
 
   const [dragReset, setDragReset] = useState(true);
   const [openPrivateModal, setOpenPrivateModal] = useState(false);
-  const [password, setPassword] = useState('');
-  const [invalidPassword, setInvalidPassword] = useState(false);
-  const [validatingPassword, setValidatingPassword] = useState(false);
 
   const [runeAmount, setRuneAmount] = useState<TokenAmount>(tokenAmount(0));
   const [targetAmount, setTargetAmount] = useState<TokenAmount>(tokenAmount(0));
@@ -147,14 +139,6 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleChangePassword = useCallback(
-    (password: string) => {
-      setPassword(password);
-      setInvalidPassword(false);
-    },
-    [setPassword, setInvalidPassword],
-  );
-
   const handleStartTimer = useCallback(() => {
     resetTxStatus({
       type: TxTypes.CREATE,
@@ -181,56 +165,28 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
   }, [setTxTimerModal, handleEndTxTimer]);
 
   const handleFinishTx = () => {
-    notification.open({
+    showNotification({
+      type: 'open',
       message: 'Pool Created Successfully!',
       description:
         'It may take a few moments until a new pool appears in the pool list!',
-      getContainer: getAppContainer,
     });
 
     handleCloseModal();
   };
 
-  const handleOpenPrivateModal = () => {
-    setPassword('');
-    setInvalidPassword(false);
+  const handleOpenPrivateModal = useCallback(() => {
     setOpenPrivateModal(true);
-  };
+  }, [setOpenPrivateModal]);
 
   const handleCancelPrivateModal = useCallback(() => {
     setOpenPrivateModal(false);
     setDragReset(true);
   }, [setOpenPrivateModal, setDragReset]);
 
-  const handleConfirmPassword = async () => {
-    if (user) {
-      setValidatingPassword(true);
-      // Short delay to render latest state changes of `validatingPassword`
-      await delay(200);
-
-      try {
-        const privateKey = crypto.getPrivateKeyFromKeyStore(
-          user.keystore,
-          password,
-        );
-        const bncClient = await binanceClient(BINANCE_NET);
-        await bncClient.setPrivateKey(privateKey);
-        const address = crypto.getAddressFromPrivateKey(
-          privateKey,
-          getPrefix(BINANCE_NET),
-        );
-        if (user.wallet === address) {
-          handleConfirmCreate();
-        }
-
-        setValidatingPassword(false);
-        setOpenPrivateModal(false);
-      } catch (error) {
-        setValidatingPassword(false);
-        setInvalidPassword(true);
-        console.error(error); // eslint-disable-line no-console
-      }
-    }
+  const handleConfirmTransaction = () => {
+    handleConfirmCreate();
+    setOpenPrivateModal(false);
   };
 
   const handleDrag = useCallback(() => {
@@ -337,10 +293,10 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
           setTxHash(hash);
         }
       } catch (error) {
-        notification.error({
+        showNotification({
+          type: 'error',
           message: 'Create Pool Failed',
           description: 'Create Pool information is not valid.',
-          getContainer: getAppContainer,
         });
         handleCloseModal();
         setDragReset(true);
@@ -361,10 +317,10 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
       runeAmount.amount().isLessThanOrEqualTo(0) ||
       targetAmount.amount().isLessThanOrEqualTo(0)
     ) {
-      notification.error({
+      showNotification({
+        type: 'error',
         message: 'Stake Invalid',
         description: 'You need to enter an amount to stake.',
-        getContainer: getAppContainer,
       });
       handleCloseModal();
       setDragReset(true);
@@ -479,11 +435,7 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
         </div>
         <PrivateModal
           visible={openPrivateModal}
-          validatingPassword={validatingPassword}
-          invalidPassword={invalidPassword}
-          password={password}
-          onChangePassword={handleChangePassword}
-          onOk={handleConfirmPassword}
+          onOk={handleConfirmTransaction}
           onCancel={handleCancelPrivateModal}
         />
       </div>

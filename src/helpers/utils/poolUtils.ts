@@ -233,9 +233,9 @@ export const getPoolData = (
 };
 
 export enum StakeErrorMsg {
-  MISSING_SYMBOL = 'Symbol to stake is missing.',
-  MISSING_POOL_ADDRESS = 'Pool address is missing.',
-  INVALID_TOKEN_AMOUNT = 'Invalid token amount.',
+  MISSING_SYMBOL = 'Missing asset to stake.',
+  MISSING_POOL_ADDRESS = 'Missing Pool Address.',
+  INVALID_TOKEN_AMOUNT = 'Invalid TOKEN amount.',
   INVALID_RUNE_AMOUNT = 'Invalid RUNE amount.',
 }
 
@@ -328,7 +328,7 @@ export enum CreatePoolErrorMsg {
   INVALID_TOKEN_AMOUNT = 'Token amount is invalid.',
   INVALID_RUNE_AMOUNT = 'Rune amount is invalid.',
   MISSING_POOL_ADDRESS = 'Pool address is missing.',
-  MISSING_TOKEN_SYMBOL = 'Token symbol is missing.',
+  MISSING_TOKEN_SYMBOL = 'Missing asset to create a new pool.',
 }
 
 type CreatePoolRequestParams = {

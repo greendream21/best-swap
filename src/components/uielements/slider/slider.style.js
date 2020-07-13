@@ -20,8 +20,6 @@ export const SliderWrapper = styled(Slider)`
     .ant-slider-handle {
       width: 14px;
       height: 14px;
-      margin-top: -6px;
-      margin-left: -6px;
       border: 3px solid ${palette('success', 0)};
       background: ${palette('background', 1)};
     }

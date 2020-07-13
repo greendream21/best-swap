@@ -5,6 +5,7 @@
   "scripts": {
     "fblogin": "firebase login",
     "start": "node scripts/start.js",
+    "start-s": "HTTPS=true node scripts/start.js",
     "build": "node scripts/build.js",
     "build:ci": "CI=true yarn build",
     "pretest": "env",
@@ -41,7 +42,7 @@
     "@thorchain/asgardex-token": "^0.1.0",
     "@thorchain/asgardex-util": "^0.1.0",
     "@thorchain/byzantine-module": "^0.1.1",
-    "@trustwallet/walletconnect": "^0.1.37",
+    "@trustwallet/walletconnect": "0.0.12",
     "@types/bignumber.js": "^5.0.0",
     "@types/react-content-loader": "^4.0.0",
     "@types/react-redux": "^7.1.7",

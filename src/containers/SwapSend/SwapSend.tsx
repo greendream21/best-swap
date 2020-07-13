@@ -4,20 +4,17 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter, useHistory, useParams } from 'react-router-dom';
 import { SwapOutlined, LockOutlined, UnlockOutlined } from '@ant-design/icons';
-import { Row, notification } from 'antd';
+import { Row } from 'antd';
 import {
   client as binanceClient,
-  getPrefix,
 } from '@thorchain/asgardex-binance';
 import {
   validBNOrZero,
   bnOrZero,
   isValidBN,
   bn,
-  delay,
 } from '@thorchain/asgardex-util';
 
-import { crypto } from '@binance-chain/javascript-sdk';
 import BigNumber from 'bignumber.js';
 import * as RD from '@devexperts/remote-data-ts';
 
@@ -63,7 +60,6 @@ import {
   validatePair,
   isValidSwap,
 } from '../../helpers/utils/swapUtils';
-import { getAppContainer } from '../../helpers/elementHelper';
 import { SwapData } from '../../helpers/utils/types';
 
 import * as appActions from '../../redux/app/actions';
@@ -102,6 +98,7 @@ import {
 } from '../../helpers/walletHelper';
 
 import { SwapSendView, TxResult } from './types';
+import showNotification from '../../components/uielements/notification';
 
 type Props = {
   history: H.History;
@@ -160,10 +157,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   const history = useHistory();
   const maxSlip = 30;
   const [address, setAddress] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
-  const [invalidPassword, setInvalidPassword] = useState<boolean>(false);
   const [invalidAddress, setInvalidAddress] = useState<boolean>(false);
-  const [validatingPassword, setValidatingPassword] = useState<boolean>(false);
   const [dragReset, setDragReset] = useState<boolean>(true);
 
   const [openPrivateModal, setOpenPrivateModal] = useState<boolean>(false);
@@ -274,18 +268,9 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     );
   };
 
-  const handleChangePassword = useCallback(
-    (password: string) => {
-      setPassword(password);
-      setInvalidPassword(false);
-    },
-    [setPassword],
-  );
-
   const handleChangeAddress = useCallback(
     (address: string) => {
       setAddress(address);
-      setInvalidAddress(false);
     },
     [setAddress],
   );
@@ -367,7 +352,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
 
   const handleChangePercent = (percent: number) => {
     const { source = '' }: Pair = getPair(info);
-
     const sourceAsset = getAssetFromAssetData(assetData, source);
 
     let totalAmount = sourceAsset?.assetValue.amount() ?? bn(0);
@@ -461,7 +445,8 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
           setTxHash(hash);
         }
       } catch (error) {
-        notification.error({
+        showNotification({
+          type: 'error',
           message: 'Swap Invalid',
           description: `Swap information is not valid: ${error.toString()}`,
         });
@@ -472,41 +457,14 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     }
   };
 
-  const handleConfirmPassword = async () => {
-    if (user) {
-      const { keystore, wallet } = user;
-
-      setValidatingPassword(true);
-      // Short delay to render latest state changes of `validatingPassword`
-      await delay(200);
-
-      try {
-        const privateKey = crypto.getPrivateKeyFromKeyStore(keystore, password);
-        const bncClient = await binanceClient(BINANCE_NET);
-        await bncClient.setPrivateKey(privateKey);
-        const address = crypto.getAddressFromPrivateKey(
-          privateKey,
-          getPrefix(BINANCE_NET),
-        );
-        if (wallet === address) {
-          handleConfirmSwap();
-        }
-
-        setValidatingPassword(false);
-        setOpenPrivateModal(false);
-      } catch (error) {
-        setValidatingPassword(false);
-        setInvalidPassword(true);
-        console.error(error); // eslint-disable-line no-console
-      }
-    }
+  const handleConfirmPassword = () => {
+    handleConfirmSwap();
+    setOpenPrivateModal(false);
   };
 
   const handleOpenPrivateModal = useCallback(() => {
     setOpenPrivateModal(true);
-    setPassword('');
-    setInvalidPassword(false);
-  }, [setOpenPrivateModal, setPassword, setInvalidPassword]);
+  }, [setOpenPrivateModal]);
 
   const handleCancelPrivateModal = useCallback(() => {
     setOpenPrivateModal(false);
@@ -529,13 +487,13 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
 
   const validateSlip = (slip: BigNumber) => {
     if (slip.isGreaterThanOrEqualTo(maxSlip)) {
-      notification.error({
+      showNotification({
+        type: 'error',
         message: 'Swap Invalid',
         description: `Slip ${slip.toFormat(
           2,
           BigNumber.ROUND_DOWN,
         )}% is too high, try less than ${maxSlip}%.`,
-        getContainer: getAppContainer,
       });
       setDragReset(true);
       return false;
@@ -561,10 +519,10 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
 
     // Validate amount to swap
     if (xValue.amount().isLessThanOrEqualTo(0)) {
-      notification.error({
+      showNotification({
+        type: 'error',
         message: 'Swap Invalid',
         description: 'You need to enter an amount to swap.',
-        getContainer: getAppContainer,
       });
       setDragReset(true);
       return;
@@ -572,10 +530,10 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
 
     // Validate RUNE value of swap to cover network transactionFee
     if (runeFeeIsNotCovered(xValue.amount())) {
-      notification.error({
+      showNotification({
+        type: 'error',
         message: 'Invalid amount',
         description: 'Swap value must exceed 1 RUNE to cover network fees.',
-        getContainer: getAppContainer,
       });
       setDragReset(true);
       return;
@@ -587,10 +545,10 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
       // fee transformation: BaseAmount -> TokenAmount -> BigNumber
       const feeAsTokenAmount = baseToToken(fee).amount();
       if (xValue.amount().isLessThanOrEqualTo(feeAsTokenAmount)) {
-        notification.error({
+        showNotification({
+          type: 'error',
           message: 'Invalid BNB value',
           description: 'Not enough BNB to cover the fee for this transaction.',
-          getContainer: getAppContainer,
         });
         setDragReset(true);
         return;
@@ -656,7 +614,10 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   }, [setTxTimerStatus, setDragReset, setTimerFinished]);
 
   const handleCompleted = () => {
-    setXValue(xValue);
+    // reset input amount after swap completed
+    setXValue(tokenAmount(0));
+    setPercent(0);
+
     setTimerFinished(false);
     resetTxStatus();
 
@@ -731,10 +692,10 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     const { source, target }: Pair = getPair(info);
 
     if (!assetData.find(data => getTickerFormat(data.asset) === target)) {
-      notification.warning({
+      showNotification({
+        type: 'warning',
         message: 'Cannot Reverse Swap Direction',
         description: 'Token does not exist in your wallet.',
-        getContainer: getAppContainer,
       });
       return;
     }
@@ -1149,10 +1110,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
         </SwapModal>
         <PrivateModal
           visible={openPrivateModal}
-          validatingPassword={validatingPassword}
-          invalidPassword={invalidPassword}
-          password={password}
-          onChangePassword={handleChangePassword}
           onOk={handleConfirmPassword}
           onCancel={handleCancelPrivateModal}
         />
