@@ -675,24 +675,6 @@ export interface StakersAssetData {
      */
     asset?: string;
     /**
-     * Value of Assets earned from the pool.
-     * @type {string}
-     * @memberof StakersAssetData
-     */
-    assetEarned?: string;
-    /**
-     * ROI of the Asset side
-     * @type {string}
-     * @memberof StakersAssetData
-     */
-    assetROI?: string;
-    /**
-     * Amount of Assets staked.
-     * @type {string}
-     * @memberof StakersAssetData
-     */
-    assetStaked?: string;
-    /**
      * 
      * @type {number}
      * @memberof StakersAssetData
@@ -704,42 +686,6 @@ export interface StakersAssetData {
      * @memberof StakersAssetData
      */
     heightLastStaked?: number;
-    /**
-     * Total value of earnings (in RUNE).
-     * @type {string}
-     * @memberof StakersAssetData
-     */
-    poolEarned?: string;
-    /**
-     * Average ROI (in RUNE) of both sides
-     * @type {string}
-     * @memberof StakersAssetData
-     */
-    poolROI?: string;
-    /**
-     * RUNE value staked.
-     * @type {string}
-     * @memberof StakersAssetData
-     */
-    poolStaked?: string;
-    /**
-     * Value of RUNE earned from the pool.
-     * @type {string}
-     * @memberof StakersAssetData
-     */
-    runeEarned?: string;
-    /**
-     * ROI of the Rune side.
-     * @type {string}
-     * @memberof StakersAssetData
-     */
-    runeROI?: string;
-    /**
-     * Amount of RUNE staked.
-     * @type {string}
-     * @memberof StakersAssetData
-     */
-    runeStaked?: string;
     /**
      * Represents ownership of a pool.
      * @type {string}

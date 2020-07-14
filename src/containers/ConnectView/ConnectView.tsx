@@ -71,6 +71,7 @@ const ConnectView: React.FC<Props> = (props: Props): JSX.Element => {
               <TabPane
                 key={tab.value}
                 tab={tab.label}
+                disabled={tab.value !== TAB_VALUES.KEYSTORE}
               />
             );
           })}
