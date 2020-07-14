@@ -7,6 +7,7 @@ import { SwapOutlined, LockOutlined, UnlockOutlined } from '@ant-design/icons';
 import { Row } from 'antd';
 import {
   client as binanceClient,
+  TransferResult,
 } from '@thorchain/asgardex-binance';
 import {
   validBNOrZero,
@@ -78,6 +79,7 @@ import {
   TokenData,
   Pair,
   AssetPair,
+  FixmeType,
 } from '../../types/bepswap';
 import { User, AssetData } from '../../redux/wallet/types';
 import { TxStatus, TxTypes } from '../../redux/app/types';
@@ -99,6 +101,7 @@ import {
 
 import { SwapSendView, TxResult } from './types';
 import showNotification from '../../components/uielements/notification';
+import { swapRequestUsingWalletConnect } from '../../helpers/utils/trustwalletUtils';
 
 type Props = {
   history: H.History;
@@ -428,18 +431,35 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
       handleStartTimer();
       const bncClient = await binanceClient(BINANCE_NET);
       try {
-        const data = await confirmSwap(
-          bncClient,
-          user.wallet,
-          source,
-          target,
-          swapData,
-          tokenAmountToSwap,
-          slipProtection,
-          address,
-        );
+        let response: TransferResult | FixmeType;
 
-        const result = data?.result ?? [];
+        if (user.type === 'walletconnect') {
+          response = await swapRequestUsingWalletConnect({
+            walletConnect: user.walletConnector,
+            bncClient,
+            walletAddress: user.wallet,
+            source: swapData.symbolFrom,
+            target: swapData.symbolTo,
+            amount: tokenAmountToSwap,
+            protectSlip: slipProtection,
+            limit: swapData.lim,
+            poolAddress: swapData.poolAddress,
+            targetAddress: address,
+          });
+        } else {
+          response = await confirmSwap(
+            bncClient,
+            user.wallet,
+            source,
+            target,
+            swapData,
+            tokenAmountToSwap,
+            slipProtection,
+            address,
+          );
+        }
+
+        const result = response?.result ?? [];
         const hash = result[0]?.hash;
         if (hash) {
           setTxHash(hash);

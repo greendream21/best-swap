@@ -19,7 +19,10 @@ import { get as _get } from 'lodash';
 
 import BigNumber from 'bignumber.js';
 import * as RD from '@devexperts/remote-data-ts';
-import { client as binanceClient } from '@thorchain/asgardex-binance';
+import {
+  client as binanceClient,
+  TransferResult,
+} from '@thorchain/asgardex-binance';
 import {
   bn,
   validBNOrZero,
@@ -81,7 +84,7 @@ import StepBar from '../../components/uielements/stepBar';
 import { MAX_VALUE } from '../../redux/app/const';
 import { RootState } from '../../redux/store';
 import { User, AssetData } from '../../redux/wallet/types';
-import { Maybe, Nothing, AssetPair } from '../../types/bepswap';
+import { Maybe, Nothing, AssetPair, FixmeType } from '../../types/bepswap';
 import { TxStatus, TxTypes } from '../../redux/app/types';
 import {
   AssetDetailMap,
@@ -104,6 +107,7 @@ import {
 } from '../../helpers/walletHelper';
 import { ShareDetailTabKeys, WithdrawData } from './types';
 import showNotification from '../../components/uielements/notification';
+import { stakeRequestUsingWalletConnect } from '../../helpers/utils/trustwalletUtils';
 
 const { TabPane } = Tabs;
 
@@ -631,14 +635,30 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       const bncClient = await binanceClient(BINANCE_NET);
 
       try {
-        const { result } = await stakeRequest({
-          bncClient,
-          wallet,
-          runeAmount,
-          tokenAmount: newTokenAmountToStake,
-          poolAddress: data.poolAddress,
-          symbolTo: data.symbolTo,
-        });
+        let response: TransferResult | FixmeType;
+
+        if (user.type === 'walletconnect') {
+          response = await stakeRequestUsingWalletConnect({
+            walletConnect: user.walletConnector,
+            bncClient,
+            walletAddress: user.wallet,
+            runeAmount,
+            tokenAmount: newTokenAmountToStake,
+            poolAddress: data.poolAddress || '',
+            symbol: data.symbolTo || '',
+          });
+        } else {
+          response = await stakeRequest({
+            bncClient,
+            wallet,
+            runeAmount,
+            tokenAmount: newTokenAmountToStake,
+            poolAddress: data.poolAddress,
+            symbolTo: data.symbolTo,
+          });
+        }
+
+        const result = response?.result;
         const hash = result ? result[0]?.hash ?? null : null;
         if (hash) {
           setTxHash(hash);
@@ -1161,7 +1181,9 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
     const dragText = withdrawDisabled ? '24hr cooldown' : 'drag to withdraw';
 
-    const ratioText = selectRatio ? 'Unlock to set the ratio manually' : 'Lock to set the ratio automatically';
+    const ratioText = selectRatio
+      ? 'Unlock to set the ratio manually'
+      : 'Lock to set the ratio automatically';
 
     return (
       <div className="share-detail-wrapper">
@@ -1204,9 +1226,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                 />
                 <PopoverContainer className="stake-ratio-select">
                   <Popover
-                    content={
-                      <PopoverContent>{ratioText}</PopoverContent>
-                    }
+                    content={<PopoverContent>{ratioText}</PopoverContent>}
                     getPopupContainer={getPopupContainer}
                     placement="right"
                     visible
