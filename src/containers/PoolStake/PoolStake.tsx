@@ -462,6 +462,9 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   const handleCloseModal = useCallback(() => {
     setTxTimerModal(false);
     handleEndTxTimer();
+
+    // reset withdraw percentage to 50%
+    setWithdrawPercentage(50);
   }, [setTxTimerModal, handleEndTxTimer, refreshStakerData]);
 
   const handleDrag = useCallback(() => {
@@ -1152,7 +1155,9 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
     const dragText = withdrawDisabled ? '24hr cooldown' : 'drag to withdraw';
 
-    const ratioText = selectRatio ? 'Unlock to set the ratio manually' : 'Lock to set the ratio automatically';
+    const ratioText = selectRatio
+      ? 'Unlock to set the ratio manually'
+      : 'Lock to set the ratio automatically';
 
     return (
       <div className="share-detail-wrapper">
@@ -1195,9 +1200,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                 />
                 <PopoverContainer className="stake-ratio-select">
                   <Popover
-                    content={
-                      <PopoverContent>{ratioText}</PopoverContent>
-                    }
+                    content={<PopoverContent>{ratioText}</PopoverContent>}
                     getPopupContainer={getPopupContainer}
                     placement="right"
                     visible
@@ -1281,7 +1284,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
               onChange={(value: SliderValue) => {
                 setWithdrawPercentage(value as number);
               }}
-              defaultValue={50}
+              value={widthdrawPercentage}
               max={100}
               min={0}
             />
@@ -1359,9 +1362,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     const runePrice = validBNOrZero(priceIndex?.RUNE);
     const assetPrice = _get(priceIndex, target.toUpperCase(), 0);
 
-    const {
-      stakeUnits,
-    }: StakersAssetData = stakersAssetData;
+    const { stakeUnits }: StakersAssetData = stakersAssetData;
     const stakeUnitsBN = bnOrZero(stakeUnits);
     const loading = isLoading() || poolUnits === undefined;
 
