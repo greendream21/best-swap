@@ -14,7 +14,7 @@ type Props = {
   data: AssetPair[];
   disableItemFilter?: (item: AssetPair) => boolean;
   placeholder?: string;
-  selectedKeys: string[];
+  selectedKeys?: string[];
 };
 
 const FilterMenu: React.FC<Props> = ({
@@ -25,7 +25,7 @@ const FilterMenu: React.FC<Props> = ({
   cellRenderer,
   disableItemFilter = _ => false,
   placeholder = 'Search Token ...',
-  selectedKeys,
+  selectedKeys = [],
   ...otherProps
 }): JSX.Element => {
   const [searchTerm, setSearchTerm] = useState('');
