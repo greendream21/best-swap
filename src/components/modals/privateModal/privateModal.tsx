@@ -100,9 +100,6 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
       // Short delay to render latest state changes of `validating`
       await delay(200);
 
-      console.log('keystore -->', user?.keystore);
-      console.log('password -->', password);
-
       // verify private key
       const result = await verifyPrivateKey(user?.keystore, password);
 

@@ -38,7 +38,6 @@ const LedgerConnector = (props: Props) => {
     // get version
     try {
       const version = await app.getVersion();
-      console.log('version', version);
     } catch ({ message, statusCode }) {
       console.error('version error', message, statusCode);
     }
