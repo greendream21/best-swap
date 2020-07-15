@@ -462,6 +462,8 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     // set rune and target token amount as 0 after stake
     setRuneAmount(tokenAmount(0));
     setTargetAmount(tokenAmount(0));
+    // reset withdraw percentage to 50%
+    setWithdrawPercentage(50);
   }, [setTxTimerModal, handleEndTxTimer, refreshStakerData]);
 
   const handleDrag = useCallback(() => {
@@ -1281,7 +1283,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
               onChange={(value: SliderValue) => {
                 setWithdrawPercentage(value as number);
               }}
-              defaultValue={50}
+              value={widthdrawPercentage}
               max={100}
               min={0}
             />
