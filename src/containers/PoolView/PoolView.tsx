@@ -158,7 +158,6 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         }
       },
     };
-
     const mobileColumns = [
       {
         key: 'pool',
@@ -244,6 +243,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         dataSource={poolViewData}
         loading={loading}
         rowKey="key"
+        key={poolStatus}
       />
     );
   };
