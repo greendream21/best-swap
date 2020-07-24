@@ -7,6 +7,8 @@ import { State, User } from './types';
 import { WalletActionsTypes } from './actions';
 import { Nothing } from '../../types/bepswap';
 
+import { RUNE_SYMBOL } from '../../settings/assetData';
+
 const wallet = getWalletAddress();
 const keystore = getKeystore();
 
@@ -19,7 +21,7 @@ const initState: State = {
   user,
   assetData: [
     {
-      asset: 'RUNE-A1F',
+      asset: RUNE_SYMBOL,
       assetValue: tokenAmount(0),
       price: bn(0),
     },

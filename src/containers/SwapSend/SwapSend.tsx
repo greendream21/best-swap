@@ -96,6 +96,7 @@ import {
   getAssetFromAssetData,
   bnbBaseAmount,
 } from '../../helpers/walletHelper';
+import { RUNE_SYMBOL } from '../../settings/assetData';
 
 import { SwapSendView, TxResult } from './types';
 import showNotification from '../../components/uielements/notification';
@@ -924,7 +925,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
 
   // add rune data in the target token list
   tokensData.push({
-    asset: 'RUNE-A1F',
+    asset: RUNE_SYMBOL,
     price: runePrice,
   });
 
