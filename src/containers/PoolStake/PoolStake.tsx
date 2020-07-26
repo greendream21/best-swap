@@ -444,7 +444,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
     // refresh staker data after tx is finished
     refreshStakerData();
-  }, [setDragReset, setTxTimerStatus]);
+  }, [setDragReset, setTxTimerStatus, refreshStakerData]);
 
   const handleOpenPrivateModal = useCallback(() => {
     setOpenPrivateModal(true);
@@ -457,14 +457,13 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
   const handleCloseModal = useCallback(() => {
     setTxTimerModal(false);
-    handleEndTxTimer();
 
     // set rune and target token amount as 0 after stake
     setRuneAmount(tokenAmount(0));
     setTargetAmount(tokenAmount(0));
     // reset withdraw percentage to 50%
     setWithdrawPercentage(50);
-  }, [setTxTimerModal, handleEndTxTimer, refreshStakerData]);
+  }, [setTxTimerModal]);
 
   const handleDrag = useCallback(() => {
     setDragReset(false);
@@ -478,6 +477,11 @@ const PoolStake: React.FC<Props> = (props: Props) => {
         status: true,
         startTime: Date.now(),
       });
+
+      // dismiss modal after 1s
+      setTimeout(() => {
+        setTxTimerModal(false);
+      }, 1000);
     },
     [resetTxStatus],
   );

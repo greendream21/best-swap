@@ -46,7 +46,7 @@ describe.skip('Staking', () => {
             to: 'tbnb15r82hgf2e7649zhl4dsqgwc5tj64wf2jztrwd5',
             coins: [
               { amount: 1254000000, denom: 'BNB' },
-              { amount: 1000000000, denom: 'RUNE-A1F' },
+              { amount: 1000000000, denom: 'RUNE-67C' },
             ],
           },
         ],

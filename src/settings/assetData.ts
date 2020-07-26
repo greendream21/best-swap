@@ -1,7 +1,11 @@
+import { isMainnet } from '../env';
+
 type tokenData = {
   mainnet: string;
   testnet: string;
 };
+
+export const RUNE_SYMBOL = isMainnet ? 'RUNE-B1A' : 'RUNE-67C';
 
 export const tokenNames: { [key: string]: tokenData } = {
   BNB: {
@@ -10,7 +14,7 @@ export const tokenNames: { [key: string]: tokenData } = {
   },
   RUNE: {
     mainnet: 'RUNE-B1A',
-    testnet: 'RUNE-A1F',
+    testnet: 'RUNE-67C',
   },
   LOK: {
     mainnet: 'LOKI-6A9',
