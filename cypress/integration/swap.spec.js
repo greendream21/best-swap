@@ -53,7 +53,7 @@ describe.skip('Swapping', () => {
         'tbnb16hlvxuwq0ju92wghc6ms3kxf88e7aysw3l76zn',
         'tbnb15r82hgf2e7649zhl4dsqgwc5tj64wf2jztrwd5',
         10,
-        'RUNE-A1F',
+        'RUNE-67C',
         'swap:BNB::773090000',
       );
 
@@ -107,7 +107,7 @@ describe.skip('Swapping', () => {
         'tbnb16hlvxuwq0ju92wghc6ms3kxf88e7aysw3l76zn',
         'tbnb15r82hgf2e7649zhl4dsqgwc5tj64wf2jztrwd5',
         10,
-        'RUNE-A1F',
+        'RUNE-67C',
         'swap:BNB:tbnb1uf4hln238vmpk366fjrhf3het8slwdxj0h74s3:773090000',
       );
   });

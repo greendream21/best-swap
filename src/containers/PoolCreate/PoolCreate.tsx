@@ -146,7 +146,13 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
       status: true,
       startTime: Date.now(),
     });
-  }, [resetTxStatus]);
+
+    // dismiss modal after 1s
+    setTimeout(() => {
+      setTxTimerModal(false);
+      setDragReset(true);
+    }, 1000);
+  }, [resetTxStatus, setTxTimerModal]);
 
   const handleEndTxTimer = useCallback(() => {
     setTxTimerStatus(false);
@@ -161,8 +167,7 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
 
   const handleCloseModal = useCallback(() => {
     setTxTimerModal(false);
-    handleEndTxTimer();
-  }, [setTxTimerModal, handleEndTxTimer]);
+  }, [setTxTimerModal]);
 
   const handleFinishTx = () => {
     showNotification({

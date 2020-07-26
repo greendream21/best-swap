@@ -2,30 +2,29 @@ import styled from 'styled-components';
 
 export const TxProgressWrapper = styled.div`
   position: relative;
-  width: 40px;
-  height: 40px;
+  width: 26px;
+  height: 26px;
   cursor: pointer;
 
   &.disabled {
-    cursor: not-allowed;
     opacity: 0.4;
   }
 
   .timerchart-icon {
     position: absolute;
-    top: 0px;
-    left: 0px;
+    top: 2px;
+    left: 2px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
 
-    width: 40px;
-    height: 40px;
+    width: 22px;
+    height: 22px;
 
     svg {
-      width: 40px;
-      height: 40px;
+      width: 22px;
+      height: 22px;
     }
   }
 
