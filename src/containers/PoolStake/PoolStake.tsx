@@ -234,6 +234,8 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
     const wallet = user?.wallet;
     if (wallet) {
+      // refresh wallet balance
+      refreshBalance(wallet);
       subscribeBinanceTransfers({ address: wallet, net });
     }
 
@@ -478,10 +480,10 @@ const PoolStake: React.FC<Props> = (props: Props) => {
         startTime: Date.now(),
       });
 
-      // dismiss modal after 1s
-      setTimeout(() => {
-        setTxTimerModal(false);
-      }, 1000);
+      // // dismiss modal after 1s
+      // setTimeout(() => {
+      //   setTxTimerModal(false);
+      // }, 1000);
     },
     [resetTxStatus],
   );
