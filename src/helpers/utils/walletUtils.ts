@@ -1,5 +1,8 @@
 import { crypto } from '@binance-chain/javascript-sdk';
-import { client as binanceClient, getPrefix } from '@thorchain/asgardex-binance';
+import {
+  client as binanceClient,
+  getPrefix,
+} from '@thorchain/asgardex-binance';
 import { BINANCE_NET } from '../../env';
 
 /** verify keystore file with password
@@ -7,10 +10,7 @@ import { BINANCE_NET } from '../../env';
  * @param keystore
  * @param password
  */
-export const verifyPrivateKey = async (
-  keystore: string,
-  password: string,
-) => {
+export const verifyPrivateKey = async (keystore: string, password: string) => {
   try {
     const privateKey = crypto.getPrivateKeyFromKeyStore(keystore, password);
 

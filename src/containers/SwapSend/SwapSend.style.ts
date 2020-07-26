@@ -313,6 +313,7 @@ export const SwapStatusPanel = styled.div`
 
   .slip-ratio-labels {
     margin-left: 18px;
+    width: 150px;
   }
 
   svg {

@@ -158,7 +158,6 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         }
       },
     };
-
     const mobileColumns = [
       {
         key: 'pool',
@@ -201,7 +200,8 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         dataIndex: ['values', 'poolPrice'],
         sorter: (a: PoolData, b: PoolData) => a.poolPrice.minus(b.poolPrice),
         sortDirections: ['descend', 'ascend'],
-        defaultSortOrder: 'descend',
+        defaultSortOrder:
+          poolStatus === PoolDetailStatusEnum.Enabled ? 'descend' : undefined,
       },
       {
         key: 'depth',
@@ -210,6 +210,8 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         sorter: (a: PoolData, b: PoolData) =>
           a.depth.amount().minus(b.depth.amount()),
         sortDirections: ['descend', 'ascend'],
+        defaultSortOrder:
+          poolStatus !== PoolDetailStatusEnum.Enabled ? 'descend' : undefined,
       },
       {
         key: 'volume24',
@@ -221,10 +223,9 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
       },
       {
         key: 'roiAT',
-        title: 'ARP',
+        title: 'APR',
         dataIndex: ['values', 'roiAT'],
-        sorter: (a: PoolData, b: PoolData) =>
-          Number(a.roiAT) - Number(b.roiAT),
+        sorter: (a: PoolData, b: PoolData) => Number(a.roiAT) - Number(b.roiAT),
         sortDirections: ['descend', 'ascend'],
       },
       buttonCol,
@@ -242,6 +243,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         dataSource={poolViewData}
         loading={loading}
         rowKey="key"
+        key={poolStatus}
       />
     );
   };

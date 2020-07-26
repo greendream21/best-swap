@@ -69,6 +69,7 @@ const TokenMenu: React.FC<Props> = (props: Props): JSX.Element => {
   return (
     <FilterMenu
       {...otherProps}
+      selectedKeys={[asset]}
       searchEnabled={withSearch}
       filterFunction={filterFunction}
       cellRenderer={cellRenderer}
