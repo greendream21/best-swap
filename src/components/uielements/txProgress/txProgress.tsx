@@ -79,7 +79,7 @@ const TxProgress: React.FC<Props> = (props): JSX.Element => {
                 textColor: '#23DCC8',
                 textSize: '14px',
                 pathColor: '#23DCC8',
-                trailColor: '#F3F4F4',
+                trailColor: 'rgba(242, 243, 243, 0.5)',
                 pathTransition: 'stroke-dashoffset 0.5s linear 0s',
               })}
             />

@@ -22,7 +22,7 @@ describe('helpers/assetHelper', () => {
     });
     it('should return a token symbol for RUNE in the testnet', () => {
       const result = getTokenName('RUNE', false);
-      expect(result).toEqual('RUNE-A1F');
+      expect(result).toEqual('RUNE-67C');
     });
   });
   describe('getTokenName for LOK', () => {

@@ -5,9 +5,7 @@ import { connect } from 'react-redux';
 import { withRouter, useHistory, useParams } from 'react-router-dom';
 import { SwapOutlined, LockOutlined, UnlockOutlined } from '@ant-design/icons';
 import { Row } from 'antd';
-import {
-  client as binanceClient,
-} from '@thorchain/asgardex-binance';
+import { client as binanceClient } from '@thorchain/asgardex-binance';
 import {
   validBNOrZero,
   bnOrZero,
@@ -96,6 +94,7 @@ import {
   getAssetFromAssetData,
   bnbBaseAmount,
 } from '../../helpers/walletHelper';
+import { RUNE_SYMBOL } from '../../settings/assetData';
 
 import { SwapSendView, TxResult } from './types';
 import showNotification from '../../components/uielements/notification';
@@ -585,6 +584,12 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
       status: true,
       startTime: Date.now(),
     });
+
+    // // dismiss modal after 1s
+    // setTimeout(() => {
+    //   setTxTimerModal(false);
+    //   setDragReset(true);
+    // }, 1000);
   };
 
   const handleChangeTxTimer = () => {
@@ -637,9 +642,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
       handleCompleted();
     } else {
       setTxTimerModal(false);
-
-      // Finish the tx timer as we no longer minimize modal to txView in the header
-      handleEndTxTimer();
     }
   };
 
@@ -691,14 +693,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   const handleReversePair = () => {
     const { source, target }: Pair = getPair(info);
 
-    if (!assetData.find(data => getTickerFormat(data.asset) === target)) {
-      showNotification({
-        type: 'warning',
-        message: 'Cannot Reverse Swap Direction',
-        description: 'Token does not exist in your wallet.',
-      });
-      return;
-    }
     if (source && target) {
       setXValue(tokenAmount(0));
       const URL = `/swap/${target}-${source}`;
@@ -924,7 +918,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
 
   // add rune data in the target token list
   tokensData.push({
-    asset: 'RUNE-A1F',
+    asset: RUNE_SYMBOL,
     price: runePrice,
   });
 
