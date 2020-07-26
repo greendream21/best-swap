@@ -693,14 +693,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   const handleReversePair = () => {
     const { source, target }: Pair = getPair(info);
 
-    if (!assetData.find(data => getTickerFormat(data.asset) === target)) {
-      showNotification({
-        type: 'warning',
-        message: 'Cannot Reverse Swap Direction',
-        description: 'Token does not exist in your wallet.',
-      });
-      return;
-    }
     if (source && target) {
       setXValue(tokenAmount(0));
       const URL = `/swap/${target}-${source}`;
