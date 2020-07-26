@@ -440,8 +440,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
   const handleEndTxTimer = useCallback(() => {
     setTxTimerStatus(false);
-    setDragReset(true);
-
     // refresh staker data after tx is finished
     refreshStakerData();
   }, [setDragReset, setTxTimerStatus, refreshStakerData]);
@@ -457,13 +455,22 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
   const handleCloseModal = useCallback(() => {
     setTxTimerModal(false);
+  }, [setTxTimerModal]);
+
+  const handleFinish = () => {
+    setTxTimerModal(false);
+    handleCompleteTx();
+  };
+
+  const handleCompleteTx = () => {
+    setDragReset(true);
 
     // set rune and target token amount as 0 after stake
     setRuneAmount(tokenAmount(0));
     setTargetAmount(tokenAmount(0));
     // reset withdraw percentage to 50%
     setWithdrawPercentage(50);
-  }, [setTxTimerModal]);
+  };
 
   const handleDrag = useCallback(() => {
     setDragReset(false);
@@ -473,6 +480,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     (type: TxTypes) => {
       resetTxStatus({
         type,
+        value: 0,
         modal: true,
         status: true,
         startTime: Date.now(),
@@ -481,6 +489,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       // dismiss modal after 1s
       setTimeout(() => {
         setTxTimerModal(false);
+        setDragReset(true);
       }, 1000);
     },
     [resetTxStatus],
@@ -865,7 +874,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
   const renderStakeModalContent = (completed: boolean) => {
     const { status, value, startTime, hash } = txStatus;
-
     const source = 'rune';
     const target = getTickerFormat(symbol);
 
@@ -918,7 +926,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                 <Button
                   className="view-btn"
                   color="success"
-                  onClick={handleCloseModal}
+                  onClick={handleFinish}
                 >
                   FINISH
                 </Button>
@@ -992,7 +1000,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                     <Button
                       className="view-btn"
                       color="success"
-                      onClick={handleCloseModal}
+                      onClick={handleFinish}
                     >
                       FINISH
                     </Button>

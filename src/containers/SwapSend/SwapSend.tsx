@@ -580,6 +580,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     setTimerFinished(false);
     resetTxStatus({
       type: TxTypes.SWAP,
+      value: 0,
       modal: true,
       status: true,
       startTime: Date.now(),
@@ -615,15 +616,15 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   const handleEndTxTimer = useCallback(() => {
     setTxTimerStatus(false);
     setDragReset(true);
-    setTimerFinished(true);
-  }, [setTxTimerStatus, setDragReset, setTimerFinished]);
+    handleCompleted();
+  }, [setTxTimerStatus, setDragReset]);
 
   const handleCompleted = () => {
     // reset input amount after swap completed
     setXValue(tokenAmount(0));
     setPercent(0);
 
-    setTimerFinished(false);
+    setTimerFinished(true);
     resetTxStatus();
 
     // refresh balance once finished

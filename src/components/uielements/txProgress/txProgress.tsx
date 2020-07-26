@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import { TimerFullIcon, ConfirmIcon } from '../../icons/timerIcons';
 
@@ -27,8 +27,7 @@ const TxProgress: React.FC<Props> = (props): JSX.Element => {
 
   const [active, setActive] = useState(false);
 
-  // Check if counter has reached the end
-  const isEnd = useCallback(() => value === maxValue, [value, maxValue]);
+  const isEnd = useMemo(() => value >= maxValue, [value, maxValue]);
 
   // Update `active` depending on `status`.
   // Since we handling internal `status` asynchronous the component has to be still `active`
@@ -41,19 +40,23 @@ const TxProgress: React.FC<Props> = (props): JSX.Element => {
 
   // Reset everything at end
   const handleEndTimer = useCallback(() => {
+    console.log('end timer called');
+
     onEnd();
     setActive(false);
   }, [onEnd]);
 
   // Delay the end of counting - for UX purposes only
   useEffect(() => {
-    if (isEnd() && status) {
+    if (isEnd && status) {
+      console.log('end timer here', isEnd, status);
+
       const id = setTimeout(handleEndTimer, 1000);
       return () => clearTimeout(id);
     }
   }, [handleEndTimer, isEnd, status]);
 
-  const final = isEnd() && !active;
+  const final = isEnd && !active;
   const CircularProgressbarStyle = `${
     final ? 'hide' : ''
   } timerchart-circular-progressbar`;

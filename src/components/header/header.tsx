@@ -27,9 +27,9 @@ import { TxStatus } from '../../redux/app/types';
 type ConnectedProps = {
   user: Maybe<User>;
   midgardBasePath: Maybe<string>;
+  txStatus: TxStatus;
   setTxTimerModal: typeof appActions.setTxTimerModal;
   setTxTimerStatus: typeof appActions.setTxTimerStatus;
-  txStatus: TxStatus;
 };
 
 type ComponentProps = {
@@ -42,9 +42,9 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
   const {
     user,
     midgardBasePath,
+    txStatus,
     setTxTimerModal,
     setTxTimerStatus,
-    txStatus,
   } = props;
   const history = useHistory();
 
@@ -62,6 +62,7 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
     // Update `status` from here if modal is hided (not running)
     // to avoid unexptected UX issues within modal (it's final icon won't be visible)
     if (!txStatus.modal) {
+      console.log('end tx progress called! --> ', txStatus);
       setTxTimerStatus(false);
     }
   }, [txStatus, setTxTimerStatus]);

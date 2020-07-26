@@ -142,6 +142,7 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
   const handleStartTimer = useCallback(() => {
     resetTxStatus({
       type: TxTypes.CREATE,
+      value: 0,
       modal: true,
       status: true,
       startTime: Date.now(),
