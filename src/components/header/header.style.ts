@@ -90,6 +90,7 @@ export const HeaderActionButtons = styled.div`
   ${media.sm`
     display: flex;
     align-items: center;
+    padding-right: 10px;
   `}
 
   /* HACK: This should be refactored in 

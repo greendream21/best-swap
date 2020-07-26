@@ -19,6 +19,8 @@ import { Pair, AssetPair, SwapType } from '../../types/bepswap';
 import { PoolDataMap } from '../../redux/midgard/types';
 import { SwapData } from './types';
 
+import { RUNE_SYMBOL } from '../../settings/assetData';
+
 const bnbPoolInfo: PoolDetail = {
   asset: 'BNB.BNB',
   assetDepth: '2224480142',
@@ -240,7 +242,7 @@ describe('swap/utils/', () => {
               o: 'tbnb1nhftlnunw3h6c9wsamfyf8dzmmwm8c9xfjaxmp',
               c: [
                 {
-                  a: 'RUNE-A1F',
+                  a: RUNE_SYMBOL,
                   A: '2.00000000',
                 },
               ],
@@ -255,7 +257,7 @@ describe('swap/utils/', () => {
         txMemo: 'SWAP:TUSDB-000::18430000',
         txFrom: 'tbnb13egw96d95lldrhwu56dttrpn2fth6cs0axzaad',
         txTo: 'tbnb1nhftlnunw3h6c9wsamfyf8dzmmwm8c9xfjaxmp',
-        txToken: 'RUNE-A1F',
+        txToken: RUNE_SYMBOL,
         txAmount: '2.00000000',
       };
       expect(result).toEqual(expected);
@@ -306,7 +308,7 @@ describe('swap/utils/', () => {
               o: 'tbnb13egw96d95lldrhwu56dttrpn2fth6cs0axzaad',
               c: [
                 {
-                  a: 'RUNE-A1F',
+                  a: RUNE_SYMBOL,
                   A: '2.00000000',
                 },
               ],
@@ -325,7 +327,7 @@ describe('swap/utils/', () => {
       });
       const expected = {
         type: 'refund',
-        token: 'RUNE-A1F',
+        token: RUNE_SYMBOL,
         amount: '2.00000000',
       };
       expect(result).toEqual(expected);
@@ -404,7 +406,7 @@ describe('swap/utils/', () => {
         outputPrice: bn(178.03053227763760049641),
         poolAddress: 'address',
         slip: bn(5.389413716466187631),
-        symbolFrom: 'RUNE-A1F',
+        symbolFrom: RUNE_SYMBOL,
         symbolTo: 'BNB',
       };
 
@@ -443,7 +445,7 @@ describe('swap/utils/', () => {
         poolAddress: 'address',
         slip: bn('134.705545606424204104'),
         symbolFrom: 'LOK-3C0',
-        symbolTo: 'RUNE-A1F',
+        symbolTo: RUNE_SYMBOL,
       };
       const result = getSwapData(
         from,

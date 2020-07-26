@@ -28,6 +28,8 @@ import { Nothing, Maybe, SwapType, Pair, AssetPair } from '../../types/bepswap';
 import { SwapData } from './types';
 import { getAssetFromString } from '../../redux/midgard/utils';
 
+import { RUNE_SYMBOL } from '../../settings/assetData';
+
 export const validatePair = (
   pair: Pair,
   sourceInfo: AssetPair[],
@@ -80,17 +82,14 @@ export const getSwapData = (
 ): Maybe<SwapData> => {
   const swapType = getSwapType(from, to);
 
-  // TODO: (Chris) FIX hardcoded rune test token symbol
-  const rune = 'RUNE-A1F';
-
   const result: {
     poolAddress: string;
     symbolFrom: string;
     symbolTo: string;
   } = {
     poolAddress,
-    symbolFrom: rune,
-    symbolTo: rune,
+    symbolFrom: RUNE_SYMBOL,
+    symbolTo: RUNE_SYMBOL,
   };
 
   if (swapType === SwapType.DOUBLE_SWAP) {
@@ -168,7 +167,7 @@ export const getSwapData = (
       }
     });
 
-    result.symbolTo = rune;
+    result.symbolTo = RUNE_SYMBOL;
     const calcData: SingleSwapCalcData = { X, Y, Py };
 
     const Px = getPx(xValue, calcData);
@@ -240,7 +239,7 @@ export const getSwapData = (
     });
 
     // Set RUNE for fromToken as we don't have rune in the pool from thorchain
-    result.symbolFrom = rune;
+    result.symbolFrom = RUNE_SYMBOL;
 
     const times = X.amount()
       .plus(xValue.amount())

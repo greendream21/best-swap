@@ -27,6 +27,7 @@ import { getAssetFromString } from '../../redux/midgard/utils';
 import { AssetData } from '../../redux/wallet/types';
 import { Maybe, Nothing } from '../../types/bepswap';
 import { PoolData } from './types';
+import { RUNE_SYMBOL } from '../../settings/assetData';
 
 export type CalcResult = {
   poolAddress: Maybe<string>;
@@ -290,7 +291,7 @@ export const stakeRequest = (
           to: poolAddress,
           coins: [
             {
-              denom: 'RUNE-A1F',
+              denom: RUNE_SYMBOL,
               amount: runeAmountNumber,
             },
             {
@@ -316,7 +317,7 @@ export const stakeRequest = (
       const memo = getStakeMemo(symbolTo);
 
       bncClient
-        .transfer(wallet, poolAddress, runeAmountNumber, 'RUNE-A1F', memo)
+        .transfer(wallet, poolAddress, runeAmountNumber, RUNE_SYMBOL, memo)
         .then(response => resolve(response))
         .catch(error => reject(error));
     }
@@ -393,7 +394,7 @@ export const createPoolRequest = (
         to: poolAddress,
         coins: [
           {
-            denom: 'RUNE-A1F',
+            denom: RUNE_SYMBOL,
             amount: runeAmountNumber,
           },
           {
@@ -440,7 +441,7 @@ export const withdrawRequest = (
     // Minimum amount to send memo on-chain
     const amount = 0.00000001;
     bncClient
-      .transfer(wallet, poolAddress, amount, 'RUNE-A1F', memo)
+      .transfer(wallet, poolAddress, amount, RUNE_SYMBOL, memo)
       .then(response => resolve(response))
       // If first tx ^ fails (e.g. there is no RUNE available)
       // another tx w/ same memo will be sent, but by using BNB now
