@@ -234,6 +234,8 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
     const wallet = user?.wallet;
     if (wallet) {
+      // refresh wallet balance
+      refreshBalance(wallet);
       subscribeBinanceTransfers({ address: wallet, net });
     }
 
