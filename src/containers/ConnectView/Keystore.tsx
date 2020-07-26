@@ -123,13 +123,15 @@ const Keystore: React.FC<Props> = (props: Props): JSX.Element => {
         <FilePicker onChange={onChangeFile} onError={onErrorFile}>
           <div className="file-upload-wrapper">
             <Button color="primary" typevalue="outline">
-              <UploadOutlined />
+              {keystore && !keystoreError && (
+                <CheckCircleTwoTone
+                  className="keystore-upload-icon"
+                  twoToneColor="#50E3C2"
+                />
+              )}
+              {(!keystore || keystoreError) && <UploadOutlined />}
               Choose File to Upload
             </Button>
-            &nbsp;
-            {keystore && !keystoreError && (
-              <CheckCircleTwoTone twoToneColor="#50E3C2" />
-            )}
           </div>
         </FilePicker>
         {keystoreError && <Label color="error">{keystoreError}</Label>}

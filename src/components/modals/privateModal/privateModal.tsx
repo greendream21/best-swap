@@ -99,15 +99,13 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
       setValidating(true);
       // Short delay to render latest state changes of `validating`
       await delay(200);
-
-      console.log('keystore -->', user?.keystore);
-      console.log('password -->', password);
-
       // verify private key
       const result = await verifyPrivateKey(user?.keystore, password);
 
-      // confirm if decoded address is matched to the user's wallet address
-      if (result.address === address) {
+      if (result.error) {
+        setInvalidPassword(true);
+      } else if (result.address === address) {
+        // confirm if decoded address is matched to the user's wallet address
         onOk();
       }
       setValidating(false);
