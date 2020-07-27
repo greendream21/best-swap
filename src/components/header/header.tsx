@@ -19,17 +19,24 @@ import BasePriceSelector from './basePriceSelector';
 import { Maybe, Nothing } from '../../types/bepswap';
 import { RootState } from '../../redux/store';
 import { User } from '../../redux/wallet/types';
+
 import * as appActions from '../../redux/app/actions';
+import * as walletActions from '../../redux/wallet/actions';
 
 import { MAX_VALUE } from '../../redux/app/const';
-import { TxStatus } from '../../redux/app/types';
+import { TxStatus, TxResult, TxTypes } from '../../redux/app/types';
 
 type ConnectedProps = {
   user: Maybe<User>;
   midgardBasePath: Maybe<string>;
   txStatus: TxStatus;
+  txResult: Maybe<TxResult>;
+  setTxTimerValue: typeof appActions.setTxTimerValue;
+  countTxTimerValue: typeof appActions.countTxTimerValue;
   setTxTimerModal: typeof appActions.setTxTimerModal;
   setTxTimerStatus: typeof appActions.setTxTimerStatus;
+  refreshBalance: typeof walletActions.refreshBalance;
+  refreshStakes: typeof walletActions.refreshStakes;
 };
 
 type ComponentProps = {
@@ -43,12 +50,24 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
     user,
     midgardBasePath,
     txStatus,
+    txResult,
+    setTxTimerValue,
+    countTxTimerValue,
     setTxTimerModal,
     setTxTimerStatus,
+    refreshBalance,
+    refreshStakes,
   } = props;
   const history = useHistory();
 
   const wallet: Maybe<string> = user ? user.wallet : Nothing;
+
+  const refreshStakerData = useCallback(() => {
+    if (wallet) {
+      refreshStakes(wallet);
+      refreshBalance(wallet);
+    }
+  }, [refreshBalance, refreshStakes, wallet]);
 
   const handleClickTxProgress = useCallback(() => {
     if (txStatus.type !== undefined) {
@@ -58,14 +77,80 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
     }
   }, [setTxTimerModal, txStatus, history]);
 
+  const handleChangeTxProgress = () => {
+    const { value, type: txType, hash } = txStatus;
+    if (txType === TxTypes.SWAP) {
+      // Count handling depends on `txResult`
+      // If tx has been confirmed, then we jump to last `valueIndex` ...
+      if (txResult !== null && value < MAX_VALUE) {
+        setTxTimerValue(MAX_VALUE);
+      }
+      // In other cases (no `txResult`) we don't jump to last `indexValue`...
+      if (txResult === null) {
+        // ..., but we are still counting
+        if (value < 75) {
+          // Add a quarter
+          countTxTimerValue(25);
+        } else if (value >= 75 && value < 95) {
+          // With last quarter we just count a little bit to signalize still a progress
+          countTxTimerValue(0.75);
+        }
+      }
+    } else if (txType === TxTypes.WITHDRAW) {
+      // If tx has been confirmed finally,
+      // then we jump to last `valueIndex` ...
+      if (txResult?.status && value < MAX_VALUE) {
+        setTxTimerValue(MAX_VALUE);
+      }
+      // In other cases (no `txResult`) we don't jump to last `indexValue`...
+      if (!txResult?.status) {
+        // ..., but we are still counting
+        if (value < 75) {
+          // Add a quarter
+          countTxTimerValue(25);
+        } else if (value >= 75 && value < 95) {
+          // With last quarter we just count a little bit to signalize still a progress
+          countTxTimerValue(1);
+        }
+      }
+    } else if (txType === TxTypes.STAKE) {
+      // If tx has been sent successfully,
+      // we jump to last `valueIndex` ...
+      if (hash && value < MAX_VALUE) {
+        setTxTimerValue(MAX_VALUE);
+      }
+      // In other cases (no `hash`) we don't jump to last `indexValue`...
+      if (!hash) {
+        // ..., but we are still counting
+        if (value < 75) {
+          // Add a quarter
+          countTxTimerValue(25);
+        } else if (value >= 75 && value < 95) {
+          // With last quarter we just count a little bit to signalize still a progress
+          countTxTimerValue(1);
+        }
+      }
+    } else if (txType === TxTypes.CREATE) {
+      // pool create tx
+      countTxTimerValue(25);
+    }
+  };
+
   const handleEndTxProgress = useCallback(() => {
     // Update `status` from here if modal is hided (not running)
     // to avoid unexptected UX issues within modal (it's final icon won't be visible)
     if (!txStatus.modal) {
-      console.log('end tx progress called! --> ', txStatus);
       setTxTimerStatus(false);
+      if (
+        txStatus.type === TxTypes.STAKE ||
+        txStatus.type === TxTypes.WITHDRAW
+      ) {
+        refreshStakerData();
+      }
     }
-  }, [txStatus, setTxTimerStatus]);
+  }, [txStatus, setTxTimerStatus, refreshStakerData]);
+
+  const { status, value, startTime } = txStatus;
 
   return (
     <StyledHeader>
@@ -97,11 +182,13 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
         <BasePriceSelector />
         {wallet && (
           <TxProgress
-            status={txStatus.status}
-            value={txStatus.value}
+            status={status}
+            value={value}
             maxValue={MAX_VALUE}
-            className={txStatus.type === undefined ? 'disabled' : ''}
+            maxSec={45}
+            startTime={startTime}
             onClick={handleClickTxProgress}
+            onChange={handleChangeTxProgress}
             onEnd={handleEndTxProgress}
           />
         )}
@@ -112,12 +199,18 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
 
 export default connect(
   (state: RootState) => ({
+    txResult: state.App.txResult,
     txStatus: state.App.txStatus,
     user: state.Wallet.user,
     midgardBasePath: RD.toNullable(state.Midgard.apiBasePath),
   }),
   {
+    setTxResult: appActions.setTxResult,
+    setTxTimerValue: appActions.setTxTimerValue,
+    countTxTimerValue: appActions.countTxTimerValue,
     setTxTimerModal: appActions.setTxTimerModal,
     setTxTimerStatus: appActions.setTxTimerStatus,
+    refreshBalance: walletActions.refreshBalance,
+    refreshStakes: walletActions.refreshStakes,
   },
 )(Header);

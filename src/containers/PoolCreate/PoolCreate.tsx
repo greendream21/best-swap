@@ -103,7 +103,6 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
     setTxTimerModal,
     setTxTimerStatus,
     setTxHash,
-    countTxTimerValue,
   } = props;
 
   const [dragReset, setDragReset] = useState(true);
@@ -159,12 +158,6 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
     setTxTimerStatus(false);
     setDragReset(true);
   }, [setTxTimerStatus, setDragReset]);
-
-  const handleChangeTxValue = () => {
-    // ATM we just count a `quarter` w/o any other checks
-    // See https://gitlab.com/thorchain/bepswap/bepswap-web-ui/issues/281
-    countTxTimerValue(25);
-  };
 
   const handleCloseModal = useCallback(() => {
     setTxTimerModal(false);
@@ -533,7 +526,6 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
               value={value}
               maxValue={MAX_VALUE}
               startTime={startTime}
-              onChange={handleChangeTxValue}
               onEnd={handleEndTxTimer}
             />
           </div>

@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useState, useEffect, useMemo } from 'react';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import { ConfirmIcon, RefundIcon } from '../../icons/timerIcons';
 import { TxTimerWrapper } from './txTimer.style';
@@ -39,16 +39,13 @@ const TxTimer: React.FC<Props> = (props): JSX.Element => {
   const [active, setActive] = useState(false);
   const [totalDuration, setTotalDuration] = useState<number>(0);
 
-  // Check if counter has reached the end
-  const checkIfEnded = () => {
+  const isEnd = useMemo(() => {
     // Check of `maxSec` wins over `maxValue`
     if (maxSec > 0 && totalDuration >= maxSec) {
       return true;
     }
     return value >= maxValue;
-  };
-
-  const isEnd = checkIfEnded();
+  }, [maxSec, value, maxValue, totalDuration]);
 
   // Callback for counting
   const countHandler = useCallback(() => {

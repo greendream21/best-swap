@@ -82,7 +82,7 @@ import { MAX_VALUE } from '../../redux/app/const';
 import { RootState } from '../../redux/store';
 import { User, AssetData } from '../../redux/wallet/types';
 import { Maybe, Nothing, AssetPair } from '../../types/bepswap';
-import { TxStatus, TxTypes } from '../../redux/app/types';
+import { TxStatus, TxTypes, TxResult } from '../../redux/app/types';
 import {
   AssetDetailMap,
   StakerPoolData,
@@ -110,6 +110,7 @@ const { TabPane } = Tabs;
 type Props = {
   history: H.History;
   txStatus: TxStatus;
+  txResult?: TxResult;
   user: Maybe<User>;
   wsTransferEvent: TransferEventRD;
   assetData: AssetData[];
@@ -126,10 +127,8 @@ type Props = {
   getPools: typeof midgardActions.getPools;
   getPoolAddress: typeof midgardActions.getPoolAddress;
   getStakerPoolData: typeof midgardActions.getStakerPoolData;
+  setTxResult: typeof appActions.setTxResult;
   setTxTimerModal: typeof appActions.setTxTimerModal;
-  setTxTimerStatus: typeof appActions.setTxTimerStatus;
-  countTxTimerValue: typeof appActions.countTxTimerValue;
-  setTxTimerValue: typeof appActions.setTxTimerValue;
   setTxHash: typeof appActions.setTxHash;
   resetTxStatus: typeof appActions.resetTxStatus;
   refreshBalance: typeof walletActions.refreshBalance;
@@ -156,6 +155,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     basePriceAsset,
     thorchainData,
     txStatus,
+    txResult,
     wsTransferEvent,
     refreshBalance,
     refreshStakes,
@@ -163,12 +163,10 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     getPools,
     getBinanceFees,
     getStakerPoolData,
-    countTxTimerValue,
     resetTxStatus,
+    setTxResult,
     setTxHash,
     setTxTimerModal,
-    setTxTimerStatus,
-    setTxTimerValue,
     unSubscribeBinanceTransfers,
     subscribeBinanceTransfers,
   } = props;
@@ -187,7 +185,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   const [runePercent, setRunePercent] = useState<number>(0);
 
   const [dragReset, setDragReset] = useState<boolean>(true);
-  const [txResult, setTxResult] = useState<boolean>(false);
 
   const [openWalletAlert, setOpenWalletAlert] = useState(false);
   const [openPrivateModal, setOpenPrivateModal] = useState(false);
@@ -234,6 +231,8 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
     const wallet = user?.wallet;
     if (wallet) {
+      // refresh wallet balance
+      refreshBalance(wallet);
       subscribeBinanceTransfers({ address: wallet, net });
     }
 
@@ -294,14 +293,16 @@ const PoolStake: React.FC<Props> = (props: Props) => {
         }
 
         if (type === TxTypes.WITHDRAW) {
-          const txResult = withdrawResult({
+          const withdrawTxRes = withdrawResult({
             tx: currentWsTransferEvent,
             symbol,
             address: wallet,
           } as WithdrawResultParams);
 
-          if (txResult) {
-            setTxResult(true);
+          if (withdrawTxRes) {
+            setTxResult({
+              status: true,
+            });
             // refresh stakes after update
             refreshStakerData();
           }
@@ -437,12 +438,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       setTargetAmount(tokenAmount(value));
     }
   };
-
-  const handleEndTxTimer = useCallback(() => {
-    setTxTimerStatus(false);
-    // refresh staker data after tx is finished
-    refreshStakerData();
-  }, [setDragReset, setTxTimerStatus, refreshStakerData]);
 
   const handleOpenPrivateModal = useCallback(() => {
     setOpenPrivateModal(true);
@@ -631,7 +626,9 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       }
 
       handleStartTimer(TxTypes.STAKE);
-      setTxResult(false);
+      setTxResult({
+        status: false,
+      });
 
       const data = getData();
       const bncClient = await binanceClient(BINANCE_NET);
@@ -725,7 +722,9 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       const { wallet } = user;
 
       handleStartTimer(TxTypes.WITHDRAW);
-      setTxResult(false);
+      setTxResult({
+        status: false,
+      });
 
       const bncClient = await binanceClient(BINANCE_NET);
 
@@ -806,49 +805,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     setDragReset(true);
   }, [setOpenWalletAlert, setDragReset]);
 
-  const handleChangeTxValue = () => {
-    const { value, type, hash } = txStatus;
-
-    // Count handling depends on `type`
-    if (type === TxTypes.WITHDRAW) {
-      // If tx has been confirmed finally,
-      // then we jump to last `valueIndex` ...
-      if (txResult && value < MAX_VALUE) {
-        setTxTimerValue(MAX_VALUE);
-      }
-      // In other cases (no `txResult`) we don't jump to last `indexValue`...
-      if (!txResult) {
-        // ..., but we are still counting
-        if (value < 75) {
-          // Add a quarter
-          countTxTimerValue(25);
-        } else if (value >= 75 && value < 95) {
-          // With last quarter we just count a little bit to signalize still a progress
-          countTxTimerValue(1);
-        }
-      }
-    }
-
-    if (type === TxTypes.STAKE) {
-      // If tx has been sent successfully,
-      // we jump to last `valueIndex` ...
-      if (hash && value < MAX_VALUE) {
-        setTxTimerValue(MAX_VALUE);
-      }
-      // In other cases (no `hash`) we don't jump to last `indexValue`...
-      if (!hash) {
-        // ..., but we are still counting
-        if (value < 75) {
-          // Add a quarter
-          countTxTimerValue(25);
-        } else if (value >= 75 && value < 95) {
-          // With last quarter we just count a little bit to signalize still a progress
-          countTxTimerValue(1);
-        }
-      }
-    }
-  };
-
   const getPopupContainer = () => {
     return document.getElementsByClassName(
       'stake-ratio-select',
@@ -895,8 +851,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
               value={value}
               maxValue={MAX_VALUE}
               startTime={startTime}
-              onChange={handleChangeTxValue}
-              onEnd={handleEndTxTimer}
             />
           </div>
           <div className="coin-data-wrapper">
@@ -970,8 +924,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                 value={value}
                 maxValue={MAX_VALUE}
                 startTime={startTime}
-                onChange={handleChangeTxValue}
-                onEnd={handleEndTxTimer}
               />
             </div>
             <div className="coin-data-wrapper">
@@ -1523,10 +1475,11 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   const txSent = txStatus.hash !== undefined;
 
   // TODO(veado): Completed depends on `txStatus.type`, too (no txResult for `stake` atm)
+  const txResultStatus = txResult?.status || false;
   const completed =
     txStatus.type === TxTypes.STAKE
       ? txSent && !txStatus.status
-      : txResult && !txStatus.status;
+      : txResultStatus && !txStatus.status;
   const stakeTitle = !completed ? 'YOU ARE STAKING' : 'YOU STAKED';
 
   // withdraw confirmation modal
@@ -1596,6 +1549,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 export default compose(
   connect(
     (state: RootState) => ({
+      txResult: state.App.txResult,
       txStatus: state.App.txStatus,
       user: state.Wallet.user,
       assetData: state.Wallet.assetData,
@@ -1616,10 +1570,8 @@ export default compose(
       getPools: midgardActions.getPools,
       getPoolAddress: midgardActions.getPoolAddress,
       getStakerPoolData: midgardActions.getStakerPoolData,
+      setTxResult: appActions.setTxResult,
       setTxTimerModal: appActions.setTxTimerModal,
-      setTxTimerStatus: appActions.setTxTimerStatus,
-      countTxTimerValue: appActions.countTxTimerValue,
-      setTxTimerValue: appActions.setTxTimerValue,
       setTxHash: appActions.setTxHash,
       resetTxStatus: appActions.resetTxStatus,
       refreshBalance: walletActions.refreshBalance,
