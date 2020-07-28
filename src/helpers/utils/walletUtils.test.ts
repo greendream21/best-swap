@@ -5,6 +5,9 @@ describe('Wallet Utils', () => {
     it('RUNE-A1F is not mini token', () => {
       expect(isBEP8Token('RUNE-A1F')).toEqual(false);
     });
+    it('RUNE-A1M is not mini token', () => {
+      expect(isBEP8Token('RUNE-A1F')).toEqual(false);
+    });
     it('RUNE-A1FM is mini token', () => {
       expect(isBEP8Token('RUNE-A1FM')).toEqual(true);
     });

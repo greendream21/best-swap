@@ -42,7 +42,11 @@ export const verifyPrivateKey = async (keystore: string, password: string) => {
 export const isBEP8Token = (symbol: string) => {
   if (symbol) {
     const symbolSuffix = symbol.split('-')[1];
-    if (symbolSuffix && symbolSuffix[symbolSuffix.length - 1] === 'M') {
+    if (
+      symbolSuffix &&
+      symbolSuffix.length === 4 &&
+      symbolSuffix[symbolSuffix.length - 1] === 'M'
+    ) {
       return true;
     }
     return false;
