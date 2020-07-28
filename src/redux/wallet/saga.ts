@@ -40,6 +40,7 @@ import {
   MIDGARD_RETRY_DELAY,
 } from '../midgard/saga';
 import { UnpackPromiseResponse } from '../../types/util';
+import { isBEP8Token } from '../../helpers/utils/walletUtils';
 
 export function* saveWalletSaga() {
   yield takeEvery('SAVE_WALLET', function*({
@@ -76,7 +77,10 @@ export function* refreshBalance() {
 
       try {
         const markets: { result: Market[] } = yield call(bncClient.getMarkets);
-        const coins = balances.map((coin: Balance) => {
+        const filteredBalance = balances.filter(
+          (balance: Balance) => !isBEP8Token(balance.symbol),
+        );
+        const coins = filteredBalance.map((coin: Balance) => {
           const market = markets.result.find(
             (market: Market) => market.base_asset_symbol === coin.symbol,
           );
