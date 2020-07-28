@@ -34,3 +34,18 @@ export const verifyPrivateKey = async (keystore: string, password: string) => {
     };
   }
 };
+
+/** check if symbol is BEP-8 mini-BEP2 token
+ * return true or false
+ * @param symbol
+ */
+export const isBEP8Token = (symbol: string) => {
+  if (symbol) {
+    const symbolSuffix = symbol.split('-')[1];
+    if (symbolSuffix && symbolSuffix[symbolSuffix.length - 1] === 'M') {
+      return true;
+    }
+    return false;
+  }
+  return false;
+};
