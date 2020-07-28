@@ -465,7 +465,8 @@ export const ConfirmModal = styled(Modal)`
     width: 420px !important;
     z-index: 999999;
     animation-duration: 550ms;
-    transform-origin: calc(50vw + 50%) -72px !important;
+    transform-origin: calc(50vw + 50% + 1.5rem) -72px !important;
+
     .ant-modal-body {
       padding: 0px;
     }
