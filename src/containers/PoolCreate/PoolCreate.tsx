@@ -58,6 +58,7 @@ import { User, AssetData } from '../../redux/wallet/types';
 
 import { BINANCE_NET } from '../../env';
 import showNotification from '../../components/uielements/notification';
+import { CONFIRM_DISMISS_TIME } from '../../settings/constants';
 
 type Props = {
   assetData: AssetData[];
@@ -151,7 +152,7 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
     setTimeout(() => {
       setTxTimerModal(false);
       setDragReset(true);
-    }, 1000);
+    }, CONFIRM_DISMISS_TIME);
   }, [resetTxStatus, setTxTimerModal]);
 
   const handleEndTxTimer = useCallback(() => {

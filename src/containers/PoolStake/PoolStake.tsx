@@ -104,6 +104,7 @@ import {
 } from '../../helpers/walletHelper';
 import { ShareDetailTabKeys, WithdrawData } from './types';
 import showNotification from '../../components/uielements/notification';
+import { CONFIRM_DISMISS_TIME } from '../../settings/constants';
 
 const { TabPane } = Tabs;
 
@@ -485,7 +486,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       setTimeout(() => {
         setTxTimerModal(false);
         setDragReset(true);
-      }, 1000);
+      }, CONFIRM_DISMISS_TIME);
     },
     [resetTxStatus],
   );

@@ -98,6 +98,7 @@ import { RUNE_SYMBOL } from '../../settings/assetData';
 
 import { SwapSendView } from './types';
 import showNotification from '../../components/uielements/notification';
+import { CONFIRM_DISMISS_TIME } from '../../settings/constants';
 
 type Props = {
   history: H.History;
@@ -587,7 +588,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     setTimeout(() => {
       setTxTimerModal(false);
       setDragReset(true);
-    }, 1000);
+    }, CONFIRM_DISMISS_TIME);
   };
 
   const handleCompleted = () => {
