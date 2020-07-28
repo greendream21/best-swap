@@ -1,4 +1,8 @@
-import { TxTypes, TxStatus } from './types';
+import { Maybe } from '../../types/bepswap';
+import { TxTypes, TxStatus, TxResult } from './types';
+
+export const setTxResult = (payload: Maybe<TxResult>) =>
+  ({ type: 'SET_TX_RESULT', payload } as const);
 
 export const setTxTimerType = (payload: TxTypes) =>
   ({ type: 'SET_TX_TIMER_TYPE', payload } as const);
@@ -28,6 +32,7 @@ export const setTheme = (payload: string) =>
   ({ type: 'SET_THEME', payload } as const);
 
 export type AppActionsTypes = ReturnType<
+  | typeof setTxResult
   | typeof setTxTimerType
   | typeof setTxTimerModal
   | typeof setTxTimerStatus

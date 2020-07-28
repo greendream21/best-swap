@@ -1,3 +1,4 @@
+import { Maybe } from '../../types/bepswap';
 /**
  * Tx types
  */
@@ -7,6 +8,14 @@ export enum TxTypes {
   WITHDRAW = 'withdraw',
   CREATE = 'create',
 }
+
+// tx result can be object (for swap) or boolean (for stake and withdraw tx)
+export type TxResult = {
+  type?: string;
+  amount?: string;
+  token?: string;
+  status?: boolean;
+};
 
 export type TxStatus = {
   /**
@@ -45,4 +54,5 @@ export type TxStatus = {
 export type State = {
   themeType: string;
   readonly txStatus: TxStatus;
+  txResult?: Maybe<TxResult>;
 };

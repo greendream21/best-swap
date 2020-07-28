@@ -1,7 +1,5 @@
 import { Reducer } from 'redux';
-import {
-  AppActionsTypes,
-} from './actions';
+import { AppActionsTypes } from './actions';
 import { MIN_VALUE, MAX_VALUE } from './const';
 import { State } from './types';
 import { getTheme, saveTheme } from '../../helpers/webStorageHelper';
@@ -16,6 +14,7 @@ const initState: State = {
     value: 0,
     status: false,
   },
+  txResult: null,
 };
 
 const reducer: Reducer<State, AppActionsTypes> = (
@@ -23,6 +22,11 @@ const reducer: Reducer<State, AppActionsTypes> = (
   action,
 ) => {
   switch (action.type) {
+    case 'SET_TX_RESULT':
+      return {
+        ...state,
+        txResult: action.payload,
+      };
     case 'SET_TX_TIMER_TYPE':
       return {
         ...state,

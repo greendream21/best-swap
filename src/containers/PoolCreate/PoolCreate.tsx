@@ -58,6 +58,7 @@ import { User, AssetData } from '../../redux/wallet/types';
 
 import { BINANCE_NET } from '../../env';
 import showNotification from '../../components/uielements/notification';
+import { CONFIRM_DISMISS_TIME } from '../../settings/constants';
 
 type Props = {
   assetData: AssetData[];
@@ -103,7 +104,6 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
     setTxTimerModal,
     setTxTimerStatus,
     setTxHash,
-    countTxTimerValue,
   } = props;
 
   const [dragReset, setDragReset] = useState(true);
@@ -142,28 +142,23 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
   const handleStartTimer = useCallback(() => {
     resetTxStatus({
       type: TxTypes.CREATE,
+      value: 0,
       modal: true,
       status: true,
       startTime: Date.now(),
     });
 
-    // // dismiss modal after 1s
-    // setTimeout(() => {
-    //   setTxTimerModal(false);
-    //   setDragReset(true);
-    // }, 1000);
-  }, [resetTxStatus]);
+    // dismiss modal after 1s
+    setTimeout(() => {
+      setTxTimerModal(false);
+      setDragReset(true);
+    }, CONFIRM_DISMISS_TIME);
+  }, [resetTxStatus, setTxTimerModal]);
 
   const handleEndTxTimer = useCallback(() => {
     setTxTimerStatus(false);
     setDragReset(true);
   }, [setTxTimerStatus, setDragReset]);
-
-  const handleChangeTxValue = () => {
-    // ATM we just count a `quarter` w/o any other checks
-    // See https://gitlab.com/thorchain/bepswap/bepswap-web-ui/issues/281
-    countTxTimerValue(25);
-  };
 
   const handleCloseModal = useCallback(() => {
     setTxTimerModal(false);
@@ -532,7 +527,6 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
               value={value}
               maxValue={MAX_VALUE}
               startTime={startTime}
-              onChange={handleChangeTxValue}
               onEnd={handleEndTxTimer}
             />
           </div>
