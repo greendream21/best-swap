@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useState, useEffect, useMemo } from 'react';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import { ConfirmIcon, RefundIcon } from '../../icons/timerIcons';
 import { TxTimerWrapper } from './txTimer.style';
@@ -39,8 +39,7 @@ const TxTimer: React.FC<Props> = (props): JSX.Element => {
   const [active, setActive] = useState(false);
   const [totalDuration, setTotalDuration] = useState<number>(0);
 
-  // Check if counter has reached the end
-  const isEnd = useCallback(() => {
+  const isEnd = useMemo(() => {
     // Check of `maxSec` wins over `maxValue`
     if (maxSec > 0 && totalDuration >= maxSec) {
       return true;
@@ -53,7 +52,7 @@ const TxTimer: React.FC<Props> = (props): JSX.Element => {
     onChange();
   }, [onChange]);
   // Interval to inform outside world about counting
-  const countInterval = status && !isEnd() ? interval : INACTIVE_INTERVAL;
+  const countInterval = status && !isEnd ? interval : INACTIVE_INTERVAL;
 
   useInterval(countHandler, countInterval);
 
@@ -64,7 +63,7 @@ const TxTimer: React.FC<Props> = (props): JSX.Element => {
   }, [startTime]);
   // Interval to count seconds
   const countSecInterval =
-    startTime && status && !isEnd() ? 100 : INACTIVE_INTERVAL;
+    startTime && status && !isEnd ? 100 : INACTIVE_INTERVAL;
   useInterval(countSecHandler, countSecInterval);
 
   // Reset everything at end
@@ -76,7 +75,7 @@ const TxTimer: React.FC<Props> = (props): JSX.Element => {
 
   // Delay the end of counting - for UX purposes only
   useEffect(() => {
-    if (isEnd() && status) {
+    if (isEnd && status) {
       const id = setTimeout(handleEndTimer, 1000);
       return () => clearTimeout(id);
     }
@@ -87,7 +86,7 @@ const TxTimer: React.FC<Props> = (props): JSX.Element => {
     setActive(status);
   }, [status]);
 
-  const hide = isEnd() && !active;
+  const hide = isEnd && !active;
   const CircularProgressbarStyle = `${
     hide ? 'hide' : ''
   } timerchart-circular-progressbar`;
@@ -117,7 +116,7 @@ const TxTimer: React.FC<Props> = (props): JSX.Element => {
             textColor: '#23DCC8',
             textSize: '14px',
             pathColor: '#23DCC8',
-            trailColor: '#F3F4F4',
+            trailColor: 'rgba(242, 243, 243, 0.5)',
             pathTransition: 'stroke-dashoffset 0.5s linear 0s',
           })}
         />

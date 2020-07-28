@@ -13,6 +13,7 @@ export const ModalWrapper = styled(Modal)`
     border: none;
     text-transform: uppercase;
     letter-spacing: 1.5px;
+
     .ant-modal-title {
       color: ${palette('text', 3)};
     }

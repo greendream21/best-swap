@@ -5,9 +5,10 @@ export const TxProgressWrapper = styled.div`
   width: 26px;
   height: 26px;
   cursor: pointer;
+  opacity: 0.4;
 
-  &.disabled {
-    opacity: 0.4;
+  &.active {
+    opacity: 1;
   }
 
   .timerchart-icon {

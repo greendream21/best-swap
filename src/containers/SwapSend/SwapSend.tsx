@@ -78,7 +78,7 @@ import {
   AssetPair,
 } from '../../types/bepswap';
 import { User, AssetData } from '../../redux/wallet/types';
-import { TxStatus, TxTypes } from '../../redux/app/types';
+import { TxStatus, TxTypes, TxResult } from '../../redux/app/types';
 
 import { PriceDataIndex, PoolDataMap } from '../../redux/midgard/types';
 import { RootState } from '../../redux/store';
@@ -96,11 +96,13 @@ import {
 } from '../../helpers/walletHelper';
 import { RUNE_SYMBOL } from '../../settings/assetData';
 
-import { SwapSendView, TxResult } from './types';
+import { SwapSendView } from './types';
 import showNotification from '../../components/uielements/notification';
+import { CONFIRM_DISMISS_TIME } from '../../settings/constants';
 
 type Props = {
   history: H.History;
+  txResult?: TxResult;
   txStatus: TxStatus;
   assetData: AssetData[];
   poolAddress: string;
@@ -110,11 +112,9 @@ type Props = {
   priceIndex: PriceDataIndex;
   user: Maybe<User>;
   wsTransferEvent: TransferEventRD;
+  setTxResult: typeof appActions.setTxResult;
   setTxTimerModal: typeof appActions.setTxTimerModal;
-  setTxTimerStatus: typeof appActions.setTxTimerStatus;
-  setTxTimerValue: typeof appActions.setTxTimerValue;
   setTxHash: typeof appActions.setTxHash;
-  countTxTimerValue: typeof appActions.countTxTimerValue;
   resetTxStatus: typeof appActions.resetTxStatus;
   getPools: typeof midgardActions.getPools;
   getPoolAddress: typeof midgardActions.getPoolAddress;
@@ -130,6 +130,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     user,
     transferFees,
     wsTransferEvent,
+    txResult,
     txStatus,
     assetData,
     poolData,
@@ -141,12 +142,10 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     getPoolAddress,
     getBinanceFees,
     refreshBalance,
+    setTxResult,
     setTxHash,
     setTxTimerModal,
-    setTxTimerStatus,
-    setTxTimerValue,
     resetTxStatus,
-    countTxTimerValue,
     subscribeBinanceTransfers,
     unSubscribeBinanceTransfers,
   } = props;
@@ -166,7 +165,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   const [xValue, setXValue] = useState<TokenAmount>(tokenAmount(0));
   const [percent, setPercent] = useState<number>(0);
 
-  const [txResult, setTxResult] = useState<Maybe<TxResult>>(null);
   const [timerFinished, setTimerFinished] = useState<boolean>(false);
   const [view, setView] = useState<SwapSendView>(SwapSendView.DETAIL);
 
@@ -580,50 +578,25 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     setTimerFinished(false);
     resetTxStatus({
       type: TxTypes.SWAP,
+      value: 0,
       modal: true,
       status: true,
       startTime: Date.now(),
     });
 
-    // // dismiss modal after 1s
-    // setTimeout(() => {
-    //   setTxTimerModal(false);
-    //   setDragReset(true);
-    // }, 1000);
+    // dismiss modal after 1s
+    setTimeout(() => {
+      setTxTimerModal(false);
+      setDragReset(true);
+    }, CONFIRM_DISMISS_TIME);
   };
-
-  const handleChangeTxTimer = () => {
-    const { value } = txStatus;
-    // Count handling depends on `txResult`
-    // If tx has been confirmed, then we jump to last `valueIndex` ...
-    if (txResult !== null && value < MAX_VALUE) {
-      setTxTimerValue(MAX_VALUE);
-    }
-    // In other cases (no `txResult`) we don't jump to last `indexValue`...
-    if (txResult === null) {
-      // ..., but we are still counting
-      if (value < 75) {
-        // Add a quarter
-        countTxTimerValue(25);
-      } else if (value >= 75 && value < 95) {
-        // With last quarter we just count a little bit to signalize still a progress
-        countTxTimerValue(0.75);
-      }
-    }
-  };
-
-  const handleEndTxTimer = useCallback(() => {
-    setTxTimerStatus(false);
-    setDragReset(true);
-    setTimerFinished(true);
-  }, [setTxTimerStatus, setDragReset, setTimerFinished]);
 
   const handleCompleted = () => {
     // reset input amount after swap completed
     setXValue(tokenAmount(0));
     setPercent(0);
 
-    setTimerFinished(false);
+    setTimerFinished(true);
     resetTxStatus();
 
     // refresh balance once finished
@@ -823,8 +796,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
               maxValue={MAX_VALUE}
               maxSec={45}
               startTime={startTime}
-              onChange={handleChangeTxTimer}
-              onEnd={handleEndTxTimer}
               refunded={refunded}
             />
           </div>
@@ -1124,6 +1095,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
 export default compose(
   connect(
     (state: RootState) => ({
+      txResult: state.App.txResult,
       txStatus: state.App.txStatus,
       user: state.Wallet.user,
       assetData: state.Wallet.assetData,
@@ -1138,10 +1110,8 @@ export default compose(
     {
       getPools: midgardActions.getPools,
       getPoolAddress: midgardActions.getPoolAddress,
+      setTxResult: appActions.setTxResult,
       setTxTimerModal: appActions.setTxTimerModal,
-      setTxTimerStatus: appActions.setTxTimerStatus,
-      countTxTimerValue: appActions.countTxTimerValue,
-      setTxTimerValue: appActions.setTxTimerValue,
       resetTxStatus: appActions.resetTxStatus,
       setTxHash: appActions.setTxHash,
       refreshBalance: walletActions.refreshBalance,
