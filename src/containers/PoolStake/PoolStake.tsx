@@ -1,5 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-
 import React, { useState, useEffect, useCallback } from 'react';
 import * as H from 'history';
 import { compose } from 'redux';
@@ -65,13 +63,11 @@ import {
   PopoverIcon,
 } from './PoolStake.style';
 import {
-  WithdrawResultParams,
   stakeRequest,
   withdrawRequest,
   getCalcResult,
   CalcResult,
   getPoolData,
-  withdrawResult,
 } from '../../helpers/utils/poolUtils';
 import { PoolData } from '../../helpers/utils/types';
 import { getTickerFormat } from '../../helpers/stringHelper';
@@ -93,11 +89,7 @@ import {
 import { StakersAssetData } from '../../types/generated/midgard';
 import { getAssetFromString } from '../../redux/midgard/utils';
 import { BINANCE_NET, getNet } from '../../env';
-import {
-  TransferEventRD,
-  TransferFeesRD,
-  TransferFees,
-} from '../../redux/binance/types';
+import { TransferFeesRD, TransferFees } from '../../redux/binance/types';
 import {
   getAssetFromAssetData,
   bnbBaseAmount,
@@ -114,7 +106,6 @@ type Props = {
   txStatus: TxStatus;
   txResult?: TxResult;
   user: Maybe<User>;
-  wsTransferEvent: TransferEventRD;
   assetData: AssetData[];
   poolAddress: Maybe<string>;
   poolData: PoolDataMap;
@@ -137,8 +128,6 @@ type Props = {
   refreshStakes: typeof walletActions.refreshStakes;
   getBinanceFees: typeof binanceActions.getBinanceFees;
   transferFees: TransferFeesRD;
-  subscribeBinanceTransfers: typeof binanceActions.subscribeBinanceTransfers;
-  unSubscribeBinanceTransfers: typeof binanceActions.unSubscribeBinanceTransfers;
 };
 
 const PoolStake: React.FC<Props> = (props: Props) => {
@@ -158,7 +147,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     thorchainData,
     txStatus,
     txResult,
-    wsTransferEvent,
     refreshBalance,
     refreshStakes,
     getPoolAddress,
@@ -169,8 +157,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     setTxResult,
     setTxHash,
     setTxTimerModal,
-    unSubscribeBinanceTransfers,
-    subscribeBinanceTransfers,
   } = props;
 
   const history = useHistory();
@@ -206,11 +192,22 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
   let withdrawData: Maybe<WithdrawData> = Nothing;
 
-  const getStakerInfo = useCallback(() => {
+  const getStakerPoolDetail = useCallback(() => {
     if (user) {
       getStakerPoolData({ asset: symbol, address: user.wallet });
     }
   }, [getStakerPoolData, symbol, user]);
+
+  const refreshStakerData = useCallback(() => {
+    // get staker info again after finished
+    getStakerPoolDetail();
+
+    if (user) {
+      const wallet = user.wallet;
+      refreshStakes(wallet);
+      refreshBalance(wallet);
+    }
+  }, [getStakerPoolDetail, refreshBalance, refreshStakes, user]);
 
   useEffect(() => {
     if (stakerPoolData) {
@@ -219,12 +216,13 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       setStakersAssetData(emptyStakerPoolData);
       setSelectedShareDetailTab(ShareDetailTabKeys.ADD);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stakerPoolData, stakerPoolDataError]);
 
   useEffect(() => {
     getPoolAddress();
     getPools();
-    getStakerInfo();
+    getStakerPoolDetail();
 
     const net = getNet();
     if (RD.isInitial(transferFees)) {
@@ -235,91 +233,23 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     if (wallet) {
       // refresh wallet balance
       refreshBalance(wallet);
-      subscribeBinanceTransfers({ address: wallet, net });
     }
-
-    return () => {
-      resetTxStatus();
-      unSubscribeBinanceTransfers();
-    };
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // stakerPoolData needs to be updated
+  // stakerPoolData needs to be updated whenever pool changed
   useEffect(() => {
-    getStakerInfo();
-  }, [symbol, getStakerInfo]);
+    getStakerPoolDetail();
+  }, [symbol, getStakerPoolDetail]);
 
   const prevTxStatus = usePrevious(txStatus);
   // if tx timer status changed from ON to OFF, should refresh staker details
   useEffect(() => {
     if (prevTxStatus?.status === true && txStatus.status === false) {
-      getStakerInfo();
+      refreshStakerData();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [txStatus]);
-
-  // user wallet change
-  useEffect(() => {
-    const wallet = user?.wallet;
-    // subscribe again if another wallet has been added
-    if (wallet) {
-      unSubscribeBinanceTransfers();
-      subscribeBinanceTransfers({ address: wallet, net: getNet() });
-    }
-  }, [user?.wallet, subscribeBinanceTransfers, unSubscribeBinanceTransfers]);
-
-  const refreshStakerData = useCallback(() => {
-    // get staker info again after finished
-    getStakerInfo();
-
-    if (user) {
-      const wallet = user.wallet;
-      refreshStakes(wallet);
-      refreshBalance(wallet);
-    }
-  }, [getStakerInfo, refreshBalance, refreshStakes, user]);
-
-  // wsTransferEvent is updated
-  useEffect(() => {
-    const { type, hash } = txStatus;
-
-    const currentWsTransferEvent = RD.toNullable(wsTransferEvent);
-    if (currentWsTransferEvent && hash !== undefined && !txResult) {
-      if (wallet) {
-        // TODO(Veado) `getHashFromTransfer` needs to be fixed
-        // see https://gitlab.com/thorchain/bepswap/asgardex-common/-/issues/6
-        // const transferHash = getHashFromTransfer(currentWsTransferEvent);
-        // At the meantime we can get hash as following
-        const transferHash = currentWsTransferEvent?.data?.H;
-
-        // Currently we do a different handling for `stake` + `withdraw`
-        // See https://thorchain.slack.com/archives/CL5B4M4BC/p1579816500171200
-        if (type === TxTypes.STAKE) {
-          if (transferHash === hash) {
-            // Just refresh stakes after update
-            refreshStakerData();
-          }
-        }
-
-        if (type === TxTypes.WITHDRAW) {
-          const withdrawTxRes = withdrawResult({
-            tx: currentWsTransferEvent,
-            symbol,
-            address: wallet,
-          } as WithdrawResultParams);
-
-          if (withdrawTxRes) {
-            setTxResult({
-              status: true,
-            });
-            // refresh stakes after update
-            refreshStakerData();
-          }
-        }
-      }
-    }
-  }, [RD.toNullable(wsTransferEvent), refreshStakerData]);
 
   const isLoading = useCallback(() => {
     return poolLoading && stakerPoolDataLoading;
@@ -489,6 +419,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
         modal: true,
         status: true,
         startTime: Date.now(),
+        info: symbol,
       });
 
       // dismiss modal after 1s
@@ -497,7 +428,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
         setDragReset(true);
       }, CONFIRM_DISMISS_TIME);
     },
-    [resetTxStatus],
+    [resetTxStatus, setTxTimerModal, symbol],
   );
 
   const handleSelectTraget = useCallback(
@@ -1484,7 +1415,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
   const txSent = txStatus.hash !== undefined;
 
-  // TODO(veado): Completed depends on `txStatus.type`, too (no txResult for `stake` atm)
   const txResultStatus = txResult?.status || false;
   const completed =
     txStatus.type === TxTypes.STAKE
@@ -1493,7 +1423,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   const stakeTitle = !completed ? 'YOU ARE STAKING' : 'YOU STAKED';
 
   // withdraw confirmation modal
-
   const withdrawText = !completed ? 'YOU ARE WITHDRAWING' : 'YOU WITHDRAWN';
 
   return (
@@ -1573,7 +1502,6 @@ export default compose(
       stakerPoolDataLoading: state.Midgard.stakerPoolDataLoading,
       stakerPoolDataError: state.Midgard.stakerPoolDataError,
       transferFees: state.Binance.transferFees,
-      wsTransferEvent: state.Binance.wsTransferEvent,
       thorchainData: state.Midgard.thorchain,
     }),
     {
@@ -1587,8 +1515,6 @@ export default compose(
       refreshBalance: walletActions.refreshBalance,
       refreshStakes: walletActions.refreshStakes,
       getBinanceFees: binanceActions.getBinanceFees,
-      subscribeBinanceTransfers: binanceActions.subscribeBinanceTransfers,
-      unSubscribeBinanceTransfers: binanceActions.unSubscribeBinanceTransfers,
     },
   ),
   withRouter,

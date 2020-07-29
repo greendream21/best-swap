@@ -46,6 +46,10 @@ export type TxStatus = {
    * Transaction hash - optional
    */
   readonly hash?: string;
+  /**
+   * Transaction Info - ex: swap pair OR stake pool symbol
+   */
+  readonly info?: string;
 };
 
 /**

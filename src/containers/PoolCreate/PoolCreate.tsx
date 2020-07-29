@@ -78,8 +78,6 @@ type Props = {
   getBinanceTokens: typeof binanceActions.getBinanceTokens;
   getBinanceMarkets: typeof binanceActions.getBinanceMarkets;
   setTxTimerModal: typeof appActions.setTxTimerModal;
-  setTxTimerStatus: typeof appActions.setTxTimerStatus;
-  countTxTimerValue: typeof appActions.countTxTimerValue;
   resetTxStatus: typeof appActions.resetTxStatus;
   setTxHash: typeof appActions.setTxHash;
 };
@@ -102,7 +100,6 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
     getStakerPoolData,
     resetTxStatus,
     setTxTimerModal,
-    setTxTimerStatus,
     setTxHash,
   } = props;
 
@@ -132,10 +129,6 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
     getBinanceTokens();
     getBinanceMarkets();
     getStakerData();
-
-    return () => {
-      resetTxStatus();
-    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -154,11 +147,6 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
       setDragReset(true);
     }, CONFIRM_DISMISS_TIME);
   }, [resetTxStatus, setTxTimerModal]);
-
-  const handleEndTxTimer = useCallback(() => {
-    setTxTimerStatus(false);
-    setDragReset(true);
-  }, [setTxTimerStatus, setDragReset]);
 
   const handleCloseModal = useCallback(() => {
     setTxTimerModal(false);
@@ -527,7 +515,6 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
               value={value}
               maxValue={MAX_VALUE}
               startTime={startTime}
-              onEnd={handleEndTxTimer}
             />
           </div>
           <div className="coin-data-wrapper">
@@ -625,8 +612,6 @@ export default compose(
       getBinanceTokens: binanceActions.getBinanceTokens,
       getBinanceMarkets: binanceActions.getBinanceMarkets,
       setTxTimerModal: appActions.setTxTimerModal,
-      setTxTimerStatus: appActions.setTxTimerStatus,
-      countTxTimerValue: appActions.countTxTimerValue,
       resetTxStatus: appActions.resetTxStatus,
       setTxHash: appActions.setTxHash,
     },

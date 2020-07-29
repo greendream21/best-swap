@@ -54,7 +54,6 @@ import { TESTNET_TX_BASE_URL } from '../../helpers/apiHelper';
 import {
   getSwapData,
   confirmSwap,
-  getTxResult,
   validatePair,
   isValidSwap,
 } from '../../helpers/utils/swapUtils';
@@ -85,11 +84,7 @@ import { RootState } from '../../redux/store';
 import { getAssetFromString } from '../../redux/midgard/utils';
 import { BINANCE_NET, getNet } from '../../env';
 import { PoolDetailStatusEnum } from '../../types/generated/midgard';
-import {
-  TransferEventRD,
-  TransferFeesRD,
-  TransferFees,
-} from '../../redux/binance/types';
+import { TransferFeesRD, TransferFees } from '../../redux/binance/types';
 import {
   getAssetFromAssetData,
   bnbBaseAmount,
@@ -111,7 +106,6 @@ type Props = {
   basePriceAsset: string;
   priceIndex: PriceDataIndex;
   user: Maybe<User>;
-  wsTransferEvent: TransferEventRD;
   setTxResult: typeof appActions.setTxResult;
   setTxTimerModal: typeof appActions.setTxTimerModal;
   setTxHash: typeof appActions.setTxHash;
@@ -121,15 +115,12 @@ type Props = {
   refreshBalance: typeof walletActions.refreshBalance;
   getBinanceFees: typeof binanceActions.getBinanceFees;
   transferFees: TransferFeesRD;
-  subscribeBinanceTransfers: typeof binanceActions.subscribeBinanceTransfers;
-  unSubscribeBinanceTransfers: typeof binanceActions.unSubscribeBinanceTransfers;
 };
 
 const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   const {
     user,
     transferFees,
-    wsTransferEvent,
     txResult,
     txStatus,
     assetData,
@@ -146,11 +137,10 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     setTxHash,
     setTxTimerModal,
     resetTxStatus,
-    subscribeBinanceTransfers,
-    unSubscribeBinanceTransfers,
   } = props;
 
   const { info } = useParams();
+  const swapPair = getPair(info);
 
   const history = useHistory();
   const maxSlip = 30;
@@ -184,55 +174,9 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     if (wallet) {
       // refresh wallet balance
       refreshBalance(wallet);
-      subscribeBinanceTransfers({ address: wallet, net });
     }
-
-    return () => {
-      resetTxStatus();
-      unSubscribeBinanceTransfers();
-    };
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // user wallet change
-  useEffect(() => {
-    const wallet = user?.wallet;
-    // subscribe again if another wallet has been added
-    if (wallet) {
-      unSubscribeBinanceTransfers();
-      subscribeBinanceTransfers({ address: wallet, net: getNet() });
-    }
-  }, [user, subscribeBinanceTransfers, unSubscribeBinanceTransfers]);
-
-  // wsTransferEvent is updated
-  useEffect(() => {
-    const pair: Pair = getPair(info);
-    const wallet = user?.wallet;
-    const { hash } = txStatus;
-
-    const currentWsTransferEvent = RD.toNullable(wsTransferEvent);
-    if (
-      currentWsTransferEvent &&
-      hash !== undefined &&
-      !txResult &&
-      txResult === null &&
-      !isCompleted() &&
-      wallet
-    ) {
-      const txResultData = getTxResult({
-        pair,
-        tx: currentWsTransferEvent,
-        address: wallet,
-      });
-
-      if (txResultData) {
-        setTxResult(txResultData);
-      }
-    }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [RD.toNullable(wsTransferEvent), info, user, txResult]);
 
   const isValidRecipient = async () => {
     const bncClient = await binanceClient(BINANCE_NET);
@@ -240,8 +184,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   };
 
   const handleGetSwapData = (): Maybe<SwapData> => {
-    const swapPair: Pair = getPair(info);
-
     if (!swapPair.source || !swapPair.target) {
       return Nothing;
     }
@@ -294,7 +236,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
    * calculate the amount to cover 1 RUNE network fee
    */
   const getRuneFeeAmount = (): BigNumber => {
-    const { source }: Pair = getPair(info);
+    const { source }: Pair = swapPair;
     if (!source) return bn(0);
 
     const runePrice = priceIndex.RUNE;
@@ -309,7 +251,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
    * @todo get current transactionFee from thornode constants endpoint eg :1317/thorchain/constants
    */
   const runeFeeIsNotCovered = (amount: BigNumber): boolean => {
-    const { source }: Pair = getPair(info);
+    const { source }: Pair = swapPair;
     if (!source) return true;
 
     const runePrice = priceIndex.RUNE;
@@ -323,7 +265,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
    * Check to consider special cases for BNB
    */
   const considerBnb = (): boolean => {
-    const { source }: Pair = getPair(info);
+    const { source }: Pair = swapPair;
     return source?.toUpperCase() === 'BNB';
   };
 
@@ -348,7 +290,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   };
 
   const handleChangePercent = (percent: number) => {
-    const { source = '' }: Pair = getPair(info);
+    const { source }: Pair = swapPair;
     const sourceAsset = getAssetFromAssetData(assetData, source);
 
     let totalAmount = sourceAsset?.assetValue.amount() ?? bn(0);
@@ -384,7 +326,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
       return;
     }
 
-    const { source }: Pair = getPair(info);
+    const { source }: Pair = swapPair;
 
     const sourceAsset = getAssetFromAssetData(assetData, source);
     const totalAmount = sourceAsset?.assetValue.amount() ?? bn(0);
@@ -405,7 +347,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   };
 
   const handleConfirmSwap = async () => {
-    const { source = '', target = '' }: Pair = getPair(info);
+    const { source = '', target = '' }: Pair = swapPair;
     const swapData = handleGetSwapData();
 
     if (user && source && target && swapData) {
@@ -582,6 +524,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
       modal: true,
       status: true,
       startTime: Date.now(),
+      info,
     });
 
     // dismiss modal after 1s
@@ -628,7 +571,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   };
 
   const handleChangeSource = (asset: string) => {
-    const { source, target }: Pair = getPair(info);
+    const { source, target }: Pair = swapPair;
     const selectedToken = getTickerFormat(asset);
 
     if (source && target) {
@@ -646,7 +589,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   };
 
   const handleSelectTarget = (asset: string) => {
-    const { source, target }: Pair = getPair(info);
+    const { source, target }: Pair = swapPair;
     const selectedToken = getTickerFormat(asset);
 
     if (source && target) {
@@ -664,7 +607,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   };
 
   const handleReversePair = () => {
-    const { source, target }: Pair = getPair(info);
+    const { source, target }: Pair = swapPair;
 
     if (source && target) {
       setXValue(tokenAmount(0));
@@ -850,8 +793,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   };
 
   // render
-  const swapPair: Pair = getPair(info);
-
   if (
     !swapPair.source ||
     !swapPair.target ||
@@ -893,11 +834,10 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     price: runePrice,
   });
 
-  const pair: Pair = getPair(info);
   const { sourceData, targetData } = handleValidatePair(
     assetData,
     tokensData,
-    pair,
+    swapPair,
   );
 
   const openSwapModal = txStatus.type === 'swap' ? txStatus.modal : false;
@@ -1105,7 +1045,6 @@ export default compose(
       priceIndex: state.Midgard.priceIndex,
       basePriceAsset: state.Midgard.basePriceAsset,
       transferFees: state.Binance.transferFees,
-      wsTransferEvent: state.Binance.wsTransferEvent,
     }),
     {
       getPools: midgardActions.getPools,
@@ -1116,8 +1055,6 @@ export default compose(
       setTxHash: appActions.setTxHash,
       refreshBalance: walletActions.refreshBalance,
       getBinanceFees: binanceActions.getBinanceFees,
-      subscribeBinanceTransfers: binanceActions.subscribeBinanceTransfers,
-      unSubscribeBinanceTransfers: binanceActions.unSubscribeBinanceTransfers,
     },
   ),
   withRouter,
