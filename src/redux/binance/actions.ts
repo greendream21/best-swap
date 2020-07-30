@@ -112,6 +112,7 @@ export const binanceTransfersMessageReceived = (event: TransferEvent) =>
   ({ type: 'BINANCE_TRANSFERS_MESSAGE_RECEIVED', event } as const);
 
 export type BinanceActionTypes = ReturnType<
+  | typeof getBinanceData
   | typeof getBinanceTokens
   | typeof getBinanceTokensSuccess
   | typeof getBinanceTokensFailed
