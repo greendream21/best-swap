@@ -243,7 +243,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   }, [symbol, getStakerPoolDetail]);
 
   const prevTxStatus = usePrevious(txStatus);
-  // if tx timer status changed from ON to OFF, should refresh staker details
+  // if tx is completed, should refresh staker details
   useEffect(() => {
     if (prevTxStatus?.status === true && txStatus.status === false) {
       refreshStakerData();

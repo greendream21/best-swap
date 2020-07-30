@@ -249,6 +249,9 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
   }, [txStatus, setTxTimerStatus, refreshBalanceAndStakeData]);
 
   const handleCloseModal = () => {
+    // hide modal
+    setTxTimerModal(false);
+
     if (txType === TxTypes.CREATE) {
       showNotification({
         type: 'open',

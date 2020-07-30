@@ -4,7 +4,6 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter, useHistory, useParams } from 'react-router-dom';
 import { SwapOutlined, LockOutlined, UnlockOutlined } from '@ant-design/icons';
-import { Row } from 'antd';
 import { client as binanceClient } from '@thorchain/asgardex-binance';
 import {
   validBNOrZero,
@@ -29,15 +28,11 @@ import Button from '../../components/uielements/button';
 import Label from '../../components/uielements/label';
 import Drag from '../../components/uielements/drag';
 import TokenCard from '../../components/uielements/tokens/tokenCard';
-import CoinData from '../../components/uielements/coins/coinData';
-import TxTimer from '../../components/uielements/txTimer';
 import Modal from '../../components/uielements/modal';
 import PrivateModal from '../../components/modals/privateModal';
 
 import {
   ContentWrapper,
-  SwapModalContent,
-  SwapModal,
   SwapAssetCard,
   CardForm,
   CardFormHolder,
@@ -50,7 +45,6 @@ import {
   SliderSwapWrapper,
 } from './SwapSend.style';
 import { getTickerFormat, getPair } from '../../helpers/stringHelper';
-import { TESTNET_TX_BASE_URL } from '../../helpers/apiHelper';
 import {
   getSwapData,
   confirmSwap,
@@ -67,8 +61,6 @@ import AddressInput from '../../components/uielements/addressInput';
 import ContentTitle from '../../components/uielements/contentTitle';
 import Slider from '../../components/uielements/slider';
 import StepBar from '../../components/uielements/stepBar';
-import Trend from '../../components/uielements/trend';
-import { MAX_VALUE } from '../../redux/app/const';
 import {
   Maybe,
   Nothing,
@@ -90,6 +82,7 @@ import {
   bnbBaseAmount,
 } from '../../helpers/walletHelper';
 import { RUNE_SYMBOL } from '../../settings/assetData';
+import usePrevious from '../../hooks/usePrevious';
 
 import { SwapSendView } from './types';
 import showNotification from '../../components/uielements/notification';
@@ -121,13 +114,11 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   const {
     user,
     transferFees,
-    txResult,
     txStatus,
     assetData,
     poolData,
     poolAddress,
     priceIndex,
-    basePriceAsset,
     pools,
     getPools,
     getPoolAddress,
@@ -155,7 +146,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   const [xValue, setXValue] = useState<TokenAmount>(tokenAmount(0));
   const [percent, setPercent] = useState<number>(0);
 
-  const [timerFinished, setTimerFinished] = useState<boolean>(false);
   const [view, setView] = useState<SwapSendView>(SwapSendView.DETAIL);
 
   useEffect(() => {
@@ -173,6 +163,15 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const prevTxStatus = usePrevious(txStatus);
+  // if tx is completed, should refresh balance
+  useEffect(() => {
+    if (prevTxStatus?.status === true && txStatus.status === false) {
+      user && refreshBalance(user.wallet);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [txStatus]);
 
   const handleGetSwapData = (): Maybe<SwapData> => {
     if (!swapPair.source || !swapPair.target) {
@@ -199,10 +198,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   };
 
   const swapData = handleGetSwapData();
-
-  const isCompleted = (): boolean => {
-    return !txStatus.status && (txResult !== Nothing || timerFinished);
-  };
 
   const isValidRecipient = async () => {
     const bncClient = await binanceClient(BINANCE_NET);
@@ -519,7 +514,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   };
 
   const handleStartTimer = () => {
-    setTimerFinished(false);
     const { source: sourceAsset, target: targetAsset } = swapPair;
     const targetAmount = swapData?.outputAmount;
 
@@ -544,33 +538,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
         setTxTimerModal(false);
         setDragReset(true);
       }, CONFIRM_DISMISS_TIME);
-    }
-  };
-
-  const handleCompleted = () => {
-    // reset input amount after swap completed
-    setXValue(tokenAmount(0));
-    setPercent(0);
-
-    setTimerFinished(true);
-    resetTxStatus();
-
-    // refresh balance once finished
-    const wallet = user?.wallet;
-    if (wallet) {
-      refreshBalance(wallet);
-    }
-  };
-
-  const handleClickFinish = () => {
-    handleCompleted();
-  };
-
-  const handleCloseModal = () => {
-    if (isCompleted()) {
-      handleCompleted();
-    } else {
-      setTxTimerModal(false);
     }
   };
 
@@ -713,98 +680,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     );
   };
 
-  const renderSwapModalContent = (
-    swapSource: string,
-    swapTarget: string,
-    swapData: SwapData,
-  ) => {
-    const { status, value, startTime, hash } = txStatus;
-    const { slip, outputAmount } = swapData;
-
-    const Px = validBNOrZero(priceIndex[swapSource.toUpperCase()]);
-    const tokenPrice = validBNOrZero(priceIndex[swapTarget.toUpperCase()]);
-
-    const priceFrom: BigNumber = Px.multipliedBy(xValue.amount());
-    const slipAmount = slip;
-
-    const refunded = txResult?.type === 'refund' ?? false;
-    const amountBN = bnOrZero(txResult?.amount);
-    const assetAmount = txResult ? tokenAmount(amountBN) : outputAmount;
-
-    let priceTo;
-    if (refunded) {
-      priceTo = priceFrom;
-    } else {
-      priceTo = txResult
-        ? amountBN.multipliedBy(tokenPrice)
-        : outputAmount.amount().multipliedBy(tokenPrice);
-    }
-
-    const txURL = TESTNET_TX_BASE_URL + hash;
-
-    return (
-      <SwapModalContent>
-        <Row className="swapmodal-content">
-          <div className="timer-container">
-            <TxTimer
-              status={status}
-              value={value}
-              maxValue={MAX_VALUE}
-              maxSec={45}
-              startTime={startTime}
-              refunded={refunded}
-            />
-          </div>
-          <div className="coin-data-wrapper">
-            <StepBar size={50} />
-            <div className="coin-data-container">
-              <CoinData
-                data-test="swapmodal-coin-data-send"
-                asset={swapSource}
-                assetValue={xValue}
-                price={priceFrom}
-                priceUnit={basePriceAsset}
-              />
-              <CoinData
-                data-test="swapmodal-coin-data-receive"
-                asset={swapTarget}
-                assetValue={assetAmount}
-                price={priceTo}
-                priceUnit={basePriceAsset}
-              />
-            </div>
-          </div>
-        </Row>
-        <Row className="swap-info-wrapper">
-          <Trend amount={slipAmount} />
-          {hash && (
-            <div className="hash-address">
-              <div className="copy-btn-wrapper">
-                {isCompleted() && (
-                  <Button
-                    className="view-btn"
-                    color="success"
-                    onClick={handleClickFinish}
-                  >
-                    FINISH
-                  </Button>
-                )}
-                <a
-                  className="view-tx"
-                  href={txURL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  VIEW TRANSACTION
-                </a>
-              </div>
-            </div>
-          )}
-        </Row>
-      </SwapModalContent>
-    );
-  };
-
   // render
   if (
     !swapPair.source ||
@@ -853,8 +728,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     swapPair,
   );
 
-  const openSwapModal = txStatus.type === 'swap' ? txStatus.modal : false;
-
   if (!swapData) {
     return <></>;
   }
@@ -871,16 +744,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   const ratioLabel = `1 ${swapSource.toUpperCase()} = ${ratio.toFixed(
     3,
   )} ${swapTarget.toUpperCase()}`;
-
-  // swap modal
-  const refunded = txResult && txResult.type === 'refund';
-
-  // eslint-disable-next-line no-nested-ternary
-  const swapTitle = !isCompleted()
-    ? 'YOU ARE SWAPPING'
-    : refunded
-    ? 'TOKEN REFUNDED'
-    : 'YOU SWAPPED';
 
   const disableDrag = bnbFeeIsNotCovered();
 
@@ -1012,15 +875,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
         </div>
         {renderFee()}
       </SwapAssetCard>
-
-      <SwapModal
-        title={swapTitle}
-        visible={openSwapModal}
-        footer={null}
-        onCancel={handleCloseModal}
-      >
-        {renderSwapModalContent(swapSource, swapTarget, swapData)}
-      </SwapModal>
       <PrivateModal
         visible={openPrivateModal}
         onOk={handleConfirmPassword}
