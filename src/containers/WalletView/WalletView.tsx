@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter, Link, useHistory } from 'react-router-dom';
@@ -12,7 +12,6 @@ import Label from '../../components/uielements/label';
 import Button from '../../components/uielements/button';
 import CoinList from '../../components/uielements/coins/coinList';
 import { CoinListDataList } from '../../components/uielements/coins/coinList/coinList';
-import * as midgardActions from '../../redux/midgard/actions';
 import { getTickerFormat, getPair } from '../../helpers/stringHelper';
 import { Maybe, Nothing } from '../../types/bepswap';
 import {
@@ -39,7 +38,6 @@ type ConnectedProps = {
   assetData: AssetData[];
   stakeData: StakeDataListLoadingState;
   loadingAssets: boolean;
-  getPools: typeof midgardActions.getPools;
   priceIndex: PriceDataIndex;
   basePriceAsset: string;
   pathname: string;
@@ -58,16 +56,9 @@ const WalletView: React.FC<Props> = (props: Props): JSX.Element => {
     basePriceAsset,
     pathname,
     status,
-    getPools,
   } = props;
 
   const history = useHistory();
-
-
-  useEffect(() => {
-    getPools();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const getAssetNameByIndex = (index: number): string => {
     const sortedAssets = _sortBy(assetData, ['asset']);
@@ -209,9 +200,6 @@ export default compose(
       basePriceAsset: state.Midgard.basePriceAsset,
       pathname: state.router.location.pathname,
     }),
-    {
-      getPools: midgardActions.getPools,
-    },
   ),
   withRouter,
 )(WalletView) as React.ComponentClass<ComponentProps, State>;

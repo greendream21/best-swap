@@ -13,6 +13,7 @@ import { TransferFeesRD } from './types';
 /* /////////////////////////////////////////////////////////////
 // api
 ///////////////////////////////////////////////////////////// */
+export const getBinanceData = () => ({ type: 'GET_BINANCE_DATA' } as const);
 
 export const getBinanceTokens = () => ({ type: 'GET_BINANCE_TOKENS' } as const);
 
@@ -111,6 +112,7 @@ export const binanceTransfersMessageReceived = (event: TransferEvent) =>
   ({ type: 'BINANCE_TRANSFERS_MESSAGE_RECEIVED', event } as const);
 
 export type BinanceActionTypes = ReturnType<
+  | typeof getBinanceData
   | typeof getBinanceTokens
   | typeof getBinanceTokensSuccess
   | typeof getBinanceTokensFailed

@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useHistory, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
@@ -8,6 +8,8 @@ import * as RD from '@devexperts/remote-data-ts';
 
 import Logo from '../uielements/logo';
 import TxProgress from '../uielements/txProgress';
+import ConfirmModal from '../modals/confirmModal';
+import showNotification from '../uielements/notification';
 
 import { StyledHeader, LogoWrapper, HeaderActionButtons } from './header.style';
 import HeaderSetting from './headerSetting';
@@ -16,27 +18,40 @@ import WalletDrawer from '../../containers/WalletView/WalletDrawer';
 import ThemeSwitch from '../uielements/themeSwitch';
 import WalletButton from '../uielements/walletButton';
 import BasePriceSelector from './basePriceSelector';
-import { Maybe, Nothing } from '../../types/bepswap';
+import { Maybe, Nothing, Pair } from '../../types/bepswap';
 import { RootState } from '../../redux/store';
 import { User } from '../../redux/wallet/types';
+import { TransferEventRD } from '../../redux/binance/types';
 
 import * as appActions from '../../redux/app/actions';
-import * as walletActions from '../../redux/wallet/actions';
+import * as binanceActions from '../../redux/binance/actions';
 
 import { MAX_VALUE } from '../../redux/app/const';
 import { TxStatus, TxResult, TxTypes } from '../../redux/app/types';
+import { getNet } from '../../env';
+
+import { getPair } from '../../helpers/stringHelper';
+import { getTxResult } from '../../helpers/utils/swapUtils';
+import {
+  withdrawResult,
+  WithdrawResultParams,
+} from '../../helpers/utils/poolUtils';
 
 type ConnectedProps = {
   user: Maybe<User>;
   midgardBasePath: Maybe<string>;
   txStatus: TxStatus;
   txResult: Maybe<TxResult>;
+  wsTransferEvent: TransferEventRD;
+  getBEPSwapData: typeof appActions.getBEPSwapData;
   setTxTimerValue: typeof appActions.setTxTimerValue;
   countTxTimerValue: typeof appActions.countTxTimerValue;
   setTxTimerModal: typeof appActions.setTxTimerModal;
   setTxTimerStatus: typeof appActions.setTxTimerStatus;
-  refreshBalance: typeof walletActions.refreshBalance;
-  refreshStakes: typeof walletActions.refreshStakes;
+  resetTxStatus: typeof appActions.resetTxStatus;
+  setTxResult: typeof appActions.setTxResult;
+  subscribeBinanceTransfers: typeof binanceActions.subscribeBinanceTransfers;
+  unSubscribeBinanceTransfers: typeof binanceActions.unSubscribeBinanceTransfers;
 };
 
 type ComponentProps = {
@@ -51,23 +66,96 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
     midgardBasePath,
     txStatus,
     txResult,
+    wsTransferEvent,
+    getBEPSwapData,
     setTxTimerValue,
     countTxTimerValue,
     setTxTimerModal,
     setTxTimerStatus,
-    refreshBalance,
-    refreshStakes,
+    resetTxStatus,
+    setTxResult,
+    subscribeBinanceTransfers,
+    unSubscribeBinanceTransfers,
   } = props;
   const history = useHistory();
 
   const wallet: Maybe<string> = user ? user.wallet : Nothing;
+  const { status, value, startTime, hash, info, type: txType } = txStatus;
 
-  const refreshStakerData = useCallback(() => {
+  // when the page loaded first time
+  useEffect(() => {
+    getBEPSwapData();
     if (wallet) {
-      refreshStakes(wallet);
-      refreshBalance(wallet);
+      subscribeBinanceTransfers({ address: wallet, net: getNet() });
+      return () => {
+        unSubscribeBinanceTransfers();
+      };
     }
-  }, [refreshBalance, refreshStakes, wallet]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // when user wallet changes, subscribe Websocket again
+  useEffect(() => {
+    // subscribe again if another wallet has been added
+    if (wallet) {
+      unSubscribeBinanceTransfers();
+      subscribeBinanceTransfers({ address: wallet, net: getNet() });
+    }
+  }, [wallet, subscribeBinanceTransfers, unSubscribeBinanceTransfers]);
+
+  // wsTransferEvent has been updated
+  useEffect(() => {
+    const currentWsTransferEvent = RD.toNullable(wsTransferEvent);
+
+    if (
+      currentWsTransferEvent &&
+      hash !== undefined &&
+      txResult?.status === false &&
+      wallet
+    ) {
+      const transferHash = currentWsTransferEvent?.data?.H;
+
+      if (txType === TxTypes.SWAP) {
+        const pair: Pair = getPair(info);
+
+        if (txStatus.status) {
+          const txResultData = getTxResult({
+            pair,
+            tx: currentWsTransferEvent,
+            address: wallet,
+          });
+
+          if (txResultData) {
+            setTxResult({
+              status: true,
+              ...txResultData,
+            });
+          }
+        }
+      }
+      if (txType === TxTypes.STAKE) {
+        if (transferHash === hash) {
+          // Stake TX with same tx hash is detected
+          // DO SOMETHING
+        }
+      }
+      if (txType === TxTypes.WITHDRAW) {
+        const withdrawTxRes = withdrawResult({
+          tx: currentWsTransferEvent,
+          symbol: info,
+          address: wallet,
+        } as WithdrawResultParams);
+
+        // if withdraw hash has been detected, set tx status as TRUE
+        if (withdrawTxRes) {
+          setTxResult({
+            status: true,
+          });
+        }
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [RD.toNullable(wsTransferEvent), wallet, txResult, txStatus]);
 
   const handleClickTxProgress = useCallback(() => {
     if (txStatus.type !== undefined) {
@@ -82,11 +170,11 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
     if (txType === TxTypes.SWAP) {
       // Count handling depends on `txResult`
       // If tx has been confirmed, then we jump to last `valueIndex` ...
-      if (txResult !== null && value < MAX_VALUE) {
+      if (txResult?.status && value < MAX_VALUE) {
         setTxTimerValue(MAX_VALUE);
       }
       // In other cases (no `txResult`) we don't jump to last `indexValue`...
-      if (txResult === null) {
+      if (!txResult?.status) {
         // ..., but we are still counting
         if (value < 75) {
           // Add a quarter
@@ -137,20 +225,27 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
   };
 
   const handleEndTxProgress = useCallback(() => {
-    // Update `status` from here if modal is hided (not running)
-    // to avoid unexptected UX issues within modal (it's final icon won't be visible)
-    if (!txStatus.modal) {
-      setTxTimerStatus(false);
-      if (
-        txStatus.type === TxTypes.STAKE ||
-        txStatus.type === TxTypes.WITHDRAW
-      ) {
-        refreshStakerData();
-      }
-    }
-  }, [txStatus, setTxTimerStatus, refreshStakerData]);
+    setTxTimerStatus(false);
+  }, [setTxTimerStatus]);
 
-  const { status, value, startTime } = txStatus;
+  const handleCloseModal = () => {
+    // hide modal
+    setTxTimerModal(false);
+
+    if (txType === TxTypes.CREATE) {
+      showNotification({
+        type: 'open',
+        message: 'Pool Created Successfully!',
+        description:
+          'It may take a few moments until a new pool appears in the pool list!',
+      });
+    }
+  };
+
+  const handleFinishModal = () => {
+    handleCloseModal();
+    resetTxStatus();
+  };
 
   return (
     <StyledHeader>
@@ -193,6 +288,12 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
           />
         )}
       </HeaderActionButtons>
+      <ConfirmModal
+        txStatus={txStatus}
+        txResult={txResult || {}}
+        onClose={handleCloseModal}
+        onFinish={handleFinishModal}
+      />
     </StyledHeader>
   );
 };
@@ -203,14 +304,17 @@ export default connect(
     txStatus: state.App.txStatus,
     user: state.Wallet.user,
     midgardBasePath: RD.toNullable(state.Midgard.apiBasePath),
+    wsTransferEvent: state.Binance.wsTransferEvent,
   }),
   {
+    getBEPSwapData: appActions.getBEPSwapData,
     setTxResult: appActions.setTxResult,
     setTxTimerValue: appActions.setTxTimerValue,
     countTxTimerValue: appActions.countTxTimerValue,
     setTxTimerModal: appActions.setTxTimerModal,
     setTxTimerStatus: appActions.setTxTimerStatus,
-    refreshBalance: walletActions.refreshBalance,
-    refreshStakes: walletActions.refreshStakes,
+    resetTxStatus: appActions.resetTxStatus,
+    subscribeBinanceTransfers: binanceActions.subscribeBinanceTransfers,
+    unSubscribeBinanceTransfers: binanceActions.unSubscribeBinanceTransfers,
   },
 )(Header);
