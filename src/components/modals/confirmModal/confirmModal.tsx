@@ -20,10 +20,11 @@ type Props = {
   txStatus: TxStatus;
   txResult: TxResult;
   onClose?: () => void;
+  onFinish?: () => void;
 };
 
 const ConfirmModal: React.FC<Props> = (props): JSX.Element => {
-  const { txStatus, txResult, onClose } = props;
+  const { txStatus, txResult, onClose, onFinish } = props;
   const {
     modal,
     status,
@@ -108,7 +109,7 @@ const ConfirmModal: React.FC<Props> = (props): JSX.Element => {
           <div className="modal-actions-container">
             <div className="modal-actions-col">
               {isCompleted && (
-                <Button className="view-btn" color="success" onClick={onClose}>
+                <Button className="view-btn" color="success" onClick={onFinish}>
                   FINISH
                 </Button>
               )}

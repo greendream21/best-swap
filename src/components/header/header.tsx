@@ -48,6 +48,7 @@ type ConnectedProps = {
   countTxTimerValue: typeof appActions.countTxTimerValue;
   setTxTimerModal: typeof appActions.setTxTimerModal;
   setTxTimerStatus: typeof appActions.setTxTimerStatus;
+  resetTxStatus: typeof appActions.resetTxStatus;
   setTxResult: typeof appActions.setTxResult;
   refreshBalance: typeof walletActions.refreshBalance;
   refreshStakes: typeof walletActions.refreshStakes;
@@ -72,6 +73,7 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
     countTxTimerValue,
     setTxTimerModal,
     setTxTimerStatus,
+    resetTxStatus,
     setTxResult,
     refreshBalance,
     refreshStakes,
@@ -262,6 +264,11 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
     }
   };
 
+  const handleFinishModal = () => {
+    handleCloseModal();
+    resetTxStatus();
+  };
+
   return (
     <StyledHeader>
       <LogoWrapper>
@@ -307,6 +314,7 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
         txStatus={txStatus}
         txResult={txResult || {}}
         onClose={handleCloseModal}
+        onFinish={handleFinishModal}
       />
     </StyledHeader>
   );
@@ -326,6 +334,7 @@ export default connect(
     countTxTimerValue: appActions.countTxTimerValue,
     setTxTimerModal: appActions.setTxTimerModal,
     setTxTimerStatus: appActions.setTxTimerStatus,
+    resetTxStatus: appActions.resetTxStatus,
     refreshBalance: walletActions.refreshBalance,
     refreshStakes: walletActions.refreshStakes,
     subscribeBinanceTransfers: binanceActions.subscribeBinanceTransfers,
