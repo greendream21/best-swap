@@ -105,6 +105,7 @@ import {
 import { ShareDetailTabKeys, WithdrawData } from './types';
 import showNotification from '../../components/uielements/notification';
 import { CONFIRM_DISMISS_TIME } from '../../settings/constants';
+import usePrevious from '../../hooks/usePrevious';
 
 const { TabPane } = Tabs;
 
@@ -249,6 +250,14 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   useEffect(() => {
     getStakerInfo();
   }, [symbol, getStakerInfo]);
+
+  const prevTxStatus = usePrevious(txStatus);
+  // if tx timer status changed from ON to OFF, should refresh staker details
+  useEffect(() => {
+    if (prevTxStatus?.status === true && txStatus.status === false) {
+      getStakerInfo();
+    }
+  }, [txStatus]);
 
   // user wallet change
   useEffect(() => {
