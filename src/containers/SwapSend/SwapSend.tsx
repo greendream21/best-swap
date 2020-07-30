@@ -55,7 +55,6 @@ import { SwapData } from '../../helpers/utils/types';
 
 import * as appActions from '../../redux/app/actions';
 import * as walletActions from '../../redux/wallet/actions';
-import * as binanceActions from '../../redux/binance/actions';
 import AddressInput from '../../components/uielements/addressInput';
 import ContentTitle from '../../components/uielements/contentTitle';
 import Slider from '../../components/uielements/slider';
@@ -73,7 +72,7 @@ import { TxStatus, TxTypes, TxResult } from '../../redux/app/types';
 import { PriceDataIndex, PoolDataMap } from '../../redux/midgard/types';
 import { RootState } from '../../redux/store';
 import { getAssetFromString } from '../../redux/midgard/utils';
-import { BINANCE_NET, getNet } from '../../env';
+import { BINANCE_NET } from '../../env';
 import { PoolDetailStatusEnum } from '../../types/generated/midgard';
 import { TransferFeesRD, TransferFees } from '../../redux/binance/types';
 import {
@@ -103,7 +102,6 @@ type Props = {
   setTxHash: typeof appActions.setTxHash;
   resetTxStatus: typeof appActions.resetTxStatus;
   refreshBalance: typeof walletActions.refreshBalance;
-  getBinanceFees: typeof binanceActions.getBinanceFees;
   transferFees: TransferFeesRD;
 };
 
@@ -117,7 +115,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     poolAddress,
     priceIndex,
     pools,
-    getBinanceFees,
     refreshBalance,
     setTxResult,
     setTxHash,
@@ -142,14 +139,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   const [percent, setPercent] = useState<number>(0);
 
   const [view, setView] = useState<SwapSendView>(SwapSendView.DETAIL);
-
-  useEffect(() => {
-    const net = getNet();
-    if (RD.isInitial(transferFees)) {
-      getBinanceFees(net);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const prevTxStatus = usePrevious(txStatus);
   // if tx is completed, should refresh balance
@@ -908,7 +897,6 @@ export default compose(
       resetTxStatus: appActions.resetTxStatus,
       setTxHash: appActions.setTxHash,
       refreshBalance: walletActions.refreshBalance,
-      getBinanceFees: binanceActions.getBinanceFees,
     },
   ),
   withRouter,

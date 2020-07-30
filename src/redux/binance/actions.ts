@@ -13,6 +13,7 @@ import { TransferFeesRD } from './types';
 /* /////////////////////////////////////////////////////////////
 // api
 ///////////////////////////////////////////////////////////// */
+export const getBinanceData = () => ({ type: 'GET_BINANCE_DATA' } as const);
 
 export const getBinanceTokens = () => ({ type: 'GET_BINANCE_TOKENS' } as const);
 

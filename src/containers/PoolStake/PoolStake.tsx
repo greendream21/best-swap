@@ -47,7 +47,6 @@ import PrivateModal from '../../components/modals/privateModal';
 import * as appActions from '../../redux/app/actions';
 import * as midgardActions from '../../redux/midgard/actions';
 import * as walletActions from '../../redux/wallet/actions';
-import * as binanceActions from '../../redux/binance/actions';
 
 import {
   ContentWrapper,
@@ -80,7 +79,7 @@ import {
 } from '../../redux/midgard/types';
 import { StakersAssetData } from '../../types/generated/midgard';
 import { getAssetFromString } from '../../redux/midgard/utils';
-import { BINANCE_NET, getNet } from '../../env';
+import { BINANCE_NET } from '../../env';
 import { TransferFeesRD, TransferFees } from '../../redux/binance/types';
 import {
   getAssetFromAssetData,
@@ -117,7 +116,6 @@ type Props = {
   resetTxStatus: typeof appActions.resetTxStatus;
   refreshBalance: typeof walletActions.refreshBalance;
   refreshStakes: typeof walletActions.refreshStakes;
-  getBinanceFees: typeof binanceActions.getBinanceFees;
   transferFees: TransferFeesRD;
 };
 
@@ -139,7 +137,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     txStatus,
     refreshBalance,
     refreshStakes,
-    getBinanceFees,
     getStakerPoolData,
     resetTxStatus,
     setTxResult,
@@ -208,12 +205,8 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   }, [stakerPoolData, stakerPoolDataError]);
 
   useEffect(() => {
+    // TODO: check if it needs to fetch staker detail on mount
     getStakerPoolDetail();
-
-    const net = getNet();
-    if (RD.isInitial(transferFees)) {
-      getBinanceFees(net);
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -1307,7 +1300,6 @@ export default compose(
       resetTxStatus: appActions.resetTxStatus,
       refreshBalance: walletActions.refreshBalance,
       refreshStakes: walletActions.refreshStakes,
-      getBinanceFees: binanceActions.getBinanceFees,
     },
   ),
   withRouter,
