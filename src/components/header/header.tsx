@@ -185,11 +185,11 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
     if (txType === TxTypes.SWAP) {
       // Count handling depends on `txResult`
       // If tx has been confirmed, then we jump to last `valueIndex` ...
-      if (txResult !== null && value < MAX_VALUE) {
+      if (txResult?.status && value < MAX_VALUE) {
         setTxTimerValue(MAX_VALUE);
       }
       // In other cases (no `txResult`) we don't jump to last `indexValue`...
-      if (txResult === null) {
+      if (!txResult?.status) {
         // ..., but we are still counting
         if (value < 75) {
           // Add a quarter
