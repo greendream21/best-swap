@@ -158,10 +158,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   const [timerFinished, setTimerFinished] = useState<boolean>(false);
   const [view, setView] = useState<SwapSendView>(SwapSendView.DETAIL);
 
-  const isCompleted = (): boolean => {
-    return !txStatus.status && (txResult !== Nothing || timerFinished);
-  };
-
   useEffect(() => {
     const net = getNet();
     getPoolAddress();
@@ -177,11 +173,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const isValidRecipient = async () => {
-    const bncClient = await binanceClient(BINANCE_NET);
-    return bncClient.isValidAddress(address);
-  };
 
   const handleGetSwapData = (): Maybe<SwapData> => {
     if (!swapPair.source || !swapPair.target) {
@@ -205,6 +196,17 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
       inputValueAfterRune,
       runePrice,
     );
+  };
+
+  const swapData = handleGetSwapData();
+
+  const isCompleted = (): boolean => {
+    return !txStatus.status && (txResult !== Nothing || timerFinished);
+  };
+
+  const isValidRecipient = async () => {
+    const bncClient = await binanceClient(BINANCE_NET);
+    return bncClient.isValidAddress(address);
   };
 
   const handleChangeAddress = useCallback(
@@ -518,20 +520,31 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
 
   const handleStartTimer = () => {
     setTimerFinished(false);
-    resetTxStatus({
-      type: TxTypes.SWAP,
-      value: 0,
-      modal: true,
-      status: true,
-      startTime: Date.now(),
-      info,
-    });
+    const { source: sourceAsset, target: targetAsset } = swapPair;
+    const targetAmount = swapData?.outputAmount;
 
-    // dismiss modal after 1s
-    setTimeout(() => {
-      setTxTimerModal(false);
-      setDragReset(true);
-    }, CONFIRM_DISMISS_TIME);
+    if (sourceAsset && targetAsset && targetAmount) {
+      resetTxStatus({
+        type: TxTypes.SWAP,
+        value: 0,
+        modal: true,
+        status: true,
+        startTime: Date.now(),
+        info,
+        txData: {
+          sourceAsset,
+          targetAsset,
+          sourceAmount: xValue,
+          targetAmount,
+        },
+      });
+
+      // dismiss modal after 1s
+      setTimeout(() => {
+        setTxTimerModal(false);
+        setDragReset(true);
+      }, CONFIRM_DISMISS_TIME);
+    }
   };
 
   const handleCompleted = () => {
@@ -842,194 +855,188 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
 
   const openSwapModal = txStatus.type === 'swap' ? txStatus.modal : false;
 
-  const swapData = handleGetSwapData();
   if (!swapData) {
     return <></>;
-  } else {
-    const { slip, outputAmount, outputPrice } = swapData;
-
-    const sourcePriceBN = bn(priceIndex[swapSource.toUpperCase()]);
-    const sourcePrice = isValidBN(sourcePriceBN) ? sourcePriceBN : outputPrice;
-    const targetPriceBN = bn(priceIndex[swapTarget.toUpperCase()]);
-    const targetPrice = isValidBN(targetPriceBN) ? targetPriceBN : outputPrice;
-
-    const ratio = !targetPrice.isEqualTo(bn(0))
-      ? sourcePrice.div(targetPrice)
-      : bn(0);
-    const ratioLabel = `1 ${swapSource.toUpperCase()} = ${ratio.toFixed(
-      3,
-    )} ${swapTarget.toUpperCase()}`;
-
-    // swap modal
-    const refunded = txResult && txResult.type === 'refund';
-
-    // eslint-disable-next-line no-nested-ternary
-    const swapTitle = !isCompleted()
-      ? 'YOU ARE SWAPPING'
-      : refunded
-      ? 'TOKEN REFUNDED'
-      : 'YOU SWAPPED';
-
-    const disableDrag = bnbFeeIsNotCovered();
-
-    const slipValue = slip
-      ? `SLIP ${slip.toFormat(2, BigNumber.ROUND_DOWN)}%`
-      : Nothing;
-
-    return (
-      <ContentWrapper className="swap-detail-wrapper">
-        <SwapAssetCard>
-          <ContentTitle>
-            swapping {swapSource} &gt;&gt; {swapTarget}
-          </ContentTitle>
-          <div className="swap-content">
-            <div className="swap-detail-panel">
-              <TokenCard
-                inputTitle="input"
-                asset={swapSource}
-                assetData={sourceData}
-                amount={xValue}
-                price={sourcePrice}
-                priceIndex={priceIndex}
-                onChange={handleChangeValue}
-                onChangeAsset={handleChangeSource}
-                onSelect={(amount: number) =>
-                  handleSelectSourceAmount(swapSource, amount)}
-                inputProps={{ 'data-test': 'coincard-source-input' }}
-                withSearch
-                data-test="coincard-source"
-              />
-              <SliderSwapWrapper>
-                <div className="slider">
-                  <Slider
-                    value={percent}
-                    onChange={handleChangePercent}
-                    withLabel
-                  />
-                </div>
-                <div className="swap-wrapper">
-                  <SwapOutlined
-                    className="swap-outlined"
-                    onClick={handleReversePair}
-                  />
-                </div>
-              </SliderSwapWrapper>
-              <TokenCard
-                inputTitle="output"
-                inputProps={{
-                  disabled: true,
-                  'data-test': 'coincard-target-input',
-                }}
-                asset={swapTarget}
-                assetData={targetData}
-                amount={outputAmount}
-                price={targetPrice}
-                priceIndex={priceIndex}
-                onChangeAsset={handleSelectTarget}
-                withSearch
-                data-test="coincard-target"
-              />
-
-              <div className="swaptool-container">
-                <CardFormHolder>
-                  <CardForm>
-                    <CardFormItem className={invalidAddress ? 'has-error' : ''}>
-                      <AddressInput
-                        value={address}
-                        onChange={handleChangeAddress}
-                        status={view === SwapSendView.SEND}
-                        onStatusChange={handleChangeSwapType}
-                      />
-                    </CardFormItem>
-                  </CardForm>
-                  {invalidAddress && (
-                    <CardFormItemError>
-                      Recipient address is invalid!
-                    </CardFormItemError>
-                  )}
-                </CardFormHolder>
-                <CardFormHolder className="slip-protection">
-                  <CardForm>
-                    <PopoverContainer
-                      content={renderProtectPopoverContent()}
-                      getPopupContainer={getPopupContainer}
-                      placement="left"
-                      visible
-                      overlayClassName="protectPrice-popover"
-                      overlayStyle={{
-                        padding: '6px',
-                        animationDuration: '0s !important',
-                        animation: 'none !important',
-                      }}
-                    >
-                      <div>
-                        <Button
-                          onClick={handleSwitchSlipProtection}
-                          sizevalue="small"
-                          typevalue="outline"
-                          focused={slipProtection}
-                        >
-                          {slipProtection ? (
-                            <LockOutlined />
-                          ) : (
-                            <UnlockOutlined />
-                          )}
-                        </Button>
-                      </div>
-                    </PopoverContainer>
-                  </CardForm>
-                </CardFormHolder>
-              </div>
-            </div>
-            <div className="desktop-view">
-              <SwapStatusPanel>
-                <StepBar size={170} />
-                <div className="slip-ratio-labels">
-                  <Label>{ratioLabel}</Label>
-                  <Label>{slipValue}</Label>
-                </div>
-              </SwapStatusPanel>
-            </div>
-          </div>
-          <div className="drag-confirm-wrapper">
-            <Drag
-              title="Drag to swap"
-              source={swapSource}
-              target={swapTarget}
-              reset={dragReset}
-              disabled={disableDrag}
-              onConfirm={handleEndDrag}
-              onDrag={handleDrag}
-            />
-          </div>
-          {renderFee()}
-        </SwapAssetCard>
-
-        <SwapModal
-          title={swapTitle}
-          visible={openSwapModal}
-          footer={null}
-          onCancel={handleCloseModal}
-        >
-          {renderSwapModalContent(swapSource, swapTarget, swapData)}
-        </SwapModal>
-        <PrivateModal
-          visible={openPrivateModal}
-          onOk={handleConfirmPassword}
-          onCancel={handleCancelPrivateModal}
-        />
-        <Modal
-          title="PLEASE ADD WALLET"
-          visible={openWalletAlert}
-          onOk={handleConnectWallet}
-          onCancel={hideWalletAlert}
-          okText="ADD WALLET"
-        >
-          <Label>Please add a wallet to swap tokens.</Label>
-        </Modal>
-      </ContentWrapper>
-    );
   }
+  const { slip, outputAmount, outputPrice } = swapData;
+
+  const sourcePriceBN = bn(priceIndex[swapSource.toUpperCase()]);
+  const sourcePrice = isValidBN(sourcePriceBN) ? sourcePriceBN : outputPrice;
+  const targetPriceBN = bn(priceIndex[swapTarget.toUpperCase()]);
+  const targetPrice = isValidBN(targetPriceBN) ? targetPriceBN : outputPrice;
+
+  const ratio = !targetPrice.isEqualTo(bn(0))
+    ? sourcePrice.div(targetPrice)
+    : bn(0);
+  const ratioLabel = `1 ${swapSource.toUpperCase()} = ${ratio.toFixed(
+    3,
+  )} ${swapTarget.toUpperCase()}`;
+
+  // swap modal
+  const refunded = txResult && txResult.type === 'refund';
+
+  // eslint-disable-next-line no-nested-ternary
+  const swapTitle = !isCompleted()
+    ? 'YOU ARE SWAPPING'
+    : refunded
+    ? 'TOKEN REFUNDED'
+    : 'YOU SWAPPED';
+
+  const disableDrag = bnbFeeIsNotCovered();
+
+  const slipValue = slip
+    ? `SLIP ${slip.toFormat(2, BigNumber.ROUND_DOWN)}%`
+    : Nothing;
+
+  return (
+    <ContentWrapper className="swap-detail-wrapper">
+      <SwapAssetCard>
+        <ContentTitle>
+          swapping {swapSource} &gt;&gt; {swapTarget}
+        </ContentTitle>
+        <div className="swap-content">
+          <div className="swap-detail-panel">
+            <TokenCard
+              inputTitle="input"
+              asset={swapSource}
+              assetData={sourceData}
+              amount={xValue}
+              price={sourcePrice}
+              priceIndex={priceIndex}
+              onChange={handleChangeValue}
+              onChangeAsset={handleChangeSource}
+              onSelect={(amount: number) =>
+                handleSelectSourceAmount(swapSource, amount)}
+              inputProps={{ 'data-test': 'coincard-source-input' }}
+              withSearch
+              data-test="coincard-source"
+            />
+            <SliderSwapWrapper>
+              <div className="slider">
+                <Slider
+                  value={percent}
+                  onChange={handleChangePercent}
+                  withLabel
+                />
+              </div>
+              <div className="swap-wrapper">
+                <SwapOutlined
+                  className="swap-outlined"
+                  onClick={handleReversePair}
+                />
+              </div>
+            </SliderSwapWrapper>
+            <TokenCard
+              inputTitle="output"
+              inputProps={{
+                disabled: true,
+                'data-test': 'coincard-target-input',
+              }}
+              asset={swapTarget}
+              assetData={targetData}
+              amount={outputAmount}
+              price={targetPrice}
+              priceIndex={priceIndex}
+              onChangeAsset={handleSelectTarget}
+              withSearch
+              data-test="coincard-target"
+            />
+
+            <div className="swaptool-container">
+              <CardFormHolder>
+                <CardForm>
+                  <CardFormItem className={invalidAddress ? 'has-error' : ''}>
+                    <AddressInput
+                      value={address}
+                      onChange={handleChangeAddress}
+                      status={view === SwapSendView.SEND}
+                      onStatusChange={handleChangeSwapType}
+                    />
+                  </CardFormItem>
+                </CardForm>
+                {invalidAddress && (
+                  <CardFormItemError>
+                    Recipient address is invalid!
+                  </CardFormItemError>
+                )}
+              </CardFormHolder>
+              <CardFormHolder className="slip-protection">
+                <CardForm>
+                  <PopoverContainer
+                    content={renderProtectPopoverContent()}
+                    getPopupContainer={getPopupContainer}
+                    placement="left"
+                    visible
+                    overlayClassName="protectPrice-popover"
+                    overlayStyle={{
+                      padding: '6px',
+                      animationDuration: '0s !important',
+                      animation: 'none !important',
+                    }}
+                  >
+                    <div>
+                      <Button
+                        onClick={handleSwitchSlipProtection}
+                        sizevalue="small"
+                        typevalue="outline"
+                        focused={slipProtection}
+                      >
+                        {slipProtection ? <LockOutlined /> : <UnlockOutlined />}
+                      </Button>
+                    </div>
+                  </PopoverContainer>
+                </CardForm>
+              </CardFormHolder>
+            </div>
+          </div>
+          <div className="desktop-view">
+            <SwapStatusPanel>
+              <StepBar size={170} />
+              <div className="slip-ratio-labels">
+                <Label>{ratioLabel}</Label>
+                <Label>{slipValue}</Label>
+              </div>
+            </SwapStatusPanel>
+          </div>
+        </div>
+        <div className="drag-confirm-wrapper">
+          <Drag
+            title="Drag to swap"
+            source={swapSource}
+            target={swapTarget}
+            reset={dragReset}
+            disabled={disableDrag}
+            onConfirm={handleEndDrag}
+            onDrag={handleDrag}
+          />
+        </div>
+        {renderFee()}
+      </SwapAssetCard>
+
+      <SwapModal
+        title={swapTitle}
+        visible={openSwapModal}
+        footer={null}
+        onCancel={handleCloseModal}
+      >
+        {renderSwapModalContent(swapSource, swapTarget, swapData)}
+      </SwapModal>
+      <PrivateModal
+        visible={openPrivateModal}
+        onOk={handleConfirmPassword}
+        onCancel={handleCancelPrivateModal}
+      />
+      <Modal
+        title="PLEASE ADD WALLET"
+        visible={openWalletAlert}
+        onOk={handleConnectWallet}
+        onCancel={hideWalletAlert}
+        okText="ADD WALLET"
+      >
+        <Label>Please add a wallet to swap tokens.</Label>
+      </Modal>
+    </ContentWrapper>
+  );
 };
 
 export default compose(

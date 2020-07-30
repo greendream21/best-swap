@@ -59,6 +59,7 @@ import { User, AssetData } from '../../redux/wallet/types';
 import { BINANCE_NET } from '../../env';
 import showNotification from '../../components/uielements/notification';
 import { CONFIRM_DISMISS_TIME } from '../../settings/constants';
+import { RUNE_SYMBOL } from '../../settings/assetData';
 
 type Props = {
   assetData: AssetData[];
@@ -139,6 +140,12 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
       modal: true,
       status: true,
       startTime: Date.now(),
+      txData: {
+        sourceAsset: RUNE_SYMBOL,
+        targetAsset: symbol,
+        sourceAmount: runeAmount,
+        targetAmount,
+      },
     });
 
     // dismiss modal after 1s

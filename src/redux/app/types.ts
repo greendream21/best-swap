@@ -1,3 +1,5 @@
+import { TokenAmount } from '@thorchain/asgardex-token';
+import BigNumber from 'bignumber.js';
 import { Maybe } from '../../types/bepswap';
 /**
  * Tx types
@@ -15,6 +17,14 @@ export type TxResult = {
   amount?: string;
   token?: string;
   status?: boolean;
+};
+
+export type TxData = {
+  sourceAsset: string; // symbol for source asset
+  sourceAmount: TokenAmount;
+  targetAsset: string; // symbol for target asset
+  targetAmount: TokenAmount;
+  slip?: BigNumber; // slip value if tx type is swap
 };
 
 export type TxStatus = {
@@ -50,6 +60,7 @@ export type TxStatus = {
    * Transaction Info - ex: swap pair OR stake pool symbol
    */
   readonly info?: string;
+  readonly txData: TxData;
 };
 
 /**
