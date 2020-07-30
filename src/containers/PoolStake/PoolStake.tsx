@@ -110,8 +110,6 @@ type Props = {
   basePriceAsset: string;
   poolLoading: boolean;
   thorchainData: ThorchainData;
-  getPools: typeof midgardActions.getPools;
-  getPoolAddress: typeof midgardActions.getPoolAddress;
   getStakerPoolData: typeof midgardActions.getStakerPoolData;
   setTxResult: typeof appActions.setTxResult;
   setTxTimerModal: typeof appActions.setTxTimerModal;
@@ -141,8 +139,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     txStatus,
     refreshBalance,
     refreshStakes,
-    getPoolAddress,
-    getPools,
     getBinanceFees,
     getStakerPoolData,
     resetTxStatus,
@@ -212,19 +208,11 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   }, [stakerPoolData, stakerPoolDataError]);
 
   useEffect(() => {
-    getPoolAddress();
-    getPools();
     getStakerPoolDetail();
 
     const net = getNet();
     if (RD.isInitial(transferFees)) {
       getBinanceFees(net);
-    }
-
-    const wallet = user?.wallet;
-    if (wallet) {
-      // refresh wallet balance
-      refreshBalance(wallet);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -1312,8 +1300,6 @@ export default compose(
       thorchainData: state.Midgard.thorchain,
     }),
     {
-      getPools: midgardActions.getPools,
-      getPoolAddress: midgardActions.getPoolAddress,
       getStakerPoolData: midgardActions.getStakerPoolData,
       setTxResult: appActions.setTxResult,
       setTxTimerModal: appActions.setTxTimerModal,

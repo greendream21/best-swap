@@ -26,7 +26,6 @@ import { greyArrowIcon } from '../../components/icons';
 import PrivateModal from '../../components/modals/privateModal';
 
 import * as appActions from '../../redux/app/actions';
-import * as walletActions from '../../redux/wallet/actions';
 import * as midgardActions from '../../redux/midgard/actions';
 import * as binanceActions from '../../redux/binance/actions';
 
@@ -63,9 +62,6 @@ type Props = {
   binanceData: BinanceState;
   history: H.History;
   txStatus: TxStatus;
-  refreshBalance: typeof walletActions.refreshBalance;
-  getPools: typeof midgardActions.getPools;
-  getPoolAddress: typeof midgardActions.getPoolAddress;
   getStakerPoolData: typeof midgardActions.getStakerPoolData;
   getBinanceTokens: typeof binanceActions.getBinanceTokens;
   getBinanceMarkets: typeof binanceActions.getBinanceMarkets;
@@ -83,9 +79,6 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
     assetData,
     binanceData,
     pools,
-    refreshBalance,
-    getPools,
-    getPoolAddress,
     getBinanceMarkets,
     getBinanceTokens,
     getStakerPoolData,
@@ -110,13 +103,6 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
   }, [user, symbol, getStakerPoolData]);
 
   useEffect(() => {
-    const wallet: Maybe<string> = user ? user.wallet : null;
-    if (wallet) {
-      // refresh wallet balance
-      refreshBalance(wallet);
-    }
-    getPools();
-    getPoolAddress();
     getBinanceTokens();
     getBinanceMarkets();
     getStakerData();
@@ -503,9 +489,6 @@ export default compose(
       txStatus: state.App.txStatus,
     }),
     {
-      refreshBalance: walletActions.refreshBalance,
-      getPools: midgardActions.getPools,
-      getPoolAddress: midgardActions.getPoolAddress,
       getStakerPoolData: midgardActions.getStakerPoolData,
       getBinanceTokens: binanceActions.getBinanceTokens,
       getBinanceMarkets: binanceActions.getBinanceMarkets,

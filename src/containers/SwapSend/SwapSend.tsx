@@ -54,7 +54,6 @@ import {
 import { SwapData } from '../../helpers/utils/types';
 
 import * as appActions from '../../redux/app/actions';
-import * as midgardActions from '../../redux/midgard/actions';
 import * as walletActions from '../../redux/wallet/actions';
 import * as binanceActions from '../../redux/binance/actions';
 import AddressInput from '../../components/uielements/addressInput';
@@ -103,8 +102,6 @@ type Props = {
   setTxTimerModal: typeof appActions.setTxTimerModal;
   setTxHash: typeof appActions.setTxHash;
   resetTxStatus: typeof appActions.resetTxStatus;
-  getPools: typeof midgardActions.getPools;
-  getPoolAddress: typeof midgardActions.getPoolAddress;
   refreshBalance: typeof walletActions.refreshBalance;
   getBinanceFees: typeof binanceActions.getBinanceFees;
   transferFees: TransferFeesRD;
@@ -120,8 +117,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     poolAddress,
     priceIndex,
     pools,
-    getPools,
-    getPoolAddress,
     getBinanceFees,
     refreshBalance,
     setTxResult,
@@ -150,16 +145,8 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
 
   useEffect(() => {
     const net = getNet();
-    getPoolAddress();
-    getPools();
     if (RD.isInitial(transferFees)) {
       getBinanceFees(net);
-    }
-
-    const wallet = user?.wallet;
-    if (wallet) {
-      // refresh wallet balance
-      refreshBalance(wallet);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -916,8 +903,6 @@ export default compose(
       transferFees: state.Binance.transferFees,
     }),
     {
-      getPools: midgardActions.getPools,
-      getPoolAddress: midgardActions.getPoolAddress,
       setTxResult: appActions.setTxResult,
       setTxTimerModal: appActions.setTxTimerModal,
       resetTxStatus: appActions.resetTxStatus,
