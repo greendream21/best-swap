@@ -99,6 +99,8 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
 
   // when the page loaded first time
   useEffect(() => {
+    getPoolAddress();
+    getPools();
     if (wallet) {
       subscribeBinanceTransfers({ address: wallet, net: getNet() });
       return () => {
@@ -112,16 +114,12 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
   useEffect(() => {
     // subscribe again if another wallet has been added
     if (wallet) {
-      getPoolAddress();
-      getPools();
       refreshBalanceAndStakeData();
       unSubscribeBinanceTransfers();
       subscribeBinanceTransfers({ address: wallet, net: getNet() });
     }
   }, [
     wallet,
-    getPools,
-    getPoolAddress,
     refreshBalanceAndStakeData,
     subscribeBinanceTransfers,
     unSubscribeBinanceTransfers,
