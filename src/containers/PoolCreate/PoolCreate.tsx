@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import * as H from 'history';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
@@ -27,7 +27,6 @@ import PrivateModal from '../../components/modals/privateModal';
 
 import * as appActions from '../../redux/app/actions';
 import * as midgardActions from '../../redux/midgard/actions';
-import * as binanceActions from '../../redux/binance/actions';
 
 import {
   ContentWrapper,
@@ -63,8 +62,6 @@ type Props = {
   history: H.History;
   txStatus: TxStatus;
   getStakerPoolData: typeof midgardActions.getStakerPoolData;
-  getBinanceTokens: typeof binanceActions.getBinanceTokens;
-  getBinanceMarkets: typeof binanceActions.getBinanceMarkets;
   setTxTimerModal: typeof appActions.setTxTimerModal;
   resetTxStatus: typeof appActions.resetTxStatus;
   setTxHash: typeof appActions.setTxHash;
@@ -79,9 +76,6 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
     assetData,
     binanceData,
     pools,
-    getBinanceMarkets,
-    getBinanceTokens,
-    getStakerPoolData,
     resetTxStatus,
     setTxTimerModal,
     setTxHash,
@@ -95,19 +89,6 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
 
   const history = useHistory();
   const { symbol = '' } = useParams();
-
-  const getStakerData = useCallback(() => {
-    if (user) {
-      getStakerPoolData({ asset: symbol, address: user.wallet });
-    }
-  }, [user, symbol, getStakerPoolData]);
-
-  useEffect(() => {
-    getBinanceTokens();
-    getBinanceMarkets();
-    getStakerData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const handleStartTimer = () => {
     resetTxStatus({
@@ -490,8 +471,6 @@ export default compose(
     }),
     {
       getStakerPoolData: midgardActions.getStakerPoolData,
-      getBinanceTokens: binanceActions.getBinanceTokens,
-      getBinanceMarkets: binanceActions.getBinanceMarkets,
       setTxTimerModal: appActions.setTxTimerModal,
       resetTxStatus: appActions.resetTxStatus,
       setTxHash: appActions.setTxHash,

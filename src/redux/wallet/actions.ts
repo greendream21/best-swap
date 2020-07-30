@@ -24,6 +24,9 @@ export const refreshStakesSuccess = (payload: StakeData[]) =>
 export const refreshStakesFailed = (payload: Error) =>
   ({ type: 'REFRESH_STAKES_FAILED', payload } as const);
 
+export const refreshWallet = () =>
+({ type: 'REFRESH_WALLET' } as const);
+
 export type WalletActionsTypes = ReturnType<
   | typeof saveWallet
   | typeof forgetWallet
@@ -33,4 +36,5 @@ export type WalletActionsTypes = ReturnType<
   | typeof refreshStakes
   | typeof refreshStakesSuccess
   | typeof refreshStakesFailed
+  | typeof refreshWallet
 >;

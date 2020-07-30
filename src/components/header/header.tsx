@@ -24,9 +24,7 @@ import { User } from '../../redux/wallet/types';
 import { TransferEventRD } from '../../redux/binance/types';
 
 import * as appActions from '../../redux/app/actions';
-import * as walletActions from '../../redux/wallet/actions';
 import * as binanceActions from '../../redux/binance/actions';
-import * as midgardActions from '../../redux/midgard/actions';
 
 import { MAX_VALUE } from '../../redux/app/const';
 import { TxStatus, TxResult, TxTypes } from '../../redux/app/types';
@@ -45,16 +43,13 @@ type ConnectedProps = {
   txStatus: TxStatus;
   txResult: Maybe<TxResult>;
   wsTransferEvent: TransferEventRD;
-  getPoolAddress: typeof midgardActions.getPoolAddress;
-  getPools: typeof midgardActions.getPools;
+  getBEPSwapData: typeof appActions.getBEPSwapData;
   setTxTimerValue: typeof appActions.setTxTimerValue;
   countTxTimerValue: typeof appActions.countTxTimerValue;
   setTxTimerModal: typeof appActions.setTxTimerModal;
   setTxTimerStatus: typeof appActions.setTxTimerStatus;
   resetTxStatus: typeof appActions.resetTxStatus;
   setTxResult: typeof appActions.setTxResult;
-  refreshBalance: typeof walletActions.refreshBalance;
-  refreshStakes: typeof walletActions.refreshStakes;
   subscribeBinanceTransfers: typeof binanceActions.subscribeBinanceTransfers;
   unSubscribeBinanceTransfers: typeof binanceActions.unSubscribeBinanceTransfers;
 };
@@ -72,16 +67,13 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
     txStatus,
     txResult,
     wsTransferEvent,
-    getPools,
-    getPoolAddress,
+    getBEPSwapData,
     setTxTimerValue,
     countTxTimerValue,
     setTxTimerModal,
     setTxTimerStatus,
     resetTxStatus,
     setTxResult,
-    refreshBalance,
-    refreshStakes,
     subscribeBinanceTransfers,
     unSubscribeBinanceTransfers,
   } = props;
@@ -90,17 +82,9 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
   const wallet: Maybe<string> = user ? user.wallet : Nothing;
   const { status, value, startTime, hash, info, type: txType } = txStatus;
 
-  const refreshBalanceAndStakeData = useCallback(() => {
-    if (wallet) {
-      refreshStakes(wallet);
-      refreshBalance(wallet);
-    }
-  }, [refreshBalance, refreshStakes, wallet]);
-
   // when the page loaded first time
   useEffect(() => {
-    getPoolAddress();
-    getPools();
+    getBEPSwapData();
     if (wallet) {
       subscribeBinanceTransfers({ address: wallet, net: getNet() });
       return () => {
@@ -114,16 +98,10 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
   useEffect(() => {
     // subscribe again if another wallet has been added
     if (wallet) {
-      refreshBalanceAndStakeData();
       unSubscribeBinanceTransfers();
       subscribeBinanceTransfers({ address: wallet, net: getNet() });
     }
-  }, [
-    wallet,
-    refreshBalanceAndStakeData,
-    subscribeBinanceTransfers,
-    unSubscribeBinanceTransfers,
-  ]);
+  }, [wallet, subscribeBinanceTransfers, unSubscribeBinanceTransfers]);
 
   // wsTransferEvent has been updated
   useEffect(() => {
@@ -329,16 +307,13 @@ export default connect(
     wsTransferEvent: state.Binance.wsTransferEvent,
   }),
   {
-    getPools: midgardActions.getPools,
-    getPoolAddress: midgardActions.getPoolAddress,
+    getBEPSwapData: appActions.getBEPSwapData,
     setTxResult: appActions.setTxResult,
     setTxTimerValue: appActions.setTxTimerValue,
     countTxTimerValue: appActions.countTxTimerValue,
     setTxTimerModal: appActions.setTxTimerModal,
     setTxTimerStatus: appActions.setTxTimerStatus,
     resetTxStatus: appActions.resetTxStatus,
-    refreshBalance: walletActions.refreshBalance,
-    refreshStakes: walletActions.refreshStakes,
     subscribeBinanceTransfers: binanceActions.subscribeBinanceTransfers,
     unSubscribeBinanceTransfers: binanceActions.unSubscribeBinanceTransfers,
   },
