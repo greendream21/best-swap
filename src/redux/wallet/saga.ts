@@ -51,6 +51,7 @@ export function* saveWalletSaga() {
     saveWalletAddress(wallet);
     saveKeystore(keystore);
 
+    // update wallet balance and stake data
     yield put(actions.refreshBalance(wallet));
     yield put(actions.refreshStakes(wallet));
   });

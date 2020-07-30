@@ -24,7 +24,6 @@ import { User } from '../../redux/wallet/types';
 import { TransferEventRD } from '../../redux/binance/types';
 
 import * as appActions from '../../redux/app/actions';
-import * as walletActions from '../../redux/wallet/actions';
 import * as binanceActions from '../../redux/binance/actions';
 import * as midgardActions from '../../redux/midgard/actions';
 
@@ -53,8 +52,6 @@ type ConnectedProps = {
   setTxTimerStatus: typeof appActions.setTxTimerStatus;
   resetTxStatus: typeof appActions.resetTxStatus;
   setTxResult: typeof appActions.setTxResult;
-  refreshBalance: typeof walletActions.refreshBalance;
-  refreshStakes: typeof walletActions.refreshStakes;
   subscribeBinanceTransfers: typeof binanceActions.subscribeBinanceTransfers;
   unSubscribeBinanceTransfers: typeof binanceActions.unSubscribeBinanceTransfers;
 };
@@ -80,8 +77,6 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
     setTxTimerStatus,
     resetTxStatus,
     setTxResult,
-    refreshBalance,
-    refreshStakes,
     subscribeBinanceTransfers,
     unSubscribeBinanceTransfers,
   } = props;
@@ -89,13 +84,6 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
 
   const wallet: Maybe<string> = user ? user.wallet : Nothing;
   const { status, value, startTime, hash, info, type: txType } = txStatus;
-
-  const refreshBalanceAndStakeData = useCallback(() => {
-    if (wallet) {
-      refreshStakes(wallet);
-      refreshBalance(wallet);
-    }
-  }, [refreshBalance, refreshStakes, wallet]);
 
   // when the page loaded first time
   useEffect(() => {
@@ -114,13 +102,11 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
   useEffect(() => {
     // subscribe again if another wallet has been added
     if (wallet) {
-      refreshBalanceAndStakeData();
       unSubscribeBinanceTransfers();
       subscribeBinanceTransfers({ address: wallet, net: getNet() });
     }
   }, [
     wallet,
-    refreshBalanceAndStakeData,
     subscribeBinanceTransfers,
     unSubscribeBinanceTransfers,
   ]);
@@ -337,8 +323,6 @@ export default connect(
     setTxTimerModal: appActions.setTxTimerModal,
     setTxTimerStatus: appActions.setTxTimerStatus,
     resetTxStatus: appActions.resetTxStatus,
-    refreshBalance: walletActions.refreshBalance,
-    refreshStakes: walletActions.refreshStakes,
     subscribeBinanceTransfers: binanceActions.subscribeBinanceTransfers,
     unSubscribeBinanceTransfers: binanceActions.unSubscribeBinanceTransfers,
   },
