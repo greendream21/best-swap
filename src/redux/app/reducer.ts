@@ -1,4 +1,6 @@
 import { Reducer } from 'redux';
+import { tokenAmount } from '@thorchain/asgardex-token';
+
 import { AppActionsTypes } from './actions';
 import { MIN_VALUE, MAX_VALUE } from './const';
 import { State } from './types';
@@ -13,6 +15,12 @@ const initState: State = {
     modal: false,
     value: 0,
     status: false,
+    txData: {
+      sourceAsset: '',
+      targetAsset: '',
+      sourceAmount: tokenAmount(0),
+      targetAmount: tokenAmount(0),
+    },
   },
   txResult: null,
 };
