@@ -1,6 +1,7 @@
 import { all, takeEvery, put, fork, call, delay } from 'redux-saga/effects';
 import { isEmpty as _isEmpty } from 'lodash';
 import byzantine from '@thorchain/byzantine-module';
+import { PoolDetail } from '../../types/generated/midgard/api';
 import { axiosRequest } from '../../helpers/apiHelper';
 import * as actions from './actions';
 import * as api from '../../helpers/apiHelper';
@@ -120,26 +121,43 @@ export function* getPools() {
   });
 }
 
-function* tryGetPoolData(assets: string[]) {
-  for (let i = 0; i < MIDGARD_MAX_RETRY; i++) {
-    try {
-      const noCache = i > 0;
-      // Unsafe type match of `basePath`: Can't be inferred by `tsc` from a return value of a Generator function - known TS/Generator/Saga issue
-      const basePath: string = yield call(getApiBasePath, getNet(), noCache);
-      const midgardApi = api.getMidgardDefaultApi(basePath);
-      const fn = midgardApi.getPoolsData;
-      const { data }: UnpackPromiseResponse<typeof fn> = yield call(
-        { context: midgardApi, fn },
-        assets.join(),
-      );
-      return data;
-    } catch (error) {
-      if (i < MIDGARD_MAX_RETRY - 1) {
-        yield delay(MIDGARD_RETRY_DELAY);
-      }
-    }
+// should use this once midgard is ready for fetching multiple pool data at once
+// function* tryGetAllPoolData(assets: string[]) {
+//   for (let i = 0; i < MIDGARD_MAX_RETRY; i++) {
+//     try {
+//       const noCache = i > 0;
+//       // Unsafe type match of `basePath`: Can't be inferred by `tsc` from a return value of a Generator function - known TS/Generator/Saga issue
+//       const basePath: string = yield call(getApiBasePath, getNet(), noCache);
+//       const midgardApi = api.getMidgardDefaultApi(basePath);
+//       const fn = midgardApi.getPoolsData;
+//       const { data }: UnpackPromiseResponse<typeof fn> = yield call(
+//         { context: midgardApi, fn },
+//         assets.join(),
+//       );
+//       return data;
+//     } catch (error) {
+//       if (i < MIDGARD_MAX_RETRY - 1) {
+//         yield delay(MIDGARD_RETRY_DELAY);
+//       }
+//     }
+//   }
+//   throw new Error('Midgard API request failed to get pool data');
+// }
+
+function* tryGetPoolDataFromAsset(asset: string) {
+  try {
+    const basePath: string = yield call(getApiBasePath, getNet());
+    const midgardApi = api.getMidgardDefaultApi(basePath);
+    const fn = midgardApi.getPoolsData;
+    const { data }: UnpackPromiseResponse<typeof fn> = yield call(
+      { context: midgardApi, fn },
+      asset,
+    );
+    return data;
+  } catch (error) {
+    console.log(error);
+    return [];
   }
-  throw new Error('Midgard API request failed to get pool data');
 }
 
 export function* getPoolData() {
@@ -148,10 +166,21 @@ export function* getPoolData() {
   }: ReturnType<typeof actions.getPoolData>) {
     const { assets, overrideAllPoolData } = payload;
     try {
-      const data = yield call(tryGetPoolData, assets);
+      const poolDetailsRespones: Array<PoolDetail []> = yield all(
+        assets.map((asset: string) => {
+          return call(tryGetPoolDataFromAsset, asset);
+        }),
+      );
+
+      const poolDetails: PoolDetail[] = [];
+
+      poolDetailsRespones.forEach(
+        (data: PoolDetail[]) => data.length && poolDetails.push(data[0]),
+      );
+
       yield put(
         actions.getPoolDataSuccess({
-          poolDetails: data,
+          poolDetails,
           overrideAllPoolData,
         }),
       );
