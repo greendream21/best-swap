@@ -45,6 +45,7 @@ type ConnectedProps = {
   txStatus: TxStatus;
   txResult: Maybe<TxResult>;
   wsTransferEvent: TransferEventRD;
+  getPoolAddress: typeof midgardActions.getPoolAddress;
   getPools: typeof midgardActions.getPools;
   setTxTimerValue: typeof appActions.setTxTimerValue;
   countTxTimerValue: typeof appActions.countTxTimerValue;
@@ -72,6 +73,7 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
     txResult,
     wsTransferEvent,
     getPools,
+    getPoolAddress,
     setTxTimerValue,
     countTxTimerValue,
     setTxTimerModal,
@@ -110,6 +112,7 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
   useEffect(() => {
     // subscribe again if another wallet has been added
     if (wallet) {
+      getPoolAddress();
       getPools();
       refreshBalanceAndStakeData();
       unSubscribeBinanceTransfers();
@@ -117,6 +120,8 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
     }
   }, [
     wallet,
+    getPools,
+    getPoolAddress,
     refreshBalanceAndStakeData,
     subscribeBinanceTransfers,
     unSubscribeBinanceTransfers,
@@ -327,6 +332,7 @@ export default connect(
   }),
   {
     getPools: midgardActions.getPools,
+    getPoolAddress: midgardActions.getPoolAddress,
     setTxResult: appActions.setTxResult,
     setTxTimerValue: appActions.setTxTimerValue,
     countTxTimerValue: appActions.countTxTimerValue,

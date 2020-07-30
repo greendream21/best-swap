@@ -63,6 +63,10 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
 
   const wallet: Maybe<string> = user ? user.wallet : null;
 
+  const handleGetPools = () => {
+    getPools();
+  };
+
   const handleNewPool = () => {
     if (!wallet) {
       showNotification({
@@ -93,13 +97,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
       key: 'stake',
       title: (
         <ActionHeader>
-          <Button
-            onClick={() => {
-              getPools();
-            }}
-            typevalue="outline"
-            round="true"
-          >
+          <Button onClick={handleGetPools} typevalue="outline" round="true">
             <SyncOutlined />
             refresh
           </Button>
