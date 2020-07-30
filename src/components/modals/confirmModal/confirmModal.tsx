@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { Row } from 'antd';
 import { FullscreenExitOutlined, CloseOutlined } from '@ant-design/icons';
 
+import { tokenAmount } from '@thorchain/asgardex-token';
 import StepBar from '../../uielements/stepBar';
 import TxTimer from '../../uielements/txTimer';
 import Button from '../../uielements/button';
@@ -23,7 +24,15 @@ type Props = {
 
 const ConfirmModal: React.FC<Props> = (props): JSX.Element => {
   const { txStatus, txResult, onClose } = props;
-  const { modal, status, value, hash, startTime, txData, type: txType } = txStatus;
+  const {
+    modal,
+    status,
+    value,
+    hash,
+    startTime,
+    txData,
+    type: txType,
+  } = txStatus;
   const { sourceAsset, sourceAmount, targetAsset, targetAmount, slip } = txData;
   const txURL = TESTNET_TX_BASE_URL + hash;
 
@@ -66,6 +75,12 @@ const ConfirmModal: React.FC<Props> = (props): JSX.Element => {
     <CloseOutlined style={{ color: '#fff' }} />
   );
 
+  // in swap tx, should display exact swapped amount
+  const outputAmount =
+    txType === TxTypes.SWAP && txResult
+      ? tokenAmount(txResult?.amount)
+      : targetAmount;
+
   const renderContent = () => {
     return (
       <ModalContent>
@@ -84,7 +99,7 @@ const ConfirmModal: React.FC<Props> = (props): JSX.Element => {
             <StepBar size={50} />
             <div className="asset-pair">
               <CoinData asset={source} assetValue={sourceAmount} />
-              <CoinData asset={target} assetValue={targetAmount} />
+              <CoinData asset={target} assetValue={outputAmount} />
             </div>
           </div>
         </Row>
