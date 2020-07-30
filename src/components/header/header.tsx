@@ -26,6 +26,7 @@ import { TransferEventRD } from '../../redux/binance/types';
 import * as appActions from '../../redux/app/actions';
 import * as walletActions from '../../redux/wallet/actions';
 import * as binanceActions from '../../redux/binance/actions';
+import * as midgardActions from '../../redux/midgard/actions';
 
 import { MAX_VALUE } from '../../redux/app/const';
 import { TxStatus, TxResult, TxTypes } from '../../redux/app/types';
@@ -44,6 +45,7 @@ type ConnectedProps = {
   txStatus: TxStatus;
   txResult: Maybe<TxResult>;
   wsTransferEvent: TransferEventRD;
+  getPools: typeof midgardActions.getPools;
   setTxTimerValue: typeof appActions.setTxTimerValue;
   countTxTimerValue: typeof appActions.countTxTimerValue;
   setTxTimerModal: typeof appActions.setTxTimerModal;
@@ -69,6 +71,7 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
     txStatus,
     txResult,
     wsTransferEvent,
+    getPools,
     setTxTimerValue,
     countTxTimerValue,
     setTxTimerModal,
@@ -107,6 +110,7 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
   useEffect(() => {
     // subscribe again if another wallet has been added
     if (wallet) {
+      getPools();
       refreshBalanceAndStakeData();
       unSubscribeBinanceTransfers();
       subscribeBinanceTransfers({ address: wallet, net: getNet() });
@@ -322,6 +326,7 @@ export default connect(
     wsTransferEvent: state.Binance.wsTransferEvent,
   }),
   {
+    getPools: midgardActions.getPools,
     setTxResult: appActions.setTxResult,
     setTxTimerValue: appActions.setTxTimerValue,
     countTxTimerValue: appActions.countTxTimerValue,

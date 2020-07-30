@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import * as H from 'history';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
@@ -25,7 +25,6 @@ import {
 import { PoolData } from '../../helpers/utils/types';
 import { getTickerFormat } from '../../helpers/stringHelper';
 
-import * as walletActions from '../../redux/wallet/actions';
 import * as midgardActions from '../../redux/midgard/actions';
 import { RootState } from '../../redux/store';
 import { AssetData, User } from '../../redux/wallet/types';
@@ -43,7 +42,6 @@ type Props = {
   assetData: AssetData[];
   user: Maybe<User>;
   loading: boolean;
-  refreshBalance: typeof walletActions.refreshBalance;
   getPools: typeof midgardActions.getPools;
 };
 
@@ -55,7 +53,6 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     assetData,
     user,
     loading,
-    refreshBalance,
     getPools,
   } = props;
 
@@ -66,18 +63,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
 
   const wallet: Maybe<string> = user ? user.wallet : null;
 
-  useEffect(() => {
-    if (wallet) {
-      // refresh wallet balance
-      refreshBalance(wallet);
-    }
-    getPools();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [wallet]);
-
   const handleNewPool = () => {
-    const wallet = user ? user.wallet : null;
-
     if (!wallet) {
       showNotification({
         type: 'warning',
@@ -305,7 +291,6 @@ export default compose(
     }),
     {
       getPools: midgardActions.getPools,
-      refreshBalance: walletActions.refreshBalance,
     },
   ),
   withRouter,
