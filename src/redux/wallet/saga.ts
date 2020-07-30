@@ -1,4 +1,4 @@
-import { all, takeEvery, put, fork, call, delay } from 'redux-saga/effects';
+import { all, takeEvery, put, fork, call, delay, select } from 'redux-saga/effects';
 import { push } from 'connected-react-router';
 import { isEmpty as _isEmpty } from 'lodash';
 
@@ -15,6 +15,7 @@ import {
   baseAmount,
   tokenAmount,
 } from '@thorchain/asgardex-token';
+import { RootState } from '../store';
 import * as api from '../../helpers/apiHelper';
 
 import {
@@ -256,11 +257,24 @@ export function* refreshStakes() {
   });
 }
 
+export function* refreshWallet() {
+  yield takeEvery('REFRESH_WALLET', function*() {
+    const user = yield select((state: RootState) => state.Wallet.user);
+    const wallet = user?.wallet;
+
+    if (wallet) {
+      yield put(actions.refreshBalance(wallet));
+      yield put(actions.refreshStakes(wallet));
+    }
+  });
+}
+
 export default function* rootSaga() {
   yield all([
     fork(saveWalletSaga),
     fork(forgetWalletSaga),
     fork(refreshBalance),
     fork(refreshStakes),
+    fork(refreshWallet),
   ]);
 }
