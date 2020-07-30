@@ -46,11 +46,10 @@ const ConfirmModal: React.FC<Props> = (props): JSX.Element => {
     if (txType === TxTypes.STAKE || txType === TxTypes.CREATE) {
       return !status;
     } else if (txType === TxTypes.WITHDRAW || txType === TxTypes.SWAP) {
-      if (txResult.status && !status) return true;
-      return false;
+      return txResult.status === true && !status;
     }
     return false;
-  }, [status, txType, txResult]);
+  }, [status, txType, txResult.status]);
 
   const modalTitle: string = useMemo(() => {
     if (txType === TxTypes.SWAP) {
@@ -78,7 +77,7 @@ const ConfirmModal: React.FC<Props> = (props): JSX.Element => {
 
   // in swap tx, should display exact swapped amount
   const outputAmount =
-    txType === TxTypes.SWAP && txResult
+    txType === TxTypes.SWAP && txResult.status
       ? tokenAmount(txResult?.amount)
       : targetAmount;
 

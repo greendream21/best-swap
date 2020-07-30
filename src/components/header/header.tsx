@@ -125,7 +125,7 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
     if (
       currentWsTransferEvent &&
       hash !== undefined &&
-      txResult === null &&
+      txResult?.status === false &&
       wallet
     ) {
       const transferHash = currentWsTransferEvent?.data?.H;
@@ -133,7 +133,7 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
       if (txType === TxTypes.SWAP) {
         const pair: Pair = getPair(info);
 
-        if (!txStatus.status && txResult !== Nothing) {
+        if (txStatus.status) {
           const txResultData = getTxResult({
             pair,
             tx: currentWsTransferEvent,
@@ -141,7 +141,10 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
           });
 
           if (txResultData) {
-            setTxResult(txResultData);
+            setTxResult({
+              status: true,
+              ...txResultData,
+            });
           }
         }
       }
@@ -237,18 +240,8 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
   };
 
   const handleEndTxProgress = useCallback(() => {
-    // Update `status` from here if modal is hided (not running)
-    // to avoid unexptected UX issues within modal (it's final icon won't be visible)
-    if (!txStatus.modal) {
-      setTxTimerStatus(false);
-      if (
-        txStatus.type === TxTypes.STAKE ||
-        txStatus.type === TxTypes.WITHDRAW
-      ) {
-        refreshBalanceAndStakeData();
-      }
-    }
-  }, [txStatus, setTxTimerStatus, refreshBalanceAndStakeData]);
+    setTxTimerStatus(false);
+  }, [setTxTimerStatus]);
 
   const handleCloseModal = () => {
     // hide modal

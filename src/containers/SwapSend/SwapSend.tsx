@@ -173,6 +173,19 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [txStatus]);
 
+  /**
+   * calculate the amount to cover 1 RUNE network fee
+   */
+  const getRuneFeeAmount = (): BigNumber => {
+    const { source }: Pair = swapPair;
+    if (!source) return bn(0);
+
+    const runePrice = priceIndex.RUNE;
+    const curTokenPrice = bn(priceIndex[source.toUpperCase()]);
+
+    return runePrice.dividedBy(curTokenPrice);
+  };
+
   const handleGetSwapData = (): Maybe<SwapData> => {
     if (!swapPair.source || !swapPair.target) {
       return Nothing;
@@ -227,19 +240,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     const bnbAmount = bnbBaseAmount(assetData);
     const fee = bnbFeeAmount();
     return !!bnbAmount && !!fee && bnbAmount.amount().isLessThan(fee.amount());
-  };
-
-  /**
-   * calculate the amount to cover 1 RUNE network fee
-   */
-  const getRuneFeeAmount = (): BigNumber => {
-    const { source }: Pair = swapPair;
-    if (!source) return bn(0);
-
-    const runePrice = priceIndex.RUNE;
-    const curTokenPrice = bn(priceIndex[source.toUpperCase()]);
-
-    return runePrice.dividedBy(curTokenPrice);
   };
 
   /**
@@ -359,7 +359,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
         tokenAmountToSwap = tokenAmount(amountToSwap);
       }
 
-      setTxResult(null);
+      setTxResult({ status: false });
 
       handleStartTimer();
       const bncClient = await binanceClient(BINANCE_NET);
@@ -513,7 +513,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     }
   };
 
-  const handleStartTimer = () => {
+  const handleStartTimer = useCallback(() => {
     const { source: sourceAsset, target: targetAsset } = swapPair;
     const targetAmount = swapData?.outputAmount;
 
@@ -539,7 +539,15 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
         setDragReset(true);
       }, CONFIRM_DISMISS_TIME);
     }
-  };
+  }, [
+    swapPair,
+    swapData,
+    xValue,
+    info,
+    resetTxStatus,
+    setTxTimerModal,
+    setDragReset,
+  ]);
 
   const handleChangeSwapType = (toSend: boolean) => {
     const view = toSend ? SwapSendView.SEND : SwapSendView.DETAIL;
