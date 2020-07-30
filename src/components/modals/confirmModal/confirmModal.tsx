@@ -16,15 +16,14 @@ import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
 import { MAX_VALUE } from '../../../redux/app/const';
 
 type Props = {
-  visible: boolean;
   txStatus: TxStatus;
   txResult: TxResult;
   onClose?: () => void;
 };
 
 const ConfirmModal: React.FC<Props> = (props): JSX.Element => {
-  const { visible, txStatus, txResult, onClose } = props;
-  const { status, value, hash, startTime, txData, type: txType } = txStatus;
+  const { txStatus, txResult, onClose } = props;
+  const { modal, status, value, hash, startTime, txData, type: txType } = txStatus;
   const { sourceAsset, sourceAmount, targetAsset, targetAmount, slip } = txData;
   const txURL = TESTNET_TX_BASE_URL + hash;
 
@@ -113,7 +112,7 @@ const ConfirmModal: React.FC<Props> = (props): JSX.Element => {
   return (
     <StyledModal
       title={modalTitle}
-      visible={visible}
+      visible={modal}
       closeIcon={closeIcon}
       onCancel={onClose}
       footer={null}

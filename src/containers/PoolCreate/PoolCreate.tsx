@@ -4,7 +4,6 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter, useHistory, useParams } from 'react-router-dom';
 import { Row, Col, Spin } from 'antd';
-import { FullscreenExitOutlined, CloseOutlined } from '@ant-design/icons';
 import { get as _get } from 'lodash';
 
 import BigNumber from 'bignumber.js';
@@ -18,16 +17,12 @@ import {
 } from '@thorchain/asgardex-util';
 
 import { TokenAmount, tokenAmount } from '@thorchain/asgardex-token';
-import Button from '../../components/uielements/button';
 import Label from '../../components/uielements/label';
 import Status from '../../components/uielements/status';
 import CoinIcon from '../../components/uielements/coins/coinIcon';
 import CoinCard from '../../components/uielements/coins/coinCard';
 import Drag from '../../components/uielements/drag';
 import { greyArrowIcon } from '../../components/icons';
-import TxTimer from '../../components/uielements/txTimer';
-import StepBar from '../../components/uielements/stepBar';
-import CoinData from '../../components/uielements/coins/coinData';
 import PrivateModal from '../../components/modals/privateModal';
 
 import * as appActions from '../../redux/app/actions';
@@ -37,8 +32,6 @@ import * as binanceActions from '../../redux/binance/actions';
 
 import {
   ContentWrapper,
-  ConfirmModal,
-  ConfirmModalContent,
   LoaderWrapper,
 } from './PoolCreate.style';
 import { getTickerFormat } from '../../helpers/stringHelper';
@@ -47,8 +40,6 @@ import {
   getAvailableTokensToCreate,
 } from '../../helpers/utils/poolUtils';
 
-import { TESTNET_TX_BASE_URL } from '../../helpers/apiHelper';
-import { MAX_VALUE } from '../../redux/app/const';
 import { RootState } from '../../redux/store';
 import { TxStatus, TxTypes } from '../../redux/app/types';
 import { State as BinanceState } from '../../redux/binance/types';
@@ -91,7 +82,6 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
     basePriceAsset,
     assetData,
     binanceData,
-    txStatus,
     pools,
     refreshBalance,
     getPools,
@@ -133,7 +123,7 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleStartTimer = useCallback(() => {
+  const handleStartTimer = () => {
     resetTxStatus({
       type: TxTypes.CREATE,
       value: 0,
@@ -153,21 +143,6 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
       setTxTimerModal(false);
       setDragReset(true);
     }, CONFIRM_DISMISS_TIME);
-  }, [resetTxStatus, setTxTimerModal]);
-
-  const handleCloseModal = useCallback(() => {
-    setTxTimerModal(false);
-  }, [setTxTimerModal]);
-
-  const handleFinishTx = () => {
-    showNotification({
-      type: 'open',
-      message: 'Pool Created Successfully!',
-      description:
-        'It may take a few moments until a new pool appears in the pool list!',
-    });
-
-    handleCloseModal();
   };
 
   const handleOpenPrivateModal = useCallback(() => {
@@ -293,7 +268,7 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
           message: 'Create Pool Failed',
           description: 'Create Pool information is not valid.',
         });
-        handleCloseModal();
+        resetTxStatus();
         setDragReset(true);
         console.error(error); // eslint-disable-line no-console
       }
@@ -317,7 +292,6 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
         message: 'Stake Invalid',
         description: 'You need to enter an amount to stake.',
       });
-      handleCloseModal();
       setDragReset(true);
       return;
     }
@@ -501,80 +475,6 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
     );
   };
 
-  const renderStakeModalContent = () => {
-    const { status, value, startTime, hash } = txStatus;
-
-    const source = 'rune';
-    const target = getTickerFormat(symbol);
-    const runePrice = validBNOrZero(priceIndex?.RUNE);
-
-    const totalPrice = runeAmount.amount().multipliedBy(runePrice);
-
-    const completed = hash && !status;
-    const txURL = TESTNET_TX_BASE_URL + hash;
-
-    return (
-      <ConfirmModalContent>
-        <Row className="modal-content">
-          <div className="timer-container">
-            <TxTimer
-              status={status}
-              value={value}
-              maxValue={MAX_VALUE}
-              startTime={startTime}
-            />
-          </div>
-          <div className="coin-data-wrapper">
-            <StepBar size={50} />
-            <div className="coin-data-container">
-              <CoinData
-                data-test="stakeconfirm-coin-data-source"
-                asset={source}
-                assetValue={runeAmount}
-                price={totalPrice}
-                priceUnit={basePriceAsset}
-              />
-              <CoinData
-                data-test="stakeconfirm-coin-data-target"
-                asset={target}
-                assetValue={targetAmount}
-                price={totalPrice}
-                priceUnit={basePriceAsset}
-              />
-            </div>
-          </div>
-        </Row>
-        <Row className="modal-info-wrapper">
-          {completed && (
-            <div className="hash-address">
-              <div className="copy-btn-wrapper">
-                <Button
-                  className="view-btn"
-                  color="success"
-                  onClick={handleFinishTx}
-                >
-                  FINISH
-                </Button>
-                <a href={txURL} target="_blank" rel="noopener noreferrer">
-                  VIEW TRANSACTION
-                </a>
-              </div>
-            </div>
-          )}
-        </Row>
-      </ConfirmModalContent>
-    );
-  };
-
-  const openCreateModal = txStatus.type === 'create' ? txStatus.modal : false;
-  const completed = txStatus.value !== null && !txStatus.status;
-  const modalTitle = !completed ? 'CREATING POOL' : 'POOL CREATED';
-  const coinCloseIconType = txStatus.status ? (
-    <FullscreenExitOutlined style={{ color: '#fff' }} />
-  ) : (
-    <CloseOutlined style={{ color: '#fff' }} />
-  );
-
   return (
     <ContentWrapper className="pool-new-wrapper" transparent>
       <Row className="pool-new-row">
@@ -585,15 +485,6 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
           {renderAssetView()}
         </Col>
       </Row>
-      <ConfirmModal
-        title={modalTitle}
-        closeIcon={coinCloseIconType}
-        visible={openCreateModal}
-        footer={null}
-        onCancel={handleCloseModal}
-      >
-        {renderStakeModalContent()}
-      </ConfirmModal>
     </ContentWrapper>
   );
 };

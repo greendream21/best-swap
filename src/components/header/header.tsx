@@ -8,6 +8,8 @@ import * as RD from '@devexperts/remote-data-ts';
 
 import Logo from '../uielements/logo';
 import TxProgress from '../uielements/txProgress';
+import ConfirmModal from '../modals/confirmModal';
+import showNotification from '../uielements/notification';
 
 import { StyledHeader, LogoWrapper, HeaderActionButtons } from './header.style';
 import HeaderSetting from './headerSetting';
@@ -79,6 +81,7 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
   const history = useHistory();
 
   const wallet: Maybe<string> = user ? user.wallet : Nothing;
+  const { status, value, startTime, hash, info, type: txType } = txStatus;
 
   const refreshBalanceAndStakeData = useCallback(() => {
     if (wallet) {
@@ -115,7 +118,6 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
 
   // wsTransferEvent has been updated
   useEffect(() => {
-    const { info, hash, type } = txStatus;
     const currentWsTransferEvent = RD.toNullable(wsTransferEvent);
 
     if (
@@ -126,7 +128,7 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
     ) {
       const transferHash = currentWsTransferEvent?.data?.H;
 
-      if (type === TxTypes.SWAP) {
+      if (txType === TxTypes.SWAP) {
         const pair: Pair = getPair(info);
 
         if (!txStatus.status && txResult !== Nothing) {
@@ -141,13 +143,13 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
           }
         }
       }
-      if (type === TxTypes.STAKE) {
+      if (txType === TxTypes.STAKE) {
         if (transferHash === hash) {
           // Stake TX with same tx hash is detected
           // DO SOMETHING
         }
       }
-      if (type === TxTypes.WITHDRAW) {
+      if (txType === TxTypes.WITHDRAW) {
         const withdrawTxRes = withdrawResult({
           tx: currentWsTransferEvent,
           symbol: info,
@@ -246,7 +248,16 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
     }
   }, [txStatus, setTxTimerStatus, refreshBalanceAndStakeData]);
 
-  const { status, value, startTime } = txStatus;
+  const handleCloseModal = () => {
+    if (txType === TxTypes.CREATE) {
+      showNotification({
+        type: 'open',
+        message: 'Pool Created Successfully!',
+        description:
+          'It may take a few moments until a new pool appears in the pool list!',
+      });
+    }
+  };
 
   return (
     <StyledHeader>
@@ -289,6 +300,11 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
           />
         )}
       </HeaderActionButtons>
+      <ConfirmModal
+        txStatus={txStatus}
+        txResult={txResult || {}}
+        onClose={handleCloseModal}
+      />
     </StyledHeader>
   );
 };
