@@ -67,6 +67,23 @@ function* tryGetPools() {
           fn,
         },
       );
+      return poolAssets;
+    } catch (error) {
+      if (i < MIDGARD_MAX_RETRY - 1) {
+        yield delay(MIDGARD_RETRY_DELAY);
+      }
+    }
+  }
+  throw new Error('Midgard API request failed to get pools');
+}
+
+function* tryGetAssets(poolAssets: string[]) {
+  for (let i = 0; i < MIDGARD_MAX_RETRY; i++) {
+    try {
+      const noCache = i > 0;
+      // Unsafe type match of `basePath`: Can't be inferred by `tsc` from a return value of a Generator function - known TS/Generator/Saga issue
+      const basePath: string = yield call(getApiBasePath, getNet(), noCache);
+      const midgardApi = api.getMidgardDefaultApi(basePath);
 
       if (!_isEmpty(poolAssets)) {
         const fn = midgardApi.getAssetInfo;
@@ -79,7 +96,7 @@ function* tryGetPools() {
           },
           poolAssets.join(),
         );
-        return { poolAssets, assetDetails } as GetPoolsResult;
+        return assetDetails;
       } else {
         throw new Error('No pools available');
       }
@@ -96,9 +113,11 @@ export function* getPools() {
   yield takeEvery('GET_POOLS_REQUEST', function*() {
     try {
       // Unsafe: Can't infer type of `GetPoolsResult` in a Generator function - known TS/Generator/Saga issue
-      const { poolAssets, assetDetails }: GetPoolsResult = yield call(
-        tryGetPools,
-      );
+      const pools = yield call(tryGetPools);
+
+      yield put(actions.getPoolsSuccess(pools));
+
+      const assetDetails = yield call(tryGetAssets, pools);
       const assetDetailIndex = getAssetDetailIndex(assetDetails);
       const assetsPayload: actions.SetAssetsPayload = {
         assetDetails,
@@ -112,9 +131,8 @@ export function* getPools() {
       yield put(actions.setPriceIndex(priceIndex));
 
       yield put(
-        actions.getPoolData({ assets: poolAssets, overrideAllPoolData: true }),
+        actions.getPoolData({ assets: pools, overrideAllPoolData: true }),
       );
-      yield put(actions.getPoolsSuccess(poolAssets));
     } catch (error) {
       yield put(actions.getPoolsFailed(error));
     }
@@ -166,7 +184,7 @@ export function* getPoolData() {
   }: ReturnType<typeof actions.getPoolData>) {
     const { assets, overrideAllPoolData } = payload;
     try {
-      const poolDetailsRespones: Array<PoolDetail []> = yield all(
+      const poolDetailsRespones: Array<PoolDetail[]> = yield all(
         assets.map((asset: string) => {
           return call(tryGetPoolDataFromAsset, asset);
         }),
