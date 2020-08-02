@@ -299,7 +299,7 @@ describe('pool/utils/', () => {
           poolPrice: '2.000',
         },
       };
-      const result = getPoolData('RUNE', fsnPoolDetail, priceIndex);
+      const result = getPoolData('RUNE', 'FSN-F1B', fsnPoolDetail, priceIndex);
 
       expect(result.asset).toEqual(expected.asset);
       expect(result.target).toEqual(expected.target);
@@ -355,7 +355,7 @@ describe('pool/utils/', () => {
           poolPrice: '0.000',
         },
       };
-      const result = getPoolData('RUNE', bnbPoolDetail, priceIndex);
+      const result = getPoolData('RUNE', 'BNB', bnbPoolDetail, priceIndex);
 
       expect(result.asset).toEqual(expected.asset);
       expect(result.target).toEqual(expected.target);
