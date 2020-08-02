@@ -98,6 +98,7 @@ export type State = {
   priceIndex: PriceDataIndex;
   error: Maybe<Error>;
   poolLoading: boolean;
+  poolDataLoading: boolean;
   txData: TxDetailData;
   txCurData: Maybe<InlineResponse2001>;
   apiBasePath: ApiBasePathRD;

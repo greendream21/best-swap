@@ -150,13 +150,12 @@ export const getAvailableTokensToCreate = (
 
 export const getPoolData = (
   from: string,
+  targetSymbol: string,
   poolDetail: PoolDetail,
   priceIndex: PriceDataIndex,
 ): PoolData => {
   const asset = from;
-  const { symbol = '', ticker: target = '' } = getAssetFromString(
-    poolDetail?.asset,
-  );
+  const target = getTickerFormat(targetSymbol).toUpperCase();
 
   const runePrice = validBNOrZero(priceIndex?.RUNE);
 
@@ -222,7 +221,7 @@ export const getPoolData = (
         target,
       },
       target,
-      symbol,
+      symbol: targetSymbol,
       depth: depthValue,
       volume24: volume24Value,
       transaction: transactionValue,

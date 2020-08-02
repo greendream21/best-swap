@@ -240,6 +240,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
 
       const poolDataDetail: PoolData = getPoolData(
         'rune',
+        symbol,
         poolInfo,
         priceIndex,
       );
@@ -251,9 +252,12 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
       };
     });
 
-    const filteredData = poolViewData.filter(
-      poolData => poolData.status === poolStatus,
-    );
+    const filteredData = poolViewData.filter(poolData => {
+      return (
+        (poolStatus === PoolDetailStatusEnum.Enabled && !poolData.status) ||
+        poolData.status === poolStatus
+      );
+    });
 
     return renderPoolTable(filteredData, view);
   };
