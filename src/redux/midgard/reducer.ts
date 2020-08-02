@@ -34,6 +34,7 @@ const initState: State = {
   },
   error: null,
   poolLoading: false,
+  poolDataLoading: false,
   txData: initial,
   txCurData: {},
   apiBasePath: initial,
@@ -96,7 +97,7 @@ const reducer: Reducer<State, MidgardActionTypes> = (
     case 'GET_POOL_DATA_REQUEST':
       return {
         ...state,
-        poolLoading: true,
+        poolDataLoading: true,
         error: Nothing,
       };
     case 'GET_POOL_DATA_SUCCESS': {
@@ -125,13 +126,13 @@ const reducer: Reducer<State, MidgardActionTypes> = (
       return {
         ...state,
         poolData,
-        poolLoading: false,
+        poolDataLoading: false,
       };
     }
     case 'GET_POOL_DATA_FAILED':
       return {
         ...state,
-        poolLoading: false,
+        poolDataLoading: false,
         error: action.payload,
       };
     case 'GET_STAKER_POOL_DATA_REQUEST':

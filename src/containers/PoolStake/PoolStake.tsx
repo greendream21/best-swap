@@ -1226,7 +1226,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   const hasWallet = wallet !== null;
   const poolInfo = poolData[tokenSymbol] || {};
 
-  const poolStats = getPoolData('rune', poolInfo, priceIndex);
+  const poolStats = getPoolData('rune', symbol, poolInfo, priceIndex);
   const calcResult = getData();
 
   const yourShareSpan = hasWallet ? 8 : 24;
