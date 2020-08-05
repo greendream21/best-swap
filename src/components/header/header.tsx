@@ -30,7 +30,7 @@ import { MAX_VALUE } from '../../redux/app/const';
 import { TxStatus, TxResult, TxTypes } from '../../redux/app/types';
 import { getNet } from '../../env';
 
-import { getPair } from '../../helpers/stringHelper';
+import { getSymbolPair } from '../../helpers/stringHelper';
 import { getTxResult } from '../../helpers/utils/swapUtils';
 import {
   withdrawResult,
@@ -116,7 +116,7 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
       const transferHash = currentWsTransferEvent?.data?.H;
 
       if (txType === TxTypes.SWAP) {
-        const pair: Pair = getPair(info);
+        const pair: Pair = getSymbolPair(info);
 
         if (txStatus.status) {
           const txResultData = getTxResult({
