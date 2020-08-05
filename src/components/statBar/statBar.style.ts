@@ -1,35 +1,22 @@
 import styled from 'styled-components';
 import { palette } from 'styled-theme';
-import { Card, Statistic } from 'antd';
-
-export const StyledCard = styled(Card)`
-  border: none;
-
-  .ant-card-head,
-  .ant-card-body {
-    background-color: ${palette('background', 1)};
-  }
-
-  .ant-card-head {
-    border-bottom-color: ${palette('gray', 0)};
-
-    .ant-card-head-wrapper {
-      .ant-card-head-title {
-        color: ${palette('text', 0)};
-        text-transform: uppercase;
-      }
-    }
-  }
-`;
+import { Statistic } from 'antd';
 
 export const StyledStatistic = styled(Statistic)`
+  background: ${palette('background', 0)};
   text-transform: uppercase;
+  padding: 10px 20px;
 
   .ant-statistic-title {
     color: ${palette('text', 1)};
+    font-size: 14px;
   }
 
-  .ant-statistic-content-value-int {
-    color: ${palette('text', 0)};
+  .ant-statistic-content {
+    span {
+      color: ${palette('text', 0)};
+      font-size: 16px;
+      font-weight: bold;
+    }
   }
 `;
