@@ -44,7 +44,7 @@ import {
   FeeParagraph,
   SliderSwapWrapper,
 } from './SwapSend.style';
-import { getTickerFormat, getPair } from '../../helpers/stringHelper';
+import { getTickerFormat, getSymbolPair } from '../../helpers/stringHelper';
 import {
   getSwapData,
   confirmSwap,
@@ -122,8 +122,14 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     resetTxStatus,
   } = props;
 
-  const { info } = useParams();
-  const swapPair = getPair(info);
+  const { symbolpair } = useParams();
+  const swapPair = getSymbolPair(symbolpair);
+  const sourceSymbol = swapPair?.source || '';
+  const targetSymbol = swapPair?.target || '';
+
+  // TODO: replace ticker based index into symbol based
+  const source = getTickerFormat(sourceSymbol);
+  const target = getTickerFormat(targetSymbol);
 
   const history = useHistory();
   const maxSlip = 30;
@@ -153,7 +159,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
    * calculate the amount to cover 1 RUNE network fee
    */
   const getRuneFeeAmount = (): BigNumber => {
-    const { source }: Pair = swapPair;
     if (!source) return bn(0);
 
     const runePrice = priceIndex.RUNE;
@@ -163,11 +168,10 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   };
 
   const handleGetSwapData = (): Maybe<SwapData> => {
-    if (!swapPair.source || !swapPair.target) {
+    if (!source || !target) {
       return Nothing;
     }
 
-    const { source, target } = swapPair;
     const runePrice = validBNOrZero(priceIndex?.RUNE);
 
     // calculate the input after 1 RUNE network fee
@@ -224,7 +228,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
    * @todo get current transactionFee from thornode constants endpoint eg :1317/thorchain/constants
    */
   const runeFeeIsNotCovered = (amount: BigNumber): boolean => {
-    const { source }: Pair = swapPair;
     if (!source) return true;
 
     const runePrice = priceIndex.RUNE;
@@ -238,7 +241,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
    * Check to consider special cases for BNB
    */
   const considerBnb = (): boolean => {
-    const { source }: Pair = swapPair;
     return source?.toUpperCase() === 'BNB';
   };
 
@@ -263,7 +265,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   };
 
   const handleChangePercent = (percent: number) => {
-    const { source }: Pair = swapPair;
     const sourceAsset = getAssetFromAssetData(assetData, source);
 
     let totalAmount = sourceAsset?.assetValue.amount() ?? bn(0);
@@ -299,8 +300,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
       return;
     }
 
-    const { source }: Pair = swapPair;
-
     const sourceAsset = getAssetFromAssetData(assetData, source);
     const totalAmount = sourceAsset?.assetValue.amount() ?? bn(0);
 
@@ -320,7 +319,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   };
 
   const handleConfirmSwap = async () => {
-    const { source = '', target = '' }: Pair = swapPair;
     const swapData = handleGetSwapData();
 
     if (user && source && target && swapData) {
@@ -490,7 +488,8 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   };
 
   const handleStartTimer = useCallback(() => {
-    const { source: sourceAsset, target: targetAsset } = swapPair;
+    const sourceAsset = source;
+    const targetAsset = target;
     const targetAmount = swapData?.outputAmount;
 
     if (sourceAsset && targetAsset && targetAmount) {
@@ -500,7 +499,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
         modal: true,
         status: true,
         startTime: Date.now(),
-        info,
+        info: symbolpair,
         txData: {
           sourceAsset,
           targetAsset,
@@ -516,10 +515,11 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
       }, CONFIRM_DISMISS_TIME);
     }
   }, [
-    swapPair,
+    source,
+    target,
     swapData,
     xValue,
-    info,
+    symbolpair,
     resetTxStatus,
     setTxTimerModal,
     setDragReset,
@@ -535,14 +535,13 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   };
 
   const handleChangeSource = (asset: string) => {
-    const { source, target }: Pair = swapPair;
     const selectedToken = getTickerFormat(asset);
 
     if (source && target) {
       const URL =
         selectedToken === target
-          ? `/swap/${selectedToken}-${source}`
-          : `/swap/${selectedToken}-${target}`;
+          ? `/swap/${targetSymbol}:${sourceSymbol}`
+          : `/swap/${sourceSymbol}:${targetSymbol}`;
       history.push(URL);
     } else {
       // eslint-disable-next-line no-console
@@ -553,14 +552,13 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   };
 
   const handleSelectTarget = (asset: string) => {
-    const { source, target }: Pair = swapPair;
     const selectedToken = getTickerFormat(asset);
 
     if (source && target) {
       const URL =
         source === selectedToken
-          ? `/swap/${target}-${selectedToken}`
-          : `/swap/${source}-${selectedToken}`;
+          ? `/swap/${targetSymbol}-${sourceSymbol}`
+          : `/swap/${sourceSymbol}-${targetSymbol}`;
       history.push(URL);
     } else {
       // eslint-disable-next-line no-console
@@ -571,11 +569,9 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   };
 
   const handleReversePair = () => {
-    const { source, target }: Pair = swapPair;
-
     if (source && target) {
       setXValue(tokenAmount(0));
-      const URL = `/swap/${target}-${source}`;
+      const URL = `/swap/${targetSymbol}-${sourceSymbol}`;
       history.push(URL);
     } else {
       // eslint-disable-next-line no-console
@@ -666,17 +662,17 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
 
   // render
   if (
-    !swapPair.source ||
-    !swapPair.target ||
+    !source ||
+    !target ||
     !Object.keys(poolData).length ||
-    !isValidSwap(swapPair, pools)
+    !isValidSwap({ source, target }, pools)
   ) {
     history.push('/pools'); // redirect to pool view if swap is invalid
     return <></>;
   }
 
-  const { source: swapSource, target: swapTarget } = swapPair;
-
+  const swapSource = source;
+  const swapTarget = target;
   const tokensData: TokenData[] = Object.keys(poolData).reduce(
     (result: TokenData[], tokenName: string) => {
       const tokenData = poolData[tokenName];
@@ -706,11 +702,10 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     price: runePrice,
   });
 
-  const { sourceData, targetData } = handleValidatePair(
-    assetData,
-    tokensData,
-    swapPair,
-  );
+  const { sourceData, targetData } = handleValidatePair(assetData, tokensData, {
+    source,
+    target,
+  });
 
   if (!swapData) {
     return <></>;

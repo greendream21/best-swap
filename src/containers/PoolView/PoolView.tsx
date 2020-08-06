@@ -33,6 +33,7 @@ import { getAssetFromString } from '../../redux/midgard/utils';
 import { ViewType, Maybe } from '../../types/bepswap';
 import { PoolDetailStatusEnum } from '../../types/generated/midgard/api';
 import showNotification from '../../components/uielements/notification';
+import { RUNE_SYMBOL } from '../../settings/assetData';
 
 type Props = {
   history: H.History;
@@ -104,9 +105,9 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         </ActionHeader>
       ),
       render: (text: string, record: PoolData) => {
-        const { asset, target, values } = record;
+        const { target, values } = record;
         if (target) {
-          const swapUrl = `/swap/${asset.toLowerCase()}-${target.toLowerCase()}`;
+          const swapUrl = `/swap/${RUNE_SYMBOL}:${values.symbol}`;
           const stakeUrl = `/pool/${values.symbol.toUpperCase()}`;
           const dataTest = `stake-button-${target.toLowerCase()}`;
 
