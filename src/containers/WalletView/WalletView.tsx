@@ -12,7 +12,7 @@ import Label from '../../components/uielements/label';
 import Button from '../../components/uielements/button';
 import CoinList from '../../components/uielements/coins/coinList';
 import { CoinListDataList } from '../../components/uielements/coins/coinList/coinList';
-import { getTickerFormat, getPair } from '../../helpers/stringHelper';
+import { getPair } from '../../helpers/stringHelper';
 import { Maybe, Nothing } from '../../types/bepswap';
 import {
   User,
@@ -26,6 +26,7 @@ import {
   matchSwapDetailPair,
   matchPoolSymbol,
 } from '../../helpers/routerHelper';
+import { RUNE_SYMBOL } from '../../settings/assetData';
 
 const { TabPane } = Tabs;
 
@@ -81,9 +82,8 @@ const WalletView: React.FC<Props> = (props: Props): JSX.Element => {
 
   const handleSelectAsset = (key: number) => {
     const newAssetName = getAssetNameByIndex(key);
-    const ticker = getTickerFormat(newAssetName);
 
-    const URL = `/swap/${ticker}-rune`;
+    const URL = `/swap/${newAssetName}:${RUNE_SYMBOL}`;
     history.push(URL);
   };
 

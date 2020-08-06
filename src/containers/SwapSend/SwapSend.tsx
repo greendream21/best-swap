@@ -124,10 +124,12 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
 
   const { symbolpair } = useParams();
   const swapPair = getSymbolPair(symbolpair);
+  const sourceSymbol = swapPair?.source || '';
+  const targetSymbol = swapPair?.target || '';
 
   // TODO: replace ticker based index into symbol based
-  const source = getTickerFormat(swapPair?.source || '');
-  const target = getTickerFormat(swapPair?.target || '');
+  const source = getTickerFormat(sourceSymbol);
+  const target = getTickerFormat(targetSymbol);
 
   const history = useHistory();
   const maxSlip = 30;
@@ -538,8 +540,8 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     if (source && target) {
       const URL =
         selectedToken === target
-          ? `/swap/${selectedToken}-${source}`
-          : `/swap/${selectedToken}-${target}`;
+          ? `/swap/${targetSymbol}:${sourceSymbol}`
+          : `/swap/${sourceSymbol}:${targetSymbol}`;
       history.push(URL);
     } else {
       // eslint-disable-next-line no-console
@@ -555,8 +557,8 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     if (source && target) {
       const URL =
         source === selectedToken
-          ? `/swap/${target}-${selectedToken}`
-          : `/swap/${source}-${selectedToken}`;
+          ? `/swap/${targetSymbol}-${sourceSymbol}`
+          : `/swap/${sourceSymbol}-${targetSymbol}`;
       history.push(URL);
     } else {
       // eslint-disable-next-line no-console
@@ -569,7 +571,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   const handleReversePair = () => {
     if (source && target) {
       setXValue(tokenAmount(0));
-      const URL = `/swap/${target}-${source}`;
+      const URL = `/swap/${targetSymbol}-${sourceSymbol}`;
       history.push(URL);
     } else {
       // eslint-disable-next-line no-console
