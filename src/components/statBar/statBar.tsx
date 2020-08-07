@@ -31,7 +31,7 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
         xl={{ span: 4 }}
       >
         <StyledStatistic
-          title="Total Liquidity"
+          title="Total Staked"
           value={getUSDValue(stats?.totalStaked ?? '0')}
           prefix="$"
         />
@@ -56,7 +56,7 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
         lg={{ span: 8 }}
         xl={{ span: 4 }}
       >
-        <StyledStatistic title="Total Users" value={stats.totalUsers} />
+        <StyledStatistic title="Total Users" value={stats?.totalUsers ?? '0'} />
       </Col>
       <Col
         xs={{ span: 24 }}
@@ -65,7 +65,7 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
         lg={{ span: 8 }}
         xl={{ span: 4 }}
       >
-        <StyledStatistic title="Total Transactions" value={stats.totalTx} />
+        <StyledStatistic title="Total Transactions" value={stats?.totalTx ?? '0'} />
       </Col>
       <Col
         xs={{ span: 24 }}
@@ -74,7 +74,7 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
         lg={{ span: 8 }}
         xl={{ span: 4 }}
       >
-        <StyledStatistic title="Total Pools" value={stats.poolCount} />
+        <StyledStatistic title="Total Pools" value={stats?.poolCount ?? '0'} />
       </Col>
       <Col
         xs={{ span: 24 }}
