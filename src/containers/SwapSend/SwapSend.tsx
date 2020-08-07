@@ -84,6 +84,7 @@ import usePrevious from '../../hooks/usePrevious';
 
 import { SwapSendView } from './types';
 import showNotification from '../../components/uielements/notification';
+import Loader from '../../components/utility/loaders/pageLoader';
 import { CONFIRM_DISMISS_TIME } from '../../settings/constants';
 
 type Props = {
@@ -599,10 +600,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     targetInfo: AssetPair[],
     pair: Pair,
   ) => {
-    if (!targetInfo.length) {
-      history.push('/pools');
-    }
-
     return validatePair(pair, sourceInfo, targetInfo);
   };
 
@@ -667,8 +664,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     !Object.keys(poolData).length ||
     !isValidSwap({ source, target }, pools)
   ) {
-    history.push('/pools'); // redirect to pool view if swap is invalid
-    return <></>;
+    return <Loader />;
   }
 
   const swapSource = source;
@@ -708,7 +704,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   });
 
   if (!swapData) {
-    return <></>;
+    return <Loader />;
   }
   const { slip, outputAmount, outputPrice } = swapData;
 
