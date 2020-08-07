@@ -35,6 +35,8 @@ import { PoolDetailStatusEnum } from '../../types/generated/midgard/api';
 import showNotification from '../../components/uielements/notification';
 import { RUNE_SYMBOL } from '../../settings/assetData';
 
+import LabelLoader from '../../components/utility/loaders/label';
+
 type Props = {
   history: H.History;
   pools: string[];
@@ -42,7 +44,9 @@ type Props = {
   priceIndex: PriceDataIndex;
   assetData: AssetData[];
   user: Maybe<User>;
-  loading: boolean;
+  poolLoading: boolean;
+  assetLoading: boolean;
+  poolDataLoading: boolean;
   getPools: typeof midgardActions.getPools;
 };
 
@@ -53,7 +57,9 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     priceIndex,
     assetData,
     user,
-    loading,
+    poolLoading,
+    assetLoading,
+    poolDataLoading,
     getPools,
   } = props;
 
@@ -62,6 +68,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
   );
   const history = useHistory();
 
+  const loading = poolLoading || poolDataLoading;
   const wallet: Maybe<string> = user ? user.wallet : null;
 
   const handleGetPools = () => {
@@ -93,6 +100,20 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     }
   };
 
+  const renderCell = (text: string) => {
+    if (loading) {
+      return <LabelLoader />;
+    }
+    return <span>{text}</span>;
+  };
+
+  const renderPoolPriceCell = (text: string) => {
+    if (assetLoading) {
+      return <LabelLoader />;
+    }
+    return <span>{text}</span>;
+  };
+
   const renderPoolTable = (poolViewData: PoolData[], view: ViewType) => {
     const buttonCol = {
       key: 'stake',
@@ -113,31 +134,33 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
 
           return (
             <ActionColumn>
-              <div className="action-column-wrapper">
-                <Link to={stakeUrl}>
-                  <Button
-                    style={{ margin: 'auto' }}
-                    round="true"
-                    typevalue="outline"
-                    data-test={dataTest}
-                  >
-                    <DatabaseOutlined />
-                    stake
-                  </Button>
-                </Link>
-                {poolStatus !== PoolDetailStatusEnum.Bootstrapped && (
-                  <Link to={swapUrl}>
+              {!loading && (
+                <div className="action-column-wrapper">
+                  <Link to={stakeUrl}>
                     <Button
                       style={{ margin: 'auto' }}
                       round="true"
+                      typevalue="outline"
                       data-test={dataTest}
                     >
-                      <SwapOutlined />
-                      swap
+                      <DatabaseOutlined />
+                      stake
                     </Button>
                   </Link>
-                )}
-              </div>
+                  {poolStatus !== PoolDetailStatusEnum.Bootstrapped && (
+                    <Link to={swapUrl}>
+                      <Button
+                        style={{ margin: 'auto' }}
+                        round="true"
+                        data-test={dataTest}
+                      >
+                        <SwapOutlined />
+                        swap
+                      </Button>
+                    </Link>
+                  )}
+                </div>
+              )}
             </ActionColumn>
           );
         }
@@ -183,6 +206,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         key: 'poolprice',
         title: 'pool price',
         dataIndex: ['values', 'poolPrice'],
+        render: renderPoolPriceCell,
         sorter: (a: PoolData, b: PoolData) => a.poolPrice.minus(b.poolPrice),
         sortDirections: ['descend', 'ascend'],
         defaultSortOrder:
@@ -192,6 +216,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         key: 'depth',
         title: 'depth',
         dataIndex: ['values', 'depth'],
+        render: renderCell,
         sorter: (a: PoolData, b: PoolData) =>
           a.depth.amount().minus(b.depth.amount()),
         sortDirections: ['descend', 'ascend'],
@@ -202,6 +227,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         key: 'volume24',
         title: '24h vol',
         dataIndex: ['values', 'volume24'],
+        render: renderCell,
         sorter: (a: PoolData, b: PoolData) =>
           a.volume24.amount().minus(b.volume24.amount()),
         sortDirections: ['descend', 'ascend'],
@@ -210,6 +236,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         key: 'roiAT',
         title: 'APR',
         dataIndex: ['values', 'roiAT'],
+        render: renderCell,
         sorter: (a: PoolData, b: PoolData) => Number(a.roiAT) - Number(b.roiAT),
         sortDirections: ['descend', 'ascend'],
       },
@@ -226,7 +253,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
       <Table
         columns={columns}
         dataSource={poolViewData}
-        loading={loading}
+        loading={poolLoading}
         rowKey="key"
         key={poolStatus}
       />
@@ -287,7 +314,9 @@ export default compose(
     (state: RootState) => ({
       pools: state.Midgard.pools,
       poolData: state.Midgard.poolData,
-      loading: state.Midgard.poolLoading,
+      poolLoading: state.Midgard.poolLoading,
+      assetLoading: state.Midgard.assetLoading,
+      poolDataLoading: state.Midgard.poolDataLoading,
       priceIndex: state.Midgard.priceIndex,
       assetData: state.Wallet.assetData,
       user: state.Wallet.user,
