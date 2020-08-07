@@ -100,6 +100,7 @@ export type State = {
   priceIndex: PriceDataIndex;
   error: Maybe<Error>;
   poolLoading: boolean;
+  assetLoading: boolean;
   poolDataLoading: boolean;
   statsLoading: boolean;
   txData: TxDetailData;
