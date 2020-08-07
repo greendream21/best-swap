@@ -3,7 +3,7 @@ import { storiesOf } from '@storybook/react';
 
 import LabelLoader from '.';
 
-storiesOf('Utility/loaders/PoolStake', module).add('LabelLoader', () => {
+storiesOf('Utility/loaders/LabelLoader', module).add('LabelLoader', () => {
   return (
     <div
       style={{
