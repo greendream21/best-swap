@@ -23,5 +23,5 @@ const stats = {
 };
 
 storiesOf('Components/Statistics', module).add('default', () => {
-  return <Statistics stats={stats} statsLoading={false} />;
+  return <Statistics stats={stats} statsLoading={false} basePrice="1" />;
 });

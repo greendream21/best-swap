@@ -16,6 +16,7 @@ import CoinIcon from '../../components/uielements/coins/coinIcon';
 import Table from '../../components/uielements/table';
 import Button from '../../components/uielements/button';
 import PoolFilter from '../../components/poolFilter';
+import StatBar from '../../components/statBar';
 
 import { ContentWrapper, ActionHeader, ActionColumn } from './PoolView.style';
 import {
@@ -28,10 +29,17 @@ import { getTickerFormat } from '../../helpers/stringHelper';
 import * as midgardActions from '../../redux/midgard/actions';
 import { RootState } from '../../redux/store';
 import { AssetData, User } from '../../redux/wallet/types';
-import { PoolDataMap, PriceDataIndex } from '../../redux/midgard/types';
+import {
+  PoolDataMap,
+  PriceDataIndex,
+  AssetDetailMap,
+} from '../../redux/midgard/types';
 import { getAssetFromString } from '../../redux/midgard/utils';
 import { ViewType, Maybe } from '../../types/bepswap';
-import { PoolDetailStatusEnum } from '../../types/generated/midgard/api';
+import {
+  PoolDetailStatusEnum,
+  StatsData,
+} from '../../types/generated/midgard/api';
 import showNotification from '../../components/uielements/notification';
 import { RUNE_SYMBOL } from '../../settings/assetData';
 
@@ -41,6 +49,9 @@ type Props = {
   history: H.History;
   pools: string[];
   poolData: PoolDataMap;
+  stats: StatsData;
+  statsLoading: boolean;
+  assets: AssetDetailMap;
   priceIndex: PriceDataIndex;
   assetData: AssetData[];
   user: Maybe<User>;
@@ -54,6 +65,9 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
   const {
     pools,
     poolData,
+    stats,
+    statsLoading,
+    assets,
     priceIndex,
     assetData,
     user,
@@ -70,6 +84,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
 
   const loading = poolLoading || poolDataLoading;
   const wallet: Maybe<string> = user ? user.wallet : null;
+  const busdPrice = assets?.['BUSD-BAF']?.priceRune ?? '1';
 
   const handleGetPools = () => {
     getPools();
@@ -290,6 +305,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
 
   return (
     <ContentWrapper className="pool-view-wrapper">
+      <StatBar stats={stats} statsLoading={statsLoading} basePrice={busdPrice} />
       <PoolFilter selected={poolStatus} onClick={selectPoolStatus} />
       <div className="pool-list-view desktop-view">
         {renderPoolList(ViewType.DESKTOP)}
@@ -312,6 +328,9 @@ export default compose(
     (state: RootState) => ({
       pools: state.Midgard.pools,
       poolData: state.Midgard.poolData,
+      stats: state.Midgard.stats,
+      statsLoading: state.Midgard.statsLoading,
+      assets: state.Midgard.assets,
       poolLoading: state.Midgard.poolLoading,
       assetLoading: state.Midgard.assetLoading,
       poolDataLoading: state.Midgard.poolDataLoading,
