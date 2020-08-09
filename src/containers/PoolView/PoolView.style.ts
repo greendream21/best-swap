@@ -70,3 +70,12 @@ export const ActionColumn = styled.div`
     width: 250px;
   }
 `;
+
+export const StatBarExpandWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  
+  div {
+    padding-top: 0px;
+  }
+`;

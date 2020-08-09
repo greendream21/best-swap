@@ -18,7 +18,12 @@ import Button from '../../components/uielements/button';
 import PoolFilter from '../../components/poolFilter';
 import StatBar from '../../components/statBar';
 
-import { ContentWrapper, ActionHeader, ActionColumn } from './PoolView.style';
+import {
+  ContentWrapper,
+  ActionHeader,
+  ActionColumn,
+  StatBarExpandWrapper,
+} from './PoolView.style';
 import {
   getAvailableTokensToCreate,
   getPoolData,
@@ -50,7 +55,6 @@ type Props = {
   pools: string[];
   poolData: PoolDataMap;
   stats: StatsData;
-  statsLoading: boolean;
   assets: AssetDetailMap;
   priceIndex: PriceDataIndex;
   assetData: AssetData[];
@@ -66,7 +70,6 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     pools,
     poolData,
     stats,
-    statsLoading,
     assets,
     priceIndex,
     assetData,
@@ -305,7 +308,14 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
 
   return (
     <ContentWrapper className="pool-view-wrapper">
-      <StatBar stats={stats} statsLoading={statsLoading} basePrice={busdPrice} />
+      <StatBar stats={stats} basePrice={busdPrice} />
+      <StatBarExpandWrapper>
+        <Link to="/statistics">
+          <Label size="big" weight="normal" color="primary">
+            See All
+          </Label>
+        </Link>
+      </StatBarExpandWrapper>
       <PoolFilter selected={poolStatus} onClick={selectPoolStatus} />
       <div className="pool-list-view desktop-view">
         {renderPoolList(ViewType.DESKTOP)}
@@ -329,7 +339,6 @@ export default compose(
       pools: state.Midgard.pools,
       poolData: state.Midgard.poolData,
       stats: state.Midgard.stats,
-      statsLoading: state.Midgard.statsLoading,
       assets: state.Midgard.assets,
       poolLoading: state.Midgard.poolLoading,
       assetLoading: state.Midgard.assetLoading,
