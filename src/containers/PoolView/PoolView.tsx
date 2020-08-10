@@ -63,6 +63,7 @@ type Props = {
   assetLoading: boolean;
   poolDataLoading: boolean;
   getPools: typeof midgardActions.getPools;
+  getPoolAddress: typeof midgardActions.getPoolAddress;
 };
 
 const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
@@ -78,6 +79,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     assetLoading,
     poolDataLoading,
     getPools,
+    getPoolAddress,
   } = props;
 
   const [poolStatus, selectPoolStatus] = useState<PoolDetailStatusEnum>(
@@ -132,6 +134,16 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     return <span>{text}</span>;
   };
 
+  const handleStakeAction = (url: string) => {
+    getPoolAddress();
+    history.push(url);
+  };
+
+  const handleSwapAction = (url: string) => {
+    getPoolAddress();
+    history.push(url);
+  };
+
   const renderPoolTable = (poolViewData: PoolData[], view: ViewType) => {
     const buttonCol = {
       key: 'stake',
@@ -153,28 +165,30 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
           return (
             <ActionColumn>
               <div className="action-column-wrapper">
-                <Link to={stakeUrl}>
-                  <Button
-                    style={{ margin: 'auto' }}
-                    round="true"
-                    typevalue="outline"
-                    data-test={dataTest}
-                  >
-                    <DatabaseOutlined />
-                    stake
-                  </Button>
-                </Link>
+                <Button
+                  style={{ margin: 'auto' }}
+                  round="true"
+                  typevalue="outline"
+                  data-test={dataTest}
+                  onClick={() => {
+                    handleStakeAction(stakeUrl);
+                  }}
+                >
+                  <DatabaseOutlined />
+                  stake
+                </Button>
                 {poolStatus !== PoolDetailStatusEnum.Bootstrapped && (
-                <Link to={swapUrl}>
                   <Button
                     style={{ margin: 'auto' }}
                     round="true"
                     data-test={dataTest}
+                    onClick={() => {
+                      handleSwapAction(swapUrl);
+                    }}
                   >
                     <SwapOutlined />
                     swap
                   </Button>
-                </Link>
                   )}
               </div>
             </ActionColumn>
@@ -349,6 +363,7 @@ export default compose(
     }),
     {
       getPools: midgardActions.getPools,
+      getPoolAddress: midgardActions.getPoolAddress,
     },
   ),
   withRouter,
