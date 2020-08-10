@@ -91,6 +91,7 @@ export type State = {
   poolAddressData: Maybe<ThorchainEndpoints>;
   bnbPoolAddress: Maybe<ThorchainEndpoint>;
   poolAddress: Maybe<string>;
+  poolAddressLoading: boolean;
   poolData: PoolDataMap;
   stakerPoolData: Maybe<StakerPoolData>;
   stakerPoolDataLoading: boolean;

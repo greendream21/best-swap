@@ -23,6 +23,7 @@ const initState: State = {
   poolAddressData: Nothing,
   bnbPoolAddress: Nothing,
   poolAddress: Nothing,
+  poolAddressLoading: false,
   poolData: {},
   stats: {
     dailyActiveUsers: '0',
@@ -217,6 +218,7 @@ const reducer: Reducer<State, MidgardActionTypes> = (
       return {
         ...state,
         error: Nothing,
+        poolAddressLoading: true,
       };
     case 'GET_POOL_ADDRESSES_SUCCESS': {
       const { payload } = action;
@@ -225,6 +227,7 @@ const reducer: Reducer<State, MidgardActionTypes> = (
         poolAddressData: payload,
         bnbPoolAddress: getBNBPoolAddress(payload),
         poolAddress: getPoolAddress(payload),
+        poolAddressLoading: false,
       };
     }
     case 'GET_POOL_ADDRESSES_FAILED':
@@ -234,6 +237,7 @@ const reducer: Reducer<State, MidgardActionTypes> = (
         bnbPoolAddress: {},
         poolAddress: Nothing,
         error: action.payload,
+        poolAddressLoading: false,
       };
     case 'GET_TX_BY_ADDRESS':
       return {

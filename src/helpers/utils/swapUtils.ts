@@ -76,18 +76,15 @@ export const getSwapData = (
   from: string,
   to: string,
   pools: PoolDataMap,
-  poolAddress: string,
   xValue: TokenAmount,
   runePrice: BigNumber,
 ): Maybe<SwapData> => {
   const swapType = getSwapType(from, to);
 
   const result: {
-    poolAddress: string;
     symbolFrom: string;
     symbolTo: string;
   } = {
-    poolAddress,
     symbolFrom: RUNE_SYMBOL,
     symbolTo: RUNE_SYMBOL,
   };
@@ -321,10 +318,6 @@ export const validateSwap = (
   if (!symbolTo) {
     return SwapErrorMsg.MISSING_SYMBOL_TO;
   }
-  const poolAddress = data?.poolAddress;
-  if (!poolAddress) {
-    return SwapErrorMsg.MISSING_ADDRESS;
-  }
 
   // validate values - needed for double swap only
   if (swapType === SwapType.DOUBLE_SWAP) {
@@ -345,6 +338,7 @@ export const confirmSwap = (
   data: SwapData,
   amount: TokenAmount,
   protectSlip: boolean,
+  poolAddress: string,
   destAddr = '',
 ): Promise<TransferResult> => {
   return new Promise((resolve, reject) => {
@@ -355,7 +349,7 @@ export const confirmSwap = (
       return reject(new Error(validationErrorMsg));
     }
 
-    const { poolAddress, symbolTo, symbolFrom, lim } = data;
+    const { symbolTo, symbolFrom, lim } = data;
 
     // Check of `validateSwap` before makes sure that we have a valid number here
     const amountNumber = amount.amount().toNumber();

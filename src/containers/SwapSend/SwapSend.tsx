@@ -185,7 +185,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
       source,
       target,
       poolData,
-      poolAddress,
       inputValueAfterRune,
       runePrice,
     );
@@ -347,6 +346,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
           swapData,
           tokenAmountToSwap,
           slipProtection,
+          poolAddress,
           address,
         );
 

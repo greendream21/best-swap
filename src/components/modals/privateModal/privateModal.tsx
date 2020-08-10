@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { Form } from 'antd';
 import { LockOutlined } from '@ant-design/icons';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { delay } from '@thorchain/asgardex-util';
 import { client as binanceClient } from '@thorchain/asgardex-binance';
@@ -9,9 +9,11 @@ import { client as binanceClient } from '@thorchain/asgardex-binance';
 import Input from '../../uielements/input';
 import Label from '../../uielements/label';
 
+import * as midgardActions from '../../../redux/midgard/actions';
 import { StyledModal, ModalContent } from './privateModal.style';
 import { RootState } from '../../../redux/store';
 import { verifyPrivateKey } from '../../../helpers/utils/walletUtils';
+import usePrevious from '../../../hooks/usePrevious';
 
 import { BINANCE_NET } from '../../../env';
 import { FixmeType } from '../../../types/bepswap';
@@ -26,13 +28,39 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
   const { visible, onOk, onCancel } = props;
 
   const history = useHistory();
+  const dispatch = useDispatch();
 
   const [password, setPassword] = useState('');
   const [invalidPassword, setInvalidPassword] = useState(false);
   const [validating, setValidating] = useState(false);
+  const [addressLoading, setAddressLoading] = useState(true);
+  const [confirmed, setConfirmed] = useState(false);
 
   const user = useSelector((state: RootState) => state.Wallet.user);
+  const poolAddressLoading = useSelector(
+    (state: RootState) => state.Midgard.poolAddressLoading,
+  );
   const walletType = user?.type ?? 'disconnected';
+
+  // load pool address before making transaction
+  useEffect(() => {
+    dispatch(midgardActions.getPoolAddress());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // check if pool address is loaded
+  const prevPoolAddressLoading = usePrevious(poolAddressLoading);
+  useEffect(() => {
+    if (prevPoolAddressLoading === true && poolAddressLoading === false) {
+      setAddressLoading(false);
+
+      // if wallet is verified, confirm
+      if (confirmed && onOk) {
+        onOk();
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [poolAddressLoading]);
 
   useEffect(() => {
     // ask to verify ledger
@@ -80,17 +108,29 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
     [setPassword, setInvalidPassword],
   );
 
+  const handleConfirm = useCallback(() => {
+    if (!onOk) {
+      return;
+    }
+
+    if (!addressLoading) {
+      onOk();
+    } else {
+      setConfirmed(true);
+    }
+  }, [addressLoading, onOk]);
+
   const handleOK = useCallback(async () => {
     const address = user?.wallet;
 
     // prevent confirm if wallet is disconnected
-    if (!address || !onOk) {
+    if (!address) {
       return;
     }
 
     // confirm if ledger is verified
     if (walletType === 'ledger' && !validating) {
-      onOk();
+      handleConfirm();
       return;
     }
 
@@ -106,7 +146,7 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
         setInvalidPassword(true);
       } else if (result.address === address) {
         // confirm if decoded address is matched to the user's wallet address
-        onOk();
+        handleConfirm();
       }
       setValidating(false);
       return;
@@ -114,14 +154,14 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
 
     // if trustwallet is connected, check if session is valid
     if (walletType === 'walletconnect' && user?.walletConnector) {
-      onOk();
+      handleConfirm();
     }
 
     // if wallet is disconnected, go to wallet connect page
     if (walletType === 'disconnected') {
       history.push('/connect');
     }
-  }, [user, walletType, validating, history, password, onOk]);
+  }, [user, walletType, validating, history, password, handleConfirm]);
 
   const handleCancel = useCallback(() => {
     if (onCancel) {
@@ -206,6 +246,7 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
       visible={visible}
       onOk={handleOK}
       onCancel={handleCancel}
+      confirmLoading={addressLoading}
       maskClosable={false}
       closable={false}
       okText={confirmBtnText}
