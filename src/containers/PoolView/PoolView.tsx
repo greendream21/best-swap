@@ -22,7 +22,6 @@ import {
   ContentWrapper,
   ActionHeader,
   ActionColumn,
-  StatBarExpandWrapper,
 } from './PoolView.style';
 import {
   getAvailableTokensToCreate,
@@ -309,13 +308,6 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
   return (
     <ContentWrapper className="pool-view-wrapper">
       <StatBar stats={stats} basePrice={busdPrice} />
-      <StatBarExpandWrapper>
-        <Link to="/statistics">
-          <Label size="big" weight="normal" color="primary">
-            See All
-          </Label>
-        </Link>
-      </StatBarExpandWrapper>
       <PoolFilter selected={poolStatus} onClick={selectPoolStatus} />
       <div className="pool-list-view desktop-view">
         {renderPoolList(ViewType.DESKTOP)}
