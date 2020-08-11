@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import * as H from 'history';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { withRouter, useHistory } from 'react-router-dom';
+import { withRouter, useHistory, Link } from 'react-router-dom';
 import { Row, Col } from 'antd';
 import {
   SyncOutlined,
@@ -143,7 +143,6 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         if (target) {
           const swapUrl = `/swap/${RUNE_SYMBOL}:${values.symbol}`;
           const stakeUrl = `/pool/${values.symbol.toUpperCase()}`;
-          const dataTest = `stake-button-${target.toLowerCase()}`;
 
           return (
             <ActionColumn>
@@ -153,24 +152,19 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
                     style={{ margin: 'auto' }}
                     round="true"
                     typevalue="outline"
-                    data-test={dataTest}
                   >
                     <DatabaseOutlined />
                     stake
                   </Button>
                 </Link>
                 {poolStatus !== PoolDetailStatusEnum.Bootstrapped && (
-                <Link to={swapUrl}>
-                  <Button
-                    style={{ margin: 'auto' }}
-                    round="true"
-                    data-test={dataTest}
-                  >
-                    <SwapOutlined />
-                    swap
-                  </Button>
-                </Link>
-                  )}
+                  <Link to={swapUrl}>
+                    <Button style={{ margin: 'auto' }} round="true">
+                      <SwapOutlined />
+                      swap
+                    </Button>
+                  </Link>
+                )}
               </div>
             </ActionColumn>
           );
