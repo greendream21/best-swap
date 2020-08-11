@@ -14,6 +14,7 @@ import { BitcoinIcon } from '../icons';
 import * as midgardActions from '../../redux/midgard/actions';
 import { getAssetFromString } from '../../redux/midgard/utils';
 import { RootState } from '../../redux/store';
+import { RUNE_SYMBOL } from '../../settings/assetData';
 
 const style: React.CSSProperties = {
   fontWeight: 'bold',
@@ -26,8 +27,6 @@ const itemStyle = {
   alignItems: 'center',
   padding: '8px 10px',
 };
-
-const UNKNOWN_ASSET = 'UNKNOWN-ASSET';
 
 type ComponentProps = {};
 type ConnectedProps = {
@@ -49,21 +48,22 @@ class BasePriceSelector extends React.Component<Props, State> {
 
   renderMenu = () => {
     const { basePriceAsset, pools } = this.props;
-    const baseAsset = getTickerFormat(basePriceAsset).toUpperCase();
-    const selectedKeys = [baseAsset];
-    const menuItems = pools.map(data => {
+    const selectedKeys = [basePriceAsset];
+    const menuItems = [];
+    pools.forEach(data => {
       const { symbol } = getAssetFromString(data);
-      const asset = getTickerFormat(symbol)?.toUpperCase() ?? UNKNOWN_ASSET;
 
-      return {
-        asset,
-        key: asset,
-      };
+      if (symbol) {
+        menuItems.push({
+          asset: symbol,
+          key: symbol,
+        });
+      }
     });
 
     menuItems.push({
-      asset: 'RUNE',
-      key: 'RUNE',
+      asset: RUNE_SYMBOL,
+      key: RUNE_SYMBOL,
     });
 
     const menu = (
@@ -74,12 +74,10 @@ class BasePriceSelector extends React.Component<Props, State> {
         selectedKeys={selectedKeys}
       >
         {menuItems.map(({ asset, key }) =>
-          asset !== UNKNOWN_ASSET ? (
+          (
             <Menu.Item style={itemStyle} key={key}>
               <AssetInfo asset={asset} />
             </Menu.Item>
-          ) : (
-            <></>
           ),
         )}
       </Menu>

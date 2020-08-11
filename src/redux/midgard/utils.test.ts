@@ -111,14 +111,14 @@ describe('redux/midgard/utils/', () => {
       const result = getPriceIndex(
         [
           { asset: 'BNB.TOMOB-1E1', priceRune: '0.3333333333333333' },
-          { asset: 'BNB.BBB', priceRune: '2206.896551724138' },
+          { asset: 'BNB.BNB', priceRune: '2206.896551724138' },
         ],
         'AAA',
       );
       const expected: PriceDataIndex = {
-        RUNE: bn(1),
-        TOMOB: bn('0.3333333333333333'),
-        BBB: bn('2206.896551724138'),
+        'RUNE-67C': bn(1),
+        'TOMOB-1E1': bn('0.3333333333333333'),
+        BNB: bn('2206.896551724138'),
       };
       expect(result).toEqual(expected);
     });
@@ -129,13 +129,13 @@ describe('redux/midgard/utils/', () => {
           { asset: 'BBB.BBB-BBB', priceRune: '2' },
           { asset: 'CCC.CCC-CCC', priceRune: '10' },
         ],
-        'BBB',
+        'BBB-BBB',
       );
       const expected: PriceDataIndex = {
-        RUNE: bn(0.5),
-        AAA: bn(2),
-        BBB: bn(1),
-        CCC: bn(5),
+        'RUNE-67C': bn(0.5),
+        'AAA-AAA': bn(2),
+        'BBB-BBB': bn(1),
+        'CCC-CCC': bn(5),
       };
       expect(result).toEqual(expected);
     });
