@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import * as H from 'history';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { withRouter, Link, useHistory } from 'react-router-dom';
+import { withRouter, useHistory } from 'react-router-dom';
 import { Row, Col } from 'antd';
 import {
   SyncOutlined,
@@ -18,11 +18,7 @@ import Button from '../../components/uielements/button';
 import PoolFilter from '../../components/poolFilter';
 import StatBar from '../../components/statBar';
 
-import {
-  ContentWrapper,
-  ActionHeader,
-  ActionColumn,
-} from './PoolView.style';
+import { ContentWrapper, ActionHeader, ActionColumn } from './PoolView.style';
 import {
   getAvailableTokensToCreate,
   getPoolData,
