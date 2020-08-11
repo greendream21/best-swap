@@ -391,7 +391,6 @@ describe('swap/utils/', () => {
   });
 
   describe('getSwapData', () => {
-    const poolAddress = 'address';
     const xValue = tokenAmount(100);
     const runePrice = bn(1);
 
@@ -404,20 +403,12 @@ describe('swap/utils/', () => {
         lim: baseAmount(54447528),
         outputAmount: tokenAmount(0.56131472),
         outputPrice: bn(178.03053227763760049641),
-        poolAddress: 'address',
         slip: bn(5.389413716466187631),
         symbolFrom: RUNE_SYMBOL,
         symbolTo: 'BNB',
       };
 
-      const result = getSwapData(
-        from,
-        to,
-        poolData,
-        poolAddress,
-        xValue,
-        runePrice,
-      );
+      const result = getSwapData(from, to, poolData, xValue, runePrice);
 
       expect(result?.Px).toEqual(expected.Px);
       expect(result?.fee.amount()).toEqual(expected.fee.amount());
@@ -428,7 +419,6 @@ describe('swap/utils/', () => {
       expect(result?.outputPrice.toFixed(5)).toEqual(
         expected.outputPrice.toFixed(5),
       );
-      expect(result?.poolAddress).toEqual(expected.poolAddress);
       expect(result?.slip.toFixed(5)).toEqual(expected.slip.toFixed(5));
       expect(result?.symbolFrom).toEqual(expected.symbolFrom);
       expect(result?.symbolTo).toEqual(expected.symbolTo);
@@ -442,19 +432,11 @@ describe('swap/utils/', () => {
         lim: baseAmount('51844403581'),
         outputAmount: tokenAmount('534.47838743'),
         outputPrice: bn('1.00000000000152525393'),
-        poolAddress: 'address',
         slip: bn('134.705545606424204104'),
         symbolFrom: 'LOK-3C0',
         symbolTo: RUNE_SYMBOL,
       };
-      const result = getSwapData(
-        from,
-        to,
-        poolData,
-        poolAddress,
-        xValue,
-        runePrice,
-      );
+      const result = getSwapData(from, to, poolData, xValue, runePrice);
 
       expect(result?.Px).toEqual(expected.Px);
       expect(result?.fee.amount()).toEqual(expected.fee.amount());
@@ -463,7 +445,6 @@ describe('swap/utils/', () => {
         expected.outputAmount.amount(),
       );
       expect(result?.outputPrice).toEqual(expected.outputPrice);
-      expect(result?.poolAddress).toEqual(expected.poolAddress);
       expect(result?.slip).toEqual(expected.slip);
       expect(result?.symbolFrom).toEqual(expected.symbolFrom);
       expect(result?.symbolTo).toEqual(expected.symbolTo);
@@ -476,21 +457,13 @@ describe('swap/utils/', () => {
         fee: tokenAmount('0.34451071'),
         outputAmount: tokenAmount(2.42380508),
         outputPrice: bn('216.67937336595058369301'),
-        poolAddress: 'address',
         slip: bn(23.340828117376259007),
         symbolFrom: 'LOK-3C0',
         symbolTo: 'BNB',
         lim: baseAmount(235109093),
       };
 
-      const result = getSwapData(
-        from,
-        to,
-        poolData,
-        poolAddress,
-        xValue,
-        runePrice,
-      );
+      const result = getSwapData(from, to, poolData, xValue, runePrice);
       expect(result?.Px).toEqual(expected.Px);
       expect(result?.fee.amount()).toEqual(expected.fee.amount());
       expect(result?.lim?.amount()).toEqual(expected.lim?.amount());
@@ -498,7 +471,6 @@ describe('swap/utils/', () => {
         expected.outputAmount.amount(),
       );
       expect(result?.outputPrice).toEqual(expected.outputPrice);
-      expect(result?.poolAddress).toEqual(expected.poolAddress);
       expect(result?.slip.toFixed(5)).toEqual(expected.slip.toFixed(5));
       expect(result?.symbolFrom).toEqual(expected.symbolFrom);
       expect(result?.symbolTo).toEqual(expected.symbolTo);
@@ -507,7 +479,6 @@ describe('swap/utils/', () => {
 
   describe('validateSwap', () => {
     const data: Partial<SwapData> = {
-      poolAddress: 'value',
       symbolFrom: 'value',
       symbolTo: 'value',
     };
@@ -521,15 +492,6 @@ describe('swap/utils/', () => {
       expect(
         validateSwap('address', SwapType.SINGLE_SWAP, data, tokenAmount(0)),
       ).toEqual(SwapErrorMsg.INVALID_AMOUNT);
-      // invalid poolAddresTo
-      expect(
-        validateSwap(
-          'address',
-          SwapType.SINGLE_SWAP,
-          { ...data, poolAddress: undefined },
-          tokenAmount(10),
-        ),
-      ).toEqual(SwapErrorMsg.MISSING_ADDRESS);
       // invalid symbolTo
       expect(
         validateSwap(
@@ -554,24 +516,6 @@ describe('swap/utils/', () => {
       expect(
         validateSwap('address', SwapType.DOUBLE_SWAP, data, tokenAmount(0)),
       ).toEqual(SwapErrorMsg.INVALID_AMOUNT);
-      // invalid poolAddresTo
-      expect(
-        validateSwap(
-          'address',
-          SwapType.DOUBLE_SWAP,
-          { ...data, poolAddress: undefined },
-          tokenAmount(10),
-        ),
-      ).toEqual(SwapErrorMsg.MISSING_ADDRESS);
-      // invalid poolAddress
-      expect(
-        validateSwap(
-          'address',
-          SwapType.DOUBLE_SWAP,
-          { ...data, poolAddress: undefined },
-          tokenAmount(10),
-        ),
-      ).toEqual(SwapErrorMsg.MISSING_ADDRESS);
       // invalid symbolfrom
       expect(
         validateSwap(
