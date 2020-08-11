@@ -32,7 +32,7 @@ const Footer: React.FC<Props> = ({ commitHash }): JSX.Element => {
         </FooterItem>
         <FooterItem>
           <div className="footer-links-bar">
-            <Link to="/statistics">See All</Link>
+            <Link to="/statistics">STATS</Link>
             <Link to="/faqs">FAQS</Link>
           </div>
         </FooterItem>
