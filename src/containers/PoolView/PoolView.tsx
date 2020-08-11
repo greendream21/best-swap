@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import * as H from 'history';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { withRouter, useHistory } from 'react-router-dom';
+import { withRouter, Link, useHistory } from 'react-router-dom';
 import { Row, Col } from 'antd';
 import {
   SyncOutlined,
