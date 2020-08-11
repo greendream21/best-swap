@@ -43,10 +43,14 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
   const walletType = user?.type ?? 'disconnected';
 
   // load pool address before making transaction
+  const prevVisible = usePrevious(visible);
   useEffect(() => {
-    dispatch(midgardActions.getPoolAddress());
+    // if private modal is open
+    if (prevVisible === false && visible === true) {
+      dispatch(midgardActions.getPoolAddress());
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [visible]);
 
   // check if pool address is loaded
   const prevPoolAddressLoading = usePrevious(poolAddressLoading);
@@ -239,6 +243,7 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
   };
 
   const confirmBtnText = walletType === 'disconnected' ? 'CONNECT' : 'CONFIRM';
+  const confirmLoading = confirmed && addressLoading;
 
   return (
     <StyledModal
@@ -246,7 +251,7 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
       visible={visible}
       onOk={handleOK}
       onCancel={handleCancel}
-      confirmLoading={addressLoading}
+      confirmLoading={confirmLoading}
       maskClosable={false}
       closable={false}
       okText={confirmBtnText}
