@@ -18,12 +18,7 @@ import Button from '../../components/uielements/button';
 import PoolFilter from '../../components/poolFilter';
 import StatBar from '../../components/statBar';
 
-import {
-  ContentWrapper,
-  ActionHeader,
-  ActionColumn,
-  StatBarExpandWrapper,
-} from './PoolView.style';
+import { ContentWrapper, ActionHeader, ActionColumn } from './PoolView.style';
 import {
   getAvailableTokensToCreate,
   getPoolData,
@@ -165,17 +160,17 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
                   </Button>
                 </Link>
                 {poolStatus !== PoolDetailStatusEnum.Bootstrapped && (
-                <Link to={swapUrl}>
-                  <Button
-                    style={{ margin: 'auto' }}
-                    round="true"
-                    data-test={dataTest}
-                  >
-                    <SwapOutlined />
-                    swap
-                  </Button>
-                </Link>
-                  )}
+                  <Link to={swapUrl}>
+                    <Button
+                      style={{ margin: 'auto' }}
+                      round="true"
+                      data-test={dataTest}
+                    >
+                      <SwapOutlined />
+                      swap
+                    </Button>
+                  </Link>
+                )}
               </div>
             </ActionColumn>
           );
@@ -309,13 +304,6 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
   return (
     <ContentWrapper className="pool-view-wrapper">
       <StatBar stats={stats} basePrice={busdPrice} />
-      <StatBarExpandWrapper>
-        <Link to="/statistics">
-          <Label size="big" weight="normal" color="primary">
-            See All
-          </Label>
-        </Link>
-      </StatBarExpandWrapper>
       <PoolFilter selected={poolStatus} onClick={selectPoolStatus} />
       <div className="pool-list-view desktop-view">
         {renderPoolList(ViewType.DESKTOP)}

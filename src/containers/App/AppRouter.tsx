@@ -48,7 +48,7 @@ const routes: AppRoute[] = [
     component: asyncComponent(() => import('../TransactionView')),
   },
   {
-    path: 'statistics',
+    path: 'stats',
     component: asyncComponent(() => import('../StatisticsView')),
   },
   {
