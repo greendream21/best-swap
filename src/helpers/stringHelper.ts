@@ -1,13 +1,8 @@
 import { Maybe, Nothing, Pair } from '../types/bepswap';
 
-export const getPair = (info?: string): Pair => ({
-  source: info?.split('-')[0]?.toLowerCase() ?? Nothing,
-  target: info?.split('-')[1]?.toLowerCase() ?? Nothing,
-});
-
 export const getSymbolPair = (symbolPair?: string): Pair => ({
-  source: symbolPair?.split(':')[0]?.toLowerCase() ?? Nothing,
-  target: symbolPair?.split(':')[1]?.toLowerCase() ?? Nothing,
+  source: symbolPair?.split(':')[0]?.toUpperCase() ?? Nothing,
+  target: symbolPair?.split(':')[1]?.toUpperCase() ?? Nothing,
 });
 
 export const getTickerFormat = (symbol?: Maybe<string>): string => {

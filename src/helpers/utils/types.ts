@@ -9,7 +9,7 @@ export type SwapData = {
   outputAmount: TokenAmount;
   outputPrice: BigNumber;
   fee: TokenAmount;
-  lim: BaseAmount;
+  slipLimit: BaseAmount;
 };
 
 export type PoolInfoType = {

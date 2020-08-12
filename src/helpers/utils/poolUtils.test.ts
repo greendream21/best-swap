@@ -1,6 +1,7 @@
 import { TransferEvent } from '@thorchain/asgardex-binance';
 import { bn } from '@thorchain/asgardex-util';
 import { tokenAmount, baseAmount } from '@thorchain/asgardex-token';
+import { RUNE_SYMBOL } from '../../settings/assetData';
 import {
   withdrawResult,
   getAvailableTokensToCreate,
@@ -263,8 +264,8 @@ describe('pool/utils/', () => {
       withdrawTxCount: '0',
     };
     const priceIndex: PriceDataIndex = {
-      RUNE: bn(1),
-      FSN: bn(2),
+      [RUNE_SYMBOL]: bn(1),
+      'FSN-F1B': bn(2),
     };
     it('returns PoolData for a FSN based pool', () => {
       const expected: PoolData = {
@@ -299,7 +300,7 @@ describe('pool/utils/', () => {
           poolPrice: '2.000',
         },
       };
-      const result = getPoolData('RUNE', 'FSN-F1B', fsnPoolDetail, priceIndex);
+      const result = getPoolData('FSN-F1B', fsnPoolDetail, priceIndex);
 
       expect(result.asset).toEqual(expected.asset);
       expect(result.target).toEqual(expected.target);
@@ -316,7 +317,9 @@ describe('pool/utils/', () => {
 
       expect(result.depth.amount()).toEqual(expected.depth.amount());
       expect(result.volume24.amount()).toEqual(expected.volume24.amount());
-      expect(result.transaction.amount()).toEqual(expected.transaction.amount());
+      expect(result.transaction.amount()).toEqual(
+        expected.transaction.amount(),
+      );
       expect(result.liqFee.amount()).toEqual(expected.liqFee.amount());
       expect(result.roiAT).toEqual(expected.roiAT);
       // Unsafe, just to test all props again (in case we might forget to test a new property in the future)
@@ -355,7 +358,7 @@ describe('pool/utils/', () => {
           poolPrice: '0.000',
         },
       };
-      const result = getPoolData('RUNE', 'BNB', bnbPoolDetail, priceIndex);
+      const result = getPoolData('BNB', bnbPoolDetail, priceIndex);
 
       expect(result.asset).toEqual(expected.asset);
       expect(result.target).toEqual(expected.target);
@@ -372,7 +375,9 @@ describe('pool/utils/', () => {
 
       expect(result.depth.amount()).toEqual(expected.depth.amount());
       expect(result.volume24.amount()).toEqual(expected.volume24.amount());
-      expect(result.transaction.amount()).toEqual(expected.transaction.amount());
+      expect(result.transaction.amount()).toEqual(
+        expected.transaction.amount(),
+      );
       expect(result.liqFee.amount()).toEqual(expected.liqFee.amount());
       expect(result.roiAT).toEqual(expected.roiAT);
       // Unsafe, just to test all props again (in case we might forget to test a new property in the future)
