@@ -16,6 +16,7 @@ import {
 import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
 import Table from '../../uielements/table';
 import { StyledText, StyledLink, StyledLinkText } from './txTable.style';
+import { FixmeType } from '../../../types/bepswap';
 
 type Props = {
   txData: TxDetailData;
@@ -42,7 +43,7 @@ const TxTable: React.FC<Props> = (props: Props): JSX.Element => {
 
   const getColumnRenderer = (): Record<
     Column,
-    (value: any, row: TxDetails) => JSX.Element
+    (value: FixmeType, row: TxDetails) => JSX.Element
   > => {
     return {
       address: (_, row) => {
