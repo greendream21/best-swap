@@ -16,7 +16,7 @@ import { CoinDataWrapperType } from '../coinData/coinData.style';
 // export type CoinListDataList = AssetData[] | StakeData[]
 // ^ Maybe similar issue to "error on valid array with union type" https://github.com/microsoft/TypeScript/issues/36390
 
-export type CoinListDataList = StakeOrAssetData[]
+export type CoinListDataList = StakeOrAssetData[];
 
 type Props = {
   data?: CoinListDataList;
@@ -42,14 +42,19 @@ export const CoinList: React.FC<Props> = (props: Props): JSX.Element => {
     ...otherProps
   } = props;
 
-  const getPrice = useCallback((asset: string): BigNumber => {
-    const ticker = getTickerFormat(asset);
-    return validBNOrZero(priceIndex[ticker.toUpperCase()]);
-  }, [priceIndex]);
+  const getPrice = useCallback(
+    (asset: string): BigNumber => {
+      return validBNOrZero(priceIndex[asset.toUpperCase()]);
+    },
+    [priceIndex],
+  );
 
-  const toggleSelect = useCallback((key: number) => () => {
-    onSelect(key);
-  }, [onSelect]);
+  const toggleSelect = useCallback(
+    (key: number) => () => {
+      onSelect(key);
+    },
+    [onSelect],
+  );
 
   return (
     <CoinListWrapper
@@ -59,53 +64,53 @@ export const CoinList: React.FC<Props> = (props: Props): JSX.Element => {
     >
       <Scrollbars className="coinList-scroll">
         {data.map((coinData: StakeOrAssetData, index: number) => {
-            let target: Maybe<string> = Nothing;
-            let targetValue: Maybe<TokenAmount> = Nothing;
+          let target: Maybe<string> = Nothing;
+          let targetValue: Maybe<TokenAmount> = Nothing;
 
-            const { asset, assetValue } = coinData;
+          const { asset, assetValue } = coinData;
 
-            let price;
+          let price;
 
-            if (isStakeData(coinData)) {
-              target = coinData.target;
-              targetValue = coinData.targetValue;
-              price = getPrice(target);
-            } else {
-              price = getPrice(asset);
-            }
+          if (isStakeData(coinData)) {
+            target = coinData.target;
+            targetValue = coinData.targetValue;
+            price = getPrice(target);
+          } else {
+            price = getPrice(asset);
+          }
 
-            const tokenName = getTickerFormat(asset);
+          const tokenName = getTickerFormat(asset);
 
-            if (!tokenName) {
-              return <Fragment key={asset} />;
-            }
+          if (!tokenName) {
+            return <Fragment key={asset} />;
+          }
 
-            const isPriceValid = !!priceIndex[tokenName.toUpperCase()];
-            const isSelected = selected && selected.includes(coinData);
-            const activeClass = isSelected ? 'active' : '';
+          const isPriceValid = !!priceIndex[asset.toUpperCase()];
+          const isSelected = selected && selected.includes(coinData);
+          const activeClass = isSelected ? 'active' : '';
 
-            return (
-              <div
-                className={`coinList-row ${activeClass}`}
-                onClick={toggleSelect(index)}
-                key={index}
-              >
-                <CoinData
-                  data-test={`coin-list-item-${tokenName}`}
-                  asset={tokenName}
-                  assetValue={assetValue}
-                  target={target}
-                  targetValue={targetValue}
-                  price={price}
-                  priceUnit={unit}
-                  priceValid={isPriceValid}
-                  size={size}
-                  type={type}
-                />
-              </div>
-            );
-          })}
+          return (
+            <div
+              className={`coinList-row ${activeClass}`}
+              onClick={toggleSelect(index)}
+              key={index}
+            >
+              <CoinData
+                data-test={`coin-list-item-${tokenName}`}
+                asset={tokenName}
+                assetValue={assetValue}
+                target={target}
+                targetValue={targetValue}
+                price={price}
+                priceUnit={unit}
+                priceValid={isPriceValid}
+                size={size}
+                type={type}
+              />
+            </div>
+          );
+        })}
       </Scrollbars>
     </CoinListWrapper>
-    );
+  );
 };

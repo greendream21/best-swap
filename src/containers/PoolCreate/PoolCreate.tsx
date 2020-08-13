@@ -274,7 +274,7 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
     const source = 'rune';
     const target = getTickerFormat(symbol);
 
-    const runePrice = validBNOrZero(priceIndex?.RUNE);
+    const runePrice = validBNOrZero(priceIndex[RUNE_SYMBOL]);
     const tokensData = getAvailableTokensToCreate(assetData, pools);
     // AssetData[] -> AssetPair[]
     const coinDardData = tokensData.map<AssetPair>((detail: AssetData) => ({

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import * as H from 'history';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { withRouter, useHistory } from 'react-router-dom';
+import { withRouter, useHistory, Link } from 'react-router-dom';
 import { Row, Col } from 'antd';
 import {
   SyncOutlined,
@@ -124,7 +124,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         showNotification({
           type: 'warning',
           message: 'Create Pool Failed',
-          description: "You don't have available asset to create a new pool.",
+          description: 'You don\'t have available asset to create a new pool.',
         });
       }
     }
@@ -170,35 +170,27 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         if (target) {
           const swapUrl = `/swap/${RUNE_SYMBOL}:${values.symbol}`;
           const stakeUrl = `/pool/${values.symbol.toUpperCase()}`;
-          const dataTest = `stake-button-${target.toLowerCase()}`;
 
           return (
             <ActionColumn>
               <div className="action-column-wrapper">
-                <Button
-                  style={{ margin: 'auto' }}
-                  round="true"
-                  typevalue="outline"
-                  data-test={dataTest}
-                  onClick={() => {
-                    handleStakeAction(stakeUrl);
-                  }}
-                >
-                  <DatabaseOutlined />
-                  stake
-                </Button>
-                {poolStatus !== PoolDetailStatusEnum.Bootstrapped && (
+                <Link to={stakeUrl}>
                   <Button
                     style={{ margin: 'auto' }}
                     round="true"
-                    data-test={dataTest}
-                    onClick={() => {
-                      handleSwapAction(swapUrl);
-                    }}
+                    typevalue="outline"
                   >
-                    <SwapOutlined />
-                    swap
+                    <DatabaseOutlined />
+                    stake
                   </Button>
+                </Link>
+                {poolStatus !== PoolDetailStatusEnum.Bootstrapped && (
+                  <Link to={swapUrl}>
+                    <Button style={{ margin: 'auto' }} round="true">
+                      <SwapOutlined />
+                      swap
+                    </Button>
+                  </Link>
                 )}
               </div>
             </ActionColumn>
@@ -307,7 +299,6 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
       const poolInfo = poolData[symbol] || {};
 
       const poolDataDetail: PoolData = getPoolData(
-        'rune',
         symbol,
         poolInfo,
         priceIndex,

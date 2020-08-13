@@ -1,6 +1,6 @@
 import { matchPath } from 'react-router-dom';
 import { Maybe, Nothing, Pair } from '../types/bepswap';
-import { getPair } from './stringHelper';
+import { getSymbolPair } from './stringHelper';
 
 /**
  * Helper to check if any page is related to a path
@@ -23,13 +23,13 @@ export const isPoolPage = (path: string): boolean => isPage(path, '/pool/:symbol
  * Returns the Pair of a SwapDetail page by parsing the path
  * */
 export const matchSwapDetailPair = (path: string): Maybe<Pair> => {
-  const match = matchPath<{pair?: string}>(path, {
-      path: '/swap/detail/:pair',
+  const match = matchPath<{symbolpair?: string}>(path, {
+      path: '/swap/:symbolpair',
       exact: true,
       strict: true,
     });
-  const pair = match?.params?.pair ?? Nothing;
-  return pair ? getPair(pair) : Nothing;
+  const symbolpair = match?.params?.symbolpair ?? Nothing;
+  return symbolpair ? getSymbolPair(symbolpair) : Nothing;
 };
 
 /**

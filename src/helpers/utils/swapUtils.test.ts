@@ -5,7 +5,7 @@ import {
   isValidSwap,
   parseTransfer,
   getTxResult,
-  validatePair,
+  getValidSwapPairs,
   getSwapType,
   getSwapData,
   validateSwap,
@@ -15,7 +15,7 @@ import {
   PoolDetail,
   PoolDetailStatusEnum,
 } from '../../types/generated/midgard';
-import { Pair, AssetPair, SwapType } from '../../types/bepswap';
+import { AssetPair } from '../../types/bepswap';
 import { PoolDataMap } from '../../redux/midgard/types';
 import { SwapData } from './types';
 
@@ -123,55 +123,27 @@ const pools: string[] = [
 describe('swap/utils/', () => {
   describe('isValidSwap', () => {
     it('should return false for source invalid pair', () => {
-      const sourceInvalidPair: Pair = {
-        source: '',
-        target: 'rune',
-      };
-      expect(isValidSwap(sourceInvalidPair, pools)).toBeFalsy();
+      expect(isValidSwap(pools, '', RUNE_SYMBOL)).toBeFalsy();
     });
     it('should return false for target invalid pair', () => {
-      const targetInvalidPair: Pair = {
-        source: 'rune',
-        target: '',
-      };
-      expect(isValidSwap(targetInvalidPair, pools)).toBeFalsy();
+      expect(isValidSwap(pools, RUNE_SYMBOL, '')).toBeFalsy();
     });
     it('should return false for invalid pair', () => {
-      const invalidPair: Pair = {
-        source: 'rune',
-        target: 'rune',
-      };
-      expect(isValidSwap(invalidPair, pools)).toBeFalsy();
+      expect(isValidSwap(pools, RUNE_SYMBOL, RUNE_SYMBOL)).toBeFalsy();
     });
     it('should return false in case the asset is unlisted!', () => {
-      const invalidPair: Pair = {
-        source: 'rune',
-        target: 'btc',
-      };
-      const invalidPair2: Pair = {
-        source: 'eth',
-        target: 'btc',
-      };
-      expect(isValidSwap(invalidPair, pools)).toBeFalsy();
-      expect(isValidSwap(invalidPair2, pools)).toBeFalsy();
+      expect(isValidSwap(pools, RUNE_SYMBOL, 'ETH')).toBeFalsy();
+      expect(isValidSwap(pools, 'ETH', 'BTC')).toBeFalsy();
     });
     it('should return true for a valid pair', () => {
-      const validPair: Pair = {
-        source: 'rune',
-        target: 'bnb',
-      };
-      expect(isValidSwap(validPair, pools)).toBeTruthy();
+      expect(isValidSwap(pools, RUNE_SYMBOL, 'BNB')).toBeTruthy();
     });
     it('should return true for a valid pair', () => {
-      const validPair: Pair = {
-        source: 'lok',
-        target: 'tusdb',
-      };
-      expect(isValidSwap(validPair, pools)).toBeTruthy();
+      expect(isValidSwap(pools, 'LOK-3C0', 'TUSDB-000')).toBeTruthy();
     });
   });
 
-  describe('validatePair', () => {
+  describe('getValidSwapPairs', () => {
     it('should filter source and target data', () => {
       const assetInfo: AssetPair[] = [
         { asset: 'BNB.BNB' },
@@ -187,9 +159,8 @@ describe('swap/utils/', () => {
         { asset: 'BNB.BOLT-E42' },
         { asset: 'BNB.LOK-3C0' },
       ];
-      const pair = { source: 'rune', target: 'bnb' };
 
-      const result = validatePair(pair, assetInfo, poolInfo);
+      const result = getValidSwapPairs(assetInfo, poolInfo, RUNE_SYMBOL, 'BNB');
       const expected = {
         sourceData: [
           { asset: 'BNB.BNB' },
@@ -216,9 +187,8 @@ describe('swap/utils/', () => {
         { asset: 'BNB.BOLT-E42' },
         { asset: 'BNB.LOK-3C0' },
       ];
-      const pair = { source: '', target: '' };
 
-      const result = validatePair(pair, assetInfo, poolInfo);
+      const result = getValidSwapPairs(assetInfo, poolInfo, '', '');
       const expected = {
         sourceData: poolInfo,
         targetData: poolInfo,
@@ -378,8 +348,8 @@ describe('swap/utils/', () => {
     it('returns sigle swap type', () => {
       const expected = 'single_swap';
 
-      expect(getSwapType('RUNE', 'BNB')).toEqual(expected);
-      expect(getSwapType('BNB', 'RUNE')).toEqual(expected);
+      expect(getSwapType(RUNE_SYMBOL, 'BNB')).toEqual(expected);
+      expect(getSwapType('BNB', RUNE_SYMBOL)).toEqual(expected);
     });
 
     it('returns double swap type', () => {
@@ -391,114 +361,86 @@ describe('swap/utils/', () => {
   });
 
   describe('getSwapData', () => {
-    const poolAddress = 'address';
     const xValue = tokenAmount(100);
     const runePrice = bn(1);
 
     it('returns calculated result for single swap type: rune -> bnb', () => {
-      const from = 'rune';
-      const to = 'bnb';
+      const from = RUNE_SYMBOL;
+      const to = 'BNB';
       const expected: SwapData = {
         Px: bn(1),
         fee: tokenAmount(0.0149273),
-        lim: baseAmount(54447528),
+        slipLimit: baseAmount(54447528),
         outputAmount: tokenAmount(0.56131472),
         outputPrice: bn(178.03053227763760049641),
-        poolAddress: 'address',
         slip: bn(5.389413716466187631),
         symbolFrom: RUNE_SYMBOL,
         symbolTo: 'BNB',
       };
 
-      const result = getSwapData(
-        from,
-        to,
-        poolData,
-        poolAddress,
-        xValue,
-        runePrice,
-      );
+      const result = getSwapData(from, to, poolData, xValue, runePrice);
 
       expect(result?.Px).toEqual(expected.Px);
       expect(result?.fee.amount()).toEqual(expected.fee.amount());
-      expect(result?.lim?.amount()).toEqual(expected.lim?.amount());
+      expect(result?.slipLimit?.amount()).toEqual(expected.slipLimit?.amount());
       expect(result?.outputAmount.amount()).toEqual(
         expected.outputAmount.amount(),
       );
       expect(result?.outputPrice.toFixed(5)).toEqual(
         expected.outputPrice.toFixed(5),
       );
-      expect(result?.poolAddress).toEqual(expected.poolAddress);
       expect(result?.slip.toFixed(5)).toEqual(expected.slip.toFixed(5));
       expect(result?.symbolFrom).toEqual(expected.symbolFrom);
       expect(result?.symbolTo).toEqual(expected.symbolTo);
     });
     it('returns calculated result for single swap type: lok -> rune', () => {
-      const from = 'lok';
-      const to = 'rune';
+      const from = 'LOK-3C0';
+      const to = RUNE_SYMBOL;
       const expected: SwapData = {
         Px: bn('6.3322188335020546053'),
         fee: tokenAmount('284.34798923'),
-        lim: baseAmount('51844403581'),
+        slipLimit: baseAmount('51844403581'),
         outputAmount: tokenAmount('534.47838743'),
         outputPrice: bn('1.00000000000152525393'),
-        poolAddress: 'address',
         slip: bn('134.705545606424204104'),
         symbolFrom: 'LOK-3C0',
         symbolTo: RUNE_SYMBOL,
       };
-      const result = getSwapData(
-        from,
-        to,
-        poolData,
-        poolAddress,
-        xValue,
-        runePrice,
-      );
+      const result = getSwapData(from, to, poolData, xValue, runePrice);
 
       expect(result?.Px).toEqual(expected.Px);
       expect(result?.fee.amount()).toEqual(expected.fee.amount());
-      expect(result?.lim?.amount()).toEqual(expected.lim?.amount());
+      expect(result?.slipLimit?.amount()).toEqual(expected.slipLimit?.amount());
       expect(result?.outputAmount.amount()).toEqual(
         expected.outputAmount.amount(),
       );
       expect(result?.outputPrice).toEqual(expected.outputPrice);
-      expect(result?.poolAddress).toEqual(expected.poolAddress);
       expect(result?.slip).toEqual(expected.slip);
       expect(result?.symbolFrom).toEqual(expected.symbolFrom);
       expect(result?.symbolTo).toEqual(expected.symbolTo);
     });
     it('returns calculated result for double swap type: lok -> bnb', () => {
-      const from = 'lok';
-      const to = 'bnb';
+      const from = 'LOK-3C0';
+      const to = 'BNB';
       const expected: SwapData = {
         Px: bn('6.3322188335020546053'),
         fee: tokenAmount('0.34451071'),
         outputAmount: tokenAmount(2.42380508),
         outputPrice: bn('216.67937336595058369301'),
-        poolAddress: 'address',
         slip: bn(23.340828117376259007),
         symbolFrom: 'LOK-3C0',
         symbolTo: 'BNB',
-        lim: baseAmount(235109093),
+        slipLimit: baseAmount(235109093),
       };
 
-      const result = getSwapData(
-        from,
-        to,
-        poolData,
-        poolAddress,
-        xValue,
-        runePrice,
-      );
+      const result = getSwapData(from, to, poolData, xValue, runePrice);
       expect(result?.Px).toEqual(expected.Px);
       expect(result?.fee.amount()).toEqual(expected.fee.amount());
-      expect(result?.lim?.amount()).toEqual(expected.lim?.amount());
+      expect(result?.slipLimit?.amount()).toEqual(expected.slipLimit?.amount());
       expect(result?.outputAmount.amount()).toEqual(
         expected.outputAmount.amount(),
       );
       expect(result?.outputPrice).toEqual(expected.outputPrice);
-      expect(result?.poolAddress).toEqual(expected.poolAddress);
       expect(result?.slip.toFixed(5)).toEqual(expected.slip.toFixed(5));
       expect(result?.symbolFrom).toEqual(expected.symbolFrom);
       expect(result?.symbolTo).toEqual(expected.symbolTo);
@@ -506,86 +448,15 @@ describe('swap/utils/', () => {
   });
 
   describe('validateSwap', () => {
-    const data: Partial<SwapData> = {
-      poolAddress: 'value',
-      symbolFrom: 'value',
-      symbolTo: 'value',
-    };
-
-    it('checks an invalid single swap', () => {
+    it('check wallet and amount', () => {
       // invalid wallet address
-      expect(
-        validateSwap('', SwapType.SINGLE_SWAP, data, tokenAmount(10)),
-      ).toEqual(SwapErrorMsg.MISSING_WALLET);
+      expect(validateSwap('', tokenAmount(10))).toEqual(
+        SwapErrorMsg.MISSING_WALLET,
+      );
       // invalid amount
-      expect(
-        validateSwap('address', SwapType.SINGLE_SWAP, data, tokenAmount(0)),
-      ).toEqual(SwapErrorMsg.INVALID_AMOUNT);
-      // invalid poolAddresTo
-      expect(
-        validateSwap(
-          'address',
-          SwapType.SINGLE_SWAP,
-          { ...data, poolAddress: undefined },
-          tokenAmount(10),
-        ),
-      ).toEqual(SwapErrorMsg.MISSING_ADDRESS);
-      // invalid symbolTo
-      expect(
-        validateSwap(
-          'address',
-          SwapType.SINGLE_SWAP,
-          { ...data, symbolTo: undefined },
-          tokenAmount(10),
-        ),
-      ).toEqual(SwapErrorMsg.MISSING_SYMBOL_TO);
-    });
-    it('checks a valid single swap', () => {
-      expect(
-        validateSwap('address', SwapType.SINGLE_SWAP, data, tokenAmount(10)),
-      ).toBeNothing();
-    });
-    it('checks an invalid double swap', () => {
-      // invalid wallet address
-      expect(
-        validateSwap('', SwapType.DOUBLE_SWAP, data, tokenAmount(10)),
-      ).toEqual(SwapErrorMsg.MISSING_WALLET);
-      // invalid amount
-      expect(
-        validateSwap('address', SwapType.DOUBLE_SWAP, data, tokenAmount(0)),
-      ).toEqual(SwapErrorMsg.INVALID_AMOUNT);
-      // invalid poolAddresTo
-      expect(
-        validateSwap(
-          'address',
-          SwapType.DOUBLE_SWAP,
-          { ...data, poolAddress: undefined },
-          tokenAmount(10),
-        ),
-      ).toEqual(SwapErrorMsg.MISSING_ADDRESS);
-      // invalid poolAddress
-      expect(
-        validateSwap(
-          'address',
-          SwapType.DOUBLE_SWAP,
-          { ...data, poolAddress: undefined },
-          tokenAmount(10),
-        ),
-      ).toEqual(SwapErrorMsg.MISSING_ADDRESS);
-      // invalid symbolfrom
-      expect(
-        validateSwap(
-          'address',
-          SwapType.DOUBLE_SWAP,
-          { ...data, symbolFrom: undefined },
-          tokenAmount(10),
-        ),
-      ).toEqual(SwapErrorMsg.MISSING_SYMBOL_FROM);
-    });
-    it('checks a valid double swap', () => {
-      expect(
-        validateSwap('address', SwapType.DOUBLE_SWAP, data, tokenAmount(10)),
-      ).toBeNothing();
+      expect(validateSwap('address', tokenAmount(0))).toEqual(
+        SwapErrorMsg.INVALID_AMOUNT,
+      );
     });
   });
 });

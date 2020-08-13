@@ -12,8 +12,7 @@ import Label from '../../components/uielements/label';
 import Button from '../../components/uielements/button';
 import CoinList from '../../components/uielements/coins/coinList';
 import { CoinListDataList } from '../../components/uielements/coins/coinList/coinList';
-import { getPair } from '../../helpers/stringHelper';
-import { Maybe, Nothing } from '../../types/bepswap';
+import { Maybe } from '../../types/bepswap';
 import {
   User,
   AssetData,
@@ -45,7 +44,7 @@ type ConnectedProps = {
 };
 
 type Props = ComponentProps & ConnectedProps;
-type State = {}
+type State = {};
 
 const WalletView: React.FC<Props> = (props: Props): JSX.Element => {
   const {
@@ -69,10 +68,9 @@ const WalletView: React.FC<Props> = (props: Props): JSX.Element => {
 
   const getAssetBySource = (source: string): Maybe<AssetData> => {
     const result = assetData.find((data: AssetData) => {
-      const { source: assetSource } = getPair(data.asset);
-      return assetSource && assetSource === source;
+      return data.asset === source && source;
     });
-    return result || Nothing;
+    return result;
   };
 
   const getStakeDataBySource = (symbol: string): Maybe<StakeData> => {
@@ -96,8 +94,9 @@ const WalletView: React.FC<Props> = (props: Props): JSX.Element => {
   };
 
   const getSelectedAsset = (): AssetData[] => {
-    const pair = matchSwapDetailPair(pathname);
-    const asset = getAssetBySource(pair?.source ?? '');
+    const symbolPair = matchSwapDetailPair(pathname);
+    const asset = getAssetBySource(symbolPair?.source ?? '');
+
     return asset ? [asset] : [];
   };
 
@@ -190,16 +189,14 @@ const WalletView: React.FC<Props> = (props: Props): JSX.Element => {
 };
 
 export default compose(
-  connect(
-    (state: RootState) => ({
-      user: state.Wallet.user,
-      assetData: state.Wallet.assetData,
-      stakeData: state.Wallet.stakeData,
-      loadingAssets: state.Wallet.loadingAssets,
-      priceIndex: state.Midgard.priceIndex,
-      basePriceAsset: state.Midgard.basePriceAsset,
-      pathname: state.router.location.pathname,
-    }),
-  ),
+  connect((state: RootState) => ({
+    user: state.Wallet.user,
+    assetData: state.Wallet.assetData,
+    stakeData: state.Wallet.stakeData,
+    loadingAssets: state.Wallet.loadingAssets,
+    priceIndex: state.Midgard.priceIndex,
+    basePriceAsset: state.Midgard.basePriceAsset,
+    pathname: state.router.location.pathname,
+  })),
   withRouter,
 )(WalletView) as React.ComponentClass<ComponentProps, State>;
