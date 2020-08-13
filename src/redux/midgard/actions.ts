@@ -3,6 +3,7 @@ import {
   GetStakerPoolDataPayload,
   PriceDataIndex,
   AssetDetailMap,
+  GetTransactionPayload,
   GetTxByAddressTxIdPayload,
   GetTxByAddressAssetPayload,
   GetTxByAddressPayload,
@@ -75,6 +76,15 @@ export const setBasePriceAsset = (payload: AssetSymbol) =>
 
 export const setPriceIndex = (payload: PriceDataIndex) =>
   ({ type: 'SET_PRICE_INDEX', payload } as const);
+
+export const getTransaction = (payload: GetTransactionPayload) =>
+  ({ type: 'GET_TRANSACTION', payload } as const);
+
+export const getTransactionSuccess = (payload: InlineResponse2001) =>
+  ({ type: 'GET_TRANSACTION_SUCCESS', payload } as const);
+
+export const getTransactionFailed = (payload: Error) =>
+  ({ type: 'GET_TRANSACTION_FAILED', payload } as const);
 
 // get transactions by address
 export const getTxByAddress = (payload: GetTxByAddressPayload) =>
@@ -150,6 +160,9 @@ export type MidgardActionTypes = ReturnType<
   | typeof setAssets
   | typeof setBasePriceAsset
   | typeof setPriceIndex
+  | typeof getTransaction
+  | typeof getTransactionSuccess
+  | typeof getTransactionFailed
   | typeof getTxByAddress
   | typeof getTxByAddressSuccess
   | typeof getTxByAddressFailed

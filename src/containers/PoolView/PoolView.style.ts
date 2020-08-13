@@ -70,3 +70,7 @@ export const ActionColumn = styled.div`
     width: 250px;
   }
 `;
+
+export const TransactionWrapper = styled.div`
+  padding: 20px 0px;
+`;
