@@ -19,6 +19,7 @@ import {
   GetTxByAssetPayload,
   GetTxByAddressAssetPayload,
   GetStakerPoolDataPayload,
+  GetTransactionPayload,
 } from './types';
 import { AssetDetail } from '../../types/generated/midgard';
 
@@ -345,6 +346,47 @@ export function* getPoolAddress() {
   });
 }
 
+function* tryGetTransactions(payload: GetTransactionPayload) {
+  for (let i = 0; i < MIDGARD_MAX_RETRY; i++) {
+    try {
+      const noCache = i > 0;
+      const { offset, limit, type } = payload;
+      // Unsafe type match of `basePath`: Can't be inferred by `tsc` from a return value of a Generator function - known TS/Generator/Saga issue
+      const basePath: string = yield call(getApiBasePath, getNet(), noCache);
+      const midgardApi = api.getMidgardDefaultApi(basePath);
+      const fn = midgardApi.getTxDetails;
+      const { data }: UnpackPromiseResponse<typeof fn> = yield call(
+        { context: midgardApi, fn },
+        offset,
+        limit,
+        undefined,
+        undefined,
+        undefined,
+        type,
+      );
+      return data;
+    } catch (error) {
+      if (i < MIDGARD_MAX_RETRY - 1) {
+        yield delay(MIDGARD_RETRY_DELAY);
+      }
+    }
+  }
+  throw new Error('Midgard API request failed to get transaction details');
+}
+
+export function* getTransactions() {
+  yield takeEvery('GET_TRANSACTION', function*({
+    payload,
+  }: ReturnType<typeof actions.getTransaction>) {
+    try {
+      const data = yield call(tryGetTransactions, payload);
+      yield put(actions.getTransactionSuccess(data));
+    } catch (error) {
+      yield put(actions.getTransactionFailed(error));
+    }
+  });
+}
+
 function* tryGetTxByAddress(payload: GetTxByAddressPayload) {
   for (let i = 0; i < MIDGARD_MAX_RETRY; i++) {
     try {
@@ -537,6 +579,7 @@ export default function* rootSaga() {
     fork(getStakerPoolData),
     fork(getPoolAddress),
     fork(setBasePriceAsset),
+    fork(getTransactions),
     fork(getTxByAddress),
     fork(getTxByAddressTxId),
     fork(getTxByAddressAsset),

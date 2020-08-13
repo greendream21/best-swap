@@ -239,6 +239,21 @@ const reducer: Reducer<State, MidgardActionTypes> = (
         error: action.payload,
         poolAddressLoading: false,
       };
+    case 'GET_TRANSACTION':
+      return {
+        ...state,
+        txData: pending,
+      };
+    case 'GET_TRANSACTION_SUCCESS':
+      return {
+        ...state,
+        txData: success(action.payload),
+      };
+    case 'GET_TRANSACTION_FAILED':
+      return {
+        ...state,
+        txData: failure(action.payload),
+      };
     case 'GET_TX_BY_ADDRESS':
       return {
         ...state,

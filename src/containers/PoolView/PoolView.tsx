@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as H from 'history';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
@@ -18,7 +18,12 @@ import Button from '../../components/uielements/button';
 import PoolFilter from '../../components/poolFilter';
 import StatBar from '../../components/statBar';
 
-import { ContentWrapper, ActionHeader, ActionColumn } from './PoolView.style';
+import {
+  ContentWrapper,
+  ActionHeader,
+  ActionColumn,
+  TransactionWrapper,
+} from './PoolView.style';
 import {
   getAvailableTokensToCreate,
   getPoolData,
@@ -33,6 +38,7 @@ import {
   PoolDataMap,
   PriceDataIndex,
   AssetDetailMap,
+  TxDetailData,
 } from '../../redux/midgard/types';
 import { getAssetFromString } from '../../redux/midgard/utils';
 import { ViewType, Maybe } from '../../types/bepswap';
@@ -44,11 +50,13 @@ import showNotification from '../../components/uielements/notification';
 import { RUNE_SYMBOL } from '../../settings/assetData';
 
 import LabelLoader from '../../components/utility/loaders/label';
+import TxTable from '../../components/transaction/txTable';
 
 type Props = {
   history: H.History;
   pools: string[];
   poolData: PoolDataMap;
+  txData: TxDetailData;
   stats: StatsData;
   assets: AssetDetailMap;
   priceIndex: PriceDataIndex;
@@ -58,12 +66,14 @@ type Props = {
   assetLoading: boolean;
   poolDataLoading: boolean;
   getPools: typeof midgardActions.getPools;
+  getTransactions: typeof midgardActions.getTransaction;
 };
 
 const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
   const {
     pools,
     poolData,
+    txData,
     stats,
     assets,
     priceIndex,
@@ -73,6 +83,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     assetLoading,
     poolDataLoading,
     getPools,
+    getTransactions,
   } = props;
 
   const [poolStatus, selectPoolStatus] = useState<PoolDetailStatusEnum>(
@@ -83,6 +94,10 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
   const loading = poolLoading || poolDataLoading;
   const wallet: Maybe<string> = user ? user.wallet : null;
   const busdPrice = assets?.['BUSD-BAF']?.priceRune ?? '1';
+
+  useEffect(() => {
+    getTransactions({ offset: 0, limit: 10 });
+  }, [getTransactions]);
 
   const handleGetPools = () => {
     getPools();
@@ -310,6 +325,12 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
           ADD NEW POOL
         </Label>
       </div>
+      <TransactionWrapper>
+        <Label size="big" color="primary">
+          Transactions
+        </Label>
+        <TxTable txData={txData} />
+      </TransactionWrapper>
     </ContentWrapper>
   );
 };
@@ -325,11 +346,13 @@ export default compose(
       assetLoading: state.Midgard.assetLoading,
       poolDataLoading: state.Midgard.poolDataLoading,
       priceIndex: state.Midgard.priceIndex,
+      txData: state.Midgard.txData,
       assetData: state.Wallet.assetData,
       user: state.Wallet.user,
     }),
     {
       getPools: midgardActions.getPools,
+      getTransactions: midgardActions.getTransaction,
     },
   ),
   withRouter,

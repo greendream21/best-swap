@@ -44,6 +44,12 @@ export type TxDetailType =
   | TxDetailsTypeEnum.Unstake
   | TxDetailsTypeEnum.DoubleSwap;
 
+export type GetTransactionPayload = {
+  offset: number;
+  limit: number;
+  type?: string;
+};
+
 export type GetTxByAddressPayload = {
   address: string;
   offset: number;
