@@ -65,7 +65,7 @@ const CoinCardMenu: React.FC<Props> = (props: Props): JSX.Element => {
       );
       return { key, node };
     },
-    [priceIndex, unit],
+    [unit],
   );
 
   const disableItemFilterHandler = useCallback(
