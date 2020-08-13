@@ -66,7 +66,6 @@ type Props = {
   assetLoading: boolean;
   poolDataLoading: boolean;
   getPools: typeof midgardActions.getPools;
-  getPoolAddress: typeof midgardActions.getPoolAddress;
   getTransactions: typeof midgardActions.getTransaction;
 };
 
@@ -353,7 +352,6 @@ export default compose(
     }),
     {
       getPools: midgardActions.getPools,
-      getPoolAddress: midgardActions.getPoolAddress,
       getTransactions: midgardActions.getTransaction,
     },
   ),
