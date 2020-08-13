@@ -84,7 +84,6 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     assetLoading,
     poolDataLoading,
     getPools,
-    getPoolAddress,
     getTransactions,
   } = props;
 
@@ -142,16 +141,6 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
       return <LabelLoader />;
     }
     return <span>{text}</span>;
-  };
-
-  const handleStakeAction = (url: string) => {
-    getPoolAddress();
-    history.push(url);
-  };
-
-  const handleSwapAction = (url: string) => {
-    getPoolAddress();
-    history.push(url);
   };
 
   const renderPoolTable = (poolViewData: PoolData[], view: ViewType) => {
