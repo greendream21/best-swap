@@ -272,7 +272,6 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
       const poolInfo = poolData[symbol] || {};
 
       const poolDataDetail: PoolData = getPoolData(
-        'rune',
         symbol,
         poolInfo,
         priceIndex,

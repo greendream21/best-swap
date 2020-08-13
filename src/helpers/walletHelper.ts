@@ -1,34 +1,32 @@
 import { tokenToBase, BaseAmount } from '@thorchain/asgardex-token';
-import { getTickerFormat } from './stringHelper';
 import { Nothing, Maybe } from '../types/bepswap';
 import { AssetData } from '../redux/wallet/types';
 
-export const getAssetFromAssetData = (
+/**
+ * return asset data from the user's balance
+ * @param assetData asset data in the user's wallet balance
+ * @param symbol symbol in the balance to retrieve the data
+ */
+export const getAssetDataFromBalance = (
   assetData: AssetData[],
-  source: Maybe<string>,
+  symbol: Maybe<string>,
 ): Maybe<AssetData> => {
-  if (!source) {
+  if (!symbol) {
     return Nothing;
   }
-  return assetData.reduce((acc, data) => {
-    const { asset } = data;
-    if (!acc) {
-      const tokenName = getTickerFormat(asset);
-      const assetName = getTickerFormat(source);
-      if (tokenName && tokenName === assetName.toLowerCase()) {
-        return data;
-      }
-    }
-    return acc;
-  }, Nothing as Maybe<AssetData>);
+
+  return (
+    assetData.find(data => data.asset.toLowerCase() === symbol.toLowerCase()) ||
+    Nothing
+  );
 };
 
 /**
  * Returns BNB amount within AssetData
  * If no BNB is available, Nothing will be returned
-*/
+ */
 export const bnbBaseAmount = (assetData: AssetData[]): Maybe<BaseAmount> => {
-  const bnbAsset = getAssetFromAssetData(assetData, 'bnb');
+  const bnbAsset = getAssetDataFromBalance(assetData, 'BNB');
   const amount = bnbAsset?.assetValue;
   return amount ? tokenToBase(amount) : Nothing;
 };

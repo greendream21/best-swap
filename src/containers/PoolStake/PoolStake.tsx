@@ -82,7 +82,7 @@ import { getAssetFromString } from '../../redux/midgard/utils';
 import { BINANCE_NET } from '../../env';
 import { TransferFeesRD, TransferFees } from '../../redux/binance/types';
 import {
-  getAssetFromAssetData,
+  getAssetDataFromBalance,
   bnbBaseAmount,
 } from '../../helpers/walletHelper';
 import { ShareDetailTabKeys, WithdrawData } from './types';
@@ -164,7 +164,12 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
   const [txType, setTxType] = useState<TxTypes>();
 
+  // TODO: Create custom usePrice hooks
+  const runePrice = validBNOrZero(priceIndex[RUNE_SYMBOL]);
+
   const tokenSymbol = symbol.toUpperCase();
+  const tokenTicker = getTickerFormat(symbol);
+
   const emptyStakerPoolData: StakersAssetData = {
     asset: tokenSymbol,
     stakeUnits: '0',
@@ -229,7 +234,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   }, [poolLoading, stakerPoolDataLoading]);
 
   const getData = (): CalcResult => {
-    const runePrice = validBNOrZero(priceIndex?.RUNE);
     const calcResult = getCalcResult(
       symbol,
       poolData,
@@ -245,36 +249,29 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   /**
    * Handler for setting token amounts in input fields
    */
-  const handleChangeTokenAmount = (tokenName: string) => (value: BigNumber) => {
-    const sourceAsset = getAssetFromAssetData(
-      assetData,
-      tokenName.toLowerCase(),
-    );
-    const targetToken = assetData.find(data => {
-      const { asset } = data;
-      if (asset.toLowerCase() === symbol.toLowerCase()) {
-        return true;
-      }
-      return false;
-    });
+  const handleChangeTokenAmount = (assetSymbol: string) => (
+    value: BigNumber,
+  ) => {
+    const sourceAsset = getAssetDataFromBalance(assetData, assetSymbol);
+    const targetAsset = getAssetDataFromBalance(assetData, tokenSymbol);
 
-    if (!sourceAsset || !targetToken) {
+    if (!sourceAsset || !targetAsset) {
       return;
     }
 
     const totalSourceAmount = sourceAsset.assetValue.amount();
-    const totalTokenAmount = targetToken.assetValue.amount();
+    const totalTokenAmount = targetAsset.assetValue.amount();
     const valueAsToken = tokenAmount(value);
 
     if (!selectRatio) {
-      if (tokenName === 'rune') {
+      if (assetSymbol === RUNE_SYMBOL) {
         if (totalSourceAmount.isLessThan(valueAsToken.amount())) {
           setRuneAmount(tokenAmount(totalSourceAmount));
           setRunePercent(100);
         } else {
           setRuneAmount(valueAsToken);
         }
-      } else if (tokenName !== 'rune') {
+      } else if (assetSymbol !== RUNE_SYMBOL) {
         if (totalSourceAmount.isLessThan(valueAsToken.amount())) {
           setTargetAmount(tokenAmount(totalSourceAmount));
         } else {
@@ -283,7 +280,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       }
       return;
     }
-    if (tokenName === 'rune') {
+    if (assetSymbol === RUNE_SYMBOL) {
       const data = getData();
       const ratio = data?.ratio ?? 1;
       // formula: newValue * ratio
@@ -300,7 +297,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
         setRuneAmount(valueAsToken);
         setTargetAmount(tokenAmount(tokenAmountBN));
       }
-    } else if (tokenName !== 'rune') {
+    } else if (assetSymbol !== RUNE_SYMBOL) {
       const data = getData();
       const ratio = data?.ratio ?? 1;
       // formula: newValue / ratio
@@ -324,9 +321,9 @@ const PoolStake: React.FC<Props> = (props: Props) => {
    * Note: Don't consider any fees in this function, since it sets values for tokenAmount,
    * which triggers `handleChangeTokenAmount` where all calculations for fees are happen
    */
-  const handleChangePercent = (tokenName: string) => (amount: number) => {
-    const selectedToken = getAssetFromAssetData(assetData, tokenName);
-    const targetToken = getAssetFromAssetData(assetData, symbol);
+  const handleChangePercent = (tokenSymbol: string) => (amount: number) => {
+    const selectedToken = getAssetDataFromBalance(assetData, tokenSymbol);
+    const targetToken = getAssetDataFromBalance(assetData, symbol);
     if (!selectedToken || !targetToken) {
       return;
     }
@@ -335,7 +332,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     const totalTokenAmount = targetToken.assetValue.amount();
     const value = totalAmount.multipliedBy(amount).div(100);
 
-    if (tokenName === 'rune') {
+    if (tokenSymbol === RUNE_SYMBOL) {
       const data = getData();
       const ratio = data?.ratio ?? 1;
       // formula: value * ratio);
@@ -743,8 +740,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   };
 
   const renderStakeInfo = (poolStats: PoolData) => {
-    const source = 'rune';
-    const target = getTickerFormat(symbol);
     const loading = isLoading();
 
     const {
@@ -791,8 +786,8 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       return (
         <Col className="token-info-card" key={key} xs={12} sm={8} md={6} lg={4}>
           <TokenInfo
-            asset={source}
-            target={target}
+            asset="RUNE"
+            target={tokenTicker}
             value={value}
             label={title}
             loading={loading}
@@ -807,11 +802,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     stakersAssetData: StakersAssetData,
     calcResult: CalcResult,
   ) => {
-    const source = 'rune';
-    const target = getTickerFormat(symbol);
-
-    const runePrice = validBNOrZero(priceIndex?.RUNE);
-    const tokenPrice = validBNOrZero(priceIndex[target.toUpperCase()]);
+    const tokenPrice = validBNOrZero(priceIndex[tokenSymbol]);
 
     const tokensData: AssetPair[] = Object.keys(assets).map(tokenName => {
       const tokenData = assets[tokenName];
@@ -921,16 +912,16 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                     tabIndex: '0',
                   }}
                   data-test="coin-card-stake-coin-rune"
-                  asset={source}
+                  asset="rune"
                   amount={runeAmount}
                   price={runePrice}
                   priceIndex={priceIndex}
                   unit={basePriceAsset}
-                  onChange={handleChangeTokenAmount('rune')}
+                  onChange={handleChangeTokenAmount(RUNE_SYMBOL)}
                 />
                 <Slider
                   value={runePercent}
-                  onChange={handleChangePercent('rune')}
+                  onChange={handleChangePercent(RUNE_SYMBOL)}
                   withLabel
                   tabIndex="-1"
                 />
@@ -968,14 +959,14 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                     tabIndex: '0',
                   }}
                   data-test="coin-card-stake-coin-target"
-                  asset={target}
+                  asset={tokenTicker}
                   assetData={tokensData}
                   amount={targetAmount}
                   price={tokenPrice}
                   priceIndex={priceIndex}
                   unit={basePriceAsset}
                   onChangeAsset={handleSelectTraget}
-                  onChange={handleChangeTokenAmount(target)}
+                  onChange={handleChangeTokenAmount(tokenSymbol)}
                   withSearch
                 />
               </div>
@@ -1031,13 +1022,13 @@ const PoolStake: React.FC<Props> = (props: Props) => {
               <div className="withdraw-status-wrapper">
                 <div className="withdraw-asset-wrapper">
                   <CoinData
-                    asset={source}
+                    asset="rune"
                     assetValue={sourceTokenAmount}
                     price={sourcePrice}
                     priceUnit={basePriceAsset}
                   />
                   <CoinData
-                    asset={target}
+                    asset={tokenTicker}
                     assetValue={targetTokenAmount}
                     price={targetPrice}
                     priceUnit={basePriceAsset}
@@ -1092,11 +1083,8 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     const hasWallet = wallet !== null;
 
     const { R, T, poolUnits } = calcResult;
-    const source = 'rune';
-    const target = getTickerFormat(symbol);
 
-    const runePrice = validBNOrZero(priceIndex?.RUNE);
-    const assetPrice = _get(priceIndex, target.toUpperCase(), 0);
+    const assetPrice = validBNOrZero(priceIndex[tokenSymbol]);
 
     const { stakeUnits }: StakersAssetData = stakersAssetData;
     const stakeUnitsBN = bnOrZero(stakeUnits);
@@ -1147,7 +1135,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                 <div className="share-info-row">
                   <div className="your-share-info">
                     <Status
-                      title={source.toUpperCase()}
+                      title="RUNE"
                       value={runeStakedShare}
                       loading={loading}
                     />
@@ -1162,7 +1150,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                   </div>
                   <div className="your-share-info">
                     <Status
-                      title={target.toUpperCase()}
+                      title={tokenTicker.toUpperCase()}
                       value={assetStakedShare}
                       loading={loading}
                     />
@@ -1226,7 +1214,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   const hasWallet = wallet !== null;
   const poolInfo = poolData[tokenSymbol] || {};
 
-  const poolStats = getPoolData('rune', symbol, poolInfo, priceIndex);
+  const poolStats = getPoolData(tokenSymbol, poolInfo, priceIndex);
   const calcResult = getData();
 
   const yourShareSpan = hasWallet ? 8 : 24;
