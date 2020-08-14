@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+/* eslint-disable no-underscore-dangle */
+import React, { useCallback, useEffect, useState } from 'react';
 import * as H from 'history';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
@@ -23,6 +24,7 @@ import {
   ActionHeader,
   ActionColumn,
   TransactionWrapper,
+  StyledPagination,
 } from './PoolView.style';
 import {
   getAvailableTokensToCreate,
@@ -95,9 +97,16 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
   const wallet: Maybe<string> = user ? user.wallet : null;
   const busdPrice = assets?.['BUSD-BAF']?.priceRune ?? '1';
 
+  const getTransactionInfo = useCallback(
+    (offset: number, limit: number) => {
+      getTransactions({ offset, limit });
+    },
+    [getTransactions],
+  );
+
   useEffect(() => {
-    getTransactions({ offset: 0, limit: 10 });
-  }, [getTransactions]);
+    getTransactionInfo(0, 10);
+  }, [getTransactionInfo]);
 
   const handleGetPools = () => {
     getPools();
@@ -330,6 +339,14 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
           Transactions
         </Label>
         <TxTable txData={txData} />
+        <StyledPagination
+          defaultCurrent={0}
+          total={txData._tag === 'RemoteSuccess' ? txData.value.count : 0}
+          showSizeChanger={false}
+          onChange={page => {
+            getTransactionInfo((page - 1) * 10, 10);
+          }}
+        />
       </TransactionWrapper>
     </ContentWrapper>
   );
