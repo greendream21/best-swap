@@ -24,6 +24,7 @@ export const StyledLink = styled.a`
 `;
 
 export const StyledLinkText = styled(Label)`
+  margin-right: 10px;
   font-size: 14px;
   text-overflow: ellipsis;
   overflow: hidden;

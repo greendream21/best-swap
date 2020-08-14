@@ -57,6 +57,10 @@ const TxTable: React.FC<Props> = (props: Props): JSX.Element => {
         );
       },
       in: (_, row) => {
+        if (row?.type === TxDetailsTypeEnum.Unstake) {
+          return <StyledLinkText>N/A</StyledLinkText>;
+        }
+
         const txId = row?.in?.txID;
         const coins = row?.in?.coins ?? [];
         let inData = '';
@@ -80,10 +84,17 @@ const TxTable: React.FC<Props> = (props: Props): JSX.Element => {
         );
       },
       out: (_, row) => {
-        const txId = row?.out?.[0].txID;
-        const coins = row?.out?.[0].coins ?? [];
+        if (
+          row?.type === TxDetailsTypeEnum.Stake ||
+          row?.type === TxDetailsTypeEnum.Add
+        ) {
+          return <StyledLinkText>N/A</StyledLinkText>;
+        }
+
+        const txId = row?.out?.[0]?.txID ?? '';
+        const coins = row?.out?.[0]?.coins ?? [];
         if (row?.type === TxDetailsTypeEnum.Unstake) {
-          coins.concat(row?.out?.[1].coins ?? []);
+          coins.concat(row?.out?.[1]?.coins ?? []);
         }
         let outData = '';
         coins.forEach((txDetail: Coin, index: number) => {
@@ -130,7 +141,7 @@ const TxTable: React.FC<Props> = (props: Props): JSX.Element => {
     key: 'type',
     title: 'type',
     dataIndex: 'type',
-    align: 'left',
+    align: 'center',
     render: columnRenders.type,
   };
   const inColumn: ColumnType<TxDetails> = {
