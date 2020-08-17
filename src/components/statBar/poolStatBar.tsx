@@ -34,14 +34,26 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
   return (
     <>
       <Row gutter={[16, 16]}>
-        <Col span={12}>
+        <Col
+          xs={{ span: 24 }}
+          sm={{ span: 24 }}
+          md={{ span: 12 }}
+          lg={{ span: 12 }}
+          xl={{ span: 12 }}
+        >
           <StyledStatistic
             title="Total Liquidity"
             value={liqFee}
             prefix="$"
           />
         </Col>
-        <Col span={12}>
+        <Col
+          xs={{ span: 24 }}
+          sm={{ span: 24 }}
+          md={{ span: 12 }}
+          lg={{ span: 12 }}
+          xl={{ span: 12 }}
+        >
           <StyledStatistic
             title="Total Volume"
             value={getUSDValue(volume)}
@@ -50,18 +62,42 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
         </Col>
       </Row>
       <Row gutter={[16, 16]}>
-        <Col span={12}>
+        <Col
+          xs={{ span: 24 }}
+          sm={{ span: 24 }}
+          md={{ span: 12 }}
+          lg={{ span: 12 }}
+          xl={{ span: 12 }}
+        >
           <StyledStatistic title="Total Users" value={users ?? '0'} />
         </Col>
-        <Col span={12}>
+        <Col
+          xs={{ span: 24 }}
+          sm={{ span: 24 }}
+          md={{ span: 12 }}
+          lg={{ span: 12 }}
+          xl={{ span: 12 }}
+        >
           <StyledStatistic title="Total Transactions" value={getUSDValue(transaction) ?? '0'} />
         </Col>
       </Row>
       <Row gutter={[16, 16]}>
-        <Col span={12}>
+        <Col
+          xs={{ span: 24 }}
+          sm={{ span: 24 }}
+          md={{ span: 12 }}
+          lg={{ span: 12 }}
+          xl={{ span: 12 }}
+        >
           <StyledStatistic title="Total Earned" value={getUSDValue(earned) ?? '0'} prefix="$" />
         </Col>
-        <Col span={12}>
+        <Col
+          xs={{ span: 24 }}
+          sm={{ span: 24 }}
+          md={{ span: 12 }}
+          lg={{ span: 12 }}
+          xl={{ span: 12 }}
+        >
           <StyledStatistic
             title="Total ROI"
             value={`${stats?.roiAT ?? '0'}`}
@@ -70,14 +106,26 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
         </Col>
       </Row>
       <Row gutter={[16, 16]}>
-        <Col span={12}>
+        <Col
+          xs={{ span: 24 }}
+          sm={{ span: 24 }}
+          md={{ span: 12 }}
+          lg={{ span: 12 }}
+          xl={{ span: 12 }}
+        >
           <StyledStatistic
             title="Buy Tx"
             value={getUSDValue(buyTx) ?? '0'}
             prefix="$"
           />
         </Col>
-        <Col span={12}>
+        <Col
+          xs={{ span: 24 }}
+          sm={{ span: 24 }}
+          md={{ span: 12 }}
+          lg={{ span: 12 }}
+          xl={{ span: 12 }}
+        >
           <StyledStatistic
             title="Sell Tx"
             value={getUSDValue(sellTx) ?? '0'}

@@ -166,7 +166,7 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [txStatus]);
 
-  const renderDetailCaption = (poolStats: PoolData) => {
+  const renderDetailCaption = (poolStats: PoolData, viewMode: string) => {
     const swapUrl = `/swap/${RUNE_SYMBOL}:${poolStats.values.symbol}`;
     const stakeUrl = `/stake/${poolStats.values.symbol.toUpperCase()}`;
 
@@ -174,7 +174,7 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
     const poolPrice = `$${poolStats.values.poolPrice}`;
 
     return (
-      <Col className="pool-caption-container">
+      <Col className={`pool-caption-container ${viewMode}`}>
         <PoolCaptionWrapper>
           <PoolCaptionTitle>
             {targetName}
@@ -209,9 +209,10 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
   return (
     <ContentWrapper className="pool-detail-wrapper" transparent>
       <Row className="detail-info-header">
-        {renderDetailCaption(poolStats)}
+        {renderDetailCaption(poolStats, 'desktop-view')}
+        {renderDetailCaption(poolStats, 'mobile-view')}
       </Row>
-      <Row className="detail-info-view">
+      <Row className="detail-info-view desktop-view">
         <Col span={8}>
           <StatBar stats={poolStats} poolInfo={poolInfo} basePrice={busdPrice} />
         </Col>
@@ -222,6 +223,22 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
             lineColor={isLight ? '#436eb9' : '#1dd3e6'}
             gradientStart={isLight ? '#c5d3f0' : '#365979'}
             gradientStop={isLight ? '#ffffff' : '#0f1922'}
+            viewMode="desktop-view"
+          />
+        </Col>
+      </Row>
+      <Row className="detail-info-view mobile-view">
+        <Col span={24}>
+          <StatBar stats={poolStats} poolInfo={poolInfo} basePrice={busdPrice} />
+        </Col>
+        <Col span={24}>
+          <PoolChart
+            chartData={chartData}
+            textColor={theme.palette.text[0]}
+            lineColor={isLight ? '#436eb9' : '#1dd3e6'}
+            gradientStart={isLight ? '#c5d3f0' : '#365979'}
+            gradientStop={isLight ? '#ffffff' : '#0f1922'}
+            viewMode="mobile-view"
           />
         </Col>
       </Row>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 import moment from 'moment';
 
 import {
@@ -27,15 +27,16 @@ type Props = {
   lineColor: string,
   gradientStart: string,
   gradientStop: string,
+  viewMode: string,
 };
 
 
-const renderHeader = (type, time, onTypeChange, onTimeChange) => {
+const renderHeader = (type: string, time: string, onTypeChange: Dispatch<SetStateAction<string>>, onTimeChange: Dispatch<SetStateAction<string>>) => {
   return (
     <HeaderContainer>
       <TypeContainer>
         <HeaderToggle
-          toggled={type === 'LIQUIDITY'}
+          role={type === 'LIQUIDITY' ? 'true' : 'false'}
           onClick={() => {
             if (type !== 'LIQUIDITY') {
               onTypeChange('LIQUIDITY');
@@ -45,7 +46,7 @@ const renderHeader = (type, time, onTypeChange, onTimeChange) => {
           Liquidity
         </HeaderToggle>
         <HeaderToggle
-          toggled={type === 'VOLUME'}
+          role={type === 'VOLUME' ? 'true' : 'false'}
           onClick={() => {
             if (type !== 'VOLUME') {
               onTypeChange('VOLUME');
@@ -57,7 +58,7 @@ const renderHeader = (type, time, onTypeChange, onTimeChange) => {
       </TypeContainer>
       <TimeContainer>
         <HeaderToggle
-          toggled={time === 'WEEK'}
+          role={time === 'WEEK' ? 'true' : 'false'}
           onClick={() => {
             if (time !== 'WEEK') {
               onTimeChange('WEEK');
@@ -67,7 +68,7 @@ const renderHeader = (type, time, onTypeChange, onTimeChange) => {
           1 Week
         </HeaderToggle>
         <HeaderToggle
-          toggled={time === 'ALL'}
+          role={time === 'ALL' ? 'true' : 'false'}
           onClick={() => {
             if (time !== 'ALL') {
               onTimeChange('ALL');
@@ -88,7 +89,8 @@ const renderChart = (
   textColor: string,
   lineColor: string,
   gradientStart: string,
-  gradientStop: string) => {
+  gradientStop: string,
+  viewMode: string) => {
   const totalDisplayChart = type === 'LIQUIDITY' ? [...chartData.liquidity] : [...chartData.volume];
   const startDate = moment().subtract(7, 'days');
   const filteredByTime = totalDisplayChart.filter(data => {
@@ -179,10 +181,10 @@ const renderChart = (
             display: false,
           },
           ticks: {
-            fontSize: '15',
+            fontSize: viewMode === 'desktop-view' ? '15' : '10',
             fontColor: textColor,
             autoSkip: true,
-            maxTicksLimit: 6,
+            maxTicksLimit: viewMode === 'desktop-view' ? 6 : 4,
             maxRotation: 0,
           },
         },
@@ -196,12 +198,12 @@ const renderChart = (
           scalePositionLeft: false,
           ticks: {
             autoSkip: true,
-            maxTicksLimit: 5,
+            maxTicksLimit: viewMode === 'desktop-view' ? 5 : 3,
             callback(value:string) {
               return `$${value}M`;
             },
-            padding: 20,
-            fontSize: '18',
+            padding: viewMode === 'desktop-view' ? 20 : 0,
+            fontSize: viewMode === 'desktop-view' ? '18' : '10',
             fontColor: textColor,
           },
           gridLines: {
@@ -219,14 +221,14 @@ const renderChart = (
 };
 
 const PoolChart: React.FC<Props> = (props: Props): JSX.Element => {
-  const { chartData, textColor, lineColor, gradientStart, gradientStop } = props;
+  const { chartData, textColor, lineColor, gradientStart, gradientStop, viewMode } = props;
   const [chartType, setChartType] = React.useState('LIQUIDITY');
   const [chartTime, setChartTime] = React.useState('ALL');
 
   return (
     <ChartContainer>
       {renderHeader(chartType, chartTime, setChartType, setChartTime)}
-      {renderChart(chartData, chartType, chartTime, textColor, lineColor, gradientStart, gradientStop)}
+      {renderChart(chartData, chartType, chartTime, textColor, lineColor, gradientStart, gradientStop, viewMode)}
     </ChartContainer>
   );
 };

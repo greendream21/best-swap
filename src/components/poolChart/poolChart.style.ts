@@ -1,15 +1,20 @@
 import styled from 'styled-components';
 import { palette } from 'styled-theme';
 import { Line } from 'react-chartjs-2';
+import { media } from '../../helpers/styleHelper';
 
 export const ChartContainer = styled('div')`
   background: ${palette('background', 0)};
-  margin-left: 20px;
-
-  padding: 10px 20px;
+  padding: 5px;
   border-radius: 4px;
-  width: calc(100% - 20px);
-  height: 362px;
+  width: 100%;
+  height: 100%;  
+  ${media.lg`
+    margin-left: 16px;
+    padding: 10px 20px;
+    width: calc(100% - 16px);
+    height: 362px;
+  `}
 `;
 
 export const ChartHeaderType = styled('div')`
@@ -49,12 +54,15 @@ export const TimeContainer = styled('div')`
 
 export const HeaderToggle = styled('span')`
   color: ${palette('text', 0)};
-  font-size: 18px;
-  font-weight: ${props => props.toggled ? '600' : 'normal'};
-  &:hover {
-    opacity: 0.8;
-  }
+  font-size: 12px;
+  font-weight: ${props => props.role === 'true' ? '600' : 'normal'};
   cursor: pointer;
+  ${media.lg`
+    height: 18px;
+    &:hover {
+      opacity: 0.8;
+    }
+  `}  
 `;
 
 export const LineChartContainer = styled('div')`
