@@ -16,7 +16,7 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
 
   const getUSDValue = useCallback(
     (val: string) => {
-      return (Number(val) / 1e8 / price).toFixed(2);
+      return (Number(val) / 1e8 / price).toFixed(0);
     },
     [price],
   );
