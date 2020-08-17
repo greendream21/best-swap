@@ -320,7 +320,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
 
   return (
     <ContentWrapper className="pool-view-wrapper">
-      <StatBar stats={stats} basePrice={busdPrice} />
+      <StatBar loading={loading} stats={stats} basePrice={busdPrice} />
       <PoolFilter selected={poolStatus} onClick={selectPoolStatus} />
       <div className="pool-list-view desktop-view">
         {renderPoolList(ViewType.DESKTOP)}
