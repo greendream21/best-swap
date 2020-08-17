@@ -46,6 +46,9 @@ export const getValidSwapPairs = (
   targetSymbol: string,
 ) => {
   const poolAssets = targetInfo.map(data => getAssetFromString(data.asset).symbol);
+  console.log('targetInfo', targetInfo);
+  console.log('sourceInfo', sourceInfo);
+  console.log('poolassets', poolAssets);
   const sourceData = sourceInfo.filter((data: AssetPair) => {
     const symbol = getAssetFromString(data.asset).symbol;
     return symbol !== sourceSymbol && poolAssets.includes(symbol);
