@@ -95,6 +95,12 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
 
   const loading = poolLoading || poolDataLoading;
   const wallet: Maybe<string> = user ? user.wallet : null;
+
+  /**
+   * TODO: implement the separate USD pricing logic
+   * 1. Should recognize BUSD pool with ticker instead of symbol
+   * 2. If BUSD pool doesn't exist, it should calculate the price in RUNE
+   */
   const busdPrice = assets?.['BUSD-BAF']?.priceRune ?? '1';
 
   const getTransactionInfo = useCallback(
@@ -136,6 +142,13 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
       }
     }
   };
+
+  const handlePagination = useCallback(
+    (page: number) => {
+      getTransactionInfo((page - 1) * 10, 10);
+    },
+    [getTransactionInfo],
+  );
 
   const renderCell = (text: string) => {
     if (loading) {
@@ -343,9 +356,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
           defaultCurrent={0}
           total={txData._tag === 'RemoteSuccess' ? txData.value.count : 0}
           showSizeChanger={false}
-          onChange={page => {
-            getTransactionInfo((page - 1) * 10, 10);
-          }}
+          onChange={handlePagination}
         />
       </TransactionWrapper>
     </ContentWrapper>
