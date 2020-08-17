@@ -15,8 +15,9 @@ const routes: AppRoute[] = [
     component: asyncComponent(() => import('../PoolView')),
     exact: true,
   },
+  // URI Format: swap/RUNE-67C:BNB
   {
-    path: 'swap/:info',
+    path: 'swap/:symbolpair',
     component: asyncComponent(() => import('../SwapSend')),
   },
   {
@@ -45,6 +46,10 @@ const routes: AppRoute[] = [
   {
     path: 'transaction',
     component: asyncComponent(() => import('../TransactionView')),
+  },
+  {
+    path: 'stats',
+    component: asyncComponent(() => import('../StatisticsView')),
   },
   {
     path: '*',

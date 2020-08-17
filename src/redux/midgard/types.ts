@@ -4,6 +4,7 @@ import { Maybe, FixmeType } from '../../types/bepswap';
 import {
   AssetDetail,
   PoolDetail,
+  StatsData,
   StakersAssetData,
   ThorchainEndpoints,
   ThorchainEndpoint,
@@ -42,6 +43,12 @@ export type TxDetailType =
   | TxDetailsTypeEnum.Stake
   | TxDetailsTypeEnum.Unstake
   | TxDetailsTypeEnum.DoubleSwap;
+
+export type GetTransactionPayload = {
+  offset: number;
+  limit: number;
+  type?: string;
+};
 
 export type GetTxByAddressPayload = {
   address: string;
@@ -86,9 +93,11 @@ export type State = {
   assets: AssetDetailMap;
   assetArray: AssetDetail[];
   pools: string[];
+  stats: StatsData;
   poolAddressData: Maybe<ThorchainEndpoints>;
   bnbPoolAddress: Maybe<ThorchainEndpoint>;
   poolAddress: Maybe<string>;
+  poolAddressLoading: boolean;
   poolData: PoolDataMap;
   stakerPoolData: Maybe<StakerPoolData>;
   stakerPoolDataLoading: boolean;
@@ -98,7 +107,9 @@ export type State = {
   priceIndex: PriceDataIndex;
   error: Maybe<Error>;
   poolLoading: boolean;
+  assetLoading: boolean;
   poolDataLoading: boolean;
+  statsLoading: boolean;
   txData: TxDetailData;
   txCurData: Maybe<InlineResponse2001>;
   apiBasePath: ApiBasePathRD;

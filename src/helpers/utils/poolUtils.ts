@@ -29,6 +29,8 @@ import { Maybe, Nothing } from '../../types/bepswap';
 import { PoolData } from './types';
 import { RUNE_SYMBOL } from '../../settings/assetData';
 
+// TODO: Refactor pool utils
+
 export type CalcResult = {
   poolAddress: Maybe<string>;
   ratio: Maybe<BigNumber>;
@@ -148,18 +150,23 @@ export const getAvailableTokensToCreate = (
 
 // TODO(Chris): Refactor utils
 
+/**
+ * return pool detail data
+ * @param symbol pool symbol
+ * @param poolDetail pool detail values
+ * @param priceIndex price index
+ */
 export const getPoolData = (
-  from: string,
-  targetSymbol: string,
+  symbol: string,
   poolDetail: PoolDetail,
   priceIndex: PriceDataIndex,
 ): PoolData => {
-  const asset = from;
-  const target = getTickerFormat(targetSymbol).toUpperCase();
+  const asset = 'RUNE';
+  const target = getTickerFormat(symbol).toUpperCase();
 
-  const runePrice = validBNOrZero(priceIndex?.RUNE);
+  const runePrice = validBNOrZero(priceIndex[RUNE_SYMBOL]);
 
-  const poolPrice = validBNOrZero(priceIndex[target.toUpperCase()]);
+  const poolPrice = validBNOrZero(priceIndex[symbol.toUpperCase()]);
   const poolPriceValue = `${poolPrice.toFixed(3)}`;
 
   const depthResult = bnOrZero(poolDetail?.runeDepth).multipliedBy(runePrice);
@@ -221,7 +228,7 @@ export const getPoolData = (
         target,
       },
       target,
-      symbol: targetSymbol,
+      symbol,
       depth: depthValue,
       volume24: volume24Value,
       transaction: transactionValue,

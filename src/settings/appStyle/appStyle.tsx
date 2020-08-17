@@ -7,7 +7,6 @@ import normalFont from '../../assets/font/Exo2-Regular.otf';
 import 'antd/dist/antd.dark.css';
 import 'antd/dist/antd.css';
 
-
 export const fontConfig = {
   custom: {
     families: ['Exo 2'],
@@ -113,6 +112,12 @@ export const AppHolder = styled.div`
 
   .ant-row > div {
     padding: 0;
+  }
+
+  .ant-table table,
+  .ant-table th,
+  .ant-table td {
+    border-radius: 0px !important;
   }
 
   .desktop-view {

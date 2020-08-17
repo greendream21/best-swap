@@ -3,6 +3,7 @@ import {
   GetStakerPoolDataPayload,
   PriceDataIndex,
   AssetDetailMap,
+  GetTransactionPayload,
   GetTxByAddressTxIdPayload,
   GetTxByAddressAssetPayload,
   GetTxByAddressPayload,
@@ -13,6 +14,7 @@ import {
 import {
   AssetDetail,
   PoolDetail,
+  StatsData,
   StakersAssetData,
   ThorchainEndpoints,
   InlineResponse2001,
@@ -75,6 +77,15 @@ export const setBasePriceAsset = (payload: AssetSymbol) =>
 export const setPriceIndex = (payload: PriceDataIndex) =>
   ({ type: 'SET_PRICE_INDEX', payload } as const);
 
+export const getTransaction = (payload: GetTransactionPayload) =>
+  ({ type: 'GET_TRANSACTION', payload } as const);
+
+export const getTransactionSuccess = (payload: InlineResponse2001) =>
+  ({ type: 'GET_TRANSACTION_SUCCESS', payload } as const);
+
+export const getTransactionFailed = (payload: Error) =>
+  ({ type: 'GET_TRANSACTION_FAILED', payload } as const);
+
 // get transactions by address
 export const getTxByAddress = (payload: GetTxByAddressPayload) =>
   ({ type: 'GET_TX_BY_ADDRESS', payload } as const);
@@ -124,6 +135,14 @@ export const getApiBasePathFailed = (payload: Error) =>
 export const getApiBasePathSuccess = (payload: string) =>
   ({ type: 'GET_API_BASEPATH_SUCCESS', payload } as const);
 
+export const getStats = () => ({ type: 'GET_STATS_REQUEST' } as const);
+
+export const getStatsSuccess = (payload: StatsData) =>
+  ({ type: 'GET_STATS_SUCCESS', payload } as const);
+
+export const getStatsFailed = (payload: Error) =>
+  ({ type: 'GET_STATS_FAILED', payload } as const);
+
 export type MidgardActionTypes = ReturnType<
   | typeof getPools
   | typeof getPoolsSuccess
@@ -141,6 +160,9 @@ export type MidgardActionTypes = ReturnType<
   | typeof setAssets
   | typeof setBasePriceAsset
   | typeof setPriceIndex
+  | typeof getTransaction
+  | typeof getTransactionSuccess
+  | typeof getTransactionFailed
   | typeof getTxByAddress
   | typeof getTxByAddressSuccess
   | typeof getTxByAddressFailed
@@ -157,4 +179,7 @@ export type MidgardActionTypes = ReturnType<
   | typeof getApiBasePathFailed
   | typeof getApiBasePathSuccess
   | typeof getThorchainDataSuccess
+  | typeof getStats
+  | typeof getStatsSuccess
+  | typeof getStatsFailed
 >;

@@ -5,12 +5,7 @@ import { connect } from 'react-redux';
 import { withRouter, useHistory, useParams } from 'react-router-dom';
 import { SwapOutlined, LockOutlined, UnlockOutlined } from '@ant-design/icons';
 import { client as binanceClient } from '@thorchain/asgardex-binance';
-import {
-  validBNOrZero,
-  bnOrZero,
-  isValidBN,
-  bn,
-} from '@thorchain/asgardex-util';
+import { bnOrZero, isValidBN, bn, validBNOrZero } from '@thorchain/asgardex-util';
 
 import BigNumber from 'bignumber.js';
 import * as RD from '@devexperts/remote-data-ts';
@@ -44,11 +39,11 @@ import {
   FeeParagraph,
   SliderSwapWrapper,
 } from './SwapSend.style';
-import { getTickerFormat, getPair } from '../../helpers/stringHelper';
+import { getTickerFormat, getSymbolPair } from '../../helpers/stringHelper';
 import {
   getSwapData,
   confirmSwap,
-  validatePair,
+  getValidSwapPairs,
   isValidSwap,
 } from '../../helpers/utils/swapUtils';
 import { SwapData } from '../../helpers/utils/types';
@@ -59,13 +54,7 @@ import AddressInput from '../../components/uielements/addressInput';
 import ContentTitle from '../../components/uielements/contentTitle';
 import Slider from '../../components/uielements/slider';
 import StepBar from '../../components/uielements/stepBar';
-import {
-  Maybe,
-  Nothing,
-  TokenData,
-  Pair,
-  AssetPair,
-} from '../../types/bepswap';
+import { Maybe, Nothing, TokenData } from '../../types/bepswap';
 import { User, AssetData } from '../../redux/wallet/types';
 import { TxStatus, TxTypes, TxResult } from '../../redux/app/types';
 
@@ -76,7 +65,7 @@ import { BINANCE_NET } from '../../env';
 import { PoolDetailStatusEnum } from '../../types/generated/midgard';
 import { TransferFeesRD, TransferFees } from '../../redux/binance/types';
 import {
-  getAssetFromAssetData,
+  getAssetDataFromBalance,
   bnbBaseAmount,
 } from '../../helpers/walletHelper';
 import { RUNE_SYMBOL } from '../../settings/assetData';
@@ -84,6 +73,7 @@ import usePrevious from '../../hooks/usePrevious';
 
 import { SwapSendView } from './types';
 import showNotification from '../../components/uielements/notification';
+import Loader from '../../components/utility/loaders/pageLoader';
 import { CONFIRM_DISMISS_TIME } from '../../settings/constants';
 
 type Props = {
@@ -122,11 +112,16 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     resetTxStatus,
   } = props;
 
-  const { info } = useParams();
-  const swapPair = getPair(info);
+  const { symbolpair } = useParams();
+  const swapPair = getSymbolPair(symbolpair);
+  const sourceSymbol = swapPair?.source || '';
+  const targetSymbol = swapPair?.target || '';
+
+  const runePrice = validBNOrZero(priceIndex[RUNE_SYMBOL]);
 
   const history = useHistory();
   const maxSlip = 30;
+
   const [address, setAddress] = useState<string>('');
   const [invalidAddress, setInvalidAddress] = useState<boolean>(false);
   const [dragReset, setDragReset] = useState<boolean>(true);
@@ -153,22 +148,17 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
    * calculate the amount to cover 1 RUNE network fee
    */
   const getRuneFeeAmount = (): BigNumber => {
-    const { source }: Pair = swapPair;
-    if (!source) return bn(0);
+    if (!sourceSymbol) return bn(0);
 
-    const runePrice = priceIndex.RUNE;
-    const curTokenPrice = bn(priceIndex[source.toUpperCase()]);
+    const curTokenPrice = bn(priceIndex[sourceSymbol]);
 
     return runePrice.dividedBy(curTokenPrice);
   };
 
   const handleGetSwapData = (): Maybe<SwapData> => {
-    if (!swapPair.source || !swapPair.target) {
+    if (!sourceSymbol || !targetSymbol) {
       return Nothing;
     }
-
-    const { source, target } = swapPair;
-    const runePrice = validBNOrZero(priceIndex?.RUNE);
 
     // calculate the input after 1 RUNE network fee
     const runeFee = getRuneFeeAmount();
@@ -177,10 +167,9 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
       : tokenAmount(0);
 
     return getSwapData(
-      source,
-      target,
+      sourceSymbol,
+      targetSymbol,
       poolData,
-      poolAddress,
       inputValueAfterRune,
       runePrice,
     );
@@ -224,11 +213,9 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
    * @todo get current transactionFee from thornode constants endpoint eg :1317/thorchain/constants
    */
   const runeFeeIsNotCovered = (amount: BigNumber): boolean => {
-    const { source }: Pair = swapPair;
-    if (!source) return true;
+    if (!sourceSymbol) return true;
 
-    const runePrice = priceIndex.RUNE;
-    return bn(priceIndex[source.toUpperCase()])
+    return bn(priceIndex[sourceSymbol])
       .dividedBy(runePrice)
       .multipliedBy(amount)
       .isLessThanOrEqualTo(1);
@@ -238,8 +225,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
    * Check to consider special cases for BNB
    */
   const considerBnb = (): boolean => {
-    const { source }: Pair = swapPair;
-    return source?.toUpperCase() === 'BNB';
+    return sourceSymbol?.toUpperCase() === 'BNB';
   };
 
   /**
@@ -263,8 +249,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   };
 
   const handleChangePercent = (percent: number) => {
-    const { source }: Pair = swapPair;
-    const sourceAsset = getAssetFromAssetData(assetData, source);
+    const sourceAsset = getAssetDataFromBalance(assetData, sourceSymbol);
 
     let totalAmount = sourceAsset?.assetValue.amount() ?? bn(0);
     // fee transformation: BaseAmount -> TokenAmount -> BigNumber
@@ -299,9 +284,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
       return;
     }
 
-    const { source }: Pair = swapPair;
-
-    const sourceAsset = getAssetFromAssetData(assetData, source);
+    const sourceAsset = getAssetDataFromBalance(assetData, sourceSymbol);
     const totalAmount = sourceAsset?.assetValue.amount() ?? bn(0);
 
     if (totalAmount.isLessThanOrEqualTo(newValue.amount())) {
@@ -320,10 +303,9 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   };
 
   const handleConfirmSwap = async () => {
-    const { source = '', target = '' }: Pair = swapPair;
     const swapData = handleGetSwapData();
 
-    if (user && source && target && swapData) {
+    if (user && sourceSymbol && targetSymbol && swapData) {
       let tokenAmountToSwap = xValue;
       const fee = bnbFeeAmount() || baseAmount(0);
       // fee transformation: BaseAmount -> TokenAmount -> BigNumber
@@ -340,14 +322,17 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
       handleStartTimer();
       const bncClient = await binanceClient(BINANCE_NET);
       try {
+        const { slipLimit } = swapData;
+
         const data = await confirmSwap(
           bncClient,
           user.wallet,
-          source,
-          target,
-          swapData,
+          sourceSymbol,
+          targetSymbol,
           tokenAmountToSwap,
           slipProtection,
+          slipLimit,
+          poolAddress,
           address,
         );
 
@@ -490,20 +475,19 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   };
 
   const handleStartTimer = useCallback(() => {
-    const { source: sourceAsset, target: targetAsset } = swapPair;
     const targetAmount = swapData?.outputAmount;
 
-    if (sourceAsset && targetAsset && targetAmount) {
+    if (sourceSymbol && targetSymbol && targetAmount) {
       resetTxStatus({
         type: TxTypes.SWAP,
         value: 0,
         modal: true,
         status: true,
         startTime: Date.now(),
-        info,
+        info: symbolpair,
         txData: {
-          sourceAsset,
-          targetAsset,
+          sourceAsset: sourceSymbol,
+          targetAsset: targetSymbol,
           sourceAmount: xValue,
           targetAmount,
         },
@@ -516,10 +500,11 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
       }, CONFIRM_DISMISS_TIME);
     }
   }, [
-    swapPair,
+    sourceSymbol,
+    targetSymbol,
     swapData,
     xValue,
-    info,
+    symbolpair,
     resetTxStatus,
     setTxTimerModal,
     setDragReset,
@@ -535,58 +520,56 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   };
 
   const handleChangeSource = (asset: string) => {
-    const { source, target }: Pair = swapPair;
     const selectedToken = getTickerFormat(asset);
+    const target = getTickerFormat(targetSymbol);
 
-    if (source && target) {
+    if (sourceSymbol && targetSymbol) {
       const URL =
         selectedToken === target
-          ? `/swap/${selectedToken}-${source}`
-          : `/swap/${selectedToken}-${target}`;
+          ? `/swap/${targetSymbol}:${sourceSymbol}`
+          : `/swap/${sourceSymbol}:${targetSymbol}`;
       history.push(URL);
     } else {
       // eslint-disable-next-line no-console
       console.error(
-        `Could not parse target / source pair: ${target} / ${source}`,
+        `Could not parse target / source pair: ${targetSymbol} / ${sourceSymbol}`,
       );
     }
   };
 
   const handleSelectTarget = (asset: string) => {
-    const { source, target }: Pair = swapPair;
     const selectedToken = getTickerFormat(asset);
+    const source = getTickerFormat(sourceSymbol);
 
-    if (source && target) {
+    if (sourceSymbol && targetSymbol) {
       const URL =
         source === selectedToken
-          ? `/swap/${target}-${selectedToken}`
-          : `/swap/${source}-${selectedToken}`;
+          ? `/swap/${targetSymbol}-${sourceSymbol}`
+          : `/swap/${sourceSymbol}-${targetSymbol}`;
       history.push(URL);
     } else {
       // eslint-disable-next-line no-console
       console.error(
-        `Could not parse target / source pair: ${target} / ${source}`,
+        `Could not parse target / source pair: ${targetSymbol} / ${sourceSymbol}`,
       );
     }
   };
 
   const handleReversePair = () => {
-    const { source, target }: Pair = swapPair;
-
-    if (source && target) {
+    if (sourceSymbol && targetSymbol) {
       setXValue(tokenAmount(0));
-      const URL = `/swap/${target}-${source}`;
+      const URL = `/swap/${targetSymbol}-${sourceSymbol}`;
       history.push(URL);
     } else {
       // eslint-disable-next-line no-console
       console.error(
-        `Could not parse target / source pair: ${target} / ${source}`,
+        `Could not parse target / source pair: ${targetSymbol} / ${sourceSymbol}`,
       );
     }
   };
 
-  const handleSelectSourceAmount = (source: string, amount: number) => {
-    const sourceAsset = getAssetFromAssetData(assetData, source);
+  const handleSelectSourceAmount = (amount: number) => {
+    const sourceAsset = getAssetDataFromBalance(assetData, sourceSymbol);
 
     if (!sourceAsset) {
       return;
@@ -596,18 +579,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     // formula (totalAmount * amount) / 100
     const xValueBN = totalAmount.multipliedBy(amount).div(100);
     setXValue(tokenAmount(xValueBN));
-  };
-
-  const handleValidatePair = (
-    sourceInfo: AssetData[],
-    targetInfo: AssetPair[],
-    pair: Pair,
-  ) => {
-    if (!targetInfo.length) {
-      history.push('/pools');
-    }
-
-    return validatePair(pair, sourceInfo, targetInfo);
   };
 
   const getPopupContainer = () => {
@@ -666,17 +637,18 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
 
   // render
   if (
-    !swapPair.source ||
-    !swapPair.target ||
+    !sourceSymbol ||
+    !targetSymbol ||
     !Object.keys(poolData).length ||
-    !isValidSwap(swapPair, pools)
+    !isValidSwap(pools, sourceSymbol, targetSymbol)
   ) {
-    history.push('/pools'); // redirect to pool view if swap is invalid
-    return <></>;
+    return <Loader />;
   }
 
-  const { source: swapSource, target: swapTarget } = swapPair;
+  const swapSource = getTickerFormat(sourceSymbol);
+  const swapTarget = getTickerFormat(targetSymbol);
 
+  // TODO: need to be refactored
   const tokensData: TokenData[] = Object.keys(poolData).reduce(
     (result: TokenData[], tokenName: string) => {
       const tokenData = poolData[tokenName];
@@ -698,28 +670,27 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     [],
   );
 
-  const runePrice = validBNOrZero(priceIndex?.RUNE);
-
   // add rune data in the target token list
   tokensData.push({
     asset: RUNE_SYMBOL,
     price: runePrice,
   });
 
-  const { sourceData, targetData } = handleValidatePair(
+  const { sourceData, targetData } = getValidSwapPairs(
     assetData,
     tokensData,
-    swapPair,
+    sourceSymbol,
+    targetSymbol,
   );
 
   if (!swapData) {
-    return <></>;
+    return <Loader />;
   }
   const { slip, outputAmount, outputPrice } = swapData;
 
-  const sourcePriceBN = bn(priceIndex[swapSource.toUpperCase()]);
+  const sourcePriceBN = bn(priceIndex[sourceSymbol]);
   const sourcePrice = isValidBN(sourcePriceBN) ? sourcePriceBN : outputPrice;
-  const targetPriceBN = bn(priceIndex[swapTarget.toUpperCase()]);
+  const targetPriceBN = bn(priceIndex[targetSymbol]);
   const targetPrice = isValidBN(targetPriceBN) ? targetPriceBN : outputPrice;
 
   const ratio = !targetPrice.isEqualTo(bn(0))
@@ -735,6 +706,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     ? `SLIP ${slip.toFormat(2, BigNumber.ROUND_DOWN)}%`
     : Nothing;
 
+  // TODO: all components need to be refactored to accept symbols instead of tickers
   return (
     <ContentWrapper className="swap-detail-wrapper">
       <SwapAssetCard>
@@ -752,8 +724,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
               priceIndex={priceIndex}
               onChange={handleChangeValue}
               onChangeAsset={handleChangeSource}
-              onSelect={(amount: number) =>
-                handleSelectSourceAmount(swapSource, amount)}
+              onSelect={handleSelectSourceAmount}
               inputProps={{ 'data-test': 'coincard-source-input' }}
               withSearch
               data-test="coincard-source"
