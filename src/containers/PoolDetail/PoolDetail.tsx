@@ -44,7 +44,6 @@ import {
   ThorchainData,
   TxDetailData,
 } from '../../redux/midgard/types';
-import { TxDetails } from '../../types/generated/midgard';
 import { TransferFeesRD } from '../../redux/binance/types';
 import usePrevious from '../../hooks/usePrevious';
 import { RUNE_SYMBOL } from '../../settings/assetData';

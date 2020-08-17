@@ -197,7 +197,7 @@ const renderChart = (
           ticks: {
             autoSkip: true,
             maxTicksLimit: 5,
-            callback(value:string, index, values) {
+            callback(value:string) {
               return `$${value}M`;
             },
             padding: 20,
