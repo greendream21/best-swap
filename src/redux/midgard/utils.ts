@@ -109,12 +109,14 @@ export const getAssetFromString = (s?: string): Asset => {
   // so we have to check the type of s here...
   if (s && typeof s === 'string') {
     const data = s.split('.');
-    chain = data[0];
-    const ss = data[1];
-    if (ss) {
-      symbol = ss;
-      // grab `ticker` from string or reference to `symbol` as `ticker`
-      ticker = ss.split('-')[0];
+    if (s.includes('.')) {
+      chain = data[0];
+      symbol = data[1];
+    } else {
+      symbol = data[0];
+    }
+    if (symbol) {
+      ticker = symbol.split('-')[0];
     }
   }
   return { chain, symbol, ticker };
