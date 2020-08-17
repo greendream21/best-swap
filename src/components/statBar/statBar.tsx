@@ -1,22 +1,28 @@
 import React, { useCallback } from 'react';
 import { Row, Col } from 'antd';
+import _ from 'lodash';
+import { bnOrZero } from '@thorchain/asgardex-util';
+import { baseAmount, formatBaseAsTokenAmount } from '@thorchain/asgardex-token';
 
+import LabelLoader from '../utility/loaders/label';
 import { StatsData } from '../../types/generated/midgard/api';
 import { StyledStatistic } from './statBar.style';
 
 type Props = {
   stats: StatsData;
-  statsLoading?: boolean;
+  loading?: boolean;
   basePrice: string;
 };
 
 const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
-  const { stats, basePrice } = props;
+  const { stats, basePrice, loading } = props;
   const price = Number(basePrice);
 
   const getUSDValue = useCallback(
     (val: string) => {
-      return (Number(val) / 1e8 / price).toFixed(0);
+      const bnValue = bnOrZero(val).dividedBy(price);
+      const amount = baseAmount(bnValue);
+      return formatBaseAsTokenAmount(amount, 0);
     },
     [price],
   );
@@ -32,8 +38,11 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
       >
         <StyledStatistic
           title="Total Staked"
-          value={getUSDValue(stats?.totalStaked ?? '0')}
-          prefix="$"
+          formatter={() => {
+            if (loading) return <LabelLoader />;
+            return <span>{getUSDValue(stats?.totalStaked ?? '0')}</span>;
+          }}
+          prefix={loading ? '' : '$'}
         />
       </Col>
       <Col
@@ -45,8 +54,11 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
       >
         <StyledStatistic
           title="Total Volume"
-          value={getUSDValue(stats?.totalVolume ?? '0')}
-          prefix="$"
+          formatter={() => {
+            if (loading) return <LabelLoader />;
+            return <span>{getUSDValue(stats?.totalVolume ?? '0')}</span>;
+          }}
+          prefix={loading ? '' : '$'}
         />
       </Col>
       <Col
@@ -56,7 +68,13 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
         lg={{ span: 8 }}
         xl={{ span: 4 }}
       >
-        <StyledStatistic title="Total Users" value={stats?.totalUsers ?? '0'} />
+        <StyledStatistic
+          title="Total Users"
+          formatter={() => {
+            if (loading) return <LabelLoader />;
+            return <span>{stats?.totalUsers ?? '0'}</span>;
+          }}
+        />
       </Col>
       <Col
         xs={{ span: 24 }}
@@ -65,7 +83,13 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
         lg={{ span: 8 }}
         xl={{ span: 4 }}
       >
-        <StyledStatistic title="Total Transactions" value={stats?.totalTx ?? '0'} />
+        <StyledStatistic
+          title="Total Transactions"
+          formatter={() => {
+            if (loading) return <LabelLoader />;
+            return <span>{stats?.totalTx ?? '0'}</span>;
+          }}
+        />
       </Col>
       <Col
         xs={{ span: 24 }}
@@ -74,7 +98,13 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
         lg={{ span: 8 }}
         xl={{ span: 4 }}
       >
-        <StyledStatistic title="Total Pools" value={stats?.poolCount ?? '0'} />
+        <StyledStatistic
+          title="Total Pools"
+          formatter={() => {
+            if (loading) return <LabelLoader />;
+            return <span>{stats?.poolCount ?? '0'}</span>;
+          }}
+        />
       </Col>
       <Col
         xs={{ span: 24 }}
@@ -85,8 +115,11 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
       >
         <StyledStatistic
           title="Total Earned"
-          value={getUSDValue(stats?.totalEarned ?? '0')}
-          prefix="$"
+          formatter={() => {
+            if (loading) return <LabelLoader />;
+            return <span>{getUSDValue(stats?.totalEarned ?? '0')}</span>;
+          }}
+          prefix={loading ? '' : '$'}
         />
       </Col>
     </Row>

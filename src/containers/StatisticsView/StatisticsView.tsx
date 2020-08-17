@@ -1,6 +1,8 @@
 import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
 import { Row, Col } from 'antd';
+import { bnOrZero } from '@thorchain/asgardex-util';
+import { baseAmount, formatBaseAsTokenAmount } from '@thorchain/asgardex-token';
 
 import { StatsData } from '../../types/generated/midgard';
 import { RootState } from '../../redux/store';
@@ -19,7 +21,9 @@ const StatisticsView: React.FC<Props> = (props: Props): JSX.Element => {
 
   const getUSDValue = useCallback(
     (val: string) => {
-      return (Number(val) / 1e8 / price).toFixed(0);
+      const bnValue = bnOrZero(val).dividedBy(price);
+      const amount = baseAmount(bnValue);
+      return formatBaseAsTokenAmount(amount, 0);
     },
     [price],
   );
