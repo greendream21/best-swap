@@ -1,6 +1,11 @@
 import { TransferEvent } from '@thorchain/asgardex-binance';
 import { bn } from '@thorchain/asgardex-util';
 import { tokenAmount, baseAmount } from '@thorchain/asgardex-token';
+import {
+  AssetDetailMap,
+  PriceDataIndex,
+  PoolDataMap,
+} from '../../redux/midgard/types';
 import { RUNE_SYMBOL } from '../../settings/assetData';
 import {
   withdrawResult,
@@ -15,7 +20,6 @@ import {
   PoolDetail,
   PoolDetailStatusEnum,
 } from '../../types/generated/midgard';
-import { PriceDataIndex, PoolDataMap } from '../../redux/midgard/types';
 
 const poolData: PoolDataMap = {
   BNB: {
@@ -98,6 +102,19 @@ const poolData: PoolDataMap = {
     swappingTxCount: '5',
     withdrawTxCount: '3',
   } as PoolDetail,
+};
+
+const assets: AssetDetailMap = {
+  BNB: {
+    asset: 'BNB.BNB',
+    dateCreated: 1597628327,
+    priceRune: '26.496460693841062',
+  },
+  'FSN-F1B': {
+    asset: 'BNB.FSN-F1B',
+    dateCreated: 1597628327,
+    priceRune: '26.496460693841062',
+  },
 };
 
 // TODO: Fix unit test
@@ -267,6 +284,10 @@ describe('pool/utils/', () => {
       [RUNE_SYMBOL]: bn(1),
       'FSN-F1B': bn(2),
     };
+
+    // set the current time manually
+    Date.now = () => 1597668345000;
+
     it('returns PoolData for a FSN based pool', () => {
       const expected: PoolData = {
         asset: 'RUNE',
@@ -280,7 +301,8 @@ describe('pool/utils/', () => {
         volumeAT: baseAmount(0),
         transaction: baseAmount(0),
         liqFee: baseAmount(0),
-        roiAT: 50,
+        apr: 50,
+        apy: 39402.27,
         poolROI12: bn(50),
         totalSwaps: 0,
         totalStakers: 1,
@@ -296,11 +318,17 @@ describe('pool/utils/', () => {
           volume24: '0.00',
           transaction: '0.00',
           liqFee: '0.00',
-          roiAT: '50% APR',
+          apr: '50% APR',
+          apy: '39402.27% APY',
           poolPrice: '2.000',
         },
       };
-      const result = getPoolData('FSN-F1B', fsnPoolDetail, priceIndex);
+      const result = getPoolData(
+        'FSN-F1B',
+        fsnPoolDetail,
+        assets['FSN-F1B'],
+        priceIndex,
+      );
 
       expect(result.asset).toEqual(expected.asset);
       expect(result.target).toEqual(expected.target);
@@ -310,7 +338,8 @@ describe('pool/utils/', () => {
         expected.transaction.amount(),
       );
       expect(result.liqFee.amount()).toEqual(expected.liqFee.amount());
-      expect(result.roiAT).toEqual(expected.roiAT);
+      expect(result.apr).toEqual(expected.apr);
+      expect(result.apy).toEqual(expected.apy);
       expect(result.totalSwaps).toEqual(expected.totalSwaps);
       expect(result.totalStakers).toEqual(expected.totalStakers);
       expect(result.values).toEqual(expected.values);
@@ -321,7 +350,7 @@ describe('pool/utils/', () => {
         expected.transaction.amount(),
       );
       expect(result.liqFee.amount()).toEqual(expected.liqFee.amount());
-      expect(result.roiAT).toEqual(expected.roiAT);
+      expect(result.apr).toEqual(expected.apr);
       // Unsafe, just to test all props again (in case we might forget to test a new property in the future)
       expect(result.toString()).toEqual(expected.toString());
     });
@@ -338,7 +367,8 @@ describe('pool/utils/', () => {
         volumeAT: baseAmount(32387),
         transaction: baseAmount(16193),
         liqFee: baseAmount(99800),
-        roiAT: 99927.69,
+        apr: 99927.69,
+        apy: 78747552.53,
         poolROI12: bn(50),
         totalSwaps: 1,
         totalStakers: 1,
@@ -354,11 +384,12 @@ describe('pool/utils/', () => {
           volume24: '0.00',
           transaction: '0.00',
           liqFee: '0.00',
-          roiAT: '99927.69% APR',
+          apr: '99927.69% APR',
+          apy: '78747552.53% APY',
           poolPrice: '0.000',
         },
       };
-      const result = getPoolData('BNB', bnbPoolDetail, priceIndex);
+      const result = getPoolData('BNB', bnbPoolDetail, assets.BNB, priceIndex);
 
       expect(result.asset).toEqual(expected.asset);
       expect(result.target).toEqual(expected.target);
@@ -368,7 +399,8 @@ describe('pool/utils/', () => {
         expected.transaction.amount(),
       );
       expect(result.liqFee.amount()).toEqual(expected.liqFee.amount());
-      expect(result.roiAT).toEqual(expected.roiAT);
+      expect(result.apr).toEqual(expected.apr);
+      expect(result.apy).toEqual(expected.apy);
       expect(result.totalSwaps).toEqual(expected.totalSwaps);
       expect(result.totalStakers).toEqual(expected.totalStakers);
       expect(result.values).toEqual(expected.values);
@@ -379,7 +411,7 @@ describe('pool/utils/', () => {
         expected.transaction.amount(),
       );
       expect(result.liqFee.amount()).toEqual(expected.liqFee.amount());
-      expect(result.roiAT).toEqual(expected.roiAT);
+      expect(result.apr).toEqual(expected.apr);
       // Unsafe, just to test all props again (in case we might forget to test a new property in the future)
       expect(result.toString()).toEqual(expected.toString());
     });

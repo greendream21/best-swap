@@ -47,6 +47,7 @@ import { ViewType, Maybe } from '../../types/bepswap';
 import {
   PoolDetailStatusEnum,
   StatsData,
+  AssetDetail,
 } from '../../types/generated/midgard/api';
 import showNotification from '../../components/uielements/notification';
 import { RUNE_SYMBOL } from '../../settings/assetData';
@@ -95,6 +96,12 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
 
   const loading = poolLoading || poolDataLoading;
   const wallet: Maybe<string> = user ? user.wallet : null;
+
+  /**
+   * TODO: implement the separate USD pricing logic
+   * 1. Should recognize BUSD pool with ticker instead of symbol
+   * 2. If BUSD pool doesn't exist, it should calculate the price in RUNE
+   */
   const busdPrice = assets?.['BUSD-BAF']?.priceRune ?? '1';
 
   const getTransactionInfo = useCallback(
@@ -136,6 +143,13 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
       }
     }
   };
+
+  const handlePagination = useCallback(
+    (page: number) => {
+      getTransactionInfo((page - 1) * 10, 10);
+    },
+    [getTransactionInfo],
+  );
 
   const renderCell = (text: string) => {
     if (loading) {
@@ -262,11 +276,11 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         sortDirections: ['descend', 'ascend'],
       },
       {
-        key: 'roiAT',
-        title: 'APR',
-        dataIndex: ['values', 'roiAT'],
+        key: 'apy',
+        title: 'APY',
+        dataIndex: ['values', 'apy'],
         render: renderCell,
-        sorter: (a: PoolData, b: PoolData) => Number(a.roiAT) - Number(b.roiAT),
+        sorter: (a: PoolData, b: PoolData) => Number(a.apy) - Number(b.apy),
         sortDirections: ['descend', 'ascend'],
       },
       buttonCol,
@@ -294,10 +308,12 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
       const { symbol = '' } = getAssetFromString(poolName);
 
       const poolInfo = poolData[symbol] || {};
+      const assetDetail: AssetDetail = assets?.[symbol] ?? {};
 
       const poolDataDetail: PoolData = getPoolData(
         symbol,
         poolInfo,
+        assetDetail,
         priceIndex,
       );
 
@@ -320,7 +336,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
 
   return (
     <ContentWrapper className="pool-view-wrapper">
-      <StatBar stats={stats} basePrice={busdPrice} />
+      <StatBar loading={loading} stats={stats} basePrice={busdPrice} />
       <PoolFilter selected={poolStatus} onClick={selectPoolStatus} />
       <div className="pool-list-view desktop-view">
         {renderPoolList(ViewType.DESKTOP)}
@@ -343,9 +359,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
           defaultCurrent={0}
           total={txData._tag === 'RemoteSuccess' ? txData.value.count : 0}
           showSizeChanger={false}
-          onChange={page => {
-            getTransactionInfo((page - 1) * 10, 10);
-          }}
+          onChange={handlePagination}
         />
       </TransactionWrapper>
     </ContentWrapper>

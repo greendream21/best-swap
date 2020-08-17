@@ -739,7 +739,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     setSelectRatio(!selectRatio);
   };
 
-  const renderStakeInfo = (poolStats: PoolData) => {
+  const renderStakeInfo = (poolDetail: PoolData) => {
     const loading = isLoading();
 
     const {
@@ -748,8 +748,8 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       volumeAT,
       totalSwaps,
       totalStakers,
-      roiAT,
-    } = poolStats;
+      apr,
+    } = poolDetail;
 
     const attrs = [
       {
@@ -776,7 +776,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       {
         key: 'roi',
         title: 'All Time ROI',
-        value: `${roiAT}% APR`,
+        value: `${apr}% APR`,
       },
     ];
 
@@ -1213,15 +1213,16 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   const wallet = user ? user.wallet : null;
   const hasWallet = wallet !== null;
   const poolInfo = poolData[tokenSymbol] || {};
+  const assetDetail = assets?.[tokenSymbol] ?? {};
 
-  const poolStats = getPoolData(tokenSymbol, poolInfo, priceIndex);
+  const poolDetail = getPoolData(tokenSymbol, poolInfo, assetDetail, priceIndex);
   const calcResult = getData();
 
   const yourShareSpan = hasWallet ? 8 : 24;
 
   return (
     <ContentWrapper className="pool-stake-wrapper" transparent>
-      <Row className="stake-info-view">{renderStakeInfo(poolStats)}</Row>
+      <Row className="stake-info-view">{renderStakeInfo(poolDetail)}</Row>
       <Row className="share-view">
         {!stakersAssetData && stakerPoolDataError && (
           <Col className="your-share-view" md={24}>
@@ -1235,7 +1236,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
         )}
         {stakersAssetData && hasWallet && (
           <Col className="share-detail-view" span={24} lg={16}>
-            {renderShareDetail(poolStats, stakersAssetData, calcResult)}
+            {renderShareDetail(poolDetail, stakersAssetData, calcResult)}
           </Col>
         )}
       </Row>
