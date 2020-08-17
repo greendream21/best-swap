@@ -41,13 +41,24 @@ const TxTable: React.FC<Props> = (props: Props): JSX.Element => {
   const isDesktopView = Grid.useBreakpoint()?.lg ?? false;
   const loading = txData._tag !== 'RemoteSuccess';
 
+  const truncateAddress = (address: string) => {
+    if (address && address.length > 9) {
+      const first = address.substr(0, 6);
+      const last = address.substr(address.length - 3, 3);
+      return `${first}...${last}`;
+    }
+    return address;
+  };
+
   const getColumnRenderer = (): Record<
     Column,
     (value: FixmeType, row: TxDetails) => JSX.Element
   > => {
     return {
       address: (_, row) => {
-        return <StyledText>{row?.in?.address ?? ''}</StyledText>;
+        return (
+          <StyledText>{truncateAddress(row?.in?.address ?? '')}</StyledText>
+        );
       },
       type: (_, row) => {
         return (
@@ -166,7 +177,7 @@ const TxTable: React.FC<Props> = (props: Props): JSX.Element => {
     outColumn,
     dateColumn,
   ];
-  const mobileColumns = [addressColumn, dateColumn];
+  const mobileColumns = [addressColumn, typeColumn, dateColumn];
 
   return (
     <Table
