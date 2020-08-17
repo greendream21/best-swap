@@ -25,7 +25,8 @@ export type PoolDataValues = {
   volume24: string;
   transaction: string;
   liqFee: string;
-  roiAT: string;
+  apr: string;
+  apy: string;
   poolPrice: string;
 };
 
@@ -38,7 +39,8 @@ export type PoolData = {
   volumeAT: BaseAmount;
   transaction: BaseAmount;
   liqFee: BaseAmount;
-  roiAT: number;
+  apr: number;
+  apy: number;
   poolROI12: BigNumber;
   totalSwaps: number;
   totalStakers: number;

@@ -47,6 +47,7 @@ import { ViewType, Maybe } from '../../types/bepswap';
 import {
   PoolDetailStatusEnum,
   StatsData,
+  AssetDetail,
 } from '../../types/generated/midgard/api';
 import showNotification from '../../components/uielements/notification';
 import { RUNE_SYMBOL } from '../../settings/assetData';
@@ -275,11 +276,11 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         sortDirections: ['descend', 'ascend'],
       },
       {
-        key: 'roiAT',
-        title: 'APR',
-        dataIndex: ['values', 'roiAT'],
+        key: 'apy',
+        title: 'APY',
+        dataIndex: ['values', 'apy'],
         render: renderCell,
-        sorter: (a: PoolData, b: PoolData) => Number(a.roiAT) - Number(b.roiAT),
+        sorter: (a: PoolData, b: PoolData) => Number(a.apy) - Number(b.apy),
         sortDirections: ['descend', 'ascend'],
       },
       buttonCol,
@@ -307,10 +308,12 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
       const { symbol = '' } = getAssetFromString(poolName);
 
       const poolInfo = poolData[symbol] || {};
+      const assetDetail: AssetDetail = assets?.[symbol] ?? {};
 
       const poolDataDetail: PoolData = getPoolData(
         symbol,
         poolInfo,
+        assetDetail,
         priceIndex,
       );
 

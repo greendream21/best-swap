@@ -19,6 +19,7 @@ import {
   baseAmount,
   formatBaseAsTokenAmount,
 } from '@thorchain/asgardex-token';
+import { AssetDetail } from '../../types/generated/midgard/api';
 import { getStakeMemo, getWithdrawMemo } from '../memoHelper';
 import { getTickerFormat } from '../stringHelper';
 import { PoolDataMap, PriceDataIndex } from '../../redux/midgard/types';
@@ -159,6 +160,7 @@ export const getAvailableTokensToCreate = (
 export const getPoolData = (
   symbol: string,
   poolDetail: PoolDetail,
+  assetDetail: AssetDetail,
   priceIndex: PriceDataIndex,
 ): PoolData => {
   const asset = 'RUNE';
@@ -184,8 +186,18 @@ export const getPoolData = (
   );
   const transaction = baseAmount(transactionResult);
 
-  const roiATResult = poolDetail?.poolROI ?? 0;
-  const roiAT = Number((Number(roiATResult) * 100).toFixed(2));
+  // APR (Annual Percent Rate)
+  const roiATResult = Number(poolDetail?.poolROI ?? 0);
+  const apr = Number((roiATResult * 100).toFixed(2));
+
+  // APY (Annual Percent Yield)
+  // Formula: poolROI / ((now - pool.genesis) / (seconds per day)) * 365
+  const poolGenesis = assetDetail?.dateCreated ?? 0;
+  const pastDays = (Date.now() / 1000 - poolGenesis) / (24 * 60 * 60);
+  const apy = poolGenesis
+    ? Number(((roiATResult / pastDays) * 365 * 100).toFixed(2))
+    : 0;
+  console.log(poolGenesis, pastDays, apy);
 
   const poolROI12Data = poolDetail?.poolROI12 ?? 0;
   const poolROI12 = bn(poolROI12Data).multipliedBy(100);
@@ -203,7 +215,8 @@ export const getPoolData = (
   const volume24Value = `${formatBaseAsTokenAmount(volume24)}`;
   const transactionValue = `${formatBaseAsTokenAmount(transaction)}`;
   const liqFeeValue = `${formatBaseAsTokenAmount(liqFee)}`;
-  const roiAtValue = `${roiAT}% APR`;
+  const aprValue = `${apr}% APR`;
+  const apyValue = `${apy}% APY`;
 
   return {
     pool: {
@@ -217,7 +230,8 @@ export const getPoolData = (
     volumeAT,
     transaction,
     liqFee,
-    roiAT,
+    apr,
+    apy,
     poolROI12,
     totalSwaps,
     totalStakers,
@@ -233,7 +247,8 @@ export const getPoolData = (
       volume24: volume24Value,
       transaction: transactionValue,
       liqFee: liqFeeValue,
-      roiAT: roiAtValue,
+      apr: aprValue,
+      apy: apyValue,
       poolPrice: poolPriceValue,
     },
   };
