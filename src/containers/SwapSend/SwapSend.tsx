@@ -527,7 +527,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
       const URL =
         selectedToken === target
           ? `/swap/${targetSymbol}:${sourceSymbol}`
-          : `/swap/${sourceSymbol}:${targetSymbol}`;
+          : `/swap/${asset}:${targetSymbol}`;
       history.push(URL);
     } else {
       // eslint-disable-next-line no-console
@@ -545,7 +545,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
       const URL =
         source === selectedToken
           ? `/swap/${targetSymbol}:${sourceSymbol}`
-          : `/swap/${sourceSymbol}:${targetSymbol}`;
+          : `/swap/${sourceSymbol}:${asset}`;
       history.push(URL);
     } else {
       // eslint-disable-next-line no-console
