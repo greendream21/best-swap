@@ -1,5 +1,5 @@
 /* eslint-disable no-underscore-dangle */
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Grid, Tag } from 'antd';
 import { LinkOutlined } from '@ant-design/icons';
 import { formatBaseAsTokenAmount, baseAmount } from '@thorchain/asgardex-token';
@@ -41,13 +41,24 @@ const TxTable: React.FC<Props> = (props: Props): JSX.Element => {
   const isDesktopView = Grid.useBreakpoint()?.lg ?? false;
   const loading = txData._tag !== 'RemoteSuccess';
 
-  const getColumnRenderer = (): Record<
+  const truncateAddress = (address: string) => {
+    if (address && address.length > 9) {
+      const first = address.substr(0, 6);
+      const last = address.substr(address.length - 3, 3);
+      return `${first}...${last}`;
+    }
+    return address;
+  };
+
+  const getColumnRenderer = useCallback((): Record<
     Column,
     (value: FixmeType, row: TxDetails) => JSX.Element
   > => {
     return {
       address: (_, row) => {
-        return <StyledText>{row?.in?.address ?? ''}</StyledText>;
+        return (
+          <StyledText>{truncateAddress(row?.in?.address ?? '')}</StyledText>
+        );
       },
       type: (_, row) => {
         return (
@@ -120,8 +131,8 @@ const TxTable: React.FC<Props> = (props: Props): JSX.Element => {
         return <span>{moment((row?.date ?? 0) * 1000).fromNow()}</span>;
       },
     };
-  };
-  const columnRenders = useMemo(() => getColumnRenderer(), []);
+  }, []);
+  const columnRenders = useMemo(() => getColumnRenderer(), [getColumnRenderer]);
 
   const addressColumn: ColumnType<TxDetails> = {
     key: 'address',
@@ -166,7 +177,7 @@ const TxTable: React.FC<Props> = (props: Props): JSX.Element => {
     outColumn,
     dateColumn,
   ];
-  const mobileColumns = [addressColumn, dateColumn];
+  const mobileColumns = [addressColumn, typeColumn, dateColumn];
 
   return (
     <Table
