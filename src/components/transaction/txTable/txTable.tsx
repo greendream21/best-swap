@@ -1,5 +1,5 @@
 /* eslint-disable no-underscore-dangle */
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Grid, Tag } from 'antd';
 import { LinkOutlined } from '@ant-design/icons';
 import { formatBaseAsTokenAmount, baseAmount } from '@thorchain/asgardex-token';
@@ -50,7 +50,7 @@ const TxTable: React.FC<Props> = (props: Props): JSX.Element => {
     return address;
   };
 
-  const getColumnRenderer = (): Record<
+  const getColumnRenderer = useCallback((): Record<
     Column,
     (value: FixmeType, row: TxDetails) => JSX.Element
   > => {
@@ -131,7 +131,7 @@ const TxTable: React.FC<Props> = (props: Props): JSX.Element => {
         return <span>{moment((row?.date ?? 0) * 1000).fromNow()}</span>;
       },
     };
-  };
+  }, []);
   const columnRenders = useMemo(() => getColumnRenderer(), [getColumnRenderer]);
 
   const addressColumn: ColumnType<TxDetails> = {
