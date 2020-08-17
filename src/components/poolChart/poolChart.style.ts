@@ -57,8 +57,8 @@ export const HeaderToggle = styled('span')`
   font-size: 12px;
   font-weight: ${props => props.role === 'true' ? '600' : 'normal'};
   cursor: pointer;
-  ${media.lg`
-    height: 18px;
+  ${media.sm`
+    font-size: 18px;
     &:hover {
       opacity: 0.8;
     }
