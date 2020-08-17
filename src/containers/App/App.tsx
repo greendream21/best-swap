@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { match, Link, withRouter, useLocation } from 'react-router-dom';
+import { match, Link, withRouter, useLocation, useHistory } from 'react-router-dom';
 import { LeftOutlined } from '@ant-design/icons';
 
 import AppLayout from './AppLayout';
@@ -20,22 +20,23 @@ const App: React.FC<Props> = (props: Props): JSX.Element => {
   } = props;
 
   const location = useLocation();
+  const history = useHistory();
 
   const renderBack = useCallback(() => {
     const { pathname } = location;
     if (pathname === '/' || pathname === '/pools') {
       return <></>;
     }
-
     return (
-      <Link to="/pools">
-        <BackLink>
-          <LeftOutlined />
-          <span>Back</span>
-        </BackLink>
-      </Link>
+      <BackLink onClick={() => {
+        history.push('/pools');
+      }}
+      >
+        <LeftOutlined />
+        <span>Back</span>
+      </BackLink>
     );
-  }, [location]);
+  }, [location, history]);
 
   return (
     <AppLayout data-test="bepswap-app">

@@ -88,6 +88,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     getTransactions,
   } = props;
 
+  console.log('txData', txData);
   const [poolStatus, selectPoolStatus] = useState<PoolDetailStatusEnum>(
     PoolDetailStatusEnum.Enabled,
   );
@@ -166,7 +167,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         const { target, values } = record;
         if (target) {
           const swapUrl = `/swap/${RUNE_SYMBOL}:${values.symbol}`;
-          const stakeUrl = `/pool/${values.symbol.toUpperCase()}`;
+          const stakeUrl = `/stake/${values.symbol.toUpperCase()}`;
 
           return (
             <ActionColumn>
@@ -280,6 +281,14 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
 
     return (
       <Table
+        onRow={(record: PoolData) => {
+          return {
+            onClick: () => {
+              const URL = `/pool/${record?.values?.symbol?.toUpperCase()}`;
+              history.push(URL);
+             },
+          };
+        }}
         columns={columns}
         dataSource={poolViewData}
         loading={poolLoading}
