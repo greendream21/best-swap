@@ -19,7 +19,9 @@ exports[`FilterDropdown Matches the snapshot 1`] = `
     </p>
     <p
       className="txStatus-asset"
-    />
+    >
+      rune
+    </p>
     
   </div>
 </div>
