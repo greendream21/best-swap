@@ -233,6 +233,7 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
           <TxTable txData={txData} />
           <StyledPagination
             defaultCurrent={0}
+            // eslint-disable-next-line no-underscore-dangle
             total={txData._tag === 'RemoteSuccess' ? txData.value.count : 0}
             showSizeChanger={false}
             onChange={page => {
