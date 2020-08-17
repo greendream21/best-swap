@@ -132,7 +132,7 @@ const TxTable: React.FC<Props> = (props: Props): JSX.Element => {
       },
     };
   };
-  const columnRenders = useMemo(() => getColumnRenderer(), []);
+  const columnRenders = useMemo(() => getColumnRenderer(), [getColumnRenderer]);
 
   const addressColumn: ColumnType<TxDetails> = {
     key: 'address',
