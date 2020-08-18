@@ -17,9 +17,7 @@ import {
 import Label from '../../components/uielements/label';
 import Button from '../../components/uielements/button';
 
-import * as appActions from '../../redux/app/actions';
 import * as midgardActions from '../../redux/midgard/actions';
-import * as walletActions from '../../redux/wallet/actions';
 
 import {
   ContentWrapper,
@@ -34,51 +32,25 @@ import {
 import { getPoolData } from '../../helpers/utils/poolUtils';
 import { PoolData } from '../../helpers/utils/types';
 import { RootState } from '../../redux/store';
-import { User, AssetData } from '../../redux/wallet/types';
-import { Maybe } from '../../types/bepswap';
-import { TxStatus, TxResult } from '../../redux/app/types';
 
 import {
   AssetDetailMap,
-  StakerPoolData,
   PoolDataMap,
   PriceDataIndex,
-  ThorchainData,
   TxDetailData,
 } from '../../redux/midgard/types';
-import { TransferFeesRD } from '../../redux/binance/types';
-import usePrevious from '../../hooks/usePrevious';
 import { RUNE_SYMBOL } from '../../settings/assetData';
-import StatBar from '../../components/statBar/poolStatBar';
+import { PoolStatBar } from '../../components/statBar';
 import PoolChart from '../../components/poolChart';
 import TxTable from '../../components/transaction/txTable';
 
 type Props = {
   history: H.History;
-  txStatus: TxStatus;
-  txResult?: TxResult;
   txData: TxDetailData;
-  user: Maybe<User>;
-  assetData: AssetData[];
-  poolAddress: Maybe<string>;
   poolData: PoolDataMap;
   assets: AssetDetailMap;
-  stakerPoolData: Maybe<StakerPoolData>;
-  stakerPoolDataLoading: boolean;
-  stakerPoolDataError: Maybe<Error>;
   priceIndex: PriceDataIndex;
-  basePriceAsset: string;
-  poolLoading: boolean;
-  thorchainData: ThorchainData;
-  getStakerPoolData: typeof midgardActions.getStakerPoolData;
   getTransactions: typeof midgardActions.getTransaction;
-  setTxResult: typeof appActions.setTxResult;
-  setTxTimerModal: typeof appActions.setTxTimerModal;
-  setTxHash: typeof appActions.setTxHash;
-  resetTxStatus: typeof appActions.resetTxStatus;
-  refreshBalance: typeof walletActions.refreshBalance;
-  refreshStakes: typeof walletActions.refreshStakes;
-  transferFees: TransferFeesRD;
 };
 
 const generateRandomTimeSeries = (minValue: number, maxValue: number, startDate: string) => {
@@ -99,15 +71,10 @@ const chartData = {
 
 const PoolDetail: React.FC<Props> = (props: Props) => {
   const {
-    user,
     assets,
     poolData,
     txData,
     priceIndex,
-    txStatus,
-    refreshBalance,
-    refreshStakes,
-    getStakerPoolData,
     getTransactions,
   } = props;
 
@@ -119,13 +86,6 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
   const isLight = themeType === ThemeType.LIGHT;
   const theme = isLight ? themes.light : themes.dark;
 
-
-  const getStakerPoolDetail = useCallback(() => {
-    if (user) {
-      getStakerPoolData({ asset: symbol, address: user.wallet });
-    }
-  }, [getStakerPoolData, symbol, user]);
-
   const getTransactionInfo = useCallback(
     (offset: number, limit: number) => {
       getTransactions({ offset, limit });
@@ -136,37 +96,6 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
   useEffect(() => {
     getTransactionInfo(0, 10);
   }, [getTransactionInfo]);
-
-  const refreshStakerData = useCallback(() => {
-    // get staker info again after finished
-    getStakerPoolDetail();
-
-    if (user) {
-      const wallet = user.wallet;
-      refreshStakes(wallet);
-      refreshBalance(wallet);
-    }
-  }, [getStakerPoolDetail, refreshBalance, refreshStakes, user]);
-
-  useEffect(() => {
-    // TODO: check if it needs to fetch staker detail on mount
-    getStakerPoolDetail();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // stakerPoolData needs to be updated whenever pool changed
-  useEffect(() => {
-    getStakerPoolDetail();
-  }, [symbol, getStakerPoolDetail]);
-
-  const prevTxStatus = usePrevious(txStatus);
-  // if tx is completed, should refresh staker details
-  useEffect(() => {
-    if (prevTxStatus?.status === true && txStatus.status === false) {
-      refreshStakerData();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [txStatus]);
 
   const renderDetailCaption = (poolStats: PoolData, viewMode: string) => {
     const swapUrl = `/swap/${RUNE_SYMBOL}:${poolStats.values.symbol}`;
@@ -216,7 +145,7 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
       </Row>
       <Row className="detail-info-view desktop-view">
         <Col span={8}>
-          <StatBar stats={poolStats} poolInfo={poolInfo} basePrice={busdPrice} />
+          <PoolStatBar stats={poolStats} poolInfo={poolInfo} basePrice={busdPrice} />
         </Col>
         <Col span={16}>
           <PoolChart
@@ -231,7 +160,7 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
       </Row>
       <Row className="detail-info-view mobile-view">
         <Col span={24}>
-          <StatBar stats={poolStats} poolInfo={poolInfo} basePrice={busdPrice} />
+          <PoolStatBar stats={poolStats} poolInfo={poolInfo} basePrice={busdPrice} />
         </Col>
         <Col span={24}>
           <PoolChart
@@ -268,31 +197,12 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
 export default compose(
   connect(
     (state: RootState) => ({
-      txResult: state.App.txResult,
-      txStatus: state.App.txStatus,
-      user: state.Wallet.user,
-      assetData: state.Wallet.assetData,
-      poolAddress: state.Midgard.poolAddress,
       poolData: state.Midgard.poolData,
       assets: state.Midgard.assets,
       priceIndex: state.Midgard.priceIndex,
-      basePriceAsset: state.Midgard.basePriceAsset,
-      poolLoading: state.Midgard.poolLoading,
-      stakerPoolData: state.Midgard.stakerPoolData,
-      stakerPoolDataLoading: state.Midgard.stakerPoolDataLoading,
-      stakerPoolDataError: state.Midgard.stakerPoolDataError,
       txData: state.Midgard.txData,
-      transferFees: state.Binance.transferFees,
-      thorchainData: state.Midgard.thorchain,
     }),
     {
-      getStakerPoolData: midgardActions.getStakerPoolData,
-      setTxResult: appActions.setTxResult,
-      setTxTimerModal: appActions.setTxTimerModal,
-      setTxHash: appActions.setTxHash,
-      resetTxStatus: appActions.resetTxStatus,
-      refreshBalance: walletActions.refreshBalance,
-      refreshStakes: walletActions.refreshStakes,
       getTransactions: midgardActions.getTransaction,
     },
   ),
