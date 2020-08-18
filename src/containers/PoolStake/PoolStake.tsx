@@ -247,9 +247,11 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   };
 
   /**
-   * Handler for setting token amounts in input fields
+   * Calculate the output amount to stake based on the input amount and locked status
+   * @param assetSymbol input asset symbol
+   * @param locked used for manual locked ratio calculation, default = false
    */
-  const handleChangeTokenAmount = (assetSymbol: string) => (
+  const handleChangeTokenAmount = (assetSymbol: string, locked = false) => (
     value: BigNumber,
   ) => {
     const sourceAsset = getAssetDataFromBalance(assetData, assetSymbol);
@@ -263,7 +265,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     const totalTokenAmount = targetAsset.assetValue.amount();
     const valueAsToken = tokenAmount(value);
 
-    if (!selectRatio) {
+    if (!selectRatio && !locked) {
       if (assetSymbol === RUNE_SYMBOL) {
         if (totalSourceAmount.isLessThan(valueAsToken.amount())) {
           setRuneAmount(tokenAmount(totalSourceAmount));
@@ -736,6 +738,10 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   );
 
   const handleSwitchSelectRatio = () => {
+    // if lock status is switched from unlock to lock, re-calculate the output amount again
+    if (!selectRatio) {
+      handleChangeTokenAmount(RUNE_SYMBOL, true)(runeAmount.amount());
+    }
     setSelectRatio(!selectRatio);
   };
 
