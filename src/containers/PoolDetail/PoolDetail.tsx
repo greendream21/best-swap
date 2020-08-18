@@ -115,7 +115,6 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
         <PoolCaptionButtonsWrapper>
           <Link to={stakeUrl}>
             <Button
-              style={{ margin: 'auto' }}
               round="true"
               typevalue="outline"
             >
@@ -124,7 +123,7 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
             </Button>
           </Link>
           <Link to={swapUrl}>
-            <Button style={{ margin: 'auto' }} round="true">
+            <Button round="true">
               <SwapOutlined />
               swap
             </Button>
