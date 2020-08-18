@@ -1,6 +1,5 @@
 import React, { useCallback } from 'react';
-import Row from 'antd/lib/row';
-import Col from 'antd/lib/col';
+import { Row, Col } from 'antd';
 
 import { bnOrZero } from '@thorchain/asgardex-util';
 import { baseAmount, formatBaseAsTokenAmount } from '@thorchain/asgardex-token';
