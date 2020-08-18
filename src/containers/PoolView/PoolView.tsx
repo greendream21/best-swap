@@ -180,12 +180,17 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         const { target, values } = record;
         if (target) {
           const swapUrl = `/swap/${RUNE_SYMBOL}:${values.symbol}`;
-          const stakeUrl = `/pool/${values.symbol.toUpperCase()}`;
+          const stakeUrl = `/stake/${values.symbol.toUpperCase()}`;
 
           return (
             <ActionColumn>
               <div className="action-column-wrapper">
-                <Link to={stakeUrl}>
+                <Link
+                  to={stakeUrl}
+                  onClick={ev => {
+                    ev.stopPropagation();
+                  }}
+                >
                   <Button
                     style={{ margin: 'auto' }}
                     round="true"
@@ -196,7 +201,12 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
                   </Button>
                 </Link>
                 {poolStatus !== PoolDetailStatusEnum.Bootstrapped && (
-                  <Link to={swapUrl}>
+                  <Link
+                    to={swapUrl}
+                    onClick={ev => {
+                      ev.stopPropagation();
+                    }}
+                  >
                     <Button style={{ margin: 'auto' }} round="true">
                       <SwapOutlined />
                       swap
@@ -294,6 +304,14 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
 
     return (
       <Table
+        onRow={(record: PoolData) => {
+          return {
+            onClick: () => {
+              const URL = `/pool/${record?.values?.symbol?.toUpperCase()}`;
+              history.push(URL);
+             },
+          };
+        }}
         columns={columns}
         dataSource={poolViewData}
         loading={poolLoading}
