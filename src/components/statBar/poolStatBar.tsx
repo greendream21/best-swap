@@ -1,5 +1,9 @@
 import React, { useCallback } from 'react';
-import { Row, Col } from 'antd';
+import Row from 'antd/lib/row';
+import Col from 'antd/lib/col';
+
+import { bnOrZero } from '@thorchain/asgardex-util';
+import { baseAmount, formatBaseAsTokenAmount } from '@thorchain/asgardex-token';
 
 import { PoolData } from '../../helpers/utils/types';
 import { StyledStatistic } from './statBar.style';
@@ -18,7 +22,9 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
 
   const getUSDValue = useCallback(
     (val: string) => {
-      return (Number(val) / 1e8 / price).toFixed(2);
+      const bnValue = bnOrZero(val).dividedBy(price);
+      const amount = baseAmount(bnValue);
+      return formatBaseAsTokenAmount(amount, 0);
     },
     [price],
   );
