@@ -33,7 +33,8 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
   const transaction = `${stats?.transaction?.amount() || '0'}`;
   const buyTx = `${poolInfo?.buyTxAverage || '0'}`;
   const sellTx = `${poolInfo?.sellTxAverage || '0'}`;
-  const earned = `${(Number(poolInfo?.sellVolume) - Number(poolInfo?.buyVolume)) || '0'}`;
+  const earned = `${Number(poolInfo?.sellVolume) -
+    Number(poolInfo?.buyVolume) || '0'}`;
   const users = `${poolInfo?.swappersCount || '0'}`;
 
   return (
@@ -46,11 +47,7 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
           lg={{ span: 12 }}
           xl={{ span: 12 }}
         >
-          <StyledStatistic
-            title="Total Liquidity"
-            value={liqFee}
-            prefix="$"
-          />
+          <StyledStatistic title="Total Liquidity" value={liqFee} prefix="$" />
         </Col>
         <Col
           xs={{ span: 24 }}
@@ -83,7 +80,10 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
           lg={{ span: 12 }}
           xl={{ span: 12 }}
         >
-          <StyledStatistic title="Total Transactions" value={getUSDValue(transaction) ?? '0'} />
+          <StyledStatistic
+            title="Total Transactions"
+            value={getUSDValue(transaction) ?? '0'}
+          />
         </Col>
       </Row>
       <Row gutter={[16, 16]}>
@@ -94,7 +94,11 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
           lg={{ span: 12 }}
           xl={{ span: 12 }}
         >
-          <StyledStatistic title="Total Earned" value={getUSDValue(earned) ?? '0'} prefix="$" />
+          <StyledStatistic
+            title="Total Earned"
+            value={getUSDValue(earned) ?? '0'}
+            prefix="$"
+          />
         </Col>
         <Col
           xs={{ span: 24 }}
@@ -105,7 +109,7 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
         >
           <StyledStatistic
             title="Total ROI"
-            value={`${stats?.roiAT ?? '0'}`}
+            value={`${stats?.apr ?? '0'}`}
             suffix="%"
           />
         </Col>
