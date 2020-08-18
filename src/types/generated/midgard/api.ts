@@ -299,7 +299,7 @@ export interface NetworkInfo {
      */
     nextChurnHeight?: string;
     /**
-     * The remaining time of pool activation (in seconds)
+     * The remaining time of pool activation (in blocks)
      * @type {number}
      * @memberof NetworkInfo
      */
@@ -799,6 +799,44 @@ export interface StatsData {
 /**
  * 
  * @export
+ * @interface ThorchainBooleanConstants
+ */
+export interface ThorchainBooleanConstants {
+    /**
+     * 
+     * @type {boolean}
+     * @memberof ThorchainBooleanConstants
+     */
+    strictBondStakeRatio?: boolean;
+}
+/**
+ * 
+ * @export
+ * @interface ThorchainConstants
+ */
+export interface ThorchainConstants {
+    /**
+     * 
+     * @type {ThorchainBooleanConstants}
+     * @memberof ThorchainConstants
+     */
+    boolValues?: ThorchainBooleanConstants;
+    /**
+     * 
+     * @type {ThorchainInt64Constants}
+     * @memberof ThorchainConstants
+     */
+    int64Values?: ThorchainInt64Constants;
+    /**
+     * 
+     * @type {ThorchainStringConstants}
+     * @memberof ThorchainConstants
+     */
+    stringValues?: ThorchainStringConstants;
+}
+/**
+ * 
+ * @export
  * @interface ThorchainEndpoint
  */
 export interface ThorchainEndpoint {
@@ -833,6 +871,250 @@ export interface ThorchainEndpoints {
      * @memberof ThorchainEndpoints
      */
     current?: Array<ThorchainEndpoint>;
+}
+/**
+ * 
+ * @export
+ * @interface ThorchainInt64Constants
+ */
+export interface ThorchainInt64Constants {
+    /**
+     * 
+     * @type {number}
+     * @memberof ThorchainInt64Constants
+     */
+    badValidatorRate?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof ThorchainInt64Constants
+     */
+    blocksPerYear?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof ThorchainInt64Constants
+     */
+    desireValidatorSet?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof ThorchainInt64Constants
+     */
+    doubleSignMaxAge?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof ThorchainInt64Constants
+     */
+    emissionCurve?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof ThorchainInt64Constants
+     */
+    failKeySignSlashPoints?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof ThorchainInt64Constants
+     */
+    failKeygenSlashPoints?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof ThorchainInt64Constants
+     */
+    fundMigrationInterval?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof ThorchainInt64Constants
+     */
+    jailTimeKeygen?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof ThorchainInt64Constants
+     */
+    jailTimeKeysign?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof ThorchainInt64Constants
+     */
+    lackOfObservationPenalty?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof ThorchainInt64Constants
+     */
+    minimumBondInRune?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof ThorchainInt64Constants
+     */
+    minimumNodesForBFT?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof ThorchainInt64Constants
+     */
+    minimumNodesForYggdrasil?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof ThorchainInt64Constants
+     */
+    newPoolCycle?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof ThorchainInt64Constants
+     */
+    observeSlashPoints?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof ThorchainInt64Constants
+     */
+    oldValidatorRate?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof ThorchainInt64Constants
+     */
+    rotatePerBlockHeight?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof ThorchainInt64Constants
+     */
+    rotateRetryBlocks?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof ThorchainInt64Constants
+     */
+    signingTransactionPeriod?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof ThorchainInt64Constants
+     */
+    stakeLockUpBlocks?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof ThorchainInt64Constants
+     */
+    transactionFee?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof ThorchainInt64Constants
+     */
+    validatorRotateInNumBeforeFull?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof ThorchainInt64Constants
+     */
+    validatorRotateNumAfterFull?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof ThorchainInt64Constants
+     */
+    validatorRotateOutNumBeforeFull?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof ThorchainInt64Constants
+     */
+    whiteListGasAsset?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof ThorchainInt64Constants
+     */
+    yggFundLimit?: number;
+}
+/**
+ * 
+ * @export
+ * @interface ThorchainLastblock
+ */
+export interface ThorchainLastblock {
+    /**
+     * 
+     * @type {string}
+     * @memberof ThorchainLastblock
+     */
+    chain?: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof ThorchainLastblock
+     */
+    lastobservedin?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof ThorchainLastblock
+     */
+    lastsignedout?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof ThorchainLastblock
+     */
+    thorchain?: number;
+}
+/**
+ * 
+ * @export
+ * @interface ThorchainStringConstants
+ */
+export interface ThorchainStringConstants {
+    /**
+     * 
+     * @type {string}
+     * @memberof ThorchainStringConstants
+     */
+    defaultPoolStatus?: string;
+}
+/**
+ * 
+ * @export
+ * @interface TotalVolChanges
+ */
+export interface TotalVolChanges {
+    /**
+     * 
+     * @type {string}
+     * @memberof TotalVolChanges
+     */
+    buyVolume?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof TotalVolChanges
+     */
+    sellVolume?: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof TotalVolChanges
+     */
+    time?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof TotalVolChanges
+     */
+    totalVolume?: string;
 }
 /**
  * 
@@ -946,7 +1228,6 @@ export enum TxDetailsStatusEnum {
     * @enum {string}
     */
 export enum TxDetailsTypeEnum {
-    DoubleSwap = 'doubleSwap',
     Swap = 'swap',
     Stake = 'stake',
     Unstake = 'unstake',
@@ -954,7 +1235,8 @@ export enum TxDetailsTypeEnum {
     Add = 'add',
     Pool = 'pool',
     Gas = 'gas',
-    Refund = 'refund'
+    Refund = 'refund',
+    DoubleSwap = 'doubleSwap'
 }
 
 
@@ -1119,16 +1401,17 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * Returns an object containing all the pool data for that asset. All assets on BEPSwap have associated pools.
-         * @summary Get Pools Data
+         * Returns an object containing all the pool details for that asset.
+         * @summary Get Pools Details
          * @param {string} asset One or more comma separated unique asset (CHAIN.SYMBOL)
+         * @param {'balances' | 'simple' | 'full'} [view] Specifies the returning view
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPoolsData(asset: string, options: any = {}): RequestArgs {
+        getPoolsDetails(asset: string, view?: 'balances' | 'simple' | 'full', options: any = {}): RequestArgs {
             // verify required parameter 'asset' is not null or undefined
             if (asset === null || asset === undefined) {
-                throw new RequiredError('asset','Required parameter asset was null or undefined when calling getPoolsData.');
+                throw new RequiredError('asset','Required parameter asset was null or undefined when calling getPoolsDetails.');
             }
             const localVarPath = `/v1/pools/detail`;
             const localVarUrlObj = globalImportUrl.parse(localVarPath, true);
@@ -1139,6 +1422,10 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            if (view !== undefined) {
+                localVarQueryParameter['view'] = view;
+            }
 
             if (asset !== undefined) {
                 localVarQueryParameter['asset'] = asset;
@@ -1294,6 +1581,35 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
+         * Returns a proxied endpoint for the constants endpoint from a local thornode
+         * @summary Get the Proxied THORChain Constants
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getThorchainProxiedConstants(options: any = {}): RequestArgs {
+            const localVarPath = `/v1/thorchain/constants`;
+            const localVarUrlObj = globalImportUrl.parse(localVarPath, true);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarUrlObj.query = {...localVarUrlObj.query, ...localVarQueryParameter, ...options.query};
+            // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
+            delete localVarUrlObj.search;
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...options.headers};
+
+            return {
+                url: globalImportUrl.format(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * Returns a proxied endpoint for the pool_addresses endpoint from a local thornode
          * @summary Get the Proxied Pool Addresses
          * @param {*} [options] Override http request option.
@@ -1309,6 +1625,91 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+
+    
+            localVarUrlObj.query = {...localVarUrlObj.query, ...localVarQueryParameter, ...options.query};
+            // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
+            delete localVarUrlObj.search;
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...options.headers};
+
+            return {
+                url: globalImportUrl.format(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Returns a proxied endpoint for the lastblock endpoint from a local thornode
+         * @summary Get the Proxied THORChain Lastblock
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getThorchainProxiedLastblock(options: any = {}): RequestArgs {
+            const localVarPath = `/v1/thorchain/lastblock`;
+            const localVarUrlObj = globalImportUrl.parse(localVarPath, true);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarUrlObj.query = {...localVarUrlObj.query, ...localVarQueryParameter, ...options.query};
+            // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
+            delete localVarUrlObj.search;
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...options.headers};
+
+            return {
+                url: globalImportUrl.format(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Returns total volume changes of all pools in specified interval
+         * @summary Get Total Volume Changes
+         * @param {'5min' | 'hour' | 'day' | 'week' | 'month' | 'year'} interval Interval of calculations
+         * @param {number} from Start time of the query as unix timestamp
+         * @param {number} to End time of the query as unix timestamp
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getTotalVolChanges(interval: '5min' | 'hour' | 'day' | 'week' | 'month' | 'year', from: number, to: number, options: any = {}): RequestArgs {
+            // verify required parameter 'interval' is not null or undefined
+            if (interval === null || interval === undefined) {
+                throw new RequiredError('interval','Required parameter interval was null or undefined when calling getTotalVolChanges.');
+            }
+            // verify required parameter 'from' is not null or undefined
+            if (from === null || from === undefined) {
+                throw new RequiredError('from','Required parameter from was null or undefined when calling getTotalVolChanges.');
+            }
+            // verify required parameter 'to' is not null or undefined
+            if (to === null || to === undefined) {
+                throw new RequiredError('to','Required parameter to was null or undefined when calling getTotalVolChanges.');
+            }
+            const localVarPath = `/v1/history/total_volume`;
+            const localVarUrlObj = globalImportUrl.parse(localVarPath, true);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (interval !== undefined) {
+                localVarQueryParameter['interval'] = interval;
+            }
+
+            if (from !== undefined) {
+                localVarQueryParameter['from'] = from;
+            }
+
+            if (to !== undefined) {
+                localVarQueryParameter['to'] = to;
+            }
 
 
     
@@ -1465,14 +1866,15 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             };
         },
         /**
-         * Returns an object containing all the pool data for that asset. All assets on BEPSwap have associated pools.
-         * @summary Get Pools Data
+         * Returns an object containing all the pool details for that asset.
+         * @summary Get Pools Details
          * @param {string} asset One or more comma separated unique asset (CHAIN.SYMBOL)
+         * @param {'balances' | 'simple' | 'full'} [view] Specifies the returning view
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPoolsData(asset: string, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<PoolDetail>> {
-            const localVarAxiosArgs = DefaultApiAxiosParamCreator(configuration).getPoolsData(asset, options);
+        getPoolsDetails(asset: string, view?: 'balances' | 'simple' | 'full', options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<PoolDetail>> {
+            const localVarAxiosArgs = DefaultApiAxiosParamCreator(configuration).getPoolsDetails(asset, view, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
                 return axios.request(axiosRequestArgs);
@@ -1534,6 +1936,19 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             };
         },
         /**
+         * Returns a proxied endpoint for the constants endpoint from a local thornode
+         * @summary Get the Proxied THORChain Constants
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getThorchainProxiedConstants(options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<ThorchainConstants> {
+            const localVarAxiosArgs = DefaultApiAxiosParamCreator(configuration).getThorchainProxiedConstants(options);
+            return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
+                const axiosRequestArgs = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
+                return axios.request(axiosRequestArgs);
+            };
+        },
+        /**
          * Returns a proxied endpoint for the pool_addresses endpoint from a local thornode
          * @summary Get the Proxied Pool Addresses
          * @param {*} [options] Override http request option.
@@ -1541,6 +1956,35 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          */
         getThorchainProxiedEndpoints(options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<ThorchainEndpoints> {
             const localVarAxiosArgs = DefaultApiAxiosParamCreator(configuration).getThorchainProxiedEndpoints(options);
+            return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
+                const axiosRequestArgs = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
+                return axios.request(axiosRequestArgs);
+            };
+        },
+        /**
+         * Returns a proxied endpoint for the lastblock endpoint from a local thornode
+         * @summary Get the Proxied THORChain Lastblock
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getThorchainProxiedLastblock(options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<ThorchainLastblock> {
+            const localVarAxiosArgs = DefaultApiAxiosParamCreator(configuration).getThorchainProxiedLastblock(options);
+            return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
+                const axiosRequestArgs = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
+                return axios.request(axiosRequestArgs);
+            };
+        },
+        /**
+         * Returns total volume changes of all pools in specified interval
+         * @summary Get Total Volume Changes
+         * @param {'5min' | 'hour' | 'day' | 'week' | 'month' | 'year'} interval Interval of calculations
+         * @param {number} from Start time of the query as unix timestamp
+         * @param {number} to End time of the query as unix timestamp
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getTotalVolChanges(interval: '5min' | 'hour' | 'day' | 'week' | 'month' | 'year', from: number, to: number, options?: any): (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TotalVolChanges>> {
+            const localVarAxiosArgs = DefaultApiAxiosParamCreator(configuration).getTotalVolChanges(interval, from, to, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
                 return axios.request(axiosRequestArgs);
@@ -1621,14 +2065,15 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return DefaultApiFp(configuration).getPools(options)(axios, basePath);
         },
         /**
-         * Returns an object containing all the pool data for that asset. All assets on BEPSwap have associated pools.
-         * @summary Get Pools Data
+         * Returns an object containing all the pool details for that asset.
+         * @summary Get Pools Details
          * @param {string} asset One or more comma separated unique asset (CHAIN.SYMBOL)
+         * @param {'balances' | 'simple' | 'full'} [view] Specifies the returning view
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPoolsData(asset: string, options?: any): AxiosPromise<Array<PoolDetail>> {
-            return DefaultApiFp(configuration).getPoolsData(asset, options)(axios, basePath);
+        getPoolsDetails(asset: string, view?: 'balances' | 'simple' | 'full', options?: any): AxiosPromise<Array<PoolDetail>> {
+            return DefaultApiFp(configuration).getPoolsDetails(asset, view, options)(axios, basePath);
         },
         /**
          * Returns an object containing staking data for the specified staker and pool.
@@ -1670,6 +2115,15 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return DefaultApiFp(configuration).getStats(options)(axios, basePath);
         },
         /**
+         * Returns a proxied endpoint for the constants endpoint from a local thornode
+         * @summary Get the Proxied THORChain Constants
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getThorchainProxiedConstants(options?: any): AxiosPromise<ThorchainConstants> {
+            return DefaultApiFp(configuration).getThorchainProxiedConstants(options)(axios, basePath);
+        },
+        /**
          * Returns a proxied endpoint for the pool_addresses endpoint from a local thornode
          * @summary Get the Proxied Pool Addresses
          * @param {*} [options] Override http request option.
@@ -1677,6 +2131,27 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          */
         getThorchainProxiedEndpoints(options?: any): AxiosPromise<ThorchainEndpoints> {
             return DefaultApiFp(configuration).getThorchainProxiedEndpoints(options)(axios, basePath);
+        },
+        /**
+         * Returns a proxied endpoint for the lastblock endpoint from a local thornode
+         * @summary Get the Proxied THORChain Lastblock
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getThorchainProxiedLastblock(options?: any): AxiosPromise<ThorchainLastblock> {
+            return DefaultApiFp(configuration).getThorchainProxiedLastblock(options)(axios, basePath);
+        },
+        /**
+         * Returns total volume changes of all pools in specified interval
+         * @summary Get Total Volume Changes
+         * @param {'5min' | 'hour' | 'day' | 'week' | 'month' | 'year'} interval Interval of calculations
+         * @param {number} from Start time of the query as unix timestamp
+         * @param {number} to End time of the query as unix timestamp
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getTotalVolChanges(interval: '5min' | 'hour' | 'day' | 'week' | 'month' | 'year', from: number, to: number, options?: any): AxiosPromise<Array<TotalVolChanges>> {
+            return DefaultApiFp(configuration).getTotalVolChanges(interval, from, to, options)(axios, basePath);
         },
         /**
          * Return an array containing the event details
@@ -1760,15 +2235,16 @@ export class DefaultApi extends BaseAPI {
     }
 
     /**
-     * Returns an object containing all the pool data for that asset. All assets on BEPSwap have associated pools.
-     * @summary Get Pools Data
+     * Returns an object containing all the pool details for that asset.
+     * @summary Get Pools Details
      * @param {string} asset One or more comma separated unique asset (CHAIN.SYMBOL)
+     * @param {'balances' | 'simple' | 'full'} [view] Specifies the returning view
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public getPoolsData(asset: string, options?: any) {
-        return DefaultApiFp(this.configuration).getPoolsData(asset, options)(this.axios, this.basePath);
+    public getPoolsDetails(asset: string, view?: 'balances' | 'simple' | 'full', options?: any) {
+        return DefaultApiFp(this.configuration).getPoolsDetails(asset, view, options)(this.axios, this.basePath);
     }
 
     /**
@@ -1819,6 +2295,17 @@ export class DefaultApi extends BaseAPI {
     }
 
     /**
+     * Returns a proxied endpoint for the constants endpoint from a local thornode
+     * @summary Get the Proxied THORChain Constants
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getThorchainProxiedConstants(options?: any) {
+        return DefaultApiFp(this.configuration).getThorchainProxiedConstants(options)(this.axios, this.basePath);
+    }
+
+    /**
      * Returns a proxied endpoint for the pool_addresses endpoint from a local thornode
      * @summary Get the Proxied Pool Addresses
      * @param {*} [options] Override http request option.
@@ -1827,6 +2314,31 @@ export class DefaultApi extends BaseAPI {
      */
     public getThorchainProxiedEndpoints(options?: any) {
         return DefaultApiFp(this.configuration).getThorchainProxiedEndpoints(options)(this.axios, this.basePath);
+    }
+
+    /**
+     * Returns a proxied endpoint for the lastblock endpoint from a local thornode
+     * @summary Get the Proxied THORChain Lastblock
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getThorchainProxiedLastblock(options?: any) {
+        return DefaultApiFp(this.configuration).getThorchainProxiedLastblock(options)(this.axios, this.basePath);
+    }
+
+    /**
+     * Returns total volume changes of all pools in specified interval
+     * @summary Get Total Volume Changes
+     * @param {'5min' | 'hour' | 'day' | 'week' | 'month' | 'year'} interval Interval of calculations
+     * @param {number} from Start time of the query as unix timestamp
+     * @param {number} to End time of the query as unix timestamp
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getTotalVolChanges(interval: '5min' | 'hour' | 'day' | 'week' | 'month' | 'year', from: number, to: number, options?: any) {
+        return DefaultApiFp(this.configuration).getTotalVolChanges(interval, from, to, options)(this.axios, this.basePath);
     }
 
     /**

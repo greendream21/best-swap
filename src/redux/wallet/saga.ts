@@ -1,4 +1,12 @@
-import { all, takeEvery, put, fork, call, delay, select } from 'redux-saga/effects';
+import {
+  all,
+  takeEvery,
+  put,
+  fork,
+  call,
+  delay,
+  select,
+} from 'redux-saga/effects';
 import { push } from 'connected-react-router';
 import { isEmpty as _isEmpty } from 'lodash';
 
@@ -141,7 +149,7 @@ export function* getUserStakeData(
   // (Request 2) Load list of possible `PoolDetail`
   midgardApi = api.getMidgardDefaultApi(basePath);
   const { data: poolDataList }: AxiosResponse<PoolDetail[]> = yield call(
-    { context: midgardApi, fn: midgardApi.getPoolsData },
+    { context: midgardApi, fn: midgardApi.getPoolsDetails },
     assets.join(),
   );
 
