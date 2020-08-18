@@ -1,18 +1,18 @@
 import React, { useEffect, useCallback } from 'react';
 import * as H from 'history';
+import moment from 'moment';
 import { compose } from 'redux';
+import Row from 'antd/lib/row';
+import Col from 'antd/lib/col';
 import { connect, useSelector } from 'react-redux';
+import { get as _get, random } from 'lodash';
 import { withRouter, useParams, Link } from 'react-router-dom';
-import { Row, Col } from 'antd';
+import themes, { ThemeType } from '@thorchain/asgardex-theme';
+
 import {
   SwapOutlined,
   DatabaseOutlined,
 } from '@ant-design/icons';
-
-import { get as _get, random } from 'lodash';
-
-import themes, { ThemeType } from '@thorchain/asgardex-theme';
-import moment from 'moment';
 
 import Label from '../../components/uielements/label';
 import Button from '../../components/uielements/button';
@@ -30,12 +30,14 @@ import {
   TransactionWrapper,
   StyledPagination,
 } from './PoolDetail.style';
+
 import { getPoolData } from '../../helpers/utils/poolUtils';
 import { PoolData } from '../../helpers/utils/types';
 import { RootState } from '../../redux/store';
 import { User, AssetData } from '../../redux/wallet/types';
 import { Maybe } from '../../types/bepswap';
 import { TxStatus, TxResult } from '../../redux/app/types';
+
 import {
   AssetDetailMap,
   StakerPoolData,

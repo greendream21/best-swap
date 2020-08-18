@@ -11,12 +11,12 @@ import {
   LineChart,
 } from './poolChart.style';
 
-interface ChartDetail {
+type ChartDetail = {
   value: number;
   time: string | Date | number;
 }
 
-interface ChartInfo {
+type ChartInfo = {
   liquidity: Array<ChartDetail>,
   volume: Array<ChartDetail>
 }
@@ -36,7 +36,7 @@ const renderHeader = (type: string, time: string, onTypeChange: Dispatch<SetStat
     <HeaderContainer>
       <TypeContainer>
         <HeaderToggle
-          role={type === 'LIQUIDITY' ? 'true' : 'false'}
+          primary={type === 'LIQUIDITY'}
           onClick={() => {
             if (type !== 'LIQUIDITY') {
               onTypeChange('LIQUIDITY');
@@ -46,7 +46,7 @@ const renderHeader = (type: string, time: string, onTypeChange: Dispatch<SetStat
           Liquidity
         </HeaderToggle>
         <HeaderToggle
-          role={type === 'VOLUME' ? 'true' : 'false'}
+          primary={type === 'VOLUME'}
           onClick={() => {
             if (type !== 'VOLUME') {
               onTypeChange('VOLUME');
@@ -58,7 +58,7 @@ const renderHeader = (type: string, time: string, onTypeChange: Dispatch<SetStat
       </TypeContainer>
       <TimeContainer>
         <HeaderToggle
-          role={time === 'WEEK' ? 'true' : 'false'}
+          primary={time === 'WEEK'}
           onClick={() => {
             if (time !== 'WEEK') {
               onTimeChange('WEEK');
@@ -68,7 +68,7 @@ const renderHeader = (type: string, time: string, onTypeChange: Dispatch<SetStat
           1 Week
         </HeaderToggle>
         <HeaderToggle
-          role={time === 'ALL' ? 'true' : 'false'}
+          primary={time === 'ALL'}
           onClick={() => {
             if (time !== 'ALL') {
               onTimeChange('ALL');

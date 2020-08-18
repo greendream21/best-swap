@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { palette } from 'styled-theme';
-import { Pagination } from 'antd';
+import Pagination from 'antd/lib/pagination';
 import ContentView from '../../components/utility/contentView';
 import { media } from '../../helpers/styleHelper';
 
@@ -43,13 +43,13 @@ export const ContentWrapper = styled(ContentView)`
   }
 `;
 
-export const PoolCaptionWrapper = styled('div')`
+export const PoolCaptionWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
 `;
 
-export const PoolCaptionTitle = styled('span')`
+export const PoolCaptionTitle = styled.span`
   font-family: 'Exo 2';
   font-weight: bold;
   font-size: 24px;
@@ -59,7 +59,7 @@ export const PoolCaptionTitle = styled('span')`
   margin-right: 20px;
 `;
 
-export const PoolCaptionPrice = styled('span')`
+export const PoolCaptionPrice = styled.span`
   font-family: 'Exo 2';
   font-weight: normal;
   font-size: 32px;
@@ -68,11 +68,11 @@ export const PoolCaptionPrice = styled('span')`
   color: ${palette('text', 0)};
 `;
 
-export const PoolCaptionButtonsWrapper = styled('div')`
+export const PoolCaptionButtonsWrapper = styled.div`
   display: flex;
   justify-content: space-around;
   align-items: center;
-  width: 250px;  
+  width: 250px;
 `;
 
 export const TransactionWrapper = styled.div`
