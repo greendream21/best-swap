@@ -88,7 +88,6 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     getTransactions,
   } = props;
 
-  console.log('txData', txData);
   const [poolStatus, selectPoolStatus] = useState<PoolDetailStatusEnum>(
     PoolDetailStatusEnum.Enabled,
   );
