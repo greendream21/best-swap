@@ -181,10 +181,10 @@ const renderChart = (
             display: false,
           },
           ticks: {
+            autoSkip: true,
             fontSize: viewMode === 'desktop-view' ? '15' : '10',
             fontColor: textColor,
-            autoSkip: true,
-            maxTicksLimit: viewMode === 'desktop-view' ? 6 : 4,
+            maxTicksLimit: viewMode === 'desktop-view' ? 5 : 3,
             maxRotation: 0,
           },
         },
