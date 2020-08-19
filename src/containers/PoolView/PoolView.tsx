@@ -102,7 +102,8 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
    * 1. Should recognize BUSD pool with ticker instead of symbol
    * 2. If BUSD pool doesn't exist, it should calculate the price in RUNE
    */
-  const busdPrice = assets?.['BUSD-BAF']?.priceRune ?? '1';
+  const busdToken = Object.keys(assets).find(item => item.startsWith('BUSD'));
+  const busdPrice = busdToken ? assets[busdToken]?.priceRune : 'RUNE';
 
   const getTransactionInfo = useCallback(
     (offset: number, limit: number) => {
@@ -309,7 +310,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
             onClick: () => {
               const URL = `/pool/${record?.values?.symbol?.toUpperCase()}`;
               history.push(URL);
-             },
+            },
           };
         }}
         columns={columns}

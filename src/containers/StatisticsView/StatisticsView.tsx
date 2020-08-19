@@ -16,17 +16,23 @@ type Props = {
 
 const StatisticsView: React.FC<Props> = (props: Props): JSX.Element => {
   const { assets, stats } = props;
-  const busdPrice = assets?.['BUSD-BAF']?.priceRune ?? '1';
-  const price = Number(busdPrice);
+
+  const busdToken = Object.keys(assets).find(item => item.startsWith('BUSD'));
+  const busdPrice = busdToken ? assets[busdToken]?.priceRune : 'RUNE';
 
   const getUSDValue = useCallback(
     (val: string) => {
+      const price = busdPrice === 'RUNE' ? 1 : Number(busdPrice);
       const bnValue = bnOrZero(val).dividedBy(price);
       const amount = baseAmount(bnValue);
       return formatBaseAsTokenAmount(amount, 0);
     },
-    [price],
+    [busdPrice],
   );
+
+  const getPrefix = useCallback(() => {
+    return busdPrice === 'RUNE' ? 'ᚱ' : '$';
+  }, [busdPrice]);
 
   return (
     <Row gutter={[16, 16]}>
@@ -40,7 +46,7 @@ const StatisticsView: React.FC<Props> = (props: Props): JSX.Element => {
         <StyledStatistic
           title="Total Staked"
           value={getUSDValue(stats?.totalStaked ?? '0')}
-          prefix="$"
+          prefix={getPrefix()}
         />
       </Col>
       <Col
@@ -65,7 +71,7 @@ const StatisticsView: React.FC<Props> = (props: Props): JSX.Element => {
         <StyledStatistic
           title="Total Earned"
           value={getUSDValue(stats?.totalEarned ?? '0')}
-          prefix="$"
+          prefix={getPrefix()}
         />
       </Col>
       <Col
@@ -87,7 +93,7 @@ const StatisticsView: React.FC<Props> = (props: Props): JSX.Element => {
         <StyledStatistic
           title="Total Depth"
           value={getUSDValue(stats?.totalDepth ?? '0')}
-          prefix="$"
+          prefix={getPrefix()}
         />
       </Col>
       <Col
@@ -109,7 +115,7 @@ const StatisticsView: React.FC<Props> = (props: Props): JSX.Element => {
         <StyledStatistic
           title="Total Volume"
           value={getUSDValue(stats?.totalVolume ?? '0')}
-          prefix="$"
+          prefix={getPrefix()}
         />
       </Col>
       <Col
@@ -122,7 +128,7 @@ const StatisticsView: React.FC<Props> = (props: Props): JSX.Element => {
         <StyledStatistic
           title="24HR Volume"
           value={getUSDValue(stats?.totalVolume24hr ?? '0')}
-          prefix="$"
+          prefix={getPrefix()}
         />
       </Col>
       <Col
