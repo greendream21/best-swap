@@ -1,7 +1,8 @@
 /* eslint-disable no-underscore-dangle */
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useMemo } from 'react';
 import * as H from 'history';
 import moment from 'moment';
+import BigNumber from 'bignumber.js';
 import { compose } from 'redux';
 import { Row, Col } from 'antd';
 import { connect, useSelector } from 'react-redux';
@@ -11,6 +12,7 @@ import themes, { ThemeType } from '@thorchain/asgardex-theme';
 
 import { SwapOutlined, DatabaseOutlined } from '@ant-design/icons';
 
+import { bnOrZero } from '@thorchain/asgardex-util';
 import Label from '../../components/uielements/label';
 import Button from '../../components/uielements/button';
 
@@ -35,6 +37,7 @@ import {
   PoolDataMap,
   PriceDataIndex,
   TxDetailData,
+  RTVolumeData,
 } from '../../redux/midgard/types';
 import { RUNE_SYMBOL } from '../../settings/assetData';
 import { PoolStatBar } from '../../components/statBar';
@@ -47,6 +50,9 @@ type Props = {
   poolData: PoolDataMap;
   assets: AssetDetailMap;
   priceIndex: PriceDataIndex;
+  rtVolumeLoading: boolean;
+  rtVolume: RTVolumeData;
+  getRTVolume: typeof midgardActions.getRTVolumeByAsset;
   getTxByAsset: typeof midgardActions.getTxByAsset;
 };
 
@@ -62,20 +68,26 @@ const generateRandomTimeSeries = (
     itr = itr.add(1, 'day')
   ) {
     series.push({
-      time: itr.format('YYYY-MM-DD'),
-      value: minValue + (random(100) / 100) * (maxValue - minValue),
+      time: itr.unix(),
+      value: new BigNumber(
+        minValue + (random(100) / 100) * (maxValue - minValue),
+      ),
     });
   }
   return series;
 };
 
-const chartData = {
-  liquidity: generateRandomTimeSeries(1, 10, '2020-05-01'),
-  volume: generateRandomTimeSeries(2, 15, '2020-05-01'),
-};
-
 const PoolDetail: React.FC<Props> = (props: Props) => {
-  const { assets, poolData, txData, priceIndex, getTxByAsset } = props;
+  const {
+    assets,
+    poolData,
+    txData,
+    priceIndex,
+    rtVolumeLoading,
+    rtVolume,
+    getRTVolume,
+    getTxByAsset,
+  } = props;
 
   const { symbol = '' } = useParams();
   const tokenSymbol = symbol.toUpperCase();
@@ -84,6 +96,25 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
   const themeType = useSelector((state: RootState) => state.App.themeType);
   const isLight = themeType === ThemeType.LIGHT;
   const theme = isLight ? themes.light : themes.dark;
+
+  const chartData = useMemo(() => {
+    if (rtVolumeLoading) {
+      return { liquidity: [], volume: [], loading: true };
+    }
+
+    const volumeSeriesData = rtVolume?.map(volume => ({
+      time: volume?.time ?? 0,
+      value: bnOrZero(volume.totalVolume).dividedBy(
+        Number(busdPrice) * 1e8 * 1000,
+      ),
+    }));
+
+    return {
+      liquidity: generateRandomTimeSeries(0, 15, '2020-05-01'),
+      volume: volumeSeriesData,
+      loading: false,
+    };
+  }, [rtVolume, rtVolumeLoading, busdPrice]);
 
   const getTransactionInfo = useCallback(
     (asset: string, offset: number, limit: number) => {
@@ -95,6 +126,23 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
   useEffect(() => {
     getTransactionInfo(tokenSymbol, 0, 10);
   }, [getTransactionInfo, tokenSymbol]);
+
+  const getRTVolumeInfo = useCallback(
+    (
+      asset: string,
+      from: number,
+      to: number,
+      interval: '5min' | 'hour' | 'day' | 'week' | 'month' | 'year',
+    ) => {
+      getRTVolume({ asset, from, to, interval });
+    },
+    [getRTVolume],
+  );
+
+  useEffect(() => {
+    const timeStamp: number = moment().unix();
+    getRTVolumeInfo(tokenSymbol, 0, timeStamp, 'day');
+  }, [getRTVolumeInfo, tokenSymbol]);
 
   const renderDetailCaption = (poolStats: PoolData, viewMode: string) => {
     const swapUrl = `/swap/${RUNE_SYMBOL}:${poolStats.values.symbol}`;
@@ -180,7 +228,8 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
       <Row className="detail-transaction-view">
         <TransactionWrapper>
           <Label size="big" color="primary">
-            Transactions ({txData._tag === 'RemoteSuccess' ? txData.value.count : 0})
+            Transactions (
+            {txData._tag === 'RemoteSuccess' ? txData.value.count : 0})
           </Label>
           <TxTable txData={txData} />
           <StyledPagination
@@ -204,8 +253,11 @@ export default compose(
       assets: state.Midgard.assets,
       priceIndex: state.Midgard.priceIndex,
       txData: state.Midgard.txData,
+      rtVolumeLoading: state.Midgard.rtVolumeLoading,
+      rtVolume: state.Midgard.rtVolume,
     }),
     {
+      getRTVolume: midgardActions.getRTVolumeByAsset,
       getTxByAsset: midgardActions.getTxByAsset,
     },
   ),

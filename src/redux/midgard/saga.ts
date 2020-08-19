@@ -20,6 +20,7 @@ import {
   GetTxByAddressAssetPayload,
   GetStakerPoolDataPayload,
   GetTransactionPayload,
+  GetRTVolumeByAssetPayload,
 } from './types';
 import { AssetDetail } from '../../types/generated/midgard';
 
@@ -574,6 +575,51 @@ export function* setBasePriceAsset() {
   });
 }
 
+function* tryGetRTVolumeByAsset(payload: GetRTVolumeByAssetPayload) {
+  for (let i = 0; i < MIDGARD_MAX_RETRY; i++) {
+    try {
+      const noCache = i > 0;
+      const { asset, from, to, interval } = payload;
+      // Unsafe: Can't infer type of `basePath` here - known TS/Generator/Saga issue
+      const basePath: string = yield call(getApiBasePath, getNet(), noCache);
+      const midgardApi = api.getMidgardDefaultApi(basePath);
+      const fn = midgardApi.getTotalVolChanges;
+      const { data }: UnpackPromiseResponse<typeof fn> = yield call(
+        {
+          context: midgardApi,
+          fn,
+        },
+        interval,
+        from,
+        to,
+        asset,
+      );
+
+      return data;
+    } catch (error) {
+      if (i < MIDGARD_MAX_RETRY - 1) {
+        yield delay(MIDGARD_RETRY_DELAY);
+      }
+    }
+  }
+  throw new Error(
+    'Midgard API request failed to get RT Volume changes by asset',
+  );
+}
+
+export function* getRTVolumeByAsset() {
+  yield takeEvery('GET_RT_VOLUME_BY_ASSET', function*({
+    payload,
+  }: ReturnType<typeof actions.getRTVolumeByAsset>) {
+    try {
+      const data = yield call(tryGetRTVolumeByAsset, payload);
+      yield put(actions.getRTVolumeByAssetSuccess(data));
+    } catch (error) {
+      yield put(actions.getRTVolumeByAssetFailed(error));
+    }
+  });
+}
+
 export default function* rootSaga() {
   yield all([
     fork(getPools),
@@ -587,5 +633,6 @@ export default function* rootSaga() {
     fork(getTxByAddressTxId),
     fork(getTxByAddressAsset),
     fork(getTxByAsset),
+    fork(getRTVolumeByAsset),
   ]);
 }

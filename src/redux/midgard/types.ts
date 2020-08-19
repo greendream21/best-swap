@@ -10,6 +10,7 @@ import {
   ThorchainEndpoint,
   InlineResponse2001,
   TxDetailsTypeEnum,
+  TotalVolChanges,
 } from '../../types/generated/midgard';
 
 export type AssetDetailMap = {
@@ -80,6 +81,16 @@ export type GetTxByAssetPayload = {
   type?: string;
 };
 
+export type GetRTVolumeByAssetPayload = {
+  asset: string;
+  from: number;
+  to: number;
+  interval: '5min' | 'hour' | 'day' | 'week' | 'month' | 'year';
+  type?: string;
+};
+
+export type RTVolumeData = Array<TotalVolChanges>;
+
 export type TxDetailData = RemoteData<Error, InlineResponse2001>;
 
 export type ApiBasePathRD = RemoteData<Error, string>;
@@ -111,6 +122,8 @@ export type State = {
   poolDataLoading: boolean;
   statsLoading: boolean;
   txData: TxDetailData;
+  rtVolumeLoading: boolean;
+  rtVolume: TotalVolChanges[];
   txCurData: Maybe<InlineResponse2001>;
   apiBasePath: ApiBasePathRD;
   thorchain: ThorchainData;

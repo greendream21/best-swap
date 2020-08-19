@@ -1,5 +1,7 @@
 import React, { Dispatch, SetStateAction } from 'react';
 import moment from 'moment';
+import BigNumber from 'bignumber.js';
+import Loader from '../utility/loaders/chart';
 
 import {
   ChartContainer,
@@ -12,13 +14,14 @@ import {
 } from './poolChart.style';
 
 type ChartDetail = {
-  value: number;
-  time: string | Date | number;
+  value: BigNumber;
+  time: number;
 }
 
 type ChartInfo = {
   liquidity: Array<ChartDetail>,
-  volume: Array<ChartDetail>
+  volume: Array<ChartDetail>,
+  loading: boolean,
 }
 
 type Props = {
@@ -95,16 +98,16 @@ const renderChart = (
   const startDate = moment().subtract(7, 'days');
   const filteredByTime = totalDisplayChart.filter(data => {
     if (time === 'ALL') return true;
-    return moment(data.time).isBetween(startDate, moment());
+    return moment.unix(data.time).isBetween(startDate, moment());
   });
 
   const labels: Array<string> = filteredByTime.map(data => {
-    return moment(data.time).format('MMM DD');
+    return moment.unix(data.time).format('MMM DD');
   });
 
-  const values: Array<number> = filteredByTime.map(data => data.value);
+  const values: Array<BigNumber> = filteredByTime.map(data => data.value);
 
-  const data = (canvas:HTMLCanvasElement) => {
+  const data = (canvas: HTMLCanvasElement) => {
     const ctx = canvas.getContext('2d');
     let gradientStroke: CanvasGradient;
 
@@ -199,7 +202,7 @@ const renderChart = (
           ticks: {
             autoSkip: true,
             maxTicksLimit: viewMode === 'desktop-view' ? 5 : 3,
-            callback(value:string) {
+            callback(value: string) {
               return `$${value}M`;
             },
             padding: viewMode === 'desktop-view' ? 20 : 0,
@@ -215,7 +218,8 @@ const renderChart = (
   };
   return (
     <LineChartContainer>
-      <LineChart data={data} options={options} />
+      {chartData?.loading && <Loader />}
+      {!chartData?.loading && <LineChart data={data} options={options} />}
     </LineChartContainer>
   );
 };
