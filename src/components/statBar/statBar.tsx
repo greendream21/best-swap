@@ -11,21 +11,27 @@ import { StyledStatistic } from './statBar.style';
 type Props = {
   stats: StatsData;
   loading?: boolean;
-  basePrice: string;
+  basePrice?: string;
 };
 
 const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
-  const { stats, basePrice, loading } = props;
-  const price = Number(basePrice);
+  const { stats, basePrice = 'RUNE', loading } = props;
 
   const getUSDValue = useCallback(
     (val: string) => {
+      const price = basePrice === 'RUNE' ? 1 : Number(basePrice);
       const bnValue = bnOrZero(val).dividedBy(price);
       const amount = baseAmount(bnValue);
       return formatBaseAsTokenAmount(amount, 0);
     },
-    [price],
+    [basePrice],
   );
+
+  const getPrefix = useCallback(() => {
+    if (loading) return '';
+    if (basePrice === 'RUNE') return 'ᚱ';
+    return '$';
+  }, [loading, basePrice]);
 
   return (
     <Row gutter={[16, 16]}>
@@ -42,7 +48,7 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
             if (loading) return <LabelLoader />;
             return <span>{getUSDValue(stats?.totalStaked ?? '0')}</span>;
           }}
-          prefix={loading ? '' : '$'}
+          prefix={getPrefix()}
         />
       </Col>
       <Col
@@ -58,7 +64,7 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
             if (loading) return <LabelLoader />;
             return <span>{getUSDValue(stats?.totalVolume ?? '0')}</span>;
           }}
-          prefix={loading ? '' : '$'}
+          prefix={getPrefix()}
         />
       </Col>
       <Col
@@ -119,7 +125,7 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
             if (loading) return <LabelLoader />;
             return <span>{getUSDValue(stats?.totalEarned ?? '0')}</span>;
           }}
-          prefix={loading ? '' : '$'}
+          prefix={getPrefix()}
         />
       </Col>
     </Row>
