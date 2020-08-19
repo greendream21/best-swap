@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import React, { useEffect, useCallback, useMemo } from 'react';
 import * as H from 'history';
 import moment from 'moment';
@@ -31,7 +32,6 @@ import { getPoolData } from '../../helpers/utils/poolUtils';
 import { PoolData } from '../../helpers/utils/types';
 import { RootState } from '../../redux/store';
 
-
 import {
   AssetDetailMap,
   PoolDataMap,
@@ -50,10 +50,10 @@ type Props = {
   poolData: PoolDataMap;
   assets: AssetDetailMap;
   priceIndex: PriceDataIndex;
-  rtVolumeLoading: boolean,
+  rtVolumeLoading: boolean;
   rtVolume: RTVolumeData;
-  getTransactions: typeof midgardActions.getTransaction;
   getRTVolume: typeof midgardActions.getRTVolumeByAsset;
+  getTxByAsset: typeof midgardActions.getTxByAsset;
 };
 
 const generateRandomTimeSeries = (
@@ -69,14 +69,25 @@ const generateRandomTimeSeries = (
   ) {
     series.push({
       time: itr.unix(),
-      value: new BigNumber(minValue + (random(100) / 100) * (maxValue - minValue)),
+      value: new BigNumber(
+        minValue + (random(100) / 100) * (maxValue - minValue),
+      ),
     });
   }
   return series;
 };
 
 const PoolDetail: React.FC<Props> = (props: Props) => {
-  const { assets, poolData, txData, priceIndex, rtVolumeLoading, rtVolume, getTransactions, getRTVolume } = props;
+  const {
+    assets,
+    poolData,
+    txData,
+    priceIndex,
+    rtVolumeLoading,
+    rtVolume,
+    getRTVolume,
+    getTxByAsset,
+  } = props;
 
   const { symbol = '' } = useParams();
   const tokenSymbol = symbol.toUpperCase();
@@ -93,7 +104,9 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
 
     const volumeSeriesData = rtVolume?.map(volume => ({
       time: volume?.time ?? 0,
-      value: bnOrZero(volume.totalVolume).dividedBy(Number(busdPrice) * 1e8 * 1000),
+      value: bnOrZero(volume.totalVolume).dividedBy(
+        Number(busdPrice) * 1e8 * 1000,
+      ),
     }));
 
     return {
@@ -104,19 +117,23 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
   }, [rtVolume, rtVolumeLoading, busdPrice]);
 
   const getTransactionInfo = useCallback(
-    (offset: number, limit: number) => {
-      getTransactions({ offset, limit });
+    (asset: string, offset: number, limit: number) => {
+      getTxByAsset({ asset, offset, limit });
     },
-    [getTransactions],
+    [getTxByAsset],
   );
 
   useEffect(() => {
-    getTransactionInfo(0, 10);
-  }, [getTransactionInfo]);
-
+    getTransactionInfo(tokenSymbol, 0, 10);
+  }, [getTransactionInfo, tokenSymbol]);
 
   const getRTVolumeInfo = useCallback(
-    (asset: string, from: number, to: number, interval: '5min' | 'hour' | 'day' | 'week' | 'month' | 'year') => {
+    (
+      asset: string,
+      from: number,
+      to: number,
+      interval: '5min' | 'hour' | 'day' | 'week' | 'month' | 'year',
+    ) => {
       getRTVolume({ asset, from, to, interval });
     },
     [getRTVolume],
@@ -133,7 +150,7 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
 
     const targetName = `${
       poolStats.target
-      } (${poolStats.values.symbol.toUpperCase()})`;
+    } (${poolStats.values.symbol.toUpperCase()})`;
     const poolPrice = `$${poolStats.values.poolPrice}`;
 
     return (
@@ -211,16 +228,16 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
       <Row className="detail-transaction-view">
         <TransactionWrapper>
           <Label size="big" color="primary">
-            Transactions
+            Transactions (
+            {txData._tag === 'RemoteSuccess' ? txData.value.count : 0})
           </Label>
           <TxTable txData={txData} />
           <StyledPagination
             defaultCurrent={0}
-            // eslint-disable-next-line no-underscore-dangle
             total={txData._tag === 'RemoteSuccess' ? txData.value.count : 0}
             showSizeChanger={false}
             onChange={page => {
-              getTransactionInfo((page - 1) * 10, 10);
+              getTransactionInfo(tokenSymbol, (page - 1) * 10, 10);
             }}
           />
         </TransactionWrapper>
@@ -240,8 +257,8 @@ export default compose(
       rtVolume: state.Midgard.rtVolume,
     }),
     {
-      getTransactions: midgardActions.getTransaction,
       getRTVolume: midgardActions.getRTVolumeByAsset,
+      getTxByAsset: midgardActions.getTxByAsset,
     },
   ),
   withRouter,
