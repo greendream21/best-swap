@@ -169,6 +169,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
   const tokenSymbol = symbol.toUpperCase();
   const tokenTicker = getTickerFormat(symbol);
+  const basePriceAssetTicker = getTickerFormat(basePriceAsset).toUpperCase();
 
   const emptyStakerPoolData: StakersAssetData = {
     asset: tokenSymbol,
@@ -757,21 +758,22 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       apr,
     } = poolDetail;
 
+
     const attrs = [
       {
         key: 'depth',
         title: 'Depth',
-        value: `${basePriceAsset} ${formatBaseAsTokenAmount(depth)}`,
+        value: `${basePriceAssetTicker} ${formatBaseAsTokenAmount(depth)}`,
       },
       {
         key: 'vol24',
         title: '24hr Volume',
-        value: `${basePriceAsset} ${formatBaseAsTokenAmount(volume24)}`,
+        value: `${basePriceAssetTicker} ${formatBaseAsTokenAmount(volume24)}`,
       },
       {
         key: 'volAT',
         title: 'All Time Volume',
-        value: `${basePriceAsset} ${formatBaseAsTokenAmount(volumeAT)}`,
+        value: `${basePriceAssetTicker} ${formatBaseAsTokenAmount(volumeAT)}`,
       },
       { key: 'swap', title: 'Total Swaps', value: totalSwaps.toString() },
       {
@@ -922,7 +924,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                   amount={runeAmount}
                   price={runePrice}
                   priceIndex={priceIndex}
-                  unit={basePriceAsset}
+                  unit={basePriceAssetTicker}
                   onChange={handleChangeTokenAmount(RUNE_SYMBOL)}
                 />
                 <Slider
@@ -970,7 +972,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                   amount={targetAmount}
                   price={tokenPrice}
                   priceIndex={priceIndex}
-                  unit={basePriceAsset}
+                  unit={basePriceAssetTicker}
                   onChangeAsset={handleSelectTraget}
                   onChange={handleChangeTokenAmount(tokenSymbol)}
                   withSearch
@@ -1031,13 +1033,13 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                     asset="rune"
                     assetValue={sourceTokenAmount}
                     price={sourcePrice}
-                    priceUnit={basePriceAsset}
+                    priceUnit={basePriceAssetTicker}
                   />
                   <CoinData
                     asset={tokenTicker}
                     assetValue={targetTokenAmount}
                     price={targetPrice}
-                    priceUnit={basePriceAsset}
+                    priceUnit={basePriceAssetTicker}
                   />
                 </div>
               </div>
@@ -1151,7 +1153,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                       color="gray"
                       loading={loading}
                     >
-                      {`${basePriceAsset} ${runeStakedPrice}`}
+                      {`${basePriceAssetTicker} ${runeStakedPrice}`}
                     </Label>
                   </div>
                   <div className="your-share-info">
@@ -1167,7 +1169,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                       color="gray"
                       loading={loading}
                     >
-                      {`${basePriceAsset} ${assetStakedPrice}`}
+                      {`${basePriceAssetTicker} ${assetStakedPrice}`}
                     </Label>
                   </div>
                 </div>
