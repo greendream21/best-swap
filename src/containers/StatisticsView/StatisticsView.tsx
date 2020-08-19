@@ -5,6 +5,7 @@ import { bnOrZero } from '@thorchain/asgardex-util';
 import { baseAmount, formatBaseAsTokenAmount } from '@thorchain/asgardex-token';
 
 import { StatsData } from '../../types/generated/midgard';
+import { getTickerFormat } from '../../helpers/stringHelper';
 import { RootState } from '../../redux/store';
 import { AssetDetailMap } from '../../redux/midgard/types';
 import { StyledStatistic } from './StatisticsView.style';
@@ -17,7 +18,9 @@ type Props = {
 const StatisticsView: React.FC<Props> = (props: Props): JSX.Element => {
   const { assets, stats } = props;
 
-  const busdToken = Object.keys(assets).find(item => item.startsWith('BUSD'));
+  const busdToken = Object.keys(assets).find(
+    item => getTickerFormat(item) === 'busd',
+  );
   const busdPrice = busdToken ? assets[busdToken]?.priceRune : 'RUNE';
 
   const getUSDValue = useCallback(
