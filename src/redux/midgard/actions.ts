@@ -9,6 +9,7 @@ import {
   GetTxByAddressPayload,
   GetTxByAssetPayload,
   GetPoolDataPayload,
+  GetRTVolumeByAssetPayload,
   ThorchainData,
 } from './types';
 import {
@@ -18,6 +19,7 @@ import {
   StakersAssetData,
   ThorchainEndpoints,
   InlineResponse2001,
+  TotalVolChanges,
 } from '../../types/generated/midgard';
 
 export type SetAssetsPayload = {
@@ -143,6 +145,15 @@ export const getStatsSuccess = (payload: StatsData) =>
 export const getStatsFailed = (payload: Error) =>
   ({ type: 'GET_STATS_FAILED', payload } as const);
 
+export const getRTVolumeByAsset = (payload: GetRTVolumeByAssetPayload) =>
+  ({ type: 'GET_RT_VOLUME_BY_ASSET', payload } as const);
+
+export const getRTVolumeByAssetSuccess = (payload: Array<TotalVolChanges>) =>
+  ({ type: 'GET_RT_VOLUME_BY_ASSET_SUCCESS', payload } as const);
+
+export const getRTVolumeByAssetFailed = (payload: Error) =>
+  ({ type: 'GET_RT_VOLUME_BY_ASSET_FAILED', payload } as const);
+
 export type MidgardActionTypes = ReturnType<
   | typeof getPools
   | typeof getPoolsSuccess
@@ -182,4 +193,7 @@ export type MidgardActionTypes = ReturnType<
   | typeof getStats
   | typeof getStatsSuccess
   | typeof getStatsFailed
+  | typeof getRTVolumeByAsset
+  | typeof getRTVolumeByAssetSuccess
+  | typeof getRTVolumeByAssetFailed
 >;
