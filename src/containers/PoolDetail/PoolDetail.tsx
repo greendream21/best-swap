@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import React, { useEffect, useCallback } from 'react';
 import * as H from 'history';
 import moment from 'moment';
@@ -46,7 +47,7 @@ type Props = {
   poolData: PoolDataMap;
   assets: AssetDetailMap;
   priceIndex: PriceDataIndex;
-  getTransactions: typeof midgardActions.getTransaction;
+  getTxByAsset: typeof midgardActions.getTxByAsset;
 };
 
 const generateRandomTimeSeries = (
@@ -74,7 +75,7 @@ const chartData = {
 };
 
 const PoolDetail: React.FC<Props> = (props: Props) => {
-  const { assets, poolData, txData, priceIndex, getTransactions } = props;
+  const { assets, poolData, txData, priceIndex, getTxByAsset } = props;
 
   const { symbol = '' } = useParams();
   const tokenSymbol = symbol.toUpperCase();
@@ -85,15 +86,15 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
   const theme = isLight ? themes.light : themes.dark;
 
   const getTransactionInfo = useCallback(
-    (offset: number, limit: number) => {
-      getTransactions({ offset, limit });
+    (asset: string, offset: number, limit: number) => {
+      getTxByAsset({ asset, offset, limit });
     },
-    [getTransactions],
+    [getTxByAsset],
   );
 
   useEffect(() => {
-    getTransactionInfo(0, 10);
-  }, [getTransactionInfo]);
+    getTransactionInfo(tokenSymbol, 0, 10);
+  }, [getTransactionInfo, tokenSymbol]);
 
   const renderDetailCaption = (poolStats: PoolData, viewMode: string) => {
     const swapUrl = `/swap/${RUNE_SYMBOL}:${poolStats.values.symbol}`;
@@ -179,16 +180,15 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
       <Row className="detail-transaction-view">
         <TransactionWrapper>
           <Label size="big" color="primary">
-            Transactions
+            Transactions ({txData._tag === 'RemoteSuccess' ? txData.value.count : 0})
           </Label>
           <TxTable txData={txData} />
           <StyledPagination
             defaultCurrent={0}
-            // eslint-disable-next-line no-underscore-dangle
             total={txData._tag === 'RemoteSuccess' ? txData.value.count : 0}
             showSizeChanger={false}
             onChange={page => {
-              getTransactionInfo((page - 1) * 10, 10);
+              getTransactionInfo(tokenSymbol, (page - 1) * 10, 10);
             }}
           />
         </TransactionWrapper>
@@ -206,7 +206,7 @@ export default compose(
       txData: state.Midgard.txData,
     }),
     {
-      getTransactions: midgardActions.getTransaction,
+      getTxByAsset: midgardActions.getTxByAsset,
     },
   ),
   withRouter,
