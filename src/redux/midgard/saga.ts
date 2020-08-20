@@ -198,12 +198,11 @@ export function* getStats() {
 //   throw new Error('Midgard API request failed to get pool data');
 // }
 
-function* tryGetPoolDataFromAsset(asset: string) {
+function* tryGetPoolDataFromAsset(asset: string, view: 'balances' | 'simple' | 'full') {
   try {
     const basePath: string = yield call(getApiBasePath, getNet());
     const midgardApi = api.getMidgardDefaultApi(basePath);
     const fn = midgardApi.getPoolsDetails;
-    const view = 'full';
 
     const { data }: UnpackPromiseResponse<typeof fn> = yield call(
       { context: midgardApi, fn },
@@ -225,7 +224,7 @@ export function* getPoolData() {
     try {
       const poolDetailsRespones: Array<PoolDetail[]> = yield all(
         assets.map((asset: string) => {
-          return call(tryGetPoolDataFromAsset, asset);
+          return call(tryGetPoolDataFromAsset, asset, 'simple');
         }),
       );
 
@@ -245,6 +244,20 @@ export function* getPoolData() {
       yield put(actions.getPoolDataFailed(error));
     }
   });
+}
+
+export function* getPoolDetailByAsset() {
+    yield takeEvery('GET_POOL_DETAIL_BY_ASSET', function*({
+      payload,
+    }: ReturnType<typeof actions.getPoolDetailByAsset>) {
+      const { asset } = payload;
+      try {
+        const data = yield call(tryGetPoolDataFromAsset, asset, 'full');
+        yield put(actions.getPoolDetailByAssetSuccess(data));
+      } catch (error) {
+        yield put(actions.getPoolDetailByAssetFailed(error));
+      }
+    });
 }
 
 function* tryGetStakerPoolData(payload: GetStakerPoolDataPayload) {
@@ -634,5 +647,6 @@ export default function* rootSaga() {
     fork(getTxByAddressAsset),
     fork(getTxByAsset),
     fork(getRTVolumeByAsset),
+    fork(getPoolDetailByAsset),
   ]);
 }
