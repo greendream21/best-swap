@@ -460,7 +460,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                     <br />
                     <Text type="danger" style={{ paddingTop: '10px' }}>
                       You have {formatBnbAmount(bnbAmount)} in your wallet,
-                      that&lsquo;s not enought to cover the fee for this
+                      that&lsquo;s not enough to cover the fee for this
                       transaction.
                     </Text>
                   </>
