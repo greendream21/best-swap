@@ -1,6 +1,7 @@
 import React, { Dispatch, SetStateAction } from 'react';
 import moment from 'moment';
 import BigNumber from 'bignumber.js';
+import { defaults } from 'react-chartjs-2';
 import Loader from '../utility/loaders/chart';
 
 import {
@@ -86,6 +87,10 @@ const renderHeader = (type: string, time: string, onTypeChange: Dispatch<SetStat
     </HeaderContainer>
   );
 };
+
+defaults.global.defaultFontFamily = '\'Exo 2\'';
+defaults.global.defaultFontSize = 14;
+defaults.global.defaultFontStyle = 'normal';
 
 const renderChart = (
   chartData: ChartInfo,
@@ -241,6 +246,7 @@ const renderChart = (
       ],
     },
   };
+
   return (
     <LineChartContainer>
       {chartData?.loading && <Loader />}

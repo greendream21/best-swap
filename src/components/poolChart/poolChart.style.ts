@@ -90,4 +90,5 @@ export const LineChartContainer = styled.div`
 
 export const LineChart = styled(Line)`
   width: 100%;
+  font-family: 'Exo 2';  
 `;
