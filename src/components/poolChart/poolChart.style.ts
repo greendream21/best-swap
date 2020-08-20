@@ -8,6 +8,11 @@ type HeaderToggleProps = {
   primary?: boolean
 }
 
+type ChartContainerProps = {
+  gradientStart?: string,
+  gradientStop?: string,
+}
+
 export const ChartContainer = styled.div`
   background: ${palette('background', 0)};
   padding: 5px;
@@ -20,6 +25,8 @@ export const ChartContainer = styled.div`
     width: calc(100% - 16px);
     height: 362px;
   `}
+  background-image: ${(props: ChartContainerProps) =>
+    `linear-gradient(to bottom, ${props.gradientStart}, ${props.gradientStop})`};
 `;
 
 export const ChartHeaderType = styled.div`
@@ -72,14 +79,15 @@ export const HeaderToggle = styled.span`
 
 export const LineChartContainer = styled.div`
   margin-top: 10px;
+  position: relative;
   width: calc(100% - 10px);
   height: calc(100% - 40px);
-  .chartjs-render-monitor{
-    height: 100% !important;
-  }
+  min-height: 200px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
 `;
 
 export const LineChart = styled(Line)`
   width: 100%;
-  height: 100%;
 `;

@@ -30,6 +30,8 @@ type Props = {
   lineColor: string,
   gradientStart: string,
   gradientStop: string,
+  backgroundGradientStart: string,
+  backgroundGradientStop: string,
   viewMode: string,
 };
 
@@ -101,18 +103,22 @@ const renderChart = (
     return moment.unix(data.time).isBetween(startDate, moment());
   });
 
-  const labels: Array<string> = filteredByTime.map(data => {
+  const filteredLabels: Array<string> = filteredByTime.map(data => {
     return moment.unix(data.time).format('MMM DD');
   });
 
-  const values: Array<BigNumber> = filteredByTime.map(data => data.value);
+  const filteredValues: Array<BigNumber> = filteredByTime.map(data => data.value);
+  const labels: Array<string> =
+    filteredLabels.slice(filteredLabels.length <= 5 ? 0 : filteredLabels.length - (Math.floor(filteredLabels.length / 5)) * 5 - 1);
+  const values: Array<BigNumber> =
+    filteredValues.slice(filteredValues.length <= 5 ? 0 : filteredValues.length - (Math.floor(filteredValues.length / 5)) * 5 - 1);
 
   const data = (canvas: HTMLCanvasElement) => {
     const ctx = canvas.getContext('2d');
     let gradientStroke: CanvasGradient;
 
     if (ctx) {
-      gradientStroke = ctx.createLinearGradient(0, 100, 0, 500);
+      gradientStroke = ctx.createLinearGradient(0, 100, 0, 300);
       gradientStroke.addColorStop(0, gradientStart);
       gradientStroke.addColorStop(1, gradientStop);
       return {
@@ -120,7 +126,7 @@ const renderChart = (
         datasets: [
           {
             fill: true,
-            lineTension: 0.1,
+            lineTension: 0.5,
             backgroundColor: gradientStroke,
             borderColor: lineColor,
             borderCapStyle: 'butt',
@@ -148,7 +154,7 @@ const renderChart = (
       datasets: [
         {
           fill: false,
-          lineTension: 0.1,
+          lineTension: 0.2,
           borderColor: '#436eb9',
           borderCapStyle: 'butt',
           borderDash: [],
@@ -171,11 +177,23 @@ const renderChart = (
   };
 
   const options = {
+    maintainAspectRatio: false,
     title: {
       display: false,
     },
     legend: {
       display: false,
+    },
+    layout: {
+      padding: {
+        left: '10px',
+        right: '10px',
+        top: '10px',
+        bottom: '10px',
+      },
+    },
+    animation: {
+      duration: 700,
     },
     scales: {
       xAxes: [
@@ -184,29 +202,36 @@ const renderChart = (
             display: false,
           },
           ticks: {
-            autoSkip: true,
-            fontSize: viewMode === 'desktop-view' ? '15' : '10',
+            fontSize: '14',
             fontColor: textColor,
             maxTicksLimit: viewMode === 'desktop-view' ? 5 : 3,
+            autoSkipPadding: 5,
             maxRotation: 0,
+            callback(value: string) {
+              if (Number(value) === 0) {
+                return '0';
+              }
+              return value;
+            },
           },
         },
       ],
       yAxes: [
         {
           type: 'linear',
-          position: 'left',
           stacked: true,
           id: 'value',
-          scalePositionLeft: false,
           ticks: {
             autoSkip: true,
-            maxTicksLimit: viewMode === 'desktop-view' ? 5 : 3,
+            maxTicksLimit: viewMode === 'desktop-view' ? 4 : 3,
             callback(value: string) {
+              if (Number(value) === 0) {
+                return '$0';
+              }
               return `$${value}M`;
             },
-            padding: viewMode === 'desktop-view' ? 20 : 0,
-            fontSize: viewMode === 'desktop-view' ? '18' : '10',
+            padding: 10,
+            fontSize: '14',
             fontColor: textColor,
           },
           gridLines: {
@@ -225,12 +250,11 @@ const renderChart = (
 };
 
 const PoolChart: React.FC<Props> = (props: Props): JSX.Element => {
-  const { chartData, textColor, lineColor, gradientStart, gradientStop, viewMode } = props;
+  const { chartData, textColor, lineColor, gradientStart, gradientStop, backgroundGradientStart, backgroundGradientStop, viewMode } = props;
   const [chartType, setChartType] = React.useState('LIQUIDITY');
   const [chartTime, setChartTime] = React.useState('ALL');
-
   return (
-    <ChartContainer>
+    <ChartContainer gradientStart={backgroundGradientStart} gradientStop={backgroundGradientStop}>
       {renderHeader(chartType, chartTime, setChartType, setChartTime)}
       {renderChart(chartData, chartType, chartTime, textColor, lineColor, gradientStart, gradientStop, viewMode)}
     </ChartContainer>
