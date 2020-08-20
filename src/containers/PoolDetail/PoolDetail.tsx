@@ -200,6 +200,8 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
             chartData={chartData}
             textColor={theme.palette.text[0]}
             lineColor={isLight ? '#436eb9' : '#1dd3e6'}
+            backgroundGradientStart={isLight ? '#e4ebf8' : '#365979'}
+            backgroundGradientStop={isLight ? '#ffffff' : '#0f1922'}
             gradientStart={isLight ? '#c5d3f0' : '#365979'}
             gradientStop={isLight ? '#ffffff' : '#0f1922'}
             viewMode="desktop-view"
@@ -219,6 +221,8 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
             chartData={chartData}
             textColor={theme.palette.text[0]}
             lineColor={isLight ? '#436eb9' : '#1dd3e6'}
+            backgroundGradientStart={isLight ? '#e4ebf8' : '#365979'}
+            backgroundGradientStop={isLight ? '#ffffff' : '#0f1922'}
             gradientStart={isLight ? '#c5d3f0' : '#365979'}
             gradientStop={isLight ? '#ffffff' : '#0f1922'}
             viewMode="mobile-view"
