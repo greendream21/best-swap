@@ -66,7 +66,7 @@ export const TimeContainer = styled.div`
 
 export const HeaderToggle = styled.span`
   color: ${palette('text', 0)};
-  font-size: 12px;
+  font-size: 14px !important;
   font-weight: ${(props: HeaderToggleProps) => props.primary ? '600' : 'normal'};
   cursor: pointer;
   ${media.sm`
