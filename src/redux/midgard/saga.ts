@@ -203,7 +203,7 @@ function* tryGetPoolDataFromAsset(asset: string) {
     const basePath: string = yield call(getApiBasePath, getNet());
     const midgardApi = api.getMidgardDefaultApi(basePath);
     const fn = midgardApi.getPoolsDetails;
-    const view = 'simple';
+    const view = 'full';
 
     const { data }: UnpackPromiseResponse<typeof fn> = yield call(
       { context: midgardApi, fn },

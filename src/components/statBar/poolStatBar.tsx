@@ -30,12 +30,12 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
 
   const liqFee = `${stats?.values?.liqFee || '0'}`;
   const volume = `${stats?.volumeAT?.amount() || '0'}`;
-  const transaction = `${stats?.transaction?.amount() || '0'}`;
-  const buyTx = `${poolInfo?.buyTxAverage || '0'}`;
-  const sellTx = `${poolInfo?.sellTxAverage || '0'}`;
-  const earned = `${Number(poolInfo?.sellVolume) -
-    Number(poolInfo?.buyVolume) || '0'}`;
-  const users = `${poolInfo?.swappersCount || '0'}`;
+  const transaction = `${(Number(poolInfo?.swappingTxCount) || 0) + (Number(poolInfo?.stakingTxCount) || 0)}`;
+  const buyTx = `${poolInfo?.buyAssetCount || '0'}`;
+  const sellTx = `${poolInfo?.sellAssetCount || '0'}`;
+  const earned = `${Number(poolInfo?.buyVolume) -
+    Number(poolInfo?.sellVolume) || '0'}`;
+  const users = `${stats?.totalStakers || '0'}`;
 
   return (
     <>
@@ -82,7 +82,7 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
         >
           <StyledStatistic
             title="Total Transactions"
-            value={getUSDValue(transaction) ?? '0'}
+            value={transaction ?? '0'}
           />
         </Col>
       </Row>
@@ -124,8 +124,7 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
         >
           <StyledStatistic
             title="Buy Tx"
-            value={getUSDValue(buyTx) ?? '0'}
-            prefix="$"
+            value={buyTx ?? '0'}
           />
         </Col>
         <Col
@@ -137,8 +136,7 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
         >
           <StyledStatistic
             title="Sell Tx"
-            value={getUSDValue(sellTx) ?? '0'}
-            prefix="$"
+            value={sellTx ?? '0'}
           />
         </Col>
       </Row>
