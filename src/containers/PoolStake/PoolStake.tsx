@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import * as H from 'history';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
@@ -29,7 +29,6 @@ import {
   formatBaseAsTokenAmount,
   baseAmount,
   baseToToken,
-  tokenToBase,
 } from '@thorchain/asgardex-token';
 import Text from 'antd/lib/typography/Text';
 
@@ -82,13 +81,14 @@ import { getAssetFromString } from '../../redux/midgard/utils';
 import { BINANCE_NET } from '../../env';
 import { TransferFeesRD, TransferFees } from '../../redux/binance/types';
 import {
-  getAssetDataFromBalance,
   bnbBaseAmount,
 } from '../../helpers/walletHelper';
 import { ShareDetailTabKeys, WithdrawData } from './types';
 import showNotification from '../../components/uielements/notification';
 import { CONFIRM_DISMISS_TIME } from '../../settings/constants';
 import usePrevious from '../../hooks/usePrevious';
+import useFee from '../../hooks/useFee';
+
 import { RUNE_SYMBOL } from '../../settings/assetData';
 
 const { TabPane } = Tabs;
@@ -163,6 +163,24 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   const [openPrivateModal, setOpenPrivateModal] = useState(false);
 
   const [txType, setTxType] = useState<TxTypes>();
+
+  const feeType = useMemo(() => {
+    if (
+      selectedShareDetailTab === ShareDetailTabKeys.ADD &&
+      runeAmount.amount().isGreaterThan(0) &&
+      targetAmount.amount().isGreaterThan(0)
+    ) {
+      return 'multi';
+    }
+    return 'single';
+  }, [selectedShareDetailTab, runeAmount, targetAmount]);
+
+  const {
+    bnbFeeAmount,
+    hasSufficientBnbFeeInBalance,
+    hasSufficientBnbFee,
+    getThresholdAmount,
+  } = useFee(feeType);
 
   // TODO: Create custom usePrice hooks
   const runePrice = validBNOrZero(priceIndex[RUNE_SYMBOL]);
@@ -255,15 +273,8 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   const handleChangeTokenAmount = (assetSymbol: string, locked = false) => (
     value: BigNumber,
   ) => {
-    const sourceAsset = getAssetDataFromBalance(assetData, assetSymbol);
-    const targetAsset = getAssetDataFromBalance(assetData, tokenSymbol);
-
-    if (!sourceAsset || !targetAsset) {
-      return;
-    }
-
-    const totalSourceAmount = sourceAsset.assetValue.amount();
-    const totalTokenAmount = targetAsset.assetValue.amount();
+    const totalSourceAmount = getThresholdAmount(assetSymbol).amount();
+    const totalTokenAmount = getThresholdAmount(tokenSymbol).amount();
     const valueAsToken = tokenAmount(value);
 
     if (!selectRatio && !locked) {
@@ -283,6 +294,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       }
       return;
     }
+
     if (assetSymbol === RUNE_SYMBOL) {
       const data = getData();
       const ratio = data?.ratio ?? 1;
@@ -325,14 +337,9 @@ const PoolStake: React.FC<Props> = (props: Props) => {
    * which triggers `handleChangeTokenAmount` where all calculations for fees are happen
    */
   const handleChangePercent = (tokenSymbol: string) => (amount: number) => {
-    const selectedToken = getAssetDataFromBalance(assetData, tokenSymbol);
-    const targetToken = getAssetDataFromBalance(assetData, symbol);
-    if (!selectedToken || !targetToken) {
-      return;
-    }
+    const totalAmount = getThresholdAmount(tokenSymbol).amount();
+    const totalTokenAmount = getThresholdAmount(symbol).amount();
 
-    const totalAmount = selectedToken.assetValue.amount();
-    const totalTokenAmount = targetToken.assetValue.amount();
     const value = totalAmount.multipliedBy(amount).div(100);
 
     if (tokenSymbol === RUNE_SYMBOL) {
@@ -416,71 +423,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   );
 
   /**
-   * BNB fee in BaseAmount
-   * Returns Nothing if fee is not available
-   */
-  const bnbFeeAmount = (): Maybe<BaseAmount> => {
-    const fees = RD.toNullable(transferFees);
-    // To withdraw we will always have a `single` transaction fee
-    if (selectedShareDetailTab === ShareDetailTabKeys.WITHDRAW) {
-      return fees?.single ?? Nothing;
-    }
-
-    // For staking, check whether it's a `single` or `multi` fee depending on entered values
-    return runeAmount.amount().isGreaterThan(0) &&
-      targetAmount.amount().isGreaterThan(0)
-      ? fees?.multi ?? Nothing
-      : fees?.single ?? Nothing;
-  };
-
-  /**
-   * Check whether to substract BNB fee from entered BNB amount
-   */
-  const subtractBnbFee = (): boolean => {
-    // Ignore withdrawing, since we deal with percent values only and can't substract fees from these values
-    if (
-      symbol.toUpperCase() === 'BNB' &&
-      selectedShareDetailTab !== ShareDetailTabKeys.WITHDRAW
-    ) {
-      // (1) BNB amount in wallet
-      const bnbInWallet = bnbBaseAmount(assetData) || baseAmount(0);
-      // (2) BNB amount entered in token input
-      const bnbEntered = tokenToBase(targetAmount);
-      // difference (1) - (2) as BigNumber
-      const bnbDiff = bnbInWallet.amount().minus(bnbEntered.amount());
-      const fee = bnbFeeAmount();
-      return (
-        !!fee && bnbDiff.isGreaterThan(0) && bnbDiff.isLessThan(fee.amount())
-      );
-    }
-    return false;
-  };
-
-  /**
-   * Check to consider BNB fee
-   */
-  const considerBnbFee = (): boolean => {
-    // For withdrawing, we always consider a bnb fee
-    if (selectedShareDetailTab === ShareDetailTabKeys.WITHDRAW) {
-      return symbol.toUpperCase() === 'BNB';
-    }
-
-    // For staking, an amount of BNB needs to be entered as well
-    return (
-      symbol.toUpperCase() === 'BNB' && targetAmount.amount().isGreaterThan(0)
-    );
-  };
-
-  /**
-   * Checks whether fee is covered by amounts of BNB in users wallet
-   */
-  const bnbFeeIsNotCovered = (): boolean => {
-    const bnbAmount = bnbBaseAmount(assetData);
-    const fee = bnbFeeAmount();
-    return !!bnbAmount && !!fee && bnbAmount.amount().isLessThan(fee.amount());
-  };
-
-  /**
    * Renders fee
    */
   const renderFee = () => {
@@ -494,6 +436,10 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     };
 
     const txtLoading = <Text>Fee: ...</Text>;
+    const isStakingBNB =
+      selectedShareDetailTab === ShareDetailTabKeys.ADD &&
+      targetAmount.amount().isGreaterThan(0);
+
     return (
       <FeeParagraph style={{ paddingTop: '10px' }}>
         {RD.fold(
@@ -501,14 +447,15 @@ const PoolStake: React.FC<Props> = (props: Props) => {
           () => txtLoading,
           (_: Error) => <Text>Error: Fee could not be loaded</Text>,
           (_: TransferFees) => {
-            const fee = bnbFeeAmount();
             return (
               <>
-                {fee && <Text>Fee: {formatBnbAmount(fee)}</Text>}
-                {subtractBnbFee() && (
+                {bnbFeeAmount && (
+                  <Text>Fee: {formatBnbAmount(bnbFeeAmount)}</Text>
+                )}
+                {isStakingBNB && (
                   <Text> (It will be substructed from BNB amount)</Text>
                 )}
-                {bnbAmount && bnbFeeIsNotCovered() && (
+                {bnbAmount && !hasSufficientBnbFeeInBalance && (
                   <>
                     <br />
                     <Text type="danger" style={{ paddingTop: '10px' }}>
@@ -529,16 +476,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   const handleConfirmStake = async () => {
     if (user) {
       const { wallet } = user;
-      let newTokenAmountToStake = targetAmount;
-      // fee transformation: BaseAmount -> TokenAmount -> BigNumber
-      const fee = bnbFeeAmount() || baseAmount(0);
-      const feeAsTokenAmount = baseToToken(fee).amount();
-      // Special case: Substract fee from BNB amount to cover fees
-      if (subtractBnbFee()) {
-        const amountToStake = targetAmount.amount().minus(feeAsTokenAmount);
-        newTokenAmountToStake = tokenAmount(amountToStake);
-      }
-
       handleStartTimer(TxTypes.STAKE);
       setTxResult({
         status: false,
@@ -552,7 +489,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
           bncClient,
           wallet,
           runeAmount,
-          tokenAmount: newTokenAmountToStake,
+          tokenAmount: targetAmount,
           poolAddress: data.poolAddress,
           symbolTo: data.symbolTo,
         });
@@ -602,21 +539,19 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       return;
     }
 
-    // Validate BNB amount to swap to consider fees
-    // to substract fee from amount before sending it
-    if (considerBnbFee()) {
-      const fee = bnbFeeAmount() || baseAmount(0);
-      // fee transformation: BaseAmount -> TokenAmount -> BigNumber
-      const feeAsTokenAmount = baseToToken(fee).amount();
-      if (targetAmount.amount().isLessThanOrEqualTo(feeAsTokenAmount)) {
-        showNotification({
-          type: 'error',
-          message: 'Invalid BNB value',
-          description: 'Not enough BNB to cover the fee for this transaction.',
-        });
-        setDragReset(true);
-        return;
-      }
+    // Validate BNB amount before stake
+    // if bnb amount is greater than 0 but doesn't have sufficient fee, cancel the stake
+    if (
+      targetAmount.amount().isGreaterThan(0) &&
+      !hasSufficientBnbFee(targetAmount, symbol)
+    ) {
+      showNotification({
+        type: 'error',
+        message: 'Invalid BNB amount',
+        description: 'Not enough BNB to cover the fee for this transaction.',
+      });
+      setDragReset(true);
+      return;
     }
 
     // Validate keystore
@@ -758,7 +693,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       apr,
     } = poolDetail;
 
-
     const attrs = [
       {
         key: 'depth',
@@ -861,7 +795,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       .amount()
       .multipliedBy(tokenPrice);
 
-    const disableDrag = bnbFeeIsNotCovered();
+    const disableDrag = !hasSufficientBnbFeeInBalance;
 
     // unstake cooldown
     const heightLastStaked = bnOrZero(stakersAssetData?.heightLastStaked);
@@ -1223,7 +1157,12 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   const poolInfo = poolData[tokenSymbol] || {};
   const assetDetail = assets?.[tokenSymbol] ?? {};
 
-  const poolDetail = getPoolData(tokenSymbol, poolInfo, assetDetail, priceIndex);
+  const poolDetail = getPoolData(
+    tokenSymbol,
+    poolInfo,
+    assetDetail,
+    priceIndex,
+  );
   const calcResult = getData();
 
   const yourShareSpan = hasWallet ? 8 : 24;

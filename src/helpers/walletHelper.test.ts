@@ -3,6 +3,7 @@ import {
   tokenAmount,
   formatTokenAmount,
   formatBaseAsTokenAmount,
+  baseAmount,
 } from '@thorchain/asgardex-token';
 import { getAssetDataFromBalance, bnbBaseAmount } from './walletHelper';
 import { AssetData } from '../redux/wallet/types';
@@ -49,9 +50,10 @@ describe('walletHelper', () => {
       const expected = formatTokenAmount(tokenAmount(1));
       expect(result).toEqual(expected);
     });
-    it('returns Nothing if BNB is not avaiable in list of assets', () => {
+    it('returns baseAmount 0 if BNB is not avaiable in list of assets', () => {
       const result = bnbBaseAmount([tusdb, lok]);
-      expect(result).toBeNothing();
+      const expected = baseAmount(0);
+      expect(result.amount()).toEqual(expected.amount());
     });
   });
 });
