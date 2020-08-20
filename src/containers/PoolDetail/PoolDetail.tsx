@@ -47,13 +47,15 @@ import TxTable from '../../components/transaction/txTable';
 type Props = {
   history: H.History;
   txData: TxDetailData;
-  poolData: PoolDataMap;
+  poolDetailedData: PoolDataMap;
+  poolDetailedDataLoading: boolean;
   assets: AssetDetailMap;
   priceIndex: PriceDataIndex;
   rtVolumeLoading: boolean;
   rtVolume: RTVolumeData;
   getRTVolume: typeof midgardActions.getRTVolumeByAsset;
   getTxByAsset: typeof midgardActions.getTxByAsset;
+  getPoolDetailByAsset: typeof midgardActions.getPoolDetailByAsset;
 };
 
 const generateRandomTimeSeries = (
@@ -80,13 +82,15 @@ const generateRandomTimeSeries = (
 const PoolDetail: React.FC<Props> = (props: Props) => {
   const {
     assets,
-    poolData,
+    poolDetailedData,
+    poolDetailedDataLoading,
     txData,
     priceIndex,
     rtVolumeLoading,
     rtVolume,
     getRTVolume,
     getTxByAsset,
+    getPoolDetailByAsset,
   } = props;
 
   const { symbol = '' } = useParams();
@@ -122,6 +126,17 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
     },
     [getTxByAsset],
   );
+
+  const getPoolDetailInfo = useCallback(
+    (asset: string) => {
+      getPoolDetailByAsset({ asset });
+    },
+    [getPoolDetailByAsset],
+  );
+
+  useEffect(() => {
+    getPoolDetailInfo(tokenSymbol);
+  }, [getPoolDetailInfo, tokenSymbol]);
 
   useEffect(() => {
     getTransactionInfo(tokenSymbol, 0, 10);
@@ -177,7 +192,7 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
     );
   };
 
-  const poolInfo = poolData[tokenSymbol] || {};
+  const poolInfo = poolDetailedData[tokenSymbol] || {};
   const assetDetail = assets?.[tokenSymbol];
   const poolStats = getPoolData(tokenSymbol, poolInfo, assetDetail, priceIndex);
 
@@ -193,6 +208,7 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
             stats={poolStats}
             poolInfo={poolInfo}
             basePrice={busdPrice}
+            loading={poolDetailedDataLoading}
           />
         </Col>
         <Col span={16}>
@@ -253,7 +269,8 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
 export default compose(
   connect(
     (state: RootState) => ({
-      poolData: state.Midgard.poolData,
+      poolDetailedData: state.Midgard.poolDetailedData,
+      poolDetailedDataLoading: state.Midgard.poolDetailedDataLoading,
       assets: state.Midgard.assets,
       priceIndex: state.Midgard.priceIndex,
       txData: state.Midgard.txData,
@@ -263,6 +280,7 @@ export default compose(
     {
       getRTVolume: midgardActions.getRTVolumeByAsset,
       getTxByAsset: midgardActions.getTxByAsset,
+      getPoolDetailByAsset: midgardActions.getPoolDetailByAsset,
     },
   ),
   withRouter,

@@ -89,6 +89,10 @@ export type GetRTVolumeByAssetPayload = {
   type?: string;
 };
 
+export type GetPoolDetailByAssetPayload = {
+  asset: string;
+}
+
 export type RTVolumeData = Array<TotalVolChanges>;
 
 export type TxDetailData = RemoteData<Error, InlineResponse2001>;
@@ -110,6 +114,7 @@ export type State = {
   poolAddress: Maybe<string>;
   poolAddressLoading: boolean;
   poolData: PoolDataMap;
+  poolDetailedData: PoolDataMap;
   stakerPoolData: Maybe<StakerPoolData>;
   stakerPoolDataLoading: boolean;
   stakerPoolDataError: Maybe<Error>;
@@ -120,6 +125,7 @@ export type State = {
   poolLoading: boolean;
   assetLoading: boolean;
   poolDataLoading: boolean;
+  poolDetailedDataLoading: boolean;
   statsLoading: boolean;
   txData: TxDetailData;
   rtVolumeLoading: boolean;
