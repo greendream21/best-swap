@@ -9,6 +9,8 @@ import {
   GetTxByAddressPayload,
   GetTxByAssetPayload,
   GetPoolDataPayload,
+  GetRTVolumeByAssetPayload,
+  GetPoolDetailByAssetPayload,
   ThorchainData,
 } from './types';
 import {
@@ -18,6 +20,7 @@ import {
   StakersAssetData,
   ThorchainEndpoints,
   InlineResponse2001,
+  TotalVolChanges,
 } from '../../types/generated/midgard';
 
 export type SetAssetsPayload = {
@@ -47,6 +50,15 @@ export const getPoolDataSuccess = (payload: GetPoolDataSuccessPayload) =>
 
 export const getPoolDataFailed = (payload: Error) =>
   ({ type: 'GET_POOL_DATA_FAILED', payload } as const);
+
+export const getPoolDetailByAsset = (payload: GetPoolDetailByAssetPayload) =>
+  ({ type: 'GET_POOL_DETAIL_BY_ASSET', payload } as const);
+
+export const getPoolDetailByAssetSuccess = (payload: PoolDetail[]) =>
+  ({ type: 'GET_POOL_DETAIL_BY_ASSET_SUCCESS', payload } as const);
+
+export const getPoolDetailByAssetFailed = (payload: Error) =>
+  ({ type: 'GET_POOL_DETAIL_BY_ASSET_FAILED', payload } as const);
 
 export const getStakerPoolData = (payload: GetStakerPoolDataPayload) =>
   ({ type: 'GET_STAKER_POOL_DATA_REQUEST', payload } as const);
@@ -143,6 +155,15 @@ export const getStatsSuccess = (payload: StatsData) =>
 export const getStatsFailed = (payload: Error) =>
   ({ type: 'GET_STATS_FAILED', payload } as const);
 
+export const getRTVolumeByAsset = (payload: GetRTVolumeByAssetPayload) =>
+  ({ type: 'GET_RT_VOLUME_BY_ASSET', payload } as const);
+
+export const getRTVolumeByAssetSuccess = (payload: Array<TotalVolChanges>) =>
+  ({ type: 'GET_RT_VOLUME_BY_ASSET_SUCCESS', payload } as const);
+
+export const getRTVolumeByAssetFailed = (payload: Error) =>
+  ({ type: 'GET_RT_VOLUME_BY_ASSET_FAILED', payload } as const);
+
 export type MidgardActionTypes = ReturnType<
   | typeof getPools
   | typeof getPoolsSuccess
@@ -182,4 +203,10 @@ export type MidgardActionTypes = ReturnType<
   | typeof getStats
   | typeof getStatsSuccess
   | typeof getStatsFailed
+  | typeof getRTVolumeByAsset
+  | typeof getRTVolumeByAssetSuccess
+  | typeof getRTVolumeByAssetFailed
+  | typeof getPoolDetailByAsset
+  | typeof getPoolDetailByAssetSuccess
+  | typeof getPoolDetailByAssetFailed
 >;

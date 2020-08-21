@@ -32,6 +32,11 @@ const routes: AppRoute[] = [
   },
   {
     path: 'pool/:symbol',
+    component: asyncComponent(() => import('../PoolDetail')),
+    exact: true,
+  },
+  {
+    path: 'stake/:symbol',
     component: asyncComponent(() => import('../PoolStake')),
     exact: true,
   },

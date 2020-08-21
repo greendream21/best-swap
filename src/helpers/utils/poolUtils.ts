@@ -197,7 +197,6 @@ export const getPoolData = (
   const apy = poolGenesis
     ? Number(((roiATResult / pastDays) * 365 * 100).toFixed(2))
     : 0;
-  console.log(poolGenesis, pastDays, apy);
 
   const poolROI12Data = poolDetail?.poolROI12 ?? 0;
   const poolROI12 = bn(poolROI12Data).multipliedBy(100);

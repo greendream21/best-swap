@@ -1,11 +1,16 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import * as H from 'history';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter, useHistory, useParams } from 'react-router-dom';
 import { SwapOutlined, LockOutlined, UnlockOutlined } from '@ant-design/icons';
 import { client as binanceClient } from '@thorchain/asgardex-binance';
-import { bnOrZero, isValidBN, bn, validBNOrZero } from '@thorchain/asgardex-util';
+import {
+  bnOrZero,
+  isValidBN,
+  bn,
+  validBNOrZero,
+} from '@thorchain/asgardex-util';
 
 import BigNumber from 'bignumber.js';
 import * as RD from '@devexperts/remote-data-ts';
@@ -15,8 +20,6 @@ import {
   tokenAmount,
   baseToToken,
   BaseAmount,
-  baseAmount,
-  tokenToBase,
 } from '@thorchain/asgardex-token';
 import Text from 'antd/lib/typography/Text';
 import Button from '../../components/uielements/button';
@@ -70,6 +73,7 @@ import {
 } from '../../helpers/walletHelper';
 import { RUNE_SYMBOL } from '../../settings/assetData';
 import usePrevious from '../../hooks/usePrevious';
+import useFee from '../../hooks/useFee';
 
 import { SwapSendView } from './types';
 import showNotification from '../../components/uielements/notification';
@@ -119,6 +123,14 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
 
   const runePrice = validBNOrZero(priceIndex[RUNE_SYMBOL]);
 
+  const {
+    hasSufficientRuneFee,
+    hasSufficientBnbFee,
+    hasSufficientBnbFeeInBalance,
+    getAmountAfterFee,
+    getThresholdAmount,
+  } = useFee();
+
   const history = useHistory();
   const maxSlip = 30;
 
@@ -144,27 +156,13 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [txStatus]);
 
-  /**
-   * calculate the amount to cover 1 RUNE network fee
-   */
-  const getRuneFeeAmount = (): BigNumber => {
-    if (!sourceSymbol) return bn(0);
-
-    const curTokenPrice = bn(priceIndex[sourceSymbol]);
-
-    return runePrice.dividedBy(curTokenPrice);
-  };
-
   const handleGetSwapData = (): Maybe<SwapData> => {
     if (!sourceSymbol || !targetSymbol) {
       return Nothing;
     }
 
     // calculate the input after 1 RUNE network fee
-    const runeFee = getRuneFeeAmount();
-    const inputValueAfterRune = xValue.amount().isGreaterThan(runeFee)
-      ? tokenAmount(xValue.amount().minus(runeFee))
-      : tokenAmount(0);
+    const inputValueAfterRune = getAmountAfterFee(xValue, sourceSymbol);
 
     return getSwapData(
       sourceSymbol,
@@ -190,83 +188,20 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   );
 
   /**
-   * BNB fee in BaseAmount
-   * Returns Nothing if fee is not available
-   */
-  const bnbFeeAmount = (): Maybe<BaseAmount> => {
-    const fees = RD.toNullable(transferFees);
-    return fees?.single;
-  };
-
-  /**
-   * Checks whether fee is covered by amounts of BNB in users wallet
-   */
-  const bnbFeeIsNotCovered = (): boolean => {
-    const bnbAmount = bnbBaseAmount(assetData);
-    const fee = bnbFeeAmount();
-    return !!bnbAmount && !!fee && bnbAmount.amount().isLessThan(fee.amount());
-  };
-
-  /**
-   * Check to ensure THORChain transactionFee (currently 1 RUNE)
-   * https://gitlab.com/thorchain/thornode/-/blob/master/constants/constants.go#L42
-   * @todo get current transactionFee from thornode constants endpoint eg :1317/thorchain/constants
-   */
-  const runeFeeIsNotCovered = (amount: BigNumber): boolean => {
-    if (!sourceSymbol) return true;
-
-    return bn(priceIndex[sourceSymbol])
-      .dividedBy(runePrice)
-      .multipliedBy(amount)
-      .isLessThanOrEqualTo(1);
-  };
-
-  /**
    * Check to consider special cases for BNB
    */
-  const considerBnb = (): boolean => {
+  const considerBnb = useMemo((): boolean => {
     return sourceSymbol?.toUpperCase() === 'BNB';
-  };
-
-  /**
-   * Check whether to substract BNB fee from entered BNB amount
-   */
-  const subtractBnbFee = (): boolean => {
-    if (considerBnb()) {
-      // (1) BNB amount in wallet
-      const bnbInWallet = bnbBaseAmount(assetData) || baseAmount(0);
-      // (2) BNB amount entered in input
-      const bnbEntered = tokenToBase(xValue);
-      // difference (1) - (2) as BigNumber
-      const bnbDiff = bnbInWallet.amount().minus(bnbEntered.amount());
-      const fee = bnbFeeAmount();
-      return (
-        !!fee && bnbDiff.isGreaterThan(0) && bnbDiff.isLessThan(fee.amount())
-      );
-    }
-
-    return false;
-  };
+  }, [sourceSymbol]);
 
   const handleChangePercent = (percent: number) => {
-    const sourceAsset = getAssetDataFromBalance(assetData, sourceSymbol);
+    const thresholdAmount = getThresholdAmount(sourceSymbol).amount();
 
-    let totalAmount = sourceAsset?.assetValue.amount() ?? bn(0);
-    // fee transformation: BaseAmount -> TokenAmount -> BigNumber
-    const fee = bnbFeeAmount() || baseAmount(0);
-    const feeAsToken = baseToToken(fee);
-    const feeAsTokenBN = feeAsToken.amount();
-    // substract fee  - for BNB source only
-    if (subtractBnbFee()) {
-      totalAmount = totalAmount.isGreaterThan(feeAsTokenBN)
-        ? totalAmount.minus(feeAsTokenBN)
-        : bn(0);
-    }
     // formula (totalAmount * percent) / 100
-    const newValue = totalAmount.multipliedBy(percent).div(100);
+    const newValue = thresholdAmount.multipliedBy(percent).div(100);
 
-    if (totalAmount.isLessThan(newValue)) {
-      setXValue(tokenAmount(totalAmount));
+    if (thresholdAmount.isLessThan(newValue)) {
+      setXValue(tokenAmount(thresholdAmount));
       setPercent(percent);
     } else {
       setXValue(tokenAmount(newValue));
@@ -284,11 +219,10 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
       return;
     }
 
-    const sourceAsset = getAssetDataFromBalance(assetData, sourceSymbol);
-    const totalAmount = sourceAsset?.assetValue.amount() ?? bn(0);
+    const thresholdAmount = getThresholdAmount(sourceSymbol).amount();
 
-    if (totalAmount.isLessThanOrEqualTo(newValue.amount())) {
-      setXValue(tokenAmount(totalAmount));
+    if (thresholdAmount.isLessThanOrEqualTo(newValue.amount())) {
+      setXValue(tokenAmount(thresholdAmount));
       setPercent(100);
     } else {
       setXValue(newValue);
@@ -296,7 +230,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
         newValue
           .amount()
           .multipliedBy(100)
-          .div(totalAmount)
+          .div(thresholdAmount)
           .toNumber(),
       );
     }
@@ -306,16 +240,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     const swapData = handleGetSwapData();
 
     if (user && sourceSymbol && targetSymbol && swapData) {
-      let tokenAmountToSwap = xValue;
-      const fee = bnbFeeAmount() || baseAmount(0);
-      // fee transformation: BaseAmount -> TokenAmount -> BigNumber
-      const feeAsTokenAmount = baseToToken(fee).amount();
-      // Special case: Substract fee from BNB amount before sending it
-      // Note: All validation for that already happened in `handleEndDrag`
-      if (considerBnb()) {
-        const amountToSwap = tokenAmountToSwap.amount().minus(feeAsTokenAmount);
-        tokenAmountToSwap = tokenAmount(amountToSwap);
-      }
+      const tokenAmountToSwap = xValue;
 
       setTxResult({ status: false });
 
@@ -425,31 +350,26 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
       return;
     }
 
-    // Validate RUNE value of swap to cover network transactionFee
-    if (runeFeeIsNotCovered(xValue.amount())) {
+    // Check if amount has sufficient RUNE to cover network transaction Fee
+    if (!hasSufficientRuneFee(xValue, sourceSymbol)) {
       showNotification({
         type: 'error',
         message: 'Invalid amount',
-        description: 'Swap value must exceed 1 RUNE to cover network fees.',
+        description: 'Swap value must exceed 1 RUNE to cover network fee.',
       });
       setDragReset(true);
       return;
     }
 
-    // Validate BNB amount to consider fees
-    if (considerBnb()) {
-      const fee = bnbFeeAmount() || baseAmount(0);
-      // fee transformation: BaseAmount -> TokenAmount -> BigNumber
-      const feeAsTokenAmount = baseToToken(fee).amount();
-      if (xValue.amount().isLessThanOrEqualTo(feeAsTokenAmount)) {
-        showNotification({
-          type: 'error',
-          message: 'Invalid BNB value',
-          description: 'Not enough BNB to cover the fee for this transaction.',
-        });
-        setDragReset(true);
-        return;
-      }
+    // Check if amount has sufficient BNB for binance tx fee
+    if (!hasSufficientBnbFee(xValue, sourceSymbol)) {
+      showNotification({
+        type: 'error',
+        message: 'Invalid BNB value',
+        description: 'Not enough BNB to cover the fee for transaction.',
+      });
+      setDragReset(true);
+      return;
     }
 
     // Validate address to send to
@@ -603,6 +523,9 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     };
 
     const txtLoading = <Text>Fee: ...</Text>;
+
+    const hasBnbFee = hasSufficientBnbFee(xValue, sourceSymbol);
+
     return (
       <FeeParagraph>
         {RD.fold(
@@ -612,18 +535,18 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
           (fees: TransferFees) => (
             <>
               <Text>Fee: {formatBnbAmount(fees.single)}</Text>
-              {subtractBnbFee() && (
+              {considerBnb && hasBnbFee && (
                 <Text>
                   {' '}
                   (It will be substructed from your entered BNB value)
                 </Text>
               )}
-              {bnbAmount && bnbFeeIsNotCovered() && (
+              {bnbAmount && !hasSufficientBnbFeeInBalance && (
                 <>
                   <br />
                   <Text type="danger" style={{ paddingTop: '10px' }}>
                     You have {formatBnbAmount(bnbAmount)} in your wallet,
-                    that&lsquo;s not enought to cover the fee for this
+                    that&lsquo;s not enough to cover the fee for this
                     transaction.
                   </Text>
                 </>
@@ -700,7 +623,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     3,
   )} ${swapTarget.toUpperCase()}`;
 
-  const disableDrag = bnbFeeIsNotCovered();
+  const disableDrag = !hasSufficientBnbFeeInBalance;
 
   const slipValue = slip
     ? `SLIP ${slip.toFormat(2, BigNumber.ROUND_DOWN)}%`

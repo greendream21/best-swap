@@ -25,6 +25,7 @@ const initState: State = {
   poolAddress: Nothing,
   poolAddressLoading: false,
   poolData: {},
+  poolDetailedData: {},
   stats: {
     dailyActiveUsers: '0',
     dailyTx: '0',
@@ -54,10 +55,13 @@ const initState: State = {
   error: null,
   poolLoading: true,
   poolDataLoading: true,
+  poolDetailedDataLoading: true,
   assetLoading: true,
   statsLoading: false,
   txData: initial,
   txCurData: {},
+  rtVolumeLoading: false,
+  rtVolume: [],
   apiBasePath: initial,
   thorchain: {
     constants: {},
@@ -173,6 +177,34 @@ const reducer: Reducer<State, MidgardActionTypes> = (
       return {
         ...state,
         poolDataLoading: false,
+        error: action.payload,
+      };
+    case 'GET_POOL_DETAIL_BY_ASSET':
+      return {
+        ...state,
+        poolDetailedDataLoading: true,
+        error: Nothing,
+      };
+    case 'GET_POOL_DETAIL_BY_ASSET_SUCCESS': {
+      const { payload } = action;
+
+      const poolDetail = payload[0];
+      const symbol = getAssetSymbolFromPayload(poolDetail);
+
+      if (symbol) {
+        const poolDetailedData = { ...state.poolDetailedData, [symbol]: poolDetail };
+        return {
+          ...state,
+          poolDetailedData,
+          poolDetailedDataLoading: false,
+        };
+      }
+      return { ...state, poolDetailedDataLoading: false };
+    }
+    case 'GET_POOL_DETAIL_BY_ASSET_FAILED':
+      return {
+        ...state,
+        poolDetailedDataLoading: false,
         error: action.payload,
       };
     case 'GET_STAKER_POOL_DATA_REQUEST':
@@ -315,6 +347,23 @@ const reducer: Reducer<State, MidgardActionTypes> = (
       return {
         ...state,
         txData: failure(action.payload),
+      };
+    case 'GET_RT_VOLUME_BY_ASSET':
+      return {
+        ...state,
+        rtVolumeLoading: true,
+      };
+    case 'GET_RT_VOLUME_BY_ASSET_SUCCESS':
+      return {
+        ...state,
+        rtVolume: action.payload,
+        rtVolumeLoading: false,
+      };
+    case 'GET_RT_VOLUME_BY_ASSET_FAILED':
+      return {
+        ...state,
+        rtVolume: [],
+        rtVolumeLoading: false,
       };
     case 'GET_API_BASEPATH_PENDING':
       return {

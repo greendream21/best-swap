@@ -20,6 +20,7 @@ import {
   GetTxByAddressAssetPayload,
   GetStakerPoolDataPayload,
   GetTransactionPayload,
+  GetRTVolumeByAssetPayload,
 } from './types';
 import { AssetDetail } from '../../types/generated/midgard';
 
@@ -197,14 +198,16 @@ export function* getStats() {
 //   throw new Error('Midgard API request failed to get pool data');
 // }
 
-function* tryGetPoolDataFromAsset(asset: string) {
+function* tryGetPoolDataFromAsset(asset: string, view: 'balances' | 'simple' | 'full') {
   try {
     const basePath: string = yield call(getApiBasePath, getNet());
     const midgardApi = api.getMidgardDefaultApi(basePath);
-    const fn = midgardApi.getPoolsData;
+    const fn = midgardApi.getPoolsDetails;
+
     const { data }: UnpackPromiseResponse<typeof fn> = yield call(
       { context: midgardApi, fn },
       asset,
+      view,
     );
     return data;
   } catch (error) {
@@ -221,7 +224,7 @@ export function* getPoolData() {
     try {
       const poolDetailsRespones: Array<PoolDetail[]> = yield all(
         assets.map((asset: string) => {
-          return call(tryGetPoolDataFromAsset, asset);
+          return call(tryGetPoolDataFromAsset, asset, 'simple');
         }),
       );
 
@@ -241,6 +244,20 @@ export function* getPoolData() {
       yield put(actions.getPoolDataFailed(error));
     }
   });
+}
+
+export function* getPoolDetailByAsset() {
+    yield takeEvery('GET_POOL_DETAIL_BY_ASSET', function*({
+      payload,
+    }: ReturnType<typeof actions.getPoolDetailByAsset>) {
+      const { asset } = payload;
+      try {
+        const data = yield call(tryGetPoolDataFromAsset, asset, 'full');
+        yield put(actions.getPoolDetailByAssetSuccess(data));
+      } catch (error) {
+        yield put(actions.getPoolDetailByAssetFailed(error));
+      }
+    });
 }
 
 function* tryGetStakerPoolData(payload: GetStakerPoolDataPayload) {
@@ -571,6 +588,51 @@ export function* setBasePriceAsset() {
   });
 }
 
+function* tryGetRTVolumeByAsset(payload: GetRTVolumeByAssetPayload) {
+  for (let i = 0; i < MIDGARD_MAX_RETRY; i++) {
+    try {
+      const noCache = i > 0;
+      const { asset, from, to, interval } = payload;
+      // Unsafe: Can't infer type of `basePath` here - known TS/Generator/Saga issue
+      const basePath: string = yield call(getApiBasePath, getNet(), noCache);
+      const midgardApi = api.getMidgardDefaultApi(basePath);
+      const fn = midgardApi.getTotalVolChanges;
+      const { data }: UnpackPromiseResponse<typeof fn> = yield call(
+        {
+          context: midgardApi,
+          fn,
+        },
+        interval,
+        from,
+        to,
+        asset,
+      );
+
+      return data;
+    } catch (error) {
+      if (i < MIDGARD_MAX_RETRY - 1) {
+        yield delay(MIDGARD_RETRY_DELAY);
+      }
+    }
+  }
+  throw new Error(
+    'Midgard API request failed to get RT Volume changes by asset',
+  );
+}
+
+export function* getRTVolumeByAsset() {
+  yield takeEvery('GET_RT_VOLUME_BY_ASSET', function*({
+    payload,
+  }: ReturnType<typeof actions.getRTVolumeByAsset>) {
+    try {
+      const data = yield call(tryGetRTVolumeByAsset, payload);
+      yield put(actions.getRTVolumeByAssetSuccess(data));
+    } catch (error) {
+      yield put(actions.getRTVolumeByAssetFailed(error));
+    }
+  });
+}
+
 export default function* rootSaga() {
   yield all([
     fork(getPools),
@@ -584,5 +646,7 @@ export default function* rootSaga() {
     fork(getTxByAddressTxId),
     fork(getTxByAddressAsset),
     fork(getTxByAsset),
+    fork(getRTVolumeByAsset),
+    fork(getPoolDetailByAsset),
   ]);
 }

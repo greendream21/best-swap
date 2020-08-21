@@ -1,15 +1,21 @@
 /* eslint-disable no-underscore-dangle */
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import * as H from 'history';
 import { compose } from 'redux';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import { withRouter, useHistory, Link } from 'react-router-dom';
-import { Row, Col } from 'antd';
+import { Row, Col, Grid } from 'antd';
+import moment from 'moment';
+import BigNumber from 'bignumber.js';
+import { random } from 'lodash';
 import {
   SyncOutlined,
   SwapOutlined,
   DatabaseOutlined,
 } from '@ant-design/icons';
+import { bnOrZero } from '@thorchain/asgardex-util';
+import { baseAmount } from '@thorchain/asgardex-token';
+import themes, { ThemeType } from '@thorchain/asgardex-theme';
 
 import Label from '../../components/uielements/label';
 import AddIcon from '../../components/uielements/addIcon';
@@ -41,6 +47,7 @@ import {
   PriceDataIndex,
   AssetDetailMap,
   TxDetailData,
+  RTVolumeData,
 } from '../../redux/midgard/types';
 import { getAssetFromString } from '../../redux/midgard/utils';
 import { ViewType, Maybe } from '../../types/bepswap';
@@ -53,6 +60,7 @@ import showNotification from '../../components/uielements/notification';
 import { RUNE_SYMBOL } from '../../settings/assetData';
 
 import LabelLoader from '../../components/utility/loaders/label';
+import PoolChart from '../../components/poolChart';
 import TxTable from '../../components/transaction/txTable';
 
 type Props = {
@@ -68,8 +76,32 @@ type Props = {
   poolLoading: boolean;
   assetLoading: boolean;
   poolDataLoading: boolean;
+  rtVolumeLoading: boolean;
+  rtVolume: RTVolumeData;
   getPools: typeof midgardActions.getPools;
   getTransactions: typeof midgardActions.getTransaction;
+  getRTVolume: typeof midgardActions.getRTVolumeByAsset;
+};
+
+const generateRandomTimeSeries = (
+  minValue: number,
+  maxValue: number,
+  startDate: string,
+) => {
+  const series = [];
+  for (
+    let itr = moment(startDate);
+    itr.isBefore(moment.now());
+    itr = itr.add(1, 'day')
+  ) {
+    series.push({
+      time: itr.unix(),
+      value: new BigNumber(
+        minValue + (random(100) / 100) * (maxValue - minValue),
+      ),
+    });
+  }
+  return series;
 };
 
 const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
@@ -85,8 +117,11 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     poolLoading,
     assetLoading,
     poolDataLoading,
+    rtVolumeLoading,
+    rtVolume,
     getPools,
     getTransactions,
+    getRTVolume,
   } = props;
 
   const [poolStatus, selectPoolStatus] = useState<PoolDetailStatusEnum>(
@@ -94,15 +129,39 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
   );
   const history = useHistory();
 
+  const themeType = useSelector((state: RootState) => state.App.themeType);
+  const isLight = themeType === ThemeType.LIGHT;
+  const theme = isLight ? themes.light : themes.dark;
+
   const loading = poolLoading || poolDataLoading;
   const wallet: Maybe<string> = user ? user.wallet : null;
 
-  /**
-   * TODO: implement the separate USD pricing logic
-   * 1. Should recognize BUSD pool with ticker instead of symbol
-   * 2. If BUSD pool doesn't exist, it should calculate the price in RUNE
-   */
-  const busdPrice = assets?.['BUSD-BAF']?.priceRune ?? '1';
+  const busdToken = Object.keys(assets).find(
+    item => getTickerFormat(item) === 'busd',
+  );
+  const busdPrice = busdToken ? assets[busdToken]?.priceRune ?? 'RUNE' : 'RUNE';
+  const isDesktopView = Grid.useBreakpoint()?.lg ?? false;
+
+  const chartData = useMemo(() => {
+    if (rtVolumeLoading) {
+      return { liquidity: [], volume: [], loading: true };
+    }
+
+    const volumeSeriesData = rtVolume?.map(volume => ({
+      time: volume?.time ?? 0,
+      value: baseAmount(
+        bnOrZero(volume.totalVolume).dividedBy(
+          Number(busdPrice === 'RUNE' ? 1 : busdPrice) * 1e11,
+        ),
+      ).amount(),
+    }));
+
+    return {
+      liquidity: generateRandomTimeSeries(0, 15, '2020-05-01'),
+      volume: volumeSeriesData,
+      loading: false,
+    };
+  }, [rtVolume, rtVolumeLoading, busdPrice]);
 
   const getTransactionInfo = useCallback(
     (offset: number, limit: number) => {
@@ -111,9 +170,25 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     [getTransactions],
   );
 
+  const getRTVolumeInfo = useCallback(
+    (
+      from: number,
+      to: number,
+      interval: '5min' | 'hour' | 'day' | 'week' | 'month' | 'year',
+    ) => {
+      getRTVolume({ asset: '', from, to, interval });
+    },
+    [getRTVolume],
+  );
+
   useEffect(() => {
     getTransactionInfo(0, 10);
   }, [getTransactionInfo]);
+
+  useEffect(() => {
+    const timeStamp: number = moment().unix();
+    getRTVolumeInfo(0, timeStamp, 'day');
+  }, [getRTVolumeInfo]);
 
   const handleGetPools = () => {
     getPools();
@@ -180,12 +255,17 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         const { target, values } = record;
         if (target) {
           const swapUrl = `/swap/${RUNE_SYMBOL}:${values.symbol}`;
-          const stakeUrl = `/pool/${values.symbol.toUpperCase()}`;
+          const stakeUrl = `/stake/${values.symbol.toUpperCase()}`;
 
           return (
             <ActionColumn>
               <div className="action-column-wrapper">
-                <Link to={stakeUrl}>
+                <Link
+                  to={stakeUrl}
+                  onClick={ev => {
+                    ev.stopPropagation();
+                  }}
+                >
                   <Button
                     style={{ margin: 'auto' }}
                     round="true"
@@ -196,7 +276,12 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
                   </Button>
                 </Link>
                 {poolStatus !== PoolDetailStatusEnum.Bootstrapped && (
-                  <Link to={swapUrl}>
+                  <Link
+                    to={swapUrl}
+                    onClick={ev => {
+                      ev.stopPropagation();
+                    }}
+                  >
                     <Button style={{ margin: 'auto' }} round="true">
                       <SwapOutlined />
                       swap
@@ -294,6 +379,14 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
 
     return (
       <Table
+        onRow={(record: PoolData) => {
+          return {
+            onClick: () => {
+              const URL = `/pool/${record?.values?.symbol?.toUpperCase()}`;
+              history.push(URL);
+            },
+          };
+        }}
         columns={columns}
         dataSource={poolViewData}
         loading={poolLoading}
@@ -337,6 +430,18 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
   return (
     <ContentWrapper className="pool-view-wrapper">
       <StatBar loading={loading} stats={stats} basePrice={busdPrice} />
+      <div>
+        <PoolChart
+          chartData={chartData}
+          textColor={theme.palette.text[0]}
+          lineColor={isLight ? '#436eb9' : '#1dd3e6'}
+          backgroundGradientStart={isLight ? '#e4ebf8' : '#365979'}
+          backgroundGradientStop={isLight ? '#ffffff' : '#0f1922'}
+          gradientStart={isLight ? '#c5d3f0' : '#365979'}
+          gradientStop={isLight ? '#ffffff' : '#0f1922'}
+          viewMode={isDesktopView ? 'desktop-view' : 'mobile-view'}
+        />
+      </div>
       <PoolFilter selected={poolStatus} onClick={selectPoolStatus} />
       <div className="pool-list-view desktop-view">
         {renderPoolList(ViewType.DESKTOP)}
@@ -380,10 +485,13 @@ export default compose(
       txData: state.Midgard.txData,
       assetData: state.Wallet.assetData,
       user: state.Wallet.user,
+      rtVolumeLoading: state.Midgard.rtVolumeLoading,
+      rtVolume: state.Midgard.rtVolume,
     }),
     {
       getPools: midgardActions.getPools,
       getTransactions: midgardActions.getTransaction,
+      getRTVolume: midgardActions.getRTVolumeByAsset,
     },
   ),
   withRouter,
