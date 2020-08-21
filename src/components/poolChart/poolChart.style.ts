@@ -92,3 +92,27 @@ export const LineChart = styled(Line)`
   width: 100%;
   font-family: 'Exo 2';  
 `;
+
+export const ComingSoonWrapper = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: ${palette('text', 1)};
+  backdrop-filter: blur(10px);
+`;
+
+export const ComingSoonText = styled.p`
+  text-transform: uppercase;
+  margin: 10px 0 0;
+  padding: 0;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 1px;
+`;

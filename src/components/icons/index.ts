@@ -18,6 +18,7 @@ import dropdownIcon from '../../assets/SVG/asset-dropdown.svg';
 import blackArrowIcon from '../../assets/SVG/asset-arrow-blacksmall.svg';
 import blueArrowIcon from '../../assets/SVG/icon-arrow-button.svg';
 import greyArrowIcon from '../../assets/SVG/asset-arrow-grey.svg';
+import { ReactComponent as CodeIcon } from '../../assets/SVG/asset-code-icon.svg';
 
 export {
   CurrencyIcon,
@@ -35,4 +36,5 @@ export {
   blackArrowIcon,
   blueArrowIcon,
   greyArrowIcon,
+  CodeIcon,
 };
