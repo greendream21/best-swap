@@ -26,6 +26,7 @@ import {
   PoolCaptionButtonsWrapper,
   TransactionWrapper,
   StyledPagination,
+  ChartContainer,
 } from './PoolDetail.style';
 
 import { getPoolData } from '../../helpers/utils/poolUtils';
@@ -212,16 +213,18 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
           />
         </Col>
         <Col span={16}>
-          <PoolChart
-            chartData={chartData}
-            textColor={theme.palette.text[0]}
-            lineColor={isLight ? '#436eb9' : '#1dd3e6'}
-            backgroundGradientStart={isLight ? '#e4ebf8' : '#365979'}
-            backgroundGradientStop={isLight ? '#ffffff' : '#0f1922'}
-            gradientStart={isLight ? '#c5d3f0' : '#365979'}
-            gradientStop={isLight ? '#ffffff' : '#0f1922'}
-            viewMode="desktop-view"
-          />
+          <ChartContainer>
+            <PoolChart
+              chartData={chartData}
+              textColor={theme.palette.text[0]}
+              lineColor={isLight ? '#436eb9' : '#1dd3e6'}
+              backgroundGradientStart={isLight ? '#e4ebf8' : '#365979'}
+              backgroundGradientStop={isLight ? '#ffffff' : '#0f1922'}
+              gradientStart={isLight ? '#c5d3f0' : '#365979'}
+              gradientStop={isLight ? '#ffffff' : '#0f1922'}
+              viewMode="desktop-view"
+            />
+          </ChartContainer>
         </Col>
       </Row>
       <Row className="detail-info-view mobile-view">

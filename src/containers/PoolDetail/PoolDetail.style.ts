@@ -169,3 +169,7 @@ export const StyledPagination = styled(Pagination)`
     }
   }
 `;
+
+export const ChartContainer = styled.div`
+  margin-left: 16px;
+`;

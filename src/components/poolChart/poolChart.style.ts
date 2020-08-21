@@ -20,9 +20,7 @@ export const ChartContainer = styled.div`
   width: 100%;
   height: 100%;  
   ${media.lg`
-    margin-left: 16px;
     padding: 10px 20px;
-    width: calc(100% - 16px);
     height: 362px;
   `}
   background-image: ${(props: ChartContainerProps) =>
