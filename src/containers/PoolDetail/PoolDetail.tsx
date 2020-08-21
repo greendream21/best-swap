@@ -2,17 +2,17 @@
 import React, { useEffect, useCallback, useMemo } from 'react';
 import * as H from 'history';
 import moment from 'moment';
-import BigNumber from 'bignumber.js';
 import { compose } from 'redux';
 import { Row, Col } from 'antd';
 import { connect, useSelector } from 'react-redux';
 import { get as _get, random } from 'lodash';
 import { withRouter, useParams, Link } from 'react-router-dom';
 import themes, { ThemeType } from '@thorchain/asgardex-theme';
+import { baseAmount, formatBaseAsTokenAmount } from '@thorchain/asgardex-token';
+import { bnOrZero } from '@thorchain/asgardex-util';
 
 import { SwapOutlined, DatabaseOutlined } from '@ant-design/icons';
 
-import { bnOrZero } from '@thorchain/asgardex-util';
 import Label from '../../components/uielements/label';
 import Button from '../../components/uielements/button';
 
@@ -44,6 +44,7 @@ import { RUNE_SYMBOL } from '../../settings/assetData';
 import { PoolStatBar } from '../../components/statBar';
 import PoolChart from '../../components/poolChart';
 import TxTable from '../../components/transaction/txTable';
+import { getTickerFormat } from '../../helpers/stringHelper';
 
 type Props = {
   history: H.History;
@@ -72,9 +73,7 @@ const generateRandomTimeSeries = (
   ) {
     series.push({
       time: itr.unix(),
-      value: new BigNumber(
-        minValue + (random(100) / 100) * (maxValue - minValue),
-      ),
+      value: (minValue + (random(100) / 100) * (maxValue - minValue)).toString(),
     });
   }
   return series;
@@ -96,7 +95,10 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
 
   const { symbol = '' } = useParams();
   const tokenSymbol = symbol.toUpperCase();
-  const busdPrice = assets?.['BUSD-BAF']?.priceRune ?? '1';
+  const busdToken = Object.keys(assets).find(
+    item => getTickerFormat(item) === 'busd',
+  );
+  const busdPrice = busdToken ? assets[busdToken]?.priceRune ?? 'RUNE' : 'RUNE';
 
   const themeType = useSelector((state: RootState) => state.App.themeType);
   const isLight = themeType === ThemeType.LIGHT;
@@ -107,12 +109,16 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
       return { liquidity: [], volume: [], loading: true };
     }
 
-    const volumeSeriesData = rtVolume?.map(volume => ({
-      time: volume?.time ?? 0,
-      value: bnOrZero(volume.totalVolume).dividedBy(
-        Number(busdPrice) * 1e8 * 1000,
-      ),
-    }));
+    const volumeSeriesData = rtVolume?.map(volume => {
+      const price = busdPrice === 'RUNE' ? 1 : Number(busdPrice);
+      const bnValue = bnOrZero(volume?.totalVolume ?? '0').dividedBy(price);
+      const amount = baseAmount(bnValue);
+
+      return {
+        time: volume?.time ?? 0,
+        value: formatBaseAsTokenAmount(amount),
+      };
+    });
 
     return {
       liquidity: generateRandomTimeSeries(0, 15, '2020-05-01'),
