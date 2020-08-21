@@ -266,7 +266,7 @@ const renderChart = (
 
 const PoolChart: React.FC<Props> = (props: Props): JSX.Element => {
   const { chartData, textColor, lineColor, gradientStart, gradientStop, backgroundGradientStart, backgroundGradientStop, viewMode } = props;
-  const [chartType, setChartType] = React.useState('LIQUIDITY');
+  const [chartType, setChartType] = React.useState('VOLUME');
   const [chartTime, setChartTime] = React.useState('ALL');
   return (
     <ChartContainer gradientStart={backgroundGradientStart} gradientStop={backgroundGradientStop}>
