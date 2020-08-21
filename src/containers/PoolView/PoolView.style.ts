@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { palette } from 'styled-theme';
 import ContentView from '../../components/utility/contentView';
 import { media } from '../../helpers/styleHelper';
+import Table from '../../components/uielements/table';
 
 export const ContentWrapper = styled(ContentView)`
   display: flex;
@@ -17,18 +18,6 @@ export const ContentWrapper = styled(ContentView)`
       ${media.sm`
         display: 80%;
       `}
-    }
-  }
-
-  .add-new-pool {
-    display: flex;
-    align-items: center;
-    padding-top: 20px;
-    cursor: pointer;
-    width: 160px;
-
-    .label-wrapper {
-      padding-left: 20px;
     }
   }
 
@@ -48,6 +37,30 @@ export const ContentWrapper = styled(ContentView)`
     padding-top: 20px;
     .pool-card {
       margin-bottom: 10px;
+    }
+  }
+`;
+
+export const StyledTable = styled(Table)`
+  tr:hover {
+    cursor: pointer;
+  }
+`;
+
+export const PoolViewTools = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 25px;
+
+  .add-new-pool {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    width: 160px;
+
+    .label-wrapper {
+      padding-left: 20px;
     }
   }
 `;
