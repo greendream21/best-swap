@@ -5,7 +5,6 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 export const PoolFilterWrapper = styled.div`
   display: flex;
   align-items: center;
-  padding: 20px 0;
 
   button {
     &:first-child {
