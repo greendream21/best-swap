@@ -3,6 +3,7 @@ import moment from 'moment';
 import BigNumber from 'bignumber.js';
 import { defaults } from 'react-chartjs-2';
 import Loader from '../utility/loaders/chart';
+import { CodeIcon } from '../icons';
 
 import {
   ChartContainer,
@@ -12,6 +13,8 @@ import {
   HeaderToggle,
   LineChartContainer,
   LineChart,
+  ComingSoonWrapper,
+  ComingSoonText,
 } from './poolChart.style';
 
 type ChartDetail = {
@@ -249,6 +252,12 @@ const renderChart = (
 
   return (
     <LineChartContainer>
+      {type === 'LIQUIDITY' && (
+        <ComingSoonWrapper>
+          <CodeIcon />
+          <ComingSoonText>Coming Soon...</ComingSoonText>
+        </ComingSoonWrapper>
+      )}
       {chartData?.loading && <Loader />}
       {!chartData?.loading && <LineChart data={data} options={options} />}
     </LineChartContainer>
@@ -257,7 +266,7 @@ const renderChart = (
 
 const PoolChart: React.FC<Props> = (props: Props): JSX.Element => {
   const { chartData, textColor, lineColor, gradientStart, gradientStop, backgroundGradientStart, backgroundGradientStop, viewMode } = props;
-  const [chartType, setChartType] = React.useState('LIQUIDITY');
+  const [chartType, setChartType] = React.useState('VOLUME');
   const [chartTime, setChartTime] = React.useState('ALL');
   return (
     <ChartContainer gradientStart={backgroundGradientStart} gradientStop={backgroundGradientStop}>
