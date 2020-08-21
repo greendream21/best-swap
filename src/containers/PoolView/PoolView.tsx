@@ -6,7 +6,6 @@ import { connect, useSelector } from 'react-redux';
 import { withRouter, useHistory, Link } from 'react-router-dom';
 import { Row, Col, Grid } from 'antd';
 import moment from 'moment';
-import BigNumber from 'bignumber.js';
 import { random } from 'lodash';
 import {
   SyncOutlined,
@@ -14,12 +13,13 @@ import {
   DatabaseOutlined,
 } from '@ant-design/icons';
 import { bnOrZero } from '@thorchain/asgardex-util';
-import { baseAmount } from '@thorchain/asgardex-token';
+import { baseAmount, formatBaseAsTokenAmount } from '@thorchain/asgardex-token';
 import themes, { ThemeType } from '@thorchain/asgardex-theme';
 
 import Label from '../../components/uielements/label';
 import AddIcon from '../../components/uielements/addIcon';
 import CoinIcon from '../../components/uielements/coins/coinIcon';
+import Table from '../../components/uielements/table';
 import Button from '../../components/uielements/button';
 import PoolFilter from '../../components/poolFilter';
 import StatBar from '../../components/statBar';
@@ -30,8 +30,6 @@ import {
   ActionColumn,
   TransactionWrapper,
   StyledPagination,
-  PoolViewTools,
-  StyledTable as Table,
 } from './PoolView.style';
 import {
   getAvailableTokensToCreate,
@@ -97,9 +95,7 @@ const generateRandomTimeSeries = (
   ) {
     series.push({
       time: itr.unix(),
-      value: new BigNumber(
-        minValue + (random(100) / 100) * (maxValue - minValue),
-      ),
+      value: (minValue + (random(100) / 100) * (maxValue - minValue)).toString(),
     });
   }
   return series;
@@ -148,14 +144,16 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
       return { liquidity: [], volume: [], loading: true };
     }
 
-    const volumeSeriesData = rtVolume?.map(volume => ({
-      time: volume?.time ?? 0,
-      value: baseAmount(
-        bnOrZero(volume.totalVolume).dividedBy(
-          Number(busdPrice === 'RUNE' ? 1 : busdPrice) * 1e11,
-        ),
-      ).amount(),
-    }));
+    const volumeSeriesData = rtVolume?.map(volume => {
+      const price = busdPrice === 'RUNE' ? 1 : Number(busdPrice);
+      const bnValue = bnOrZero(volume?.totalVolume ?? '0').dividedBy(price);
+      const amount = baseAmount(bnValue);
+
+      return {
+        time: volume?.time ?? 0,
+        value: formatBaseAsTokenAmount(amount),
+      };
+    });
 
     return {
       liquidity: generateRandomTimeSeries(0, 15, '2020-05-01'),
@@ -214,7 +212,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         showNotification({
           type: 'warning',
           message: 'Create Pool Failed',
-          description: "You don't have available asset to create a new pool.",
+          description: 'You don\'t have available asset to create a new pool.',
         });
       }
     }
@@ -443,24 +441,21 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
           viewMode={isDesktopView ? 'desktop-view' : 'mobile-view'}
         />
       </div>
-      <PoolViewTools>
-        <PoolFilter selected={poolStatus} onClick={selectPoolStatus} />
-
-        <div className="add-new-pool" onClick={handleNewPool}>
-          <AddIcon />
-          <Label size="normal" weight="bold" color="normal">
-            ADD NEW POOL
-          </Label>
-        </div>
-      </PoolViewTools>
+      <PoolFilter selected={poolStatus} onClick={selectPoolStatus} />
       <div className="pool-list-view desktop-view">
         {renderPoolList(ViewType.DESKTOP)}
       </div>
       <div className="pool-list-view mobile-view">
         {renderPoolList(ViewType.MOBILE)}
       </div>
+      <div className="add-new-pool" onClick={handleNewPool}>
+        <AddIcon />
+        <Label size="normal" weight="bold" color="normal">
+          ADD NEW POOL
+        </Label>
+      </div>
       <TransactionWrapper>
-        <Label size="large" weight="bold" color="primary">
+        <Label size="big" color="primary">
           Transactions
         </Label>
         <TxTable txData={txData} />

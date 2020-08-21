@@ -1,6 +1,5 @@
 import React, { Dispatch, SetStateAction } from 'react';
 import moment from 'moment';
-import BigNumber from 'bignumber.js';
 import { defaults } from 'react-chartjs-2';
 import Loader from '../utility/loaders/chart';
 import { CodeIcon } from '../icons';
@@ -18,29 +17,48 @@ import {
 } from './poolChart.style';
 
 type ChartDetail = {
-  value: BigNumber;
+  value: string;
   time: number;
-}
+};
 
 type ChartInfo = {
-  liquidity: Array<ChartDetail>,
-  volume: Array<ChartDetail>,
-  loading: boolean,
-}
+  liquidity: Array<ChartDetail>;
+  volume: Array<ChartDetail>;
+  loading: boolean;
+};
 
 type Props = {
   chartData: ChartInfo;
-  textColor: string,
-  lineColor: string,
-  gradientStart: string,
-  gradientStop: string,
-  backgroundGradientStart: string,
-  backgroundGradientStop: string,
-  viewMode: string,
+  textColor: string;
+  lineColor: string;
+  gradientStart: string;
+  gradientStop: string;
+  backgroundGradientStart: string;
+  backgroundGradientStop: string;
+  viewMode: string;
 };
 
+const abbreviateNumber = (value: number): string => {
+  let newValue = value;
+  const suffixes = ['', 'K', 'M', 'B', 'T'];
+  let suffixNum = 0;
 
-const renderHeader = (type: string, time: string, onTypeChange: Dispatch<SetStateAction<string>>, onTimeChange: Dispatch<SetStateAction<string>>) => {
+  while (newValue >= 1000) {
+    newValue /= 1000;
+    suffixNum++;
+  }
+
+  return `${newValue}${
+    suffixNum > 0 ? ` ${suffixes[suffixNum]}` : ''
+  }`;
+};
+
+const renderHeader = (
+  type: string,
+  time: string,
+  onTypeChange: Dispatch<SetStateAction<string>>,
+  onTimeChange: Dispatch<SetStateAction<string>>,
+) => {
   return (
     <HeaderContainer>
       <TypeContainer>
@@ -103,8 +121,10 @@ const renderChart = (
   lineColor: string,
   gradientStart: string,
   gradientStop: string,
-  viewMode: string) => {
-  const totalDisplayChart = type === 'LIQUIDITY' ? [...chartData.liquidity] : [...chartData.volume];
+  viewMode: string,
+) => {
+  const totalDisplayChart =
+    type === 'LIQUIDITY' ? [...chartData.liquidity] : [...chartData.volume];
   const startDate = moment().subtract(7, 'days');
   const filteredByTime = totalDisplayChart.filter(data => {
     if (time === 'ALL') return true;
@@ -115,11 +135,19 @@ const renderChart = (
     return moment.unix(data.time).format('MMM DD');
   });
 
-  const filteredValues: Array<BigNumber> = filteredByTime.map(data => data.value);
-  const labels: Array<string> =
-    filteredLabels.slice(filteredLabels.length <= 5 ? 0 : filteredLabels.length - (Math.floor(filteredLabels.length / 5)) * 5 - 1);
-  const values: Array<BigNumber> =
-    filteredValues.slice(filteredValues.length <= 5 ? 0 : filteredValues.length - (Math.floor(filteredValues.length / 5)) * 5 - 1);
+  const filteredValues: Array<number> = filteredByTime.map(data =>
+    Number(data.value.split(',').join('')),
+  );
+  const labels: Array<string> = filteredLabels.slice(
+    filteredLabels.length <= 5
+      ? 0
+      : filteredLabels.length - Math.floor(filteredLabels.length / 5) * 5 - 1,
+  );
+  const values: Array<number> = filteredValues.slice(
+    filteredValues.length <= 5
+      ? 0
+      : filteredValues.length - Math.floor(filteredValues.length / 5) * 5 - 1,
+  );
 
   const data = (canvas: HTMLCanvasElement) => {
     const ctx = canvas.getContext('2d');
@@ -236,7 +264,7 @@ const renderChart = (
               if (Number(value) === 0) {
                 return '$0';
               }
-              return `$${value}M`;
+              return `$${abbreviateNumber(Number(value))}`;
             },
             padding: 10,
             fontSize: '14',
@@ -265,13 +293,34 @@ const renderChart = (
 };
 
 const PoolChart: React.FC<Props> = (props: Props): JSX.Element => {
-  const { chartData, textColor, lineColor, gradientStart, gradientStop, backgroundGradientStart, backgroundGradientStop, viewMode } = props;
+  const {
+    chartData,
+    textColor,
+    lineColor,
+    gradientStart,
+    gradientStop,
+    backgroundGradientStart,
+    backgroundGradientStop,
+    viewMode,
+  } = props;
   const [chartType, setChartType] = React.useState('VOLUME');
   const [chartTime, setChartTime] = React.useState('ALL');
   return (
-    <ChartContainer gradientStart={backgroundGradientStart} gradientStop={backgroundGradientStop}>
+    <ChartContainer
+      gradientStart={backgroundGradientStart}
+      gradientStop={backgroundGradientStop}
+    >
       {renderHeader(chartType, chartTime, setChartType, setChartTime)}
-      {renderChart(chartData, chartType, chartTime, textColor, lineColor, gradientStart, gradientStop, viewMode)}
+      {renderChart(
+        chartData,
+        chartType,
+        chartTime,
+        textColor,
+        lineColor,
+        gradientStart,
+        gradientStop,
+        viewMode,
+      )}
     </ChartContainer>
   );
 };
