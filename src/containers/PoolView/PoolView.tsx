@@ -19,7 +19,6 @@ import themes, { ThemeType } from '@thorchain/asgardex-theme';
 import Label from '../../components/uielements/label';
 import AddIcon from '../../components/uielements/addIcon';
 import CoinIcon from '../../components/uielements/coins/coinIcon';
-import Table from '../../components/uielements/table';
 import Button from '../../components/uielements/button';
 import PoolFilter from '../../components/poolFilter';
 import StatBar from '../../components/statBar';
@@ -30,6 +29,8 @@ import {
   ActionColumn,
   TransactionWrapper,
   StyledPagination,
+  PoolViewTools,
+  StyledTable as Table,
 } from './PoolView.style';
 import {
   getAvailableTokensToCreate,
@@ -95,7 +96,10 @@ const generateRandomTimeSeries = (
   ) {
     series.push({
       time: itr.unix(),
-      value: (minValue + (random(100) / 100) * (maxValue - minValue)).toString(),
+      value: (
+        minValue +
+        (random(100) / 100) * (maxValue - minValue)
+      ).toString(),
     });
   }
   return series;
@@ -212,7 +216,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         showNotification({
           type: 'warning',
           message: 'Create Pool Failed',
-          description: 'You don\'t have available asset to create a new pool.',
+          description: "You don't have available asset to create a new pool.",
         });
       }
     }
@@ -441,21 +445,23 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
           viewMode={isDesktopView ? 'desktop-view' : 'mobile-view'}
         />
       </div>
-      <PoolFilter selected={poolStatus} onClick={selectPoolStatus} />
+      <PoolViewTools>
+        <PoolFilter selected={poolStatus} onClick={selectPoolStatus} />
+        <div className="add-new-pool" onClick={handleNewPool}>
+          <AddIcon />
+          <Label size="normal" weight="bold" color="normal">
+            ADD NEW POOL
+          </Label>
+        </div>
+      </PoolViewTools>
       <div className="pool-list-view desktop-view">
         {renderPoolList(ViewType.DESKTOP)}
       </div>
       <div className="pool-list-view mobile-view">
         {renderPoolList(ViewType.MOBILE)}
       </div>
-      <div className="add-new-pool" onClick={handleNewPool}>
-        <AddIcon />
-        <Label size="normal" weight="bold" color="normal">
-          ADD NEW POOL
-        </Label>
-      </div>
       <TransactionWrapper>
-        <Label size="big" color="primary">
+        <Label size="large" weight="bold" color="primary">
           Transactions
         </Label>
         <TxTable txData={txData} />
