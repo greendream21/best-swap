@@ -216,7 +216,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         showNotification({
           type: 'warning',
           message: 'Create Pool Failed',
-          description: "You don't have available asset to create a new pool.",
+          description: 'You don\'t have available asset to create a new pool.',
         });
       }
     }
