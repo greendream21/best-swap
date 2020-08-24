@@ -2,6 +2,16 @@ import styled from 'styled-components';
 import { palette, size, key } from 'styled-theme';
 import { media } from '../../helpers/styleHelper';
 
+export const StyledAlertWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  z-index: 1001;
+  left: 50%;
+  transform: translateX(-50%);
+`;
+
 export const StyledHeader = styled.div`
   display: flex;
   justify-content: center;

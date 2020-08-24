@@ -2,6 +2,7 @@ import React, { useCallback, useEffect } from 'react';
 import { useHistory, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
+import { Alert } from 'antd';
 import { WalletOutlined } from '@ant-design/icons';
 
 import * as RD from '@devexperts/remote-data-ts';
@@ -11,7 +12,12 @@ import TxProgress from '../uielements/txProgress';
 import ConfirmModal from '../modals/confirmModal';
 import showNotification from '../uielements/notification';
 
-import { StyledHeader, LogoWrapper, HeaderActionButtons } from './header.style';
+import {
+  StyledAlertWrapper,
+  StyledHeader,
+  LogoWrapper,
+  HeaderActionButtons,
+} from './header.style';
 import HeaderSetting from './headerSetting';
 import WalletDrawer from '../../containers/WalletView/WalletDrawer';
 
@@ -28,9 +34,10 @@ import * as binanceActions from '../../redux/binance/actions';
 
 import { MAX_VALUE } from '../../redux/app/const';
 import { TxStatus, TxResult, TxTypes } from '../../redux/app/types';
-import { getNet } from '../../env';
+import { getNet, isMainnet } from '../../env';
 
 import { getSymbolPair } from '../../helpers/stringHelper';
+import { getBetaConfirm, saveBetaConfirm } from '../../helpers/webStorageHelper';
 import { getTxResult } from '../../helpers/utils/swapUtils';
 import {
   withdrawResult,
@@ -78,6 +85,7 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
     unSubscribeBinanceTransfers,
   } = props;
   const history = useHistory();
+  const hasBetaConfirmed = getBetaConfirm();
 
   const wallet: Maybe<string> = user ? user.wallet : Nothing;
   const { status, value, startTime, hash, info, type: txType } = txStatus;
@@ -248,53 +256,67 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
   };
 
   return (
-    <StyledHeader>
-      <LogoWrapper>
-        <Link to="/pools">
-          <Logo name="bepswap" type="long" />
-        </Link>
-        <HeaderSetting midgardBasePath={midgardBasePath} />
-      </LogoWrapper>
-      <HeaderActionButtons>
-        {!wallet && (
-          <Link to="/connect">
-            <WalletButton
-              data-test="add-wallet-button"
-              connected={false}
-              address={wallet}
-            />
-          </Link>
-        )}
-        {!wallet && (
-          <Link to="/connect">
-            <div className="wallet-mobile-btn">
-              <WalletOutlined />
-            </div>
-          </Link>
-        )}
-        {wallet && <WalletDrawer />}
-        <ThemeSwitch />
-        <BasePriceSelector />
-        {wallet && (
-          <TxProgress
-            status={status}
-            value={value}
-            maxValue={MAX_VALUE}
-            maxSec={45}
-            startTime={startTime}
-            onClick={handleClickTxProgress}
-            onChange={handleChangeTxProgress}
-            onEnd={handleEndTxProgress}
+    <>
+      {!isMainnet && !hasBetaConfirmed && (
+        <StyledAlertWrapper>
+          <Alert
+            message="Warning"
+            description="This product is in beta. Do not stake or swap large amounts of funds."
+            showIcon
+            closable
+            type="warning"
+            onClose={() => saveBetaConfirm(true)}
           />
-        )}
-      </HeaderActionButtons>
-      <ConfirmModal
-        txStatus={txStatus}
-        txResult={txResult || {}}
-        onClose={handleCloseModal}
-        onFinish={handleFinishModal}
-      />
-    </StyledHeader>
+        </StyledAlertWrapper>
+      )}
+      <StyledHeader>
+        <LogoWrapper>
+          <Link to="/pools">
+            <Logo name="bepswap" type="long" />
+          </Link>
+          <HeaderSetting midgardBasePath={midgardBasePath} />
+        </LogoWrapper>
+        <HeaderActionButtons>
+          {!wallet && (
+            <Link to="/connect">
+              <WalletButton
+                data-test="add-wallet-button"
+                connected={false}
+                address={wallet}
+              />
+            </Link>
+          )}
+          {!wallet && (
+            <Link to="/connect">
+              <div className="wallet-mobile-btn">
+                <WalletOutlined />
+              </div>
+            </Link>
+          )}
+          {wallet && <WalletDrawer />}
+          <ThemeSwitch />
+          <BasePriceSelector />
+          {wallet && (
+            <TxProgress
+              status={status}
+              value={value}
+              maxValue={MAX_VALUE}
+              maxSec={45}
+              startTime={startTime}
+              onClick={handleClickTxProgress}
+              onChange={handleChangeTxProgress}
+              onEnd={handleEndTxProgress}
+            />
+          )}
+        </HeaderActionButtons>
+        <ConfirmModal
+          txStatus={txStatus}
+          txResult={txResult || {}}
+          onClose={handleCloseModal}
+          onFinish={handleFinishModal}
+        />
+      </StyledHeader>
+    </>
   );
 };
 
