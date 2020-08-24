@@ -33,6 +33,7 @@ deploy:testnet-staging:
     name: testnet
   only:
     - development
+   when: manual
 
 deploy:testnet-production:
   stage: deploy
@@ -53,7 +54,8 @@ deploy:chaosnet-staging:
   environment:
     name: chaosnet
   only:
-    - chaosnet
+    - chaosnet-dev
+  when: manual
 
 deploy:chaosnet-production:
   stage: deploy
@@ -63,7 +65,7 @@ deploy:chaosnet-production:
   environment:
     name: chaosnet
   only:
-    - chaosnet
+    - chaosnet-prod
   when: manual
 
 deploy:cloudfront:
