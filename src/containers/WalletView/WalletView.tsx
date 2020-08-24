@@ -83,15 +83,9 @@ const WalletView: React.FC<Props> = (props: Props): JSX.Element => {
     const newAssetName = getAssetNameByIndex(key);
 
     let URL = `/swap/${newAssetName}:${RUNE_SYMBOL}`;
-    if (newAssetName === RUNE_SYMBOL && key > 0) {
-      const firstAssetName = getAssetNameByIndex(0);
-      URL = `/swap/${RUNE_SYMBOL}:${firstAssetName}`;
+    if (newAssetName === RUNE_SYMBOL) {
+      URL = '/pools';
     }
-    if (newAssetName === RUNE_SYMBOL && key === 0) {
-      const firstAssetName = 'BNB';
-      URL = `/swap/${RUNE_SYMBOL}:${firstAssetName}`;
-    }
-
     history.push(URL);
   };
 
