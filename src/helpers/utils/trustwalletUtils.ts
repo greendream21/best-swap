@@ -37,6 +37,7 @@ export const sendTrustSignedTx = ({
         .getAccount(walletAddress)
         .then((response: FixmeType) => {
           const account = response.result;
+          console.log('AccountInfo:', account);
           const tx: FixmeType = {
             accountNumber: account.account_number.toString(),
             chainId: CHAIN_ID,
@@ -49,9 +50,11 @@ export const sendTrustSignedTx = ({
           walletConnect
             .trustSignTransaction(NETWORK_ID, tx)
             .then((result: FixmeType) => {
+              console.log('Successfully signed stake tx msg:', result);
               bncClient
                 .sendRawTransaction(result, true)
                 .then((response: FixmeType) => {
+                  console.log('Response', response);
                   resolve(response);
                 })
                 .catch((error: FixmeType) => {

@@ -15,7 +15,10 @@ import { get as _get } from 'lodash';
 
 import BigNumber from 'bignumber.js';
 import * as RD from '@devexperts/remote-data-ts';
-import { client as binanceClient } from '@thorchain/asgardex-binance';
+import {
+  client as binanceClient,
+  TransferResult,
+} from '@thorchain/asgardex-binance';
 import {
   bn,
   validBNOrZero,
@@ -67,7 +70,7 @@ import { getTickerFormat } from '../../helpers/stringHelper';
 import TokenInfo from '../../components/uielements/tokens/tokenInfo';
 import { RootState } from '../../redux/store';
 import { User, AssetData } from '../../redux/wallet/types';
-import { Maybe, Nothing, AssetPair } from '../../types/bepswap';
+import { Maybe, Nothing, AssetPair, FixmeType } from '../../types/bepswap';
 import { TxStatus, TxTypes, TxResult } from '../../redux/app/types';
 import {
   AssetDetailMap,
@@ -80,11 +83,13 @@ import { StakersAssetData } from '../../types/generated/midgard';
 import { getAssetFromString } from '../../redux/midgard/utils';
 import { BINANCE_NET } from '../../env';
 import { TransferFeesRD, TransferFees } from '../../redux/binance/types';
-import {
-  bnbBaseAmount,
-} from '../../helpers/walletHelper';
+import { bnbBaseAmount } from '../../helpers/walletHelper';
 import { ShareDetailTabKeys, WithdrawData } from './types';
 import showNotification from '../../components/uielements/notification';
+import {
+  stakeRequestUsingWalletConnect,
+  withdrawRequestUsingWalletConnect,
+} from '../../helpers/utils/trustwalletUtils';
 import { CONFIRM_DISMISS_TIME } from '../../settings/constants';
 import usePrevious from '../../hooks/usePrevious';
 import useFee from '../../hooks/useFee';
@@ -485,14 +490,30 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       const bncClient = await binanceClient(BINANCE_NET);
 
       try {
-        const { result } = await stakeRequest({
-          bncClient,
-          wallet,
-          runeAmount,
-          tokenAmount: targetAmount,
-          poolAddress: data.poolAddress,
-          symbolTo: data.symbolTo,
-        });
+        let response: TransferResult | FixmeType;
+
+        if (user.type === 'walletconnect') {
+          response = await stakeRequestUsingWalletConnect({
+            walletConnect: user.walletConnector,
+            bncClient,
+            walletAddress: user.wallet,
+            runeAmount,
+            tokenAmount: targetAmount,
+            poolAddress: data.poolAddress || '',
+            symbol: data.symbolTo || '',
+          });
+        } else {
+          response = await stakeRequest({
+            bncClient,
+            wallet,
+            runeAmount,
+            tokenAmount: targetAmount,
+            poolAddress: data.poolAddress,
+            symbolTo: data.symbolTo,
+          });
+        }
+
+        const result = response?.result;
         const hash = result ? result[0]?.hash ?? null : null;
         if (hash) {
           setTxHash(hash);
@@ -580,14 +601,28 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       try {
         const percent = withdrawRate * 100;
 
-        const { result } = await withdrawRequest({
-          bncClient,
-          wallet,
-          poolAddress,
-          symbol,
-          percent,
-        });
+        let response: TransferResult | FixmeType;
 
+        if (user.type === 'walletconnect') {
+          response = await withdrawRequestUsingWalletConnect({
+            walletConnect: user.walletConnector,
+            bncClient,
+            walletAddress: user.wallet,
+            poolAddress: poolAddress || '',
+            symbol,
+            percent,
+          });
+        } else {
+          response = await withdrawRequest({
+            bncClient,
+            wallet,
+            poolAddress,
+            symbol,
+            percent,
+          });
+        }
+
+        const result = response?.result;
         const hash = result ? result[0]?.hash ?? null : null;
         if (hash) {
           setTxHash(hash);

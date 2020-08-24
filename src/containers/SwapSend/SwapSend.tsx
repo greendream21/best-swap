@@ -4,7 +4,10 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter, useHistory, useParams } from 'react-router-dom';
 import { SwapOutlined, LockOutlined, UnlockOutlined } from '@ant-design/icons';
-import { client as binanceClient } from '@thorchain/asgardex-binance';
+import {
+  client as binanceClient,
+  TransferResult,
+} from '@thorchain/asgardex-binance';
 import {
   bnOrZero,
   isValidBN,
@@ -57,7 +60,7 @@ import AddressInput from '../../components/uielements/addressInput';
 import ContentTitle from '../../components/uielements/contentTitle';
 import Slider from '../../components/uielements/slider';
 import StepBar from '../../components/uielements/stepBar';
-import { Maybe, Nothing, TokenData } from '../../types/bepswap';
+import { Maybe, Nothing, TokenData, FixmeType } from '../../types/bepswap';
 import { User, AssetData } from '../../redux/wallet/types';
 import { TxStatus, TxTypes, TxResult } from '../../redux/app/types';
 
@@ -77,6 +80,7 @@ import useFee from '../../hooks/useFee';
 
 import { SwapSendView } from './types';
 import showNotification from '../../components/uielements/notification';
+import { swapRequestUsingWalletConnect } from '../../helpers/utils/trustwalletUtils';
 import Loader from '../../components/utility/loaders/pageLoader';
 import { CONFIRM_DISMISS_TIME } from '../../settings/constants';
 
@@ -247,21 +251,38 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
       handleStartTimer();
       const bncClient = await binanceClient(BINANCE_NET);
       try {
+        let response: TransferResult | FixmeType;
         const { slipLimit } = swapData;
 
-        const data = await confirmSwap(
-          bncClient,
-          user.wallet,
-          sourceSymbol,
-          targetSymbol,
-          tokenAmountToSwap,
-          slipProtection,
-          slipLimit,
-          poolAddress,
-          address,
-        );
+        if (user.type === 'walletconnect') {
+          response = await swapRequestUsingWalletConnect({
+            walletConnect: user.walletConnector,
+            bncClient,
+            walletAddress: user.wallet,
+            source: sourceSymbol,
+            target: targetSymbol,
+            amount: tokenAmountToSwap,
+            protectSlip: slipProtection,
+            limit: slipLimit,
+            poolAddress,
+            targetAddress: address,
+          });
+        } else {
+          response = await confirmSwap(
+            bncClient,
+            user.wallet,
+            sourceSymbol,
+            targetSymbol,
+            tokenAmountToSwap,
+            slipProtection,
+            slipLimit,
+            poolAddress,
+            address,
+          );
+        }
 
-        const result = data?.result ?? [];
+        const result = response?.result ?? [];
+
         const hash = result[0]?.hash;
         if (hash) {
           setTxHash(hash);
