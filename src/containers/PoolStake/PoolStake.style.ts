@@ -23,7 +23,7 @@ export const ContentWrapper = styled(ContentView)`
 
     .token-info-card {
       padding: 8px 8px 8px 0;
-      width: 200px;
+      width: 33.3%;
       ${media.sm`
         width: 25%;
       `};
@@ -31,10 +31,10 @@ export const ContentWrapper = styled(ContentView)`
         width: 25%;
       `};
       ${media.lg`
-        width: 14%;
+        width: 14.285%;
       `};
       ${media.xl`
-        width: 14%;
+        width: 14.285%;
       `};
 
       &:last-child {
