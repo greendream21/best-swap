@@ -210,6 +210,9 @@ export const getPoolData = (
   const totalSwaps = Number(poolDetail?.swappingTxCount ?? 0);
   const totalStakers = Number(poolDetail?.stakersCount ?? 0);
 
+  const runeStakedTotal = baseAmount(bnOrZero(poolDetail?.runeStakedTotal));
+  const runeStakedTotalValue = `${formatBaseAsTokenAmount(runeStakedTotal)}`;
+
   const depthValue = `${formatBaseAsTokenAmount(depth)}`;
   const volume24Value = `${formatBaseAsTokenAmount(volume24)}`;
   const transactionValue = `${formatBaseAsTokenAmount(transaction)}`;
@@ -234,6 +237,7 @@ export const getPoolData = (
     poolROI12,
     totalSwaps,
     totalStakers,
+    runeStakedTotal,
     poolPrice,
     values: {
       pool: {
@@ -248,6 +252,7 @@ export const getPoolData = (
       liqFee: liqFeeValue,
       apr: aprValue,
       apy: apyValue,
+      runeStakedTotal: runeStakedTotalValue,
       poolPrice: poolPriceValue,
     },
   };

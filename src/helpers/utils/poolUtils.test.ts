@@ -224,7 +224,7 @@ describe('pool/utils/', () => {
       price: '327.15040100500704',
       runeDepth: '199999799',
       runeROI: '1998.99799',
-      runeStakedTotal: '100000',
+      runeStakedTotal: '12865427860',
       sellAssetCount: '0',
       sellFeeAverage: '0',
       sellFeesTotal: '0',
@@ -265,7 +265,7 @@ describe('pool/utils/', () => {
       price: '2',
       runeDepth: '200000',
       runeROI: '1',
-      runeStakedTotal: '100000',
+      runeStakedTotal: '12865427860',
       sellAssetCount: '0',
       sellFeeAverage: '0',
       sellFeesTotal: '0',
@@ -301,6 +301,7 @@ describe('pool/utils/', () => {
         volumeAT: baseAmount(0),
         transaction: baseAmount(0),
         liqFee: baseAmount(0),
+        runeStakedTotal: baseAmount(12865427860),
         apr: 50,
         apy: 39402.27,
         poolROI12: bn(50),
@@ -320,6 +321,7 @@ describe('pool/utils/', () => {
           liqFee: '0.00',
           apr: '50% APR',
           apy: '39402.27% APY',
+          runeStakedTotal: '128.65',
           poolPrice: '2.000',
         },
       };
@@ -337,6 +339,7 @@ describe('pool/utils/', () => {
       expect(result.transaction.amount()).toEqual(
         expected.transaction.amount(),
       );
+      expect(result.runeStakedTotal.amount()).toEqual(expected.runeStakedTotal.amount());
       expect(result.liqFee.amount()).toEqual(expected.liqFee.amount());
       expect(result.apr).toEqual(expected.apr);
       expect(result.apy).toEqual(expected.apy);
@@ -367,6 +370,7 @@ describe('pool/utils/', () => {
         volumeAT: baseAmount(32387),
         transaction: baseAmount(16193),
         liqFee: baseAmount(99800),
+        runeStakedTotal: baseAmount(12865427860),
         apr: 99927.69,
         apy: 78747552.53,
         poolROI12: bn(50),
@@ -386,6 +390,7 @@ describe('pool/utils/', () => {
           liqFee: '0.00',
           apr: '99927.69% APR',
           apy: '78747552.53% APY',
+          runeStakedTotal: '128.65',
           poolPrice: '0.000',
         },
       };
@@ -399,6 +404,7 @@ describe('pool/utils/', () => {
         expected.transaction.amount(),
       );
       expect(result.liqFee.amount()).toEqual(expected.liqFee.amount());
+      expect(result.runeStakedTotal.amount()).toEqual(expected.runeStakedTotal.amount());
       expect(result.apr).toEqual(expected.apr);
       expect(result.apy).toEqual(expected.apy);
       expect(result.totalSwaps).toEqual(expected.totalSwaps);

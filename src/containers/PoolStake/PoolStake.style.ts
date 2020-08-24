@@ -15,8 +15,27 @@ export const ContentWrapper = styled(ContentView)`
   padding: 0;
 
   .stake-info-view {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    flex-wrap: wrap;
+
     .token-info-card {
       padding: 8px 8px 8px 0;
+      width: 200px;
+      ${media.sm`
+        width: 25%;
+      `};
+      ${media.md`
+        width: 25%;
+      `};
+      ${media.lg`
+        width: 14%;
+      `};
+      ${media.xl`
+        width: 14%;
+      `};
 
       &:last-child {
         padding-right: 0px;

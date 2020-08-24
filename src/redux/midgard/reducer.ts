@@ -66,6 +66,7 @@ const initState: State = {
   thorchain: {
     constants: {},
     lastBlock: {},
+    mimir: {},
   },
 };
 
