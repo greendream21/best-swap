@@ -5,8 +5,8 @@ const dev_hostnames = ['localhost'];
 
 const hostname = window.location.hostname;
 
-const isMainnet = process.env.REACT_ENV_NET === 'mainnet' || prod_hostnames.includes(hostname);
-const isTestnet = process.env.REACT_ENV_NET === 'testnet' || hostname.includes('testnet');
+const isMainnet = process.env.REACT_APP_NET === 'mainnet' || prod_hostnames.includes(hostname);
+const isTestnet = process.env.REACT_APP_NET === 'testnet' || hostname.includes('testnet');
 const isChaosnet = hostname.includes('chaosnet');
 const isDevnet = dev_hostnames.includes(hostname);
 
