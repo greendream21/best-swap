@@ -33,7 +33,7 @@ deploy:testnet-staging:
     name: testnet
   only:
     - development
-   when: manual
+  when: manual
 
 deploy:testnet-production:
   stage: deploy
