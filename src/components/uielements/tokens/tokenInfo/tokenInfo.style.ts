@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 import { palette } from 'styled-theme';
-import { media } from '../../../../helpers/styleHelper';
 
 export const TokenInfoWrapper = styled.div`
   position: relative;
