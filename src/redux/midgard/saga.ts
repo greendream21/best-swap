@@ -11,7 +11,7 @@ import {
   getBasePriceAsset,
 } from '../../helpers/webStorageHelper';
 import { getAssetDetailIndex, getPriceIndex } from './utils';
-import { NET, getNet } from '../../env';
+import { NET, getNet, isMainnet } from '../../env';
 import { UnpackPromiseResponse } from '../../types/util';
 import {
   GetTxByAddressPayload,
@@ -28,11 +28,19 @@ export const MIDGARD_MAX_RETRY = 3;
 export const MIDGARD_RETRY_DELAY = 1000; // ms
 
 export function* getApiBasePath(net: NET, noCache = false) {
-  // dev | test- | chaosnet
-  if (net === NET.TEST || net === NET.CHAOS || net === NET.DEV) {
-    const basePath: string = api.MIDGARD_TEST_API;
-    yield put(actions.getApiBasePathSuccess(basePath));
-    return basePath;
+  let baseAPIURL: string;
+
+  if (isMainnet) {
+    baseAPIURL = api.MIDGARD_CHAOSNET_API;
+    yield put(actions.getApiBasePathSuccess(baseAPIURL));
+    return baseAPIURL;
+  }
+
+  // dev | test
+  if (net === NET.TEST || net === NET.DEV) {
+    baseAPIURL = api.MIDGARD_TEST_API;
+    yield put(actions.getApiBasePathSuccess(baseAPIURL));
+    return baseAPIURL;
   }
 
   // mainnet uses `byz`
@@ -198,7 +206,10 @@ export function* getStats() {
 //   throw new Error('Midgard API request failed to get pool data');
 // }
 
-function* tryGetPoolDataFromAsset(asset: string, view: 'balances' | 'simple' | 'full') {
+function* tryGetPoolDataFromAsset(
+  asset: string,
+  view: 'balances' | 'simple' | 'full',
+) {
   try {
     const basePath: string = yield call(getApiBasePath, getNet());
     const midgardApi = api.getMidgardDefaultApi(basePath);
@@ -247,17 +258,17 @@ export function* getPoolData() {
 }
 
 export function* getPoolDetailByAsset() {
-    yield takeEvery('GET_POOL_DETAIL_BY_ASSET', function*({
-      payload,
-    }: ReturnType<typeof actions.getPoolDetailByAsset>) {
-      const { asset } = payload;
-      try {
-        const data = yield call(tryGetPoolDataFromAsset, asset, 'full');
-        yield put(actions.getPoolDetailByAssetSuccess(data));
-      } catch (error) {
-        yield put(actions.getPoolDetailByAssetFailed(error));
-      }
-    });
+  yield takeEvery('GET_POOL_DETAIL_BY_ASSET', function*({
+    payload,
+  }: ReturnType<typeof actions.getPoolDetailByAsset>) {
+    const { asset } = payload;
+    try {
+      const data = yield call(tryGetPoolDataFromAsset, asset, 'full');
+      yield put(actions.getPoolDetailByAssetSuccess(data));
+    } catch (error) {
+      yield put(actions.getPoolDetailByAssetFailed(error));
+    }
+  });
 }
 
 function* tryGetStakerPoolData(payload: GetStakerPoolDataPayload) {

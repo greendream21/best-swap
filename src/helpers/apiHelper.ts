@@ -21,6 +21,11 @@ export const MIDGARD_TEST_API = envOrDefault(
   'https://midgard.bepswap.com',
 );
 
+export const MIDGARD_CHAOSNET_API = envOrDefault(
+  process.env.REACT_APP_MIDGARD_CHAOSNET_API_URL,
+  'https://chaosnet-midgard.bepswap.com',
+);
+
 export const TESTNET_TX_BASE_URL = 'https://testnet-explorer.binance.org/tx/';
 
 export const TESTNET_SEED_URL = envOrDefault(

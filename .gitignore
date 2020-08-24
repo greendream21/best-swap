@@ -211,3 +211,7 @@ $RECYCLE.BIN/
 keystore
 
 src/types/generated/midgard/git_push.sh
+
+# env variables
+
+.env
