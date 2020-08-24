@@ -4,7 +4,7 @@ import { formatBaseAsTokenAmount, baseAmount } from '@thorchain/asgardex-token';
 import { TxStatusWrapper, TxStatusContent, Seperator } from './txStatus.style';
 import { Coin } from '../../../types/generated/midgard';
 import { getAssetFromString } from '../../../redux/midgard/utils';
-import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
+import { BINANCE_TX_BASE_URL } from '../../../helpers/apiHelper';
 import Label from '../../uielements/label';
 
 export type RoundValue = 'left' | 'right';
@@ -18,7 +18,7 @@ export type Props = {
 
 const TxStatus: React.FC<Props> = (props: Props): JSX.Element => {
   const { type, data, round, txID } = props;
-  const txURL = txID ? TESTNET_TX_BASE_URL + txID : '#';
+  const txURL = txID ? BINANCE_TX_BASE_URL + txID : '#';
 
   const renderTxStatus = () => {
     return (

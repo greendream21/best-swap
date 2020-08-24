@@ -13,7 +13,7 @@ import {
   TxDetailsTypeEnum,
   Coin,
 } from '../../../types/generated/midgard';
-import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
+import { BINANCE_TX_BASE_URL } from '../../../helpers/apiHelper';
 import Table from '../../uielements/table';
 import { StyledText, StyledLink, StyledLinkText } from './txTable.style';
 import { FixmeType } from '../../../types/bepswap';
@@ -85,7 +85,7 @@ const TxTable: React.FC<Props> = (props: Props): JSX.Element => {
 
         return (
           <StyledLink
-            href={`${txId ? `${TESTNET_TX_BASE_URL}${txId}` : '#'}`}
+            href={`${txId ? `${BINANCE_TX_BASE_URL}${txId}` : '#'}`}
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -118,7 +118,7 @@ const TxTable: React.FC<Props> = (props: Props): JSX.Element => {
 
         return (
           <StyledLink
-            href={`${txId ? `${TESTNET_TX_BASE_URL}${txId}` : '#'}`}
+            href={`${txId ? `${BINANCE_TX_BASE_URL}${txId}` : '#'}`}
             target="_blank"
             rel="noopener noreferrer"
           >
