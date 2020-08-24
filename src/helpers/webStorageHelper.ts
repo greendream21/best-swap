@@ -5,6 +5,7 @@ export const WALLET_ADDRESS = 'WALLET_ADDRESS';
 export const KEY_STORE = 'KEY_STORE';
 export const BASE_PRICE_ASSET = 'BASE_PRICE_ASSET';
 export const THEME_TYPE = 'THEME_TYPE';
+export const BETA_CONFIRM = 'BETA_CONFIRM';
 
 export const saveWalletAddress = (address: string) => {
   sessionStorage.setItem(WALLET_ADDRESS, address);
@@ -52,4 +53,12 @@ export const saveTheme = (themeType: string) => {
 
 export const getTheme = () => {
   return localStorage.getItem(THEME_TYPE) || ThemeType.LIGHT;
+};
+
+export const saveBetaConfirm = (hasConfirmed: boolean) => {
+  localStorage.setItem(BETA_CONFIRM, JSON.stringify(hasConfirmed));
+};
+
+export const getBetaConfirm = () => {
+  return JSON.parse(localStorage.getItem(BETA_CONFIRM) || 'false');
 };
