@@ -5,6 +5,7 @@ import rateLimit from 'axios-rate-limit';
 import { DefaultApi } from '../types/generated/midgard';
 import { Maybe, Nothing } from '../types/bepswap';
 import { envOrDefault } from './envHelper';
+import { isMainnet } from '../env';
 
 export const BINANCE_TESTNET_URL = envOrDefault(
   process.env.REACT_APP_BINANCE_TESTNET_URL,
@@ -26,12 +27,17 @@ export const MIDGARD_CHAOSNET_API = envOrDefault(
   'https://chaosnet-midgard.bepswap.com',
 );
 
-export const TESTNET_TX_BASE_URL = 'https://testnet-explorer.binance.org/tx/';
+export const getMidgardBaseURL = () => {
+  return isMainnet ? MIDGARD_CHAOSNET_API : MIDGARD_TEST_API;
+};
 
-export const TESTNET_SEED_URL = envOrDefault(
-  process.env.REACT_APP_TESTNET_SEED_URL,
-  'https://testnet-seed.thorchain.info/node_ip_list.json',
-);
+const THORCHAIN_API_URL = 'http://175.41.165.95:1317/thorchain';
+
+export const getThorchainBaseURL = () => {
+  return THORCHAIN_API_URL;
+};
+
+export const TESTNET_TX_BASE_URL = 'https://testnet-explorer.binance.org/tx/';
 
 export const getBinanceTestnetURL = (url: string) =>
   `${BINANCE_TESTNET_URL}/${url}`;

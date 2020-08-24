@@ -102,6 +102,7 @@ export type ApiBasePathRD = RemoteData<Error, string>;
 export type ThorchainData = {
   constants?: FixmeType;
   lastBlock?: FixmeType;
+  mimir?: FixmeType;
 };
 
 export type State = {

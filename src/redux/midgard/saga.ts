@@ -11,7 +11,7 @@ import {
   getBasePriceAsset,
 } from '../../helpers/webStorageHelper';
 import { getAssetDetailIndex, getPriceIndex } from './utils';
-import { NET, getNet, isMainnet } from '../../env';
+import { NET, getNet } from '../../env';
 import { UnpackPromiseResponse } from '../../types/util';
 import {
   GetTxByAddressPayload,
@@ -28,22 +28,16 @@ export const MIDGARD_MAX_RETRY = 3;
 export const MIDGARD_RETRY_DELAY = 1000; // ms
 
 export function* getApiBasePath(net: NET, noCache = false) {
-  let baseAPIURL: string;
+  const baseAPIURL: string = api.getMidgardBaseURL();
+  const hostname = window.location.hostname;
 
-  if (isMainnet) {
-    baseAPIURL = api.MIDGARD_CHAOSNET_API;
+  const isMainnet = hostname === 'bepswap.com';
+  if (!isMainnet) {
     yield put(actions.getApiBasePathSuccess(baseAPIURL));
     return baseAPIURL;
   }
 
-  // dev | test
-  if (net === NET.TEST || net === NET.DEV) {
-    baseAPIURL = api.MIDGARD_TEST_API;
-    yield put(actions.getApiBasePathSuccess(baseAPIURL));
-    return baseAPIURL;
-  }
-
-  // mainnet uses `byz`
+  // mainnet will use byzantine
 
   try {
     yield put(actions.getApiBasePathPending());
@@ -300,21 +294,23 @@ function* tryGetStakerPoolData(payload: GetStakerPoolDataPayload) {
   throw new Error('Midgard API request failed to get stakers pool data');
 }
 
-const getThorchainBaseURL = () => {
-  // TODO: hardcode the thorchain url for temporarly
-  return 'https://midgard.bepswap.com/v1/thorchain';
-};
-
 const getThorchainConstants = () => {
   return axiosRequest({
-    url: `${getThorchainBaseURL()}/constants`,
+    url: `${api.getThorchainBaseURL()}/constants`,
     method: 'GET',
   });
 };
 
 const getThorchainLastBlock = () => {
   return axiosRequest({
-    url: `${getThorchainBaseURL()}/lastblock`,
+    url: `${api.getThorchainBaseURL()}/lastblock`,
+    method: 'GET',
+  });
+};
+
+const getThorchainMimir = () => {
+  return axiosRequest({
+    url: `${api.getThorchainBaseURL()}/mimir`,
     method: 'GET',
   });
 };
@@ -325,14 +321,18 @@ export function* getStakerPoolData() {
   }: ReturnType<typeof actions.getStakerPoolData>) {
     try {
       const data = yield call(tryGetStakerPoolData, payload);
+
+      // TODO: (CHRIS) create a separate get thorchaindata actions
       const { data: constants } = yield call(getThorchainConstants);
       const { data: lastBlock } = yield call(getThorchainLastBlock);
+      const { data: mimir } = yield call(getThorchainMimir);
 
       yield put(actions.getStakerPoolDataSuccess(data));
       yield put(
         actions.getThorchainDataSuccess({
           constants,
           lastBlock,
+          mimir,
         }),
       );
     } catch (error) {
