@@ -54,7 +54,7 @@ const initState: State = {
   },
   error: null,
   poolLoading: true,
-  poolDataLoading: true,
+  poolDataLoading: false,
   poolDetailedDataLoading: true,
   assetLoading: true,
   statsLoading: false,
