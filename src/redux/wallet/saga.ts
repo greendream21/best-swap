@@ -1,4 +1,12 @@
-import { all, takeEvery, put, fork, call, delay } from 'redux-saga/effects';
+import {
+  all,
+  takeEvery,
+  put,
+  fork,
+  call,
+  delay,
+  select,
+} from 'redux-saga/effects';
 import { push } from 'connected-react-router';
 import { isEmpty as _isEmpty } from 'lodash';
 
@@ -15,6 +23,7 @@ import {
   baseAmount,
   tokenAmount,
 } from '@thorchain/asgardex-token';
+import { RootState } from '../store';
 import * as api from '../../helpers/apiHelper';
 
 import {
@@ -40,6 +49,7 @@ import {
   MIDGARD_RETRY_DELAY,
 } from '../midgard/saga';
 import { UnpackPromiseResponse } from '../../types/util';
+import { isBEP8Token } from '../../helpers/utils/walletUtils';
 
 export function* saveWalletSaga() {
   yield takeEvery('SAVE_WALLET', function*({
@@ -50,6 +60,7 @@ export function* saveWalletSaga() {
     saveWalletAddress(wallet);
     saveKeystore(keystore);
 
+    // update wallet balance and stake data
     yield put(actions.refreshBalance(wallet));
     yield put(actions.refreshStakes(wallet));
   });
@@ -76,7 +87,10 @@ export function* refreshBalance() {
 
       try {
         const markets: { result: Market[] } = yield call(bncClient.getMarkets);
-        const coins = balances.map((coin: Balance) => {
+        const filteredBalance = balances.filter(
+          (balance: Balance) => !isBEP8Token(balance.symbol),
+        );
+        const coins = filteredBalance.map((coin: Balance) => {
           const market = markets.result.find(
             (market: Market) => market.base_asset_symbol === coin.symbol,
           );
@@ -135,7 +149,7 @@ export function* getUserStakeData(
   // (Request 2) Load list of possible `PoolDetail`
   midgardApi = api.getMidgardDefaultApi(basePath);
   const { data: poolDataList }: AxiosResponse<PoolDetail[]> = yield call(
-    { context: midgardApi, fn: midgardApi.getPoolsData },
+    { context: midgardApi, fn: midgardApi.getPoolsDetails },
     assets.join(),
   );
 
@@ -251,11 +265,24 @@ export function* refreshStakes() {
   });
 }
 
+export function* refreshWallet() {
+  yield takeEvery('REFRESH_WALLET', function*() {
+    const user = yield select((state: RootState) => state.Wallet.user);
+    const wallet = user?.wallet;
+
+    if (wallet) {
+      yield put(actions.refreshBalance(wallet));
+      yield put(actions.refreshStakes(wallet));
+    }
+  });
+}
+
 export default function* rootSaga() {
   yield all([
     fork(saveWalletSaga),
     fork(forgetWalletSaga),
     fork(refreshBalance),
     fork(refreshStakes),
+    fork(refreshWallet),
   ]);
 }

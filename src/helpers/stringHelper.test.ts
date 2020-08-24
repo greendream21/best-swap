@@ -1,6 +1,6 @@
 import {
   getTickerFormat,
-  getPair,
+  getSymbolPair,
   compareShallowStr,
 } from './stringHelper';
 import { Pair } from '../types/bepswap';
@@ -31,20 +31,19 @@ describe('helpers/stringHelper/', () => {
     });
   });
 
-  // getPair
 
-  describe('getPair', () => {
-    it('returns a valid value pair for "-" separated strings', () => {
-      const result: Pair = getPair('HELLO-WORLD');
-      expect(result).toEqual({ source: 'hello', target: 'world' });
+  describe('getSymbolPair', () => {
+    it('returns source and target symbols for ":" separated symbol pair', () => {
+      const result: Pair = getSymbolPair('RUNE-67C:BNB');
+      expect(result).toEqual({ source: 'RUNE-67C', target: 'BNB' });
     });
-    it('returns a valid source value for non "-" separated strings', () => {
-      const result: Pair = getPair('HELLO');
-      expect(result.source).toEqual('hello');
+    it('returns a valid source value for non ":" separated strings', () => {
+      const result: Pair = getSymbolPair('RUNE-67C');
+      expect(result.source).toEqual('RUNE-67C');
       expect(result.target).toBeNothing();
     });
     it('returns a null value pair if no value entered', () => {
-      const result: Pair = getPair();
+      const result: Pair = getSymbolPair();
       expect(result.source).toBeNothing();
       expect(result.target).toBeNothing();
     });

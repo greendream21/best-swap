@@ -30,7 +30,7 @@ import {
 import { getTickerFormat } from '../../helpers/stringHelper';
 import { getTokenName } from '../../helpers/assetHelper';
 import { Maybe, Nothing, FixmeType } from '../../types/bepswap';
-import { NET } from '../../env';
+import { NET, getNet } from '../../env';
 import { envOrDefault } from '../../helpers/envHelper';
 import { Fees } from './types';
 import { getTransferFeeds } from '../../helpers/binanceHelper';
@@ -42,6 +42,15 @@ import { getTransferFeeds } from '../../helpers/binanceHelper';
 const LIMIT = 1000;
 export const BINANCE_MAX_RETRY = 5;
 export const BINANCE_RETRY_DELAY = 1000; // ms
+
+// load initial binance data
+export function* getBinanceData() {
+  yield takeEvery('GET_BINANCE_DATA', function*() {
+    yield put(actions.getBinanceTokens());
+    yield put(actions.getBinanceMarkets());
+    yield put(actions.getBinanceFees(getNet()));
+  });
+}
 
 export function* getBinanceTokens() {
   yield takeEvery('GET_BINANCE_TOKENS', function*() {
@@ -356,6 +365,7 @@ function* unSubscribeBinanceTransfers() {
 
 export default function* rootSaga() {
   yield all([
+    fork(getBinanceData),
     fork(getBinanceTokens),
     fork(getBinanceMarkets),
     fork(getBinanceTicker),

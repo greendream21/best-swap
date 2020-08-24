@@ -4,6 +4,8 @@ import { AssetInfoWrapper } from './assetInfo.style';
 import Coin from '../../coins/coin';
 import { CoinSize } from '../../coins/coin/types';
 
+import { getTickerFormat } from '../../../../helpers/stringHelper';
+
 type Props = {
   asset: string;
   size?: CoinSize;
@@ -19,7 +21,7 @@ const AssetInfo: React.FC<Props> = (props: Props): JSX.Element => {
       {...otherProps}
     >
       <Coin className="asset-avatar" type={asset} size={size} />
-      <div className="asset-label">{asset}</div>
+      <div className="asset-label">{getTickerFormat(asset)}</div>
     </AssetInfoWrapper>
   );
 };

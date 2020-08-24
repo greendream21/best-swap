@@ -37,12 +37,8 @@ const WalletDrawer: React.FC<Props> = props => {
   const wallet = user ? user.wallet : null;
 
   const toggleDrawer = useCallback(() => {
-    if (wallet && visible === false) {
-      refreshBalance(wallet);
-      refreshStakes(wallet);
-    }
     setVisible(!visible);
-  }, [refreshBalance, refreshStakes, visible, wallet]);
+  }, [visible]);
 
   const onClose = () => {
     setVisible(false);

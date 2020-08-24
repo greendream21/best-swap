@@ -1,6 +1,7 @@
 import { all, takeEvery, put, fork, call, delay } from 'redux-saga/effects';
 import { isEmpty as _isEmpty } from 'lodash';
 import byzantine from '@thorchain/byzantine-module';
+import { PoolDetail } from '../../types/generated/midgard/api';
 import { axiosRequest } from '../../helpers/apiHelper';
 import * as actions from './actions';
 import * as api from '../../helpers/apiHelper';
@@ -18,6 +19,8 @@ import {
   GetTxByAssetPayload,
   GetTxByAddressAssetPayload,
   GetStakerPoolDataPayload,
+  GetTransactionPayload,
+  GetRTVolumeByAssetPayload,
 } from './types';
 import { AssetDetail } from '../../types/generated/midgard';
 
@@ -66,6 +69,44 @@ function* tryGetPools() {
           fn,
         },
       );
+      return poolAssets;
+    } catch (error) {
+      if (i < MIDGARD_MAX_RETRY - 1) {
+        yield delay(MIDGARD_RETRY_DELAY);
+      }
+    }
+  }
+  throw new Error('Midgard API request failed to get pools');
+}
+
+function* tryGetStats() {
+  for (let i = 0; i < MIDGARD_MAX_RETRY; i++) {
+    try {
+      const noCache = i > 0;
+      // Unsafe type match of `basePath`: Can't be inferred by `tsc` from a return value of a Generator function - known TS/Generator/Saga issue
+      const basePath: string = yield call(getApiBasePath, getNet(), noCache);
+      const midgardApi = api.getMidgardDefaultApi(basePath);
+      const fn = midgardApi.getStats;
+      const { data: stats }: UnpackPromiseResponse<typeof fn> = yield call({
+        context: midgardApi,
+        fn,
+      });
+      return stats;
+    } catch (error) {
+      if (i < MIDGARD_MAX_RETRY - 1) {
+        yield delay(MIDGARD_RETRY_DELAY);
+      }
+    }
+  }
+}
+
+function* tryGetAssets(poolAssets: string[]) {
+  for (let i = 0; i < MIDGARD_MAX_RETRY; i++) {
+    try {
+      const noCache = i > 0;
+      // Unsafe type match of `basePath`: Can't be inferred by `tsc` from a return value of a Generator function - known TS/Generator/Saga issue
+      const basePath: string = yield call(getApiBasePath, getNet(), noCache);
+      const midgardApi = api.getMidgardDefaultApi(basePath);
 
       if (!_isEmpty(poolAssets)) {
         const fn = midgardApi.getAssetInfo;
@@ -78,7 +119,7 @@ function* tryGetPools() {
           },
           poolAssets.join(),
         );
-        return { poolAssets, assetDetails } as GetPoolsResult;
+        return assetDetails;
       } else {
         throw new Error('No pools available');
       }
@@ -95,9 +136,11 @@ export function* getPools() {
   yield takeEvery('GET_POOLS_REQUEST', function*() {
     try {
       // Unsafe: Can't infer type of `GetPoolsResult` in a Generator function - known TS/Generator/Saga issue
-      const { poolAssets, assetDetails }: GetPoolsResult = yield call(
-        tryGetPools,
-      );
+      const pools = yield call(tryGetPools);
+
+      yield put(actions.getPoolsSuccess(pools));
+
+      const assetDetails = yield call(tryGetAssets, pools);
       const assetDetailIndex = getAssetDetailIndex(assetDetails);
       const assetsPayload: actions.SetAssetsPayload = {
         assetDetails,
@@ -111,35 +154,66 @@ export function* getPools() {
       yield put(actions.setPriceIndex(priceIndex));
 
       yield put(
-        actions.getPoolData({ assets: poolAssets, overrideAllPoolData: true }),
+        actions.getPoolData({ assets: pools, overrideAllPoolData: true }),
       );
-      yield put(actions.getPoolsSuccess(poolAssets));
     } catch (error) {
       yield put(actions.getPoolsFailed(error));
     }
   });
 }
 
-function* tryGetPoolData(assets: string[]) {
-  for (let i = 0; i < MIDGARD_MAX_RETRY; i++) {
+export function* getStats() {
+  yield takeEvery('GET_STATS_REQUEST', function*() {
     try {
-      const noCache = i > 0;
-      // Unsafe type match of `basePath`: Can't be inferred by `tsc` from a return value of a Generator function - known TS/Generator/Saga issue
-      const basePath: string = yield call(getApiBasePath, getNet(), noCache);
-      const midgardApi = api.getMidgardDefaultApi(basePath);
-      const fn = midgardApi.getPoolsData;
-      const { data }: UnpackPromiseResponse<typeof fn> = yield call(
-        { context: midgardApi, fn },
-        assets.join(),
-      );
-      return data;
+      // Unsafe: Can't infer type of `GetStatsResult` in a Generator function - known TS/Generator/Saga issue
+      const stats = yield call(tryGetStats);
+
+      yield put(actions.getStatsSuccess(stats));
     } catch (error) {
-      if (i < MIDGARD_MAX_RETRY - 1) {
-        yield delay(MIDGARD_RETRY_DELAY);
-      }
+      yield put(actions.getStatsFailed(error));
     }
+  });
+}
+
+// should use this once midgard is ready for fetching multiple pool data at once
+// function* tryGetAllPoolData(assets: string[]) {
+//   for (let i = 0; i < MIDGARD_MAX_RETRY; i++) {
+//     try {
+//       const noCache = i > 0;
+//       // Unsafe type match of `basePath`: Can't be inferred by `tsc` from a return value of a Generator function - known TS/Generator/Saga issue
+//       const basePath: string = yield call(getApiBasePath, getNet(), noCache);
+//       const midgardApi = api.getMidgardDefaultApi(basePath);
+//       const fn = midgardApi.getPoolsData;
+//       const { data }: UnpackPromiseResponse<typeof fn> = yield call(
+//         { context: midgardApi, fn },
+//         assets.join(),
+//       );
+//       return data;
+//     } catch (error) {
+//       if (i < MIDGARD_MAX_RETRY - 1) {
+//         yield delay(MIDGARD_RETRY_DELAY);
+//       }
+//     }
+//   }
+//   throw new Error('Midgard API request failed to get pool data');
+// }
+
+function* tryGetPoolDataFromAsset(asset: string, view: 'balances' | 'simple' | 'full') {
+  try {
+    const basePath: string = yield call(getApiBasePath, getNet());
+    const midgardApi = api.getMidgardDefaultApi(basePath);
+    const fn = midgardApi.getPoolsDetails;
+
+    const { data }: UnpackPromiseResponse<typeof fn> = yield call(
+      { context: midgardApi, fn },
+      asset,
+      view,
+    );
+    return data;
+  } catch (error) {
+    console.log(error);
+    return [];
   }
-  throw new Error('Midgard API request failed to get pool data');
 }
 
 export function* getPoolData() {
@@ -148,10 +222,21 @@ export function* getPoolData() {
   }: ReturnType<typeof actions.getPoolData>) {
     const { assets, overrideAllPoolData } = payload;
     try {
-      const data = yield call(tryGetPoolData, assets);
+      const poolDetailsRespones: Array<PoolDetail[]> = yield all(
+        assets.map((asset: string) => {
+          return call(tryGetPoolDataFromAsset, asset, 'simple');
+        }),
+      );
+
+      const poolDetails: PoolDetail[] = [];
+
+      poolDetailsRespones.forEach(
+        (data: PoolDetail[]) => data.length && poolDetails.push(data[0]),
+      );
+
       yield put(
         actions.getPoolDataSuccess({
-          poolDetails: data,
+          poolDetails,
           overrideAllPoolData,
         }),
       );
@@ -159,6 +244,20 @@ export function* getPoolData() {
       yield put(actions.getPoolDataFailed(error));
     }
   });
+}
+
+export function* getPoolDetailByAsset() {
+    yield takeEvery('GET_POOL_DETAIL_BY_ASSET', function*({
+      payload,
+    }: ReturnType<typeof actions.getPoolDetailByAsset>) {
+      const { asset } = payload;
+      try {
+        const data = yield call(tryGetPoolDataFromAsset, asset, 'full');
+        yield put(actions.getPoolDetailByAssetSuccess(data));
+      } catch (error) {
+        yield put(actions.getPoolDetailByAssetFailed(error));
+      }
+    });
 }
 
 function* tryGetStakerPoolData(payload: GetStakerPoolDataPayload) {
@@ -260,6 +359,47 @@ export function* getPoolAddress() {
       yield put(actions.getPoolAddressSuccess(data));
     } catch (error) {
       yield put(actions.getPoolAddressFailed(error));
+    }
+  });
+}
+
+function* tryGetTransactions(payload: GetTransactionPayload) {
+  for (let i = 0; i < MIDGARD_MAX_RETRY; i++) {
+    try {
+      const noCache = i > 0;
+      const { offset, limit, type } = payload;
+      // Unsafe type match of `basePath`: Can't be inferred by `tsc` from a return value of a Generator function - known TS/Generator/Saga issue
+      const basePath: string = yield call(getApiBasePath, getNet(), noCache);
+      const midgardApi = api.getMidgardDefaultApi(basePath);
+      const fn = midgardApi.getTxDetails;
+      const { data }: UnpackPromiseResponse<typeof fn> = yield call(
+        { context: midgardApi, fn },
+        offset,
+        limit,
+        undefined,
+        undefined,
+        undefined,
+        type,
+      );
+      return data;
+    } catch (error) {
+      if (i < MIDGARD_MAX_RETRY - 1) {
+        yield delay(MIDGARD_RETRY_DELAY);
+      }
+    }
+  }
+  throw new Error('Midgard API request failed to get transaction details');
+}
+
+export function* getTransactions() {
+  yield takeEvery('GET_TRANSACTION', function*({
+    payload,
+  }: ReturnType<typeof actions.getTransaction>) {
+    try {
+      const data = yield call(tryGetTransactions, payload);
+      yield put(actions.getTransactionSuccess(data));
+    } catch (error) {
+      yield put(actions.getTransactionFailed(error));
     }
   });
 }
@@ -448,16 +588,65 @@ export function* setBasePriceAsset() {
   });
 }
 
+function* tryGetRTVolumeByAsset(payload: GetRTVolumeByAssetPayload) {
+  for (let i = 0; i < MIDGARD_MAX_RETRY; i++) {
+    try {
+      const noCache = i > 0;
+      const { asset, from, to, interval } = payload;
+      // Unsafe: Can't infer type of `basePath` here - known TS/Generator/Saga issue
+      const basePath: string = yield call(getApiBasePath, getNet(), noCache);
+      const midgardApi = api.getMidgardDefaultApi(basePath);
+      const fn = midgardApi.getTotalVolChanges;
+      const { data }: UnpackPromiseResponse<typeof fn> = yield call(
+        {
+          context: midgardApi,
+          fn,
+        },
+        interval,
+        from,
+        to,
+        asset,
+      );
+
+      return data;
+    } catch (error) {
+      if (i < MIDGARD_MAX_RETRY - 1) {
+        yield delay(MIDGARD_RETRY_DELAY);
+      }
+    }
+  }
+  throw new Error(
+    'Midgard API request failed to get RT Volume changes by asset',
+  );
+}
+
+export function* getRTVolumeByAsset() {
+  yield takeEvery('GET_RT_VOLUME_BY_ASSET', function*({
+    payload,
+  }: ReturnType<typeof actions.getRTVolumeByAsset>) {
+    try {
+      const data = yield call(tryGetRTVolumeByAsset, payload);
+      yield put(actions.getRTVolumeByAssetSuccess(data));
+    } catch (error) {
+      yield put(actions.getRTVolumeByAssetFailed(error));
+    }
+  });
+}
+
 export default function* rootSaga() {
   yield all([
     fork(getPools),
     fork(getPoolData),
+    fork(getStats),
     fork(getStakerPoolData),
     fork(getPoolAddress),
     fork(setBasePriceAsset),
+    fork(getTransactions),
     fork(getTxByAddress),
     fork(getTxByAddressTxId),
     fork(getTxByAddressAsset),
     fork(getTxByAsset),
+    fork(getRTVolumeByAsset),
+    fork(getPoolDetailByAsset),
   ]);
 }

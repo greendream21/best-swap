@@ -1,4 +1,6 @@
 import { bn } from '@thorchain/asgardex-util';
+import { RUNE_SYMBOL } from '../../settings/assetData';
+
 import { Nothing, Maybe } from '../../types/bepswap';
 import { PriceDataIndex, AssetDetailMap } from './types';
 import {
@@ -46,24 +48,25 @@ export const getAssetDetailIndex = (
 
 export const getPriceIndex = (
   assets: AssetDetail[],
-  baseTokenTicker: string,
+  baseAssetSymbol: string,
 ): PriceDataIndex => {
   let baseTokenPrice = bn(0);
 
-  if (baseTokenTicker.toLowerCase() === 'rune') {
+  if (baseAssetSymbol === RUNE_SYMBOL) {
     baseTokenPrice = bn(1);
   }
 
   const baseTokenInfo = assets.find(assetInfo => {
     const { asset = '' } = assetInfo;
-    const { ticker } = getAssetFromString(asset);
-    return ticker === baseTokenTicker.toUpperCase();
+    const { symbol } = getAssetFromString(asset);
+    return symbol === baseAssetSymbol;
   });
+
   baseTokenPrice = bn(baseTokenInfo?.priceRune ?? 1);
 
   let priceDataIndex: PriceDataIndex = {
     // formula: 1 / baseTokenPrice
-    RUNE: bn(1).div(baseTokenPrice),
+    [RUNE_SYMBOL]: bn(1).div(baseTokenPrice),
   };
 
   assets.forEach(assetInfo => {
@@ -72,12 +75,14 @@ export const getPriceIndex = (
     let price = bn(0);
     if (priceRune && baseTokenPrice) {
       // formula: 1 / baseTokenPrice) * priceRune
-      price = bn(1).div(baseTokenPrice).multipliedBy(priceRune);
+      price = bn(1)
+        .div(baseTokenPrice)
+        .multipliedBy(priceRune);
     }
 
-    const { ticker } = getAssetFromString(asset);
-    if (ticker) {
-      priceDataIndex = { ...priceDataIndex, [ticker]: price };
+    const { symbol } = getAssetFromString(asset);
+    if (symbol) {
+      priceDataIndex = { ...priceDataIndex, [symbol]: price };
     }
   });
 
@@ -104,12 +109,14 @@ export const getAssetFromString = (s?: string): Asset => {
   // so we have to check the type of s here...
   if (s && typeof s === 'string') {
     const data = s.split('.');
-    chain = data[0];
-    const ss = data[1];
-    if (ss) {
-      symbol = ss;
-      // grab `ticker` from string or reference to `symbol` as `ticker`
-      ticker = ss.split('-')[0];
+    if (s.includes('.')) {
+      chain = data[0];
+      symbol = data[1];
+    } else {
+      symbol = data[0];
+    }
+    if (symbol) {
+      ticker = symbol.split('-')[0];
     }
   }
   return { chain, symbol, ticker };

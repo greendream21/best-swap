@@ -17,12 +17,12 @@ describe('routeHelper', () => {
 
   describe('matchSwapDetailPair', () => {
     it('should match swap detail pair', () => {
-      const result = matchSwapDetailPair('/swap/detail/fsn-rune');
-      expect(result?.source).toEqual('fsn');
-      expect(result?.target).toEqual('rune');
+      const result = matchSwapDetailPair('/swap/RUNE-67C:BNB');
+      expect(result?.source).toEqual('RUNE-67C');
+      expect(result?.target).toEqual('BNB');
     });
     it('should not match a pair at an swap detail page', () => {
-      const result = matchSwapDetailPair('/swap/detail');
+      const result = matchSwapDetailPair('/swap');
       expect(result).toBeNothing();
     });
     it('should not match a pair at pool page', () => {

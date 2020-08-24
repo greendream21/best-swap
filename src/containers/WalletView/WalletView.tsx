@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter, Link, useHistory } from 'react-router-dom';
@@ -12,9 +12,7 @@ import Label from '../../components/uielements/label';
 import Button from '../../components/uielements/button';
 import CoinList from '../../components/uielements/coins/coinList';
 import { CoinListDataList } from '../../components/uielements/coins/coinList/coinList';
-import * as midgardActions from '../../redux/midgard/actions';
-import { getTickerFormat, getPair } from '../../helpers/stringHelper';
-import { Maybe, Nothing } from '../../types/bepswap';
+import { Maybe } from '../../types/bepswap';
 import {
   User,
   AssetData,
@@ -27,6 +25,7 @@ import {
   matchSwapDetailPair,
   matchPoolSymbol,
 } from '../../helpers/routerHelper';
+import { RUNE_SYMBOL } from '../../settings/assetData';
 
 const { TabPane } = Tabs;
 
@@ -39,14 +38,13 @@ type ConnectedProps = {
   assetData: AssetData[];
   stakeData: StakeDataListLoadingState;
   loadingAssets: boolean;
-  getPools: typeof midgardActions.getPools;
   priceIndex: PriceDataIndex;
   basePriceAsset: string;
   pathname: string;
 };
 
 type Props = ComponentProps & ConnectedProps;
-type State = {}
+type State = {};
 
 const WalletView: React.FC<Props> = (props: Props): JSX.Element => {
   const {
@@ -58,16 +56,9 @@ const WalletView: React.FC<Props> = (props: Props): JSX.Element => {
     basePriceAsset,
     pathname,
     status,
-    getPools,
   } = props;
 
   const history = useHistory();
-
-
-  useEffect(() => {
-    getPools();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const getAssetNameByIndex = (index: number): string => {
     const sortedAssets = _sortBy(assetData, ['asset']);
@@ -77,10 +68,9 @@ const WalletView: React.FC<Props> = (props: Props): JSX.Element => {
 
   const getAssetBySource = (source: string): Maybe<AssetData> => {
     const result = assetData.find((data: AssetData) => {
-      const { source: assetSource } = getPair(data.asset);
-      return assetSource && assetSource === source;
+      return data.asset === source && source;
     });
-    return result || Nothing;
+    return result;
   };
 
   const getStakeDataBySource = (symbol: string): Maybe<StakeData> => {
@@ -90,9 +80,8 @@ const WalletView: React.FC<Props> = (props: Props): JSX.Element => {
 
   const handleSelectAsset = (key: number) => {
     const newAssetName = getAssetNameByIndex(key);
-    const ticker = getTickerFormat(newAssetName);
 
-    const URL = `/swap/${ticker}-rune`;
+    const URL = `/swap/${newAssetName}:${RUNE_SYMBOL}`;
     history.push(URL);
   };
 
@@ -105,8 +94,9 @@ const WalletView: React.FC<Props> = (props: Props): JSX.Element => {
   };
 
   const getSelectedAsset = (): AssetData[] => {
-    const pair = matchSwapDetailPair(pathname);
-    const asset = getAssetBySource(pair?.source ?? '');
+    const symbolPair = matchSwapDetailPair(pathname);
+    const asset = getAssetBySource(symbolPair?.source ?? '');
+
     return asset ? [asset] : [];
   };
 
@@ -199,19 +189,14 @@ const WalletView: React.FC<Props> = (props: Props): JSX.Element => {
 };
 
 export default compose(
-  connect(
-    (state: RootState) => ({
-      user: state.Wallet.user,
-      assetData: state.Wallet.assetData,
-      stakeData: state.Wallet.stakeData,
-      loadingAssets: state.Wallet.loadingAssets,
-      priceIndex: state.Midgard.priceIndex,
-      basePriceAsset: state.Midgard.basePriceAsset,
-      pathname: state.router.location.pathname,
-    }),
-    {
-      getPools: midgardActions.getPools,
-    },
-  ),
+  connect((state: RootState) => ({
+    user: state.Wallet.user,
+    assetData: state.Wallet.assetData,
+    stakeData: state.Wallet.stakeData,
+    loadingAssets: state.Wallet.loadingAssets,
+    priceIndex: state.Midgard.priceIndex,
+    basePriceAsset: state.Midgard.basePriceAsset,
+    pathname: state.router.location.pathname,
+  })),
   withRouter,
 )(WalletView) as React.ComponentClass<ComponentProps, State>;

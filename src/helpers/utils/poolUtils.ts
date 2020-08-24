@@ -19,6 +19,7 @@ import {
   baseAmount,
   formatBaseAsTokenAmount,
 } from '@thorchain/asgardex-token';
+import { AssetDetail } from '../../types/generated/midgard/api';
 import { getStakeMemo, getWithdrawMemo } from '../memoHelper';
 import { getTickerFormat } from '../stringHelper';
 import { PoolDataMap, PriceDataIndex } from '../../redux/midgard/types';
@@ -27,6 +28,9 @@ import { getAssetFromString } from '../../redux/midgard/utils';
 import { AssetData } from '../../redux/wallet/types';
 import { Maybe, Nothing } from '../../types/bepswap';
 import { PoolData } from './types';
+import { RUNE_SYMBOL } from '../../settings/assetData';
+
+// TODO: Refactor pool utils
 
 export type CalcResult = {
   poolAddress: Maybe<string>;
@@ -147,19 +151,24 @@ export const getAvailableTokensToCreate = (
 
 // TODO(Chris): Refactor utils
 
+/**
+ * return pool detail data
+ * @param symbol pool symbol
+ * @param poolDetail pool detail values
+ * @param priceIndex price index
+ */
 export const getPoolData = (
-  from: string,
+  symbol: string,
   poolDetail: PoolDetail,
+  assetDetail: AssetDetail,
   priceIndex: PriceDataIndex,
 ): PoolData => {
-  const asset = from;
-  const { symbol = '', ticker: target = '' } = getAssetFromString(
-    poolDetail?.asset,
-  );
+  const asset = 'RUNE';
+  const target = getTickerFormat(symbol).toUpperCase();
 
-  const runePrice = validBNOrZero(priceIndex?.RUNE);
+  const runePrice = validBNOrZero(priceIndex[RUNE_SYMBOL]);
 
-  const poolPrice = validBNOrZero(priceIndex[target.toUpperCase()]);
+  const poolPrice = validBNOrZero(priceIndex[symbol.toUpperCase()]);
   const poolPriceValue = `${poolPrice.toFixed(3)}`;
 
   const depthResult = bnOrZero(poolDetail?.runeDepth).multipliedBy(runePrice);
@@ -177,8 +186,17 @@ export const getPoolData = (
   );
   const transaction = baseAmount(transactionResult);
 
-  const roiATResult = poolDetail?.poolROI ?? 0;
-  const roiAT = Number((Number(roiATResult) * 100).toFixed(2));
+  // APR (Annual Percent Rate)
+  const roiATResult = Number(poolDetail?.poolROI ?? 0);
+  const apr = Number((roiATResult * 100).toFixed(2));
+
+  // APY (Annual Percent Yield)
+  // Formula: poolROI / ((now - pool.genesis) / (seconds per day)) * 365
+  const poolGenesis = assetDetail?.dateCreated ?? 0;
+  const pastDays = (Date.now() / 1000 - poolGenesis) / (24 * 60 * 60);
+  const apy = poolGenesis
+    ? Number(((roiATResult / pastDays) * 365 * 100).toFixed(2))
+    : 0;
 
   const poolROI12Data = poolDetail?.poolROI12 ?? 0;
   const poolROI12 = bn(poolROI12Data).multipliedBy(100);
@@ -196,7 +214,8 @@ export const getPoolData = (
   const volume24Value = `${formatBaseAsTokenAmount(volume24)}`;
   const transactionValue = `${formatBaseAsTokenAmount(transaction)}`;
   const liqFeeValue = `${formatBaseAsTokenAmount(liqFee)}`;
-  const roiAtValue = `${roiAT}% APR`;
+  const aprValue = `${apr}% APR`;
+  const apyValue = `${apy}% APY`;
 
   return {
     pool: {
@@ -210,7 +229,8 @@ export const getPoolData = (
     volumeAT,
     transaction,
     liqFee,
-    roiAT,
+    apr,
+    apy,
     poolROI12,
     totalSwaps,
     totalStakers,
@@ -226,7 +246,8 @@ export const getPoolData = (
       volume24: volume24Value,
       transaction: transactionValue,
       liqFee: liqFeeValue,
-      roiAT: roiAtValue,
+      apr: aprValue,
+      apy: apyValue,
       poolPrice: poolPriceValue,
     },
   };
@@ -290,7 +311,7 @@ export const stakeRequest = (
           to: poolAddress,
           coins: [
             {
-              denom: 'RUNE-A1F',
+              denom: RUNE_SYMBOL,
               amount: runeAmountNumber,
             },
             {
@@ -316,7 +337,7 @@ export const stakeRequest = (
       const memo = getStakeMemo(symbolTo);
 
       bncClient
-        .transfer(wallet, poolAddress, runeAmountNumber, 'RUNE-A1F', memo)
+        .transfer(wallet, poolAddress, runeAmountNumber, RUNE_SYMBOL, memo)
         .then(response => resolve(response))
         .catch(error => reject(error));
     }
@@ -393,7 +414,7 @@ export const createPoolRequest = (
         to: poolAddress,
         coins: [
           {
-            denom: 'RUNE-A1F',
+            denom: RUNE_SYMBOL,
             amount: runeAmountNumber,
           },
           {
@@ -440,7 +461,7 @@ export const withdrawRequest = (
     // Minimum amount to send memo on-chain
     const amount = 0.00000001;
     bncClient
-      .transfer(wallet, poolAddress, amount, 'RUNE-A1F', memo)
+      .transfer(wallet, poolAddress, amount, RUNE_SYMBOL, memo)
       .then(response => resolve(response))
       // If first tx ^ fails (e.g. there is no RUNE available)
       // another tx w/ same memo will be sent, but by using BNB now

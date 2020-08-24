@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { get as _get } from 'lodash';
 
-import { validBNOrZero, formatBN } from '@thorchain/asgardex-util';
+import { bn, formatBN } from '@thorchain/asgardex-util';
 import FilterMenu from '../../filterMenu';
 import TokenData from '../tokenData';
 
@@ -48,11 +48,8 @@ const TokenMenu: React.FC<Props> = (props: Props): JSX.Element => {
     const tokenName = getTickerFormat(key);
     const dataTest = `token-menu-item-${tokenName}`;
 
-    const ticker = getTickerFormat(data.asset).toUpperCase();
-    const price =
-      ticker === 'RUNE'
-        ? validBNOrZero(priceIndex?.RUNE)
-        : validBNOrZero(priceIndex?.ticker);
+    // TODO: currently disable price in the token menu
+    const price = bn(0);
 
     const node = (
       <TokenData
@@ -69,6 +66,7 @@ const TokenMenu: React.FC<Props> = (props: Props): JSX.Element => {
   return (
     <FilterMenu
       {...otherProps}
+      selectedKeys={[asset]}
       searchEnabled={withSearch}
       filterFunction={filterFunction}
       cellRenderer={cellRenderer}

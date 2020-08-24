@@ -4,11 +4,13 @@ import { Maybe, FixmeType } from '../../types/bepswap';
 import {
   AssetDetail,
   PoolDetail,
+  StatsData,
   StakersAssetData,
   ThorchainEndpoints,
   ThorchainEndpoint,
   InlineResponse2001,
   TxDetailsTypeEnum,
+  TotalVolChanges,
 } from '../../types/generated/midgard';
 
 export type AssetDetailMap = {
@@ -43,6 +45,12 @@ export type TxDetailType =
   | TxDetailsTypeEnum.Unstake
   | TxDetailsTypeEnum.DoubleSwap;
 
+export type GetTransactionPayload = {
+  offset: number;
+  limit: number;
+  type?: string;
+};
+
 export type GetTxByAddressPayload = {
   address: string;
   offset: number;
@@ -73,6 +81,20 @@ export type GetTxByAssetPayload = {
   type?: string;
 };
 
+export type GetRTVolumeByAssetPayload = {
+  asset: string;
+  from: number;
+  to: number;
+  interval: '5min' | 'hour' | 'day' | 'week' | 'month' | 'year';
+  type?: string;
+};
+
+export type GetPoolDetailByAssetPayload = {
+  asset: string;
+}
+
+export type RTVolumeData = Array<TotalVolChanges>;
+
 export type TxDetailData = RemoteData<Error, InlineResponse2001>;
 
 export type ApiBasePathRD = RemoteData<Error, string>;
@@ -86,10 +108,13 @@ export type State = {
   assets: AssetDetailMap;
   assetArray: AssetDetail[];
   pools: string[];
+  stats: StatsData;
   poolAddressData: Maybe<ThorchainEndpoints>;
   bnbPoolAddress: Maybe<ThorchainEndpoint>;
   poolAddress: Maybe<string>;
+  poolAddressLoading: boolean;
   poolData: PoolDataMap;
+  poolDetailedData: PoolDataMap;
   stakerPoolData: Maybe<StakerPoolData>;
   stakerPoolDataLoading: boolean;
   stakerPoolDataError: Maybe<Error>;
@@ -98,7 +123,13 @@ export type State = {
   priceIndex: PriceDataIndex;
   error: Maybe<Error>;
   poolLoading: boolean;
+  assetLoading: boolean;
+  poolDataLoading: boolean;
+  poolDetailedDataLoading: boolean;
+  statsLoading: boolean;
   txData: TxDetailData;
+  rtVolumeLoading: boolean;
+  rtVolume: TotalVolChanges[];
   txCurData: Maybe<InlineResponse2001>;
   apiBasePath: ApiBasePathRD;
   thorchain: ThorchainData;

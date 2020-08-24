@@ -23,7 +23,27 @@ const initState: State = {
   poolAddressData: Nothing,
   bnbPoolAddress: Nothing,
   poolAddress: Nothing,
+  poolAddressLoading: false,
   poolData: {},
+  poolDetailedData: {},
+  stats: {
+    dailyActiveUsers: '0',
+    dailyTx: '0',
+    monthlyActiveUsers: '0',
+    monthlyTx: '0',
+    poolCount: '0',
+    totalAssetBuys: '0',
+    totalAssetSells: '0',
+    totalDepth: '0',
+    totalEarned: '0',
+    totalStakeTx: '0',
+    totalStaked: '0',
+    totalTx: '0',
+    totalUsers: '0',
+    totalVolume: '0',
+    totalVolume24hr: '0',
+    totalWithdrawTx: '0',
+  },
   stakerPoolData: Nothing,
   stakerPoolDataLoading: false,
   stakerPoolDataError: Nothing,
@@ -33,9 +53,15 @@ const initState: State = {
     RUNE: bn(1),
   },
   error: null,
-  poolLoading: false,
+  poolLoading: true,
+  poolDataLoading: true,
+  poolDetailedDataLoading: true,
+  assetLoading: true,
+  statsLoading: false,
   txData: initial,
   txCurData: {},
+  rtVolumeLoading: false,
+  rtVolume: [],
   apiBasePath: initial,
   thorchain: {
     constants: {},
@@ -73,6 +99,7 @@ const reducer: Reducer<State, MidgardActionTypes> = (
         ...state,
         assets: payload.assetDetailIndex,
         assetArray: payload.assetDetails,
+        assetLoading: false,
       };
     }
     case 'GET_POOLS_REQUEST':
@@ -93,10 +120,28 @@ const reducer: Reducer<State, MidgardActionTypes> = (
         poolLoading: false,
         error: action.payload,
       };
+    case 'GET_STATS_REQUEST':
+      return {
+        ...state,
+        statsLoading: true,
+        error: Nothing,
+      };
+    case 'GET_STATS_SUCCESS':
+      return {
+        ...state,
+        statsLoading: false,
+        stats: action.payload,
+      };
+    case 'GET_STATS_FAILED':
+      return {
+        ...state,
+        statsLoading: false,
+        error: action.payload,
+      };
     case 'GET_POOL_DATA_REQUEST':
       return {
         ...state,
-        poolLoading: true,
+        poolDataLoading: true,
         error: Nothing,
       };
     case 'GET_POOL_DATA_SUCCESS': {
@@ -125,13 +170,41 @@ const reducer: Reducer<State, MidgardActionTypes> = (
       return {
         ...state,
         poolData,
-        poolLoading: false,
+        poolDataLoading: false,
       };
     }
     case 'GET_POOL_DATA_FAILED':
       return {
         ...state,
-        poolLoading: false,
+        poolDataLoading: false,
+        error: action.payload,
+      };
+    case 'GET_POOL_DETAIL_BY_ASSET':
+      return {
+        ...state,
+        poolDetailedDataLoading: true,
+        error: Nothing,
+      };
+    case 'GET_POOL_DETAIL_BY_ASSET_SUCCESS': {
+      const { payload } = action;
+
+      const poolDetail = payload[0];
+      const symbol = getAssetSymbolFromPayload(poolDetail);
+
+      if (symbol) {
+        const poolDetailedData = { ...state.poolDetailedData, [symbol]: poolDetail };
+        return {
+          ...state,
+          poolDetailedData,
+          poolDetailedDataLoading: false,
+        };
+      }
+      return { ...state, poolDetailedDataLoading: false };
+    }
+    case 'GET_POOL_DETAIL_BY_ASSET_FAILED':
+      return {
+        ...state,
+        poolDetailedDataLoading: false,
         error: action.payload,
       };
     case 'GET_STAKER_POOL_DATA_REQUEST':
@@ -177,6 +250,7 @@ const reducer: Reducer<State, MidgardActionTypes> = (
       return {
         ...state,
         error: Nothing,
+        poolAddressLoading: true,
       };
     case 'GET_POOL_ADDRESSES_SUCCESS': {
       const { payload } = action;
@@ -185,6 +259,7 @@ const reducer: Reducer<State, MidgardActionTypes> = (
         poolAddressData: payload,
         bnbPoolAddress: getBNBPoolAddress(payload),
         poolAddress: getPoolAddress(payload),
+        poolAddressLoading: false,
       };
     }
     case 'GET_POOL_ADDRESSES_FAILED':
@@ -194,6 +269,22 @@ const reducer: Reducer<State, MidgardActionTypes> = (
         bnbPoolAddress: {},
         poolAddress: Nothing,
         error: action.payload,
+        poolAddressLoading: false,
+      };
+    case 'GET_TRANSACTION':
+      return {
+        ...state,
+        txData: pending,
+      };
+    case 'GET_TRANSACTION_SUCCESS':
+      return {
+        ...state,
+        txData: success(action.payload),
+      };
+    case 'GET_TRANSACTION_FAILED':
+      return {
+        ...state,
+        txData: failure(action.payload),
       };
     case 'GET_TX_BY_ADDRESS':
       return {
@@ -256,6 +347,23 @@ const reducer: Reducer<State, MidgardActionTypes> = (
       return {
         ...state,
         txData: failure(action.payload),
+      };
+    case 'GET_RT_VOLUME_BY_ASSET':
+      return {
+        ...state,
+        rtVolumeLoading: true,
+      };
+    case 'GET_RT_VOLUME_BY_ASSET_SUCCESS':
+      return {
+        ...state,
+        rtVolume: action.payload,
+        rtVolumeLoading: false,
+      };
+    case 'GET_RT_VOLUME_BY_ASSET_FAILED':
+      return {
+        ...state,
+        rtVolume: [],
+        rtVolumeLoading: false,
       };
     case 'GET_API_BASEPATH_PENDING':
       return {

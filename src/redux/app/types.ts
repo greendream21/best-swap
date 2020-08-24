@@ -1,3 +1,6 @@
+import { TokenAmount } from '@thorchain/asgardex-token';
+import BigNumber from 'bignumber.js';
+import { Maybe } from '../../types/bepswap';
 /**
  * Tx types
  */
@@ -7,6 +10,22 @@ export enum TxTypes {
   WITHDRAW = 'withdraw',
   CREATE = 'create',
 }
+
+// tx result can be object (for swap) or boolean (for stake and withdraw tx)
+export type TxResult = {
+  type?: string;
+  amount?: string;
+  token?: string;
+  status?: boolean;
+};
+
+export type TxData = {
+  sourceAsset: string; // symbol for source asset
+  sourceAmount: TokenAmount;
+  targetAsset: string; // symbol for target asset
+  targetAmount: TokenAmount;
+  slip?: BigNumber; // slip value if tx type is swap
+};
 
 export type TxStatus = {
   /**
@@ -37,6 +56,11 @@ export type TxStatus = {
    * Transaction hash - optional
    */
   readonly hash?: string;
+  /**
+   * Transaction Info - ex: swap pair OR stake pool symbol
+   */
+  readonly info?: string;
+  readonly txData: TxData;
 };
 
 /**
@@ -45,4 +69,5 @@ export type TxStatus = {
 export type State = {
   themeType: string;
   readonly txStatus: TxStatus;
+  txResult?: Maybe<TxResult>;
 };

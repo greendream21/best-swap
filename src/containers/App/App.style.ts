@@ -20,6 +20,7 @@ export const ContentWrapper = styled(Content)`
 
 export const BackLink = styled.div`
   display: flex;
+  width: fit-content;
   align-items: center;
   margin-bottom: 10px !important;
   ${media.sm`

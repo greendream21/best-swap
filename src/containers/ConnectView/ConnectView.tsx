@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 
 import { Row, Col } from 'antd';
@@ -10,7 +10,6 @@ import WalletConnect from './WalletConnect';
 import Ledger from './Ledger';
 
 import * as walletActions from '../../redux/wallet/actions';
-import * as midgardActions from '../../redux/midgard/actions';
 
 const { TabPane } = Tabs;
 
@@ -25,17 +24,11 @@ const TAB_VALUES: {
 
 type Props = {
   saveWallet: typeof walletActions.saveWallet;
-  getPools: typeof midgardActions.getPools;
 };
 
 const ConnectView: React.FC<Props> = (props: Props): JSX.Element => {
-  const { getPools, saveWallet } = props;
+  const { saveWallet } = props;
   const [active, setActive] = useState<TAB_TYPE>(TAB_VALUES.KEYSTORE);
-
-  useEffect(() => {
-    getPools();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const tabs = [
     {
@@ -87,6 +80,5 @@ const ConnectView: React.FC<Props> = (props: Props): JSX.Element => {
 };
 
 export default connect(null, {
-  getPools: midgardActions.getPools,
   saveWallet: walletActions.saveWallet,
 })(ConnectView);

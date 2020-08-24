@@ -3,19 +3,24 @@ import {
   GetStakerPoolDataPayload,
   PriceDataIndex,
   AssetDetailMap,
+  GetTransactionPayload,
   GetTxByAddressTxIdPayload,
   GetTxByAddressAssetPayload,
   GetTxByAddressPayload,
   GetTxByAssetPayload,
   GetPoolDataPayload,
+  GetRTVolumeByAssetPayload,
+  GetPoolDetailByAssetPayload,
   ThorchainData,
 } from './types';
 import {
   AssetDetail,
   PoolDetail,
+  StatsData,
   StakersAssetData,
   ThorchainEndpoints,
   InlineResponse2001,
+  TotalVolChanges,
 } from '../../types/generated/midgard';
 
 export type SetAssetsPayload = {
@@ -46,6 +51,15 @@ export const getPoolDataSuccess = (payload: GetPoolDataSuccessPayload) =>
 export const getPoolDataFailed = (payload: Error) =>
   ({ type: 'GET_POOL_DATA_FAILED', payload } as const);
 
+export const getPoolDetailByAsset = (payload: GetPoolDetailByAssetPayload) =>
+  ({ type: 'GET_POOL_DETAIL_BY_ASSET', payload } as const);
+
+export const getPoolDetailByAssetSuccess = (payload: PoolDetail[]) =>
+  ({ type: 'GET_POOL_DETAIL_BY_ASSET_SUCCESS', payload } as const);
+
+export const getPoolDetailByAssetFailed = (payload: Error) =>
+  ({ type: 'GET_POOL_DETAIL_BY_ASSET_FAILED', payload } as const);
+
 export const getStakerPoolData = (payload: GetStakerPoolDataPayload) =>
   ({ type: 'GET_STAKER_POOL_DATA_REQUEST', payload } as const);
 
@@ -74,6 +88,15 @@ export const setBasePriceAsset = (payload: AssetSymbol) =>
 
 export const setPriceIndex = (payload: PriceDataIndex) =>
   ({ type: 'SET_PRICE_INDEX', payload } as const);
+
+export const getTransaction = (payload: GetTransactionPayload) =>
+  ({ type: 'GET_TRANSACTION', payload } as const);
+
+export const getTransactionSuccess = (payload: InlineResponse2001) =>
+  ({ type: 'GET_TRANSACTION_SUCCESS', payload } as const);
+
+export const getTransactionFailed = (payload: Error) =>
+  ({ type: 'GET_TRANSACTION_FAILED', payload } as const);
 
 // get transactions by address
 export const getTxByAddress = (payload: GetTxByAddressPayload) =>
@@ -124,6 +147,23 @@ export const getApiBasePathFailed = (payload: Error) =>
 export const getApiBasePathSuccess = (payload: string) =>
   ({ type: 'GET_API_BASEPATH_SUCCESS', payload } as const);
 
+export const getStats = () => ({ type: 'GET_STATS_REQUEST' } as const);
+
+export const getStatsSuccess = (payload: StatsData) =>
+  ({ type: 'GET_STATS_SUCCESS', payload } as const);
+
+export const getStatsFailed = (payload: Error) =>
+  ({ type: 'GET_STATS_FAILED', payload } as const);
+
+export const getRTVolumeByAsset = (payload: GetRTVolumeByAssetPayload) =>
+  ({ type: 'GET_RT_VOLUME_BY_ASSET', payload } as const);
+
+export const getRTVolumeByAssetSuccess = (payload: Array<TotalVolChanges>) =>
+  ({ type: 'GET_RT_VOLUME_BY_ASSET_SUCCESS', payload } as const);
+
+export const getRTVolumeByAssetFailed = (payload: Error) =>
+  ({ type: 'GET_RT_VOLUME_BY_ASSET_FAILED', payload } as const);
+
 export type MidgardActionTypes = ReturnType<
   | typeof getPools
   | typeof getPoolsSuccess
@@ -141,6 +181,9 @@ export type MidgardActionTypes = ReturnType<
   | typeof setAssets
   | typeof setBasePriceAsset
   | typeof setPriceIndex
+  | typeof getTransaction
+  | typeof getTransactionSuccess
+  | typeof getTransactionFailed
   | typeof getTxByAddress
   | typeof getTxByAddressSuccess
   | typeof getTxByAddressFailed
@@ -157,4 +200,13 @@ export type MidgardActionTypes = ReturnType<
   | typeof getApiBasePathFailed
   | typeof getApiBasePathSuccess
   | typeof getThorchainDataSuccess
+  | typeof getStats
+  | typeof getStatsSuccess
+  | typeof getStatsFailed
+  | typeof getRTVolumeByAsset
+  | typeof getRTVolumeByAssetSuccess
+  | typeof getRTVolumeByAssetFailed
+  | typeof getPoolDetailByAsset
+  | typeof getPoolDetailByAssetSuccess
+  | typeof getPoolDetailByAssetFailed
 >;

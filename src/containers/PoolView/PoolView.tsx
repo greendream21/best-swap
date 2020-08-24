@@ -1,23 +1,37 @@
-import React, { useState, useEffect } from 'react';
+/* eslint-disable no-underscore-dangle */
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import * as H from 'history';
 import { compose } from 'redux';
-import { connect } from 'react-redux';
-import { withRouter, Link, useHistory } from 'react-router-dom';
-import { Row, Col } from 'antd';
+import { connect, useSelector } from 'react-redux';
+import { withRouter, useHistory, Link } from 'react-router-dom';
+import { Row, Col, Grid } from 'antd';
+import moment from 'moment';
+import { random } from 'lodash';
 import {
   SyncOutlined,
   SwapOutlined,
   DatabaseOutlined,
 } from '@ant-design/icons';
+import { bnOrZero } from '@thorchain/asgardex-util';
+import { baseAmount, formatBaseAsTokenAmount } from '@thorchain/asgardex-token';
+import themes, { ThemeType } from '@thorchain/asgardex-theme';
 
 import Label from '../../components/uielements/label';
 import AddIcon from '../../components/uielements/addIcon';
 import CoinIcon from '../../components/uielements/coins/coinIcon';
-import Table from '../../components/uielements/table';
 import Button from '../../components/uielements/button';
 import PoolFilter from '../../components/poolFilter';
+import StatBar from '../../components/statBar';
 
-import { ContentWrapper, ActionHeader, ActionColumn } from './PoolView.style';
+import {
+  ContentWrapper,
+  ActionHeader,
+  ActionColumn,
+  TransactionWrapper,
+  StyledPagination,
+  PoolViewTools,
+  StyledTable as Table,
+} from './PoolView.style';
 import {
   getAvailableTokensToCreate,
   getPoolData,
@@ -25,38 +39,90 @@ import {
 import { PoolData } from '../../helpers/utils/types';
 import { getTickerFormat } from '../../helpers/stringHelper';
 
-import * as walletActions from '../../redux/wallet/actions';
 import * as midgardActions from '../../redux/midgard/actions';
 import { RootState } from '../../redux/store';
 import { AssetData, User } from '../../redux/wallet/types';
-import { PoolDataMap, PriceDataIndex } from '../../redux/midgard/types';
+import {
+  PoolDataMap,
+  PriceDataIndex,
+  AssetDetailMap,
+  TxDetailData,
+  RTVolumeData,
+} from '../../redux/midgard/types';
 import { getAssetFromString } from '../../redux/midgard/utils';
 import { ViewType, Maybe } from '../../types/bepswap';
-import { PoolDetailStatusEnum } from '../../types/generated/midgard/api';
+import {
+  PoolDetailStatusEnum,
+  StatsData,
+  AssetDetail,
+} from '../../types/generated/midgard/api';
 import showNotification from '../../components/uielements/notification';
+import { RUNE_SYMBOL } from '../../settings/assetData';
+
+import LabelLoader from '../../components/utility/loaders/label';
+import PoolChart from '../../components/poolChart';
+import TxTable from '../../components/transaction/txTable';
 
 type Props = {
   history: H.History;
   pools: string[];
   poolData: PoolDataMap;
+  txData: TxDetailData;
+  stats: StatsData;
+  assets: AssetDetailMap;
   priceIndex: PriceDataIndex;
   assetData: AssetData[];
   user: Maybe<User>;
-  loading: boolean;
-  refreshBalance: typeof walletActions.refreshBalance;
+  poolLoading: boolean;
+  assetLoading: boolean;
+  poolDataLoading: boolean;
+  rtVolumeLoading: boolean;
+  rtVolume: RTVolumeData;
   getPools: typeof midgardActions.getPools;
+  getTransactions: typeof midgardActions.getTransaction;
+  getRTVolume: typeof midgardActions.getRTVolumeByAsset;
+};
+
+const generateRandomTimeSeries = (
+  minValue: number,
+  maxValue: number,
+  startDate: string,
+) => {
+  const series = [];
+  for (
+    let itr = moment(startDate);
+    itr.isBefore(moment.now());
+    itr = itr.add(1, 'day')
+  ) {
+    series.push({
+      time: itr.unix(),
+      value: (
+        minValue +
+        (random(100) / 100) * (maxValue - minValue)
+      ).toString(),
+    });
+  }
+  return series;
 };
 
 const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
   const {
     pools,
     poolData,
+    txData,
+    stats,
+    assets,
     priceIndex,
     assetData,
     user,
-    loading,
-    refreshBalance,
+    poolLoading,
+    assetLoading,
+    poolDataLoading,
+    rtVolumeLoading,
+    rtVolume,
     getPools,
+    getTransactions,
+    getRTVolume,
   } = props;
 
   const [poolStatus, selectPoolStatus] = useState<PoolDetailStatusEnum>(
@@ -64,20 +130,74 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
   );
   const history = useHistory();
 
+  const themeType = useSelector((state: RootState) => state.App.themeType);
+  const isLight = themeType === ThemeType.LIGHT;
+  const theme = isLight ? themes.light : themes.dark;
+
+  const loading = poolLoading || poolDataLoading;
   const wallet: Maybe<string> = user ? user.wallet : null;
 
-  useEffect(() => {
-    if (wallet) {
-      // refresh wallet balance
-      refreshBalance(wallet);
+  const busdToken = Object.keys(assets).find(
+    item => getTickerFormat(item) === 'busd',
+  );
+  const busdPrice = busdToken ? assets[busdToken]?.priceRune ?? 'RUNE' : 'RUNE';
+  const isDesktopView = Grid.useBreakpoint()?.lg ?? false;
+
+  const chartData = useMemo(() => {
+    if (rtVolumeLoading) {
+      return { liquidity: [], volume: [], loading: true };
     }
+
+    const volumeSeriesData = rtVolume?.map(volume => {
+      const price = busdPrice === 'RUNE' ? 1 : Number(busdPrice);
+      const bnValue = bnOrZero(volume?.totalVolume ?? '0').dividedBy(price);
+      const amount = baseAmount(bnValue);
+
+      return {
+        time: volume?.time ?? 0,
+        value: formatBaseAsTokenAmount(amount),
+      };
+    });
+
+    return {
+      liquidity: generateRandomTimeSeries(0, 15, '2020-05-01'),
+      volume: volumeSeriesData,
+      loading: false,
+    };
+  }, [rtVolume, rtVolumeLoading, busdPrice]);
+
+  const getTransactionInfo = useCallback(
+    (offset: number, limit: number) => {
+      getTransactions({ offset, limit });
+    },
+    [getTransactions],
+  );
+
+  const getRTVolumeInfo = useCallback(
+    (
+      from: number,
+      to: number,
+      interval: '5min' | 'hour' | 'day' | 'week' | 'month' | 'year',
+    ) => {
+      getRTVolume({ asset: '', from, to, interval });
+    },
+    [getRTVolume],
+  );
+
+  useEffect(() => {
+    getTransactionInfo(0, 10);
+  }, [getTransactionInfo]);
+
+  useEffect(() => {
+    const timeStamp: number = moment().unix();
+    getRTVolumeInfo(0, timeStamp, 'day');
+  }, [getRTVolumeInfo]);
+
+  const handleGetPools = () => {
     getPools();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [wallet]);
+  };
 
   const handleNewPool = () => {
-    const wallet = user ? user.wallet : null;
-
     if (!wallet) {
       showNotification({
         type: 'warning',
@@ -102,51 +222,70 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     }
   };
 
+  const handlePagination = useCallback(
+    (page: number) => {
+      getTransactionInfo((page - 1) * 10, 10);
+    },
+    [getTransactionInfo],
+  );
+
+  const renderCell = (text: string) => {
+    if (loading) {
+      return <LabelLoader />;
+    }
+    return <span>{text}</span>;
+  };
+
+  const renderPoolPriceCell = (text: string) => {
+    if (assetLoading) {
+      return <LabelLoader />;
+    }
+    return <span>{text}</span>;
+  };
+
   const renderPoolTable = (poolViewData: PoolData[], view: ViewType) => {
     const buttonCol = {
       key: 'stake',
       title: (
         <ActionHeader>
-          <Button
-            onClick={() => {
-              getPools();
-            }}
-            typevalue="outline"
-            round="true"
-          >
+          <Button onClick={handleGetPools} typevalue="outline" round="true">
             <SyncOutlined />
             refresh
           </Button>
         </ActionHeader>
       ),
       render: (text: string, record: PoolData) => {
-        const { asset, target, values } = record;
+        const { target, values } = record;
         if (target) {
-          const swapUrl = `/swap/${asset.toLowerCase()}-${target.toLowerCase()}`;
-          const stakeUrl = `/pool/${values.symbol.toUpperCase()}`;
-          const dataTest = `stake-button-${target.toLowerCase()}`;
+          const swapUrl = `/swap/${RUNE_SYMBOL}:${values.symbol}`;
+          const stakeUrl = `/stake/${values.symbol.toUpperCase()}`;
 
           return (
             <ActionColumn>
               <div className="action-column-wrapper">
-                <Link to={stakeUrl}>
+                <Link
+                  to={stakeUrl}
+                  onClick={ev => {
+                    ev.stopPropagation();
+                  }}
+                >
                   <Button
                     style={{ margin: 'auto' }}
                     round="true"
                     typevalue="outline"
-                    data-test={dataTest}
                   >
                     <DatabaseOutlined />
                     stake
                   </Button>
                 </Link>
                 {poolStatus !== PoolDetailStatusEnum.Bootstrapped && (
-                  <Link to={swapUrl}>
-                    <Button
-                      style={{ margin: 'auto' }}
-                      round="true"
-                      data-test={dataTest}
-                    >
+                  <Link
+                    to={swapUrl}
+                    onClick={ev => {
+                      ev.stopPropagation();
+                    }}
+                  >
+                    <Button style={{ margin: 'auto' }} round="true">
                       <SwapOutlined />
                       swap
                     </Button>
@@ -158,7 +297,6 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         }
       },
     };
-
     const mobileColumns = [
       {
         key: 'pool',
@@ -199,32 +337,38 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         key: 'poolprice',
         title: 'pool price',
         dataIndex: ['values', 'poolPrice'],
+        render: renderPoolPriceCell,
         sorter: (a: PoolData, b: PoolData) => a.poolPrice.minus(b.poolPrice),
         sortDirections: ['descend', 'ascend'],
-        defaultSortOrder: 'descend',
+        defaultSortOrder:
+          poolStatus === PoolDetailStatusEnum.Enabled ? 'descend' : undefined,
       },
       {
         key: 'depth',
         title: 'depth',
         dataIndex: ['values', 'depth'],
+        render: renderCell,
         sorter: (a: PoolData, b: PoolData) =>
           a.depth.amount().minus(b.depth.amount()),
         sortDirections: ['descend', 'ascend'],
+        defaultSortOrder:
+          poolStatus !== PoolDetailStatusEnum.Enabled ? 'descend' : undefined,
       },
       {
         key: 'volume24',
         title: '24h vol',
         dataIndex: ['values', 'volume24'],
+        render: renderCell,
         sorter: (a: PoolData, b: PoolData) =>
           a.volume24.amount().minus(b.volume24.amount()),
         sortDirections: ['descend', 'ascend'],
       },
       {
-        key: 'roiAT',
-        title: 'ARP',
-        dataIndex: ['values', 'roiAT'],
-        sorter: (a: PoolData, b: PoolData) =>
-          Number(a.roiAT) - Number(b.roiAT),
+        key: 'apy',
+        title: 'APY',
+        dataIndex: ['values', 'apy'],
+        render: renderCell,
+        sorter: (a: PoolData, b: PoolData) => Number(a.apy) - Number(b.apy),
         sortDirections: ['descend', 'ascend'],
       },
       buttonCol,
@@ -238,10 +382,19 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
 
     return (
       <Table
+        onRow={(record: PoolData) => {
+          return {
+            onClick: () => {
+              const URL = `/pool/${record?.values?.symbol?.toUpperCase()}`;
+              history.push(URL);
+            },
+          };
+        }}
         columns={columns}
         dataSource={poolViewData}
-        loading={loading}
+        loading={poolLoading}
         rowKey="key"
+        key={poolStatus}
       />
     );
   };
@@ -251,10 +404,12 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
       const { symbol = '' } = getAssetFromString(poolName);
 
       const poolInfo = poolData[symbol] || {};
+      const assetDetail: AssetDetail = assets?.[symbol] ?? {};
 
       const poolDataDetail: PoolData = getPoolData(
-        'rune',
+        symbol,
         poolInfo,
+        assetDetail,
         priceIndex,
       );
 
@@ -265,28 +420,58 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
       };
     });
 
-    const filteredData = poolViewData.filter(
-      poolData => poolData.status === poolStatus,
-    );
+    const filteredData = poolViewData.filter(poolData => {
+      return (
+        (poolStatus === PoolDetailStatusEnum.Enabled && !poolData.status) ||
+        poolData.status === poolStatus
+      );
+    });
 
     return renderPoolTable(filteredData, view);
   };
 
   return (
     <ContentWrapper className="pool-view-wrapper">
-      <PoolFilter selected={poolStatus} onClick={selectPoolStatus} />
+      <StatBar loading={loading} stats={stats} basePrice={busdPrice} />
+      <div>
+        <PoolChart
+          chartData={chartData}
+          textColor={theme.palette.text[0]}
+          lineColor={isLight ? '#436eb9' : '#1dd3e6'}
+          backgroundGradientStart={isLight ? '#e4ebf8' : '#365979'}
+          backgroundGradientStop={isLight ? '#ffffff' : '#0f1922'}
+          gradientStart={isLight ? '#c5d3f0' : '#365979'}
+          gradientStop={isLight ? '#ffffff' : '#0f1922'}
+          viewMode={isDesktopView ? 'desktop-view' : 'mobile-view'}
+        />
+      </div>
+      <PoolViewTools>
+        <PoolFilter selected={poolStatus} onClick={selectPoolStatus} />
+        <div className="add-new-pool" onClick={handleNewPool}>
+          <AddIcon />
+          <Label size="normal" weight="bold" color="normal">
+            ADD NEW POOL
+          </Label>
+        </div>
+      </PoolViewTools>
       <div className="pool-list-view desktop-view">
         {renderPoolList(ViewType.DESKTOP)}
       </div>
       <div className="pool-list-view mobile-view">
         {renderPoolList(ViewType.MOBILE)}
       </div>
-      <div className="add-new-pool" onClick={handleNewPool}>
-        <AddIcon />
-        <Label size="normal" weight="bold" color="normal">
-          ADD NEW POOL
+      <TransactionWrapper>
+        <Label size="large" weight="bold" color="primary">
+          Transactions
         </Label>
-      </div>
+        <TxTable txData={txData} />
+        <StyledPagination
+          defaultCurrent={0}
+          total={txData._tag === 'RemoteSuccess' ? txData.value.count : 0}
+          showSizeChanger={false}
+          onChange={handlePagination}
+        />
+      </TransactionWrapper>
     </ContentWrapper>
   );
 };
@@ -296,14 +481,22 @@ export default compose(
     (state: RootState) => ({
       pools: state.Midgard.pools,
       poolData: state.Midgard.poolData,
-      loading: state.Midgard.poolLoading,
+      stats: state.Midgard.stats,
+      assets: state.Midgard.assets,
+      poolLoading: state.Midgard.poolLoading,
+      assetLoading: state.Midgard.assetLoading,
+      poolDataLoading: state.Midgard.poolDataLoading,
       priceIndex: state.Midgard.priceIndex,
+      txData: state.Midgard.txData,
       assetData: state.Wallet.assetData,
       user: state.Wallet.user,
+      rtVolumeLoading: state.Midgard.rtVolumeLoading,
+      rtVolume: state.Midgard.rtVolume,
     }),
     {
       getPools: midgardActions.getPools,
-      refreshBalance: walletActions.refreshBalance,
+      getTransactions: midgardActions.getTransaction,
+      getRTVolume: midgardActions.getRTVolumeByAsset,
     },
   ),
   withRouter,

@@ -2,7 +2,6 @@ import BigNumber from 'bignumber.js';
 import { TokenAmount, BaseAmount } from '@thorchain/asgardex-token';
 
 export type SwapData = {
-  poolAddress: string;
   symbolFrom: string;
   symbolTo: string;
   Px: BigNumber;
@@ -10,7 +9,7 @@ export type SwapData = {
   outputAmount: TokenAmount;
   outputPrice: BigNumber;
   fee: TokenAmount;
-  lim: BaseAmount;
+  slipLimit: BaseAmount;
 };
 
 export type PoolInfoType = {
@@ -26,7 +25,8 @@ export type PoolDataValues = {
   volume24: string;
   transaction: string;
   liqFee: string;
-  roiAT: string;
+  apr: string;
+  apy: string;
   poolPrice: string;
 };
 
@@ -39,7 +39,8 @@ export type PoolData = {
   volumeAT: BaseAmount;
   transaction: BaseAmount;
   liqFee: BaseAmount;
-  roiAT: number;
+  apr: number;
+  apy: number;
   poolROI12: BigNumber;
   totalSwaps: number;
   totalStakers: number;

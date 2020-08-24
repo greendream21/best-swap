@@ -1,19 +1,18 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import * as H from 'history';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter, useHistory, useParams } from 'react-router-dom';
 import { SwapOutlined, LockOutlined, UnlockOutlined } from '@ant-design/icons';
-import { Row } from 'antd';
 import {
   client as binanceClient,
   TransferResult,
 } from '@thorchain/asgardex-binance';
 import {
-  validBNOrZero,
   bnOrZero,
   isValidBN,
   bn,
+  validBNOrZero,
 } from '@thorchain/asgardex-util';
 
 import BigNumber from 'bignumber.js';
@@ -24,23 +23,17 @@ import {
   tokenAmount,
   baseToToken,
   BaseAmount,
-  baseAmount,
-  tokenToBase,
 } from '@thorchain/asgardex-token';
 import Text from 'antd/lib/typography/Text';
 import Button from '../../components/uielements/button';
 import Label from '../../components/uielements/label';
 import Drag from '../../components/uielements/drag';
 import TokenCard from '../../components/uielements/tokens/tokenCard';
-import CoinData from '../../components/uielements/coins/coinData';
-import TxTimer from '../../components/uielements/txTimer';
 import Modal from '../../components/uielements/modal';
 import PrivateModal from '../../components/modals/privateModal';
 
 import {
   ContentWrapper,
-  SwapModalContent,
-  SwapModal,
   SwapAssetCard,
   CardForm,
   CardFormHolder,
@@ -52,59 +45,48 @@ import {
   FeeParagraph,
   SliderSwapWrapper,
 } from './SwapSend.style';
-import { getTickerFormat, getPair } from '../../helpers/stringHelper';
-import { TESTNET_TX_BASE_URL } from '../../helpers/apiHelper';
+import { getTickerFormat, getSymbolPair } from '../../helpers/stringHelper';
 import {
   getSwapData,
   confirmSwap,
-  getTxResult,
-  validatePair,
+  getValidSwapPairs,
   isValidSwap,
 } from '../../helpers/utils/swapUtils';
 import { SwapData } from '../../helpers/utils/types';
 
 import * as appActions from '../../redux/app/actions';
-import * as midgardActions from '../../redux/midgard/actions';
 import * as walletActions from '../../redux/wallet/actions';
-import * as binanceActions from '../../redux/binance/actions';
 import AddressInput from '../../components/uielements/addressInput';
 import ContentTitle from '../../components/uielements/contentTitle';
 import Slider from '../../components/uielements/slider';
 import StepBar from '../../components/uielements/stepBar';
-import Trend from '../../components/uielements/trend';
-import { MAX_VALUE } from '../../redux/app/const';
-import {
-  Maybe,
-  Nothing,
-  TokenData,
-  Pair,
-  AssetPair,
-  FixmeType,
-} from '../../types/bepswap';
+import { Maybe, Nothing, TokenData, FixmeType } from '../../types/bepswap';
 import { User, AssetData } from '../../redux/wallet/types';
-import { TxStatus, TxTypes } from '../../redux/app/types';
+import { TxStatus, TxTypes, TxResult } from '../../redux/app/types';
 
 import { PriceDataIndex, PoolDataMap } from '../../redux/midgard/types';
 import { RootState } from '../../redux/store';
 import { getAssetFromString } from '../../redux/midgard/utils';
-import { BINANCE_NET, getNet } from '../../env';
+import { BINANCE_NET } from '../../env';
 import { PoolDetailStatusEnum } from '../../types/generated/midgard';
+import { TransferFeesRD, TransferFees } from '../../redux/binance/types';
 import {
-  TransferEventRD,
-  TransferFeesRD,
-  TransferFees,
-} from '../../redux/binance/types';
-import {
-  getAssetFromAssetData,
+  getAssetDataFromBalance,
   bnbBaseAmount,
 } from '../../helpers/walletHelper';
+import { RUNE_SYMBOL } from '../../settings/assetData';
+import usePrevious from '../../hooks/usePrevious';
+import useFee from '../../hooks/useFee';
 
-import { SwapSendView, TxResult } from './types';
+import { SwapSendView } from './types';
 import showNotification from '../../components/uielements/notification';
 import { swapRequestUsingWalletConnect } from '../../helpers/utils/trustwalletUtils';
+import Loader from '../../components/utility/loaders/pageLoader';
+import { CONFIRM_DISMISS_TIME } from '../../settings/constants';
 
 type Props = {
   history: H.History;
+  txResult?: TxResult;
   txStatus: TxStatus;
   assetData: AssetData[];
   poolAddress: string;
@@ -113,52 +95,49 @@ type Props = {
   basePriceAsset: string;
   priceIndex: PriceDataIndex;
   user: Maybe<User>;
-  wsTransferEvent: TransferEventRD;
+  setTxResult: typeof appActions.setTxResult;
   setTxTimerModal: typeof appActions.setTxTimerModal;
-  setTxTimerStatus: typeof appActions.setTxTimerStatus;
-  setTxTimerValue: typeof appActions.setTxTimerValue;
   setTxHash: typeof appActions.setTxHash;
-  countTxTimerValue: typeof appActions.countTxTimerValue;
   resetTxStatus: typeof appActions.resetTxStatus;
-  getPools: typeof midgardActions.getPools;
-  getPoolAddress: typeof midgardActions.getPoolAddress;
   refreshBalance: typeof walletActions.refreshBalance;
-  getBinanceFees: typeof binanceActions.getBinanceFees;
   transferFees: TransferFeesRD;
-  subscribeBinanceTransfers: typeof binanceActions.subscribeBinanceTransfers;
-  unSubscribeBinanceTransfers: typeof binanceActions.unSubscribeBinanceTransfers;
 };
 
 const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   const {
     user,
     transferFees,
-    wsTransferEvent,
     txStatus,
     assetData,
     poolData,
     poolAddress,
     priceIndex,
-    basePriceAsset,
     pools,
-    getPools,
-    getPoolAddress,
-    getBinanceFees,
     refreshBalance,
+    setTxResult,
     setTxHash,
     setTxTimerModal,
-    setTxTimerStatus,
-    setTxTimerValue,
     resetTxStatus,
-    countTxTimerValue,
-    subscribeBinanceTransfers,
-    unSubscribeBinanceTransfers,
   } = props;
 
-  const { info } = useParams();
+  const { symbolpair } = useParams();
+  const swapPair = getSymbolPair(symbolpair);
+  const sourceSymbol = swapPair?.source || '';
+  const targetSymbol = swapPair?.target || '';
+
+  const runePrice = validBNOrZero(priceIndex[RUNE_SYMBOL]);
+
+  const {
+    hasSufficientRuneFee,
+    hasSufficientBnbFee,
+    hasSufficientBnbFeeInBalance,
+    getAmountAfterFee,
+    getThresholdAmount,
+  } = useFee();
 
   const history = useHistory();
   const maxSlip = 30;
+
   const [address, setAddress] = useState<string>('');
   const [invalidAddress, setInvalidAddress] = useState<boolean>(false);
   const [dragReset, setDragReset] = useState<boolean>(true);
@@ -170,105 +149,39 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   const [xValue, setXValue] = useState<TokenAmount>(tokenAmount(0));
   const [percent, setPercent] = useState<number>(0);
 
-  const [txResult, setTxResult] = useState<Maybe<TxResult>>(null);
-  const [timerFinished, setTimerFinished] = useState<boolean>(false);
   const [view, setView] = useState<SwapSendView>(SwapSendView.DETAIL);
 
-  const isCompleted = (): boolean => {
-    return !txStatus.status && (txResult !== Nothing || timerFinished);
+  const prevTxStatus = usePrevious(txStatus);
+  // if tx is completed, should refresh balance
+  useEffect(() => {
+    if (prevTxStatus?.status === true && txStatus.status === false) {
+      user && refreshBalance(user.wallet);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [txStatus]);
+
+  const handleGetSwapData = (): Maybe<SwapData> => {
+    if (!sourceSymbol || !targetSymbol) {
+      return Nothing;
+    }
+
+    // calculate the input after 1 RUNE network fee
+    const inputValueAfterRune = getAmountAfterFee(xValue, sourceSymbol);
+
+    return getSwapData(
+      sourceSymbol,
+      targetSymbol,
+      poolData,
+      inputValueAfterRune,
+      runePrice,
+    );
   };
 
-  useEffect(() => {
-    const net = getNet();
-    getPoolAddress();
-    getPools();
-    if (RD.isInitial(transferFees)) {
-      getBinanceFees(net);
-    }
-
-    const wallet = user?.wallet;
-    if (wallet) {
-      // refresh wallet balance
-      refreshBalance(wallet);
-      subscribeBinanceTransfers({ address: wallet, net });
-    }
-
-    return () => {
-      resetTxStatus();
-      unSubscribeBinanceTransfers();
-    };
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // user wallet change
-  useEffect(() => {
-    const wallet = user?.wallet;
-    // subscribe again if another wallet has been added
-    if (wallet) {
-      unSubscribeBinanceTransfers();
-      subscribeBinanceTransfers({ address: wallet, net: getNet() });
-    }
-  }, [user, subscribeBinanceTransfers, unSubscribeBinanceTransfers]);
-
-  // wsTransferEvent is updated
-  useEffect(() => {
-    const pair: Pair = getPair(info);
-    const wallet = user?.wallet;
-    const { hash } = txStatus;
-
-    const currentWsTransferEvent = RD.toNullable(wsTransferEvent);
-    if (
-      currentWsTransferEvent &&
-      hash !== undefined &&
-      !txResult &&
-      txResult === null &&
-      !isCompleted() &&
-      wallet
-    ) {
-      const txResultData = getTxResult({
-        pair,
-        tx: currentWsTransferEvent,
-        address: wallet,
-      });
-
-      if (txResultData) {
-        setTxResult(txResultData);
-      }
-    }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [RD.toNullable(wsTransferEvent), info, user, txResult]);
+  const swapData = handleGetSwapData();
 
   const isValidRecipient = async () => {
     const bncClient = await binanceClient(BINANCE_NET);
     return bncClient.isValidAddress(address);
-  };
-
-  const handleGetSwapData = (): Maybe<SwapData> => {
-    const swapPair: Pair = getPair(info);
-
-    if (!swapPair.source || !swapPair.target) {
-      return Nothing;
-    }
-
-    const { source, target } = swapPair;
-    const runePrice = validBNOrZero(priceIndex?.RUNE);
-
-    // calculate the input after 1 RUNE network fee
-    const runeFee = getRuneFeeAmount();
-    const inputValueAfterRune = xValue.amount().isGreaterThan(runeFee)
-      ? tokenAmount(xValue.amount().minus(runeFee))
-      : tokenAmount(0);
-
-    return getSwapData(
-      source,
-      target,
-      poolData,
-      poolAddress,
-      inputValueAfterRune,
-      runePrice,
-    );
   };
 
   const handleChangeAddress = useCallback(
@@ -279,100 +192,20 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   );
 
   /**
-   * BNB fee in BaseAmount
-   * Returns Nothing if fee is not available
-   */
-  const bnbFeeAmount = (): Maybe<BaseAmount> => {
-    const fees = RD.toNullable(transferFees);
-    return fees?.single;
-  };
-
-  /**
-   * Checks whether fee is covered by amounts of BNB in users wallet
-   */
-  const bnbFeeIsNotCovered = (): boolean => {
-    const bnbAmount = bnbBaseAmount(assetData);
-    const fee = bnbFeeAmount();
-    return !!bnbAmount && !!fee && bnbAmount.amount().isLessThan(fee.amount());
-  };
-
-  /**
-   * calculate the amount to cover 1 RUNE network fee
-   */
-  const getRuneFeeAmount = (): BigNumber => {
-    const { source }: Pair = getPair(info);
-    if (!source) return bn(0);
-
-    const runePrice = priceIndex.RUNE;
-    const curTokenPrice = bn(priceIndex[source.toUpperCase()]);
-
-    return runePrice.dividedBy(curTokenPrice);
-  };
-
-  /**
-   * Check to ensure THORChain transactionFee (currently 1 RUNE)
-   * https://gitlab.com/thorchain/thornode/-/blob/master/constants/constants.go#L42
-   * @todo get current transactionFee from thornode constants endpoint eg :1317/thorchain/constants
-   */
-  const runeFeeIsNotCovered = (amount: BigNumber): boolean => {
-    const { source }: Pair = getPair(info);
-    if (!source) return true;
-
-    const runePrice = priceIndex.RUNE;
-    return bn(priceIndex[source.toUpperCase()])
-      .dividedBy(runePrice)
-      .multipliedBy(amount)
-      .isLessThanOrEqualTo(1);
-  };
-
-  /**
    * Check to consider special cases for BNB
    */
-  const considerBnb = (): boolean => {
-    const { source }: Pair = getPair(info);
-    return source?.toUpperCase() === 'BNB';
-  };
-
-  /**
-   * Check whether to substract BNB fee from entered BNB amount
-   */
-  const subtractBnbFee = (): boolean => {
-    if (considerBnb()) {
-      // (1) BNB amount in wallet
-      const bnbInWallet = bnbBaseAmount(assetData) || baseAmount(0);
-      // (2) BNB amount entered in input
-      const bnbEntered = tokenToBase(xValue);
-      // difference (1) - (2) as BigNumber
-      const bnbDiff = bnbInWallet.amount().minus(bnbEntered.amount());
-      const fee = bnbFeeAmount();
-      return (
-        !!fee && bnbDiff.isGreaterThan(0) && bnbDiff.isLessThan(fee.amount())
-      );
-    }
-
-    return false;
-  };
+  const considerBnb = useMemo((): boolean => {
+    return sourceSymbol?.toUpperCase() === 'BNB';
+  }, [sourceSymbol]);
 
   const handleChangePercent = (percent: number) => {
-    const { source = '' }: Pair = getPair(info);
-    const sourceAsset = getAssetFromAssetData(assetData, source);
+    const thresholdAmount = getThresholdAmount(sourceSymbol).amount();
 
-    let totalAmount = sourceAsset?.assetValue.amount() ?? bn(0);
-    // fee transformation: BaseAmount -> TokenAmount -> BigNumber
-    const fee = bnbFeeAmount() || baseAmount(0);
-    const feeAsToken = baseToToken(fee);
-    const feeAsTokenBN = feeAsToken.amount();
-    // substract fee  - for BNB source only
-    if (subtractBnbFee()) {
-      totalAmount = totalAmount.isGreaterThan(feeAsTokenBN)
-        ? totalAmount.minus(feeAsTokenBN)
-        : bn(0);
-    }
     // formula (totalAmount * percent) / 100
-    const newValue = totalAmount.multipliedBy(percent).div(100);
+    const newValue = thresholdAmount.multipliedBy(percent).div(100);
 
-    if (totalAmount.isLessThan(newValue)) {
-      setXValue(tokenAmount(totalAmount));
+    if (thresholdAmount.isLessThan(newValue)) {
+      setXValue(tokenAmount(thresholdAmount));
       setPercent(percent);
     } else {
       setXValue(tokenAmount(newValue));
@@ -390,13 +223,10 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
       return;
     }
 
-    const { source }: Pair = getPair(info);
+    const thresholdAmount = getThresholdAmount(sourceSymbol).amount();
 
-    const sourceAsset = getAssetFromAssetData(assetData, source);
-    const totalAmount = sourceAsset?.assetValue.amount() ?? bn(0);
-
-    if (totalAmount.isLessThanOrEqualTo(newValue.amount())) {
-      setXValue(tokenAmount(totalAmount));
+    if (thresholdAmount.isLessThanOrEqualTo(newValue.amount())) {
+      setXValue(tokenAmount(thresholdAmount));
       setPercent(100);
     } else {
       setXValue(newValue);
@@ -404,62 +234,55 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
         newValue
           .amount()
           .multipliedBy(100)
-          .div(totalAmount)
+          .div(thresholdAmount)
           .toNumber(),
       );
     }
   };
 
   const handleConfirmSwap = async () => {
-    const { source = '', target = '' }: Pair = getPair(info);
     const swapData = handleGetSwapData();
 
-    if (user && source && target && swapData) {
-      let tokenAmountToSwap = xValue;
-      const fee = bnbFeeAmount() || baseAmount(0);
-      // fee transformation: BaseAmount -> TokenAmount -> BigNumber
-      const feeAsTokenAmount = baseToToken(fee).amount();
-      // Special case: Substract fee from BNB amount before sending it
-      // Note: All validation for that already happened in `handleEndDrag`
-      if (considerBnb()) {
-        const amountToSwap = tokenAmountToSwap.amount().minus(feeAsTokenAmount);
-        tokenAmountToSwap = tokenAmount(amountToSwap);
-      }
+    if (user && sourceSymbol && targetSymbol && swapData) {
+      const tokenAmountToSwap = xValue;
 
-      setTxResult(null);
+      setTxResult({ status: false });
 
       handleStartTimer();
       const bncClient = await binanceClient(BINANCE_NET);
       try {
         let response: TransferResult | FixmeType;
+        const { slipLimit } = swapData;
 
         if (user.type === 'walletconnect') {
           response = await swapRequestUsingWalletConnect({
             walletConnect: user.walletConnector,
             bncClient,
             walletAddress: user.wallet,
-            source: swapData.symbolFrom,
-            target: swapData.symbolTo,
+            source: sourceSymbol,
+            target: targetSymbol,
             amount: tokenAmountToSwap,
             protectSlip: slipProtection,
-            limit: swapData.lim,
-            poolAddress: swapData.poolAddress,
+            limit: slipLimit,
+            poolAddress,
             targetAddress: address,
           });
         } else {
           response = await confirmSwap(
             bncClient,
             user.wallet,
-            source,
-            target,
-            swapData,
+            sourceSymbol,
+            targetSymbol,
             tokenAmountToSwap,
             slipProtection,
+            slipLimit,
+            poolAddress,
             address,
           );
         }
 
         const result = response?.result ?? [];
+
         const hash = result[0]?.hash;
         if (hash) {
           setTxHash(hash);
@@ -548,31 +371,26 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
       return;
     }
 
-    // Validate RUNE value of swap to cover network transactionFee
-    if (runeFeeIsNotCovered(xValue.amount())) {
+    // Check if amount has sufficient RUNE to cover network transaction Fee
+    if (!hasSufficientRuneFee(xValue, sourceSymbol)) {
       showNotification({
         type: 'error',
         message: 'Invalid amount',
-        description: 'Swap value must exceed 1 RUNE to cover network fees.',
+        description: 'Swap value must exceed 1 RUNE to cover network fee.',
       });
       setDragReset(true);
       return;
     }
 
-    // Validate BNB amount to consider fees
-    if (considerBnb()) {
-      const fee = bnbFeeAmount() || baseAmount(0);
-      // fee transformation: BaseAmount -> TokenAmount -> BigNumber
-      const feeAsTokenAmount = baseToToken(fee).amount();
-      if (xValue.amount().isLessThanOrEqualTo(feeAsTokenAmount)) {
-        showNotification({
-          type: 'error',
-          message: 'Invalid BNB value',
-          description: 'Not enough BNB to cover the fee for this transaction.',
-        });
-        setDragReset(true);
-        return;
-      }
+    // Check if amount has sufficient BNB for binance tx fee
+    if (!hasSufficientBnbFee(xValue, sourceSymbol)) {
+      showNotification({
+        type: 'error',
+        message: 'Invalid BNB value',
+        description: 'Not enough BNB to cover the fee for transaction.',
+      });
+      setDragReset(true);
+      return;
     }
 
     // Validate address to send to
@@ -597,71 +415,41 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     }
   };
 
-  const handleStartTimer = () => {
-    setTimerFinished(false);
-    resetTxStatus({
-      type: TxTypes.SWAP,
-      modal: true,
-      status: true,
-      startTime: Date.now(),
-    });
-  };
+  const handleStartTimer = useCallback(() => {
+    const targetAmount = swapData?.outputAmount;
 
-  const handleChangeTxTimer = () => {
-    const { value } = txStatus;
-    // Count handling depends on `txResult`
-    // If tx has been confirmed, then we jump to last `valueIndex` ...
-    if (txResult !== null && value < MAX_VALUE) {
-      setTxTimerValue(MAX_VALUE);
+    if (sourceSymbol && targetSymbol && targetAmount) {
+      resetTxStatus({
+        type: TxTypes.SWAP,
+        value: 0,
+        modal: true,
+        status: true,
+        startTime: Date.now(),
+        info: symbolpair,
+        txData: {
+          sourceAsset: sourceSymbol,
+          targetAsset: targetSymbol,
+          sourceAmount: xValue,
+          targetAmount,
+        },
+      });
+
+      // dismiss modal after 1s
+      setTimeout(() => {
+        setTxTimerModal(false);
+        setDragReset(true);
+      }, CONFIRM_DISMISS_TIME);
     }
-    // In other cases (no `txResult`) we don't jump to last `indexValue`...
-    if (txResult === null) {
-      // ..., but we are still counting
-      if (value < 75) {
-        // Add a quarter
-        countTxTimerValue(25);
-      } else if (value >= 75 && value < 95) {
-        // With last quarter we just count a little bit to signalize still a progress
-        countTxTimerValue(0.75);
-      }
-    }
-  };
-
-  const handleEndTxTimer = useCallback(() => {
-    setTxTimerStatus(false);
-    setDragReset(true);
-    setTimerFinished(true);
-  }, [setTxTimerStatus, setDragReset, setTimerFinished]);
-
-  const handleCompleted = () => {
-    // reset input amount after swap completed
-    setXValue(tokenAmount(0));
-    setPercent(0);
-
-    setTimerFinished(false);
-    resetTxStatus();
-
-    // refresh balance once finished
-    const wallet = user?.wallet;
-    if (wallet) {
-      refreshBalance(wallet);
-    }
-  };
-
-  const handleClickFinish = () => {
-    handleCompleted();
-  };
-
-  const handleCloseModal = () => {
-    if (isCompleted()) {
-      handleCompleted();
-    } else {
-      setTxTimerModal(false);
-
-      // Finish the tx timer as we no longer minimize modal to txView in the header
-      handleEndTxTimer();
-    }
-  };
+  }, [
+    sourceSymbol,
+    targetSymbol,
+    swapData,
+    xValue,
+    symbolpair,
+    resetTxStatus,
+    setTxTimerModal,
+    setDragReset,
+  ]);
 
   const handleChangeSwapType = (toSend: boolean) => {
     const view = toSend ? SwapSendView.SEND : SwapSendView.DETAIL;
@@ -673,66 +461,56 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   };
 
   const handleChangeSource = (asset: string) => {
-    const { source, target }: Pair = getPair(info);
     const selectedToken = getTickerFormat(asset);
+    const target = getTickerFormat(targetSymbol);
 
-    if (source && target) {
+    if (sourceSymbol && targetSymbol) {
       const URL =
         selectedToken === target
-          ? `/swap/${selectedToken}-${source}`
-          : `/swap/${selectedToken}-${target}`;
+          ? `/swap/${targetSymbol}:${sourceSymbol}`
+          : `/swap/${asset}:${targetSymbol}`;
       history.push(URL);
     } else {
       // eslint-disable-next-line no-console
       console.error(
-        `Could not parse target / source pair: ${target} / ${source}`,
+        `Could not parse target / source pair: ${targetSymbol} / ${sourceSymbol}`,
       );
     }
   };
 
   const handleSelectTarget = (asset: string) => {
-    const { source, target }: Pair = getPair(info);
     const selectedToken = getTickerFormat(asset);
+    const source = getTickerFormat(sourceSymbol);
 
-    if (source && target) {
+    if (sourceSymbol && targetSymbol) {
       const URL =
         source === selectedToken
-          ? `/swap/${target}-${selectedToken}`
-          : `/swap/${source}-${selectedToken}`;
+          ? `/swap/${targetSymbol}:${sourceSymbol}`
+          : `/swap/${sourceSymbol}:${asset}`;
       history.push(URL);
     } else {
       // eslint-disable-next-line no-console
       console.error(
-        `Could not parse target / source pair: ${target} / ${source}`,
+        `Could not parse target / source pair: ${targetSymbol} / ${sourceSymbol}`,
       );
     }
   };
 
   const handleReversePair = () => {
-    const { source, target }: Pair = getPair(info);
-
-    if (!assetData.find(data => getTickerFormat(data.asset) === target)) {
-      showNotification({
-        type: 'warning',
-        message: 'Cannot Reverse Swap Direction',
-        description: 'Token does not exist in your wallet.',
-      });
-      return;
-    }
-    if (source && target) {
+    if (sourceSymbol && targetSymbol) {
       setXValue(tokenAmount(0));
-      const URL = `/swap/${target}-${source}`;
+      const URL = `/swap/${targetSymbol}:${sourceSymbol}`;
       history.push(URL);
     } else {
       // eslint-disable-next-line no-console
       console.error(
-        `Could not parse target / source pair: ${target} / ${source}`,
+        `Could not parse target / source pair: ${targetSymbol} / ${sourceSymbol}`,
       );
     }
   };
 
-  const handleSelectSourceAmount = (source: string, amount: number) => {
-    const sourceAsset = getAssetFromAssetData(assetData, source);
+  const handleSelectSourceAmount = (amount: number) => {
+    const sourceAsset = getAssetDataFromBalance(assetData, sourceSymbol);
 
     if (!sourceAsset) {
       return;
@@ -742,18 +520,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     // formula (totalAmount * amount) / 100
     const xValueBN = totalAmount.multipliedBy(amount).div(100);
     setXValue(tokenAmount(xValueBN));
-  };
-
-  const handleValidatePair = (
-    sourceInfo: AssetData[],
-    targetInfo: AssetPair[],
-    pair: Pair,
-  ) => {
-    if (!targetInfo.length) {
-      history.push('/pools');
-    }
-
-    return validatePair(pair, sourceInfo, targetInfo);
   };
 
   const getPopupContainer = () => {
@@ -778,6 +544,9 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     };
 
     const txtLoading = <Text>Fee: ...</Text>;
+
+    const hasBnbFee = hasSufficientBnbFee(xValue, sourceSymbol);
+
     return (
       <FeeParagraph>
         {RD.fold(
@@ -787,18 +556,18 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
           (fees: TransferFees) => (
             <>
               <Text>Fee: {formatBnbAmount(fees.single)}</Text>
-              {subtractBnbFee() && (
+              {considerBnb && hasBnbFee && (
                 <Text>
                   {' '}
                   (It will be substructed from your entered BNB value)
                 </Text>
               )}
-              {bnbAmount && bnbFeeIsNotCovered() && (
+              {bnbAmount && !hasSufficientBnbFeeInBalance && (
                 <>
                   <br />
                   <Text type="danger" style={{ paddingTop: '10px' }}>
                     You have {formatBnbAmount(bnbAmount)} in your wallet,
-                    that&lsquo;s not enought to cover the fee for this
+                    that&lsquo;s not enough to cover the fee for this
                     transaction.
                   </Text>
                 </>
@@ -810,115 +579,20 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     );
   };
 
-  const renderSwapModalContent = (
-    swapSource: string,
-    swapTarget: string,
-    swapData: SwapData,
-  ) => {
-    const { status, value, startTime, hash } = txStatus;
-    const { slip, outputAmount } = swapData;
-
-    const Px = validBNOrZero(priceIndex[swapSource.toUpperCase()]);
-    const tokenPrice = validBNOrZero(priceIndex[swapTarget.toUpperCase()]);
-
-    const priceFrom: BigNumber = Px.multipliedBy(xValue.amount());
-    const slipAmount = slip;
-
-    const refunded = txResult?.type === 'refund' ?? false;
-    const amountBN = bnOrZero(txResult?.amount);
-    const assetAmount = txResult ? tokenAmount(amountBN) : outputAmount;
-
-    let priceTo;
-    if (refunded) {
-      priceTo = priceFrom;
-    } else {
-      priceTo = txResult
-        ? amountBN.multipliedBy(tokenPrice)
-        : outputAmount.amount().multipliedBy(tokenPrice);
-    }
-
-    const txURL = TESTNET_TX_BASE_URL + hash;
-
-    return (
-      <SwapModalContent>
-        <Row className="swapmodal-content">
-          <div className="timer-container">
-            <TxTimer
-              status={status}
-              value={value}
-              maxValue={MAX_VALUE}
-              maxSec={45}
-              startTime={startTime}
-              onChange={handleChangeTxTimer}
-              onEnd={handleEndTxTimer}
-              refunded={refunded}
-            />
-          </div>
-          <div className="coin-data-wrapper">
-            <StepBar size={50} />
-            <div className="coin-data-container">
-              <CoinData
-                data-test="swapmodal-coin-data-send"
-                asset={swapSource}
-                assetValue={xValue}
-                price={priceFrom}
-                priceUnit={basePriceAsset}
-              />
-              <CoinData
-                data-test="swapmodal-coin-data-receive"
-                asset={swapTarget}
-                assetValue={assetAmount}
-                price={priceTo}
-                priceUnit={basePriceAsset}
-              />
-            </div>
-          </div>
-        </Row>
-        <Row className="swap-info-wrapper">
-          <Trend amount={slipAmount} />
-          {hash && (
-            <div className="hash-address">
-              <div className="copy-btn-wrapper">
-                {isCompleted() && (
-                  <Button
-                    className="view-btn"
-                    color="success"
-                    onClick={handleClickFinish}
-                  >
-                    FINISH
-                  </Button>
-                )}
-                <a
-                  className="view-tx"
-                  href={txURL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  VIEW TRANSACTION
-                </a>
-              </div>
-            </div>
-          )}
-        </Row>
-      </SwapModalContent>
-    );
-  };
-
   // render
-  const swapPair: Pair = getPair(info);
-
   if (
-    !swapPair.source ||
-    !swapPair.target ||
+    !sourceSymbol ||
+    !targetSymbol ||
     !Object.keys(poolData).length ||
-    !isValidSwap(swapPair, pools)
+    !isValidSwap(pools, sourceSymbol, targetSymbol)
   ) {
-    history.push('/pools'); // redirect to pool view if swap is invalid
-    return <></>;
+    return <Loader />;
   }
 
-  const { source: swapSource, target: swapTarget } = swapPair;
+  const swapSource = getTickerFormat(sourceSymbol);
+  const swapTarget = getTickerFormat(targetSymbol);
 
+  // TODO: need to be refactored
   const tokensData: TokenData[] = Object.keys(poolData).reduce(
     (result: TokenData[], tokenName: string) => {
       const tokenData = poolData[tokenName];
@@ -940,216 +614,188 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     [],
   );
 
-  const runePrice = validBNOrZero(priceIndex?.RUNE);
-
   // add rune data in the target token list
   tokensData.push({
-    asset: 'RUNE-A1F',
+    asset: RUNE_SYMBOL,
     price: runePrice,
   });
 
-  const pair: Pair = getPair(info);
-  const { sourceData, targetData } = handleValidatePair(
+  const { sourceData, targetData } = getValidSwapPairs(
     assetData,
     tokensData,
-    pair,
+    sourceSymbol,
+    targetSymbol,
   );
 
-  const openSwapModal = txStatus.type === 'swap' ? txStatus.modal : false;
-
-  const swapData = handleGetSwapData();
   if (!swapData) {
-    return <></>;
-  } else {
-    const { slip, outputAmount, outputPrice } = swapData;
-
-    const sourcePriceBN = bn(priceIndex[swapSource.toUpperCase()]);
-    const sourcePrice = isValidBN(sourcePriceBN) ? sourcePriceBN : outputPrice;
-    const targetPriceBN = bn(priceIndex[swapTarget.toUpperCase()]);
-    const targetPrice = isValidBN(targetPriceBN) ? targetPriceBN : outputPrice;
-
-    const ratio = !targetPrice.isEqualTo(bn(0))
-      ? sourcePrice.div(targetPrice)
-      : bn(0);
-    const ratioLabel = `1 ${swapSource.toUpperCase()} = ${ratio.toFixed(
-      3,
-    )} ${swapTarget.toUpperCase()}`;
-
-    // swap modal
-    const refunded = txResult && txResult.type === 'refund';
-
-    // eslint-disable-next-line no-nested-ternary
-    const swapTitle = !isCompleted()
-      ? 'YOU ARE SWAPPING'
-      : refunded
-      ? 'TOKEN REFUNDED'
-      : 'YOU SWAPPED';
-
-    const disableDrag = bnbFeeIsNotCovered();
-
-    const slipValue = slip
-      ? `SLIP ${slip.toFormat(2, BigNumber.ROUND_DOWN)}%`
-      : Nothing;
-
-    return (
-      <ContentWrapper className="swap-detail-wrapper">
-        <SwapAssetCard>
-          <ContentTitle>
-            swapping {swapSource} &gt;&gt; {swapTarget}
-          </ContentTitle>
-          <div className="swap-content">
-            <div className="swap-detail-panel">
-              <TokenCard
-                inputTitle="input"
-                asset={swapSource}
-                assetData={sourceData}
-                amount={xValue}
-                price={sourcePrice}
-                priceIndex={priceIndex}
-                onChange={handleChangeValue}
-                onChangeAsset={handleChangeSource}
-                onSelect={(amount: number) =>
-                  handleSelectSourceAmount(swapSource, amount)}
-                inputProps={{ 'data-test': 'coincard-source-input' }}
-                withSearch
-                data-test="coincard-source"
-              />
-              <SliderSwapWrapper>
-                <div className="slider">
-                  <Slider
-                    value={percent}
-                    onChange={handleChangePercent}
-                    withLabel
-                  />
-                </div>
-                <div className="swap-wrapper">
-                  <SwapOutlined
-                    className="swap-outlined"
-                    onClick={handleReversePair}
-                  />
-                </div>
-              </SliderSwapWrapper>
-              <TokenCard
-                inputTitle="output"
-                inputProps={{
-                  disabled: true,
-                  'data-test': 'coincard-target-input',
-                }}
-                asset={swapTarget}
-                assetData={targetData}
-                amount={outputAmount}
-                price={targetPrice}
-                priceIndex={priceIndex}
-                onChangeAsset={handleSelectTarget}
-                withSearch
-                data-test="coincard-target"
-              />
-
-              <div className="swaptool-container">
-                <CardFormHolder>
-                  <CardForm>
-                    <CardFormItem className={invalidAddress ? 'has-error' : ''}>
-                      <AddressInput
-                        value={address}
-                        onChange={handleChangeAddress}
-                        status={view === SwapSendView.SEND}
-                        onStatusChange={handleChangeSwapType}
-                      />
-                    </CardFormItem>
-                  </CardForm>
-                  {invalidAddress && (
-                    <CardFormItemError>
-                      Recipient address is invalid!
-                    </CardFormItemError>
-                  )}
-                </CardFormHolder>
-                <CardFormHolder className="slip-protection">
-                  <CardForm>
-                    <PopoverContainer
-                      content={renderProtectPopoverContent()}
-                      getPopupContainer={getPopupContainer}
-                      placement="left"
-                      visible
-                      overlayClassName="protectPrice-popover"
-                      overlayStyle={{
-                        padding: '6px',
-                        animationDuration: '0s !important',
-                        animation: 'none !important',
-                      }}
-                    >
-                      <div>
-                        <Button
-                          onClick={handleSwitchSlipProtection}
-                          sizevalue="small"
-                          typevalue="outline"
-                          focused={slipProtection}
-                        >
-                          {slipProtection ? (
-                            <LockOutlined />
-                          ) : (
-                            <UnlockOutlined />
-                          )}
-                        </Button>
-                      </div>
-                    </PopoverContainer>
-                  </CardForm>
-                </CardFormHolder>
-              </div>
-            </div>
-            <div className="desktop-view">
-              <SwapStatusPanel>
-                <StepBar size={170} />
-                <div className="slip-ratio-labels">
-                  <Label>{ratioLabel}</Label>
-                  <Label>{slipValue}</Label>
-                </div>
-              </SwapStatusPanel>
-            </div>
-          </div>
-          <div className="drag-confirm-wrapper">
-            <Drag
-              title="Drag to swap"
-              source={swapSource}
-              target={swapTarget}
-              reset={dragReset}
-              disabled={disableDrag}
-              onConfirm={handleEndDrag}
-              onDrag={handleDrag}
-            />
-          </div>
-          {renderFee()}
-        </SwapAssetCard>
-
-        <SwapModal
-          title={swapTitle}
-          visible={openSwapModal}
-          footer={null}
-          onCancel={handleCloseModal}
-        >
-          {renderSwapModalContent(swapSource, swapTarget, swapData)}
-        </SwapModal>
-        <PrivateModal
-          visible={openPrivateModal}
-          onOk={handleConfirmPassword}
-          onCancel={handleCancelPrivateModal}
-        />
-        <Modal
-          title="PLEASE ADD WALLET"
-          visible={openWalletAlert}
-          onOk={handleConnectWallet}
-          onCancel={hideWalletAlert}
-          okText="ADD WALLET"
-        >
-          <Label>Please add a wallet to swap tokens.</Label>
-        </Modal>
-      </ContentWrapper>
-    );
+    return <Loader />;
   }
+  const { slip, outputAmount, outputPrice } = swapData;
+
+  const sourcePriceBN = bn(priceIndex[sourceSymbol]);
+  const sourcePrice = isValidBN(sourcePriceBN) ? sourcePriceBN : outputPrice;
+  const targetPriceBN = bn(priceIndex[targetSymbol]);
+  const targetPrice = isValidBN(targetPriceBN) ? targetPriceBN : outputPrice;
+
+  const ratio = !targetPrice.isEqualTo(bn(0))
+    ? sourcePrice.div(targetPrice)
+    : bn(0);
+  const ratioLabel = `1 ${swapSource.toUpperCase()} = ${ratio.toFixed(
+    3,
+  )} ${swapTarget.toUpperCase()}`;
+
+  const disableDrag = !hasSufficientBnbFeeInBalance;
+
+  const slipValue = slip
+    ? `SLIP ${slip.toFormat(2, BigNumber.ROUND_DOWN)}%`
+    : Nothing;
+
+  // TODO: all components need to be refactored to accept symbols instead of tickers
+  return (
+    <ContentWrapper className="swap-detail-wrapper">
+      <SwapAssetCard>
+        <ContentTitle>
+          swapping {swapSource} &gt;&gt; {swapTarget}
+        </ContentTitle>
+        <div className="swap-content">
+          <div className="swap-detail-panel">
+            <TokenCard
+              inputTitle="input"
+              asset={swapSource}
+              assetData={sourceData}
+              amount={xValue}
+              price={sourcePrice}
+              priceIndex={priceIndex}
+              onChange={handleChangeValue}
+              onChangeAsset={handleChangeSource}
+              onSelect={handleSelectSourceAmount}
+              inputProps={{ 'data-test': 'coincard-source-input' }}
+              withSearch
+              data-test="coincard-source"
+            />
+            <SliderSwapWrapper>
+              <div className="slider">
+                <Slider
+                  value={percent}
+                  onChange={handleChangePercent}
+                  withLabel
+                />
+              </div>
+              <div className="swap-wrapper">
+                <SwapOutlined
+                  className="swap-outlined"
+                  onClick={handleReversePair}
+                />
+              </div>
+            </SliderSwapWrapper>
+            <TokenCard
+              inputTitle="output"
+              inputProps={{
+                disabled: true,
+                'data-test': 'coincard-target-input',
+              }}
+              asset={swapTarget}
+              assetData={targetData}
+              amount={outputAmount}
+              price={targetPrice}
+              priceIndex={priceIndex}
+              onChangeAsset={handleSelectTarget}
+              withSearch
+              data-test="coincard-target"
+            />
+
+            <div className="swaptool-container">
+              <CardFormHolder>
+                <CardForm>
+                  <CardFormItem className={invalidAddress ? 'has-error' : ''}>
+                    <AddressInput
+                      value={address}
+                      onChange={handleChangeAddress}
+                      status={view === SwapSendView.SEND}
+                      onStatusChange={handleChangeSwapType}
+                    />
+                  </CardFormItem>
+                </CardForm>
+                {invalidAddress && (
+                  <CardFormItemError>
+                    Recipient address is invalid!
+                  </CardFormItemError>
+                )}
+              </CardFormHolder>
+              <CardFormHolder className="slip-protection">
+                <CardForm>
+                  <PopoverContainer
+                    content={renderProtectPopoverContent()}
+                    getPopupContainer={getPopupContainer}
+                    placement="left"
+                    visible
+                    overlayClassName="protectPrice-popover"
+                    overlayStyle={{
+                      padding: '6px',
+                      animationDuration: '0s !important',
+                      animation: 'none !important',
+                    }}
+                  >
+                    <div>
+                      <Button
+                        onClick={handleSwitchSlipProtection}
+                        sizevalue="small"
+                        typevalue="outline"
+                        focused={slipProtection}
+                      >
+                        {slipProtection ? <LockOutlined /> : <UnlockOutlined />}
+                      </Button>
+                    </div>
+                  </PopoverContainer>
+                </CardForm>
+              </CardFormHolder>
+            </div>
+          </div>
+          <div className="desktop-view">
+            <SwapStatusPanel>
+              <StepBar size={170} />
+              <div className="slip-ratio-labels">
+                <Label>{ratioLabel}</Label>
+                <Label>{slipValue}</Label>
+              </div>
+            </SwapStatusPanel>
+          </div>
+        </div>
+        <div className="drag-confirm-wrapper">
+          <Drag
+            title="Drag to swap"
+            source={swapSource}
+            target={swapTarget}
+            reset={dragReset}
+            disabled={disableDrag}
+            onConfirm={handleEndDrag}
+            onDrag={handleDrag}
+          />
+        </div>
+        {renderFee()}
+      </SwapAssetCard>
+      <PrivateModal
+        visible={openPrivateModal}
+        onOk={handleConfirmPassword}
+        onCancel={handleCancelPrivateModal}
+      />
+      <Modal
+        title="PLEASE ADD WALLET"
+        visible={openWalletAlert}
+        onOk={handleConnectWallet}
+        onCancel={hideWalletAlert}
+        okText="ADD WALLET"
+      >
+        <Label>Please add a wallet to swap tokens.</Label>
+      </Modal>
+    </ContentWrapper>
+  );
 };
 
 export default compose(
   connect(
     (state: RootState) => ({
+      txResult: state.App.txResult,
       txStatus: state.App.txStatus,
       user: state.Wallet.user,
       assetData: state.Wallet.assetData,
@@ -1159,21 +805,13 @@ export default compose(
       priceIndex: state.Midgard.priceIndex,
       basePriceAsset: state.Midgard.basePriceAsset,
       transferFees: state.Binance.transferFees,
-      wsTransferEvent: state.Binance.wsTransferEvent,
     }),
     {
-      getPools: midgardActions.getPools,
-      getPoolAddress: midgardActions.getPoolAddress,
+      setTxResult: appActions.setTxResult,
       setTxTimerModal: appActions.setTxTimerModal,
-      setTxTimerStatus: appActions.setTxTimerStatus,
-      countTxTimerValue: appActions.countTxTimerValue,
-      setTxTimerValue: appActions.setTxTimerValue,
       resetTxStatus: appActions.resetTxStatus,
       setTxHash: appActions.setTxHash,
       refreshBalance: walletActions.refreshBalance,
-      getBinanceFees: binanceActions.getBinanceFees,
-      subscribeBinanceTransfers: binanceActions.subscribeBinanceTransfers,
-      unSubscribeBinanceTransfers: binanceActions.unSubscribeBinanceTransfers,
     },
   ),
   withRouter,

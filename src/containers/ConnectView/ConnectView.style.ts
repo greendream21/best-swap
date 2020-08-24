@@ -62,6 +62,10 @@ export const ContentWrapper = styled(ContentView)`
         .btn-wrapper {
           width: 100%;
         }
+
+        .keystore-upload-icon {
+          font-size: 18px;
+        }
       }
 
       .keystore-footer {

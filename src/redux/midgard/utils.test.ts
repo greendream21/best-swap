@@ -87,6 +87,7 @@ describe('redux/midgard/utils/', () => {
       const result = getAssetDetailIndex(data);
       result;
       const expected = {
+        AAA: emptyAssetSymbol,
         'B-C': asset1,
         'BB-CC': asset2,
       };
@@ -95,9 +96,6 @@ describe('redux/midgard/utils/', () => {
     it('should return an emtpy {} if no asset or symbols in list', () => {
       const data = [
         emptyAsset,
-        emptyAssetSymbol,
-        emptyAssetSymbol,
-        emptyAssetSymbol,
         emptyAsset,
       ] as Array<PoolDataMock>;
       const result = getAssetDetailIndex(data);
@@ -111,14 +109,14 @@ describe('redux/midgard/utils/', () => {
       const result = getPriceIndex(
         [
           { asset: 'BNB.TOMOB-1E1', priceRune: '0.3333333333333333' },
-          { asset: 'BNB.BBB', priceRune: '2206.896551724138' },
+          { asset: 'BNB.BNB', priceRune: '2206.896551724138' },
         ],
         'AAA',
       );
       const expected: PriceDataIndex = {
-        RUNE: bn(1),
-        TOMOB: bn('0.3333333333333333'),
-        BBB: bn('2206.896551724138'),
+        'RUNE-67C': bn(1),
+        'TOMOB-1E1': bn('0.3333333333333333'),
+        BNB: bn('2206.896551724138'),
       };
       expect(result).toEqual(expected);
     });
@@ -129,13 +127,13 @@ describe('redux/midgard/utils/', () => {
           { asset: 'BBB.BBB-BBB', priceRune: '2' },
           { asset: 'CCC.CCC-CCC', priceRune: '10' },
         ],
-        'BBB',
+        'BBB-BBB',
       );
       const expected: PriceDataIndex = {
-        RUNE: bn(0.5),
-        AAA: bn(2),
-        BBB: bn(1),
-        CCC: bn(5),
+        'RUNE-67C': bn(0.5),
+        'AAA-AAA': bn(2),
+        'BBB-BBB': bn(1),
+        'CCC-CCC': bn(5),
       };
       expect(result).toEqual(expected);
     });
@@ -154,9 +152,9 @@ describe('redux/midgard/utils/', () => {
       const result = getAssetFromString('BNB.RUNE');
       expect(result).toEqual({ chain: 'BNB', symbol: 'RUNE', ticker: 'RUNE' });
     });
-    it('should return an asset with a value for chain only', () => {
+    it('should return symbol and ticker if chain is not provided', () => {
       const result = getAssetFromString('BNB');
-      expect(result).toEqual({ chain: 'BNB' });
+      expect(result).toEqual({ symbol: 'BNB', ticker: 'BNB' });
     });
     it('returns an asset without any values if the passing value is an empty string', () => {
       const result = getAssetFromString('');
