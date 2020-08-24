@@ -37,7 +37,9 @@ export const getThorchainBaseURL = () => {
   return THORCHAIN_API_URL;
 };
 
-export const TESTNET_TX_BASE_URL = 'https://testnet-explorer.binance.org/tx/';
+export const BINANCE_TX_BASE_URL = isMainnet
+  ? 'https://explorer.binance.org/tx/'
+  : 'https://testnet-explorer.binance.org/tx/';
 
 export const getBinanceTestnetURL = (url: string) =>
   `${BINANCE_TESTNET_URL}/${url}`;
@@ -60,8 +62,6 @@ export const getHeaders = () => ({
   Accept: 'application/json',
   'Content-Type': 'application/json',
 });
-
-export type TestnetSeedData = string[];
 
 /**
  * Helper to get `DefaultApi` instance for Midgard
