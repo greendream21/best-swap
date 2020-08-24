@@ -6,7 +6,7 @@
     "fblogin": "firebase login",
     "start": "node scripts/start.js",
     "start-s": "HTTPS=true node scripts/start.js",
-    "mainnet": "HTTPS=true REACT_APP_ENV=mainnet node scripts/start.js",
+    "mainnet": "HTTPS=true REACT_APP_NET=mainnet node scripts/start.js",
     "build": "node scripts/build.js",
     "build:ci": "CI=true yarn build",
     "pretest": "env",
