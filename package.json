@@ -10,7 +10,7 @@
     "build": "node scripts/build.js",
     "build:ci": "CI=true yarn build",
     "pretest": "env",
-    "test": "yarn lint && yarn test:swagger && yarn test:unit && yarn test:feat",
+    "test": "yarn lint && yarn test:swagger && yarn test:unit",
     "test:feat:_no-build": "run-p -r cy:launch cy:run",
     "pretest:feat": "yarn build",
     "test:feat": "yarn test:feat:_no-build",

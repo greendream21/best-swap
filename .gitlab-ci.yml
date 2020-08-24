@@ -18,57 +18,52 @@ before_script:
   - firebase -V
 
 test:develop:
-  variables:
-    # provide cypress with our cached folder to install its cache in
-    CYPRESS_CACHE_FOLDER: '$CI_PROJECT_DIR/cache/Cypress'
   stage: test
-  except:
-    - bepswap-testnet-reskin
-  image: cypress/base:12.14.0
   script:
     - yarn test
   environment:
     name: develop
-  artifacts:
-    expire_in: 1 week
-    when: always
-    paths:
-      - cypress/screenshots
-      - cypress/videos
 
-deploy:develop:
-  stage: deploy
-  except:
-    - schedules
-  script:
-    - firebase use --token ${FIREBASE_TOKEN} bepswap-testnet-dev
-    - firebase deploy --token ${FIREBASE_TOKEN}
-  environment:
-    name: develop
-  only:
-    - master
-
-deploy:staging:
+deploy:testnet-staging:
   stage: deploy
   script:
     - firebase use --token ${FIREBASE_TOKEN} bepswap-testnet-staging
     - firebase deploy --token ${FIREBASE_TOKEN}
   environment:
-    name: staging
+    name: testnet
   only:
-    - schedules
+    - development
 
-deploy:production:
-  except:
-    - schedules
+deploy:testnet-production:
   stage: deploy
   script:
     - firebase use --token ${FIREBASE_TOKEN} bepswap-testnet
     - firebase deploy --token ${FIREBASE_TOKEN}
   environment:
-    name: production
+    name: testnet
   only:
     - master
+  when: manual
+
+deploy:chaosnet-staging:
+  stage: deploy
+  script:
+    - firebase use --token ${FIREBASE_TOKEN} bepswap-chaosnet-staging
+    - firebase deploy --token ${FIREBASE_TOKEN}
+  environment:
+    name: chaosnet
+  only:
+    - chaosnet
+
+deploy:chaosnet-production:
+  stage: deploy
+  script:
+    - firebase use --token ${FIREBASE_TOKEN} bepswap-app
+    - firebase deploy --token ${FIREBASE_TOKEN}
+  environment:
+    name: chaosnet
+  only:
+    - chaosnet
   when: manual
 
 deploy:cloudfront:
@@ -101,15 +96,3 @@ build-docker:
   script:
     - docker build -t registry.gitlab.com/thorchain/bepswap/bepswap-web-ui .
     - docker push registry.gitlab.com/thorchain/bepswap/bepswap-web-ui
-
-deploy:reskin:
-  stage: deploy
-  except:
-    - schedules
-  script:
-    - firebase use --token ${FIREBASE_TOKEN} bepswap-testnet-update
-    - firebase deploy --token ${FIREBASE_TOKEN}
-  environment:
-    name: develop
-  only:
-    - bepswap-testnet-reskin
