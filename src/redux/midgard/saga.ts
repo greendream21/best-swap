@@ -177,6 +177,43 @@ export function* getStats() {
   });
 }
 
+function* tryGetNetworkInfo() {
+  for (let i = 0; i < MIDGARD_MAX_RETRY; i++) {
+    try {
+      const noCache = i > 0;
+      // Unsafe type match of `basePath`: Can't be inferred by `tsc` from a return value of a Generator function - known TS/Generator/Saga issue
+      const basePath: string = yield call(getApiBasePath, getNet(), noCache);
+      const midgardApi = api.getMidgardDefaultApi(basePath);
+      const fn = midgardApi.getNetworkData;
+      const {
+        data: networkInfo,
+      }: UnpackPromiseResponse<typeof fn> = yield call({
+        context: midgardApi,
+        fn,
+      });
+      return networkInfo;
+    } catch (error) {
+      if (i < MIDGARD_MAX_RETRY - 1) {
+        yield delay(MIDGARD_RETRY_DELAY);
+      }
+    }
+  }
+}
+
+export function* getNetworkInfo() {
+  yield takeEvery('GET_NETWORK_INFO_REQUEST', function*() {
+    try {
+      const networkInfo = yield call(tryGetNetworkInfo);
+      const { data: mimir } = yield call(getThorchainMimir);
+
+      yield put(actions.getThorchainDataSuccess({ mimir }));
+      yield put(actions.getNetworkInfoSuccess(networkInfo));
+    } catch (error) {
+      yield put(actions.getNetworkInfoFailed(error));
+    }
+  });
+}
+
 // should use this once midgard is ready for fetching multiple pool data at once
 // function* tryGetAllPoolData(assets: string[]) {
 //   for (let i = 0; i < MIDGARD_MAX_RETRY; i++) {
@@ -325,14 +362,12 @@ export function* getStakerPoolData() {
       // TODO: (CHRIS) create a separate get thorchaindata actions
       const { data: constants } = yield call(getThorchainConstants);
       const { data: lastBlock } = yield call(getThorchainLastBlock);
-      const { data: mimir } = yield call(getThorchainMimir);
 
       yield put(actions.getStakerPoolDataSuccess(data));
       yield put(
         actions.getThorchainDataSuccess({
           constants,
           lastBlock,
-          mimir,
         }),
       );
     } catch (error) {
@@ -659,5 +694,6 @@ export default function* rootSaga() {
     fork(getTxByAsset),
     fork(getRTVolumeByAsset),
     fork(getPoolDetailByAsset),
+    fork(getNetworkInfo),
   ]);
 }

@@ -68,6 +68,8 @@ const initState: State = {
     lastBlock: {},
     mimir: {},
   },
+  networkInfo: {},
+  networkInfoLoading: false,
 };
 
 const reducer: Reducer<State, MidgardActionTypes> = (
@@ -193,7 +195,10 @@ const reducer: Reducer<State, MidgardActionTypes> = (
       const symbol = getAssetSymbolFromPayload(poolDetail);
 
       if (symbol) {
-        const poolDetailedData = { ...state.poolDetailedData, [symbol]: poolDetail };
+        const poolDetailedData = {
+          ...state.poolDetailedData,
+          [symbol]: poolDetail,
+        };
         return {
           ...state,
           poolDetailedData,
@@ -237,7 +242,10 @@ const reducer: Reducer<State, MidgardActionTypes> = (
     case 'GET_THORCHAIN_DATA_SUCCESS': {
       return {
         ...state,
-        thorchain: action.payload,
+        thorchain: {
+          ...state.thorchain,
+          ...action.payload,
+        },
       };
     }
     case 'GET_STAKER_POOL_DATA_FAILED':
@@ -380,6 +388,24 @@ const reducer: Reducer<State, MidgardActionTypes> = (
       return {
         ...state,
         apiBasePath: success(action.payload),
+      };
+    case 'GET_NETWORK_INFO_REQUEST':
+      return {
+        ...state,
+        networkInfoLoading: true,
+        error: Nothing,
+      };
+    case 'GET_NETWORK_INFO_SUCCESS':
+      return {
+        ...state,
+        networkInfoLoading: false,
+        networkInfo: action.payload,
+      };
+    case 'GET_NETWORK_INFO_FAILED':
+      return {
+        ...state,
+        networkInfoLoading: false,
+        error: action.payload,
       };
     default:
       return state;

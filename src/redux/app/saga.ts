@@ -10,6 +10,7 @@ export function* getBEPSwapData() {
     yield put(midgardActions.getPools());
     yield put(midgardActions.getPoolAddress());
     yield put(midgardActions.getStats());
+    yield put(midgardActions.getNetworkInfo());
     yield put(walletActions.refreshWallet());
     yield put(binanceActions.getBinanceData());
   });
