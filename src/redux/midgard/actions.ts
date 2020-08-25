@@ -21,6 +21,7 @@ import {
   ThorchainEndpoints,
   InlineResponse2001,
   TotalVolChanges,
+  NetworkInfo,
 } from '../../types/generated/midgard';
 
 export type SetAssetsPayload = {
@@ -164,6 +165,15 @@ export const getRTVolumeByAssetSuccess = (payload: Array<TotalVolChanges>) =>
 export const getRTVolumeByAssetFailed = (payload: Error) =>
   ({ type: 'GET_RT_VOLUME_BY_ASSET_FAILED', payload } as const);
 
+export const getNetworkInfo = () =>
+  ({ type: 'GET_NETWORK_INFO_REQUEST' } as const);
+
+export const getNetworkInfoSuccess = (payload: NetworkInfo) =>
+  ({ type: 'GET_NETWORK_INFO_SUCCESS', payload } as const);
+
+export const getNetworkInfoFailed = (payload: Error) =>
+  ({ type: 'GET_NETWORK_INFO_FAILED', payload } as const);
+
 export type MidgardActionTypes = ReturnType<
   | typeof getPools
   | typeof getPoolsSuccess
@@ -209,4 +219,7 @@ export type MidgardActionTypes = ReturnType<
   | typeof getPoolDetailByAsset
   | typeof getPoolDetailByAssetSuccess
   | typeof getPoolDetailByAssetFailed
+  | typeof getNetworkInfo
+  | typeof getNetworkInfoSuccess
+  | typeof getNetworkInfoFailed
 >;
