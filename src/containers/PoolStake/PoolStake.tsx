@@ -725,15 +725,8 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       volumeAT,
       totalSwaps,
       totalStakers,
-      runeStakedTotal,
       apr,
     } = poolDetail;
-    const { mimir } = thorchainData;
-    console.log(mimir);
-    const maxStakeRuneAmount = baseAmount(
-      bnOrZero(mimir?.['mimir//MAXIMUMSTAKERUNE']),
-    );
-    const maxStakeRuneValue = `${formatBaseAsTokenAmount(maxStakeRuneAmount)}`;
 
     const attrs = [
       {
@@ -762,20 +755,13 @@ const PoolStake: React.FC<Props> = (props: Props) => {
         title: 'All Time ROI',
         value: `${apr}% APR`,
       },
-      {
-        key: 'stake_status',
-        title: 'Total/Max staked RUNE',
-        value: `${formatBaseAsTokenAmount(
-          runeStakedTotal,
-        )} / ${maxStakeRuneValue}`,
-      },
     ];
 
     return attrs.map(info => {
       const { title, value, key } = info;
 
       return (
-        <div className="token-info-card" key={key}>
+        <Col className="token-info-card" key={key} xs={12} sm={8} md={6} lg={4}>
           <TokenInfo
             asset="RUNE"
             target={tokenTicker}
@@ -783,7 +769,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
             label={title}
             loading={loading}
           />
-        </div>
+        </Col>
       );
     });
   };
