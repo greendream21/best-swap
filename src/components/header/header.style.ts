@@ -106,7 +106,11 @@ export const HeaderActionButtons = styled.div`
   /* HACK: This should be refactored in 
      the future to not use classes */
   
-    .wallet-btn-wrapper {
+  .global-rune-stake-status {
+    margin-right: 10px;
+  }
+
+  .wallet-btn-wrapper {
     display: none !important;
     ${media.sm`
         display: flex !important;

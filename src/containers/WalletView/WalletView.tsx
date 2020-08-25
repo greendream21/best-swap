@@ -25,6 +25,7 @@ import {
   matchSwapDetailPair,
   matchPoolSymbol,
 } from '../../helpers/routerHelper';
+
 import { RUNE_SYMBOL } from '../../settings/assetData';
 
 const { TabPane } = Tabs;
@@ -81,7 +82,10 @@ const WalletView: React.FC<Props> = (props: Props): JSX.Element => {
   const handleSelectAsset = (key: number) => {
     const newAssetName = getAssetNameByIndex(key);
 
-    const URL = `/swap/${newAssetName}:${RUNE_SYMBOL}`;
+    let URL = `/swap/${newAssetName}:${RUNE_SYMBOL}`;
+    if (newAssetName === RUNE_SYMBOL) {
+      URL = '/pools';
+    }
     history.push(URL);
   };
 
