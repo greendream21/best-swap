@@ -4,7 +4,6 @@ import { LockOutlined } from '@ant-design/icons';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { delay } from '@thorchain/asgardex-util';
-import { client as binanceClient } from '@thorchain/asgardex-binance';
 
 import Input from '../../uielements/input';
 import Label from '../../uielements/label';
@@ -15,8 +14,7 @@ import { RootState } from '../../../redux/store';
 import { verifyPrivateKey } from '../../../helpers/utils/walletUtils';
 import usePrevious from '../../../hooks/usePrevious';
 
-import { BINANCE_NET } from '../../../env';
-import { FixmeType } from '../../../types/bepswap';
+import { bncClient } from '../../../env';
 import showNotification from '../../uielements/notification';
 
 type Props = {
@@ -106,9 +104,6 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
     if (!ledger || !hdPath) {
       return;
     }
-
-    // TODO: Update asgardex binance
-    const bncClient: FixmeType = await binanceClient(BINANCE_NET);
 
     bncClient.useLedgerSigningDelegate(
       ledger,

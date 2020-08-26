@@ -1,9 +1,5 @@
 import BigNumber from 'bignumber.js';
-import {
-  TransferResult,
-  TransferEvent,
-  BinanceClient,
-} from '@thorchain/asgardex-binance';
+import { TransferResult, WS } from '@thorchain/asgardex-binance';
 import { bn, isValidBN } from '@thorchain/asgardex-util';
 import {
   TokenAmount,
@@ -13,6 +9,7 @@ import {
   baseAmount,
   tokenToBase,
 } from '@thorchain/asgardex-token';
+
 import { getSwapMemo } from '../memoHelper';
 import { getTickerFormat } from '../stringHelper';
 import {
@@ -27,7 +24,7 @@ import {
 import { PoolDataMap } from '../../redux/midgard/types';
 import { getAssetFromString } from '../../redux/midgard/utils';
 import { PoolDetail } from '../../types/generated/midgard/api';
-import { Nothing, Maybe, SwapType, Pair, AssetPair } from '../../types/bepswap';
+import { FixmeType, Nothing, Maybe, SwapType, Pair, AssetPair } from '../../types/bepswap';
 import { SwapData } from './types';
 
 import { RUNE_SYMBOL } from '../../settings/assetData';
@@ -45,7 +42,9 @@ export const getValidSwapPairs = (
   sourceSymbol: string,
   targetSymbol: string,
 ) => {
-  const poolAssets = targetInfo.map(data => getAssetFromString(data.asset).symbol);
+  const poolAssets = targetInfo.map(
+    data => getAssetFromString(data.asset).symbol,
+  );
   const sourceData = sourceInfo.filter((data: AssetPair) => {
     const symbol = getAssetFromString(data.asset).symbol;
     return symbol !== sourceSymbol && poolAssets.includes(symbol);
@@ -315,7 +314,7 @@ export const validateSwap = (
 
 // TODO(Veado): Write tests for `confirmSwap'
 export const confirmSwap = (
-  Binance: BinanceClient,
+  bncClient: FixmeType,
   wallet: string,
   symbolFrom: string,
   symbolTo: string,
@@ -337,13 +336,14 @@ export const confirmSwap = (
     const limit = protectSlip && slipLimit ? slipLimit.amount().toString() : '';
     const memo = getSwapMemo(symbolTo, destAddr, limit);
 
-    Binance.transfer(wallet, poolAddress, amountNumber, symbolFrom, memo)
+    bncClient
+      .transfer(wallet, poolAddress, amountNumber, symbolFrom, memo)
       .then((response: TransferResult) => resolve(response))
       .catch((error: Error) => reject(error));
   });
 };
 
-export const parseTransfer = (tx?: Pick<TransferEvent, 'data'>) => {
+export const parseTransfer = (tx?: Pick<WS.TransferEvent, 'data'>) => {
   const txHash = tx?.data?.H;
   const txMemo = tx?.data?.M;
   const txFrom = tx?.data?.f;
@@ -369,7 +369,7 @@ export const getTxResult = ({
   address,
 }: {
   pair: Pair;
-  tx: TransferEvent;
+  tx: WS.TransferEvent;
   address?: string;
 }) => {
   const { txToken, txAmount, txTo } = parseTransfer(tx);

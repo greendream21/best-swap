@@ -15,10 +15,7 @@ import { get as _get } from 'lodash';
 
 import BigNumber from 'bignumber.js';
 import * as RD from '@devexperts/remote-data-ts';
-import {
-  client as binanceClient,
-  TransferResult,
-} from '@thorchain/asgardex-binance';
+import { TransferResult } from '@thorchain/asgardex-binance';
 import {
   bn,
   validBNOrZero,
@@ -34,6 +31,8 @@ import {
   baseToToken,
 } from '@thorchain/asgardex-token';
 import Text from 'antd/lib/typography/Text';
+
+import { bncClient } from '../../env';
 
 import Label from '../../components/uielements/label';
 import Status from '../../components/uielements/status';
@@ -81,7 +80,6 @@ import {
 } from '../../redux/midgard/types';
 import { StakersAssetData } from '../../types/generated/midgard';
 import { getAssetFromString } from '../../redux/midgard/utils';
-import { BINANCE_NET } from '../../env';
 import { TransferFeesRD, TransferFees } from '../../redux/binance/types';
 import { bnbBaseAmount } from '../../helpers/walletHelper';
 import { ShareDetailTabKeys, WithdrawData } from './types';
@@ -487,7 +485,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       });
 
       const data = getData();
-      const bncClient = await binanceClient(BINANCE_NET);
 
       try {
         let response: TransferResult | FixmeType;
@@ -595,8 +592,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       setTxResult({
         status: false,
       });
-
-      const bncClient = await binanceClient(BINANCE_NET);
 
       try {
         const percent = withdrawRate * 100;

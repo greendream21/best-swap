@@ -1,4 +1,4 @@
-import { TransferEvent, TransferEventData } from '@thorchain/asgardex-binance';
+import { WS } from '@thorchain/asgardex-binance';
 import { bn } from '@thorchain/asgardex-util';
 import { tokenAmount, baseAmount } from '@thorchain/asgardex-token';
 import {
@@ -199,7 +199,7 @@ describe('swap/utils/', () => {
 
   describe('parseTransfer', () => {
     it('should parse transfer event ', () => {
-      const transferEvent: TransferEvent = {
+      const transferEvent: WS.TransferEvent = {
         stream: 'transfers',
         data: {
           e: 'outboundTransferInfo',
@@ -247,25 +247,11 @@ describe('swap/utils/', () => {
 
       expect(result).toEqual(expected);
     });
-
-    it('can not parse anything if event includes an empty payload` ', () => {
-      const result = parseTransfer({ data: {} as TransferEventData });
-      const expected = {
-        txHash: undefined,
-        txMemo: undefined,
-        txFrom: undefined,
-        txTo: undefined,
-        txToken: undefined,
-        txAmount: undefined,
-      };
-
-      expect(result).toEqual(expected);
-    });
   });
 
   describe('getTxResult', () => {
     it('should return a "refunded" TxResult', () => {
-      const tx: TransferEvent = {
+      const tx: WS.TransferEvent = {
         stream: '',
         data: {
           e: 'outboundTransferInfo',
@@ -304,7 +290,7 @@ describe('swap/utils/', () => {
     });
 
     it('should return a "refunded" TxResult', () => {
-      const tx: TransferEvent = {
+      const tx: WS.TransferEvent = {
         stream: '',
         data: {
           e: 'outboundTransferInfo',

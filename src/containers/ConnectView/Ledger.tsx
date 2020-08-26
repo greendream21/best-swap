@@ -4,19 +4,18 @@ import { ArrowRightOutlined } from '@ant-design/icons';
 import { ledger, crypto } from '@binance-chain/javascript-sdk';
 import u2f_transport from '@ledgerhq/hw-transport-u2f';
 
-import { getPrefix } from '@thorchain/asgardex-binance';
 import Label from '../../components/uielements/label';
 import Button from '../../components/uielements/button';
 import { getAppContainer } from '../../helpers/elementHelper';
 
-import { BINANCE_NET } from '../../env';
+import { asgardexBncClient } from '../../env';
 import * as walletActions from '../../redux/wallet/actions';
 
 ledger.transports.u2f = u2f_transport;
 
 type Props = {
   saveWallet: typeof walletActions.saveWallet;
-}
+};
 
 const LedgerConnector = (props: Props) => {
   const [connecting, setConnecting] = useState(false);
@@ -47,7 +46,7 @@ const LedgerConnector = (props: Props) => {
     const hdPath = [44, 714, 0, 0, ledgerIndex];
 
     // select which address to use
-    const _ = await app.showAddress(getPrefix(BINANCE_NET), hdPath); // results
+    const _ = await app.showAddress(asgardexBncClient.getPrefix(), hdPath); // results
 
     // get public key
     let pk;
@@ -55,10 +54,7 @@ const LedgerConnector = (props: Props) => {
       pk = (await app.getPublicKey(hdPath)).pk;
 
       // get address from pubkey
-      const address = crypto.getAddressFromPublicKey(
-        pk,
-        getPrefix(BINANCE_NET),
-      );
+      const address = crypto.getAddressFromPublicKey(pk, asgardexBncClient.getPrefix());
       setConnecting(false);
 
       props.saveWallet({

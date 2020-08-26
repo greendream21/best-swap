@@ -13,7 +13,7 @@ type SendTrustSignedTxParams = {
   bncClient: FixmeType;
   walletAddress: string;
   sendOrder: FixmeType;
-  memo: string
+  memo: string;
 };
 
 /**
@@ -31,11 +31,19 @@ export const sendTrustSignedTx = ({
   sendOrder,
   memo = '',
 }: SendTrustSignedTxParams) => {
+  console.log('walletConnect', walletConnect);
+  console.log('bncClient', bncClient);
+  console.log('walletAddress', walletAddress);
+  console.log('sendOrder', sendOrder);
+  console.log('memo', memo);
+
   return new Promise((resolve, reject) => {
     if (walletConnect) {
       bncClient
         .getAccount(walletAddress)
         .then((response: FixmeType) => {
+          if (!response) reject(Error('binance client getAccount error!'));
+
           const account = response.result;
           console.log('AccountInfo:', account);
           const tx: FixmeType = {
@@ -215,8 +223,8 @@ type SwapRequestParam = {
   walletConnect: FixmeType;
   bncClient: FixmeType;
   walletAddress: string;
-  source: string,
-  target: string,
+  source: string;
+  target: string;
   amount: TokenAmount;
   protectSlip: boolean;
   limit: BaseAmount;

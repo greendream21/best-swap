@@ -4,10 +4,7 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter, useHistory, useParams } from 'react-router-dom';
 import { SwapOutlined, LockOutlined, UnlockOutlined } from '@ant-design/icons';
-import {
-  client as binanceClient,
-  TransferResult,
-} from '@thorchain/asgardex-binance';
+import { TransferResult } from '@thorchain/asgardex-binance';
 import {
   bnOrZero,
   isValidBN,
@@ -31,6 +28,7 @@ import Drag from '../../components/uielements/drag';
 import TokenCard from '../../components/uielements/tokens/tokenCard';
 import Modal from '../../components/uielements/modal';
 import PrivateModal from '../../components/modals/privateModal';
+import { bncClient, asgardexBncClient } from '../../env';
 
 import {
   ContentWrapper,
@@ -67,7 +65,6 @@ import { TxStatus, TxTypes, TxResult } from '../../redux/app/types';
 import { PriceDataIndex, PoolDataMap } from '../../redux/midgard/types';
 import { RootState } from '../../redux/store';
 import { getAssetFromString } from '../../redux/midgard/utils';
-import { BINANCE_NET } from '../../env';
 import { PoolDetailStatusEnum } from '../../types/generated/midgard';
 import { TransferFeesRD, TransferFees } from '../../redux/binance/types';
 import {
@@ -180,8 +177,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   const swapData = handleGetSwapData();
 
   const isValidRecipient = async () => {
-    const bncClient = await binanceClient(BINANCE_NET);
-    return bncClient.isValidAddress(address);
+    return asgardexBncClient.validateAddress(address);
   };
 
   const handleChangeAddress = useCallback(
@@ -249,7 +245,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
       setTxResult({ status: false });
 
       handleStartTimer();
-      const bncClient = await binanceClient(BINANCE_NET);
       try {
         let response: TransferResult | FixmeType;
         const { slipLimit } = swapData;

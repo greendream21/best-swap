@@ -3,12 +3,11 @@ import { Dropdown, Row } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import { ClickParam } from 'antd/lib/menu';
 import { keyBy } from 'lodash';
-import { getBinanceUrl } from '@thorchain/asgardex-binance';
 
 import Menu from '../uielements/menu';
 import ConnectionStatus from '../uielements/connectionStatus';
 
-import { BINANCE_NET } from '../../env';
+import { asgardexBncClient } from '../../env';
 import { Maybe } from '../../types/bepswap';
 import { getHostnameFromUrl } from '../../helpers/apiHelper';
 
@@ -30,14 +29,15 @@ const HeaderSetting: React.FC<Props> = (props: Props): JSX.Element => {
   const [currentItem, setCurrentItem] = useState<string>('');
 
   // Midgard IP on devnet OR on test|chaos|mainnet
-  const midgardUrl = (midgardBasePath && getHostnameFromUrl(midgardBasePath)) || '';
+  const midgardUrl =
+    (midgardBasePath && getHostnameFromUrl(midgardBasePath)) || '';
 
   const menuItems: MenuItem[] = useMemo(
     () => [
       {
         key: 'binance_chain',
         label: 'binance chain',
-        url: getHostnameFromUrl(getBinanceUrl(BINANCE_NET)),
+        url: getHostnameFromUrl(asgardexBncClient.getClientUrl()),
         status: 'green',
       },
       {
