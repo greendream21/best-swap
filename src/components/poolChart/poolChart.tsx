@@ -14,6 +14,7 @@ import {
   LineChart,
   ComingSoonWrapper,
   ComingSoonText,
+  BlurWrapper,
 } from './poolChart.style';
 
 type ChartDetail = {
@@ -48,9 +49,7 @@ const abbreviateNumber = (value: number): string => {
     suffixNum++;
   }
 
-  return `${newValue}${
-    suffixNum > 0 ? ` ${suffixes[suffixNum]}` : ''
-  }`;
+  return `${newValue}${suffixNum > 0 ? ` ${suffixes[suffixNum]}` : ''}`;
 };
 
 const renderHeader = (
@@ -287,7 +286,11 @@ const renderChart = (
         </ComingSoonWrapper>
       )}
       {chartData?.loading && <Loader />}
-      {!chartData?.loading && <LineChart data={data} options={options} />}
+      {!chartData?.loading && (
+        <BlurWrapper isBlur={type === 'LIQUIDITY'}>
+          <LineChart data={data} options={options} />
+        </BlurWrapper>
+      )}
     </LineChartContainer>
   );
 };
