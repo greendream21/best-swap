@@ -60,7 +60,7 @@ deploy:chaosnet-staging:
 deploy:chaosnet-production:
   stage: deploy
   script:
-    - firebase use --token ${FIREBASE_TOKEN} bepswap-app
+    - firebase use --token ${FIREBASE_TOKEN} bepswap-chaosnet
     - firebase deploy --token ${FIREBASE_TOKEN}
   environment:
     name: chaosnet

@@ -282,7 +282,7 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
 
   return (
     <>
-      {!isMainnet && !hasBetaConfirmed && (
+      {isMainnet && !hasBetaConfirmed && (
         <StyledAlertWrapper>
           <Alert
             message="Warning"

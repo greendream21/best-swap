@@ -5,13 +5,17 @@ import { Line } from 'react-chartjs-2';
 import { media } from '../../helpers/styleHelper';
 
 type HeaderToggleProps = {
-  primary?: boolean
-}
+  primary?: boolean;
+};
+
+type BlurWrapperProps = {
+  isBlur?: boolean;
+};
 
 type ChartContainerProps = {
-  gradientStart?: string,
-  gradientStop?: string,
-}
+  gradientStart?: string;
+  gradientStop?: string;
+};
 
 export const ChartContainer = styled.div`
   background: ${palette('background', 0)};
@@ -34,7 +38,7 @@ export const ChartHeaderType = styled.div`
 
 export const ChartHeaderItem = styled.div`
   margin-right: 20px;
-  &:last-child{
+  &:last-child {
     margin-right: 0px;
   }
 `;
@@ -65,14 +69,15 @@ export const TimeContainer = styled.div`
 export const HeaderToggle = styled.span`
   color: ${palette('text', 0)};
   font-size: 14px !important;
-  font-weight: ${(props: HeaderToggleProps) => props.primary ? '600' : 'normal'};
+  font-weight: ${(props: HeaderToggleProps) =>
+    props.primary ? '600' : 'normal'};
   cursor: pointer;
   ${media.sm`
     font-size: 18px;
     &:hover {
       opacity: 0.8;
     }
-  `}  
+  `}
 `;
 
 export const LineChartContainer = styled.div`
@@ -88,7 +93,7 @@ export const LineChartContainer = styled.div`
 
 export const LineChart = styled(Line)`
   width: 100%;
-  font-family: 'Exo 2';  
+  font-family: 'Exo 2';
 `;
 
 export const ComingSoonWrapper = styled.div`
@@ -103,7 +108,6 @@ export const ComingSoonWrapper = styled.div`
   justify-content: center;
   align-items: center;
   color: ${palette('text', 1)};
-  backdrop-filter: blur(10px);
 `;
 
 export const ComingSoonText = styled.p`
@@ -113,4 +117,10 @@ export const ComingSoonText = styled.p`
   font-size: 16px;
   font-weight: 500;
   letter-spacing: 1px;
+`;
+
+export const BlurWrapper = styled.div<BlurWrapperProps>`
+  width: 100%;
+  height: 100%;
+  filter: ${props => (props.isBlur ? 'blur(10px)' : 'none')};
 `;
