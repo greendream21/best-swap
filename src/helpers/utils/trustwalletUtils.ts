@@ -1,9 +1,14 @@
 import { TokenAmount, BaseAmount } from '@thorchain/asgardex-token';
+import { crypto } from '@binance-chain/javascript-sdk';
+import base64js from 'base64-js';
+
 import { getSwapMemo, getWithdrawMemo, getStakeMemo } from '../memoHelper';
 
 import { FixmeType } from '../../types/bepswap';
 
 import { CHAIN_ID } from '../../env';
+
+// TODO: implement the exact types and remove all FixmeTypes
 
 const NETWORK_ID = 714;
 const RUNE = 'RUNE-B1A'; // RUNE symbol in the mainnet
@@ -16,6 +21,13 @@ type SendTrustSignedTxParams = {
   memo: string;
 };
 
+/** Reference link
+ * https://developer.trustwallet.com/wallet-connect/dapp#sign-transaction
+ * https://github.com/trustwallet/wallet-core/blob/master/src/proto/Binance.proto
+ * https://docs.binance.org/guides/concepts/encoding/amino-example.html#transfer
+ * https://github.com/binance-chain/javascript-sdk/blob/master/src/tx/index.ts
+ * https://github.com/binance-chain/javascript-sdk/blob/master/src/types/msg/send.ts
+ */
 /**
  * Sign the Tx by trustwallet and send raw transaction using binance sdk
  * @param walletConnect wallet connect object
@@ -66,19 +78,61 @@ export const sendTrustSignedTx = ({
                   resolve(response);
                 })
                 .catch((error: FixmeType) => {
+                  console.log('sendRawTransaction error: ', error);
                   reject(error);
                 });
             })
-            .catch((error: FixmeType) => reject(error));
+            .catch((error: FixmeType) => {
+              console.log('trustSignTransaction error: ', error);
+
+              reject(error);
+            });
         })
-        .catch((error: FixmeType) => reject(error));
+        .catch((error: FixmeType) => {
+          console.log('getAccount error: ', error);
+
+          reject(error);
+        });
     }
     // eslint-disable-next-line prefer-promise-reject-errors
     reject('wallet connect error');
   });
 };
 
-type WithdrawRequestParam = {
+export type GetSendOrderMsgParam = {
+  fromAddress: string;
+  toAddress: string;
+  coins: FixmeType;
+};
+
+const getByteArrayFromAddress = (address: string) => {
+  return base64js.fromByteArray(crypto.decodeAddress(address));
+};
+
+export const getSendOrderMsg = ({
+  fromAddress,
+  toAddress,
+  coins,
+}: GetSendOrderMsgParam) => {
+  const msg = {
+    inputs: [
+      {
+        address: getByteArrayFromAddress(fromAddress),
+        coins,
+      },
+    ],
+    outputs: [
+      {
+        address: getByteArrayFromAddress(toAddress),
+        coins,
+      },
+    ],
+  };
+
+  return msg;
+};
+
+export type WithdrawRequestParam = {
   walletConnect: FixmeType;
   bncClient: FixmeType;
   walletAddress: string;
@@ -109,30 +163,18 @@ export const withdrawRequestUsingWalletConnect = ({
 
   const memo = getWithdrawMemo(symbol, percent * 100);
 
-  const sendOrder = {
-    inputs: [
-      {
-        address: walletAddress,
-        coins: [
-          {
-            denom: RUNE,
-            amount: runeAmount,
-          },
-        ],
-      },
-    ],
-    outputs: [
-      {
-        address: poolAddress,
-        coins: [
-          {
-            denom: RUNE,
-            amount: runeAmount,
-          },
-        ],
-      },
-    ],
-  };
+  const coins = [
+    {
+      denom: RUNE,
+      amount: runeAmount,
+    },
+  ];
+
+  const sendOrder = getSendOrderMsg({
+    fromAddress: walletAddress,
+    toAddress: poolAddress,
+    coins,
+  });
 
   return sendTrustSignedTx({
     walletConnect,
@@ -177,38 +219,22 @@ export const stakeRequestUsingWalletConnect = ({
   const runeAmountNumber = runeAmount.amount().toNumber();
   const tokenAmountNumber = tokenAmount.amount().toNumber();
 
-  const sendOrder = {
-    inputs: [
-      {
-        address: walletAddress,
-        coins: [
-          {
-            denom: RUNE,
-            amount: runeAmountNumber,
-          },
-          {
-            denom: symbol,
-            amount: tokenAmountNumber,
-          },
-        ],
-      },
-    ],
-    outputs: [
-      {
-        address: poolAddress,
-        coins: [
-          {
-            denom: RUNE,
-            amount: runeAmountNumber,
-          },
-          {
-            denom: symbol,
-            amount: tokenAmountNumber,
-          },
-        ],
-      },
-    ],
-  };
+  const coins = [
+    {
+      denom: RUNE,
+      amount: runeAmountNumber,
+    },
+    {
+      denom: symbol,
+      amount: tokenAmountNumber,
+    },
+  ];
+
+  const sendOrder = getSendOrderMsg({
+    fromAddress: walletAddress,
+    toAddress: poolAddress,
+    coins,
+  });
 
   return sendTrustSignedTx({
     walletConnect,
@@ -261,30 +287,18 @@ export const swapRequestUsingWalletConnect = ({
   const memo = getSwapMemo(target, targetAddress, limitValue);
   const sourceAmount = amount.amount().toNumber();
 
-  const sendOrder = {
-    inputs: [
-      {
-        address: walletAddress,
-        coins: [
-          {
-            denom: source,
-            amount: sourceAmount,
-          },
-        ],
-      },
-    ],
-    outputs: [
-      {
-        address: poolAddress,
-        coins: [
-          {
-            denom: source,
-            amount: sourceAmount,
-          },
-        ],
-      },
-    ],
-  };
+  const coins = [
+    {
+      denom: source,
+      amount: sourceAmount,
+    },
+  ];
+
+  const sendOrder = getSendOrderMsg({
+    fromAddress: walletAddress,
+    toAddress: poolAddress,
+    coins,
+  });
 
   return sendTrustSignedTx({
     walletConnect,

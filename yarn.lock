@@ -2586,6 +2586,11 @@
   dependencies:
     "@babel/types" "^7.3.0"
 
+"@types/base64-js@^1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@types/base64-js/-/base64-js-1.3.0.tgz#c939fdba49846861caf5a246b165dbf5698a317c"
+  integrity sha512-ZmI0sZGAUNXUfMWboWwi4LcfpoVUYldyN6Oe0oJ5cCsHDU/LlRq8nQKPXhYLOx36QYSW9bNIb1vvRrD6K7Llgw==
+
 "@types/bignumber.js@^5.0.0":
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/@types/bignumber.js/-/bignumber.js-5.0.0.tgz#d9f1a378509f3010a3255e9cc822ad0eeb4ab969"
@@ -4481,7 +4486,7 @@ base16@^1.0.0:
   resolved "https://registry.yarnpkg.com/base16/-/base16-1.0.0.tgz#e297f60d7ec1014a7a971a39ebc8a98c0b681e70"
   integrity sha1-4pf2DX7BAUp6lxo568ipjAtoHnA=
 
-base64-js@^1.0.2:
+base64-js@^1.0.2, base64-js@^1.3.1:
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/base64-js/-/base64-js-1.3.1.tgz#58ece8cb75dd07e71ed08c736abc5fac4dbf8df1"
   integrity sha512-mLQ4i2QO1ytvGWFWmcngKO//JXAQueZvwEKtjgQFM4jIK0kU+ytMfplL8j+n5mspOfjHwoAg+9yhb7BwAHm36g==
