@@ -24,7 +24,14 @@ import {
 import { PoolDataMap } from '../../redux/midgard/types';
 import { getAssetFromString } from '../../redux/midgard/utils';
 import { PoolDetail } from '../../types/generated/midgard/api';
-import { FixmeType, Nothing, Maybe, SwapType, Pair, AssetPair } from '../../types/bepswap';
+import {
+  FixmeType,
+  Nothing,
+  Maybe,
+  SwapType,
+  Pair,
+  AssetPair,
+} from '../../types/bepswap';
 import { SwapData } from './types';
 
 import { RUNE_SYMBOL } from '../../settings/assetData';
@@ -97,6 +104,7 @@ export const getSwapType = (source: string, target: string) =>
     ? SwapType.SINGLE_SWAP
     : SwapType.DOUBLE_SWAP;
 
+// TODO: fix hard coded slip limit
 /**
  * Return Calculations for swap tx
  * @param from Asset symbol for source
@@ -153,7 +161,7 @@ export const getSwapData = (
     const Pz = getPz(xValue, calcData);
     const fee = getFee(xValue, calcData);
 
-    const limitValue = zValue.amount().multipliedBy(97 / 100);
+    const limitValue = zValue.amount().multipliedBy(70 / 100);
     const slipLimit = tokenToBase(tokenAmount(limitValue));
 
     return {
@@ -210,8 +218,8 @@ export const getSwapData = (
       .div(balanceTimes)
       .multipliedBy(100);
     const slip = bn(slipValue);
-    // formula: (1 - 3 / 100) * outputToken * BASE_NUMBER
-    const limitValue = outputTokenBN.multipliedBy(97 / 100);
+    // formula: (1 - 30 / 100) * outputToken * BASE_NUMBER
+    const limitValue = outputTokenBN.multipliedBy(70 / 100);
     const slipLimit = tokenToBase(tokenAmount(limitValue));
     // formula: (xTimes * Y) / times
     const feeValue = Y.amount()
@@ -265,8 +273,8 @@ export const getSwapData = (
           .multipliedBy(100)
       : bn(0);
 
-    // formula: (1 - 3 / 100) * outputToken * BASE_NUMBER;
-    const limitValue = outputTokenBN.multipliedBy(97 / 100);
+    // formula: (1 - 30 / 100) * outputToken * BASE_NUMBER;
+    const limitValue = outputTokenBN.multipliedBy(70 / 100);
     const slipLimit = tokenToBase(tokenAmount(limitValue));
     const feeValue = Y.amount()
       .multipliedBy(xTimes)
