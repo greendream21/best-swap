@@ -1,4 +1,9 @@
-import { TokenAmount, BaseAmount } from '@thorchain/asgardex-token';
+import {
+  TokenAmount,
+  BaseAmount,
+  tokenAmount,
+  tokenToBase,
+} from '@thorchain/asgardex-token';
 import { crypto } from '@binance-chain/javascript-sdk';
 import base64js from 'base64-js';
 
@@ -43,12 +48,6 @@ export const sendTrustSignedTx = ({
   sendOrder,
   memo = '',
 }: SendTrustSignedTxParams) => {
-  console.log('walletConnect', walletConnect);
-  console.log('bncClient', bncClient);
-  console.log('walletAddress', walletAddress);
-  console.log('sendOrder', sendOrder);
-  console.log('memo', memo);
-
   return new Promise((resolve, reject) => {
     if (walletConnect) {
       bncClient
@@ -159,7 +158,9 @@ export const withdrawRequestUsingWalletConnect = ({
   percent,
 }: WithdrawRequestParam) => {
   // Minimum amount to send memo on-chain
-  const runeAmount = 0.00000001;
+  const runeAmount = tokenToBase(tokenAmount(0.00000001))
+    .amount()
+    .toNumber();
 
   const memo = getWithdrawMemo(symbol, percent * 100);
 
@@ -190,7 +191,7 @@ type StakeRequestParam = {
   bncClient: FixmeType;
   walletAddress: string;
   runeAmount: TokenAmount;
-  tokenAmount: TokenAmount;
+  assetAmount: TokenAmount;
   poolAddress: string;
   symbol: string;
 };
@@ -201,7 +202,7 @@ type StakeRequestParam = {
  * @param bncClient     binance client
  * @param walletAddress User wallet address
  * @param runeAmount    RUNE Amount to stake
- * @param tokenAmount   TOKEN Amount to stake
+ * @param assetAmount   TOKEN Amount to stake
  * @param poolAddress   RUNE, TOKEN Pool address
  * @param symbol        SYMBOL of token to stake
  */
@@ -210,14 +211,18 @@ export const stakeRequestUsingWalletConnect = ({
   bncClient,
   walletAddress,
   runeAmount,
-  tokenAmount,
+  assetAmount,
   poolAddress,
   symbol,
 }: StakeRequestParam) => {
   const memo = getStakeMemo(symbol);
 
-  const runeAmountNumber = runeAmount.amount().toNumber();
-  const tokenAmountNumber = tokenAmount.amount().toNumber();
+  const runeAmountNumber = tokenToBase(runeAmount)
+    .amount()
+    .toNumber();
+  const tokenAmountNumber = tokenToBase(assetAmount)
+    .amount()
+    .toNumber();
 
   const coins = [
     {
@@ -285,7 +290,9 @@ export const swapRequestUsingWalletConnect = ({
 }: SwapRequestParam) => {
   const limitValue = protectSlip && limit ? limit.amount().toString() : '';
   const memo = getSwapMemo(target, targetAddress, limitValue);
-  const sourceAmount = amount.amount().toNumber();
+  const sourceAmount = tokenToBase(amount)
+    .amount()
+    .toNumber();
 
   const coins = [
     {
