@@ -229,6 +229,7 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
               gradientStart={isLight ? '#c5d3f0' : '#365979'}
               gradientStop={isLight ? '#ffffff' : '#0f1922'}
               viewMode="desktop-view"
+              basePrice={busdPrice}
             />
           </ChartContainer>
         </Col>
