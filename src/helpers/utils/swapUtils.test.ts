@@ -356,7 +356,7 @@ describe('swap/utils/', () => {
       const expected: SwapData = {
         Px: bn(1),
         fee: tokenAmount(0.0149273),
-        slipLimit: baseAmount(54447528),
+        slipLimit: baseAmount(39292030),
         outputAmount: tokenAmount(0.56131472),
         outputPrice: bn(178.03053227763760049641),
         slip: bn(5.389413716466187631),
@@ -385,7 +385,7 @@ describe('swap/utils/', () => {
       const expected: SwapData = {
         Px: bn('6.3322188335020546053'),
         fee: tokenAmount('284.34798923'),
-        slipLimit: baseAmount('51844403581'),
+        slipLimit: baseAmount('37413487120'),
         outputAmount: tokenAmount('534.47838743'),
         outputPrice: bn('1.00000000000152525393'),
         slip: bn('134.705545606424204104'),
@@ -416,7 +416,7 @@ describe('swap/utils/', () => {
         slip: bn(23.340828117376259007),
         symbolFrom: 'LOK-3C0',
         symbolTo: 'BNB',
-        slipLimit: baseAmount(235109093),
+        slipLimit: baseAmount(169666356),
       };
 
       const result = getSwapData(from, to, poolData, xValue, runePrice);
