@@ -10,6 +10,7 @@ import WalletConnect from './WalletConnect';
 import Ledger from './Ledger';
 
 import * as walletActions from '../../redux/wallet/actions';
+import { isMainnet } from '../../env';
 
 const { TabPane } = Tabs;
 
@@ -35,16 +36,19 @@ const ConnectView: React.FC<Props> = (props: Props): JSX.Element => {
       label: 'wallet connect',
       value: TAB_VALUES.WALLET,
       comp: <WalletConnect saveWallet={saveWallet} />,
+      status: true,
     },
     {
       label: 'ledger',
       value: TAB_VALUES.LEDGER,
       comp: <Ledger saveWallet={saveWallet} />,
+      status: isMainnet,
     },
     {
       label: 'keystore file',
       value: TAB_VALUES.KEYSTORE,
       comp: <Keystore saveWallet={saveWallet} />,
+      status: isMainnet,
     },
   ];
 
@@ -61,11 +65,7 @@ const ConnectView: React.FC<Props> = (props: Props): JSX.Element => {
         >
           {tabs.map(tab => {
             return (
-              <TabPane
-                key={tab.value}
-                tab={tab.label}
-                disabled={tab.value !== TAB_VALUES.KEYSTORE}
-              />
+              <TabPane key={tab.value} tab={tab.label} disabled={!tab.status} />
             );
           })}
         </Tabs>

@@ -9,7 +9,6 @@ import {
   CheckCircleTwoTone,
 } from '@ant-design/icons';
 
-import { getPrefix } from '@thorchain/asgardex-binance';
 import { delay } from '@thorchain/asgardex-util';
 import { ContentWrapper, KeystoreTitle } from './ConnectView.style';
 
@@ -19,7 +18,7 @@ import FormGroup from '../../components/uielements/formGroup';
 import * as walletActions from '../../redux/wallet/actions';
 
 import { Maybe, Nothing, FixmeType } from '../../types/bepswap';
-import { BINANCE_NET } from '../../env';
+import { asgardexBncClient } from '../../env';
 
 type Props = {
   saveWallet: typeof walletActions.saveWallet;
@@ -78,7 +77,7 @@ const Keystore: React.FC<Props> = (props: Props): JSX.Element => {
       const privateKey = crypto.getPrivateKeyFromKeyStore(keystore, password);
       const address = crypto.getAddressFromPrivateKey(
         privateKey,
-        getPrefix(BINANCE_NET),
+        asgardexBncClient.getPrefix(),
       );
 
       saveWallet({

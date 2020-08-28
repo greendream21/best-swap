@@ -3,11 +3,13 @@ import BigNumber from 'bignumber.js';
 import { TokenAmount } from '@thorchain/asgardex-token';
 import { FixmeType, Maybe, Address } from '../../types/bepswap';
 
+export type WalletType = 'keystore' | 'walletconnect' | 'ledger';
+
 export interface User {
   /**
    * Users wallet address
    * */
-  type: 'keystore' | 'walletconnect' | 'ledger';
+  type: WalletType;
   wallet: Address;
   keystore?: FixmeType;
   ledger?: FixmeType;

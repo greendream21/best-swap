@@ -1,4 +1,4 @@
-import { TransferEvent, TransferEventData } from '@thorchain/asgardex-binance';
+import { WS } from '@thorchain/asgardex-binance';
 import { bn } from '@thorchain/asgardex-util';
 import { tokenAmount, baseAmount } from '@thorchain/asgardex-token';
 import {
@@ -199,7 +199,7 @@ describe('swap/utils/', () => {
 
   describe('parseTransfer', () => {
     it('should parse transfer event ', () => {
-      const transferEvent: TransferEvent = {
+      const transferEvent: WS.TransferEvent = {
         stream: 'transfers',
         data: {
           e: 'outboundTransferInfo',
@@ -247,25 +247,11 @@ describe('swap/utils/', () => {
 
       expect(result).toEqual(expected);
     });
-
-    it('can not parse anything if event includes an empty payload` ', () => {
-      const result = parseTransfer({ data: {} as TransferEventData });
-      const expected = {
-        txHash: undefined,
-        txMemo: undefined,
-        txFrom: undefined,
-        txTo: undefined,
-        txToken: undefined,
-        txAmount: undefined,
-      };
-
-      expect(result).toEqual(expected);
-    });
   });
 
   describe('getTxResult', () => {
     it('should return a "refunded" TxResult', () => {
-      const tx: TransferEvent = {
+      const tx: WS.TransferEvent = {
         stream: '',
         data: {
           e: 'outboundTransferInfo',
@@ -304,7 +290,7 @@ describe('swap/utils/', () => {
     });
 
     it('should return a "refunded" TxResult', () => {
-      const tx: TransferEvent = {
+      const tx: WS.TransferEvent = {
         stream: '',
         data: {
           e: 'outboundTransferInfo',
@@ -370,7 +356,7 @@ describe('swap/utils/', () => {
       const expected: SwapData = {
         Px: bn(1),
         fee: tokenAmount(0.0149273),
-        slipLimit: baseAmount(54447528),
+        slipLimit: baseAmount(39292030),
         outputAmount: tokenAmount(0.56131472),
         outputPrice: bn(178.03053227763760049641),
         slip: bn(5.389413716466187631),
@@ -399,7 +385,7 @@ describe('swap/utils/', () => {
       const expected: SwapData = {
         Px: bn('6.3322188335020546053'),
         fee: tokenAmount('284.34798923'),
-        slipLimit: baseAmount('51844403581'),
+        slipLimit: baseAmount('37413487120'),
         outputAmount: tokenAmount('534.47838743'),
         outputPrice: bn('1.00000000000152525393'),
         slip: bn('134.705545606424204104'),
@@ -430,7 +416,7 @@ describe('swap/utils/', () => {
         slip: bn(23.340828117376259007),
         symbolFrom: 'LOK-3C0',
         symbolTo: 'BNB',
-        slipLimit: baseAmount(235109093),
+        slipLimit: baseAmount(169666356),
       };
 
       const result = getSwapData(from, to, poolData, xValue, runePrice);

@@ -1,10 +1,9 @@
 import BigNumber from 'bignumber.js';
 import {
-  BinanceClient,
   Address,
   TransferResult,
   MultiTransfer,
-  TransferEvent,
+  WS,
 } from '@thorchain/asgardex-binance';
 import {
   bn,
@@ -26,7 +25,7 @@ import { PoolDataMap, PriceDataIndex } from '../../redux/midgard/types';
 import { PoolDetail } from '../../types/generated/midgard';
 import { getAssetFromString } from '../../redux/midgard/utils';
 import { AssetData } from '../../redux/wallet/types';
-import { Maybe, Nothing } from '../../types/bepswap';
+import { FixmeType, Maybe, Nothing } from '../../types/bepswap';
 import { PoolData } from './types';
 import { RUNE_SYMBOL } from '../../settings/assetData';
 
@@ -266,7 +265,7 @@ export enum StakeErrorMsg {
 }
 
 export type StakeRequestParams = {
-  bncClient: BinanceClient;
+  bncClient: FixmeType;
   wallet: Address;
   runeAmount: TokenAmount;
   tokenAmount: TokenAmount;
@@ -343,8 +342,8 @@ export const stakeRequest = (
 
       bncClient
         .transfer(wallet, poolAddress, runeAmountNumber, RUNE_SYMBOL, memo)
-        .then(response => resolve(response))
-        .catch(error => reject(error));
+        .then((response: TransferResult) => resolve(response))
+        .catch((error: Error) => reject(error));
     }
   });
 };
@@ -358,7 +357,7 @@ export enum CreatePoolErrorMsg {
 }
 
 type CreatePoolRequestParams = {
-  bncClient: BinanceClient;
+  bncClient: FixmeType;
   wallet: string;
   runeAmount: TokenAmount;
   tokenAmount: TokenAmount;
@@ -432,8 +431,8 @@ export const createPoolRequest = (
 
     bncClient
       .multiSend(wallet, outputs, memo)
-      .then(response => resolve(response))
-      .catch(error => reject(error));
+      .then((response: TransferResult) => resolve(response))
+      .catch((error: Error) => reject(error));
   });
 };
 
@@ -443,7 +442,7 @@ export enum WithdrawErrorMsg {
 }
 
 type WithdrawParams = {
-  bncClient: BinanceClient;
+  bncClient: FixmeType;
   wallet: string;
   poolAddress: Maybe<string>;
   symbol: string;
@@ -467,19 +466,19 @@ export const withdrawRequest = (
     const amount = 0.00000001;
     bncClient
       .transfer(wallet, poolAddress, amount, RUNE_SYMBOL, memo)
-      .then(response => resolve(response))
+      .then((response: TransferResult) => resolve(response))
       // If first tx ^ fails (e.g. there is no RUNE available)
       // another tx w/ same memo will be sent, but by using BNB now
       .catch(() => {
         bncClient
           .transfer(wallet, poolAddress, amount, 'BNB', memo)
-          .then(response => resolve(response))
-          .catch(error => reject(error));
+          .then((response: TransferResult) => resolve(response))
+          .catch((error: Error) => reject(error));
       });
   });
 };
 
-export const parseTransfer = (tx?: Pick<TransferEvent, 'data'>) => {
+export const parseTransfer = (tx?: Pick<WS.TransferEvent, 'data'>) => {
   const txHash = tx?.data?.H;
   const txMemo = tx?.data?.M;
   const txFrom = tx?.data?.f;
@@ -500,7 +499,7 @@ export const parseTransfer = (tx?: Pick<TransferEvent, 'data'>) => {
 };
 
 export type WithdrawResultParams = {
-  tx: TransferEvent;
+  tx: WS.TransferEvent;
   symbol: string;
   address: string;
 };

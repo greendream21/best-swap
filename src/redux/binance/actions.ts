@@ -5,7 +5,7 @@ import {
   TickerStatistics,
   Market,
   Token,
-  TransferEvent,
+  WS,
 } from '@thorchain/asgardex-binance';
 import { NET } from '../../env';
 import { TransferFeesRD } from './types';
@@ -108,7 +108,7 @@ export const subscribeBinanceTransfersFailed = (error: Error) =>
 export const unSubscribeBinanceTransfers = () =>
   ({ type: 'UNSUBSCRIBE_BINANCE_TRANSFERS' } as const);
 
-export const binanceTransfersMessageReceived = (event: TransferEvent) =>
+export const binanceTransfersMessageReceived = (event: WS.TransferEvent) =>
   ({ type: 'BINANCE_TRANSFERS_MESSAGE_RECEIVED', event } as const);
 
 export type BinanceActionTypes = ReturnType<
