@@ -49,3 +49,8 @@ export type PoolData = {
   poolPrice: BigNumber;
   values: PoolDataValues;
 };
+
+export type CoinData = {
+  denom: string;
+  amount: number;
+};

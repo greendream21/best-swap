@@ -479,10 +479,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   const handleConfirmStake = async () => {
     if (user) {
       const { wallet } = user;
-      handleStartTimer(TxTypes.STAKE);
-      setTxResult({
-        status: false,
-      });
 
       const data = getData();
 
@@ -495,7 +491,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
             bncClient,
             walletAddress: user.wallet,
             runeAmount,
-            tokenAmount: targetAmount,
+            assetAmount: targetAmount,
             poolAddress: data.poolAddress || '',
             symbol: data.symbolTo || '',
           });
@@ -514,6 +510,12 @@ const PoolStake: React.FC<Props> = (props: Props) => {
         const hash = result ? result[0]?.hash ?? null : null;
         if (hash) {
           setTxHash(hash);
+
+          // start tx timer modal
+          setTxResult({
+            status: false,
+          });
+          handleStartTimer(TxTypes.STAKE);
         }
       } catch (error) {
         showNotification({
@@ -534,7 +536,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
    */
   const handleStake = () => {
     const wallet = user ? user.wallet : null;
-    const keystore = user ? user.keystore : null;
 
     // Validata existing wallet
     if (!wallet) {
@@ -572,14 +573,11 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       return;
     }
 
-    // Validate keystore
-    if (keystore) {
+    // if wallet is connected
+    if (wallet) {
       setTxType(TxTypes.STAKE);
       handleOpenPrivateModal();
-      return;
     }
-
-    handleConfirmStake();
   };
 
   const handleConfirmWithdraw = async () => {
@@ -587,11 +585,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
     if (user) {
       const { wallet } = user;
-
-      handleStartTimer(TxTypes.WITHDRAW);
-      setTxResult({
-        status: false,
-      });
 
       try {
         const percent = withdrawRate * 100;
@@ -621,6 +614,12 @@ const PoolStake: React.FC<Props> = (props: Props) => {
         const hash = result ? result[0]?.hash ?? null : null;
         if (hash) {
           setTxHash(hash);
+
+          // start tx timer
+          handleStartTimer(TxTypes.WITHDRAW);
+          setTxResult({
+            status: false,
+          });
         }
       } catch (error) {
         showNotification({
@@ -636,7 +635,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
   const handleWithdraw = () => {
     const wallet = user ? user.wallet : null;
-    const keystore = user ? user.keystore : null;
 
     if (!wallet) {
       setOpenWalletAlert(true);
@@ -656,11 +654,9 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       return;
     }
 
-    if (keystore) {
+    if (wallet) {
       setTxType(TxTypes.WITHDRAW);
       handleOpenPrivateModal();
-    } else if (wallet) {
-      handleConfirmWithdraw();
     }
   };
 

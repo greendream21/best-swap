@@ -209,8 +209,6 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
 
   const handleConfirmCreate = async () => {
     if (user) {
-      // start timer modal
-      handleStartTimer();
       try {
         let response: TransferResult | FixmeType;
 
@@ -220,7 +218,7 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
             bncClient,
             walletAddress: user.wallet,
             runeAmount,
-            tokenAmount: targetAmount,
+            assetAmount: targetAmount,
             poolAddress,
             symbol,
           });
@@ -239,6 +237,9 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
         const hash = result && result.length ? result[0].hash : null;
         if (hash) {
           setTxHash(hash);
+
+          // start timer modal
+          handleStartTimer();
         }
       } catch (error) {
         showNotification({
@@ -255,8 +256,8 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
 
   const handleCreatePool = () => {
     const wallet = user ? user.wallet : null;
-    const keystore = user ? user.keystore : null;
 
+    // TODO: display wallet alert modal to connect wallet
     if (!wallet) {
       return;
     }
@@ -274,10 +275,8 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
       return;
     }
 
-    if (keystore) {
+    if (wallet) {
       handleOpenPrivateModal();
-    } else if (wallet) {
-      handleConfirmCreate();
     }
   };
 

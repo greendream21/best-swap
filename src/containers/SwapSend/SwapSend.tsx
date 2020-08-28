@@ -242,9 +242,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     if (user && sourceSymbol && targetSymbol && swapData) {
       const tokenAmountToSwap = xValue;
 
-      setTxResult({ status: false });
-
-      handleStartTimer();
       try {
         let response: TransferResult | FixmeType;
         const { slipLimit } = swapData;
@@ -281,6 +278,10 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
         const hash = result[0]?.hash;
         if (hash) {
           setTxHash(hash);
+
+          // start tx timer
+          setTxResult({ status: false });
+          handleStartTimer();
         }
       } catch (error) {
         showNotification({
@@ -295,7 +296,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     }
   };
 
-  const handleConfirmPassword = () => {
+  const handleConfirmTransaction = () => {
     handleConfirmSwap();
     setOpenPrivateModal(false);
   };
@@ -347,7 +348,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
    */
   const handleEndDrag = async () => {
     const wallet = user ? user.wallet : null;
-    const keystore = user ? user.keystore : null;
 
     // Validate existing wallet
     if (!wallet) {
@@ -399,10 +399,8 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     // Validate calculation + slip
     const swapData = handleGetSwapData();
     if (swapData && validateSlip(swapData.slip)) {
-      if (keystore) {
+      if (wallet) {
         handleOpenPrivateModal();
-      } else if (wallet) {
-        handleConfirmSwap();
       } else {
         setInvalidAddress(true);
         setDragReset(true);
@@ -771,7 +769,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
       </SwapAssetCard>
       <PrivateModal
         visible={openPrivateModal}
-        onOk={handleConfirmPassword}
+        onOk={handleConfirmTransaction}
         onCancel={handleCancelPrivateModal}
       />
       <Modal

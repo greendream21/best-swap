@@ -7,10 +7,9 @@ import {
 import { crypto } from '@binance-chain/javascript-sdk';
 import base64js from 'base64-js';
 
+import { CoinData } from './types';
 import { getSwapMemo, getWithdrawMemo, getStakeMemo } from '../memoHelper';
-
 import { FixmeType } from '../../types/bepswap';
-
 import { CHAIN_ID } from '../../env';
 
 // TODO: implement the exact types and remove all FixmeTypes
@@ -92,16 +91,20 @@ export const sendTrustSignedTx = ({
 
           reject(error);
         });
+    } else {
+      // eslint-disable-next-line prefer-promise-reject-errors
+      reject('wallet connect error');
     }
-    // eslint-disable-next-line prefer-promise-reject-errors
-    reject('wallet connect error');
   });
 };
 
+/** Reference
+ * https://github.com/binance-chain/javascript-sdk/blob/aa1947b696/src/client/index.ts#L440
+ */
 export type GetSendOrderMsgParam = {
   fromAddress: string;
   toAddress: string;
-  coins: FixmeType;
+  coins: CoinData[];
 };
 
 const getByteArrayFromAddress = (address: string) => {
@@ -111,8 +114,11 @@ const getByteArrayFromAddress = (address: string) => {
 export const getSendOrderMsg = ({
   fromAddress,
   toAddress,
-  coins,
+  coins: coinData,
 }: GetSendOrderMsgParam) => {
+  // sort denoms by alphabet order
+  const coins = coinData.sort((a, b) => a.denom.localeCompare(b.denom));
+
   const msg = {
     inputs: [
       {
@@ -164,7 +170,7 @@ export const withdrawRequestUsingWalletConnect = ({
 
   const memo = getWithdrawMemo(symbol, percent * 100);
 
-  const coins = [
+  const coins: CoinData[] = [
     {
       denom: RUNE,
       amount: runeAmount,

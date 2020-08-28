@@ -239,7 +239,7 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
     if (walletType === 'walletconnect') {
       return (
         <ModalContent>
-          <Label>Please confirm the transaction!</Label>
+          <Label>Please confirm the transaction from walletconnect!</Label>
         </ModalContent>
       );
     }

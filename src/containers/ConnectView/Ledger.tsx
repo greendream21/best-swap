@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
+
 import { Row, Col, notification, InputNumber } from 'antd';
 import { ArrowRightOutlined } from '@ant-design/icons';
 import { ledger, crypto } from '@binance-chain/javascript-sdk';
@@ -20,6 +22,7 @@ type Props = {
 const LedgerConnector = (props: Props) => {
   const [connecting, setConnecting] = useState(false);
   const [ledgerIndex, setLedgerIndex] = useState(0);
+  const history = useHistory();
 
   const ledgerConnect = async () => {
     setConnecting(true);
@@ -54,7 +57,10 @@ const LedgerConnector = (props: Props) => {
       pk = (await app.getPublicKey(hdPath)).pk;
 
       // get address from pubkey
-      const address = crypto.getAddressFromPublicKey(pk, asgardexBncClient.getPrefix());
+      const address = crypto.getAddressFromPublicKey(
+        pk,
+        asgardexBncClient.getPrefix(),
+      );
       setConnecting(false);
 
       props.saveWallet({
@@ -63,6 +69,9 @@ const LedgerConnector = (props: Props) => {
         ledger: app,
         hdPath,
       });
+
+      // redirect to previous page
+      history.goBack();
     } catch (err) {
       console.error('pk error', err.message, err.statusCode);
 

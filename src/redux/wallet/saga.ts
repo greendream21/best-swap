@@ -21,12 +21,7 @@ import {
 import { RootState } from '../store';
 import * as api from '../../helpers/apiHelper';
 
-import {
-  saveWalletAddress,
-  saveKeystore,
-  clearWalletAddress,
-  clearKeystore,
-} from '../../helpers/webStorageHelper';
+import { saveWallet, clearWallet } from '../../helpers/webStorageHelper';
 
 import * as actions from './actions';
 import { AssetData, StakeData } from './types';
@@ -50,10 +45,9 @@ export function* saveWalletSaga() {
   yield takeEvery('SAVE_WALLET', function*({
     payload,
   }: ReturnType<typeof actions.saveWallet>) {
-    const { wallet, keystore } = payload;
+    const { wallet } = payload;
 
-    saveWalletAddress(wallet);
-    saveKeystore(keystore);
+    saveWallet(payload);
 
     // update wallet balance and stake data
     yield put(actions.refreshBalance(wallet));
@@ -63,8 +57,7 @@ export function* saveWalletSaga() {
 
 export function* forgetWalletSaga() {
   yield takeEvery('FORGET_WALLET', function*() {
-    clearWalletAddress();
-    clearKeystore();
+    clearWallet();
 
     yield put(push('/connect'));
   });
