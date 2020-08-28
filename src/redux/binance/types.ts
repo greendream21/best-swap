@@ -5,13 +5,13 @@ import {
   TxPage,
   OrderList,
   Market,
-  TransferEvent,
+  WS,
 } from '@thorchain/asgardex-binance';
 import { RemoteData } from '@devexperts/remote-data-ts';
 import { BaseAmount } from '@thorchain/asgardex-token';
 import { Maybe } from '../../types/bepswap';
 
-export type TransferEventRD = RemoteData<Error, TransferEvent>;
+export type TransferEventRD = RemoteData<Error, WS.TransferEvent>;
 
 export type State = {
   tokenList: Token[];
@@ -29,7 +29,6 @@ export type State = {
   wsError: Maybe<Error>;
   wsTransferEvent: TransferEventRD;
 };
-
 
 // TODO (@Veado) Extract all following "fee" types into `asgardex-binance`
 // All based on https://docs.binance.org/trading-spec.html#fees
@@ -55,7 +54,7 @@ export type FeeType =
   | 'HTLT'
   | 'depositHTLT'
   | 'claimHTLT'
-  | 'refundHTLT'
+  | 'refundHTLT';
 
 export type Fee = {
   msg_type: FeeType;
@@ -85,10 +84,10 @@ export type DexFee = {
 };
 
 export type DexFees = {
-  dex_fee_fields: DexFee[]
-}
+  dex_fee_fields: DexFee[];
+};
 
-export type Fees = Array<Fee | TransferFee | DexFees>
+export type Fees = Array<Fee | TransferFee | DexFees>;
 
 // #END TODO
 

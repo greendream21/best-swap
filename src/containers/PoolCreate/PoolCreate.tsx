@@ -7,7 +7,7 @@ import { Row, Col, Spin } from 'antd';
 import { get as _get } from 'lodash';
 
 import BigNumber from 'bignumber.js';
-import { client as binanceClient, TransferResult } from '@thorchain/asgardex-binance';
+import { TransferResult } from '@thorchain/asgardex-binance';
 import {
   bn,
   validBNOrZero,
@@ -15,8 +15,9 @@ import {
   bnOrZero,
   formatBNCurrency,
 } from '@thorchain/asgardex-util';
-
 import { TokenAmount, tokenAmount } from '@thorchain/asgardex-token';
+import { bncClient } from '../../env';
+
 import Label from '../../components/uielements/label';
 import Status from '../../components/uielements/status';
 import CoinIcon from '../../components/uielements/coins/coinIcon';
@@ -28,10 +29,7 @@ import PrivateModal from '../../components/modals/privateModal';
 import * as appActions from '../../redux/app/actions';
 import * as midgardActions from '../../redux/midgard/actions';
 
-import {
-  ContentWrapper,
-  LoaderWrapper,
-} from './PoolCreate.style';
+import { ContentWrapper, LoaderWrapper } from './PoolCreate.style';
 import { getTickerFormat } from '../../helpers/stringHelper';
 import {
   createPoolRequest,
@@ -45,7 +43,6 @@ import { PriceDataIndex } from '../../redux/midgard/types';
 import { Maybe, AssetPair, FixmeType } from '../../types/bepswap';
 import { User, AssetData } from '../../redux/wallet/types';
 
-import { BINANCE_NET } from '../../env';
 import showNotification from '../../components/uielements/notification';
 import { stakeRequestUsingWalletConnect } from '../../helpers/utils/trustwalletUtils';
 import { CONFIRM_DISMISS_TIME } from '../../settings/constants';
@@ -212,9 +209,6 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
 
   const handleConfirmCreate = async () => {
     if (user) {
-      // start timer modal
-      handleStartTimer();
-      const bncClient = await binanceClient(BINANCE_NET);
       try {
         let response: TransferResult | FixmeType;
 
@@ -224,7 +218,7 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
             bncClient,
             walletAddress: user.wallet,
             runeAmount,
-            tokenAmount: targetAmount,
+            assetAmount: targetAmount,
             poolAddress,
             symbol,
           });
@@ -243,6 +237,9 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
         const hash = result && result.length ? result[0].hash : null;
         if (hash) {
           setTxHash(hash);
+
+          // start timer modal
+          handleStartTimer();
         }
       } catch (error) {
         showNotification({
@@ -259,8 +256,8 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
 
   const handleCreatePool = () => {
     const wallet = user ? user.wallet : null;
-    const keystore = user ? user.keystore : null;
 
+    // TODO: display wallet alert modal to connect wallet
     if (!wallet) {
       return;
     }
@@ -278,10 +275,8 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
       return;
     }
 
-    if (keystore) {
+    if (wallet) {
       handleOpenPrivateModal();
-    } else if (wallet) {
-      handleConfirmCreate();
     }
   };
 

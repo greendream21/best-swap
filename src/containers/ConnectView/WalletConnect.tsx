@@ -1,4 +1,5 @@
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
 // import { crypto } from '@binance-chain/javascript-sdk';
 import { Row } from 'antd';
@@ -16,6 +17,8 @@ type Props = {
 };
 
 const WalletConnectPane = (props: Props) => {
+  const history = useHistory();
+
   const walletConnect = async () => {
     const walletConnector = new WalletConnect({
       bridge: 'https://bridge.walletconnect.org', // Required
@@ -38,6 +41,7 @@ const WalletConnectPane = (props: Props) => {
     // Subscribe to connection events
     walletConnector.on('connect', error => {
       if (error) {
+        console.log('walletConnector connect error: ', error);
         throw error;
       }
 
@@ -62,15 +66,20 @@ const WalletConnectPane = (props: Props) => {
             wallet: address,
             walletConnector,
           });
+
+          // redirect to previous page
+          history.goBack();
         })
         .catch(error => {
           // Error returned when rejected
-          console.error(error);
+          console.error('walletConnector getAccount error!', error);
         });
     });
 
     walletConnector.on('session_update', error => {
       if (error) {
+        console.log('walletConnector session_update error: ', error);
+
         throw error;
       }
 
@@ -80,11 +89,13 @@ const WalletConnectPane = (props: Props) => {
 
     walletConnector.on('disconnect', error => {
       if (error) {
+        console.log('walletConnector disconnect error: ', error);
+
         throw error;
       }
 
       // Delete walletConnector
-      props.saveWallet({ type: 'walletconnect', walletConnector: null, wallet: '' });
+      // props.saveWallet({ type: 'walletconnect', walletConnector: null, wallet: '' });
     });
   };
 

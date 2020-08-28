@@ -1,9 +1,5 @@
 import BigNumber from 'bignumber.js';
-import {
-  TransferResult,
-  TransferEvent,
-  BinanceClient,
-} from '@thorchain/asgardex-binance';
+import { TransferResult, WS } from '@thorchain/asgardex-binance';
 import { bn, isValidBN } from '@thorchain/asgardex-util';
 import {
   TokenAmount,
@@ -13,6 +9,7 @@ import {
   baseAmount,
   tokenToBase,
 } from '@thorchain/asgardex-token';
+
 import { getSwapMemo } from '../memoHelper';
 import { getTickerFormat } from '../stringHelper';
 import {
@@ -27,7 +24,14 @@ import {
 import { PoolDataMap } from '../../redux/midgard/types';
 import { getAssetFromString } from '../../redux/midgard/utils';
 import { PoolDetail } from '../../types/generated/midgard/api';
-import { Nothing, Maybe, SwapType, Pair, AssetPair } from '../../types/bepswap';
+import {
+  FixmeType,
+  Nothing,
+  Maybe,
+  SwapType,
+  Pair,
+  AssetPair,
+} from '../../types/bepswap';
 import { SwapData } from './types';
 
 import { RUNE_SYMBOL } from '../../settings/assetData';
@@ -45,7 +49,9 @@ export const getValidSwapPairs = (
   sourceSymbol: string,
   targetSymbol: string,
 ) => {
-  const poolAssets = targetInfo.map(data => getAssetFromString(data.asset).symbol);
+  const poolAssets = targetInfo.map(
+    data => getAssetFromString(data.asset).symbol,
+  );
   const sourceData = sourceInfo.filter((data: AssetPair) => {
     const symbol = getAssetFromString(data.asset).symbol;
     return symbol !== sourceSymbol && poolAssets.includes(symbol);
@@ -98,6 +104,7 @@ export const getSwapType = (source: string, target: string) =>
     ? SwapType.SINGLE_SWAP
     : SwapType.DOUBLE_SWAP;
 
+// TODO: fix hard coded slip limit
 /**
  * Return Calculations for swap tx
  * @param from Asset symbol for source
@@ -154,7 +161,7 @@ export const getSwapData = (
     const Pz = getPz(xValue, calcData);
     const fee = getFee(xValue, calcData);
 
-    const limitValue = zValue.amount().multipliedBy(97 / 100);
+    const limitValue = zValue.amount().multipliedBy(70 / 100);
     const slipLimit = tokenToBase(tokenAmount(limitValue));
 
     return {
@@ -211,8 +218,8 @@ export const getSwapData = (
       .div(balanceTimes)
       .multipliedBy(100);
     const slip = bn(slipValue);
-    // formula: (1 - 3 / 100) * outputToken * BASE_NUMBER
-    const limitValue = outputTokenBN.multipliedBy(97 / 100);
+    // formula: (1 - 30 / 100) * outputToken * BASE_NUMBER
+    const limitValue = outputTokenBN.multipliedBy(70 / 100);
     const slipLimit = tokenToBase(tokenAmount(limitValue));
     // formula: (xTimes * Y) / times
     const feeValue = Y.amount()
@@ -266,8 +273,8 @@ export const getSwapData = (
           .multipliedBy(100)
       : bn(0);
 
-    // formula: (1 - 3 / 100) * outputToken * BASE_NUMBER;
-    const limitValue = outputTokenBN.multipliedBy(97 / 100);
+    // formula: (1 - 30 / 100) * outputToken * BASE_NUMBER;
+    const limitValue = outputTokenBN.multipliedBy(70 / 100);
     const slipLimit = tokenToBase(tokenAmount(limitValue));
     const feeValue = Y.amount()
       .multipliedBy(xTimes)
@@ -315,7 +322,7 @@ export const validateSwap = (
 
 // TODO(Veado): Write tests for `confirmSwap'
 export const confirmSwap = (
-  Binance: BinanceClient,
+  bncClient: FixmeType,
   wallet: string,
   symbolFrom: string,
   symbolTo: string,
@@ -337,13 +344,14 @@ export const confirmSwap = (
     const limit = protectSlip && slipLimit ? slipLimit.amount().toString() : '';
     const memo = getSwapMemo(symbolTo, destAddr, limit);
 
-    Binance.transfer(wallet, poolAddress, amountNumber, symbolFrom, memo)
+    bncClient
+      .transfer(wallet, poolAddress, amountNumber, symbolFrom, memo)
       .then((response: TransferResult) => resolve(response))
       .catch((error: Error) => reject(error));
   });
 };
 
-export const parseTransfer = (tx?: Pick<TransferEvent, 'data'>) => {
+export const parseTransfer = (tx?: Pick<WS.TransferEvent, 'data'>) => {
   const txHash = tx?.data?.H;
   const txMemo = tx?.data?.M;
   const txFrom = tx?.data?.f;
@@ -369,7 +377,7 @@ export const getTxResult = ({
   address,
 }: {
   pair: Pair;
-  tx: TransferEvent;
+  tx: WS.TransferEvent;
   address?: string;
 }) => {
   const { txToken, txAmount, txTo } = parseTransfer(tx);
