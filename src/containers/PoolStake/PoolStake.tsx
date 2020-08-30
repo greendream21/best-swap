@@ -113,6 +113,7 @@ type Props = {
   poolLoading: boolean;
   thorchainData: ThorchainData;
   getStakerPoolData: typeof midgardActions.getStakerPoolData;
+  getPoolDataForAsset: typeof midgardActions.getPoolData;
   setTxResult: typeof appActions.setTxResult;
   setTxTimerModal: typeof appActions.setTxTimerModal;
   setTxHash: typeof appActions.setTxHash;
@@ -140,6 +141,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     txStatus,
     refreshBalance,
     refreshStakes,
+    getPoolDataForAsset,
     getStakerPoolData,
     resetTxStatus,
     setTxResult,
@@ -210,16 +212,22 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     }
   }, [getStakerPoolData, symbol, user]);
 
-  const refreshStakerData = useCallback(() => {
+  const refreshStakerData = () => {
     // get staker info again after finished
     getStakerPoolDetail();
+
+    // refresh pool data
+    getPoolDataForAsset({
+      assets: [symbol],
+      overrideAllPoolData: false,
+    });
 
     if (user) {
       const wallet = user.wallet;
       refreshStakes(wallet);
       refreshBalance(wallet);
     }
-  }, [getStakerPoolDetail, refreshBalance, refreshStakes, user]);
+  };
 
   useEffect(() => {
     if (stakerPoolData) {
@@ -1256,6 +1264,7 @@ export default compose(
     }),
     {
       getStakerPoolData: midgardActions.getStakerPoolData,
+      getPoolDataForAsset: midgardActions.getPoolData,
       setTxResult: appActions.setTxResult,
       setTxTimerModal: appActions.setTxTimerModal,
       setTxHash: appActions.setTxHash,
