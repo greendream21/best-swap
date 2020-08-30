@@ -36,7 +36,7 @@ const ConnectView: React.FC<Props> = (props: Props): JSX.Element => {
       label: 'wallet connect',
       value: TAB_VALUES.WALLET,
       comp: <WalletConnect saveWallet={saveWallet} />,
-      status: true,
+      status: isMainnet,
     },
     {
       label: 'ledger',
@@ -48,7 +48,7 @@ const ConnectView: React.FC<Props> = (props: Props): JSX.Element => {
       label: 'keystore file',
       value: TAB_VALUES.KEYSTORE,
       comp: <Keystore saveWallet={saveWallet} />,
-      status: isMainnet,
+      status: true,
     },
   ];
 

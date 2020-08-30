@@ -54,6 +54,7 @@ import { SwapData } from '../../helpers/utils/types';
 
 import * as appActions from '../../redux/app/actions';
 import * as walletActions from '../../redux/wallet/actions';
+import * as midgardActions from '../../redux/midgard/actions';
 import AddressInput from '../../components/uielements/addressInput';
 import ContentTitle from '../../components/uielements/contentTitle';
 import Slider from '../../components/uielements/slider';
@@ -92,6 +93,7 @@ type Props = {
   basePriceAsset: string;
   priceIndex: PriceDataIndex;
   user: Maybe<User>;
+  getPoolDataForAsset: typeof midgardActions.getPoolData;
   setTxResult: typeof appActions.setTxResult;
   setTxTimerModal: typeof appActions.setTxTimerModal;
   setTxHash: typeof appActions.setTxHash;
@@ -110,6 +112,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     poolAddress,
     priceIndex,
     pools,
+    getPoolDataForAsset,
     refreshBalance,
     setTxResult,
     setTxHash,
@@ -153,6 +156,12 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   useEffect(() => {
     if (prevTxStatus?.status === true && txStatus.status === false) {
       user && refreshBalance(user.wallet);
+
+      // refresh pool data
+      getPoolDataForAsset({
+        assets: [sourceSymbol, targetSymbol],
+        overrideAllPoolData: false,
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [txStatus]);
@@ -800,6 +809,7 @@ export default compose(
       transferFees: state.Binance.transferFees,
     }),
     {
+      getPoolDataForAsset: midgardActions.getPoolData,
       setTxResult: appActions.setTxResult,
       setTxTimerModal: appActions.setTxTimerModal,
       resetTxStatus: appActions.resetTxStatus,
