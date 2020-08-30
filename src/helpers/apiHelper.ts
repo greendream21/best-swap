@@ -31,7 +31,7 @@ export const getMidgardBaseURL = () => {
   return isMainnet ? MIDGARD_CHAOSNET_API : MIDGARD_TEST_API;
 };
 
-const THORCHAIN_API_URL = `${getMidgardBaseURL()}/thorchain`;
+const THORCHAIN_API_URL = `${getMidgardBaseURL()}/v1/thorchain`;
 
 export const getThorchainBaseURL = () => {
   return THORCHAIN_API_URL;
