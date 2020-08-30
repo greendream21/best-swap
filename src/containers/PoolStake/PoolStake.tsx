@@ -15,10 +15,7 @@ import { get as _get } from 'lodash';
 
 import BigNumber from 'bignumber.js';
 import * as RD from '@devexperts/remote-data-ts';
-import {
-  client as binanceClient,
-  TransferResult,
-} from '@thorchain/asgardex-binance';
+import { TransferResult } from '@thorchain/asgardex-binance';
 import {
   bn,
   validBNOrZero,
@@ -34,6 +31,8 @@ import {
   baseToToken,
 } from '@thorchain/asgardex-token';
 import Text from 'antd/lib/typography/Text';
+
+import { bncClient } from '../../env';
 
 import Label from '../../components/uielements/label';
 import Status from '../../components/uielements/status';
@@ -81,7 +80,6 @@ import {
 } from '../../redux/midgard/types';
 import { StakersAssetData } from '../../types/generated/midgard';
 import { getAssetFromString } from '../../redux/midgard/utils';
-import { BINANCE_NET } from '../../env';
 import { TransferFeesRD, TransferFees } from '../../redux/binance/types';
 import { bnbBaseAmount } from '../../helpers/walletHelper';
 import { ShareDetailTabKeys, WithdrawData } from './types';
@@ -115,6 +113,7 @@ type Props = {
   poolLoading: boolean;
   thorchainData: ThorchainData;
   getStakerPoolData: typeof midgardActions.getStakerPoolData;
+  getPoolDataForAsset: typeof midgardActions.getPoolData;
   setTxResult: typeof appActions.setTxResult;
   setTxTimerModal: typeof appActions.setTxTimerModal;
   setTxHash: typeof appActions.setTxHash;
@@ -142,6 +141,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     txStatus,
     refreshBalance,
     refreshStakes,
+    getPoolDataForAsset,
     getStakerPoolData,
     resetTxStatus,
     setTxResult,
@@ -212,16 +212,22 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     }
   }, [getStakerPoolData, symbol, user]);
 
-  const refreshStakerData = useCallback(() => {
+  const refreshStakerData = () => {
     // get staker info again after finished
     getStakerPoolDetail();
+
+    // refresh pool data
+    getPoolDataForAsset({
+      assets: [symbol],
+      overrideAllPoolData: false,
+    });
 
     if (user) {
       const wallet = user.wallet;
       refreshStakes(wallet);
       refreshBalance(wallet);
     }
-  }, [getStakerPoolDetail, refreshBalance, refreshStakes, user]);
+  };
 
   useEffect(() => {
     if (stakerPoolData) {
@@ -481,13 +487,8 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   const handleConfirmStake = async () => {
     if (user) {
       const { wallet } = user;
-      handleStartTimer(TxTypes.STAKE);
-      setTxResult({
-        status: false,
-      });
 
       const data = getData();
-      const bncClient = await binanceClient(BINANCE_NET);
 
       try {
         let response: TransferResult | FixmeType;
@@ -498,7 +499,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
             bncClient,
             walletAddress: user.wallet,
             runeAmount,
-            tokenAmount: targetAmount,
+            assetAmount: targetAmount,
             poolAddress: data.poolAddress || '',
             symbol: data.symbolTo || '',
           });
@@ -517,6 +518,12 @@ const PoolStake: React.FC<Props> = (props: Props) => {
         const hash = result ? result[0]?.hash ?? null : null;
         if (hash) {
           setTxHash(hash);
+
+          // start tx timer modal
+          setTxResult({
+            status: false,
+          });
+          handleStartTimer(TxTypes.STAKE);
         }
       } catch (error) {
         showNotification({
@@ -537,7 +544,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
    */
   const handleStake = () => {
     const wallet = user ? user.wallet : null;
-    const keystore = user ? user.keystore : null;
 
     // Validata existing wallet
     if (!wallet) {
@@ -575,14 +581,11 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       return;
     }
 
-    // Validate keystore
-    if (keystore) {
+    // if wallet is connected
+    if (wallet) {
       setTxType(TxTypes.STAKE);
       handleOpenPrivateModal();
-      return;
     }
-
-    handleConfirmStake();
   };
 
   const handleConfirmWithdraw = async () => {
@@ -590,13 +593,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
     if (user) {
       const { wallet } = user;
-
-      handleStartTimer(TxTypes.WITHDRAW);
-      setTxResult({
-        status: false,
-      });
-
-      const bncClient = await binanceClient(BINANCE_NET);
 
       try {
         const percent = withdrawRate * 100;
@@ -626,6 +622,12 @@ const PoolStake: React.FC<Props> = (props: Props) => {
         const hash = result ? result[0]?.hash ?? null : null;
         if (hash) {
           setTxHash(hash);
+
+          // start tx timer
+          handleStartTimer(TxTypes.WITHDRAW);
+          setTxResult({
+            status: false,
+          });
         }
       } catch (error) {
         showNotification({
@@ -641,7 +643,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
   const handleWithdraw = () => {
     const wallet = user ? user.wallet : null;
-    const keystore = user ? user.keystore : null;
 
     if (!wallet) {
       setOpenWalletAlert(true);
@@ -661,11 +662,9 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       return;
     }
 
-    if (keystore) {
+    if (wallet) {
       setTxType(TxTypes.WITHDRAW);
       handleOpenPrivateModal();
-    } else if (wallet) {
-      handleConfirmWithdraw();
     }
   };
 
@@ -1265,6 +1264,7 @@ export default compose(
     }),
     {
       getStakerPoolData: midgardActions.getStakerPoolData,
+      getPoolDataForAsset: midgardActions.getPoolData,
       setTxResult: appActions.setTxResult,
       setTxTimerModal: appActions.setTxTimerModal,
       setTxHash: appActions.setTxHash,

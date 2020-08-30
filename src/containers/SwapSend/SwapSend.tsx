@@ -4,10 +4,7 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter, useHistory, useParams } from 'react-router-dom';
 import { SwapOutlined, LockOutlined, UnlockOutlined } from '@ant-design/icons';
-import {
-  client as binanceClient,
-  TransferResult,
-} from '@thorchain/asgardex-binance';
+import { TransferResult } from '@thorchain/asgardex-binance';
 import {
   bnOrZero,
   isValidBN,
@@ -31,6 +28,7 @@ import Drag from '../../components/uielements/drag';
 import TokenCard from '../../components/uielements/tokens/tokenCard';
 import Modal from '../../components/uielements/modal';
 import PrivateModal from '../../components/modals/privateModal';
+import { bncClient, asgardexBncClient } from '../../env';
 
 import {
   ContentWrapper,
@@ -56,6 +54,7 @@ import { SwapData } from '../../helpers/utils/types';
 
 import * as appActions from '../../redux/app/actions';
 import * as walletActions from '../../redux/wallet/actions';
+import * as midgardActions from '../../redux/midgard/actions';
 import AddressInput from '../../components/uielements/addressInput';
 import ContentTitle from '../../components/uielements/contentTitle';
 import Slider from '../../components/uielements/slider';
@@ -67,7 +66,6 @@ import { TxStatus, TxTypes, TxResult } from '../../redux/app/types';
 import { PriceDataIndex, PoolDataMap } from '../../redux/midgard/types';
 import { RootState } from '../../redux/store';
 import { getAssetFromString } from '../../redux/midgard/utils';
-import { BINANCE_NET } from '../../env';
 import { PoolDetailStatusEnum } from '../../types/generated/midgard';
 import { TransferFeesRD, TransferFees } from '../../redux/binance/types';
 import {
@@ -95,6 +93,7 @@ type Props = {
   basePriceAsset: string;
   priceIndex: PriceDataIndex;
   user: Maybe<User>;
+  getPoolDataForAsset: typeof midgardActions.getPoolData;
   setTxResult: typeof appActions.setTxResult;
   setTxTimerModal: typeof appActions.setTxTimerModal;
   setTxHash: typeof appActions.setTxHash;
@@ -113,6 +112,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     poolAddress,
     priceIndex,
     pools,
+    getPoolDataForAsset,
     refreshBalance,
     setTxResult,
     setTxHash,
@@ -156,6 +156,12 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   useEffect(() => {
     if (prevTxStatus?.status === true && txStatus.status === false) {
       user && refreshBalance(user.wallet);
+
+      // refresh pool data
+      getPoolDataForAsset({
+        assets: [sourceSymbol, targetSymbol],
+        overrideAllPoolData: false,
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [txStatus]);
@@ -180,8 +186,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   const swapData = handleGetSwapData();
 
   const isValidRecipient = async () => {
-    const bncClient = await binanceClient(BINANCE_NET);
-    return bncClient.isValidAddress(address);
+    return asgardexBncClient.validateAddress(address);
   };
 
   const handleChangeAddress = useCallback(
@@ -246,10 +251,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     if (user && sourceSymbol && targetSymbol && swapData) {
       const tokenAmountToSwap = xValue;
 
-      setTxResult({ status: false });
-
-      handleStartTimer();
-      const bncClient = await binanceClient(BINANCE_NET);
       try {
         let response: TransferResult | FixmeType;
         const { slipLimit } = swapData;
@@ -286,6 +287,10 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
         const hash = result[0]?.hash;
         if (hash) {
           setTxHash(hash);
+
+          // start tx timer
+          setTxResult({ status: false });
+          handleStartTimer();
         }
       } catch (error) {
         showNotification({
@@ -300,7 +305,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     }
   };
 
-  const handleConfirmPassword = () => {
+  const handleConfirmTransaction = () => {
     handleConfirmSwap();
     setOpenPrivateModal(false);
   };
@@ -352,7 +357,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
    */
   const handleEndDrag = async () => {
     const wallet = user ? user.wallet : null;
-    const keystore = user ? user.keystore : null;
 
     // Validate existing wallet
     if (!wallet) {
@@ -404,10 +408,8 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     // Validate calculation + slip
     const swapData = handleGetSwapData();
     if (swapData && validateSlip(swapData.slip)) {
-      if (keystore) {
+      if (wallet) {
         handleOpenPrivateModal();
-      } else if (wallet) {
-        handleConfirmSwap();
       } else {
         setInvalidAddress(true);
         setDragReset(true);
@@ -776,7 +778,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
       </SwapAssetCard>
       <PrivateModal
         visible={openPrivateModal}
-        onOk={handleConfirmPassword}
+        onOk={handleConfirmTransaction}
         onCancel={handleCancelPrivateModal}
       />
       <Modal
@@ -807,6 +809,7 @@ export default compose(
       transferFees: state.Binance.transferFees,
     }),
     {
+      getPoolDataForAsset: midgardActions.getPoolData,
       setTxResult: appActions.setTxResult,
       setTxTimerModal: appActions.setTxTimerModal,
       resetTxStatus: appActions.resetTxStatus,
