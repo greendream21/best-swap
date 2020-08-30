@@ -68,23 +68,11 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
   useEffect(() => {
     // ask to verify ledger
     if (walletType === 'ledger') {
-      setValidating(true);
       verifyLedger();
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [walletType]);
-
-  const handleLedgerVerifySuccess = useCallback(() => {
-    // confirm transaction if ledger is verified
-    setValidating(false);
-    showNotification({
-      type: 'success',
-      message: 'Ledger Successfully Verified!',
-      duration: 10,
-    });
-    if (onOk) onOk();
-  }, [onOk]);
 
   const handleLedgerVerifyFailed = () => {
     console.log('ledger verify failed');
@@ -108,7 +96,7 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
     bncClient.useLedgerSigningDelegate(
       ledger,
       null,
-      handleLedgerVerifySuccess,
+      null,
       handleLedgerVerifyFailed,
       hdPath,
     );
@@ -221,17 +209,9 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
     }
 
     if (walletType === 'ledger') {
-      if (validating) {
-        return (
-          <ModalContent>
-            <Label>Verifying Ledger...</Label>
-          </ModalContent>
-        );
-      }
-
       return (
         <ModalContent>
-          <Label>Ledger Verified!</Label>
+          <Label>CLICK CONFIRM TO SIGN WITH LEDGER"</Label>
         </ModalContent>
       );
     }
@@ -239,7 +219,7 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
     if (walletType === 'walletconnect') {
       return (
         <ModalContent>
-          <Label>Please confirm the transaction from walletconnect!</Label>
+          <Label>CLICK CONFIRM TO SIGN WITH TRUSTWALLET!</Label>
         </ModalContent>
       );
     }
@@ -247,7 +227,7 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
     // if wallet is not connected
     return (
       <ModalContent>
-        <Label>Wallet is not connected!</Label>
+        <Label>WALLET IS NOT CONNECTED!</Label>
       </ModalContent>
     );
   };
