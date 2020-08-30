@@ -211,7 +211,7 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
     if (walletType === 'ledger') {
       return (
         <ModalContent>
-          <Label>CLICK CONFIRM TO SIGN WITH LEDGER"</Label>
+          <Label>CLICK CONFIRM TO SIGN WITH LEDGER!</Label>
         </ModalContent>
       );
     }
