@@ -25,6 +25,7 @@ import CoinCard from '../../components/uielements/coins/coinCard';
 import Drag from '../../components/uielements/drag';
 import { greyArrowIcon } from '../../components/icons';
 import PrivateModal from '../../components/modals/privateModal';
+import showNotification from '../../components/uielements/notification';
 
 import * as appActions from '../../redux/app/actions';
 import * as midgardActions from '../../redux/midgard/actions';
@@ -43,7 +44,8 @@ import { PriceDataIndex } from '../../redux/midgard/types';
 import { Maybe, AssetPair, FixmeType } from '../../types/bepswap';
 import { User, AssetData } from '../../redux/wallet/types';
 
-import showNotification from '../../components/uielements/notification';
+import useNetwork from '../../hooks/useNetwork';
+
 import { stakeRequestUsingWalletConnect } from '../../helpers/utils/trustwalletUtils';
 import { CONFIRM_DISMISS_TIME } from '../../settings/constants';
 import { RUNE_SYMBOL } from '../../settings/assetData';
@@ -77,6 +79,8 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
     setTxTimerModal,
     setTxHash,
   } = props;
+
+  const { isValidFundCaps } = useNetwork();
 
   const [dragReset, setDragReset] = useState(true);
   const [openPrivateModal, setOpenPrivateModal] = useState(false);
@@ -259,6 +263,16 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
 
     // TODO: display wallet alert modal to connect wallet
     if (!wallet) {
+      return;
+    }
+
+    if (!isValidFundCaps) {
+      showNotification({
+        type: 'error',
+        message: 'Stake Invalid',
+        description: 'Funds cap has been reached, You cannot stake.',
+      });
+      setDragReset(true);
       return;
     }
 
