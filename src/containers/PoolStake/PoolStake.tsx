@@ -437,6 +437,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
    * Renders fee
    */
   const renderFee = () => {
+    const wallet = user ? user.wallet : null;
     const bnbAmount = bnbBaseAmount(assetData);
 
     // Helper to format BNB amounts properly (we can't use `formatTokenAmountCurrency`)
@@ -466,7 +467,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                 {isStakingBNB && (
                   <Text> (It will be substructed from BNB amount)</Text>
                 )}
-                {bnbAmount && !hasSufficientBnbFeeInBalance && (
+                {wallet && bnbAmount && !hasSufficientBnbFeeInBalance && (
                   <>
                     <br />
                     <Text type="danger" style={{ paddingTop: '10px' }}>
