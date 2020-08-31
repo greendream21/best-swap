@@ -536,6 +536,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
    * Renders fee
    */
   const renderFee = () => {
+    const wallet = user ? user.wallet : null;
     const bnbAmount = bnbBaseAmount(assetData);
 
     // Helper to format BNB amounts properly (we can't use `formatTokenAmountCurrency`)
@@ -564,7 +565,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
                   (It will be substructed from your entered BNB value)
                 </Text>
               )}
-              {bnbAmount && !hasSufficientBnbFeeInBalance && (
+              {wallet && bnbAmount && !hasSufficientBnbFeeInBalance && (
                 <>
                   <br />
                   <Text type="danger" style={{ paddingTop: '10px' }}>
@@ -642,9 +643,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   const ratio = !targetPrice.isEqualTo(bn(0))
     ? sourcePrice.div(targetPrice)
     : bn(0);
-  const ratioLabel = `1 ${swapSource.toUpperCase()} = ${ratio.toFixed(
-    3,
-  )} ${swapTarget.toUpperCase()}`;
 
   const disableDrag = !hasSufficientBnbFeeInBalance;
 
@@ -757,7 +755,16 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
             <SwapStatusPanel>
               <StepBar size={170} />
               <div className="slip-ratio-labels">
-                <Label>{ratioLabel}</Label>
+                {ratio.toFixed(3) === '0.000' ? (
+                  <>
+                    <Label>{`1 ${swapSource.toUpperCase()} =`}</Label>
+                    <Label>{`${ratio.toFixed(8)} ${swapTarget.toUpperCase()}`}</Label>
+                  </>
+                ) : (
+                  <Label>
+                    {`1 ${swapSource.toUpperCase()} = ${ratio.toFixed(3)} ${swapTarget.toUpperCase()}`}
+                  </Label>
+                )}
                 <Label>{slipValue}</Label>
               </div>
             </SwapStatusPanel>

@@ -91,6 +91,7 @@ import {
 import { CONFIRM_DISMISS_TIME } from '../../settings/constants';
 import usePrevious from '../../hooks/usePrevious';
 import useFee from '../../hooks/useFee';
+import useNetwork from '../../hooks/useNetwork';
 
 import { RUNE_SYMBOL } from '../../settings/assetData';
 
@@ -151,6 +152,8 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
   const history = useHistory();
   const { symbol = '' } = useParams();
+
+  const { isValidFundCaps } = useNetwork();
 
   const [selectedShareDetailTab, setSelectedShareDetailTab] = useState<
     ShareDetailTabKeys
@@ -437,6 +440,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
    * Renders fee
    */
   const renderFee = () => {
+    const wallet = user ? user.wallet : null;
     const bnbAmount = bnbBaseAmount(assetData);
 
     // Helper to format BNB amounts properly (we can't use `formatTokenAmountCurrency`)
@@ -466,7 +470,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                 {isStakingBNB && (
                   <Text> (It will be substructed from BNB amount)</Text>
                 )}
-                {bnbAmount && !hasSufficientBnbFeeInBalance && (
+                {wallet && bnbAmount && !hasSufficientBnbFeeInBalance && (
                   <>
                     <br />
                     <Text type="danger" style={{ paddingTop: '10px' }}>
@@ -548,6 +552,16 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     // Validata existing wallet
     if (!wallet) {
       setOpenWalletAlert(true);
+      return;
+    }
+
+    if (!isValidFundCaps) {
+      showNotification({
+        type: 'error',
+        message: 'Stake Invalid',
+        description: 'Funds cap has been reached, You cannot stake.',
+      });
+      setDragReset(true);
       return;
     }
 
