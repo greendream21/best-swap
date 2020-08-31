@@ -2,23 +2,17 @@ import { Reducer } from 'redux';
 import { initial, success, pending, failure } from '@devexperts/remote-data-ts';
 import { bn } from '@thorchain/asgardex-util';
 import { tokenAmount } from '@thorchain/asgardex-token';
-import { getWalletAddress, getKeystore } from '../../helpers/webStorageHelper';
+import { getWallet } from '../../helpers/webStorageHelper';
 import { State, User } from './types';
 import { WalletActionsTypes } from './actions';
-import { Nothing } from '../../types/bepswap';
+import { Nothing, Maybe } from '../../types/bepswap';
 
 import { RUNE_SYMBOL } from '../../settings/assetData';
 
-const wallet = getWalletAddress();
-const keystore = getKeystore();
-
-const user =
-  wallet && keystore
-    ? ({ wallet, keystore, type: 'keystore' } as User)
-    : Nothing;
+const initialUser: Maybe<User> = getWallet();
 
 const initState: State = {
-  user,
+  user: initialUser,
   assetData: [
     {
       asset: RUNE_SYMBOL,

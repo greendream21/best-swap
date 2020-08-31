@@ -11,6 +11,7 @@ import {
   InlineResponse2001,
   TxDetailsTypeEnum,
   TotalVolChanges,
+  NetworkInfo,
 } from '../../types/generated/midgard';
 
 export type AssetDetailMap = {
@@ -102,6 +103,7 @@ export type ApiBasePathRD = RemoteData<Error, string>;
 export type ThorchainData = {
   constants?: FixmeType;
   lastBlock?: FixmeType;
+  mimir?: FixmeType;
 };
 
 export type State = {
@@ -133,4 +135,6 @@ export type State = {
   txCurData: Maybe<InlineResponse2001>;
   apiBasePath: ApiBasePathRD;
   thorchain: ThorchainData;
+  networkInfo: NetworkInfo;
+  networkInfoLoading: boolean;
 };

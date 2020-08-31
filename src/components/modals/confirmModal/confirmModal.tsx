@@ -13,7 +13,7 @@ import { StyledModal, ModalContent } from './confirmModal.style';
 
 import { getTickerFormat } from '../../../helpers/stringHelper';
 import { TxStatus, TxResult, TxTypes } from '../../../redux/app/types';
-import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
+import { BINANCE_TX_BASE_URL } from '../../../helpers/apiHelper';
 import { MAX_VALUE } from '../../../redux/app/const';
 
 type Props = {
@@ -35,7 +35,7 @@ const ConfirmModal: React.FC<Props> = (props): JSX.Element => {
     type: txType,
   } = txStatus;
   const { sourceAsset, sourceAmount, targetAsset, targetAmount, slip } = txData;
-  const txURL = TESTNET_TX_BASE_URL + hash;
+  const txURL = BINANCE_TX_BASE_URL + hash;
 
   const source = getTickerFormat(sourceAsset);
   const target = getTickerFormat(targetAsset);

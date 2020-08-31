@@ -28,14 +28,16 @@ export const MIDGARD_MAX_RETRY = 3;
 export const MIDGARD_RETRY_DELAY = 1000; // ms
 
 export function* getApiBasePath(net: NET, noCache = false) {
-  // dev | test- | chaosnet
-  if (net === NET.TEST || net === NET.CHAOS || net === NET.DEV) {
-    const basePath: string = api.MIDGARD_TEST_API;
-    yield put(actions.getApiBasePathSuccess(basePath));
-    return basePath;
+  const baseAPIURL: string = api.getMidgardBaseURL();
+  const hostname = window.location.hostname;
+
+  const isMainnet = hostname === 'bepswap.com';
+  if (!isMainnet) {
+    yield put(actions.getApiBasePathSuccess(baseAPIURL));
+    return baseAPIURL;
   }
 
-  // mainnet uses `byz`
+  // mainnet will use byzantine
 
   try {
     yield put(actions.getApiBasePathPending());
@@ -175,6 +177,43 @@ export function* getStats() {
   });
 }
 
+function* tryGetNetworkInfo() {
+  for (let i = 0; i < MIDGARD_MAX_RETRY; i++) {
+    try {
+      const noCache = i > 0;
+      // Unsafe type match of `basePath`: Can't be inferred by `tsc` from a return value of a Generator function - known TS/Generator/Saga issue
+      const basePath: string = yield call(getApiBasePath, getNet(), noCache);
+      const midgardApi = api.getMidgardDefaultApi(basePath);
+      const fn = midgardApi.getNetworkData;
+      const {
+        data: networkInfo,
+      }: UnpackPromiseResponse<typeof fn> = yield call({
+        context: midgardApi,
+        fn,
+      });
+      return networkInfo;
+    } catch (error) {
+      if (i < MIDGARD_MAX_RETRY - 1) {
+        yield delay(MIDGARD_RETRY_DELAY);
+      }
+    }
+  }
+}
+
+export function* getNetworkInfo() {
+  yield takeEvery('GET_NETWORK_INFO_REQUEST', function*() {
+    try {
+      const networkInfo = yield call(tryGetNetworkInfo);
+      const { data: mimir } = yield call(getThorchainMimir);
+
+      yield put(actions.getThorchainDataSuccess({ mimir }));
+      yield put(actions.getNetworkInfoSuccess(networkInfo));
+    } catch (error) {
+      yield put(actions.getNetworkInfoFailed(error));
+    }
+  });
+}
+
 // should use this once midgard is ready for fetching multiple pool data at once
 // function* tryGetAllPoolData(assets: string[]) {
 //   for (let i = 0; i < MIDGARD_MAX_RETRY; i++) {
@@ -198,7 +237,10 @@ export function* getStats() {
 //   throw new Error('Midgard API request failed to get pool data');
 // }
 
-function* tryGetPoolDataFromAsset(asset: string, view: 'balances' | 'simple' | 'full') {
+function* tryGetPoolDataFromAsset(
+  asset: string,
+  view: 'balances' | 'simple' | 'full',
+) {
   try {
     const basePath: string = yield call(getApiBasePath, getNet());
     const midgardApi = api.getMidgardDefaultApi(basePath);
@@ -247,17 +289,17 @@ export function* getPoolData() {
 }
 
 export function* getPoolDetailByAsset() {
-    yield takeEvery('GET_POOL_DETAIL_BY_ASSET', function*({
-      payload,
-    }: ReturnType<typeof actions.getPoolDetailByAsset>) {
-      const { asset } = payload;
-      try {
-        const data = yield call(tryGetPoolDataFromAsset, asset, 'full');
-        yield put(actions.getPoolDetailByAssetSuccess(data));
-      } catch (error) {
-        yield put(actions.getPoolDetailByAssetFailed(error));
-      }
-    });
+  yield takeEvery('GET_POOL_DETAIL_BY_ASSET', function*({
+    payload,
+  }: ReturnType<typeof actions.getPoolDetailByAsset>) {
+    const { asset } = payload;
+    try {
+      const data = yield call(tryGetPoolDataFromAsset, asset, 'full');
+      yield put(actions.getPoolDetailByAssetSuccess(data));
+    } catch (error) {
+      yield put(actions.getPoolDetailByAssetFailed(error));
+    }
+  });
 }
 
 function* tryGetStakerPoolData(payload: GetStakerPoolDataPayload) {
@@ -289,21 +331,23 @@ function* tryGetStakerPoolData(payload: GetStakerPoolDataPayload) {
   throw new Error('Midgard API request failed to get stakers pool data');
 }
 
-const getThorchainBaseURL = () => {
-  // TODO: hardcode the thorchain url for temporarly
-  return 'https://midgard.bepswap.com/v1/thorchain';
-};
-
 const getThorchainConstants = () => {
   return axiosRequest({
-    url: `${getThorchainBaseURL()}/constants`,
+    url: `${api.getThorchainBaseURL()}/constants`,
     method: 'GET',
   });
 };
 
 const getThorchainLastBlock = () => {
   return axiosRequest({
-    url: `${getThorchainBaseURL()}/lastblock`,
+    url: `${api.getThorchainBaseURL()}/lastblock`,
+    method: 'GET',
+  });
+};
+
+const getThorchainMimir = () => {
+  return axiosRequest({
+    url: `${api.getThorchainBaseURL()}/mimir`,
     method: 'GET',
   });
 };
@@ -314,6 +358,8 @@ export function* getStakerPoolData() {
   }: ReturnType<typeof actions.getStakerPoolData>) {
     try {
       const data = yield call(tryGetStakerPoolData, payload);
+
+      // TODO: (CHRIS) create a separate get thorchaindata actions
       const { data: constants } = yield call(getThorchainConstants);
       const { data: lastBlock } = yield call(getThorchainLastBlock);
 
@@ -648,5 +694,6 @@ export default function* rootSaga() {
     fork(getTxByAsset),
     fork(getRTVolumeByAsset),
     fork(getPoolDetailByAsset),
+    fork(getNetworkInfo),
   ]);
 }

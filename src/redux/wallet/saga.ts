@@ -11,12 +11,7 @@ import { push } from 'connected-react-router';
 import { isEmpty as _isEmpty } from 'lodash';
 
 import { AxiosResponse } from 'axios';
-import {
-  Balance,
-  Market,
-  client as binanceClient,
-  Address,
-} from '@thorchain/asgardex-binance';
+import { Balance, Market, Address } from '@thorchain/asgardex-binance';
 import { bnOrZero, bn } from '@thorchain/asgardex-util';
 import {
   baseToToken,
@@ -26,12 +21,7 @@ import {
 import { RootState } from '../store';
 import * as api from '../../helpers/apiHelper';
 
-import {
-  saveWalletAddress,
-  saveKeystore,
-  clearWalletAddress,
-  clearKeystore,
-} from '../../helpers/webStorageHelper';
+import { saveWallet, clearWallet } from '../../helpers/webStorageHelper';
 
 import * as actions from './actions';
 import { AssetData, StakeData } from './types';
@@ -42,7 +32,7 @@ import {
 } from '../../types/generated/midgard';
 import { getAssetFromString } from '../midgard/utils';
 
-import { BINANCE_NET, getNet } from '../../env';
+import { asgardexBncClient, getNet } from '../../env';
 import {
   getApiBasePath,
   MIDGARD_MAX_RETRY,
@@ -55,10 +45,9 @@ export function* saveWalletSaga() {
   yield takeEvery('SAVE_WALLET', function*({
     payload,
   }: ReturnType<typeof actions.saveWallet>) {
-    const { wallet, keystore } = payload;
+    const { wallet } = payload;
 
-    saveWalletAddress(wallet);
-    saveKeystore(keystore);
+    saveWallet(payload);
 
     // update wallet balance and stake data
     yield put(actions.refreshBalance(wallet));
@@ -68,8 +57,7 @@ export function* saveWalletSaga() {
 
 export function* forgetWalletSaga() {
   yield takeEvery('FORGET_WALLET', function*() {
-    clearWalletAddress();
-    clearKeystore();
+    clearWallet();
 
     yield put(push('/connect'));
   });
@@ -82,11 +70,16 @@ export function* refreshBalance() {
     const address = payload;
 
     try {
-      const bncClient = yield call(binanceClient, BINANCE_NET);
-      const balances: Balance[] = yield call(bncClient.getBalance, address);
+      const balances: Balance[] = yield call(
+        asgardexBncClient.getBalance,
+        address,
+      );
 
       try {
-        const markets: { result: Market[] } = yield call(bncClient.getMarkets);
+        const markets: { result: Market[] } = yield call(
+          asgardexBncClient.getMarkets,
+          {},
+        );
         const filteredBalance = balances.filter(
           (balance: Balance) => !isBEP8Token(balance.symbol),
         );

@@ -443,6 +443,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
           gradientStart={isLight ? '#c5d3f0' : '#365979'}
           gradientStop={isLight ? '#ffffff' : '#0f1922'}
           viewMode={isDesktopView ? 'desktop-view' : 'mobile-view'}
+          basePrice={busdPrice}
         />
       </div>
       <PoolViewTools>

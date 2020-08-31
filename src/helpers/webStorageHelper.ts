@@ -1,41 +1,43 @@
 import { ThemeType } from '@thorchain/asgardex-theme';
-import { FixmeType } from '../types/bepswap';
+
+import { Maybe } from '../types/bepswap';
+import { User, WalletType } from '../redux/wallet/types';
 
 export const WALLET_ADDRESS = 'WALLET_ADDRESS';
 export const KEY_STORE = 'KEY_STORE';
 export const BASE_PRICE_ASSET = 'BASE_PRICE_ASSET';
 export const THEME_TYPE = 'THEME_TYPE';
+export const BETA_CONFIRM = 'BETA_CONFIRM';
 
-export const saveWalletAddress = (address: string) => {
-  sessionStorage.setItem(WALLET_ADDRESS, address);
+export const BEPSWAP_WALLET = 'BEPSWAP_WALLET';
+
+export const saveWallet = (user: User) => {
+  sessionStorage.setItem(BEPSWAP_WALLET, JSON.stringify(user));
 };
 
-export const getWalletAddress = () => {
-  const address = sessionStorage.getItem(WALLET_ADDRESS);
-  return address;
-};
+export const getWallet = (): Maybe<User> => {
+  const userObj = sessionStorage.getItem(BEPSWAP_WALLET);
 
-export const clearWalletAddress = () => {
-  sessionStorage.removeItem(WALLET_ADDRESS);
-};
-
-export const isUserExist = () => {
-  return !!getWalletAddress();
-};
-
-export const saveKeystore = (keystore: FixmeType): FixmeType => {
-  if (keystore) {
-    sessionStorage.setItem(KEY_STORE, JSON.stringify(keystore));
+  if (userObj) {
+    const user: User = JSON.parse(userObj);
+    const walletType: WalletType = user?.type;
+    if (walletType === 'keystore' && user?.keystore) {
+      return {
+        type: 'keystore',
+        wallet: user.wallet,
+        keystore: user.keystore,
+      };
+    }
   }
+
+  // if wallet is invalid, reset the web storage
+  clearWallet();
+
+  return null;
 };
 
-export const getKeystore = () => {
-  const keystoreStr = sessionStorage.getItem(KEY_STORE) || '{}';
-  return JSON.parse(keystoreStr);
-};
-
-export const clearKeystore = () => {
-  sessionStorage.removeItem(KEY_STORE);
+export const clearWallet = () => {
+  sessionStorage.removeItem(BEPSWAP_WALLET);
 };
 
 export const saveBasePriceAsset = (asset: string) => {
@@ -52,4 +54,12 @@ export const saveTheme = (themeType: string) => {
 
 export const getTheme = () => {
   return localStorage.getItem(THEME_TYPE) || ThemeType.LIGHT;
+};
+
+export const saveBetaConfirm = (hasConfirmed: boolean) => {
+  localStorage.setItem(BETA_CONFIRM, JSON.stringify(hasConfirmed));
+};
+
+export const getBetaConfirm = () => {
+  return JSON.parse(localStorage.getItem(BETA_CONFIRM) || 'false');
 };

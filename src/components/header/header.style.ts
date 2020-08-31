@@ -2,6 +2,16 @@ import styled from 'styled-components';
 import { palette, size, key } from 'styled-theme';
 import { media } from '../../helpers/styleHelper';
 
+export const StyledAlertWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  z-index: 1001;
+  left: 50%;
+  transform: translateX(-50%);
+`;
+
 export const StyledHeader = styled.div`
   display: flex;
   justify-content: center;
@@ -96,7 +106,11 @@ export const HeaderActionButtons = styled.div`
   /* HACK: This should be refactored in 
      the future to not use classes */
   
-    .wallet-btn-wrapper {
+  .global-rune-stake-status {
+    margin-right: 10px;
+  }
+
+  .wallet-btn-wrapper {
     display: none !important;
     ${media.sm`
         display: flex !important;

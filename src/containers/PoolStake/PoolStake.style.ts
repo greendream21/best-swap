@@ -15,6 +15,7 @@ export const ContentWrapper = styled(ContentView)`
   padding: 0;
 
   .stake-info-view {
+
     .token-info-card {
       padding: 8px 8px 8px 0;
 

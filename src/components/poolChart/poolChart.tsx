@@ -14,6 +14,7 @@ import {
   LineChart,
   ComingSoonWrapper,
   ComingSoonText,
+  BlurWrapper,
 } from './poolChart.style';
 
 type ChartDetail = {
@@ -36,6 +37,7 @@ type Props = {
   backgroundGradientStart: string;
   backgroundGradientStop: string;
   viewMode: string;
+  basePrice?: string;
 };
 
 const abbreviateNumber = (value: number): string => {
@@ -48,9 +50,7 @@ const abbreviateNumber = (value: number): string => {
     suffixNum++;
   }
 
-  return `${newValue}${
-    suffixNum > 0 ? ` ${suffixes[suffixNum]}` : ''
-  }`;
+  return `${newValue}${suffixNum > 0 ? ` ${suffixes[suffixNum]}` : ''}`;
 };
 
 const renderHeader = (
@@ -122,6 +122,7 @@ const renderChart = (
   gradientStart: string,
   gradientStop: string,
   viewMode: string,
+  basePrice: string,
 ) => {
   const totalDisplayChart =
     type === 'LIQUIDITY' ? [...chartData.liquidity] : [...chartData.volume];
@@ -261,6 +262,12 @@ const renderChart = (
             autoSkip: true,
             maxTicksLimit: viewMode === 'desktop-view' ? 4 : 3,
             callback(value: string) {
+              if (basePrice === 'RUNE') {
+                if (Number(value) === 0) {
+                  return 'ᚱ0';
+                }
+                return `ᚱ${abbreviateNumber(Number(value))}`;
+              }
               if (Number(value) === 0) {
                 return '$0';
               }
@@ -287,7 +294,11 @@ const renderChart = (
         </ComingSoonWrapper>
       )}
       {chartData?.loading && <Loader />}
-      {!chartData?.loading && <LineChart data={data} options={options} />}
+      {!chartData?.loading && (
+        <BlurWrapper isBlur={type === 'LIQUIDITY'}>
+          <LineChart data={data} options={options} />
+        </BlurWrapper>
+      )}
     </LineChartContainer>
   );
 };
@@ -302,6 +313,7 @@ const PoolChart: React.FC<Props> = (props: Props): JSX.Element => {
     backgroundGradientStart,
     backgroundGradientStop,
     viewMode,
+    basePrice = 'RUNE',
   } = props;
   const [chartType, setChartType] = React.useState('VOLUME');
   const [chartTime, setChartTime] = React.useState('ALL');
@@ -320,6 +332,7 @@ const PoolChart: React.FC<Props> = (props: Props): JSX.Element => {
         gradientStart,
         gradientStop,
         viewMode,
+        basePrice,
       )}
     </ChartContainer>
   );
