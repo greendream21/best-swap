@@ -6,9 +6,6 @@ import { Alert } from 'antd';
 import { WalletOutlined } from '@ant-design/icons';
 
 import * as RD from '@devexperts/remote-data-ts';
-import { formatBaseAsTokenAmount, baseAmount } from '@thorchain/asgardex-token';
-
-import { bnOrZero } from '@thorchain/asgardex-util';
 
 import Logo from '../uielements/logo';
 import TxProgress from '../uielements/txProgress';
@@ -29,11 +26,10 @@ import ThemeSwitch from '../uielements/themeSwitch';
 import WalletButton from '../uielements/walletButton';
 import BasePriceSelector from './basePriceSelector';
 import { Maybe, Nothing, Pair } from '../../types/bepswap';
+
 import { RootState } from '../../redux/store';
 import { User } from '../../redux/wallet/types';
 import { TransferEventRD } from '../../redux/binance/types';
-import { ThorchainData } from '../../redux/midgard/types';
-import { NetworkInfo } from '../../types/generated/midgard';
 
 import * as appActions from '../../redux/app/actions';
 import * as binanceActions from '../../redux/binance/actions';
@@ -41,6 +37,7 @@ import * as binanceActions from '../../redux/binance/actions';
 import { MAX_VALUE } from '../../redux/app/const';
 import { TxStatus, TxResult, TxTypes } from '../../redux/app/types';
 import { getNet, isMainnet } from '../../env';
+import useNetwork from '../../hooks/useNetwork';
 
 import { getSymbolPair } from '../../helpers/stringHelper';
 import {
@@ -59,9 +56,6 @@ type ConnectedProps = {
   txStatus: TxStatus;
   txResult: Maybe<TxResult>;
   wsTransferEvent: TransferEventRD;
-  thorchainData: ThorchainData;
-  networkInfo: NetworkInfo;
-  networkInfoLoading: boolean;
   getBEPSwapData: typeof appActions.getBEPSwapData;
   setTxTimerValue: typeof appActions.setTxTimerValue;
   countTxTimerValue: typeof appActions.countTxTimerValue;
@@ -86,8 +80,6 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
     txStatus,
     txResult,
     wsTransferEvent,
-    thorchainData,
-    networkInfo,
     getBEPSwapData,
     setTxTimerValue,
     countTxTimerValue,
@@ -100,6 +92,8 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
   } = props;
   const history = useHistory();
   const hasBetaConfirmed = getBetaConfirm();
+
+  const { globalRuneStakeStatus } = useNetwork();
 
   const wallet: Maybe<string> = user ? user.wallet : Nothing;
   const { status, value, startTime, hash, info, type: txType } = txStatus;
@@ -269,17 +263,6 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
     resetTxStatus();
   };
 
-  const { mimir } = thorchainData;
-  const maxStakeRuneAmount = baseAmount(
-    bnOrZero(mimir?.['mimir//MAXIMUMSTAKERUNE']),
-  );
-  const maxStakeRuneValue = `${formatBaseAsTokenAmount(maxStakeRuneAmount)}`;
-
-  const totalStakedAmount = baseAmount(bnOrZero(networkInfo?.totalStaked));
-  const totalStakedValue = `${formatBaseAsTokenAmount(totalStakedAmount)}`;
-
-  const globalRuneStakeStatus = `${totalStakedValue} / ${maxStakeRuneValue} RUNE Staked`;
-
   return (
     <>
       {isMainnet && !hasBetaConfirmed && (
@@ -302,7 +285,9 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
           <HeaderSetting midgardBasePath={midgardBasePath} />
         </LogoWrapper>
         <HeaderActionButtons>
-          <Label className="global-rune-stake-status">{globalRuneStakeStatus}</Label>
+          <Label className="global-rune-stake-status">
+            {globalRuneStakeStatus}
+          </Label>
           {!wallet && (
             <Link to="/connect">
               <WalletButton
@@ -353,9 +338,6 @@ export default connect(
     user: state.Wallet.user,
     midgardBasePath: RD.toNullable(state.Midgard.apiBasePath),
     wsTransferEvent: state.Binance.wsTransferEvent,
-    thorchainData: state.Midgard.thorchain,
-    networkInfo: state.Midgard.networkInfo,
-    networkInfoLoading: state.Midgard.networkInfoLoading,
   }),
   {
     getBEPSwapData: appActions.getBEPSwapData,
