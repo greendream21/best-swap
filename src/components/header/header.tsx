@@ -6,9 +6,6 @@ import { Alert } from 'antd';
 import { WalletOutlined } from '@ant-design/icons';
 
 import * as RD from '@devexperts/remote-data-ts';
-import { formatBaseAsTokenAmount, baseAmount } from '@thorchain/asgardex-token';
-
-import { bnOrZero } from '@thorchain/asgardex-util';
 
 import Logo from '../uielements/logo';
 import TxProgress from '../uielements/txProgress';

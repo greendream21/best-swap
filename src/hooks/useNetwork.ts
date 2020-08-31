@@ -25,7 +25,7 @@ const useNetwork = () => {
   );
   const totalStakedValue = `${formatBaseAsTokenAmount(totalStakedAmount)}`;
 
-  const globalRuneStakeStatus: string = `${totalStakedValue} / ${maxStakeRuneValue} RUNE Staked`;
+  const globalRuneStakeStatus = `${totalStakedValue} / ${maxStakeRuneValue} RUNE Staked`;
 
   // totalStake / maxStake < 95%
   const isValidFundCaps: boolean = totalStakedAmount
