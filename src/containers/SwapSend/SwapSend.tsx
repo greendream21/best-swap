@@ -643,9 +643,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   const ratio = !targetPrice.isEqualTo(bn(0))
     ? sourcePrice.div(targetPrice)
     : bn(0);
-  const ratioLabel = `1 ${swapSource.toUpperCase()} = ${ratio.toFixed(
-    3,
-  )} ${swapTarget.toUpperCase()}`;
 
   const disableDrag = !hasSufficientBnbFeeInBalance;
 
@@ -758,7 +755,16 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
             <SwapStatusPanel>
               <StepBar size={170} />
               <div className="slip-ratio-labels">
-                <Label>{ratioLabel}</Label>
+                {ratio.toFixed(3) === '0.000' ? (
+                  <>
+                    <Label>{`1 ${swapSource.toUpperCase()} =`}</Label>
+                    <Label>{`${ratio.toFixed(8)} ${swapTarget.toUpperCase()}`}</Label>
+                  </>
+                ) : (
+                  <Label>
+                    {`1 ${swapSource.toUpperCase()} = ${ratio.toFixed(3)} ${swapTarget.toUpperCase()}`}
+                  </Label>
+                )}
                 <Label>{slipValue}</Label>
               </div>
             </SwapStatusPanel>
