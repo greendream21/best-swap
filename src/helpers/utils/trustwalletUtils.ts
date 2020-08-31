@@ -48,7 +48,7 @@ export const sendTrustSignedTx = ({
   memo = '',
 }: SendTrustSignedTxParams) => {
   return new Promise((resolve, reject) => {
-    if (walletConnect) {
+    if (walletConnect && bncClient && sendOrder && walletAddress) {
       bncClient
         .getAccount(walletAddress)
         .then((response: FixmeType) => {
@@ -93,7 +93,7 @@ export const sendTrustSignedTx = ({
         });
     } else {
       // eslint-disable-next-line prefer-promise-reject-errors
-      reject('wallet connect error');
+      reject('Transaction Error');
     }
   });
 };
@@ -116,8 +116,18 @@ export const getSendOrderMsg = ({
   toAddress,
   coins: coinData,
 }: GetSendOrderMsgParam) => {
-  // sort denoms by alphabet order
-  const coins = coinData.sort((a, b) => a.denom.localeCompare(b.denom));
+  // 1. sort denoms by alphabet order
+  // 2. validate coins with zero amounts
+  const coins: CoinData[] = coinData
+    .sort((a, b) => a.denom.localeCompare(b.denom))
+    .filter(data => {
+      return data.amount > 0;
+    });
+
+  // if coin data is invalid, return null
+  if (!coins.length) {
+    return null;
+  }
 
   const msg = {
     inputs: [
