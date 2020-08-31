@@ -9,7 +9,7 @@ import Input from '../../uielements/input';
 import Label from '../../uielements/label';
 
 import * as midgardActions from '../../../redux/midgard/actions';
-import { StyledModal, ModalContent } from './privateModal.style';
+import { StyledModal, ModalContent, ModalIcon } from './privateModal.style';
 import { RootState } from '../../../redux/store';
 import { verifyPrivateKey } from '../../../helpers/utils/walletUtils';
 import usePrevious from '../../../hooks/usePrevious';
@@ -197,7 +197,11 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
               sizevalue="big"
               value={password}
               onChange={onChangePasswordHandler}
-              prefix={<LockOutlined />}
+              prefix={(
+                <ModalIcon>
+                  <LockOutlined />
+                </ModalIcon>
+              )}
               autoComplete="off"
             />
             {invalidPassword && (
