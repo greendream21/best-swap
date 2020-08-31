@@ -536,6 +536,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
    * Renders fee
    */
   const renderFee = () => {
+    const wallet = user ? user.wallet : null;
     const bnbAmount = bnbBaseAmount(assetData);
 
     // Helper to format BNB amounts properly (we can't use `formatTokenAmountCurrency`)
@@ -564,7 +565,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
                   (It will be substructed from your entered BNB value)
                 </Text>
               )}
-              {bnbAmount && !hasSufficientBnbFeeInBalance && (
+              {wallet && bnbAmount && !hasSufficientBnbFeeInBalance && (
                 <>
                   <br />
                   <Text type="danger" style={{ paddingTop: '10px' }}>
