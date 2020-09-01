@@ -275,8 +275,8 @@ describe('swap/utils/', () => {
       const address = 'tbnb13egw96d95lldrhwu56dttrpn2fth6cs0axzaad';
       const result = getTxResult({
         pair: {
-          source: 'rune',
-          target: 'bnb',
+          source: RUNE_SYMBOL,
+          target: 'BNB',
         },
         tx,
         address,
@@ -315,8 +315,8 @@ describe('swap/utils/', () => {
 
       const result = getTxResult({
         pair: {
-          source: 'rune',
-          target: 'tusdb',
+          source: RUNE_SYMBOL,
+          target: 'TUSDB-000',
         },
         tx,
         address,

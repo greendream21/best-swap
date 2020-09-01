@@ -112,7 +112,7 @@ const ConfirmModal: React.FC<Props> = (props): JSX.Element => {
                   FINISH
                 </Button>
               )}
-              {hash && (
+              {!!hash && (
                 <a href={txURL} target="_blank" rel="noopener noreferrer">
                   VIEW TRANSACTION
                 </a>

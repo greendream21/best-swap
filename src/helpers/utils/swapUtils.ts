@@ -11,7 +11,6 @@ import {
 } from '@thorchain/asgardex-token';
 
 import { getSwapMemo } from '../memoHelper';
-import { getTickerFormat } from '../stringHelper';
 import {
   getZValue,
   getPx,
@@ -384,8 +383,9 @@ export const getTxResult = ({
   const { source, target } = pair;
 
   const IS_IN_TX = address && txTo === address;
-  const IS_REFUND = IS_IN_TX && getTickerFormat(txToken) === source;
-  const IS_OUTBOUND = IS_IN_TX && getTickerFormat(txToken) === target;
+  const IS_REFUND = IS_IN_TX && txToken.toLowerCase() === source?.toLowerCase();
+  const IS_OUTBOUND =
+    IS_IN_TX && txToken.toLowerCase() === target?.toLowerCase();
 
   if (IS_REFUND) {
     return {

@@ -242,12 +242,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stakerPoolData, stakerPoolDataError]);
 
-  useEffect(() => {
-    // TODO: check if it needs to fetch staker detail on mount
-    getStakerPoolDetail();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   // stakerPoolData needs to be updated whenever pool changed
   useEffect(() => {
     getStakerPoolDetail();
@@ -522,6 +516,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
         const hash = result ? result[0]?.hash ?? null : null;
         if (hash) {
           setTxHash(hash);
+          setOpenPrivateModal(false);
 
           // start tx timer modal
           setTxResult({
@@ -530,6 +525,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
           handleStartTimer(TxTypes.STAKE);
         }
       } catch (error) {
+        setOpenPrivateModal(false);
         showNotification({
           type: 'error',
           message: 'Stake Invalid',
@@ -599,6 +595,9 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     if (wallet) {
       setTxType(TxTypes.STAKE);
       handleOpenPrivateModal();
+      if (user?.type === 'walletconnect') {
+        handleConfirmStake();
+      }
     }
   };
 
@@ -636,6 +635,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
         const hash = result ? result[0]?.hash ?? null : null;
         if (hash) {
           setTxHash(hash);
+          setOpenPrivateModal(false);
 
           // start tx timer
           handleStartTimer(TxTypes.WITHDRAW);
@@ -644,6 +644,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
           });
         }
       } catch (error) {
+        setOpenPrivateModal(false);
         showNotification({
           type: 'error',
           message: 'Withdraw Invalid',
@@ -679,6 +680,9 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     if (wallet) {
       setTxType(TxTypes.WITHDRAW);
       handleOpenPrivateModal();
+      if (user?.type === 'walletconnect') {
+        handleConfirmWithdraw();
+      }
     }
   };
 

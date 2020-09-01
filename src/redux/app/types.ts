@@ -70,4 +70,5 @@ export type State = {
   themeType: string;
   readonly txStatus: TxStatus;
   txResult?: Maybe<TxResult>;
+  refreshTxStatus: boolean;
 };
