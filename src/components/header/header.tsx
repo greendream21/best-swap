@@ -17,6 +17,7 @@ import {
   StyledHeader,
   LogoWrapper,
   HeaderActionButtons,
+  HeaderCenterWrapper,
 } from './header.style';
 import HeaderSetting from './headerSetting';
 import WalletDrawer from '../../containers/WalletView/WalletDrawer';
@@ -25,8 +26,9 @@ import Label from '../uielements/label';
 import ThemeSwitch from '../uielements/themeSwitch';
 import WalletButton from '../uielements/walletButton';
 import BasePriceSelector from './basePriceSelector';
-import { Maybe, Nothing, Pair } from '../../types/bepswap';
+import Refresh from '../refresh';
 
+import { Maybe, Nothing, Pair } from '../../types/bepswap';
 import { RootState } from '../../redux/store';
 import { User } from '../../redux/wallet/types';
 import { TransferEventRD } from '../../redux/binance/types';
@@ -284,10 +286,24 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
           </Link>
           <HeaderSetting midgardBasePath={midgardBasePath} />
         </LogoWrapper>
+        <HeaderCenterWrapper>
+          <Label weight="bold">{globalRuneStakeStatus}</Label>
+        </HeaderCenterWrapper>
         <HeaderActionButtons>
-          <Label className="global-rune-stake-status">
-            {globalRuneStakeStatus}
-          </Label>
+          <ThemeSwitch />
+          <BasePriceSelector />
+          {wallet && (
+            <TxProgress
+              status={status}
+              value={value}
+              maxValue={MAX_VALUE}
+              maxSec={45}
+              startTime={startTime}
+              onClick={handleClickTxProgress}
+              onChange={handleChangeTxProgress}
+              onEnd={handleEndTxProgress}
+            />
+          )}
           {!wallet && (
             <Link to="/connect">
               <WalletButton
@@ -305,20 +321,7 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
             </Link>
           )}
           {wallet && <WalletDrawer />}
-          <ThemeSwitch />
-          <BasePriceSelector />
-          {wallet && (
-            <TxProgress
-              status={status}
-              value={value}
-              maxValue={MAX_VALUE}
-              maxSec={45}
-              startTime={startTime}
-              onClick={handleClickTxProgress}
-              onChange={handleChangeTxProgress}
-              onEnd={handleEndTxProgress}
-            />
-          )}
+          <Refresh />
         </HeaderActionButtons>
         <ConfirmModal
           txStatus={txStatus}

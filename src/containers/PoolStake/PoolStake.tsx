@@ -242,12 +242,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stakerPoolData, stakerPoolDataError]);
 
-  useEffect(() => {
-    // TODO: check if it needs to fetch staker detail on mount
-    getStakerPoolDetail();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   // stakerPoolData needs to be updated whenever pool changed
   useEffect(() => {
     getStakerPoolDetail();

@@ -23,6 +23,7 @@ const initState: State = {
     },
   },
   txResult: null,
+  refreshTxStatus: false,
 };
 
 const reducer: Reducer<State, AppActionsTypes> = (
@@ -121,6 +122,12 @@ const reducer: Reducer<State, AppActionsTypes> = (
       return {
         ...state,
         themeType: payload,
+      };
+    }
+    case 'SET_REFRESH_TX_STATUS': {
+      return {
+        ...state,
+        refreshTxStatus: action.payload,
       };
     }
     default:
