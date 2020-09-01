@@ -1,8 +1,21 @@
 import { Maybe } from '../../types/bepswap';
 import { TxTypes, TxStatus, TxResult } from './types';
 
-export const getBEPSwapData = () =>
-  ({ type: 'GET_BEPSWAP_DATA' } as const);
+export const getBEPSwapData = () => ({ type: 'GET_BEPSWAP_DATA' } as const);
+
+export const getPoolViewData = () => ({ type: 'GET_POOL_VIEW_DATA' } as const);
+
+export const refreshSwapData = () => ({ type: 'REFRESH_SWAP_DATA' } as const);
+
+/** payload: pool symbol for stake */
+export const refreshStakeData = (payload: string) =>
+  ({ type: 'REFRESH_STAKE_DATA', payload } as const);
+
+export const refreshTransactionData = () =>
+  ({ type: 'REFRESH_TRANSACTION_DATA' } as const);
+
+export const setRefreshTxStatus = (payload: boolean) =>
+  ({ type: 'SET_REFRESH_TX_STATUS', payload } as const);
 
 export const setTxResult = (payload: Maybe<TxResult>) =>
   ({ type: 'SET_TX_RESULT', payload } as const);
@@ -36,6 +49,11 @@ export const setTheme = (payload: string) =>
 
 export type AppActionsTypes = ReturnType<
   | typeof getBEPSwapData
+  | typeof getPoolViewData
+  | typeof refreshSwapData
+  | typeof refreshStakeData
+  | typeof refreshTransactionData
+  | typeof setRefreshTxStatus
   | typeof setTxResult
   | typeof setTxTimerType
   | typeof setTxTimerModal

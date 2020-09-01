@@ -46,6 +46,13 @@ export const getBinanceTestnetURL = (url: string) =>
 export const getBinanceMainnetURL = (url: string) =>
   `${BINANCE_MAINNET_URL}/${url}`;
 
+export const getBinanceURL = (url: string) => {
+  if (isMainnet) {
+    return getBinanceMainnetURL(url);
+  }
+  return getBinanceTestnetURL(url);
+};
+
 const defaultAxios = axios.create();
 
 export const axiosRequest = defaultAxios.request;

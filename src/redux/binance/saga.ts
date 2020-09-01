@@ -22,7 +22,7 @@ import { eventChannel, END } from 'redux-saga';
 import { failure, success } from '@devexperts/remote-data-ts';
 import * as actions from './actions';
 import {
-  getBinanceTestnetURL,
+  getBinanceURL,
   getBinanceMainnetURL,
   getHeaders,
   binanceRequest as axiosRequest,
@@ -56,7 +56,7 @@ export function* getBinanceTokens() {
   yield takeEvery('GET_BINANCE_TOKENS', function*() {
     const params: AxiosRequestConfig = {
       method: 'get' as Method,
-      url: getBinanceTestnetURL(`tokens?limit=${LIMIT}`),
+      url: getBinanceURL(`tokens?limit=${LIMIT}`),
       headers: getHeaders(),
     };
 
@@ -74,7 +74,7 @@ export function* getBinanceMarkets() {
   yield takeEvery('GET_BINANCE_MARKETS', function*() {
     const params: AxiosRequestConfig = {
       method: 'get' as Method,
-      url: getBinanceTestnetURL(`markets?limit=${LIMIT}`),
+      url: getBinanceURL(`markets?limit=${LIMIT}`),
       headers: getHeaders(),
     };
 
@@ -123,7 +123,7 @@ export function* getBinanceAccount() {
   }: ReturnType<typeof actions.getBinanceAccount>) {
     const params = {
       method: 'get' as Method,
-      url: getBinanceTestnetURL(`account/${payload}`),
+      url: getBinanceURL(`account/${payload}`),
       headers: getHeaders(),
     };
 
@@ -145,7 +145,7 @@ export function* getBinanceTransactions() {
 
     const params = {
       method: 'get' as Method,
-      url: getBinanceTestnetURL(
+      url: getBinanceURL(
         `transactions?address=${address}&txAsset=${symbol}&startTime=${startTime}&endTime=${endTime}&limit=${limit}`,
       ),
       headers: getHeaders(),
@@ -169,7 +169,7 @@ export function* getBinanceOpenOrders() {
 
     const params = {
       method: 'get' as Method,
-      url: getBinanceTestnetURL(
+      url: getBinanceURL(
         `orders/open?address=${address}&symbol=${symbol}`,
       ),
       headers: getHeaders(),
@@ -193,7 +193,7 @@ function* tryGetBinanceFees(net: NET) {
   const url =
     net === NET.MAIN
       ? getBinanceMainnetURL(endpoint)
-      : getBinanceTestnetURL(endpoint);
+      : getBinanceURL(endpoint);
   const params = {
     method: 'get' as Method,
     url,
