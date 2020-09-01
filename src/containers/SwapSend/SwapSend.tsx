@@ -287,7 +287,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
         const hash = result[0]?.hash;
         if (hash) {
           setTxHash(hash);
-
           // start tx timer
           setTxResult({ status: false });
           handleStartTimer();
