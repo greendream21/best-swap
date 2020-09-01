@@ -64,15 +64,30 @@ export const StyledHeader = styled.div`
   }
 `;
 
+export const HeaderCenterWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
+
+export const HeaderTools = styled.div`
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+`;
+
 export const LogoWrapper = styled.div`
-  margin-right: 4px;
   display: none;
+  height: 24px;
+  margin-right: 4px;
+
   ${media.sm`
     margin-right: 20px;
     display: flex;
   `}
   svg {
-    max-height: 24px;
+    height: 24px;
   }
 
   .ant-dropdown-link {
@@ -105,17 +120,13 @@ export const HeaderActionButtons = styled.div`
 
   /* HACK: This should be refactored in 
      the future to not use classes */
-  
-  .global-rune-stake-status {
-    margin-right: 10px;
-  }
 
   .wallet-btn-wrapper {
     display: none !important;
     ${media.sm`
-        display: flex !important;
-      `}
-    margin-right: 14px;
+      display: flex !important;
+      margin-right: 4px;
+    `}
   }
 
   a {
@@ -152,6 +163,7 @@ export const HeaderActionButtons = styled.div`
 
     &.baseprice-selector {
       display: flex;
+      margin-right: 12px;
 
       .currency-icon-container {
         display: none;

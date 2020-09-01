@@ -28,19 +28,22 @@ import { User } from '../../redux/wallet/types';
 import { RootState } from '../../redux/store';
 import AddWallet from '../../components/uielements/addWallet';
 
+import usePrevious from '../../hooks/usePrevious';
+
 type ComponentProps = {};
 
 type ConnectedProps = {
   user: Maybe<User>;
   txData: TxDetailData;
   txCurData: Maybe<InlineResponse2001>;
+  refreshTxStatus: boolean;
   getTxByAddress: typeof midgardActions.getTxByAddress;
 };
 
 type Props = ComponentProps & ConnectedProps;
 
 const Transaction: React.FC<Props> = (props): JSX.Element => {
-  const { user, txData, txCurData, getTxByAddress } = props;
+  const { user, txData, txCurData, refreshTxStatus, getTxByAddress } = props;
   const [filter, setFilter] = useState('all');
   const [page, setPage] = useState(1);
 
@@ -78,6 +81,15 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
     getTxDetails();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, filter]);
+
+  // reset filter, page after refresh
+  const prevRefreshTxStatus = usePrevious(refreshTxStatus);
+  useEffect(() => {
+    if (!refreshTxStatus && prevRefreshTxStatus) {
+      setPage(1);
+      setFilter('all');
+    }
+  }, [refreshTxStatus, prevRefreshTxStatus]);
 
   const renderTxTable = (
     data: TxDetails[],
@@ -230,7 +242,9 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
         },
         (error: Error) => (
           <ContentWrapper className="transaction-view-wrapper center-align">
-            <Label size="big">Loading of transaction history data failed.</Label>
+            <Label size="big">
+              Loading of transaction history data failed.
+            </Label>
             {!!error?.message && <Label size="small">{error.message}</Label>}
           </ContentWrapper>
         ),
@@ -257,6 +271,7 @@ export default compose(
       user: state.Wallet.user,
       txData: state.Midgard.txData,
       txCurData: state.Midgard.txCurData,
+      refreshTxStatus: state.App.refreshTxStatus,
     }),
     {
       getTxByAddress: midgardActions.getTxByAddress,

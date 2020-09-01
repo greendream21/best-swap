@@ -6,7 +6,6 @@ import { connect, useSelector } from 'react-redux';
 import { withRouter, useHistory, Link } from 'react-router-dom';
 import { Row, Col, Grid } from 'antd';
 import moment from 'moment';
-import { random } from 'lodash';
 import {
   SyncOutlined,
   SwapOutlined,
@@ -63,6 +62,8 @@ import LabelLoader from '../../components/utility/loaders/label';
 import PoolChart from '../../components/poolChart';
 import TxTable from '../../components/transaction/txTable';
 
+import { generateRandomTimeSeries } from './utils';
+
 type Props = {
   history: H.History;
   pools: string[];
@@ -81,28 +82,6 @@ type Props = {
   getPools: typeof midgardActions.getPools;
   getTransactions: typeof midgardActions.getTransaction;
   getRTVolume: typeof midgardActions.getRTVolumeByAsset;
-};
-
-const generateRandomTimeSeries = (
-  minValue: number,
-  maxValue: number,
-  startDate: string,
-) => {
-  const series = [];
-  for (
-    let itr = moment(startDate);
-    itr.isBefore(moment.now());
-    itr = itr.add(1, 'day')
-  ) {
-    series.push({
-      time: itr.unix(),
-      value: (
-        minValue +
-        (random(100) / 100) * (maxValue - minValue)
-      ).toString(),
-    });
-  }
-  return series;
 };
 
 const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
@@ -216,7 +195,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         showNotification({
           type: 'warning',
           message: 'Create Pool Failed',
-          description: 'You don\'t have available asset to create a new pool.',
+          description: 'You do not have available asset to create a new pool.',
         });
       }
     }

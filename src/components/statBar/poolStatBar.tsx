@@ -52,7 +52,7 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
   const earning = getUSDValue(poolStakedTotal.multipliedBy(poolROI).toString());
 
   const users = `${stats?.totalStakers || '0'}`;
-  const apy = stats?.values?.apy;
+  const apy = stats?.apy;
 
   return (
     <>
@@ -152,7 +152,7 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
               if (loading) return <LabelLoader />;
               return <span>{apy}</span>;
             }}
-            suffix="%"
+            suffix={loading ? '' : '%'}
           />
         </Col>
       </Row>

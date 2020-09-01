@@ -9,7 +9,6 @@ import Menu from '../uielements/menu';
 import AssetInfo from '../uielements/tokens/assetInfo';
 import Label from '../uielements/label';
 import { getTickerFormat } from '../../helpers/stringHelper';
-import { BitcoinIcon } from '../icons';
 
 import * as midgardActions from '../../redux/midgard/actions';
 import { getAssetFromString } from '../../redux/midgard/utils';
@@ -97,9 +96,6 @@ class BasePriceSelector extends React.Component<Props, State> {
         placement="bottomRight"
       >
         <a className="ant-dropdown-link baseprice-selector" href="/">
-          <div className="currency-icon-container">
-            <BitcoinIcon />
-          </div>
           <Label>{baseAsset}</Label>
           <DownOutlined />
         </a>
