@@ -107,7 +107,7 @@ const reducer: Reducer<State, AppActionsTypes> = (
     case 'RESET_TX_STATUS': {
       const { payload } = action;
       const txStatus = payload
-        ? { ...initState.txStatus, ...payload }
+        ? { ...state.txStatus, ...payload }
         : { ...initState.txStatus };
       return {
         ...state,
