@@ -287,11 +287,14 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
         const hash = result[0]?.hash;
         if (hash) {
           setTxHash(hash);
+
+          setOpenPrivateModal(false);
           // start tx timer
           setTxResult({ status: false });
           handleStartTimer();
         }
       } catch (error) {
+        setOpenPrivateModal(false);
         showNotification({
           type: 'error',
           message: 'Swap Invalid',
@@ -409,6 +412,9 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     if (swapData && validateSlip(swapData.slip)) {
       if (wallet) {
         handleOpenPrivateModal();
+        if (user?.type === 'walletconnect') {
+          handleConfirmSwap();
+        }
       } else {
         setInvalidAddress(true);
         setDragReset(true);
@@ -757,11 +763,15 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
                 {ratio.toFixed(3) === '0.000' ? (
                   <>
                     <Label>{`1 ${swapSource.toUpperCase()} =`}</Label>
-                    <Label>{`${ratio.toFixed(8)} ${swapTarget.toUpperCase()}`}</Label>
+                    <Label>
+                      {`${ratio.toFixed(8)} ${swapTarget.toUpperCase()}`}
+                    </Label>
                   </>
                 ) : (
                   <Label>
-                    {`1 ${swapSource.toUpperCase()} = ${ratio.toFixed(3)} ${swapTarget.toUpperCase()}`}
+                    {`1 ${swapSource.toUpperCase()} = ${ratio.toFixed(
+                      3,
+                    )} ${swapTarget.toUpperCase()}`}
                   </Label>
                 )}
                 <Label>{slipValue}</Label>

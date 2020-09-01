@@ -241,11 +241,13 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
         const hash = result && result.length ? result[0].hash : null;
         if (hash) {
           setTxHash(hash);
+          setOpenPrivateModal(false);
 
           // start timer modal
           handleStartTimer();
         }
       } catch (error) {
+        setOpenPrivateModal(false);
         showNotification({
           type: 'error',
           message: 'Create Pool Failed',
@@ -291,6 +293,10 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
 
     if (wallet) {
       handleOpenPrivateModal();
+
+      if (user?.type === 'walletconnect') {
+        handleConfirmCreate();
+      }
     }
   };
 
