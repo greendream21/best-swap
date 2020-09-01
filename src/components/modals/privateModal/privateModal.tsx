@@ -85,6 +85,11 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
     });
   };
 
+  const handleLedgerVerifySuccess = () => {
+    setValidating(false);
+    handleConfirm();
+  };
+
   const verifyLedger = async () => {
     const ledger = user?.ledger;
     const hdPath = user?.hdPath;
@@ -96,7 +101,7 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
     bncClient.useLedgerSigningDelegate(
       ledger,
       null,
-      null,
+      handleLedgerVerifySuccess,
       handleLedgerVerifyFailed,
       hdPath,
     );
@@ -130,12 +135,6 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
       return;
     }
 
-    // confirm if ledger is verified
-    if (walletType === 'ledger' && !validating) {
-      handleConfirm();
-      return;
-    }
-
     // verify password if wallet type is keystore
     if (walletType === 'keystore' && user?.keystore) {
       setValidating(true);
@@ -163,7 +162,7 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
     if (walletType === 'disconnected') {
       history.push('/connect');
     }
-  }, [user, walletType, validating, history, password, handleConfirm]);
+  }, [user, walletType, history, password, handleConfirm]);
 
   const handleCancel = useCallback(() => {
     if (onCancel) {
@@ -183,6 +182,12 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
   }, [walletType]);
 
   const renderModalContent = () => {
+    const modalIcon = (
+      <ModalIcon>
+        <LockOutlined />
+      </ModalIcon>
+    );
+
     if (walletType === 'keystore') {
       return (
         <Form onFinish={handleOK} autoComplete="off">
@@ -197,11 +202,7 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
               sizevalue="big"
               value={password}
               onChange={onChangePasswordHandler}
-              prefix={(
-                <ModalIcon>
-                  <LockOutlined />
-                </ModalIcon>
-              )}
+              prefix={modalIcon}
               autoComplete="off"
             />
             {invalidPassword && (
@@ -215,7 +216,7 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
     if (walletType === 'ledger') {
       return (
         <ModalContent>
-          <Label>CLICK CONFIRM TO SIGN WITH LEDGER!</Label>
+          <Label>PLEASE SIGN USING YOUR LEDGER!</Label>
         </ModalContent>
       );
     }
@@ -239,6 +240,8 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
   const confirmBtnText = walletType === 'disconnected' ? 'CONNECT' : 'CONFIRM';
   const confirmLoading = confirmed && addressLoading;
 
+  const footer = walletType === 'ledger' ? null : undefined;
+
   return (
     <StyledModal
       title={modalTitle}
@@ -250,6 +253,7 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
       closable={false}
       okText={confirmBtnText}
       cancelText="CANCEL"
+      footer={footer}
     >
       {renderModalContent()}
     </StyledModal>
