@@ -153,11 +153,6 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
       return;
     }
 
-    // if trustwallet is connected, check if session is valid
-    if (walletType === 'walletconnect' && user?.walletConnector) {
-      handleConfirm();
-    }
-
     // if wallet is disconnected, go to wallet connect page
     if (walletType === 'disconnected') {
       history.push('/connect');
@@ -176,7 +171,7 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
   const modalTitle = useMemo(() => {
     if (walletType === 'keystore') return 'PASSWORD CONFIRMATION';
     if (walletType === 'ledger') return 'LEDGER CONFIRMATION';
-    if (walletType === 'walletconnect') return 'TRANSACTION CONFIRMATION';
+    if (walletType === 'walletconnect') return 'WALLETCONNECT CONFIRMATION';
 
     return 'CONNECT WALLET';
   }, [walletType]);
@@ -224,7 +219,7 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
     if (walletType === 'walletconnect') {
       return (
         <ModalContent>
-          <Label>CLICK CONFIRM TO SIGN WITH TRUSTWALLET!</Label>
+          <Label>PLEASE SIGN USING YOUR TRUSTWALLET!</Label>
         </ModalContent>
       );
     }
@@ -240,7 +235,10 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
   const confirmBtnText = walletType === 'disconnected' ? 'CONNECT' : 'CONFIRM';
   const confirmLoading = confirmed && addressLoading;
 
-  const footer = walletType === 'ledger' ? null : undefined;
+  const footer =
+    walletType === 'ledger' || walletType === 'walletconnect'
+      ? null
+      : undefined;
 
   return (
     <StyledModal
