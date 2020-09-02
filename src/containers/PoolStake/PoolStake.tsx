@@ -251,6 +251,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       overrideAllPoolData: false,
       type: 'full',
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // stakerPoolData needs to be updated whenever pool changed

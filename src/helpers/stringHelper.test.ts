@@ -2,6 +2,8 @@ import {
   getTickerFormat,
   getSymbolPair,
   compareShallowStr,
+  isShortFormatPossible,
+  getShortAmount,
 } from './stringHelper';
 import { Pair } from '../types/bepswap';
 
@@ -30,7 +32,6 @@ describe('helpers/stringHelper/', () => {
       expect(result).toEqual('xxx000');
     });
   });
-
 
   describe('getSymbolPair', () => {
     it('returns source and target symbols for ":" separated symbol pair', () => {
@@ -63,6 +64,32 @@ describe('helpers/stringHelper/', () => {
     it('returns true if numerical strings are input to function', () => {
       const result = compareShallowStr('123', '123');
       expect(result).toEqual(true);
+    });
+  });
+
+  // isShortFormatPossible
+
+  describe('isShortFormatPossible', () => {
+    it('returns true if the amount is greater than 0.001', () => {
+      const amount = 0.03142343;
+      expect(isShortFormatPossible(amount)).toEqual(true);
+    });
+    it('returns false if the amount is less than 0.001', () => {
+      const amount = 0.00042412;
+      expect(isShortFormatPossible(amount)).toEqual(false);
+    });
+  });
+
+  // getShortAmount
+
+  describe('getShortAmount', () => {
+    it('returns short amount if the amount is greater than 0.001', () => {
+      const amount = 0.00354217;
+      expect(getShortAmount(amount)).toEqual('0.004');
+    });
+    it('returns origin amount if the amount is less than 0.001', () => {
+      const amount = 0.00003542;
+      expect(getShortAmount(amount)).toEqual('0.00003542');
     });
   });
 });
