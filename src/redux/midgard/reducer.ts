@@ -169,7 +169,7 @@ const reducer: Reducer<State, MidgardActionTypes> = (
         ? newPoolData
         : {
             ...state.poolData,
-            newPoolData,
+            ...newPoolData,
           };
       return {
         ...state,
