@@ -66,6 +66,7 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
   }, [poolAddressLoading]);
 
   useEffect(() => {
+    console.log('DEBUG WALLET TYPE: ', walletType);
     // ask to verify ledger
     if (walletType === 'ledger') {
       verifyLedger();
@@ -75,7 +76,7 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
   }, [walletType]);
 
   const handleLedgerVerifyFailed = () => {
-    console.log('ledger verify failed');
+    console.log('LEDGER DEBUG: VERIFY FAILED');
     setValidating(false);
     showNotification({
       type: 'error',
@@ -86,8 +87,25 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
   };
 
   const handleLedgerVerifySuccess = () => {
+    console.log('LEDGER DEBUG: VERIFY SUCCESS');
     setValidating(false);
+    showNotification({
+      type: 'success',
+      message: 'Ledger Signing Successful',
+      description: 'Transaction was signed successfully.',
+      duration: 5,
+    });
     handleConfirm();
+  };
+
+  const handleLedgerPresign = () => {
+    console.log('LEDGER DEBUG: PRESIGN CALLED');
+    showNotification({
+      type: 'info',
+      message: 'Ledger signing requested',
+      description: 'Please approve the transaction on your ledger.',
+      duration: 5,
+    });
   };
 
   const verifyLedger = async () => {
@@ -95,16 +113,18 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
     const hdPath = user?.hdPath;
 
     if (!ledger || !hdPath) {
+      console.log('LEDGER DEBUG: MISSING LEDGER OR HDPATH');
       return;
     }
 
-    bncClient.useLedgerSigningDelegate(
+    await bncClient.useLedgerSigningDelegate(
       ledger,
-      null,
+      handleLedgerPresign,
       handleLedgerVerifySuccess,
       handleLedgerVerifyFailed,
       hdPath,
     );
+    handleConfirm();
   };
 
   const onChangePasswordHandler = useCallback(
@@ -116,6 +136,7 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
   );
 
   const handleConfirm = useCallback(() => {
+    console.log('DEBUG: CONFIRMING');
     if (!onOk) {
       return;
     }
@@ -128,6 +149,7 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
   }, [addressLoading, onOk]);
 
   const handleOK = useCallback(async () => {
+    console.log('DEBUG: OK');
     const address = user?.wallet;
 
     // prevent confirm if wallet is disconnected
@@ -135,7 +157,13 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
       return;
     }
 
-    // verify password if wallet type is keystore
+     // confirm if ledger is verified
+     if (walletType === 'ledger' && !validating) {
+      handleConfirm();
+      return;
+    }
+
+       // verify password if wallet type is keystore
     if (walletType === 'keystore' && user?.keystore) {
       setValidating(true);
       // Short delay to render latest state changes of `validating`
