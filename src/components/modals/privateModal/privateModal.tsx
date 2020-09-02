@@ -66,6 +66,7 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
   }, [poolAddressLoading]);
 
   useEffect(() => {
+    console.log('DEBUG WALLET TYPE: ', walletType);
     // ask to verify ledger
     if (walletType === 'ledger') {
       verifyLedger();
@@ -75,7 +76,7 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
   }, [walletType]);
 
   const handleLedgerVerifyFailed = () => {
-    console.log('ledger verify failed');
+    console.log('LEDGER DEBUG: VERIFY FAILED');
     setValidating(false);
     showNotification({
       type: 'error',
@@ -86,8 +87,25 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
   };
 
   const handleLedgerVerifySuccess = () => {
+    console.log('LEDGER DEBUG: VERIFY SUCCESS');
     setValidating(false);
+    showNotification({
+      type: 'success',
+      message: 'Ledger Signing Successful',
+      description: 'Transaction was signed successfully.',
+      duration: 5,
+    });
     handleConfirm();
+  };
+
+  const handleLedgerPresign = () => {
+    console.log('LEDGER DEBUG: PRESIGN CALLED');
+    showNotification({
+      type: 'info',
+      message: 'Ledger signing requested',
+      description: 'Please approve the transaction on your ledger.',
+      duration: 5,
+    });
   };
 
   const verifyLedger = async () => {
@@ -95,16 +113,18 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
     const hdPath = user?.hdPath;
 
     if (!ledger || !hdPath) {
+      console.log('LEDGER DEBUG: MISSING LEDGER OR HDPATH');
       return;
     }
 
-    bncClient.useLedgerSigningDelegate(
+    await bncClient.useLedgerSigningDelegate(
       ledger,
-      null,
+      handleLedgerPresign,
       handleLedgerVerifySuccess,
       handleLedgerVerifyFailed,
       hdPath,
     );
+    handleConfirm();
   };
 
   const onChangePasswordHandler = useCallback(
@@ -116,6 +136,7 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
   );
 
   const handleConfirm = useCallback(() => {
+    console.log('DEBUG: CONFIRMING');
     if (!onOk) {
       return;
     }
@@ -128,10 +149,17 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
   }, [addressLoading, onOk]);
 
   const handleOK = useCallback(async () => {
+    console.log('DEBUG: OK');
     const address = user?.wallet;
 
     // prevent confirm if wallet is disconnected
     if (!address) {
+      return;
+    }
+
+    // confirm if ledger is verified
+    if (walletType === 'ledger' && !validating) {
+      handleConfirm();
       return;
     }
 
@@ -153,11 +181,16 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
       return;
     }
 
+    // if trustwallet is connected, check if session is valid
+    if (walletType === 'walletconnect' && user?.walletConnector) {
+      handleConfirm();
+    }
+
     // if wallet is disconnected, go to wallet connect page
     if (walletType === 'disconnected') {
       history.push('/connect');
     }
-  }, [user, walletType, history, password, handleConfirm]);
+  }, [user, walletType, validating, history, password, handleConfirm]);
 
   const handleCancel = useCallback(() => {
     if (onCancel) {
@@ -171,7 +204,7 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
   const modalTitle = useMemo(() => {
     if (walletType === 'keystore') return 'PASSWORD CONFIRMATION';
     if (walletType === 'ledger') return 'LEDGER CONFIRMATION';
-    if (walletType === 'walletconnect') return 'WALLETCONNECT CONFIRMATION';
+    if (walletType === 'walletconnect') return 'TRANSACTION CONFIRMATION';
 
     return 'CONNECT WALLET';
   }, [walletType]);
@@ -211,7 +244,7 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
     if (walletType === 'ledger') {
       return (
         <ModalContent>
-          <Label>PLEASE SIGN USING YOUR LEDGER!</Label>
+          <Label>CLICK CONFIRM TO SIGN WITH LEDGER!</Label>
         </ModalContent>
       );
     }
@@ -219,7 +252,7 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
     if (walletType === 'walletconnect') {
       return (
         <ModalContent>
-          <Label>PLEASE SIGN USING YOUR TRUSTWALLET!</Label>
+          <Label>CLICK CONFIRM TO SIGN WITH TRUSTWALLET!</Label>
         </ModalContent>
       );
     }
@@ -235,11 +268,6 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
   const confirmBtnText = walletType === 'disconnected' ? 'CONNECT' : 'CONFIRM';
   const confirmLoading = confirmed && addressLoading;
 
-  const footer =
-    walletType === 'ledger' || walletType === 'walletconnect'
-      ? null
-      : undefined;
-
   return (
     <StyledModal
       title={modalTitle}
@@ -251,7 +279,6 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
       closable={false}
       okText={confirmBtnText}
       cancelText="CANCEL"
-      footer={footer}
     >
       {renderModalContent()}
     </StyledModal>

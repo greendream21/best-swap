@@ -14,7 +14,8 @@ import { MidgardActionTypes } from './actions';
 import { Nothing } from '../../types/bepswap';
 import { PoolDetail, StakersAssetData } from '../../types/generated/midgard';
 
-const basePriceAsset = getBasePriceAsset() || 'RUNE';
+// set base price asset to BUSD as a default
+const basePriceAsset = getBasePriceAsset() || 'BUSD';
 
 const initState: State = {
   assets: {},
@@ -168,7 +169,7 @@ const reducer: Reducer<State, MidgardActionTypes> = (
         ? newPoolData
         : {
             ...state.poolData,
-            newPoolData,
+            ...newPoolData,
           };
       return {
         ...state,
