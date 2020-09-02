@@ -223,6 +223,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     getPoolDataForAsset({
       assets: [symbol],
       overrideAllPoolData: false,
+      type: 'full',
     });
 
     if (user) {
@@ -242,10 +243,21 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stakerPoolData, stakerPoolDataError]);
 
-  // stakerPoolData needs to be updated whenever pool changed
   useEffect(() => {
     getStakerPoolDetail();
-  }, [symbol, getStakerPoolDetail]);
+    // refresh pool data
+    getPoolDataForAsset({
+      assets: [symbol],
+      overrideAllPoolData: false,
+      type: 'full',
+    });
+  }, []);
+
+  // stakerPoolData needs to be updated whenever pool changed
+  useEffect(() => {
+    refreshStakerData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [symbol]);
 
   const prevTxStatus = usePrevious(txStatus);
   // if tx is completed, should refresh staker details
@@ -1209,6 +1221,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   const poolInfo = poolData[tokenSymbol] || {};
   const assetDetail = assets?.[tokenSymbol] ?? {};
 
+  console.log('stake pool detail', poolInfo);
   const poolDetail = getPoolData(
     tokenSymbol,
     poolInfo,

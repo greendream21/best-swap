@@ -25,6 +25,7 @@ export type PoolDataMap = {
 export type GetPoolDataPayload = {
   assets: string[];
   overrideAllPoolData: boolean;
+  type?: 'simple' | 'full';
 };
 
 export type GetStakerPoolDataPayload = {
@@ -92,7 +93,7 @@ export type GetRTVolumeByAssetPayload = {
 
 export type GetPoolDetailByAssetPayload = {
   asset: string;
-}
+};
 
 export type RTVolumeData = Array<TotalVolChanges>;
 
