@@ -47,7 +47,16 @@ class BasePriceSelector extends React.Component<Props, State> {
 
   renderMenu = () => {
     const { basePriceAsset, pools } = this.props;
-    const selectedKeys = [basePriceAsset];
+    let selectedKeys: string[] = [];
+
+    if (
+      !pools.find(pool => getAssetFromString(pool)?.ticker === basePriceAsset)
+    ) {
+      selectedKeys = ['RUNE'];
+    } else {
+      selectedKeys = [basePriceAsset];
+    }
+
     const menuItems = [];
     pools.forEach(data => {
       const { symbol } = getAssetFromString(data);
@@ -72,13 +81,11 @@ class BasePriceSelector extends React.Component<Props, State> {
         style={style}
         selectedKeys={selectedKeys}
       >
-        {menuItems.map(({ asset, key }) =>
-          (
-            <Menu.Item style={itemStyle} key={key}>
-              <AssetInfo asset={asset} />
-            </Menu.Item>
-          ),
-        )}
+        {menuItems.map(({ asset, key }) => (
+          <Menu.Item style={itemStyle} key={key}>
+            <AssetInfo asset={asset} />
+          </Menu.Item>
+        ))}
       </Menu>
     );
 
