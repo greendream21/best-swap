@@ -210,6 +210,12 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
   }, [walletType]);
 
   const renderModalContent = () => {
+    const modalIcon = (
+      <ModalIcon>
+        <LockOutlined />
+      </ModalIcon>
+    );
+
     if (walletType === 'keystore') {
       return (
         <Form onFinish={handleOK} autoComplete="off">
@@ -224,11 +230,7 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
               sizevalue="big"
               value={password}
               onChange={onChangePasswordHandler}
-              prefix={
-                <ModalIcon>
-                  <LockOutlined />
-                </ModalIcon>
-              }
+              prefix={modalIcon}
               autoComplete="off"
             />
             {invalidPassword && (
