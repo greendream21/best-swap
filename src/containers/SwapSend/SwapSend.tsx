@@ -43,7 +43,11 @@ import {
   FeeParagraph,
   SliderSwapWrapper,
 } from './SwapSend.style';
-import { getTickerFormat, getSymbolPair } from '../../helpers/stringHelper';
+import {
+  getTickerFormat,
+  getSymbolPair,
+  isShortFormatPossible,
+} from '../../helpers/stringHelper';
 import {
   getSwapData,
   confirmSwap,
@@ -760,19 +764,19 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
             <SwapStatusPanel>
               <StepBar size={170} />
               <div className="slip-ratio-labels">
-                {ratio.toFixed(3) === '0.000' ? (
+                {isShortFormatPossible(ratio) ? (
+                  <Label>
+                    {`1 ${swapSource.toUpperCase()} = ${ratio.toFixed(
+                      3,
+                    )} ${swapTarget.toUpperCase()}`}
+                  </Label>
+                ) : (
                   <>
                     <Label>{`1 ${swapSource.toUpperCase()} =`}</Label>
                     <Label>
                       {`${ratio.toFixed(8)} ${swapTarget.toUpperCase()}`}
                     </Label>
                   </>
-                ) : (
-                  <Label>
-                    {`1 ${swapSource.toUpperCase()} = ${ratio.toFixed(
-                      3,
-                    )} ${swapTarget.toUpperCase()}`}
-                  </Label>
                 )}
                 <Label>{slipValue}</Label>
               </div>
