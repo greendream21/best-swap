@@ -53,7 +53,7 @@ const isInMaintenance = () => {
   return false;
 };
 
-const routes = isInMaintenance ? maintenanceRoute : publicRoutes;
+const routes = isInMaintenance() ? maintenanceRoute : publicRoutes;
 
 type Props = {
   history: H.History;
