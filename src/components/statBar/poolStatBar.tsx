@@ -2,10 +2,7 @@ import React, { useCallback } from 'react';
 import { Row, Col } from 'antd';
 
 import { bnOrZero } from '@thorchain/asgardex-util';
-import {
-  baseAmount,
-  formatBaseAsTokenAmount,
-} from '@thorchain/asgardex-token';
+import { baseAmount, formatBaseAsTokenAmount } from '@thorchain/asgardex-token';
 
 import LabelLoader from '../utility/loaders/label';
 import { PoolData } from '../../helpers/utils/types';
@@ -43,16 +40,18 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
   const volume = getUSDValue(`${stats?.volumeAT?.amount() || '0'}`);
   const transaction = `${(Number(poolInfo?.swappingTxCount) || 0) +
     (Number(poolInfo?.stakingTxCount) || 0)}`;
-  const buyTx = `${poolInfo?.buyAssetCount || '0'}`;
-  const sellTx = `${poolInfo?.sellAssetCount || '0'}`;
 
   /** pool earning = poolROI * poolStakedTotal */
   const poolROI = bnOrZero(poolInfo?.poolROI);
   const poolStakedTotal = bnOrZero(poolInfo?.poolStakedTotal);
   const earning = getUSDValue(poolStakedTotal.multipliedBy(poolROI).toString());
 
-  const users = `${stats?.totalStakers || '0'}`;
+  const totalStakers = `${stats?.totalStakers ?? '0'}`;
+  const totalSwaps = `${poolInfo?.swappingTxCount ?? '0'}`;
   const apy = stats?.apy;
+
+  const roiATResult = Number(poolInfo?.poolROI ?? 0);
+  const apr = Number((roiATResult * 100).toFixed(2));
 
   return (
     <>
@@ -99,10 +98,10 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
           xl={{ span: 12 }}
         >
           <StyledStatistic
-            title="Total Users"
+            title="Total Stakers"
             formatter={() => {
               if (loading) return <LabelLoader />;
-              return <span>{users}</span>;
+              return <span>{totalStakers}</span>;
             }}
           />
         </Col>
@@ -114,10 +113,10 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
           xl={{ span: 12 }}
         >
           <StyledStatistic
-            title="Total Transactions"
+            title="Total Swaps"
             formatter={() => {
               if (loading) return <LabelLoader />;
-              return <span>{transaction}</span>;
+              return <span>{totalSwaps}</span>;
             }}
           />
         </Col>
@@ -147,12 +146,11 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
           xl={{ span: 12 }}
         >
           <StyledStatistic
-            title="APY"
+            title="Total Transactions"
             formatter={() => {
               if (loading) return <LabelLoader />;
-              return <span>{apy}</span>;
+              return <span>{transaction}</span>;
             }}
-            suffix={loading ? '' : '%'}
           />
         </Col>
       </Row>
@@ -165,11 +163,12 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
           xl={{ span: 12 }}
         >
           <StyledStatistic
-            title="Buy Tx"
+            title="APY"
             formatter={() => {
               if (loading) return <LabelLoader />;
-              return <span>{buyTx}</span>;
+              return <span>{apy}</span>;
             }}
+            suffix={loading ? '' : '%'}
           />
         </Col>
         <Col
@@ -180,11 +179,12 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
           xl={{ span: 12 }}
         >
           <StyledStatistic
-            title="Sell Tx"
+            title="APR"
             formatter={() => {
               if (loading) return <LabelLoader />;
-              return <span>{sellTx}</span>;
+              return <span>{apr}</span>;
             }}
+            suffix={loading ? '' : '%'}
           />
         </Col>
       </Row>
