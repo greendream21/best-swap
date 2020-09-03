@@ -6,6 +6,7 @@ import DynamicCoin from '../dynamicCoin';
 import { CoinSize } from './types';
 import { Nothing, Maybe } from '../../../../types/bepswap';
 import { coinGroup } from '../../../../settings';
+import { coinIconsFromTrustWallet } from '../coinIcon/iconList';
 
 type Props = {
   type: string;
@@ -23,12 +24,17 @@ const Coin: React.FC<Props> = (props: Props): JSX.Element => {
     ...otherProps
   } = props;
 
-  const isDynamicIcon = useMemo(() => !coinGroup.includes(type.toLowerCase()), [
-    type,
-  ]);
+  const isDynamicIcon = useMemo(
+    () =>
+      !coinGroup.includes(type.toLowerCase()) &&
+      !Object.keys(coinIconsFromTrustWallet).includes(type.toUpperCase()),
+    [type],
+  );
 
   if (over) {
-    const isDynamicIconOver = !coinGroup.includes(over.toLowerCase());
+    const isDynamicIconOver =
+      !coinGroup.includes(over.toLowerCase()) &&
+      !Object.keys(coinIconsFromTrustWallet).includes(type.toUpperCase());
 
     return (
       <CoinsWrapper

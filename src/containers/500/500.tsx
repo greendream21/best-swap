@@ -11,10 +11,7 @@ class Page500 extends Component {
       <AppLayout>
         <Logo name="bepswap" type="long" />
         <Label size="large">Thanks for trying out BEPSwap!</Label>
-        <Label size="big">
-          we've learned a lot and will be relaunching with new changes from
-          community feedback.
-        </Label>
+        <Label size="big">DOWN FOR MAINTENANCE!</Label>
       </AppLayout>
     );
   }
