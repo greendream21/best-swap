@@ -73,7 +73,10 @@ const generateRandomTimeSeries = (
   ) {
     series.push({
       time: itr.unix(),
-      value: (minValue + (random(100) / 100) * (maxValue - minValue)).toString(),
+      value: (
+        minValue +
+        (random(100) / 100) * (maxValue - minValue)
+      ).toString(),
     });
   }
   return series;
@@ -166,6 +169,16 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
     getRTVolumeInfo(tokenSymbol, 0, timeStamp, 'day');
   }, [getRTVolumeInfo, tokenSymbol]);
 
+  const getUSDPrice = (price: number, busdPrice: number) => {
+    const prefix = busdPrice ? '$' : 'ᚱ';
+    const bnValue = busdPrice
+      ? bnOrZero(price)
+          .dividedBy(busdPrice)
+          .toNumber()
+      : price;
+    return `${prefix}${bnValue.toFixed(3)}`;
+  };
+
   const renderDetailCaption = (poolStats: PoolData, viewMode: string) => {
     const swapUrl = `/swap/${RUNE_SYMBOL}:${poolStats.values.symbol}`;
     const stakeUrl = `/stake/${poolStats.values.symbol.toUpperCase()}`;
@@ -173,7 +186,12 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
     const targetName = `${
       poolStats.target
     } (${poolStats.values.symbol.toUpperCase()})`;
-    const poolPrice = `$${poolStats.values.poolPrice}`;
+
+    const poolPriceInRune = bnOrZero(poolInfo?.price).toNumber();
+    const busdPriceInRune = busdToken
+      ? bnOrZero(assets[busdToken]?.priceRune).toNumber()
+      : 0;
+    const poolPrice = getUSDPrice(poolPriceInRune, busdPriceInRune);
 
     return (
       <Col className={`pool-caption-container ${viewMode}`}>
