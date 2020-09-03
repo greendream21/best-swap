@@ -5,12 +5,20 @@ import DynamicCoin from '../dynamicCoin';
 
 import { CoinIconWrapper } from './coinIcon.style';
 import { coinIconGroup } from '../../../icons/coinIcons';
+import { coinIconsFromTrustWallet } from './iconList';
 
 class CoinIcon extends Component {
   renderCoinIcon = () => {
     const { type, size } = this.props;
     const coinIcon = coinIconGroup[type.toLowerCase()] || '';
+    const liveIcon = coinIconsFromTrustWallet[type.toUpperCase()] || '';
 
+    if (liveIcon) {
+      // currently we do load assets for Binance chain only
+      // Note: Trustwallet supports asset names for mainnet only.
+      const imgUrl = `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/assets/${liveIcon}/logo.png`;
+      return <img src={imgUrl} alt={type} />;
+    }
     if (coinIcon) {
       return <img src={coinIcon} alt={type} />;
     }
