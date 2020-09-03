@@ -37,7 +37,7 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
 
   const liquidityValue = getUSDValue(poolInfo?.poolDepth ?? 0);
 
-  const volume = getUSDValue(`${stats?.volumeAT?.amount() || '0'}`);
+  const volume = getUSDValue(poolInfo?.poolVolume ?? 0);
   const transaction = `${(Number(poolInfo?.swappingTxCount) || 0) +
     (Number(poolInfo?.stakingTxCount) || 0)}`;
 
