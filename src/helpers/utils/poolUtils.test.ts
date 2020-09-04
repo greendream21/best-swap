@@ -302,7 +302,7 @@ describe('pool/utils/', () => {
         transaction: baseAmount(0),
         liqFee: baseAmount(0),
         runeStakedTotal: baseAmount(12865427860),
-        apr: 50,
+        roi: 50,
         apy: 39402.27,
         poolROI12: bn(50),
         totalSwaps: 0,
@@ -319,7 +319,7 @@ describe('pool/utils/', () => {
           volume24: '0.00',
           transaction: '0.00',
           liqFee: '0.00',
-          apr: '50% APR',
+          roi: '50% ROI',
           apy: '39402.27% APY',
           runeStakedTotal: '128.65',
           poolPrice: '2.000',
@@ -339,9 +339,11 @@ describe('pool/utils/', () => {
       expect(result.transaction.amount()).toEqual(
         expected.transaction.amount(),
       );
-      expect(result.runeStakedTotal.amount()).toEqual(expected.runeStakedTotal.amount());
+      expect(result.runeStakedTotal.amount()).toEqual(
+        expected.runeStakedTotal.amount(),
+      );
       expect(result.liqFee.amount()).toEqual(expected.liqFee.amount());
-      expect(result.apr).toEqual(expected.apr);
+      expect(result.roi).toEqual(expected.roi);
       expect(result.apy).toEqual(expected.apy);
       expect(result.totalSwaps).toEqual(expected.totalSwaps);
       expect(result.totalStakers).toEqual(expected.totalStakers);
@@ -353,7 +355,7 @@ describe('pool/utils/', () => {
         expected.transaction.amount(),
       );
       expect(result.liqFee.amount()).toEqual(expected.liqFee.amount());
-      expect(result.apr).toEqual(expected.apr);
+      expect(result.roi).toEqual(expected.roi);
       // Unsafe, just to test all props again (in case we might forget to test a new property in the future)
       expect(result.toString()).toEqual(expected.toString());
     });
@@ -371,7 +373,7 @@ describe('pool/utils/', () => {
         transaction: baseAmount(16193),
         liqFee: baseAmount(99800),
         runeStakedTotal: baseAmount(12865427860),
-        apr: 99927.69,
+        roi: 99927.69,
         apy: 78747552.53,
         poolROI12: bn(50),
         totalSwaps: 1,
@@ -388,7 +390,7 @@ describe('pool/utils/', () => {
           volume24: '0.00',
           transaction: '0.00',
           liqFee: '0.00',
-          apr: '99927.69% APR',
+          roi: '99927.69% ROI',
           apy: '78747552.53% APY',
           runeStakedTotal: '128.65',
           poolPrice: '0.000',
@@ -404,8 +406,10 @@ describe('pool/utils/', () => {
         expected.transaction.amount(),
       );
       expect(result.liqFee.amount()).toEqual(expected.liqFee.amount());
-      expect(result.runeStakedTotal.amount()).toEqual(expected.runeStakedTotal.amount());
-      expect(result.apr).toEqual(expected.apr);
+      expect(result.runeStakedTotal.amount()).toEqual(
+        expected.runeStakedTotal.amount(),
+      );
+      expect(result.roi).toEqual(expected.roi);
       expect(result.apy).toEqual(expected.apy);
       expect(result.totalSwaps).toEqual(expected.totalSwaps);
       expect(result.totalStakers).toEqual(expected.totalStakers);
@@ -417,7 +421,7 @@ describe('pool/utils/', () => {
         expected.transaction.amount(),
       );
       expect(result.liqFee.amount()).toEqual(expected.liqFee.amount());
-      expect(result.apr).toEqual(expected.apr);
+      expect(result.roi).toEqual(expected.roi);
       // Unsafe, just to test all props again (in case we might forget to test a new property in the future)
       expect(result.toString()).toEqual(expected.toString());
     });

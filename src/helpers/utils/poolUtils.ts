@@ -185,9 +185,9 @@ export const getPoolData = (
   );
   const transaction = baseAmount(transactionResult);
 
-  // APR (Annual Percent Rate)
+  // ROI (Return To Date)
   const roiATResult = Number(poolDetail?.poolROI ?? 0);
-  const apr = Number((roiATResult * 100).toFixed(2));
+  const roi = Number((roiATResult * 100).toFixed(2));
 
   // APY (Annual Percent Yield)
   // Formula: poolROI / ((now - pool.genesis) / (seconds per day)) * 365
@@ -216,7 +216,7 @@ export const getPoolData = (
   const volume24Value = `${formatBaseAsTokenAmount(volume24)}`;
   const transactionValue = `${formatBaseAsTokenAmount(transaction)}`;
   const liqFeeValue = `${formatBaseAsTokenAmount(liqFee)}`;
-  const aprValue = `${apr}% APR`;
+  const roiValue = `${roi}% ROI`;
   const apyValue = `${apy}% APY`;
 
   return {
@@ -231,7 +231,7 @@ export const getPoolData = (
     volumeAT,
     transaction,
     liqFee,
-    apr,
+    roi,
     apy,
     poolROI12,
     totalSwaps,
@@ -249,7 +249,7 @@ export const getPoolData = (
       volume24: volume24Value,
       transaction: transactionValue,
       liqFee: liqFeeValue,
-      apr: aprValue,
+      roi: roiValue,
       apy: apyValue,
       runeStakedTotal: runeStakedTotalValue,
       poolPrice: poolPriceValue,
