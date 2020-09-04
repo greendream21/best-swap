@@ -749,7 +749,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   const renderStakeInfo = (poolDetail: PoolData) => {
     const loading = isLoading();
 
-    const { depth, volume24, volumeAT, totalStakers, apy, apr } = poolDetail;
+    const { depth, volume24, volumeAT, totalStakers, apy, roi } = poolDetail;
 
     const attrs = [
       {
@@ -778,9 +778,9 @@ const PoolStake: React.FC<Props> = (props: Props) => {
         value: `${apy}% APY`,
       },
       {
-        key: 'apr',
-        title: 'APR',
-        value: `${apr}% APR`,
+        key: 'roi',
+        title: 'ROI',
+        value: `${roi}%`,
       },
     ];
 
