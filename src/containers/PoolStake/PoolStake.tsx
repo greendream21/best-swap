@@ -568,7 +568,8 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       showNotification({
         type: 'error',
         message: 'Stake Invalid',
-        description: 'Funds cap has been reached, You cannot stake.',
+        description:
+          '90% Funds Cap has been reached. You cannot stake right now, come back later.',
       });
       setDragReset(true);
       return;
@@ -1219,7 +1220,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   const poolInfo = poolData[tokenSymbol] || {};
   const assetDetail = assets?.[tokenSymbol] ?? {};
 
-  console.log('stake pool detail', poolInfo);
   const poolDetail = getPoolData(
     tokenSymbol,
     poolInfo,
