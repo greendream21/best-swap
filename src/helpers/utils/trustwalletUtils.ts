@@ -174,16 +174,17 @@ export const withdrawRequestUsingWalletConnect = ({
   percent,
 }: WithdrawRequestParam) => {
   // Minimum amount to send memo on-chain
-  const runeAmount = tokenToBase(tokenAmount(0.00000001))
+  const amount = tokenToBase(tokenAmount(0.00000001))
     .amount()
     .toNumber();
 
   const memo = getWithdrawMemo(symbol, percent * 100);
 
+  // send 0.00000001 amount of BNB
   const coins: CoinData[] = [
     {
-      denom: RUNE,
-      amount: runeAmount,
+      denom: 'BNB',
+      amount,
     },
   ];
 

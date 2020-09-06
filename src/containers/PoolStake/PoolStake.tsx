@@ -1220,7 +1220,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   const poolInfo = poolData[tokenSymbol] || {};
   const assetDetail = assets?.[tokenSymbol] ?? {};
 
-  console.log('stake pool detail', poolInfo);
   const poolDetail = getPoolData(
     tokenSymbol,
     poolInfo,
