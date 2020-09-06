@@ -27,11 +27,11 @@ const useNetwork = () => {
 
   const globalRuneStakeStatus = `${totalStakedValue} / ${maxStakeRuneValue} RUNE Staked`;
 
-  // totalStake / maxStake < 95%
+  // totalStake / maxStake < 90%
   const isValidFundCaps: boolean = totalStakedAmount
     .amount()
     .dividedBy(maxStakeRuneAmount.amount())
-    .isLessThan(0.95);
+    .isLessThan(0.90);
 
   return {
     totalStakedAmount,
