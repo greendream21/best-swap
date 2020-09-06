@@ -561,6 +561,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     // Validata existing wallet
     if (!wallet) {
       setOpenWalletAlert(true);
+      setDragReset(true);
       return;
     }
 
@@ -675,6 +676,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
     if (!wallet) {
       setOpenWalletAlert(true);
+      setDragReset(true);
       return;
     }
 
@@ -688,6 +690,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
         description:
           'Withdraw amount must exceed 1 RUNE to cover network fees.',
       });
+      setDragReset(true);
       return;
     }
 

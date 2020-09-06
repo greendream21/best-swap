@@ -161,9 +161,13 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     if (prevTxStatus?.status === true && txStatus.status === false) {
       user && refreshBalance(user.wallet);
 
+      const assets = [sourceSymbol, targetSymbol].filter(
+        asset => asset !== RUNE_SYMBOL,
+      );
+
       // refresh pool data
       getPoolDataForAsset({
-        assets: [sourceSymbol, targetSymbol],
+        assets,
         overrideAllPoolData: false,
       });
     }
@@ -367,6 +371,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     // Validate existing wallet
     if (!wallet) {
       setOpenWalletAlert(true);
+      setDragReset(true);
       return;
     }
 
