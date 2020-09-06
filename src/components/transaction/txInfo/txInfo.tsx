@@ -108,7 +108,8 @@ const TxInfo: React.FC<Props> = (props: Props): JSX.Element => {
   if (type === TxDetailsTypeEnum.Stake) {
     const inData1 = _in?.coins?.[0];
     const inData2 = _in?.coins?.[1];
-    const inData = inData1 && inData2 ? [inData1, inData2] : [];
+    // eslint-disable-next-line no-nested-ternary
+    const inData = (inData1 && inData2) ? [inData1, inData2] : inData1 ? [inData1] : [];
 
     return (
       <TxInfoWrapper className="txInfo-wrapper stake-tx">

@@ -51,7 +51,7 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
   const apy = stats?.apy;
 
   const roiATResult = Number(poolInfo?.poolROI ?? 0);
-  const apr = Number((roiATResult * 100).toFixed(2));
+  const roi = Number((roiATResult * 100).toFixed(2));
 
   return (
     <>
@@ -179,10 +179,10 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
           xl={{ span: 12 }}
         >
           <StyledStatistic
-            title="APR"
+            title="Return To Date"
             formatter={() => {
               if (loading) return <LabelLoader />;
-              return <span>{apr}</span>;
+              return <span>{roi}</span>;
             }}
             suffix={loading ? '' : '%'}
           />

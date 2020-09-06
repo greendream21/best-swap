@@ -48,8 +48,9 @@ yarn start
 
 ### npm scripts
 
-- `fblogin`: firebase login
-- `start`: run in development mode
+- `start`: start local development app
+- `start-s`: start local development app with SSL allowed
+- `mainnet`: start local development app with mainnet mode
 - `build`: build react project
 - `test`: unit test with jest / enzyme
 - `test:all`: Run entire test suite
@@ -63,6 +64,7 @@ yarn start
 - `lint:watch` : lint watch mode
 - `eject`: eject CRA (not recommended)
 - `generate:types`: Generate TypeScript types and API function calls for Midgards API endpoints
+- `fblogin`: firebase login
 
 Example: `yarn start`
 

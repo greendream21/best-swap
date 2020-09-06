@@ -561,6 +561,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     // Validata existing wallet
     if (!wallet) {
       setOpenWalletAlert(true);
+      setDragReset(true);
       return;
     }
 
@@ -568,7 +569,8 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       showNotification({
         type: 'error',
         message: 'Stake Invalid',
-        description: 'Funds cap has been reached, You cannot stake.',
+        description:
+          '90% Funds Cap has been reached. You cannot stake right now, come back later.',
       });
       setDragReset(true);
       return;
@@ -674,6 +676,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
     if (!wallet) {
       setOpenWalletAlert(true);
+      setDragReset(true);
       return;
     }
 
@@ -687,6 +690,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
         description:
           'Withdraw amount must exceed 1 RUNE to cover network fees.',
       });
+      setDragReset(true);
       return;
     }
 
@@ -749,7 +753,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   const renderStakeInfo = (poolDetail: PoolData) => {
     const loading = isLoading();
 
-    const { depth, volume24, volumeAT, totalStakers, apy, apr } = poolDetail;
+    const { depth, volume24, volumeAT, totalStakers, apy, roi } = poolDetail;
 
     const attrs = [
       {
@@ -778,9 +782,9 @@ const PoolStake: React.FC<Props> = (props: Props) => {
         value: `${apy}% APY`,
       },
       {
-        key: 'apr',
-        title: 'APR',
-        value: `${apr}% APR`,
+        key: 'roi',
+        title: 'Return To Date',
+        value: `${roi}%`,
       },
     ];
 
@@ -1219,7 +1223,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   const poolInfo = poolData[tokenSymbol] || {};
   const assetDetail = assets?.[tokenSymbol] ?? {};
 
-  console.log('stake pool detail', poolInfo);
   const poolDetail = getPoolData(
     tokenSymbol,
     poolInfo,

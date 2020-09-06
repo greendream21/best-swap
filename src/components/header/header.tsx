@@ -133,9 +133,9 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
     ) {
       const transferHash = currentWsTransferEvent?.data?.H;
 
-      if (txType === TxTypes.SWAP) {
+      if (txType === TxTypes.SWAP && transferHash !== hash) {
         const pair: Pair = getSymbolPair(info);
-
+        console.log('currentWsTransferEvent', currentWsTransferEvent);
         if (txStatus.status) {
           const txResultData = getTxResult({
             pair,
@@ -145,15 +145,15 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
 
           if (txResultData) {
             setTxResult({
-              status: true,
               ...txResultData,
+              status: true,
             });
           }
         }
       }
       if (txType === TxTypes.STAKE) {
         if (transferHash === hash) {
-          // Stake TX with same tx hash is detected
+          // stake transfer detected from the binance
           // DO SOMETHING
         }
       }
@@ -173,7 +173,7 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [RD.toNullable(wsTransferEvent), wallet, txResult, txStatus]);
+  }, [RD.toNullable(wsTransferEvent)]);
 
   const handleClickTxProgress = useCallback(() => {
     if (txStatus.type !== undefined) {

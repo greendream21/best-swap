@@ -47,6 +47,11 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
     // if private modal is open
     if (prevVisible === false && visible === true) {
       dispatch(midgardActions.getPoolAddress());
+
+      // if wallet type is ledger, ask users to verify ledger
+      if (walletType === 'ledger') {
+        verifyLedger();
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
@@ -64,16 +69,6 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [poolAddressLoading]);
-
-  useEffect(() => {
-    console.log('DEBUG WALLET TYPE: ', walletType);
-    // ask to verify ledger
-    if (walletType === 'ledger') {
-      verifyLedger();
-    }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [walletType]);
 
   const handleLedgerVerifyFailed = () => {
     console.log('LEDGER DEBUG: VERIFY FAILED');
