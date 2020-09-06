@@ -31,7 +31,7 @@ const useNetwork = () => {
   const isValidFundCaps: boolean = totalStakedAmount
     .amount()
     .dividedBy(maxStakeRuneAmount.amount())
-    .isLessThan(0.90);
+    .isLessThan(0.9);
 
   return {
     totalStakedAmount,
