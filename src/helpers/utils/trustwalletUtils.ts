@@ -93,7 +93,7 @@ export const sendTrustSignedTx = ({
         });
     } else {
       // eslint-disable-next-line prefer-promise-reject-errors
-      reject('Transaction Error');
+      reject(Error('Transaction Error'));
     }
   });
 };
