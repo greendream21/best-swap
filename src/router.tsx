@@ -8,6 +8,7 @@ import en_US from 'antd/es/locale-provider/en_US'; // same as default `locale` o
 
 import asyncComponent from './helpers/AsyncFunc';
 import { RootState } from './redux/store';
+import { isMainnet } from './env';
 
 const maintenanceRoute = [
   {
@@ -40,10 +41,19 @@ const publicRoutes: RouteType[] = [
   },
 ];
 
-const routes =
-  process.env.REACT_APP_WEBSITE_STATUS === 'maintenance'
-    ? maintenanceRoute
-    : publicRoutes;
+const isInMaintenance = () => {
+  if (isMainnet && process.env.REACT_APP_MAINNET_STATUS === 'maintenance') {
+    return true;
+  } else if (
+    !isMainnet &&
+    process.env.REACT_APP_WEBSITE_STATUS === 'maintenance'
+  ) {
+    return true;
+  }
+  return false;
+};
+
+const routes = isInMaintenance() ? maintenanceRoute : publicRoutes;
 
 type Props = {
   history: H.History;

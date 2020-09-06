@@ -69,13 +69,19 @@ export function* refreshStakeData() {
   }: ReturnType<typeof actions.refreshStakeData>) {
     const symbol = payload;
 
-    yield put(midgardActions.getPools());
     yield put(midgardActions.getPoolAddress());
     yield put(walletActions.refreshWallet());
 
     const user = yield select((state: RootState) => state.Wallet.user);
 
     if (user.wallet) {
+      yield put(
+        midgardActions.getPoolData({
+          assets: [symbol],
+          overrideAllPoolData: false,
+          type: 'full',
+        }),
+      );
       yield put(
         midgardActions.getStakerPoolData({
           asset: symbol,

@@ -26,41 +26,45 @@ const LedgerConnector = (props: Props) => {
 
   const ledgerConnect = async () => {
     setConnecting(true);
-    notification.success({
-      message: 'Ledger connecting...',
-      description: 'Please approve on your ledger',
-      getContainer: getAppContainer,
-    });
 
     // use the u2f transport
+    console.log('[+] LEDGER DEBUG: CREATING TRANSPORT');
     const timeout = 50000;
     const transport = await ledger.transports.u2f.create(timeout);
+    console.log('LEDGER DEBUG: CREATING TRANSPORT 2');
     const app = new ledger.app(transport, 100000, 100000);
+    const hdPath = [44, 714, 0, 0, ledgerIndex];
 
+    console.log('[+] LEDGER DEBUG: GETTING VERSION');
     // get version
     try {
       const version = await app.getVersion();
-      console.log('app version', version);
+      console.log('LEDGER DEBUG: APP VERSION: ', version);
     } catch ({ message, statusCode }) {
-      console.error('version error', message, statusCode);
+      console.error('LEDGER DEBUG: VERSION ERROR: ', message, statusCode);
     }
 
-    // we can provide the hd path (app checks first two parts are same as below)
-    const hdPath = [44, 714, 0, 0, ledgerIndex];
-
-    // select which address to use
-    const _ = await app.showAddress(asgardexBncClient.getPrefix(), hdPath); // results
-
+    console.log('[+] LEDGER DEBUG: GETTING PUBLIC KEY');
     // get public key
-    let pk;
-    try {
-      pk = (await app.getPublicKey(hdPath)).pk;
+    const pk =  (await app.getPublicKey(hdPath)).pk;
 
-      // get address from pubkey
-      const address = crypto.getAddressFromPublicKey(
-        pk,
-        asgardexBncClient.getPrefix(),
-      );
+    // get address from pubkey
+    const address = crypto.getAddressFromPublicKey(
+      pk,
+      asgardexBncClient.getPrefix(),
+    );
+
+    notification.info({
+      message: 'Confirm your ledger address',
+      description: address,
+      getContainer: getAppContainer,
+    });
+
+    try {
+          console.log('[+] LEDGER DEBUG: SHOWING ADDRESS');
+      // REQUESTS THE USER TO CONFIRM ADDRESS>
+      const _ = await app.showAddress(asgardexBncClient.getPrefix(), hdPath); // results
+
       setConnecting(false);
 
       props.saveWallet({
@@ -70,6 +74,14 @@ const LedgerConnector = (props: Props) => {
         hdPath,
       });
 
+      notification.success({
+        message: 'Ledger connected!',
+        description: 'Your ledger has successfully connected.',
+        getContainer: getAppContainer,
+        duration: 3,
+      });
+
+
       // redirect to previous page
       history.goBack();
     } catch (err) {
@@ -77,7 +89,7 @@ const LedgerConnector = (props: Props) => {
 
       notification.error({
         message: 'Ledger Error',
-        description: 'public key error',
+        description: 'Transaction was cancelled. Please try again.',
         getContainer: getAppContainer,
       });
       setConnecting(false);

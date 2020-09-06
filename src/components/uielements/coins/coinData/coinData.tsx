@@ -2,7 +2,7 @@ import React from 'react';
 
 import BigNumber from 'bignumber.js';
 import { bn, formatBN } from '@thorchain/asgardex-util';
-import { TokenAmount, formatTokenAmount } from '@thorchain/asgardex-token';
+import { TokenAmount } from '@thorchain/asgardex-token';
 import {
   CoinDataWrapper,
   CoinDataWrapperType,
@@ -10,6 +10,7 @@ import {
 } from './coinData.style';
 import Coin from '../coin';
 import Label from '../../label';
+import { getShortTokenAmount } from '../../../../helpers/stringHelper';
 import { Maybe, Nothing } from '../../../../types/bepswap';
 
 type Props = {
@@ -80,7 +81,7 @@ const CoinData: React.FC<Props> = (props: Props): JSX.Element => {
                 type="normal"
                 weight="600"
               >
-                {formatTokenAmount(assetValue)}
+                {getShortTokenAmount(assetValue)}
               </Label>
             )}
           </div>
@@ -99,7 +100,7 @@ const CoinData: React.FC<Props> = (props: Props): JSX.Element => {
                   type="normal"
                   weight="600"
                 >
-                  {formatTokenAmount(targetValue)}
+                  {getShortTokenAmount(targetValue)}
                 </Label>
               )}
             </div>

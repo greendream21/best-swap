@@ -1,3 +1,5 @@
+import BigNumber from 'bignumber.js';
+import { TokenAmount, formatTokenAmount } from '@thorchain/asgardex-token';
 import { Maybe, Nothing, Pair } from '../types/bepswap';
 
 export const getSymbolPair = (symbolPair?: string): Pair => ({
@@ -23,6 +25,26 @@ export const compareShallowStr = (str1: string, str2: string): boolean => {
   } catch (error) {
     return false;
   }
+};
+
+export const isShortFormatPossible = (
+  amount: BigNumber | number,
+  decimal = 3,
+) => {
+  if (Number(amount.toFixed(decimal)) === 0) return false;
+  return true;
+};
+
+export const getShortAmount = (amount: BigNumber | number, decimal = 3) => {
+  if (isShortFormatPossible(amount, decimal)) return amount.toFixed(decimal);
+  return amount.toFixed(8);
+};
+
+export const getShortTokenAmount = (amount: TokenAmount) => {
+  if (formatTokenAmount(amount) === '0.00') {
+    return formatTokenAmount(amount, 8);
+  }
+  return formatTokenAmount(amount);
 };
 
 export const emptyString = '';
