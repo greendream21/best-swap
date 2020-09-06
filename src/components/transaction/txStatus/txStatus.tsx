@@ -30,6 +30,7 @@ const TxStatus: React.FC<Props> = (props: Props): JSX.Element => {
           const amountValue = formatBaseAsTokenAmount(baseAmount(amount));
 
           return (
+
             <TxStatusContent className="tx-status-content" key={index}>
               <p className="txStatus-amount">{amountValue}</p>
               <p className="txStatus-asset">{assetValue}</p>
