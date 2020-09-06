@@ -272,7 +272,7 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
       showNotification({
         type: 'error',
         message: 'Stake Invalid',
-        description: 'Funds cap has been reached, You cannot stake.',
+        description: '90% Funds Cap has been reached. You cannot stake right now, come back later.',
       });
       setDragReset(true);
       return;
