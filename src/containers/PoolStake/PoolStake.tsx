@@ -779,7 +779,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       },
       {
         key: 'roi',
-        title: 'ROI',
+        title: 'Return To Date',
         value: `${roi}%`,
       },
     ];
