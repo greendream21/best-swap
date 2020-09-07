@@ -18,6 +18,8 @@ import { RootState } from '../store';
 
 import { TxDetailsTypeEnum } from '../../types/generated/midgard';
 
+import { BUSD_SYMBOL } from '../../settings/assetData';
+
 // initial data used for bepswap
 export function* getBEPSwapData() {
   yield takeEvery('GET_BEPSWAP_DATA', function*() {
@@ -27,6 +29,10 @@ export function* getBEPSwapData() {
     yield put(midgardActions.getNetworkInfo());
     yield put(walletActions.refreshWallet());
     yield put(binanceActions.getBinanceData());
+
+    yield take('GET_POOL_ADDRESSES_SUCCESS');
+
+    yield put(midgardActions.setBasePriceAsset(BUSD_SYMBOL));
   });
 }
 
