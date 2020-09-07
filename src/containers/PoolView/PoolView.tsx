@@ -319,6 +319,14 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         sortDirections: ['descend', 'ascend'],
       },
       {
+        key: 'symbol',
+        title: 'symbol',
+        dataIndex: 'pool',
+        render: ({ target }: { target: string }) => <p>{target}</p>,
+        sorter: (a: PoolData, b: PoolData) => a.target.localeCompare(b.target),
+        sortDirections: ['descend', 'ascend'],
+      },
+      {
         key: 'poolprice',
         title: 'pool price',
         dataIndex: ['values', 'poolPrice'],

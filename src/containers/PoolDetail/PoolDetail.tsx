@@ -186,9 +186,9 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
     const swapUrl = `/swap/${RUNE_SYMBOL}:${poolStats.values.symbol}`;
     const stakeUrl = `/stake/${poolStats.values.symbol.toUpperCase()}`;
 
-    const targetName = `${
+    const targetName = `${getTokenName(tokenList, poolStats.target)} (${
       poolStats.target
-    } (${getTokenName(tokenList, poolStats.target)})`;
+    })`;
 
     const poolPriceInRune = bnOrZero(poolInfo?.price).toNumber();
     const busdPriceInRune = busdToken
