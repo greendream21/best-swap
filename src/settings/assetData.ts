@@ -6,6 +6,7 @@ type tokenData = {
 };
 
 export const RUNE_SYMBOL = isMainnet ? 'RUNE-B1A' : 'RUNE-67C';
+export const BUSD_SYMBOL = isMainnet ? 'BUSD-BD1' : 'BUSD-BAF';
 
 export const tokenNames: { [key: string]: tokenData } = {
   BNB: {
