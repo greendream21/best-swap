@@ -70,6 +70,7 @@ type Props = {
   pools: string[];
   poolData: PoolDataMap;
   txData: TxDetailData;
+  refreshTxStatus: boolean;
   stats: StatsData;
   assets: AssetDetailMap;
   priceIndex: PriceDataIndex;
@@ -91,6 +92,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     pools,
     poolData,
     txData,
+    refreshTxStatus,
     stats,
     assets,
     priceIndex,
@@ -110,6 +112,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
   const [poolStatus, selectPoolStatus] = useState<PoolDetailStatusEnum>(
     PoolDetailStatusEnum.Enabled,
   );
+  const [currentTxPage, setCurrentTxPage] = useState<number>(1);
   const history = useHistory();
 
   const themeType = useSelector((state: RootState) => state.App.themeType);
@@ -167,8 +170,12 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
   );
 
   useEffect(() => {
-    getTransactionInfo(0, 10);
-  }, [getTransactionInfo]);
+    if (refreshTxStatus) setCurrentTxPage(1);
+  }, [refreshTxStatus]);
+
+  useEffect(() => {
+    getTransactionInfo((currentTxPage - 1) * 10, 10);
+  }, [currentTxPage, getTransactionInfo]);
 
   useEffect(() => {
     const timeStamp: number = moment().unix();
@@ -206,6 +213,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
 
   const handlePagination = useCallback(
     (page: number) => {
+      setCurrentTxPage(page);
       getTransactionInfo((page - 1) * 10, 10);
     },
     [getTransactionInfo],
@@ -460,7 +468,8 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         </Label>
         <TxTable txData={txData} />
         <StyledPagination
-          defaultCurrent={0}
+          defaultCurrent={1}
+          current={currentTxPage}
           total={txData._tag === 'RemoteSuccess' ? txData.value.count : 0}
           showSizeChanger={false}
           onChange={handlePagination}
@@ -483,6 +492,7 @@ export default compose(
       poolDataLoading: state.Midgard.poolDataLoading,
       priceIndex: state.Midgard.priceIndex,
       txData: state.Midgard.txData,
+      refreshTxStatus: state.Midgard.refreshTxStatus,
       assetData: state.Wallet.assetData,
       user: state.Wallet.user,
       rtVolumeLoading: state.Midgard.rtVolumeLoading,
