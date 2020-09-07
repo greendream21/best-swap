@@ -69,6 +69,7 @@ type Props = {
   pools: string[];
   poolData: PoolDataMap;
   txData: TxDetailData;
+  refreshTxStatus: boolean;
   stats: StatsData;
   assets: AssetDetailMap;
   priceIndex: PriceDataIndex;
@@ -89,6 +90,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     pools,
     poolData,
     txData,
+    refreshTxStatus,
     stats,
     assets,
     priceIndex,
@@ -163,6 +165,10 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     },
     [getRTVolume],
   );
+
+  useEffect(() => {
+    if (refreshTxStatus) setCurrentTxPage(1);
+  }, [refreshTxStatus]);
 
   useEffect(() => {
     getTransactionInfo((currentTxPage - 1) * 10, 10);
@@ -471,6 +477,7 @@ export default compose(
       poolDataLoading: state.Midgard.poolDataLoading,
       priceIndex: state.Midgard.priceIndex,
       txData: state.Midgard.txData,
+      refreshTxStatus: state.Midgard.refreshTxStatus,
       assetData: state.Wallet.assetData,
       user: state.Wallet.user,
       rtVolumeLoading: state.Midgard.rtVolumeLoading,
