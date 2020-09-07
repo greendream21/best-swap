@@ -30,7 +30,7 @@ export function* getBEPSwapData() {
     yield put(walletActions.refreshWallet());
     yield put(binanceActions.getBinanceData());
 
-    yield take('SET_ASSETS');
+    yield take('GET_POOL_ADDRESSES_SUCCESS');
 
     yield put(midgardActions.setBasePriceAsset(BUSD_SYMBOL));
   });
