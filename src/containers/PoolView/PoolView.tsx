@@ -11,6 +11,7 @@ import {
   SwapOutlined,
   DatabaseOutlined,
 } from '@ant-design/icons';
+import { Token } from '@thorchain/asgardex-binance';
 import { bnOrZero } from '@thorchain/asgardex-util';
 import { baseAmount, formatBaseAsTokenAmount } from '@thorchain/asgardex-token';
 import themes, { ThemeType } from '@thorchain/asgardex-theme';
@@ -36,7 +37,7 @@ import {
   getPoolData,
 } from '../../helpers/utils/poolUtils';
 import { PoolData } from '../../helpers/utils/types';
-import { getTickerFormat } from '../../helpers/stringHelper';
+import { getTickerFormat, getTokenName } from '../../helpers/stringHelper';
 
 import * as midgardActions from '../../redux/midgard/actions';
 import { RootState } from '../../redux/store';
@@ -79,6 +80,7 @@ type Props = {
   poolDataLoading: boolean;
   rtVolumeLoading: boolean;
   rtVolume: RTVolumeData;
+  tokenList: Token[];
   getPools: typeof midgardActions.getPools;
   getTransactions: typeof midgardActions.getTransaction;
   getRTVolume: typeof midgardActions.getRTVolumeByAsset;
@@ -99,6 +101,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     poolDataLoading,
     rtVolumeLoading,
     rtVolume,
+    tokenList,
     getPools,
     getTransactions,
     getRTVolume,
@@ -308,6 +311,17 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         key: 'asset',
         title: 'asset',
         dataIndex: 'pool',
+        render: ({ target }: { target: string }) => {
+          const tokenName = getTokenName(tokenList, target);
+          return <p>{tokenName}</p>;
+        },
+        sorter: (a: PoolData, b: PoolData) => a.target.localeCompare(b.target),
+        sortDirections: ['descend', 'ascend'],
+      },
+      {
+        key: 'symbol',
+        title: 'symbol',
+        dataIndex: 'pool',
         render: ({ target }: { target: string }) => <p>{target}</p>,
         sorter: (a: PoolData, b: PoolData) => a.target.localeCompare(b.target),
         sortDirections: ['descend', 'ascend'],
@@ -459,6 +473,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
 export default compose(
   connect(
     (state: RootState) => ({
+      tokenList: state.Binance.tokenList,
       pools: state.Midgard.pools,
       poolData: state.Midgard.poolData,
       stats: state.Midgard.stats,

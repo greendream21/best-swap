@@ -7,6 +7,7 @@ import { Row, Col } from 'antd';
 import { connect, useSelector } from 'react-redux';
 import { get as _get, random } from 'lodash';
 import { withRouter, useParams, Link } from 'react-router-dom';
+import { Token } from '@thorchain/asgardex-binance';
 import themes, { ThemeType } from '@thorchain/asgardex-theme';
 import { baseAmount, formatBaseAsTokenAmount } from '@thorchain/asgardex-token';
 import { bnOrZero } from '@thorchain/asgardex-util';
@@ -44,7 +45,7 @@ import { RUNE_SYMBOL } from '../../settings/assetData';
 import { PoolStatBar } from '../../components/statBar';
 import PoolChart from '../../components/poolChart';
 import TxTable from '../../components/transaction/txTable';
-import { getTickerFormat } from '../../helpers/stringHelper';
+import { getTickerFormat, getTokenName } from '../../helpers/stringHelper';
 
 type Props = {
   history: H.History;
@@ -55,6 +56,7 @@ type Props = {
   priceIndex: PriceDataIndex;
   rtVolumeLoading: boolean;
   rtVolume: RTVolumeData;
+  tokenList: Token[];
   getRTVolume: typeof midgardActions.getRTVolumeByAsset;
   getTxByAsset: typeof midgardActions.getTxByAsset;
   getPoolDetailByAsset: typeof midgardActions.getPoolDetailByAsset;
@@ -91,6 +93,7 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
     priceIndex,
     rtVolumeLoading,
     rtVolume,
+    tokenList,
     getRTVolume,
     getTxByAsset,
     getPoolDetailByAsset,
@@ -183,9 +186,9 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
     const swapUrl = `/swap/${RUNE_SYMBOL}:${poolStats.values.symbol}`;
     const stakeUrl = `/stake/${poolStats.values.symbol.toUpperCase()}`;
 
-    const targetName = `${
+    const targetName = `${getTokenName(tokenList, poolStats.target)} (${
       poolStats.target
-    } (${poolStats.values.symbol.toUpperCase()})`;
+    })`;
 
     const poolPriceInRune = bnOrZero(poolInfo?.price).toNumber();
     const busdPriceInRune = busdToken
@@ -297,6 +300,7 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
 export default compose(
   connect(
     (state: RootState) => ({
+      tokenList: state.Binance.tokenList,
       poolDetailedData: state.Midgard.poolDetailedData,
       poolDetailedDataLoading: state.Midgard.poolDetailedDataLoading,
       assets: state.Midgard.assets,

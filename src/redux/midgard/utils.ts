@@ -1,3 +1,4 @@
+import { Token } from '@thorchain/asgardex-binance';
 import { bn } from '@thorchain/asgardex-util';
 import { RUNE_SYMBOL } from '../../settings/assetData';
 
@@ -120,4 +121,14 @@ export const getAssetFromString = (s?: string): Asset => {
     }
   }
   return { chain, symbol, ticker };
+};
+
+export const getTokenInfo = (
+  tokenList: Token[],
+  assetInfo?: string,
+): Token[] => {
+  const asset = getAssetFromString(assetInfo);
+  const token = tokenList.find(item => item.symbol === asset.symbol);
+
+  return token ? [token] : [];
 };

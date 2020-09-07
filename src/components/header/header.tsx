@@ -51,6 +51,7 @@ import {
   withdrawResult,
   WithdrawResultParams,
 } from '../../helpers/utils/poolUtils';
+import { showTxFinishNotification } from '../../helpers/notificationHelper';
 
 type ConnectedProps = {
   user: Maybe<User>;
@@ -242,9 +243,10 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
     }
   };
 
-  const handleEndTxProgress = useCallback(() => {
+  const handleEndTxProgress = () => {
     setTxTimerStatus(false);
-  }, [setTxTimerStatus]);
+    showTxFinishNotification(txStatus, txResult);
+  };
 
   const handleCloseModal = () => {
     // hide modal
