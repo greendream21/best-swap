@@ -1,4 +1,5 @@
 import BigNumber from 'bignumber.js';
+import { Token } from '@thorchain/asgardex-binance';
 import { TokenAmount, formatTokenAmount } from '@thorchain/asgardex-token';
 import { Maybe, Nothing, Pair } from '../types/bepswap';
 
@@ -45,6 +46,11 @@ export const getShortTokenAmount = (amount: TokenAmount) => {
     return formatTokenAmount(amount, 8);
   }
   return formatTokenAmount(amount);
+};
+
+export const getTokenName = (tokenList: Token[], assetName: string): string => {
+  const token = tokenList.find(item => item.original_symbol === assetName);
+  return token ? token.name.toUpperCase() : assetName.toUpperCase();
 };
 
 export const emptyString = '';
