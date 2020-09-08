@@ -341,8 +341,6 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         render: renderPoolPriceCell,
         sorter: (a: PoolData, b: PoolData) => a.poolPrice.minus(b.poolPrice),
         sortDirections: ['descend', 'ascend'],
-        defaultSortOrder:
-          poolStatus === PoolDetailStatusEnum.Enabled ? 'descend' : undefined,
       },
       {
         key: 'depth',
@@ -352,8 +350,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         sorter: (a: PoolData, b: PoolData) =>
           a.depth.amount().minus(b.depth.amount()),
         sortDirections: ['descend', 'ascend'],
-        defaultSortOrder:
-          poolStatus !== PoolDetailStatusEnum.Enabled ? 'descend' : undefined,
+        defaultSortOrder: 'descend',
       },
       {
         key: 'volume24',
