@@ -5,7 +5,7 @@ import DynamicCoin from '../dynamicCoin';
 
 import { CoinIconWrapper } from './coinIcon.style';
 import { coinIconGroup } from '../../../icons/coinIcons';
-import { coinIconsFromTrustWallet } from './iconList';
+import { coinIconsFromTrustWallet } from '../../../../settings/logoData';
 
 class CoinIcon extends Component {
   renderCoinIcon = () => {
