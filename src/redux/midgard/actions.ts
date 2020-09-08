@@ -99,6 +99,15 @@ export const getTransactionSuccess = (payload: InlineResponse2001) =>
 export const getTransactionFailed = (payload: Error) =>
   ({ type: 'GET_TRANSACTION_FAILED', payload } as const);
 
+export const getTransactionWithRefresh = (payload: GetTransactionPayload) =>
+  ({ type: 'GET_TRANSACTION_WITH_REFRESH', payload } as const);
+
+export const getTransactionWithRefreshSuccess = (payload: InlineResponse2001) =>
+  ({ type: 'GET_TRANSACTION_WITH_REFRESH_SUCCESS', payload } as const);
+
+export const getTransactionWithRefreshFailed = (payload: Error) =>
+  ({ type: 'GET_TRANSACTION_WITH_REFRESH_FAILED', payload } as const);
+
 // get transactions by address
 export const getTxByAddress = (payload: GetTxByAddressPayload) =>
   ({ type: 'GET_TX_BY_ADDRESS', payload } as const);
@@ -194,6 +203,9 @@ export type MidgardActionTypes = ReturnType<
   | typeof getTransaction
   | typeof getTransactionSuccess
   | typeof getTransactionFailed
+  | typeof getTransactionWithRefresh
+  | typeof getTransactionWithRefreshSuccess
+  | typeof getTransactionWithRefreshFailed
   | typeof getTxByAddress
   | typeof getTxByAddressSuccess
   | typeof getTxByAddressFailed

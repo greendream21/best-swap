@@ -658,7 +658,15 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     ? sourcePrice.div(targetPrice)
     : bn(0);
 
-  const disableDrag = !hasSufficientBnbFeeInBalance;
+  const isSourcePoolEnabled =
+    poolData?.[sourceSymbol]?.status === PoolDetailStatusEnum.Enabled;
+  const isTargetPoolEnabled =
+    poolData?.[targetSymbol]?.status === PoolDetailStatusEnum.Enabled;
+
+  const disableDrag =
+    !hasSufficientBnbFeeInBalance ||
+    !isSourcePoolEnabled ||
+    !isTargetPoolEnabled;
 
   const slipValue = slip
     ? `SLIP ${slip.toFormat(2, BigNumber.ROUND_DOWN)}%`

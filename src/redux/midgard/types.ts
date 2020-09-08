@@ -131,6 +131,7 @@ export type State = {
   poolDetailedDataLoading: boolean;
   statsLoading: boolean;
   txData: TxDetailData;
+  refreshTxStatus: boolean;
   rtVolumeLoading: boolean;
   rtVolume: TotalVolChanges[];
   txCurData: Maybe<InlineResponse2001>;

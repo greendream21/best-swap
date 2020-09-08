@@ -70,9 +70,13 @@ export const PoolCaptionPrice = styled.span`
 
 export const PoolCaptionButtonsWrapper = styled.div`
   display: flex;
-  justify-content: space-around;
+  justify-content: flex-end;
   align-items: center;
   width: 250px;
+
+  .btn-wrapper {
+    margin-left: 10px;
+  }
 `;
 
 export const TransactionWrapper = styled.div`
