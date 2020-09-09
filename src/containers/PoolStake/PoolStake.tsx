@@ -63,6 +63,7 @@ import {
   getCalcResult,
   CalcResult,
   getPoolData,
+  isAsymStakeValid,
 } from '../../helpers/utils/poolUtils';
 import { PoolData } from '../../helpers/utils/types';
 import { getTickerFormat } from '../../helpers/stringHelper';
@@ -587,17 +588,32 @@ const PoolStake: React.FC<Props> = (props: Props) => {
         message: 'Stake Invalid',
         description: 'You need to enter an amount to stake.',
       });
-      handleCloseModal();
       setDragReset(true);
       return;
     }
 
-    // Validate BNB amount before stake
-    // if bnb amount is greater than 0 but doesn't have sufficient fee, cancel the stake
+    const isAsymStakeValidUser = isAsymStakeValid();
+
+    if (
+      !isAsymStakeValidUser &&
+      (runeAmount.amount().isLessThanOrEqualTo(0) ||
+        targetAmount.amount().isLessThanOrEqualTo(0))
+    ) {
+      showNotification({
+        type: 'error',
+        message: 'Stake Invalid',
+        description: 'You cannot stake asymmetrically.',
+      });
+      setDragReset(true);
+      return;
+    }
+
     if (
       targetAmount.amount().isGreaterThan(0) &&
       !hasSufficientBnbFee(targetAmount, symbol)
     ) {
+      // Validate BNB amount before stake
+      // if bnb amount is greater than 0 but doesn't have sufficient fee, cancel the stake
       showNotification({
         type: 'error',
         message: 'Invalid BNB amount',
