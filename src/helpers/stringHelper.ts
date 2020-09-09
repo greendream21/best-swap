@@ -49,7 +49,7 @@ export const getShortTokenAmount = (amount: TokenAmount) => {
 };
 
 export const getTokenName = (tokenList: Token[], assetName: string): string => {
-  const token = tokenList.find(item => item.original_symbol === assetName);
+  const token = tokenList.find(item => item.symbol === assetName);
   return token ? token.name.toUpperCase() : assetName.toUpperCase();
 };
 

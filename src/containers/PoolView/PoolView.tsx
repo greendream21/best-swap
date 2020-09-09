@@ -319,8 +319,8 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         key: 'asset',
         title: 'asset',
         dataIndex: 'pool',
-        render: ({ target }: { target: string }) => {
-          const tokenName = getTokenName(tokenList, target);
+        render: (_: {target: string}, record: PoolData) => {
+          const tokenName = getTokenName(tokenList, record.values.symbol);
           return <p>{tokenName}</p>;
         },
         sorter: (a: PoolData, b: PoolData) => a.target.localeCompare(b.target),
