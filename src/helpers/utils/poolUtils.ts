@@ -31,6 +31,10 @@ import { RUNE_SYMBOL } from '../../settings/assetData';
 
 // TODO: Refactor pool utils
 
+export const isAsymStakeValid = () => {
+  return localStorage.getItem('ASYM') === 'true';
+};
+
 export type CalcResult = {
   poolAddress: Maybe<string>;
   ratio: Maybe<BigNumber>;
