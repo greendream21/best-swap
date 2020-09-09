@@ -159,7 +159,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     ShareDetailTabKeys
   >(ShareDetailTabKeys.ADD);
 
-  const [widthdrawPercentage, setWithdrawPercentage] = useState(50);
+  const [widthdrawPercentage, setWithdrawPercentage] = useState(0);
   const [selectRatio, setSelectRatio] = useState<boolean>(true);
   const [runeAmount, setRuneAmount] = useState<TokenAmount>(tokenAmount(0));
   const [targetAmount, setTargetAmount] = useState<TokenAmount>(tokenAmount(0));
@@ -617,7 +617,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   };
 
   const handleConfirmWithdraw = async () => {
-    const withdrawRate = (widthdrawPercentage || 50) / 100;
+    const withdrawRate = widthdrawPercentage / 100;
 
     if (user) {
       const { wallet } = user;
@@ -689,6 +689,16 @@ const PoolStake: React.FC<Props> = (props: Props) => {
         message: 'Invalid amount',
         description:
           'Withdraw amount must exceed 1 RUNE to cover network fees.',
+      });
+      setDragReset(true);
+      return;
+    }
+
+    if (widthdrawPercentage > 10) {
+      showNotification({
+        type: 'error',
+        message: 'Invalid Withdraw Percent',
+        description: 'Withdraw amount must be equal or less than 10 percent.',
       });
       setDragReset(true);
       return;
