@@ -159,7 +159,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     ShareDetailTabKeys
   >(ShareDetailTabKeys.ADD);
 
-  const [widthdrawPercentage, setWithdrawPercentage] = useState(0);
+  const [withdrawPercentage, setWithdrawPercentage] = useState(50);
   const [selectRatio, setSelectRatio] = useState<boolean>(true);
   const [runeAmount, setRuneAmount] = useState<TokenAmount>(tokenAmount(0));
   const [targetAmount, setTargetAmount] = useState<TokenAmount>(tokenAmount(0));
@@ -273,6 +273,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     return poolLoading && stakerPoolDataLoading;
   }, [poolLoading, stakerPoolDataLoading]);
 
+  // TODO: needs to be refactored
   const getData = (): CalcResult => {
     const calcResult = getCalcResult(
       symbol,
@@ -617,7 +618,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   };
 
   const handleConfirmWithdraw = async () => {
-    const withdrawRate = widthdrawPercentage / 100;
+    const withdrawRate = withdrawPercentage / 100;
 
     if (user) {
       const { wallet } = user;
@@ -671,6 +672,21 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     }
   };
 
+  const getWithdrawPoolSharePercent = () => {
+    const poolInfo = poolData?.[symbol];
+    const poolUnits = poolInfo?.poolUnits;
+    const poolUnitsBN = bnOrZero(poolUnits);
+
+    const { stakeUnits }: StakersAssetData = stakersAssetData;
+    const stakeUnitsBN = bnOrZero(stakeUnits);
+
+    const percent = poolUnits
+      ? stakeUnitsBN.div(poolUnitsBN).multipliedBy(withdrawPercentage)
+      : bn(0);
+
+    return percent;
+  };
+
   const handleWithdraw = () => {
     const wallet = user ? user.wallet : null;
 
@@ -694,7 +710,9 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       return;
     }
 
-    if (widthdrawPercentage > 10) {
+    const withdrawPoolSharePercent = getWithdrawPoolSharePercent();
+
+    if (withdrawPoolSharePercent.isGreaterThan(10)) {
       showNotification({
         type: 'error',
         message: 'Invalid Withdraw Percent',
@@ -833,7 +851,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     });
 
     // withdraw values
-    const withdrawRate: number = widthdrawPercentage / 100;
+    const withdrawRate: number = withdrawPercentage / 100;
     const { stakeUnits }: StakersAssetData = stakersAssetData;
 
     const { R, T, poolUnits } = calcResult;
@@ -857,7 +875,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       runeValue: runeBaseAmount,
       tokenValue: tokenBaseAmount,
       tokenPrice,
-      percentage: widthdrawPercentage,
+      percentage: withdrawPercentage,
     };
 
     const disableWithdraw = stakeUnitsBN.isEqualTo(0);
@@ -1029,7 +1047,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
               onChange={(value: SliderValue) => {
                 setWithdrawPercentage(value as number);
               }}
-              value={widthdrawPercentage}
+              value={withdrawPercentage}
               max={100}
               min={0}
             />
