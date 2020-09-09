@@ -579,6 +579,15 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
                   (It will be substructed from your entered BNB value)
                 </Text>
               )}
+              {wallet && bnbAmount && hasSufficientBnbFeeInBalance && (
+                <>
+                  <br />
+                  <Text style={{ paddingTop: '10px' }}>
+                    Note: 0.1 BNB will be left in your wallet for the
+                    transaction fees.
+                  </Text>
+                </>
+              )}
               {wallet && bnbAmount && !hasSufficientBnbFeeInBalance && (
                 <>
                   <br />
@@ -659,8 +668,10 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     : bn(0);
 
   const isSourcePoolEnabled =
+    sourceSymbol === RUNE_SYMBOL ||
     poolData?.[sourceSymbol]?.status === PoolDetailStatusEnum.Enabled;
   const isTargetPoolEnabled =
+    targetSymbol === RUNE_SYMBOL ||
     poolData?.[targetSymbol]?.status === PoolDetailStatusEnum.Enabled;
 
   const disableDrag =
