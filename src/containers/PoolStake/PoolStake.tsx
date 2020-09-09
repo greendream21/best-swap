@@ -479,6 +479,15 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                 {isStakingBNB && (
                   <Text> (It will be substructed from BNB amount)</Text>
                 )}
+                {wallet && bnbAmount && hasSufficientBnbFeeInBalance && (
+                  <>
+                    <br />
+                    <Text style={{ paddingTop: '10px' }}>
+                      Note: 0.1 BNB will be left in your wallet for the
+                      transaction fees.
+                    </Text>
+                  </>
+                )}
                 {wallet && bnbAmount && !hasSufficientBnbFeeInBalance && (
                   <>
                     <br />
@@ -1035,6 +1044,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                   onDrag={handleDrag}
                 />
               </div>
+              {renderFee()}
             </div>
           </TabPane>
           <TabPane
