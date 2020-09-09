@@ -659,8 +659,10 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     : bn(0);
 
   const isSourcePoolEnabled =
+    sourceSymbol === RUNE_SYMBOL ||
     poolData?.[sourceSymbol]?.status === PoolDetailStatusEnum.Enabled;
   const isTargetPoolEnabled =
+    targetSymbol === RUNE_SYMBOL ||
     poolData?.[targetSymbol]?.status === PoolDetailStatusEnum.Enabled;
 
   const disableDrag =
