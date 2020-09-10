@@ -4,12 +4,7 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter, useHistory, useParams } from 'react-router-dom';
 import { Row, Col, Popover } from 'antd';
-import {
-  InboxOutlined,
-  InfoOutlined,
-  LockOutlined,
-  UnlockOutlined,
-} from '@ant-design/icons';
+import { InboxOutlined, InfoOutlined } from '@ant-design/icons';
 import { SliderValue } from 'antd/lib/slider';
 import { get as _get } from 'lodash';
 
@@ -41,7 +36,6 @@ import CoinData from '../../components/uielements/coins/coinData';
 import Slider from '../../components/uielements/slider';
 import Drag from '../../components/uielements/drag';
 import Modal from '../../components/uielements/modal';
-import Button from '../../components/uielements/button';
 import AddWallet from '../../components/uielements/addWallet';
 import PrivateModal from '../../components/modals/privateModal';
 
@@ -52,7 +46,6 @@ import * as walletActions from '../../redux/wallet/actions';
 import {
   ContentWrapper,
   Tabs,
-  PopoverContainer,
   FeeParagraph,
   PopoverContent,
   PopoverIcon,
@@ -76,7 +69,6 @@ import {
   AssetDetailMap,
   StakerPoolData,
   PoolDataMap,
-  PriceDataIndex,
   ThorchainData,
 } from '../../redux/midgard/types';
 import { StakersAssetData } from '../../types/generated/midgard';
@@ -93,6 +85,7 @@ import { CONFIRM_DISMISS_TIME } from '../../settings/constants';
 import usePrevious from '../../hooks/usePrevious';
 import useFee from '../../hooks/useFee';
 import useNetwork from '../../hooks/useNetwork';
+import usePrice from '../../hooks/usePrice';
 
 import { RUNE_SYMBOL } from '../../settings/assetData';
 
@@ -110,8 +103,6 @@ type Props = {
   stakerPoolData: Maybe<StakerPoolData>;
   stakerPoolDataLoading: boolean;
   stakerPoolDataError: Maybe<Error>;
-  priceIndex: PriceDataIndex;
-  basePriceAsset: string;
   poolLoading: boolean;
   thorchainData: ThorchainData;
   getStakerPoolData: typeof midgardActions.getStakerPoolData;
@@ -137,8 +128,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     stakerPoolData,
     stakerPoolDataLoading,
     stakerPoolDataError,
-    priceIndex,
-    basePriceAsset,
     thorchainData,
     txStatus,
     refreshBalance,
@@ -154,14 +143,18 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   const history = useHistory();
   const { symbol = '' } = useParams();
 
+  const { runePrice, priceIndex, pricePrefix } = usePrice();
+
   const { isValidFundCaps } = useNetwork();
+
+  const isAsymStakeValidUser = isAsymStakeValid();
 
   const [selectedShareDetailTab, setSelectedShareDetailTab] = useState<
     ShareDetailTabKeys
   >(ShareDetailTabKeys.ADD);
 
+  const selectRatio = !isAsymStakeValidUser;
   const [withdrawPercentage, setWithdrawPercentage] = useState(50);
-  const [selectRatio, setSelectRatio] = useState<boolean>(true);
   const [runeAmount, setRuneAmount] = useState<TokenAmount>(tokenAmount(0));
   const [targetAmount, setTargetAmount] = useState<TokenAmount>(tokenAmount(0));
   const [runePercent, setRunePercent] = useState<number>(0);
@@ -191,12 +184,8 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     getThresholdAmount,
   } = useFee(feeType);
 
-  // TODO: Create custom usePrice hooks
-  const runePrice = validBNOrZero(priceIndex[RUNE_SYMBOL]);
-
   const tokenSymbol = symbol.toUpperCase();
   const tokenTicker = getTickerFormat(symbol);
-  const basePriceAssetTicker = getTickerFormat(basePriceAsset).toUpperCase();
 
   const emptyStakerPoolData: StakersAssetData = {
     asset: tokenSymbol,
@@ -601,8 +590,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       return;
     }
 
-    const isAsymStakeValidUser = isAsymStakeValid();
-
     if (
       !isAsymStakeValidUser &&
       (runeAmount.amount().isLessThanOrEqualTo(0) ||
@@ -776,12 +763,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     setDragReset(true);
   }, [setOpenWalletAlert, setDragReset]);
 
-  const getPopupContainer = () => {
-    return document.getElementsByClassName(
-      'stake-ratio-select',
-    )[0] as HTMLElement;
-  };
-
   const getCooldownPopupContainer = () => {
     return document.getElementsByClassName(
       'share-detail-wrapper',
@@ -795,13 +776,13 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     </PopoverContent>
   );
 
-  const handleSwitchSelectRatio = () => {
-    // if lock status is switched from unlock to lock, re-calculate the output amount again
-    if (!selectRatio) {
-      handleChangeTokenAmount(RUNE_SYMBOL, true)(runeAmount.amount());
-    }
-    setSelectRatio(!selectRatio);
-  };
+  // const handleSwitchSelectRatio = () => {
+  //   // if lock status is switched from unlock to lock, re-calculate the output amount again
+  //   if (!selectRatio) {
+  //     handleChangeTokenAmount(RUNE_SYMBOL, true)(runeAmount.amount());
+  //   }
+  //   setSelectRatio(!selectRatio);
+  // };
 
   const renderStakeInfo = (poolDetail: PoolData) => {
     const loading = isLoading();
@@ -812,17 +793,17 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       {
         key: 'depth',
         title: 'Depth',
-        value: `${basePriceAssetTicker} ${formatBaseAsTokenAmount(depth)}`,
+        value: `${pricePrefix} ${formatBaseAsTokenAmount(depth)}`,
       },
       {
         key: 'vol24',
         title: '24hr Volume',
-        value: `${basePriceAssetTicker} ${formatBaseAsTokenAmount(volume24)}`,
+        value: `${pricePrefix} ${formatBaseAsTokenAmount(volume24)}`,
       },
       {
         key: 'volAT',
         title: 'All Time Volume',
-        value: `${basePriceAssetTicker} ${formatBaseAsTokenAmount(volumeAT)}`,
+        value: `${pricePrefix} ${formatBaseAsTokenAmount(volumeAT)}`,
       },
       {
         key: 'stakers',
@@ -943,10 +924,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
     const dragText = withdrawDisabled ? '24hr cooldown' : 'drag to withdraw';
 
-    const ratioText = selectRatio
-      ? 'Unlock to set the ratio manually'
-      : 'Lock to set the ratio automatically';
-
     return (
       <div className="share-detail-wrapper">
         <Tabs
@@ -977,7 +954,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                   amount={runeAmount}
                   price={runePrice}
                   priceIndex={priceIndex}
-                  unit={basePriceAssetTicker}
+                  unit={pricePrefix}
                   onChange={handleChangeTokenAmount(RUNE_SYMBOL)}
                 />
                 <Slider
@@ -986,32 +963,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                   withLabel
                   tabIndex="-1"
                 />
-                <PopoverContainer className="stake-ratio-select">
-                  <Popover
-                    content={<PopoverContent>{ratioText}</PopoverContent>}
-                    getPopupContainer={getPopupContainer}
-                    placement="right"
-                    visible
-                    overlayClassName="stake-ratio-select-popover"
-                    overlayStyle={{
-                      padding: '6px',
-                      animationDuration: '0s !important',
-                      animation: 'none !important',
-                    }}
-                  >
-                    <div>
-                      <Button
-                        onClick={handleSwitchSelectRatio}
-                        sizevalue="normal"
-                        typevalue="outline"
-                        focused={selectRatio}
-                        tabIndex={-1}
-                      >
-                        {selectRatio ? <LockOutlined /> : <UnlockOutlined />}
-                      </Button>
-                    </div>
-                  </Popover>
-                </PopoverContainer>
               </div>
               <div className="coin-card-wrapper">
                 <CoinCard
@@ -1025,7 +976,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                   amount={targetAmount}
                   price={tokenPrice}
                   priceIndex={priceIndex}
-                  unit={basePriceAssetTicker}
+                  unit={pricePrefix}
                   onChangeAsset={handleSelectTraget}
                   onChange={handleChangeTokenAmount(tokenSymbol)}
                   withSearch
@@ -1087,13 +1038,13 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                     asset="rune"
                     assetValue={sourceTokenAmount}
                     price={sourcePrice}
-                    priceUnit={basePriceAssetTicker}
+                    priceUnit={pricePrefix}
                   />
                   <CoinData
                     asset={tokenTicker}
                     assetValue={targetTokenAmount}
                     price={targetPrice}
-                    priceUnit={basePriceAssetTicker}
+                    priceUnit={pricePrefix}
                   />
                 </div>
               </div>
@@ -1207,7 +1158,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                       color="gray"
                       loading={loading}
                     >
-                      {`${basePriceAssetTicker} ${runeStakedPrice}`}
+                      {`${pricePrefix} ${runeStakedPrice}`}
                     </Label>
                   </div>
                   <div className="your-share-info">
@@ -1223,7 +1174,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                       color="gray"
                       loading={loading}
                     >
-                      {`${basePriceAssetTicker} ${assetStakedPrice}`}
+                      {`${pricePrefix} ${assetStakedPrice}`}
                     </Label>
                   </div>
                 </div>
@@ -1339,8 +1290,6 @@ export default compose(
       poolAddress: state.Midgard.poolAddress,
       poolData: state.Midgard.poolData,
       assets: state.Midgard.assets,
-      priceIndex: state.Midgard.priceIndex,
-      basePriceAsset: state.Midgard.basePriceAsset,
       poolLoading: state.Midgard.poolLoading,
       stakerPoolData: state.Midgard.stakerPoolData,
       stakerPoolDataLoading: state.Midgard.stakerPoolDataLoading,
