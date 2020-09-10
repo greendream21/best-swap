@@ -7,7 +7,7 @@ import { StyledButton } from './refresh.style';
 
 import * as appActions from '../../redux/app/actions';
 
-import showNotification from '../../components/uielements/notification';
+import showNotification from '../uielements/notification';
 import useInterval from '../../hooks/useInterval';
 
 const Refresh = (): JSX.Element => {
@@ -21,11 +21,6 @@ const Refresh = (): JSX.Element => {
   const REFRESH_INTERVAL = 30 * 60 * 1000; // 30 mins
 
   useInterval(() => {
-    showNotification({
-      type: 'info',
-      message: 'Refreshing Data',
-      description: `Data is reloaded every 30 mins`,
-    });
     handleRefresh();
   }, REFRESH_INTERVAL);
 
