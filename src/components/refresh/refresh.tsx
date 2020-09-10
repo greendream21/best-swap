@@ -7,7 +7,6 @@ import { StyledButton } from './refresh.style';
 
 import * as appActions from '../../redux/app/actions';
 
-import showNotification from '../uielements/notification';
 import useInterval from '../../hooks/useInterval';
 
 const Refresh = (): JSX.Element => {
