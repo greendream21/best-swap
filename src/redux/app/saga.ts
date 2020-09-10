@@ -75,6 +75,7 @@ export function* refreshStakeData() {
     const symbol = payload;
 
     yield put(midgardActions.getPoolAddress());
+    yield put(midgardActions.getNetworkInfo());
     yield put(walletActions.refreshWallet());
 
     const user = yield select((state: RootState) => state.Wallet.user);
