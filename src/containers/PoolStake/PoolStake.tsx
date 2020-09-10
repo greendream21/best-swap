@@ -4,12 +4,7 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter, useHistory, useParams } from 'react-router-dom';
 import { Row, Col, Popover } from 'antd';
-import {
-  InboxOutlined,
-  InfoOutlined,
-  LockOutlined,
-  UnlockOutlined,
-} from '@ant-design/icons';
+import { InboxOutlined, InfoOutlined } from '@ant-design/icons';
 import { SliderValue } from 'antd/lib/slider';
 import { get as _get } from 'lodash';
 
@@ -41,7 +36,6 @@ import CoinData from '../../components/uielements/coins/coinData';
 import Slider from '../../components/uielements/slider';
 import Drag from '../../components/uielements/drag';
 import Modal from '../../components/uielements/modal';
-import Button from '../../components/uielements/button';
 import AddWallet from '../../components/uielements/addWallet';
 import PrivateModal from '../../components/modals/privateModal';
 
@@ -52,7 +46,6 @@ import * as walletActions from '../../redux/wallet/actions';
 import {
   ContentWrapper,
   Tabs,
-  PopoverContainer,
   FeeParagraph,
   PopoverContent,
   PopoverIcon,
@@ -155,13 +148,14 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   const { symbol = '' } = useParams();
 
   const { isValidFundCaps } = useNetwork();
+  const isAsymStakeValidUser = isAsymStakeValid();
 
   const [selectedShareDetailTab, setSelectedShareDetailTab] = useState<
     ShareDetailTabKeys
   >(ShareDetailTabKeys.ADD);
 
+  const selectRatio = !isAsymStakeValidUser;
   const [withdrawPercentage, setWithdrawPercentage] = useState(50);
-  const [selectRatio, setSelectRatio] = useState<boolean>(true);
   const [runeAmount, setRuneAmount] = useState<TokenAmount>(tokenAmount(0));
   const [targetAmount, setTargetAmount] = useState<TokenAmount>(tokenAmount(0));
   const [runePercent, setRunePercent] = useState<number>(0);
@@ -601,8 +595,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       return;
     }
 
-    const isAsymStakeValidUser = isAsymStakeValid();
-
     if (
       !isAsymStakeValidUser &&
       (runeAmount.amount().isLessThanOrEqualTo(0) ||
@@ -776,12 +768,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     setDragReset(true);
   }, [setOpenWalletAlert, setDragReset]);
 
-  const getPopupContainer = () => {
-    return document.getElementsByClassName(
-      'stake-ratio-select',
-    )[0] as HTMLElement;
-  };
-
   const getCooldownPopupContainer = () => {
     return document.getElementsByClassName(
       'share-detail-wrapper',
@@ -795,13 +781,13 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     </PopoverContent>
   );
 
-  const handleSwitchSelectRatio = () => {
-    // if lock status is switched from unlock to lock, re-calculate the output amount again
-    if (!selectRatio) {
-      handleChangeTokenAmount(RUNE_SYMBOL, true)(runeAmount.amount());
-    }
-    setSelectRatio(!selectRatio);
-  };
+  // const handleSwitchSelectRatio = () => {
+  //   // if lock status is switched from unlock to lock, re-calculate the output amount again
+  //   if (!selectRatio) {
+  //     handleChangeTokenAmount(RUNE_SYMBOL, true)(runeAmount.amount());
+  //   }
+  //   setSelectRatio(!selectRatio);
+  // };
 
   const renderStakeInfo = (poolDetail: PoolData) => {
     const loading = isLoading();
@@ -943,10 +929,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
     const dragText = withdrawDisabled ? '24hr cooldown' : 'drag to withdraw';
 
-    const ratioText = selectRatio
-      ? 'Unlock to set the ratio manually'
-      : 'Lock to set the ratio automatically';
-
     return (
       <div className="share-detail-wrapper">
         <Tabs
@@ -986,32 +968,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                   withLabel
                   tabIndex="-1"
                 />
-                <PopoverContainer className="stake-ratio-select">
-                  <Popover
-                    content={<PopoverContent>{ratioText}</PopoverContent>}
-                    getPopupContainer={getPopupContainer}
-                    placement="right"
-                    visible
-                    overlayClassName="stake-ratio-select-popover"
-                    overlayStyle={{
-                      padding: '6px',
-                      animationDuration: '0s !important',
-                      animation: 'none !important',
-                    }}
-                  >
-                    <div>
-                      <Button
-                        onClick={handleSwitchSelectRatio}
-                        sizevalue="normal"
-                        typevalue="outline"
-                        focused={selectRatio}
-                        tabIndex={-1}
-                      >
-                        {selectRatio ? <LockOutlined /> : <UnlockOutlined />}
-                      </Button>
-                    </div>
-                  </Popover>
-                </PopoverContainer>
               </div>
               <div className="coin-card-wrapper">
                 <CoinCard
