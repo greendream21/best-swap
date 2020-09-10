@@ -236,7 +236,7 @@ const renderChart = (
       callbacks: {
         label: ({ yLabel }: { yLabel: number }) => {
           const unit = basePrice === 'RUNE' ? 'ᚱ' : '$';
-          const label = `${unit}${new Intl.NumberFormat().format(yLabel)}`;
+          const label = `${unit}${new Intl.NumberFormat().format(Math.floor(yLabel))}`;
           return label;
         },
       },
