@@ -16,6 +16,9 @@ import { RootState } from '../../redux/store';
 import { RUNE_SYMBOL } from '../../settings/assetData';
 
 const style: React.CSSProperties = {
+  width: '160px',
+  maxHeight: '500px',
+  overflow: 'auto',
   fontWeight: 'bold',
   textTransform: 'uppercase',
   letterSpacing: '1px',
