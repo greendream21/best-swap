@@ -232,6 +232,15 @@ const renderChart = (
     animation: {
       duration: 700,
     },
+    tooltips: {
+      callbacks: {
+        label: ({ yLabel }: { yLabel: number }) => {
+          const unit = basePrice === 'RUNE' ? 'ᚱ' : '$';
+          const label = `${unit}${new Intl.NumberFormat().format(Math.floor(yLabel))}`;
+          return label;
+        },
+      },
+    },
     scales: {
       xAxes: [
         {
