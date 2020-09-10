@@ -9,7 +9,6 @@ import { get as _get, random } from 'lodash';
 import { withRouter, useParams, Link } from 'react-router-dom';
 import { Token } from '@thorchain/asgardex-binance';
 import themes, { ThemeType } from '@thorchain/asgardex-theme';
-import { baseAmount, formatBaseAsTokenAmount } from '@thorchain/asgardex-token';
 import { bnOrZero } from '@thorchain/asgardex-util';
 
 import { SwapOutlined, DatabaseOutlined } from '@ant-design/icons';
@@ -47,6 +46,8 @@ import PoolChart from '../../components/poolChart';
 import TxTable from '../../components/transaction/txTable';
 import { getTickerFormat, getTokenName } from '../../helpers/stringHelper';
 import { PoolDetailStatusEnum } from '../../types/generated/midgard';
+
+import usePrice from '../../hooks/usePrice';
 
 type Props = {
   history: H.History;
@@ -100,6 +101,8 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
     getPoolDetailByAsset,
   } = props;
 
+  const { getUSDPrice, getPriceInUSD } = usePrice();
+
   const { symbol = '' } = useParams();
   const tokenSymbol = symbol.toUpperCase();
   const busdToken = Object.keys(assets).find(
@@ -117,13 +120,9 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
     }
 
     const volumeSeriesData = rtVolume?.map(volume => {
-      const price = busdPrice === 'RUNE' ? 1 : Number(busdPrice);
-      const bnValue = bnOrZero(volume?.totalVolume ?? '0').dividedBy(price);
-      const amount = baseAmount(bnValue);
-
       return {
         time: volume?.time ?? 0,
-        value: formatBaseAsTokenAmount(amount),
+        value: getUSDPrice(bnOrZero(volume?.totalVolume ?? '0')),
       };
     });
 
@@ -132,7 +131,7 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
       volume: volumeSeriesData,
       loading: false,
     };
-  }, [rtVolume, rtVolumeLoading, busdPrice]);
+  }, [rtVolume, rtVolumeLoading, getUSDPrice]);
 
   const getTransactionInfo = useCallback(
     (asset: string, offset: number, limit: number) => {
@@ -173,16 +172,6 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
     getRTVolumeInfo(tokenSymbol, 0, timeStamp, 'day');
   }, [getRTVolumeInfo, tokenSymbol]);
 
-  const getUSDPrice = (price: number, busdPrice: number) => {
-    const prefix = busdPrice ? '$' : 'ᚱ';
-    const bnValue = busdPrice
-      ? bnOrZero(price)
-          .dividedBy(busdPrice)
-          .toNumber()
-      : price;
-    return `${prefix}${bnValue.toFixed(3)}`;
-  };
-
   const renderDetailCaption = (poolStats: PoolData, viewMode: string) => {
     const swapUrl = `/swap/${RUNE_SYMBOL}:${poolStats.values.symbol}`;
     const stakeUrl = `/stake/${poolStats.values.symbol.toUpperCase()}`;
@@ -191,11 +180,7 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
       poolStats.target
     })`;
 
-    const poolPriceInRune = bnOrZero(poolInfo?.price).toNumber();
-    const busdPriceInRune = busdToken
-      ? bnOrZero(assets[busdToken]?.priceRune).toNumber()
-      : 0;
-    const poolPrice = getUSDPrice(poolPriceInRune, busdPriceInRune);
+    const poolPrice = getPriceInUSD(bnOrZero(poolInfo?.price));
     const poolStatus = poolInfo?.status ?? null;
 
     return (
@@ -239,7 +224,6 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
           <PoolStatBar
             stats={poolStats}
             poolInfo={poolInfo}
-            basePrice={busdPrice}
             loading={poolDetailedDataLoading}
           />
         </Col>
@@ -261,11 +245,7 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
       </Row>
       <Row className="detail-info-view mobile-view">
         <Col span={24}>
-          <PoolStatBar
-            stats={poolStats}
-            poolInfo={poolInfo}
-            basePrice={busdPrice}
-          />
+          <PoolStatBar stats={poolStats} poolInfo={poolInfo} />
         </Col>
         <Col span={24}>
           <PoolChart
@@ -277,6 +257,7 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
             gradientStart={isLight ? '#c5d3f0' : '#365979'}
             gradientStop={isLight ? '#ffffff' : '#0f1922'}
             viewMode="mobile-view"
+            basePrice={busdPrice}
           />
         </Col>
       </Row>

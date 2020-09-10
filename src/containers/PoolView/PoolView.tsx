@@ -44,7 +44,6 @@ import { RootState } from '../../redux/store';
 import { AssetData, User } from '../../redux/wallet/types';
 import {
   PoolDataMap,
-  PriceDataIndex,
   AssetDetailMap,
   TxDetailData,
   RTVolumeData,
@@ -64,6 +63,7 @@ import PoolChart from '../../components/poolChart';
 import TxTable from '../../components/transaction/txTable';
 
 import { generateRandomTimeSeries } from './utils';
+import usePrice from '../../hooks/usePrice';
 
 type Props = {
   history: H.History;
@@ -73,7 +73,6 @@ type Props = {
   refreshTxStatus: boolean;
   stats: StatsData;
   assets: AssetDetailMap;
-  priceIndex: PriceDataIndex;
   assetData: AssetData[];
   user: Maybe<User>;
   poolLoading: boolean;
@@ -95,7 +94,6 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     refreshTxStatus,
     stats,
     assets,
-    priceIndex,
     assetData,
     user,
     poolLoading,
@@ -114,6 +112,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
   );
   const [currentTxPage, setCurrentTxPage] = useState<number>(1);
   const history = useHistory();
+  const { pricePrefix, priceIndex } = usePrice();
 
   const themeType = useSelector((state: RootState) => state.App.themeType);
   const isLight = themeType === ThemeType.LIGHT;
@@ -219,18 +218,33 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     [getTransactionInfo],
   );
 
-  const renderCell = (text: string) => {
+  const renderTextCell = (text: string) => {
     if (loading) {
       return <LabelLoader />;
     }
     return <span>{text}</span>;
   };
 
+  const renderCell = (text: string) => {
+    if (loading) {
+      return <LabelLoader />;
+    }
+    return (
+      <span>
+        {pricePrefix} {text}
+      </span>
+    );
+  };
+
   const renderPoolPriceCell = (text: string) => {
     if (assetLoading) {
       return <LabelLoader />;
     }
-    return <span>{text}</span>;
+    return (
+      <span>
+        {pricePrefix} {text}
+      </span>
+    );
   };
 
   const renderPoolTable = (poolViewData: PoolData[], view: ViewType) => {
@@ -319,7 +333,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         key: 'asset',
         title: 'asset',
         dataIndex: 'pool',
-        render: (_: {target: string}, record: PoolData) => {
+        render: (_: { target: string }, record: PoolData) => {
           const tokenName = getTokenName(tokenList, record.values.symbol);
           return <p>{tokenName}</p>;
         },
@@ -365,7 +379,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         key: 'apy',
         title: 'APY',
         dataIndex: ['values', 'apy'],
-        render: renderCell,
+        render: renderTextCell,
         sorter: (a: PoolData, b: PoolData) => Number(a.apy) - Number(b.apy),
         sortDirections: ['descend', 'ascend'],
       },
@@ -487,7 +501,6 @@ export default compose(
       poolLoading: state.Midgard.poolLoading,
       assetLoading: state.Midgard.assetLoading,
       poolDataLoading: state.Midgard.poolDataLoading,
-      priceIndex: state.Midgard.priceIndex,
       txData: state.Midgard.txData,
       refreshTxStatus: state.Midgard.refreshTxStatus,
       assetData: state.Wallet.assetData,

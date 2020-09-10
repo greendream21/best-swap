@@ -69,7 +69,6 @@ import {
   AssetDetailMap,
   StakerPoolData,
   PoolDataMap,
-  PriceDataIndex,
   ThorchainData,
 } from '../../redux/midgard/types';
 import { StakersAssetData } from '../../types/generated/midgard';
@@ -86,6 +85,7 @@ import { CONFIRM_DISMISS_TIME } from '../../settings/constants';
 import usePrevious from '../../hooks/usePrevious';
 import useFee from '../../hooks/useFee';
 import useNetwork from '../../hooks/useNetwork';
+import usePrice from '../../hooks/usePrice';
 
 import { RUNE_SYMBOL } from '../../settings/assetData';
 
@@ -103,8 +103,6 @@ type Props = {
   stakerPoolData: Maybe<StakerPoolData>;
   stakerPoolDataLoading: boolean;
   stakerPoolDataError: Maybe<Error>;
-  priceIndex: PriceDataIndex;
-  basePriceAsset: string;
   poolLoading: boolean;
   thorchainData: ThorchainData;
   getStakerPoolData: typeof midgardActions.getStakerPoolData;
@@ -130,8 +128,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     stakerPoolData,
     stakerPoolDataLoading,
     stakerPoolDataError,
-    priceIndex,
-    basePriceAsset,
     thorchainData,
     txStatus,
     refreshBalance,
@@ -147,7 +143,10 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   const history = useHistory();
   const { symbol = '' } = useParams();
 
+  const { runePrice, priceIndex, pricePrefix } = usePrice();
+
   const { isValidFundCaps } = useNetwork();
+
   const isAsymStakeValidUser = isAsymStakeValid();
 
   const [selectedShareDetailTab, setSelectedShareDetailTab] = useState<
@@ -185,12 +184,8 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     getThresholdAmount,
   } = useFee(feeType);
 
-  // TODO: Create custom usePrice hooks
-  const runePrice = validBNOrZero(priceIndex[RUNE_SYMBOL]);
-
   const tokenSymbol = symbol.toUpperCase();
   const tokenTicker = getTickerFormat(symbol);
-  const basePriceAssetTicker = getTickerFormat(basePriceAsset).toUpperCase();
 
   const emptyStakerPoolData: StakersAssetData = {
     asset: tokenSymbol,
@@ -798,17 +793,17 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       {
         key: 'depth',
         title: 'Depth',
-        value: `${basePriceAssetTicker} ${formatBaseAsTokenAmount(depth)}`,
+        value: `${pricePrefix} ${formatBaseAsTokenAmount(depth)}`,
       },
       {
         key: 'vol24',
         title: '24hr Volume',
-        value: `${basePriceAssetTicker} ${formatBaseAsTokenAmount(volume24)}`,
+        value: `${pricePrefix} ${formatBaseAsTokenAmount(volume24)}`,
       },
       {
         key: 'volAT',
         title: 'All Time Volume',
-        value: `${basePriceAssetTicker} ${formatBaseAsTokenAmount(volumeAT)}`,
+        value: `${pricePrefix} ${formatBaseAsTokenAmount(volumeAT)}`,
       },
       {
         key: 'stakers',
@@ -959,7 +954,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                   amount={runeAmount}
                   price={runePrice}
                   priceIndex={priceIndex}
-                  unit={basePriceAssetTicker}
+                  unit={pricePrefix}
                   onChange={handleChangeTokenAmount(RUNE_SYMBOL)}
                 />
                 <Slider
@@ -981,7 +976,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                   amount={targetAmount}
                   price={tokenPrice}
                   priceIndex={priceIndex}
-                  unit={basePriceAssetTicker}
+                  unit={pricePrefix}
                   onChangeAsset={handleSelectTraget}
                   onChange={handleChangeTokenAmount(tokenSymbol)}
                   withSearch
@@ -1043,13 +1038,13 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                     asset="rune"
                     assetValue={sourceTokenAmount}
                     price={sourcePrice}
-                    priceUnit={basePriceAssetTicker}
+                    priceUnit={pricePrefix}
                   />
                   <CoinData
                     asset={tokenTicker}
                     assetValue={targetTokenAmount}
                     price={targetPrice}
-                    priceUnit={basePriceAssetTicker}
+                    priceUnit={pricePrefix}
                   />
                 </div>
               </div>
@@ -1163,7 +1158,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                       color="gray"
                       loading={loading}
                     >
-                      {`${basePriceAssetTicker} ${runeStakedPrice}`}
+                      {`${pricePrefix} ${runeStakedPrice}`}
                     </Label>
                   </div>
                   <div className="your-share-info">
@@ -1179,7 +1174,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                       color="gray"
                       loading={loading}
                     >
-                      {`${basePriceAssetTicker} ${assetStakedPrice}`}
+                      {`${pricePrefix} ${assetStakedPrice}`}
                     </Label>
                   </div>
                 </div>
@@ -1295,8 +1290,6 @@ export default compose(
       poolAddress: state.Midgard.poolAddress,
       poolData: state.Midgard.poolData,
       assets: state.Midgard.assets,
-      priceIndex: state.Midgard.priceIndex,
-      basePriceAsset: state.Midgard.basePriceAsset,
       poolLoading: state.Midgard.poolLoading,
       stakerPoolData: state.Midgard.stakerPoolData,
       stakerPoolDataLoading: state.Midgard.stakerPoolDataLoading,
