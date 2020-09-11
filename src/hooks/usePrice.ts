@@ -28,6 +28,8 @@ const usePrice = () => {
       ? '$'
       : getTickerFormat(basePriceAsset).toUpperCase();
 
+  const reducedPricePrefix = basePriceAsset === BUSD_SYMBOL ? '$' : '';
+
   const setBasePriceAsset = (symbol: string) => {
     dispatch(midgardActions.setBasePriceAsset(symbol));
   };
@@ -51,6 +53,11 @@ const usePrice = () => {
   // get price amount and prefix
   const getPriceLabel = (value: BigNumber) => {
     return `${pricePrefix} ${getPrice(value)}`;
+  };
+
+  // get price amount and prefix
+  const getReducedPriceLabel = (value: BigNumber) => {
+    return `${reducedPricePrefix}${getPrice(value)}`;
   };
 
   // get usd based price amount and prefix, fall back to rune if busd pool doesnt exist
@@ -83,7 +90,9 @@ const usePrice = () => {
     priceIndex,
     basePriceAsset,
     pricePrefix,
+    reducedPricePrefix,
     getPriceLabel,
+    getReducedPriceLabel,
     getUSDPriceLabel,
     getPrice,
     getUSDPrice,
