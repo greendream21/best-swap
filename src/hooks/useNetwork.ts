@@ -18,7 +18,10 @@ const useNetwork = () => {
   const maxStakeRuneAmount: BaseAmount = baseAmount(
     bnOrZero(mimir?.['mimir//MAXIMUMSTAKERUNE']),
   );
-  const maxStakeRuneValue = `${formatBaseAsTokenAmount(maxStakeRuneAmount)}`;
+  const maxStakeRuneAmountBN = maxStakeRuneAmount.amount();
+  const maxStakeRuneValue = maxStakeRuneAmountBN.isEqualTo(0)
+    ? 'Unlimited'
+    : `${formatBaseAsTokenAmount(maxStakeRuneAmount)}`;
 
   const totalStakedAmount: BaseAmount = baseAmount(
     bnOrZero(networkInfo?.totalStaked),
@@ -27,11 +30,13 @@ const useNetwork = () => {
 
   const globalRuneStakeStatus = `${totalStakedValue} / ${maxStakeRuneValue} RUNE Staked`;
 
-  // totalStake / maxStake < 90%
-  const isValidFundCaps: boolean = totalStakedAmount
-    .amount()
-    .dividedBy(maxStakeRuneAmount.amount())
-    .isLessThan(0.9);
+  // totalStake / maxStake < 90% OR maxStakeRuneAmount is 0
+  const isValidFundCaps: boolean =
+    maxStakeRuneAmountBN.isEqualTo(0) ||
+    totalStakedAmount
+      .amount()
+      .dividedBy(maxStakeRuneAmountBN)
+      .isLessThan(0.9);
 
   return {
     totalStakedAmount,
