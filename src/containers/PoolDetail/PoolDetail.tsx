@@ -101,7 +101,7 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
     getPoolDetailByAsset,
   } = props;
 
-  const { getUSDPrice, getPriceInUSD } = usePrice();
+  const { getUSDPrice, pricePrefix, runePrice } = usePrice();
 
   const { symbol = '' } = useParams();
   const tokenSymbol = symbol.toUpperCase();
@@ -180,7 +180,9 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
       poolStats.target
     })`;
 
-    const poolPrice = getPriceInUSD(bnOrZero(poolInfo?.price));
+    const poolPrice = `${pricePrefix} ${bnOrZero(poolInfo?.price)
+      .multipliedBy(runePrice)
+      .toFixed(3)}`;
     const poolStatus = poolInfo?.status ?? null;
 
     return (
