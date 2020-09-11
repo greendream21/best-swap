@@ -112,7 +112,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
   );
   const [currentTxPage, setCurrentTxPage] = useState<number>(1);
   const history = useHistory();
-  const { pricePrefix, priceIndex } = usePrice();
+  const { reducedPricePrefix, priceIndex } = usePrice();
 
   const themeType = useSelector((state: RootState) => state.App.themeType);
   const isLight = themeType === ThemeType.LIGHT;
@@ -231,7 +231,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     }
     return (
       <span>
-        {pricePrefix} {text}
+        {reducedPricePrefix} {text}
       </span>
     );
   };
@@ -242,7 +242,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     }
     return (
       <span>
-        {pricePrefix} {text}
+        {reducedPricePrefix} {text}
       </span>
     );
   };

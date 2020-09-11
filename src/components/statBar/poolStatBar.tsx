@@ -19,18 +19,18 @@ type Props = {
 const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
   const { stats, poolInfo, loading } = props;
 
-  const { getUSDPriceLabel } = usePrice();
+  const { getReducedPriceLabel } = usePrice();
 
-  const liquidityValue = getUSDPriceLabel(bnOrZero(poolInfo?.poolDepth ?? 0));
+  const liquidityValue = getReducedPriceLabel(bnOrZero(poolInfo?.poolDepth ?? 0));
 
-  const volume = getUSDPriceLabel(bnOrZero(poolInfo?.poolVolume ?? 0));
+  const volume = getReducedPriceLabel(bnOrZero(poolInfo?.poolVolume ?? 0));
   const transaction = `${(Number(poolInfo?.swappingTxCount) || 0) +
     (Number(poolInfo?.stakingTxCount) || 0)}`;
 
   /** pool earning = poolROI * poolStakedTotal */
   const poolROI = bnOrZero(poolInfo?.poolROI);
   const poolStakedTotal = bnOrZero(poolInfo?.poolStakedTotal);
-  const earning = getUSDPriceLabel(poolStakedTotal.multipliedBy(poolROI));
+  const earning = getReducedPriceLabel(poolStakedTotal.multipliedBy(poolROI));
 
   const totalStakers = `${stats?.totalStakers ?? '0'}`;
   const totalSwaps = `${poolInfo?.swappingTxCount ?? '0'}`;
