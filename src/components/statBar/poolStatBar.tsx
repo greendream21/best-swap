@@ -35,7 +35,6 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
 
   const totalStakers = `${stats?.totalStakers ?? '0'}`;
   const totalSwaps = `${poolInfo?.swappingTxCount ?? '0'}`;
-  const apy = stats?.apy;
 
   const roiATResult = Number(poolInfo?.poolROI ?? 0);
   const roi = Number((roiATResult * 100).toFixed(2));
