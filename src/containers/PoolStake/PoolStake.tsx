@@ -787,7 +787,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   const renderStakeInfo = (poolDetail: PoolData) => {
     const loading = isLoading();
 
-    const { depth, volume24, volumeAT, totalStakers, apy, roi } = poolDetail;
+    const { depth, volume24, volumeAT, totalSwaps, totalStakers, roi } = poolDetail;
 
     const attrs = [
       {
@@ -806,14 +806,14 @@ const PoolStake: React.FC<Props> = (props: Props) => {
         value: `${pricePrefix} ${formatBaseAsTokenAmount(volumeAT)}`,
       },
       {
+        key: 'swaps',
+        title: 'Total Swaps',
+        value: totalSwaps.toString(),
+      },
+      {
         key: 'stakers',
         title: 'Total Stakers',
         value: totalStakers.toString(),
-      },
-      {
-        key: 'apy',
-        title: 'APY',
-        value: `${apy}% APY`,
       },
       {
         key: 'roi',

@@ -220,7 +220,7 @@ export const getPoolData = (
   const volume24Value = `${formatBaseAsTokenAmount(volume24)}`;
   const transactionValue = `${formatBaseAsTokenAmount(transaction)}`;
   const liqFeeValue = `${formatBaseAsTokenAmount(liqFee)}`;
-  const roiValue = `${roi}% ROI`;
+  const roiValue = `${roi}%`;
   const apyValue = `${apy}% APY`;
 
   return {
