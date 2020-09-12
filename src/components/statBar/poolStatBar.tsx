@@ -24,6 +24,7 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
   const liquidityValue = getReducedPriceLabel(bnOrZero(poolInfo?.poolDepth ?? 0));
 
   const volume = getReducedPriceLabel(bnOrZero(poolInfo?.poolVolume ?? 0));
+  const volume24 = getReducedPriceLabel(bnOrZero(poolInfo?.poolVolume24hr ?? 0));
   const transaction = `${(Number(poolInfo?.swappingTxCount) || 0) +
     (Number(poolInfo?.stakingTxCount) || 0)}`;
 
@@ -65,10 +66,42 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
           xl={{ span: 12 }}
         >
           <StyledStatistic
+            title="Total Earnings"
+            formatter={() => {
+              if (loading) return <LabelLoader />;
+              return <span>{earning}</span>;
+            }}
+          />
+        </Col>
+      </Row>
+      <Row gutter={[16, 16]}>
+        <Col
+          xs={{ span: 24 }}
+          sm={{ span: 24 }}
+          md={{ span: 12 }}
+          lg={{ span: 12 }}
+          xl={{ span: 12 }}
+        >
+          <StyledStatistic
             title="Total Volume"
             formatter={() => {
               if (loading) return <LabelLoader />;
               return <span>{volume}</span>;
+            }}
+          />
+        </Col>
+        <Col
+          xs={{ span: 24 }}
+          sm={{ span: 24 }}
+          md={{ span: 12 }}
+          lg={{ span: 12 }}
+          xl={{ span: 12 }}
+        >
+          <StyledStatistic
+            title="24H Volume"
+            formatter={() => {
+              if (loading) return <LabelLoader />;
+              return <span>{volume24}</span>;
             }}
           />
         </Col>
@@ -114,44 +147,11 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
           xl={{ span: 12 }}
         >
           <StyledStatistic
-            title="Total Earnings"
-            formatter={() => {
-              if (loading) return <LabelLoader />;
-              return <span>{earning}</span>;
-            }}
-          />
-        </Col>
-        <Col
-          xs={{ span: 24 }}
-          sm={{ span: 24 }}
-          md={{ span: 12 }}
-          lg={{ span: 12 }}
-          xl={{ span: 12 }}
-        >
-          <StyledStatistic
             title="Total Transactions"
             formatter={() => {
               if (loading) return <LabelLoader />;
               return <span>{transaction}</span>;
             }}
-          />
-        </Col>
-      </Row>
-      <Row gutter={[16, 16]}>
-        <Col
-          xs={{ span: 24 }}
-          sm={{ span: 24 }}
-          md={{ span: 12 }}
-          lg={{ span: 12 }}
-          xl={{ span: 12 }}
-        >
-          <StyledStatistic
-            title="APY"
-            formatter={() => {
-              if (loading) return <LabelLoader />;
-              return <span>{apy}</span>;
-            }}
-            suffix={loading ? '' : '%'}
           />
         </Col>
         <Col
