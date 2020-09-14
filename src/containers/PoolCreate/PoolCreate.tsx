@@ -6,6 +6,8 @@ import { withRouter, useHistory, useParams } from 'react-router-dom';
 import { Row, Col, Spin } from 'antd';
 import { get as _get } from 'lodash';
 
+import Text from 'antd/lib/typography/Text';
+
 import BigNumber from 'bignumber.js';
 import { TransferResult } from '@thorchain/asgardex-binance';
 import {
@@ -412,9 +414,16 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
               source="blue"
               target="confirm"
               reset={dragReset}
+              disabled={!isValidFundCaps}
               onConfirm={handleCreatePool}
               onDrag={handleDrag}
             />
+            {!isValidFundCaps && (
+              <Text type="danger" style={{ paddingTop: '10px' }}>
+                90% Funds Cap has been reached. You cannot stake right now, come
+                back later.
+              </Text>
+            )}
           </div>
         </div>
         <PrivateModal
