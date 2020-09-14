@@ -16,3 +16,12 @@ export const abbreviateNumber = (
     suffixNum > 0 ? ` ${suffixes[suffixNum]}` : ''
   }`;
 };
+
+export const abbreviateNumberFromString = (
+  value: string,
+  decimal: number = 2,
+): string => {
+  const num = parseFloat(value.replace(/,/g, ''));
+  console.log('VALUE - ', value, num);
+  return abbreviateNumber(num, decimal);
+};
