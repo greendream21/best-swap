@@ -18,6 +18,7 @@ import {
 import { TokenAmount, tokenAmount } from '@thorchain/asgardex-token';
 import { bncClient } from '../../env';
 
+import Modal from '../../components/uielements/modal';
 import Label from '../../components/uielements/label';
 import Status from '../../components/uielements/status';
 import CoinIcon from '../../components/uielements/coins/coinIcon';
@@ -84,12 +85,16 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
 
   const [dragReset, setDragReset] = useState(true);
   const [openPrivateModal, setOpenPrivateModal] = useState(false);
+  const [openWalletAlert, setOpenWalletAlert] = useState(false);
 
   const [runeAmount, setRuneAmount] = useState<TokenAmount>(tokenAmount(0));
   const [targetAmount, setTargetAmount] = useState<TokenAmount>(tokenAmount(0));
 
   const history = useHistory();
   const { symbol = '' } = useParams();
+
+  const wallet = user ? user.wallet : null;
+  const hasWallet = wallet !== null;
 
   const handleStartTimer = () => {
     resetTxStatus({
@@ -121,6 +126,17 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
     setOpenPrivateModal(false);
     setDragReset(true);
   }, [setOpenPrivateModal, setDragReset]);
+
+  const handleConnectWallet = useCallback(() => {
+    setOpenWalletAlert(false);
+
+    history.push('/connect');
+  }, [setOpenWalletAlert, history]);
+
+  const hideWalletAlert = useCallback(() => {
+    setOpenWalletAlert(false);
+    setDragReset(true);
+  }, [setOpenWalletAlert, setDragReset]);
 
   const handleConfirmTransaction = () => {
     handleConfirmCreate();
@@ -263,8 +279,9 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
   const handleCreatePool = () => {
     const wallet = user ? user.wallet : null;
 
-    // TODO: display wallet alert modal to connect wallet
     if (!wallet) {
+      setOpenWalletAlert(true);
+      setDragReset(true);
       return;
     }
 
@@ -272,7 +289,8 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
       showNotification({
         type: 'error',
         message: 'Stake Invalid',
-        description: '90% Funds Cap has been reached. You cannot stake right now, come back later.',
+        description:
+          '90% Funds Cap has been reached. You cannot stake right now, come back later.',
       });
       setDragReset(true);
       return;
@@ -481,6 +499,17 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
         <Col className="add-asset-view" span={24} lg={16}>
           {renderAssetView()}
         </Col>
+        {!hasWallet && (
+          <Modal
+            title="PLEASE ADD WALLET"
+            visible={openWalletAlert}
+            onOk={handleConnectWallet}
+            onCancel={hideWalletAlert}
+            okText="ADD WALLET"
+          >
+            <Label>Please add a wallet to swap tokens.</Label>
+          </Modal>
+        )}
       </Row>
     </ContentWrapper>
   );

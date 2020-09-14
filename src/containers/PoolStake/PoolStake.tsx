@@ -787,7 +787,14 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   const renderStakeInfo = (poolDetail: PoolData) => {
     const loading = isLoading();
 
-    const { depth, volume24, volumeAT, totalSwaps, totalStakers, roi } = poolDetail;
+    const {
+      depth,
+      volume24,
+      volumeAT,
+      totalSwaps,
+      totalStakers,
+      roi,
+    } = poolDetail;
 
     const attrs = [
       {
@@ -1259,22 +1266,22 @@ const PoolStake: React.FC<Props> = (props: Props) => {
         )}
       </Row>
       {hasWallet && (
-        <>
-          <PrivateModal
-            visible={openPrivateModal}
-            onOk={handleConfirmTransaction}
-            onCancel={handleCancelPrivateModal}
-          />
-          <Modal
-            title="PLEASE ADD WALLET"
-            visible={openWalletAlert}
-            onOk={handleConnectWallet}
-            onCancel={hideWalletAlert}
-            okText="ADD WALLET"
-          >
-            <Label>Please add a wallet to swap tokens.</Label>
-          </Modal>
-        </>
+        <PrivateModal
+          visible={openPrivateModal}
+          onOk={handleConfirmTransaction}
+          onCancel={handleCancelPrivateModal}
+        />
+      )}
+      {!hasWallet && (
+        <Modal
+          title="PLEASE ADD WALLET"
+          visible={openWalletAlert}
+          onOk={handleConnectWallet}
+          onCancel={hideWalletAlert}
+          okText="ADD WALLET"
+        >
+          <Label>Please add a wallet to swap tokens.</Label>
+        </Modal>
       )}
     </ContentWrapper>
   );
