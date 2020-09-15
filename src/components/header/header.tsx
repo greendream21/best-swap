@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from 'react';
 import { useHistory, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import { Alert } from 'antd';
+import { Alert, Grid } from 'antd';
 import { WalletOutlined } from '@ant-design/icons';
 
 import * as RD from '@devexperts/remote-data-ts';
@@ -96,10 +96,11 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
   const history = useHistory();
   const hasBetaConfirmed = getBetaConfirm();
 
-  const { globalRuneStakeStatus } = useNetwork();
+  const { globalRuneStakeStatus, shortGlobalRuneStakeStatus } = useNetwork();
 
   const wallet: Maybe<string> = user ? user.wallet : Nothing;
   const { status, value, startTime, hash, info, type: txType } = txStatus;
+  const isDesktopView = Grid.useBreakpoint()?.lg ?? true;
 
   // when the page loaded first time
   useEffect(() => {
@@ -267,6 +268,111 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
     resetTxStatus();
   };
 
+  const renderHeader = (isDesktopView: boolean) => {
+    if (isDesktopView) {
+      return (
+        <StyledHeader>
+          <LogoWrapper>
+            <Link to="/pools">
+              <Logo name="bepswap" type="long" />
+            </Link>
+            <HeaderSetting midgardBasePath={midgardBasePath} />
+          </LogoWrapper>
+          <HeaderCenterWrapper>
+            <Label weight="bold">{globalRuneStakeStatus}</Label>
+          </HeaderCenterWrapper>
+          <HeaderActionButtons>
+            <ThemeSwitch />
+            <BasePriceSelector />
+            {wallet && (
+              <TxProgress
+                status={status}
+                value={value}
+                maxValue={MAX_VALUE}
+                maxSec={45}
+                startTime={startTime}
+                onClick={handleClickTxProgress}
+                onChange={handleChangeTxProgress}
+                onEnd={handleEndTxProgress}
+              />
+            )}
+            {!wallet && (
+              <Link to="/connect">
+                <WalletButton
+                  data-test="add-wallet-button"
+                  connected={false}
+                  address={wallet}
+                />
+              </Link>
+            )}
+            {wallet && <WalletDrawer />}
+            <Refresh />
+          </HeaderActionButtons>
+          <ConfirmModal
+            txStatus={txStatus}
+            txResult={txResult || {}}
+            onClose={handleCloseModal}
+            onFinish={handleFinishModal}
+          />
+        </StyledHeader>
+      );
+    }
+    return (
+      <>
+        <StyledHeader>
+          <LogoWrapper>
+            <Link to="/pools">
+              <Logo name="bepswap" type="normal" />
+            </Link>
+          </LogoWrapper>
+          <HeaderCenterWrapper>
+            <Label weight="bold">{shortGlobalRuneStakeStatus}</Label>
+          </HeaderCenterWrapper>
+          <HeaderActionButtons>
+            <ThemeSwitch />
+            <BasePriceSelector />
+            {wallet && (
+              <TxProgress
+                status={status}
+                value={value}
+                maxValue={MAX_VALUE}
+                maxSec={45}
+                startTime={startTime}
+                onClick={handleClickTxProgress}
+                onChange={handleChangeTxProgress}
+                onEnd={handleEndTxProgress}
+              />
+            )}
+            {!wallet && (
+              <Link to="/connect">
+                <WalletButton
+                  data-test="add-wallet-button"
+                  connected={false}
+                  address={wallet}
+                />
+              </Link>
+            )}
+            {!wallet && (
+              <Link to="/connect">
+                <div className="wallet-mobile-btn">
+                  <WalletOutlined />
+                </div>
+              </Link>
+            )}
+            {wallet && <WalletDrawer />}
+            <Refresh />
+          </HeaderActionButtons>
+          <ConfirmModal
+            txStatus={txStatus}
+            txResult={txResult || {}}
+            onClose={handleCloseModal}
+            onFinish={handleFinishModal}
+          />
+        </StyledHeader>
+      </>
+    );
+  };
+
   return (
     <>
       {isMainnet && !hasBetaConfirmed && (
@@ -281,57 +387,7 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
           />
         </StyledAlertWrapper>
       )}
-      <StyledHeader>
-        <LogoWrapper>
-          <Link to="/pools">
-            <Logo name="bepswap" type="long" />
-          </Link>
-          <HeaderSetting midgardBasePath={midgardBasePath} />
-        </LogoWrapper>
-        <HeaderCenterWrapper>
-          <Label weight="bold">{globalRuneStakeStatus}</Label>
-        </HeaderCenterWrapper>
-        <HeaderActionButtons>
-          <ThemeSwitch />
-          <BasePriceSelector />
-          {wallet && (
-            <TxProgress
-              status={status}
-              value={value}
-              maxValue={MAX_VALUE}
-              maxSec={45}
-              startTime={startTime}
-              onClick={handleClickTxProgress}
-              onChange={handleChangeTxProgress}
-              onEnd={handleEndTxProgress}
-            />
-          )}
-          {!wallet && (
-            <Link to="/connect">
-              <WalletButton
-                data-test="add-wallet-button"
-                connected={false}
-                address={wallet}
-              />
-            </Link>
-          )}
-          {!wallet && (
-            <Link to="/connect">
-              <div className="wallet-mobile-btn">
-                <WalletOutlined />
-              </div>
-            </Link>
-          )}
-          {wallet && <WalletDrawer />}
-          <Refresh />
-        </HeaderActionButtons>
-        <ConfirmModal
-          txStatus={txStatus}
-          txResult={txResult || {}}
-          onClose={handleCloseModal}
-          onFinish={handleFinishModal}
-        />
-      </StyledHeader>
+      {renderHeader(isDesktopView)}
     </>
   );
 };

@@ -7,6 +7,7 @@ import {
 } from '@thorchain/asgardex-token';
 
 import { RootState } from '../redux/store';
+import { abbreviateNumberFromString } from '../helpers/numberHelper';
 
 const useNetwork = () => {
   const { networkInfo, thorchain: thorchainData } = useSelector(
@@ -22,13 +23,22 @@ const useNetwork = () => {
   const maxStakeRuneValue = maxStakeRuneAmountBN.isEqualTo(0)
     ? 'Unlimited'
     : `${formatBaseAsTokenAmount(maxStakeRuneAmount)}`;
+  const shortMaxStakeRuneValue = maxStakeRuneAmountBN.isEqualTo(0)
+    ? 'Unlimited'
+    : `${abbreviateNumberFromString(
+        formatBaseAsTokenAmount(maxStakeRuneAmount, 2),
+      )}`;
 
   const totalStakedAmount: BaseAmount = baseAmount(
     bnOrZero(networkInfo?.totalStaked),
   );
   const totalStakedValue = `${formatBaseAsTokenAmount(totalStakedAmount)}`;
+  const shortTotalShakedValue = `${abbreviateNumberFromString(
+    formatBaseAsTokenAmount(totalStakedAmount, 2),
+  )}`;
 
   const globalRuneStakeStatus = `${totalStakedValue} / ${maxStakeRuneValue} RUNE Staked`;
+  const shortGlobalRuneStakeStatus = `${shortTotalShakedValue} / ${shortMaxStakeRuneValue} RUNE staked`;
 
   // totalStake / maxStake < 90% OR maxStakeRuneAmount is 0
   const isValidFundCaps: boolean =
@@ -42,6 +52,7 @@ const useNetwork = () => {
     totalStakedAmount,
     maxStakeRuneAmount,
     globalRuneStakeStatus,
+    shortGlobalRuneStakeStatus,
     isValidFundCaps,
   };
 };
