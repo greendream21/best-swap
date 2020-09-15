@@ -14,7 +14,7 @@ export const StyledAlertWrapper = styled.div`
 
 export const StyledHeader = styled.div`
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   position: fixed;
   z-index: 1000;
@@ -24,7 +24,6 @@ export const StyledHeader = styled.div`
   padding: 0 10px;
   ${media.sm`
     padding: 0 20px;
-    justify-content: space-between;
   `}
 
   > *:last-child {
@@ -82,7 +81,7 @@ export const LogoWrapper = styled.div`
   height: 24px;
   margin-right: 4px;
 
-  ${media.sm`
+  ${media.md`
     margin-right: 20px;
     display: flex;
   `}
@@ -111,10 +110,9 @@ export const HeaderTitle = styled.p`
 `;
 
 export const HeaderActionButtons = styled.div`
-  display: block;
+  display: flex;
+  align-items: center;
   ${media.sm`
-    display: flex;
-    align-items: center;
     padding-right: 10px;
   `}
 
@@ -131,10 +129,7 @@ export const HeaderActionButtons = styled.div`
 
   a {
     .wallet-mobile-btn {
-      position: fixed;
-      top: 26px;
-      right: 8px;
-      display: block;
+      margin-right: 8px;
       width: 30px;
       height: 30px;
       min-width: 30px;

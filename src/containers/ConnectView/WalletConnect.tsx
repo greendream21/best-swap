@@ -20,8 +20,14 @@ const WalletConnectPane = (props: Props) => {
   const history = useHistory();
 
   const walletConnect = async () => {
+    const qrcodeModalOptions = {
+      mobileLinks: ['trust'],
+    };
+
     const walletConnector = new WalletConnect({
       bridge: 'https://bridge.walletconnect.org', // Required
+      qrcodeModal: WalletConnectQRCodeModal,
+      qrcodeModalOptions,
     });
 
     walletConnector.killSession();
@@ -33,8 +39,8 @@ const WalletConnectPane = (props: Props) => {
       walletConnector.createSession().then(() => {
         // get uri for QR Code modal
         const uri = walletConnector.uri;
-        // display QR Code modal
-        WalletConnectQRCodeModal.open(uri, () => {});
+        // display QR Code modal OR MobileLink for trustwallet
+        WalletConnectQRCodeModal.open(uri, () => {}, qrcodeModalOptions);
       });
     }
 

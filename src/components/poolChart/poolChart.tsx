@@ -3,6 +3,7 @@ import moment from 'moment';
 import { defaults } from 'react-chartjs-2';
 import Loader from '../utility/loaders/chart';
 import { CodeIcon } from '../icons';
+import { abbreviateNumber } from '../../helpers/numberHelper';
 
 import {
   ChartContainer,
@@ -38,19 +39,6 @@ type Props = {
   backgroundGradientStop: string;
   viewMode: string;
   basePrice?: string;
-};
-
-const abbreviateNumber = (value: number): string => {
-  let newValue = value;
-  const suffixes = ['', 'K', 'M', 'B', 'T'];
-  let suffixNum = 0;
-
-  while (newValue >= 1000) {
-    newValue /= 1000;
-    suffixNum++;
-  }
-
-  return `${newValue}${suffixNum > 0 ? ` ${suffixes[suffixNum]}` : ''}`;
 };
 
 const renderHeader = (
