@@ -28,7 +28,7 @@ const Keystore: React.FC<Props> = (props: Props): JSX.Element => {
   const { saveWallet } = props;
 
   const [keystore, setKeystore] = useState<Maybe<FixmeType>>(Nothing);
-  const [password, setPassword] = useState<Maybe<string>>(Nothing);
+  const [password, setPassword] = useState<string>('');
   const [invalideStatus, setInvalideStatus] = useState(false);
   const [keystoreError, setKeystoreError] = useState<Maybe<string>>(Nothing);
   const [processing, setProcessing] = useState(false);
@@ -87,7 +87,7 @@ const Keystore: React.FC<Props> = (props: Props): JSX.Element => {
       });
 
       // clean up
-      setPassword(Nothing);
+      setPassword('');
       setKeystore(Nothing);
 
       // redirect to previous page

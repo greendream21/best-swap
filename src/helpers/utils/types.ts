@@ -1,5 +1,6 @@
 import BigNumber from 'bignumber.js';
 import { TokenAmount, BaseAmount } from '@thorchain/asgardex-token';
+import { FixmeType, Maybe } from '../../types/bepswap';
 
 export type SwapData = {
   symbolFrom: string;
@@ -50,7 +51,7 @@ export type PoolData = {
   values: PoolDataValues;
 };
 
-export type CoinData = {
-  denom: string;
-  amount: number;
-};
+export type BncResponse = Maybe<{
+  result: FixmeType;
+  status: number;
+}>;

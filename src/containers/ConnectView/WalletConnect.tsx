@@ -3,14 +3,14 @@ import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
 // import { crypto } from '@binance-chain/javascript-sdk';
 import { Row } from 'antd';
-import WalletConnect from '@trustwallet/walletconnect';
+import WalletConnect, { IAccount } from '@trustwallet/walletconnect';
 import WalletConnectQRCodeModal from '@walletconnect/qrcode-modal';
 
 import { ContentWrapper, QRCodeWrapper } from './ConnectView.style';
 
 import * as walletActions from '../../redux/wallet/actions';
 import Label from '../../components/uielements/label';
-import { FixmeType } from '../../types/bepswap';
+import { Maybe } from '../../types/bepswap';
 
 type Props = {
   saveWallet: typeof walletActions.saveWallet;
@@ -59,10 +59,10 @@ const WalletConnectPane = (props: Props) => {
 
       walletConnector
         .getAccounts()
-        .then((result: FixmeType) => {
+        .then((result: IAccount[]) => {
           // Returns the accounts
-          const account: FixmeType = result.find(
-            (account: FixmeType) => account.network === 714,
+          const account: Maybe<IAccount> = result.find(
+            (account: IAccount) => account.network === 714,
           );
           // const address = crypto.decodeAddress(account.address);
           const address = account?.address ?? '';
