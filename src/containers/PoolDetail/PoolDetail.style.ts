@@ -46,7 +46,11 @@ export const ContentWrapper = styled(ContentView)`
 export const PoolCaptionWrapper = styled.div`
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+
+  ${media.sm`
+    justify-content: center;
+  `}
 `;
 
 export const PoolCaptionTitle = styled.span`
@@ -62,17 +66,26 @@ export const PoolCaptionTitle = styled.span`
 export const PoolCaptionPrice = styled.span`
   font-family: 'Exo 2';
   font-weight: normal;
-  font-size: 32px;
+  font-size: 20px;
+  white-space: nowrap;
   text-transform: uppercase;
   letter-spacing: 1.5px;
   color: ${palette('text', 0)};
+  ${media.sm`
+    font-size: 32px;
+  `}
 `;
 
 export const PoolCaptionButtonsWrapper = styled.div`
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  margin-top: 8px;
   width: 250px;
+
+  ${media.sm`
+    margin-top: 0px;
+  `}
 
   .btn-wrapper {
     margin-left: 10px;

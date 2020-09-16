@@ -5,12 +5,13 @@ import {
   tokenToBase,
 } from '@thorchain/asgardex-token';
 import { crypto } from '@binance-chain/javascript-sdk';
+import { Coin, SignedSend } from '@binance-chain/javascript-sdk/lib/types';
 import base64js from 'base64-js';
 
-import { CoinData } from './types';
 import { getSwapMemo, getWithdrawMemo, getStakeMemo } from '../memoHelper';
-import { FixmeType } from '../../types/bepswap';
+import { FixmeType, Maybe } from '../../types/bepswap';
 import { CHAIN_ID } from '../../env';
+import { BncResponse } from './types';
 
 // TODO: implement the exact types and remove all FixmeTypes
 
@@ -21,7 +22,7 @@ type SendTrustSignedTxParams = {
   walletConnect: FixmeType;
   bncClient: FixmeType;
   walletAddress: string;
-  sendOrder: FixmeType;
+  sendOrder: Maybe<SignedSend>;
   memo: string;
 };
 
@@ -51,10 +52,13 @@ export const sendTrustSignedTx = ({
     if (walletConnect && bncClient && sendOrder && walletAddress) {
       bncClient
         .getAccount(walletAddress)
-        .then((response: FixmeType) => {
-          if (!response) reject(Error('binance client getAccount error!'));
+        .then((response: BncResponse) => {
+          if (!response) {
+            reject(Error('binance client getAccount error!'));
+            return;
+          }
 
-          const account = response.result;
+          const account = response?.result;
           console.log('AccountInfo:', account);
           const tx: FixmeType = {
             accountNumber: account.account_number.toString(),
@@ -71,22 +75,22 @@ export const sendTrustSignedTx = ({
               console.log('Successfully signed stake tx msg:', result);
               bncClient
                 .sendRawTransaction(result, true)
-                .then((response: FixmeType) => {
+                .then((response: BncResponse) => {
                   console.log('Response', response);
                   resolve(response);
                 })
-                .catch((error: FixmeType) => {
+                .catch((error: Error) => {
                   console.log('sendRawTransaction error: ', error);
                   reject(error);
                 });
             })
-            .catch((error: FixmeType) => {
+            .catch((error: Error) => {
               console.log('trustSignTransaction error: ', error);
 
               reject(error);
             });
         })
-        .catch((error: FixmeType) => {
+        .catch((error: Error) => {
           console.log('getAccount error: ', error);
 
           reject(error);
@@ -104,7 +108,7 @@ export const sendTrustSignedTx = ({
 export type GetSendOrderMsgParam = {
   fromAddress: string;
   toAddress: string;
-  coins: CoinData[];
+  coins: Coin[];
 };
 
 const getByteArrayFromAddress = (address: string) => {
@@ -114,11 +118,11 @@ const getByteArrayFromAddress = (address: string) => {
 export const getSendOrderMsg = ({
   fromAddress,
   toAddress,
-  coins: coinData,
+  coins: Coin,
 }: GetSendOrderMsgParam) => {
   // 1. sort denoms by alphabet order
   // 2. validate coins with zero amounts
-  const coins: CoinData[] = coinData
+  const coins: Coin[] = Coin
     .sort((a, b) => a.denom.localeCompare(b.denom))
     .filter(data => {
       return data.amount > 0;
@@ -129,7 +133,7 @@ export const getSendOrderMsg = ({
     return null;
   }
 
-  const msg = {
+  const msg: SignedSend = {
     inputs: [
       {
         address: getByteArrayFromAddress(fromAddress),
@@ -181,7 +185,7 @@ export const withdrawRequestUsingWalletConnect = ({
   const memo = getWithdrawMemo(symbol, percent * 100);
 
   // send 0.00000001 amount of BNB
-  const coins: CoinData[] = [
+  const coins: Coin[] = [
     {
       denom: 'BNB',
       amount,

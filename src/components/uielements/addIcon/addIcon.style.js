@@ -12,8 +12,8 @@ export const IconWrapper = styled.div`
 
   span {
     position: relative;
-    top: -6px;
-    left: 4px;
+    top: -7px;
+    left: 5px;
     font-size: 20px;
     &::selection {
       background-color: transparent;
