@@ -57,7 +57,7 @@ export const PoolViewTools = styled.div`
     display: flex;
     align-items: center;
     cursor: pointer;
-    width: 160px;
+    max-width: 160px;
 
     .label-wrapper {
       padding-left: 20px;

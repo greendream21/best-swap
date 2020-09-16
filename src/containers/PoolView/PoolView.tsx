@@ -462,9 +462,11 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         <PoolFilter selected={poolStatus} onClick={selectPoolStatus} />
         <div className="add-new-pool" onClick={handleNewPool}>
           <AddIcon />
-          <Label size="normal" weight="bold" color="normal">
-            ADD NEW POOL
-          </Label>
+          {isDesktopView && (
+            <Label size="normal" weight="bold" color="normal">
+              ADD NEW POOL
+            </Label>
+          )}
         </div>
       </PoolViewTools>
       <div className="pool-list-view desktop-view">
