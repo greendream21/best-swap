@@ -8,10 +8,6 @@ export const WalletDrawerWrapper = styled.div`
   padding: 8px 4px;
 
   .wallet-mobile-btn {
-    position: fixed;
-    top: 26px;
-    right: 8px;
-    display: block;
     width: 30px;
     height: 30px;
     min-width: 30px;
