@@ -1,4 +1,5 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
 // import { crypto } from '@binance-chain/javascript-sdk';
@@ -11,12 +12,14 @@ import { ContentWrapper, QRCodeWrapper } from './ConnectView.style';
 import * as walletActions from '../../redux/wallet/actions';
 import Label from '../../components/uielements/label';
 import { Maybe } from '../../types/bepswap';
+import showNotification from '../../components/uielements/notification';
 
 type Props = {
   saveWallet: typeof walletActions.saveWallet;
 };
 
 const WalletConnectPane = (props: Props) => {
+  const dispatch = useDispatch();
   const history = useHistory();
 
   const walletConnect = async () => {
@@ -100,8 +103,15 @@ const WalletConnectPane = (props: Props) => {
         throw error;
       }
 
-      // Delete walletConnector
-      // props.saveWallet({ type: 'walletconnect', walletConnector: null, wallet: '' });
+      showNotification({
+        type: 'info',
+        message: 'Wallet Disconnected',
+        description: 'Walletconnect is disconnected in your app',
+      });
+
+      // forget wallet and redirect to connect page
+      dispatch(walletActions.forgetWallet());
+      history.push('/connect');
     });
   };
 
