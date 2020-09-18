@@ -1,5 +1,5 @@
 /* eslint-disable no-underscore-dangle */
-import React, { useEffect, useCallback, useMemo } from 'react';
+import React, { useEffect, useCallback, useMemo, useState } from 'react';
 import * as H from 'history';
 import moment from 'moment';
 import { compose } from 'redux';
@@ -59,6 +59,7 @@ type Props = {
   rtVolumeLoading: boolean;
   rtVolume: RTVolumeData;
   tokenList: Token[];
+  refreshTxStatus: boolean;
   getRTVolume: typeof midgardActions.getRTVolumeByAsset;
   getTxByAsset: typeof midgardActions.getTxByAsset;
   getPoolDetailByAsset: typeof midgardActions.getPoolDetailByAsset;
@@ -96,12 +97,14 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
     rtVolumeLoading,
     rtVolume,
     tokenList,
+    refreshTxStatus,
     getRTVolume,
     getTxByAsset,
     getPoolDetailByAsset,
   } = props;
 
   const { getUSDPrice, pricePrefix, runePrice } = usePrice();
+  const [currentTxPage, setCurrentTxPage] = useState<number>(1);
 
   const { symbol = '' } = useParams();
   const tokenSymbol = symbol.toUpperCase();
@@ -154,6 +157,21 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
   useEffect(() => {
     getTransactionInfo(tokenSymbol, 0, 10);
   }, [getTransactionInfo, tokenSymbol]);
+
+  useEffect(() => {
+    if (refreshTxStatus) {
+      setCurrentTxPage(1);
+      getTransactionInfo(tokenSymbol, 0, 10);
+    }
+  }, [getTransactionInfo, tokenSymbol, refreshTxStatus]);
+
+  const handlePagination = useCallback(
+    (page: number) => {
+      setCurrentTxPage(page);
+      getTransactionInfo(tokenSymbol, (page - 1) * 10, 10);
+    },
+    [getTransactionInfo, tokenSymbol],
+  );
 
   const getRTVolumeInfo = useCallback(
     (
@@ -271,12 +289,11 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
           </Label>
           <TxTable txData={txData} />
           <StyledPagination
-            defaultCurrent={0}
+            defaultCurrent={1}
+            current={currentTxPage}
             total={txData._tag === 'RemoteSuccess' ? txData.value.count : 0}
             showSizeChanger={false}
-            onChange={page => {
-              getTransactionInfo(tokenSymbol, (page - 1) * 10, 10);
-            }}
+            onChange={handlePagination}
           />
         </TransactionWrapper>
       </Row>
@@ -290,6 +307,7 @@ export default compose(
       tokenList: state.Binance.tokenList,
       poolDetailedData: state.Midgard.poolDetailedData,
       poolDetailedDataLoading: state.Midgard.poolDetailedDataLoading,
+      refreshTxStatus: state.Midgard.refreshTxStatus,
       assets: state.Midgard.assets,
       priceIndex: state.Midgard.priceIndex,
       txData: state.Midgard.txData,
