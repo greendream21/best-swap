@@ -53,19 +53,17 @@ export const ContentWrapper = styled(ContentView)`
 `;
 
 export const MobileColumeHeader = styled.div`
-  position: relative;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
   height: 100%;
   .mobile-col-title {
     text-align: center;
   }
 
   .mobile-col-filter {
-    display: block;
-    position: absolute;
-    top: 5px;
-    left: 150px;
+    margin-left: 8px;
   }
 `;
 
