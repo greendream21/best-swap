@@ -636,7 +636,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       const { wallet } = user;
 
       try {
-        const percent = withdrawRate * 100;
+        const percent = Number(Number(withdrawRate * 100).toFixed(0));
 
         let response: TransferResult | FixmeType;
 
