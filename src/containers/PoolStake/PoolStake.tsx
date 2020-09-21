@@ -53,9 +53,12 @@ import {
 import {
   stakeRequest,
   withdrawRequest,
+  getCalcResult,
+  CalcResult,
   getPoolData,
   isAsymStakeValid,
 } from '../../helpers/utils/poolUtils';
+import { PoolData } from '../../helpers/utils/types';
 import { getTickerFormat } from '../../helpers/stringHelper';
 import TokenInfo from '../../components/uielements/tokens/tokenInfo';
 import { RootState } from '../../redux/store';
@@ -102,7 +105,6 @@ type Props = {
   stakerPoolDataError: Maybe<Error>;
   poolLoading: boolean;
   thorchainData: ThorchainData;
-  transferFees: TransferFeesRD;
   getStakerPoolData: typeof midgardActions.getStakerPoolData;
   getPoolDataForAsset: typeof midgardActions.getPoolData;
   setTxResult: typeof appActions.setTxResult;
@@ -111,6 +113,7 @@ type Props = {
   resetTxStatus: typeof appActions.resetTxStatus;
   refreshBalance: typeof walletActions.refreshBalance;
   refreshStakes: typeof walletActions.refreshStakes;
+  transferFees: TransferFeesRD;
 };
 
 const PoolStake: React.FC<Props> = (props: Props) => {
@@ -140,34 +143,11 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   const history = useHistory();
   const { symbol = '' } = useParams();
 
-  const tokenSymbol = symbol.toUpperCase();
-  const tokenTicker = getTickerFormat(symbol);
-
   const { runePrice, priceIndex, pricePrefix } = usePrice();
 
   const { isValidFundCaps } = useNetwork();
 
   const isAsymStakeValidUser = isAsymStakeValid();
-
-  // pool details
-  const poolInfo = poolData[tokenSymbol] || {};
-  const assetDetail = assets?.[tokenSymbol] ?? {};
-
-  const R = bnOrZero(poolInfo?.runeDepth);
-  const T = bnOrZero(poolInfo?.assetDepth);
-  const poolUnits = bnOrZero(poolInfo?.poolUnits);
-  // pool ratio -> formula: 1 / (R / T) = T / R
-  const ratio = R.isEqualTo(0) ? 1 : T.div(R);
-
-  const poolDetail = getPoolData(
-    tokenSymbol,
-    poolInfo,
-    assetDetail,
-    priceIndex,
-  );
-
-  const wallet = user ? user.wallet : null;
-  const hasWallet = wallet !== null;
 
   const [selectedShareDetailTab, setSelectedShareDetailTab] = useState<
     ShareDetailTabKeys
@@ -204,6 +184,9 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     getThresholdAmount,
   } = useFee(feeType);
 
+  const tokenSymbol = symbol.toUpperCase();
+  const tokenTicker = getTickerFormat(symbol);
+
   const emptyStakerPoolData: StakersAssetData = {
     asset: tokenSymbol,
     stakeUnits: '0',
@@ -216,7 +199,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
   let withdrawData: Maybe<WithdrawData> = Nothing;
 
-  // get staker pool detail from midgard
   const getStakerPoolDetail = useCallback(() => {
     if (user) {
       getStakerPoolData({ asset: symbol, address: user.wallet });
@@ -281,6 +263,20 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     return poolLoading && stakerPoolDataLoading;
   }, [poolLoading, stakerPoolDataLoading]);
 
+  // TODO: needs to be refactored
+  const getData = (): CalcResult => {
+    const calcResult = getCalcResult(
+      symbol,
+      poolData,
+      poolAddress,
+      runeAmount,
+      runePrice,
+      targetAmount,
+    );
+
+    return calcResult;
+  };
+
   /**
    * Calculate the output amount to stake based on the input amount and locked status
    * @param assetSymbol input asset symbol
@@ -312,6 +308,8 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     }
 
     if (assetSymbol === RUNE_SYMBOL) {
+      const data = getData();
+      const ratio = data?.ratio ?? 1;
       // formula: newValue * ratio
       const tokenValue = valueAsToken.amount().multipliedBy(ratio);
       const tokenAmountBN = tokenValue.isLessThanOrEqualTo(totalTokenAmount)
@@ -327,6 +325,8 @@ const PoolStake: React.FC<Props> = (props: Props) => {
         setTargetAmount(tokenAmount(tokenAmountBN));
       }
     } else if (assetSymbol !== RUNE_SYMBOL) {
+      const data = getData();
+      const ratio = data?.ratio ?? 1;
       // formula: newValue / ratio
       const tokenValue = valueAsToken.amount().dividedBy(ratio);
 
@@ -355,6 +355,8 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     const value = totalAmount.multipliedBy(amount).div(100);
 
     if (tokenSymbol === RUNE_SYMBOL) {
+      const data = getData();
+      const ratio = data?.ratio ?? 1;
       // formula: value * ratio);
       const tokenValue = value.multipliedBy(ratio);
       const tokenAmountBN = tokenValue.isLessThanOrEqualTo(totalTokenAmount)
@@ -497,6 +499,8 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     if (user) {
       const { wallet } = user;
 
+      const data = getData();
+
       try {
         let response: TransferResult | FixmeType;
 
@@ -507,8 +511,8 @@ const PoolStake: React.FC<Props> = (props: Props) => {
             walletAddress: user.wallet,
             runeAmount,
             assetAmount: targetAmount,
-            poolAddress: poolAddress || '',
-            symbol,
+            poolAddress: data.poolAddress || '',
+            symbol: data.symbolTo || '',
           });
         } else {
           response = await stakeRequest({
@@ -516,8 +520,8 @@ const PoolStake: React.FC<Props> = (props: Props) => {
             wallet,
             runeAmount,
             tokenAmount: targetAmount,
-            poolAddress,
-            symbolTo: symbol,
+            poolAddress: data.poolAddress,
+            symbolTo: data.symbolTo,
           });
         }
 
@@ -772,7 +776,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     </PopoverContent>
   );
 
-  // TODO: disabled the asym stake for temp
   // const handleSwitchSelectRatio = () => {
   //   // if lock status is switched from unlock to lock, re-calculate the output amount again
   //   if (!selectRatio) {
@@ -781,7 +784,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   //   setSelectRatio(!selectRatio);
   // };
 
-  const renderStakeInfo = () => {
+  const renderStakeInfo = (poolDetail: PoolData) => {
     const loading = isLoading();
 
     const {
@@ -843,7 +846,11 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     });
   };
 
-  const renderShareDetail = () => {
+  const renderShareDetail = (
+    _: PoolData,
+    stakersAssetData: StakersAssetData,
+    calcResult: CalcResult,
+  ) => {
     const tokenPrice = validBNOrZero(priceIndex[tokenSymbol]);
 
     const tokensData: AssetPair[] = Object.keys(assets).map(tokenName => {
@@ -859,6 +866,8 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     // withdraw values
     const withdrawRate: number = withdrawPercentage / 100;
     const { stakeUnits }: StakersAssetData = stakersAssetData;
+
+    const { R, T, poolUnits } = calcResult;
 
     const stakeUnitsBN = bnOrZero(stakeUnits);
 
@@ -1092,7 +1101,15 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     );
   };
 
-  const renderYourShare = () => {
+  const renderYourShare = (
+    calcResult: CalcResult,
+    stakersAssetData: StakersAssetData,
+  ) => {
+    const wallet = user ? user.wallet : null;
+    const hasWallet = wallet !== null;
+
+    const { R, T, poolUnits } = calcResult;
+
     const assetPrice = validBNOrZero(priceIndex[tokenSymbol]);
 
     const { stakeUnits }: StakersAssetData = stakersAssetData;
@@ -1219,11 +1236,24 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     );
   };
 
+  const wallet = user ? user.wallet : null;
+  const hasWallet = wallet !== null;
+  const poolInfo = poolData[tokenSymbol] || {};
+  const assetDetail = assets?.[tokenSymbol] ?? {};
+
+  const poolDetail = getPoolData(
+    tokenSymbol,
+    poolInfo,
+    assetDetail,
+    priceIndex,
+  );
+  const calcResult = getData();
+
   const yourShareSpan = hasWallet ? 8 : 24;
 
   return (
     <ContentWrapper className="pool-stake-wrapper" transparent>
-      <Row className="stake-info-view">{renderStakeInfo()}</Row>
+      <Row className="stake-info-view">{renderStakeInfo(poolDetail)}</Row>
       <Row className="share-view">
         {!stakersAssetData && stakerPoolDataError && (
           <Col className="your-share-view" md={24}>
@@ -1232,12 +1262,12 @@ const PoolStake: React.FC<Props> = (props: Props) => {
         )}
         {stakersAssetData && (
           <Col className="your-share-view" span={24} lg={yourShareSpan}>
-            {renderYourShare()}
+            {renderYourShare(calcResult, stakersAssetData)}
           </Col>
         )}
         {stakersAssetData && hasWallet && (
           <Col className="share-detail-view" span={24} lg={16}>
-            {renderShareDetail()}
+            {renderShareDetail(poolDetail, stakersAssetData, calcResult)}
           </Col>
         )}
       </Row>

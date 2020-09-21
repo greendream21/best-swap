@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js';
 import {
   Address,
   TransferResult,
@@ -6,23 +7,25 @@ import {
 } from '@thorchain/asgardex-binance';
 import {
   bn,
+  fixedBN,
   bnOrZero,
   validBNOrZero,
   isValidBN,
 } from '@thorchain/asgardex-util';
 import {
   TokenAmount,
+  tokenToBase,
   baseAmount,
   formatBaseAsTokenAmount,
 } from '@thorchain/asgardex-token';
 import { AssetDetail } from '../../types/generated/midgard/api';
 import { getStakeMemo, getWithdrawMemo } from '../memoHelper';
 import { getTickerFormat } from '../stringHelper';
-import { PriceDataIndex } from '../../redux/midgard/types';
+import { PoolDataMap, PriceDataIndex } from '../../redux/midgard/types';
 import { PoolDetail } from '../../types/generated/midgard';
 import { getAssetFromString } from '../../redux/midgard/utils';
 import { AssetData } from '../../redux/wallet/types';
-import { FixmeType, Maybe } from '../../types/bepswap';
+import { FixmeType, Maybe, Nothing } from '../../types/bepswap';
 import { PoolData } from './types';
 import { RUNE_SYMBOL } from '../../settings/assetData';
 
@@ -30,6 +33,101 @@ import { RUNE_SYMBOL } from '../../settings/assetData';
 
 export const isAsymStakeValid = () => {
   return localStorage.getItem('ASYM') === 'true';
+};
+
+export type CalcResult = {
+  poolAddress: Maybe<string>;
+  ratio: Maybe<BigNumber>;
+  symbolTo: Maybe<string>;
+  poolUnits: Maybe<BigNumber>;
+  poolPrice: BigNumber;
+  newPrice: BigNumber;
+  newDepth: BigNumber;
+  share: BigNumber;
+  Pr: BigNumber;
+  R: BigNumber;
+  T: BigNumber;
+};
+
+export const getCalcResult = (
+  tokenName: string,
+  pools: PoolDataMap,
+  poolAddress: Maybe<string>,
+  rValue: TokenAmount,
+  runePrice: BigNumber,
+  tValue: TokenAmount,
+): CalcResult => {
+  let R = bn(10000);
+  let T = bn(10);
+  let ratio: Maybe<BigNumber> = Nothing;
+  let symbolTo: Maybe<string> = Nothing;
+  let poolUnits: Maybe<BigNumber> = Nothing;
+
+  Object.keys(pools).forEach(key => {
+    const poolDetail: PoolDetail = pools[key];
+    const {
+      runeDepth,
+      assetDepth,
+      poolUnits: poolDataUnits,
+      asset = '',
+    } = poolDetail;
+
+    const { symbol } = getAssetFromString(asset);
+
+    if (symbol && symbol.toLowerCase() === tokenName.toLowerCase()) {
+      R = bn(runeDepth || 0);
+      T = bn(assetDepth || 0);
+      // formula: 1 / (R / T)
+      const a = R.div(T);
+      // Ratio does need more than 2 decimal places
+      ratio = bn(1).div(a);
+      symbolTo = symbol;
+      poolUnits = bn(poolDataUnits || 0);
+    }
+  });
+
+  const rBase = tokenToBase(rValue);
+  const r = rBase.amount();
+  const tBase = tokenToBase(tValue);
+  const t = tBase.amount();
+
+  // formula: (R / T) * runePrice
+  const poolPrice = fixedBN(R.div(T).multipliedBy(runePrice));
+  // formula: (runePrice * (r + R)) / (t + T)
+  const a = r.plus(R).multipliedBy(runePrice);
+  const aa = t.plus(T);
+  const newPrice = fixedBN(a.dividedBy(aa));
+  // formula: runePrice * (1 + (r / R + t / T) / 2) * R
+  const b = r.dividedBy(R); // r / R
+  const bb = t.dividedBy(T); // t / T
+  const bbb = b.plus(bb); // (r / R + t / T)
+  const bbbb = bbb.dividedBy(2).plus(1); // (1 + (r / R + t / T) / 2)
+  const newDepth = fixedBN(runePrice.multipliedBy(bbbb).multipliedBy(R));
+  // formula: ((r / (r + R) + t / (t + T)) / 2) * 100
+  const c = r.plus(R); // (r + R)
+  const cc = t.plus(T); // (t + T)
+  const ccc = r.dividedBy(c); // r / (r + R)
+  const cccc = t.dividedBy(cc); // (t / (t + T))
+  const share = fixedBN(
+    ccc
+      .plus(cccc)
+      .div(2)
+      .multipliedBy(100),
+  );
+
+  return {
+    poolAddress,
+    ratio,
+    symbolTo,
+    poolUnits,
+    poolPrice,
+    newPrice,
+    newDepth,
+    share,
+    Pr: runePrice,
+    R,
+    T,
+  };
 };
 
 export const getAvailableTokensToCreate = (
