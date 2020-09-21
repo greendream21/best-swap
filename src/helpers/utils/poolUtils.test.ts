@@ -11,8 +11,6 @@ import {
   withdrawResult,
   getAvailableTokensToCreate,
   getPoolData,
-  getCalcResult,
-  CalcResult,
 } from './poolUtils';
 import { PoolData } from './types';
 import { AssetData } from '../../redux/wallet/types';
@@ -117,7 +115,6 @@ const assets: AssetDetailMap = {
   },
 };
 
-// TODO: Fix unit test
 describe('pool/utils/', () => {
   describe('witdrawResult', () => {
     it('should validate a withdraw transfer', () => {
@@ -424,94 +421,6 @@ describe('pool/utils/', () => {
       expect(result.roi).toEqual(expected.roi);
       // Unsafe, just to test all props again (in case we might forget to test a new property in the future)
       expect(result.toString()).toEqual(expected.toString());
-    });
-  });
-
-  describe('getCalcResult', () => {
-    it('calculates result of staking into RUNE - BNB pool ', () => {
-      const poolAddress = 'tbnabc123';
-      const runeAmount = tokenAmount(744.568);
-      const runePrice = bn(1);
-      const tAmount = tokenAmount(0.023);
-      const expected: CalcResult = {
-        poolAddress: 'tbnabc123',
-        ratio: bn(0.00591566291482636971),
-        symbolTo: 'BNB',
-        poolUnits: bn('201288130514'),
-        poolPrice: bn(169.04),
-        newPrice: bn(202.31),
-        newDepth: bn('413455067077.65'),
-        share: bn(8.32),
-        Pr: bn(1),
-        R: bn('376032267901'),
-        T: bn(2224480142),
-      };
-
-      const result: CalcResult = getCalcResult(
-        'BNB',
-        poolData,
-        poolAddress,
-        runeAmount,
-        runePrice,
-        tAmount,
-      );
-
-      expect(result.poolAddress).toEqual(expected.poolAddress);
-      expect(result.ratio?.decimalPlaces(5)).toEqual(
-        expected.ratio?.decimalPlaces(5),
-      );
-      expect(result.symbolTo).toEqual(expected.symbolTo);
-      expect(result.poolUnits).toEqual(expected.poolUnits);
-      expect(result.poolPrice).toEqual(expected.poolPrice);
-      expect(result.newPrice).toEqual(expected.newPrice);
-      expect(result.newDepth).toEqual(expected.newDepth);
-      expect(result.share).toEqual(expected.share);
-      expect(result.Pr).toEqual(expected.Pr);
-      expect(result.R).toEqual(expected.R);
-      expect(result.T).toEqual(expected.T);
-    });
-
-    it('calculates result of staking into RUNE - TCAN pool ', () => {
-      const poolAddress = 'tbnabc123';
-      const runeAmount = tokenAmount(938.803);
-      const runePrice = bn(1);
-      const tAmount = tokenAmount(49.061);
-      const expected = {
-        poolAddress: 'tbnabc123',
-        ratio: bn('0.2456350644894517849'),
-        symbolTo: 'TCAN-014',
-        poolUnits: bn('15255810504'),
-        poolPrice: bn(4.07),
-        newPrice: bn(10.74),
-        newDepth: bn('82042624485.56'),
-        share: bn(61.6),
-        Pr: bn(1),
-        R: bn('25115911675'),
-        T: bn('6169348584'),
-      };
-
-      const result: CalcResult = getCalcResult(
-        'TCAN-014',
-        poolData,
-        poolAddress,
-        runeAmount,
-        runePrice,
-        tAmount,
-      );
-
-      expect(result.poolAddress).toEqual(expected.poolAddress);
-      expect(result.ratio?.decimalPlaces(5)).toEqual(
-        expected.ratio.decimalPlaces(5),
-      );
-      expect(result.symbolTo).toEqual(expected.symbolTo);
-      expect(result.poolUnits).toEqual(expected.poolUnits);
-      expect(result.poolPrice).toEqual(expected.poolPrice);
-      expect(result.newPrice).toEqual(expected.newPrice);
-      expect(result.newDepth).toEqual(expected.newDepth);
-      expect(result.share).toEqual(expected.share);
-      expect(result.Pr).toEqual(expected.Pr);
-      expect(result.R).toEqual(expected.R);
-      expect(result.T).toEqual(expected.T);
     });
   });
 });
