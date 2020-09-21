@@ -413,7 +413,7 @@ function* tryGetTransactions(payload: GetTransactionPayload) {
   for (let i = 0; i < MIDGARD_MAX_RETRY; i++) {
     try {
       const noCache = i > 0;
-      const { offset, limit, type } = payload;
+      const { asset, offset, limit, type } = payload;
       // Unsafe type match of `basePath`: Can't be inferred by `tsc` from a return value of a Generator function - known TS/Generator/Saga issue
       const basePath: string = yield call(getApiBasePath, getNet(), noCache);
       const midgardApi = api.getMidgardDefaultApi(basePath);
@@ -424,7 +424,7 @@ function* tryGetTransactions(payload: GetTransactionPayload) {
         limit,
         undefined,
         undefined,
-        undefined,
+        asset,
         type,
       );
       return data;

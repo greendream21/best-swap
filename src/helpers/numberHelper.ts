@@ -22,6 +22,5 @@ export const abbreviateNumberFromString = (
   decimal: number = 2,
 ): string => {
   const num = parseFloat(value.replace(/,/g, ''));
-  console.log('VALUE - ', value, num);
   return abbreviateNumber(num, decimal);
 };

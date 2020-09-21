@@ -3,7 +3,8 @@ import { TxTypes, TxStatus, TxResult } from './types';
 
 export const getBEPSwapData = () => ({ type: 'GET_BEPSWAP_DATA' } as const);
 
-export const getPoolViewData = () => ({ type: 'GET_POOL_VIEW_DATA' } as const);
+export const getPoolViewData = (payload?: string) =>
+  ({ type: 'GET_POOL_VIEW_DATA', payload } as const);
 
 export const refreshSwapData = () => ({ type: 'REFRESH_SWAP_DATA' } as const);
 

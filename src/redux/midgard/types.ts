@@ -50,6 +50,7 @@ export type TxDetailType =
 export type GetTransactionPayload = {
   offset: number;
   limit: number;
+  asset?: string;
   type?: string;
 };
 
