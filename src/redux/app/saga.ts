@@ -38,13 +38,21 @@ export function* getBEPSwapData() {
 
 // refresh data needed for pool view homepage
 export function* getPoolViewData() {
-  yield takeEvery('GET_POOL_VIEW_DATA', function*() {
+  yield takeEvery('GET_POOL_VIEW_DATA', function*({
+    payload,
+  }: ReturnType<typeof actions.getPoolViewData>) {
     yield put(midgardActions.getPools());
     yield put(midgardActions.getPoolAddress());
     yield put(midgardActions.getStats());
     yield put(midgardActions.getNetworkInfo());
     yield put(walletActions.refreshWallet());
-    yield put(midgardActions.getTransactionWithRefresh({ offset: 0, limit: 10 }));
+    yield put(
+      midgardActions.getTransactionWithRefresh({
+        asset: payload,
+        offset: 0,
+        limit: 10,
+      }),
+    );
 
     const timeStamp: number = moment().unix();
     yield put(
