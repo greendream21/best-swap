@@ -28,5 +28,5 @@ svg {
 }
 
 .ant-popover {
-  z-index: 1;
+  z-index: 9999;
 }

@@ -20,6 +20,7 @@ type Props = {
   unit: string;
   searchDisable: string[];
   withSearch: boolean;
+  disabled: boolean;
   onSelect: (value: string) => void;
   'data-test': string;
 };
