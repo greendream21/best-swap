@@ -1,6 +1,13 @@
 import BigNumber from 'bignumber.js';
 import { TransferResult, WS } from '@thorchain/asgardex-binance';
-import { bn, isValidBN } from '@thorchain/asgardex-util';
+import {
+  bn,
+  isValidBN,
+  getDoubleSwapSlip,
+  getSwapSlip,
+  baseAmount as getBaseAmount,
+  PoolData,
+} from '@thorchain/asgardex-util';
 import {
   TokenAmount,
   BaseAmount,
@@ -15,7 +22,6 @@ import {
   getZValue,
   getPx,
   getPz,
-  getSlip,
   getFee,
   SingleSwapCalcData,
   DoubleSwapCalcData,
@@ -104,6 +110,7 @@ export const getSwapType = (source: string, target: string) =>
     : SwapType.DOUBLE_SWAP;
 
 // TODO: fix hard coded slip limit
+// TODO: refactor getswapdata
 /**
  * Return Calculations for swap tx
  * @param from Asset symbol for source
@@ -155,7 +162,24 @@ export const getSwapData = (
     const calcData: DoubleSwapCalcData = { X, Y, R, Z, Py, Pr: Py };
 
     const zValue = getZValue(xValue, calcData);
-    const slip = getSlip(xValue, calcData);
+
+    // TODO: remove getBaseAmount once asgardex-util is fixed
+    const inputBaseAmount = tokenToBase(xValue);
+    const inputBaseAmountValue = getBaseAmount(inputBaseAmount.amount(), 8);
+    const sourcePoolData: PoolData = {
+      assetBalance: getBaseAmount(sourcePool?.assetDepth ?? 0, 8),
+      runeBalance: getBaseAmount(sourcePool?.runeDepth ?? 0, 8),
+    };
+    const targetPoolData: PoolData = {
+      assetBalance: getBaseAmount(targetPool?.assetDepth ?? 0, 8),
+      runeBalance: getBaseAmount(targetPool?.runeDepth ?? 0, 8),
+    };
+
+    const slip = getDoubleSwapSlip(
+      inputBaseAmountValue,
+      sourcePoolData,
+      targetPoolData,
+    );
     const Px = getPx(xValue, calcData);
     const Pz = getPz(xValue, calcData);
     const fee = getFee(xValue, calcData);
@@ -195,7 +219,7 @@ export const getSwapData = (
       .pow(2);
     const xTimes = xValue.amount().pow(2);
     // formula: X ** 2
-    const balanceTimes = X.amount().pow(2);
+    // const balanceTimes = X.amount().pow(2);
     // formula: (xValue * X * Y) / times
     const outputTokenBN = X.amount()
       .multipliedBy(Y.amount())
@@ -210,13 +234,14 @@ export const getSwapData = (
 
     // calc trade slip
     // formula: ((xValue * (2 * X + xValue)) / balanceTimes) * 100
-    const slipValue = X.amount()
-      .multipliedBy(2)
-      .plus(xValue.amount())
-      .multipliedBy(xValue.amount())
-      .div(balanceTimes)
-      .multipliedBy(100);
-    const slip = bn(slipValue);
+
+    const inputBaseAmount = tokenToBase(xValue);
+    const inputBaseAmountValue = getBaseAmount(inputBaseAmount.amount(), 8);
+    const poolBalanceData: PoolData = {
+      assetBalance: getBaseAmount(poolData?.assetDepth ?? 0, 8),
+      runeBalance: getBaseAmount(poolData?.runeDepth ?? 0, 8),
+    };
+    const slip = getSwapSlip(inputBaseAmountValue, poolBalanceData, true);
     // formula: (1 - 30 / 100) * outputToken * BASE_NUMBER
     const limitValue = outputTokenBN.multipliedBy(70 / 100);
     const slipLimit = tokenToBase(tokenAmount(limitValue));
@@ -250,7 +275,7 @@ export const getSwapData = (
       .plus(xValue.amount())
       .pow(2);
     const xTimes = xValue.amount().pow(2);
-    const balanceTimes = X.amount().pow(2);
+    // const balanceTimes = X.amount().pow(2);
     const outputTokenBN = X.amount()
       .multipliedBy(Y.amount())
       .multipliedBy(xValue.amount())
@@ -263,14 +288,13 @@ export const getSwapData = (
 
     // trade slip
     // avoid division by zero
-    const slip = balanceTimes.gt(0)
-      ? X.amount()
-          .multipliedBy(2)
-          .plus(xValue.amount())
-          .multipliedBy(xValue.amount())
-          .div(balanceTimes)
-          .multipliedBy(100)
-      : bn(0);
+    const inputBaseAmount = tokenToBase(xValue);
+    const inputBaseAmountValue = getBaseAmount(inputBaseAmount.amount(), 8);
+    const poolBalanceData: PoolData = {
+      assetBalance: getBaseAmount(poolData?.assetDepth ?? 0, 8),
+      runeBalance: getBaseAmount(poolData?.runeDepth ?? 0, 8),
+    };
+    const slip = getSwapSlip(inputBaseAmountValue, poolBalanceData, false);
 
     // formula: (1 - 30 / 100) * outputToken * BASE_NUMBER;
     const limitValue = outputTokenBN.multipliedBy(70 / 100);
