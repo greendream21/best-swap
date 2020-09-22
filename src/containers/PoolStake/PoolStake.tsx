@@ -943,6 +943,12 @@ const PoolStake: React.FC<Props> = (props: Props) => {
             key={ShareDetailTabKeys.ADD}
             disabled={!isValidFundCaps}
           >
+            {!isValidFundCaps && (
+            <Text type="danger" style={{ paddingTop: '10px' }}>
+              90% Funds Cap has been reached. You cannot stake right now,
+              come back later.
+            </Text>
+            )}
             <Row>
               <Col span={24} lg={12}>
                 <Label className="label-description" size="normal">
@@ -967,12 +973,14 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                   priceIndex={priceIndex}
                   unit={pricePrefix}
                   onChange={handleChangeTokenAmount(RUNE_SYMBOL)}
+                  disabled={!isValidFundCaps}
                 />
                 <Slider
                   value={runePercent}
                   onChange={handleChangePercent(RUNE_SYMBOL)}
                   withLabel
                   tabIndex="-1"
+                  disabled={!isValidFundCaps}
                 />
               </div>
               <div className="coin-card-wrapper">
@@ -990,6 +998,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                   unit={pricePrefix}
                   onChangeAsset={handleSelectTraget}
                   onChange={handleChangeTokenAmount(tokenSymbol)}
+                  disabled={!isValidFundCaps}
                   withSearch
                 />
               </div>

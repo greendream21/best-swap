@@ -10,6 +10,7 @@ const Slider = props => {
     withLabel,
     tooltipPlacement,
     className,
+    disabled,
     ...otherProps
   } = props;
   const sliderRef = useRef();
@@ -25,6 +26,7 @@ const Slider = props => {
       <SliderWrapper
         className={`slider-wrapper ${className}`}
         value={value}
+        disabled={disabled}
         onChange={onChange}
         tooltipPlacement={tooltipPlacement}
         onAfterChange={handleAfterChange}
@@ -51,10 +53,12 @@ Slider.propTypes = {
   withLabel: PropTypes.bool,
   tooltipPlacement: PropTypes.string,
   className: PropTypes.string,
+  disabled: PropTypes.bool,
 };
 
 Slider.defaultProps = {
   withLabel: false,
+  disabled: false,
   tooltipPlacement: 'bottom',
   className: '',
 };

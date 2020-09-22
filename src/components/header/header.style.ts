@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { palette, size, key } from 'styled-theme';
+import { InfoCircleOutlined } from '@ant-design/icons';
 import { media } from '../../helpers/styleHelper';
 
 export const StyledAlertWrapper = styled.div`
@@ -65,8 +66,6 @@ export const StyledHeader = styled.div`
 
 export const HeaderCenterWrapper = styled.div`
   display: flex;
-  flex-direction: column;
-  justify-content: center;
   align-items: center;
 `;
 
@@ -201,4 +200,15 @@ export const ConnectionMenuItem = styled.div`
     color: ${palette('text', 2)};
     text-transform: lowercase;
   }
+`;
+
+export const PopoverContent = styled.div`
+  width: 300px;
+  font-size: '11px';
+  color: ${palette('text', 0)};
+`;
+
+export const PopoverIcon = styled(InfoCircleOutlined)`
+  color: ${palette('error', 0)};
+  margin: 0 10px;
 `;

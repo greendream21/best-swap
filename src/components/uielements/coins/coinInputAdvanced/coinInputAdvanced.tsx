@@ -162,12 +162,14 @@ export const CoinInputAdvanced: React.FC<Props> = ({
   className = '',
   minimumFractionDigits = 2,
   size,
+  disabled,
   ...otherProps
 }: Props): JSX.Element => {
   return (
     <CoinInputAdvancedView
       className={className}
       size={size}
+      disabled={disabled}
       {...otherProps}
       {...useCoinCardInputBehaviour({
         amount: value,
