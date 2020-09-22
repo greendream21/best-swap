@@ -938,7 +938,11 @@ const PoolStake: React.FC<Props> = (props: Props) => {
           onChange={setSelectedShareDetailTab}
           activeKey={selectedShareDetailTab}
         >
-          <TabPane tab="Add" key={ShareDetailTabKeys.ADD}>
+          <TabPane
+            tab="Add"
+            key={ShareDetailTabKeys.ADD}
+            disabled={!isValidFundCaps}
+          >
             <Row>
               <Col span={24} lg={12}>
                 <Label className="label-description" size="normal">

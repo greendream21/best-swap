@@ -97,6 +97,7 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
   const hasBetaConfirmed = getBetaConfirm();
 
   const { globalRuneStakeStatus, shortGlobalRuneStakeStatus } = useNetwork();
+  const { isValidFundCaps } = useNetwork();
 
   const wallet: Maybe<string> = user ? user.wallet : Nothing;
   const { status, value, startTime, hash, info, type: txType } = txStatus;
@@ -279,7 +280,7 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
             <HeaderSetting midgardBasePath={midgardBasePath} />
           </LogoWrapper>
           <HeaderCenterWrapper>
-            <Label weight="bold">{globalRuneStakeStatus}</Label>
+            <Label weight="bold">{globalRuneStakeStatus} {!isValidFundCaps && '(90% Funds Cap Reached)'}</Label>
           </HeaderCenterWrapper>
           <HeaderActionButtons>
             <ThemeSwitch />
@@ -326,7 +327,7 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
             </Link>
           </LogoWrapper>
           <HeaderCenterWrapper>
-            <Label weight="bold">{shortGlobalRuneStakeStatus}</Label>
+            <Label weight="bold">{shortGlobalRuneStakeStatus} {!isValidFundCaps && '(Funds Cap Reached)'}</Label>
           </HeaderCenterWrapper>
           <HeaderActionButtons>
             <ThemeSwitch />

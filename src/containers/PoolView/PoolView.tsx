@@ -64,6 +64,7 @@ import TxTable from '../../components/transaction/txTable';
 
 import { generateRandomTimeSeries } from './utils';
 import usePrice from '../../hooks/usePrice';
+import useNetwork from '../../hooks/useNetwork';
 
 type Props = {
   history: H.History;
@@ -126,6 +127,8 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
   );
   const busdPrice = busdToken ? assets[busdToken]?.priceRune ?? 'RUNE' : 'RUNE';
   const isDesktopView = Grid.useBreakpoint()?.lg ?? false;
+
+  const { isValidFundCaps } = useNetwork();
 
   const chartData = useMemo(() => {
     if (rtVolumeLoading) {
@@ -277,6 +280,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
                     style={{ margin: 'auto' }}
                     round="true"
                     typevalue="outline"
+                    color={!isValidFundCaps ? 'error' : 'primary'}
                   >
                     <DatabaseOutlined />
                     stake
