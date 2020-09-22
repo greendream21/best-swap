@@ -1,6 +1,12 @@
 import BigNumber from 'bignumber.js';
 import { TransferResult, WS } from '@thorchain/asgardex-binance';
-import { bn, isValidBN } from '@thorchain/asgardex-util';
+import {
+  bn,
+  isValidBN,
+  getDoubleSwapSlip,
+  baseAmount as getBaseAmount,
+  PoolData,
+} from '@thorchain/asgardex-util';
 import {
   TokenAmount,
   BaseAmount,
@@ -15,7 +21,6 @@ import {
   getZValue,
   getPx,
   getPz,
-  getSlip,
   getFee,
   SingleSwapCalcData,
   DoubleSwapCalcData,
@@ -104,6 +109,7 @@ export const getSwapType = (source: string, target: string) =>
     : SwapType.DOUBLE_SWAP;
 
 // TODO: fix hard coded slip limit
+// TODO: refactor getswapdata
 /**
  * Return Calculations for swap tx
  * @param from Asset symbol for source
@@ -155,7 +161,24 @@ export const getSwapData = (
     const calcData: DoubleSwapCalcData = { X, Y, R, Z, Py, Pr: Py };
 
     const zValue = getZValue(xValue, calcData);
-    const slip = getSlip(xValue, calcData);
+
+    // TODO: remove getBaseAmount once asgardex-util is fixed
+    const inputBaseAmount = tokenToBase(xValue);
+    const inputBaseAmountValue = getBaseAmount(inputBaseAmount.amount(), 8);
+    const sourcePoolData: PoolData = {
+      assetBalance: getBaseAmount(sourcePool?.assetDepth ?? 0, 8),
+      runeBalance: getBaseAmount(sourcePool?.runeDepth ?? 0, 8),
+    };
+    const targetPoolData: PoolData = {
+      assetBalance: getBaseAmount(targetPool?.assetDepth ?? 0, 8),
+      runeBalance: getBaseAmount(targetPool?.runeDepth ?? 0, 8),
+    };
+
+    const slip = getDoubleSwapSlip(
+      inputBaseAmountValue,
+      sourcePoolData,
+      targetPoolData,
+    );
     const Px = getPx(xValue, calcData);
     const Pz = getPz(xValue, calcData);
     const fee = getFee(xValue, calcData);
