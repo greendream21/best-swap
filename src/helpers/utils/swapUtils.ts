@@ -4,6 +4,7 @@ import {
   bn,
   isValidBN,
   getDoubleSwapSlip,
+  getSwapSlip,
   baseAmount as getBaseAmount,
   PoolData,
 } from '@thorchain/asgardex-util';
@@ -233,13 +234,14 @@ export const getSwapData = (
 
     // calc trade slip
     // formula: ((xValue * (2 * X + xValue)) / balanceTimes) * 100
-    const slipValue = X.amount()
-      .multipliedBy(2)
-      .plus(xValue.amount())
-      .multipliedBy(xValue.amount())
-      .div(balanceTimes)
-      .multipliedBy(100);
-    const slip = bn(slipValue);
+
+    const inputBaseAmount = tokenToBase(xValue);
+    const inputBaseAmountValue = getBaseAmount(inputBaseAmount.amount(), 8);
+    const poolBalanceData: PoolData = {
+      assetBalance: getBaseAmount(poolData?.assetDepth ?? 0, 8),
+      runeBalance: getBaseAmount(poolData?.runeDepth ?? 0, 8),
+    };
+    const slip = getSwapSlip(inputBaseAmountValue, poolBalanceData, true);
     // formula: (1 - 30 / 100) * outputToken * BASE_NUMBER
     const limitValue = outputTokenBN.multipliedBy(70 / 100);
     const slipLimit = tokenToBase(tokenAmount(limitValue));
@@ -286,14 +288,13 @@ export const getSwapData = (
 
     // trade slip
     // avoid division by zero
-    const slip = balanceTimes.gt(0)
-      ? X.amount()
-          .multipliedBy(2)
-          .plus(xValue.amount())
-          .multipliedBy(xValue.amount())
-          .div(balanceTimes)
-          .multipliedBy(100)
-      : bn(0);
+    const inputBaseAmount = tokenToBase(xValue);
+    const inputBaseAmountValue = getBaseAmount(inputBaseAmount.amount(), 8);
+    const poolBalanceData: PoolData = {
+      assetBalance: getBaseAmount(poolData?.assetDepth ?? 0, 8),
+      runeBalance: getBaseAmount(poolData?.runeDepth ?? 0, 8),
+    };
+    const slip = getSwapSlip(inputBaseAmountValue, poolBalanceData, false);
 
     // formula: (1 - 30 / 100) * outputToken * BASE_NUMBER;
     const limitValue = outputTokenBN.multipliedBy(70 / 100);
