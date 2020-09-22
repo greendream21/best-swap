@@ -219,7 +219,7 @@ export const getSwapData = (
       .pow(2);
     const xTimes = xValue.amount().pow(2);
     // formula: X ** 2
-    const balanceTimes = X.amount().pow(2);
+    // const balanceTimes = X.amount().pow(2);
     // formula: (xValue * X * Y) / times
     const outputTokenBN = X.amount()
       .multipliedBy(Y.amount())
@@ -275,7 +275,7 @@ export const getSwapData = (
       .plus(xValue.amount())
       .pow(2);
     const xTimes = xValue.amount().pow(2);
-    const balanceTimes = X.amount().pow(2);
+    // const balanceTimes = X.amount().pow(2);
     const outputTokenBN = X.amount()
       .multipliedBy(Y.amount())
       .multipliedBy(xValue.amount())
