@@ -570,7 +570,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
         type: 'error',
         message: 'Stake Invalid',
         description:
-          '90% Funds Cap has been reached. You cannot stake right now, come back later.',
+          '95% Funds Cap has been reached. You cannot stake right now, come back later.',
       });
       setDragReset(true);
       return;
@@ -1005,7 +1005,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
               {renderFee()}
               {!isValidFundCaps && (
                 <Text type="danger" style={{ paddingTop: '10px' }}>
-                  90% Funds Cap has been reached. You cannot stake right now,
+                  95% Funds Cap has been reached. You cannot stake right now,
                   come back later.
                 </Text>
               )}
