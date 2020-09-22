@@ -945,7 +945,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
           >
             {!isValidFundCaps && (
             <Text type="danger" style={{ paddingTop: '10px' }}>
-              90% Funds Cap has been reached. You cannot stake right now,
+              95% Funds Cap has been reached. You cannot stake right now,
               come back later.
             </Text>
             )}
