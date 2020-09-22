@@ -2,7 +2,8 @@ import React, { useCallback, useEffect } from 'react';
 import { useHistory, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import { Alert, Grid } from 'antd';
+import { Alert, Grid, Popover } from 'antd';
+
 import { WalletOutlined } from '@ant-design/icons';
 
 import * as RD from '@devexperts/remote-data-ts';
@@ -18,7 +19,9 @@ import {
   LogoWrapper,
   HeaderActionButtons,
   HeaderCenterWrapper,
+  PopoverContent, PopoverIcon,
 } from './header.style';
+
 import HeaderSetting from './headerSetting';
 import WalletDrawer from '../../containers/WalletView/WalletDrawer';
 
@@ -97,6 +100,7 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
   const hasBetaConfirmed = getBetaConfirm();
 
   const { globalRuneStakeStatus, shortGlobalRuneStakeStatus } = useNetwork();
+  const { isValidFundCaps } = useNetwork();
 
   const wallet: Maybe<string> = user ? user.wallet : Nothing;
   const { status, value, startTime, hash, info, type: txType } = txStatus;
@@ -268,6 +272,17 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
     resetTxStatus();
   };
 
+  const getPopupContainer = () => {
+    return document.getElementsByClassName('stake-header')[0] as HTMLElement;
+  };
+
+  const renderPopoverContent = () => (
+    <PopoverContent>
+      A Funds Cap is currently in place as we balance security and demand on ChaosNet.
+      The cap maxes out at 90%. Please follow us on Twitter @thorchain_org for announcements regarding cap raise.
+    </PopoverContent>
+  );
+
   const renderHeader = (isDesktopView: boolean) => {
     if (isDesktopView) {
       return (
@@ -278,8 +293,23 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
             </Link>
             <HeaderSetting midgardBasePath={midgardBasePath} />
           </LogoWrapper>
-          <HeaderCenterWrapper>
-            <Label weight="bold">{globalRuneStakeStatus}</Label>
+          <HeaderCenterWrapper className="stake-header">
+            <Label weight="bold">{globalRuneStakeStatus} {!isValidFundCaps && '(Funds Cap Reached)'}</Label>
+            {!isValidFundCaps && (
+              <Popover
+                content={renderPopoverContent}
+                getPopupContainer={getPopupContainer}
+                placement="bottomRight"
+                overlayClassName="stake-header-info"
+                overlayStyle={{
+                  padding: '6px',
+                  animationDuration: '0s !important',
+                  animation: 'none !important',
+              }}
+              >
+                <PopoverIcon />
+              </Popover>
+          )}
           </HeaderCenterWrapper>
           <HeaderActionButtons>
             <ThemeSwitch />
@@ -326,7 +356,7 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
             </Link>
           </LogoWrapper>
           <HeaderCenterWrapper>
-            <Label weight="bold">{shortGlobalRuneStakeStatus}</Label>
+            <Label weight="bold">{shortGlobalRuneStakeStatus} {!isValidFundCaps && '(Funds Cap Reached)'}</Label>
           </HeaderCenterWrapper>
           <HeaderActionButtons>
             <ThemeSwitch />

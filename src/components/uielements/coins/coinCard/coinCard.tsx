@@ -198,6 +198,7 @@ class CoinCard extends React.Component<Props, State> {
       unit,
       withSearch,
       searchDisable,
+      disabled,
       'data-test': dataTest,
     } = this.props;
     const sortedAssetData = _sortBy(assetData, ['asset']);
@@ -213,23 +214,24 @@ class CoinCard extends React.Component<Props, State> {
           withSearch={withSearch}
           searchDisable={searchDisable}
           onSelect={this.handleChangeAsset}
+          disabled={disabled}
         />
       </Ref>
     );
   }
 
   renderDropDownButton() {
-    const { assetData, asset } = this.props;
+    const { assetData, asset, disabled } = this.props;
     const { openDropdown: open } = this.state;
-    const disabled = assetData.length === 0;
+    const disabledInput = disabled || assetData.length === 0;
     return (
       <CoinDropdownButton
         data-test="coin-dropdown-button"
-        disabled={disabled}
+        disabled={disabledInput}
         onClick={this.handleDropdownButtonClicked}
       >
         <CoinDropdownCoin type={asset} size="big" />
-        {!disabled ? (
+        {!disabledInput ? (
           <CoinDropdownVerticalColumn>
             <DropdownCarret className="caret-down" open={open} />
           </CoinDropdownVerticalColumn>
@@ -255,6 +257,7 @@ class CoinCard extends React.Component<Props, State> {
       className,
       withSearch,
       searchDisable,
+      disabled,
       children,
       inputProps,
       ...props
@@ -281,6 +284,7 @@ class CoinCard extends React.Component<Props, State> {
                     className="asset-amount-label"
                     size="large"
                     value={amount.amount()}
+                    disabled={disabled}
                     onChangeValue={this.onChange}
                     {...inputProps}
                   />
