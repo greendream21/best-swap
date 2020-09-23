@@ -179,7 +179,7 @@ export const getSwapData = (
       inputBaseAmountValue,
       sourcePoolData,
       targetPoolData,
-    );
+    ).multipliedBy(100);
     const Px = getPx(xValue, calcData);
     const Pz = getPz(xValue, calcData);
     const fee = getFee(xValue, calcData);
@@ -241,7 +241,11 @@ export const getSwapData = (
       assetBalance: getBaseAmount(poolData?.assetDepth ?? 0, 8),
       runeBalance: getBaseAmount(poolData?.runeDepth ?? 0, 8),
     };
-    const slip = getSwapSlip(inputBaseAmountValue, poolBalanceData, true);
+    const slip = getSwapSlip(
+      inputBaseAmountValue,
+      poolBalanceData,
+      true,
+    ).multipliedBy(100);
     // formula: (1 - 30 / 100) * outputToken * BASE_NUMBER
     const limitValue = outputTokenBN.multipliedBy(70 / 100);
     const slipLimit = tokenToBase(tokenAmount(limitValue));
@@ -294,7 +298,11 @@ export const getSwapData = (
       assetBalance: getBaseAmount(poolData?.assetDepth ?? 0, 8),
       runeBalance: getBaseAmount(poolData?.runeDepth ?? 0, 8),
     };
-    const slip = getSwapSlip(inputBaseAmountValue, poolBalanceData, false);
+    const slip = getSwapSlip(
+      inputBaseAmountValue,
+      poolBalanceData,
+      false,
+    ).multipliedBy(100);
 
     // formula: (1 - 30 / 100) * outputToken * BASE_NUMBER;
     const limitValue = outputTokenBN.multipliedBy(70 / 100);
