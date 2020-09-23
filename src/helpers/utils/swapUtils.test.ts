@@ -359,7 +359,7 @@ describe('swap/utils/', () => {
         slipLimit: baseAmount(39292030),
         outputAmount: tokenAmount(0.56131472),
         outputPrice: bn(178.03053227763760049641),
-        slip: bn(0.02590),
+        slip: bn(2.59046),
         symbolFrom: RUNE_SYMBOL,
         symbolTo: 'BNB',
       };
@@ -388,7 +388,7 @@ describe('swap/utils/', () => {
         slipLimit: baseAmount('37413487120'),
         outputAmount: tokenAmount('534.47838743'),
         outputPrice: bn('1.00000000000152525393'),
-        slip: bn('0.34726285979023202465'),
+        slip: bn('34.726285979023202465'),
         symbolFrom: 'LOK-3C0',
         symbolTo: RUNE_SYMBOL,
       };
@@ -413,7 +413,7 @@ describe('swap/utils/', () => {
         fee: tokenAmount('0.34451071'),
         outputAmount: tokenAmount(2.42380508),
         outputPrice: bn('216.67937336595058369301'),
-        slip: bn(0.47171),
+        slip: bn(47.17106),
         symbolFrom: 'LOK-3C0',
         symbolTo: 'BNB',
         slipLimit: baseAmount(169666356),

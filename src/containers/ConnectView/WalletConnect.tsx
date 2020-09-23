@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -24,6 +24,11 @@ const WalletConnectPane = (props: Props) => {
   const history = useHistory();
 
   const user = useSelector((state: RootState) => state.Wallet.user);
+  const userRef = useRef(user);
+
+  useEffect(() => {
+    userRef.current = user;
+  }, [user]);
 
   const walletConnect = async () => {
     const qrcodeModalOptions = {
@@ -105,6 +110,8 @@ const WalletConnectPane = (props: Props) => {
 
         throw error;
       }
+
+      const user = userRef.current;
 
       if (user?.type === 'walletconnect' && user?.wallet) {
         showNotification({
