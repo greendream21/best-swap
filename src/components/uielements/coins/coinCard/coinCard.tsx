@@ -263,6 +263,10 @@ class CoinCard extends React.Component<Props, State> {
       ...props
     } = this.props;
     const { openDropdown, percentButtonSelected } = this.state;
+    const dropdownOverlayStyle = {
+      maxHeight: '300px',
+      overflow: 'scroll',
+    };
 
     // TODO (Rudi): render dropown menu as bottom fixed sheet for mobile
     return (
@@ -274,6 +278,7 @@ class CoinCard extends React.Component<Props, State> {
             overlay={this.renderMenu()}
             trigger={[]}
             visible={openDropdown}
+            overlayStyle={dropdownOverlayStyle}
           >
             <CardBorderWrapper>
               <AssetNameLabel>{asset}</AssetNameLabel>
