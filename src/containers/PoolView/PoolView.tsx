@@ -7,6 +7,7 @@ import { withRouter, useHistory, Link } from 'react-router-dom';
 import { Row, Col, Grid } from 'antd';
 import moment from 'moment';
 import {
+  SearchOutlined,
   SyncOutlined,
   SwapOutlined,
   DatabaseOutlined,
@@ -20,6 +21,7 @@ import Label from '../../components/uielements/label';
 import AddIcon from '../../components/uielements/addIcon';
 import CoinIcon from '../../components/uielements/coins/coinIcon';
 import Button from '../../components/uielements/button';
+import Input from '../../components/uielements/input';
 import PoolFilter from '../../components/poolFilter';
 import StatBar from '../../components/statBar';
 
@@ -30,6 +32,7 @@ import {
   TransactionWrapper,
   StyledPagination,
   PoolViewTools,
+  PoolSearchWrapper,
   StyledTable as Table,
 } from './PoolView.style';
 import {
@@ -112,6 +115,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     PoolDetailStatusEnum.Enabled,
   );
   const [currentTxPage, setCurrentTxPage] = useState<number>(1);
+  const [keyword, setKeyword] = useState<string>('');
   const history = useHistory();
   const { reducedPricePrefix, priceIndex } = usePrice();
 
@@ -219,6 +223,13 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
       getTransactionInfo((page - 1) * 10, 10);
     },
     [getTransactionInfo],
+  );
+
+  const onChangeKeywordHandler = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setKeyword(e.target.value);
+    },
+    [],
   );
 
   const renderTextCell = (text: string) => {
@@ -436,12 +447,22 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
       };
     });
 
-    const filteredData = poolViewData.filter(poolData => {
-      return (
-        (poolStatus === PoolDetailStatusEnum.Enabled && !poolData.status) ||
-        poolData.status === poolStatus
-      );
-    });
+    const filteredData = poolViewData
+      .filter(poolItem => {
+        const tokenSymbol = poolItem.values.symbol.toLowerCase();
+        const tokenName = getTokenName(tokenList, tokenSymbol.toUpperCase()).toLowerCase();
+
+        return (
+          tokenName.includes(keyword.toLowerCase()) ||
+          tokenSymbol.includes(keyword.toLowerCase())
+        );
+      })
+      .filter(poolData => {
+        return (
+          (poolStatus === PoolDetailStatusEnum.Enabled && !poolData.status) ||
+          poolData.status === poolStatus
+        );
+      });
 
     return renderPoolTable(filteredData, view);
   };
@@ -473,6 +494,15 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
           )}
         </div>
       </PoolViewTools>
+      <PoolSearchWrapper>
+        <Input
+          prefix={<SearchOutlined />}
+          sizevalue="big"
+          placeholder="Search pools..."
+          value={keyword}
+          onChange={onChangeKeywordHandler}
+        />
+      </PoolSearchWrapper>
       <div className="pool-list-view desktop-view">
         {renderPoolList(ViewType.DESKTOP)}
       </div>
