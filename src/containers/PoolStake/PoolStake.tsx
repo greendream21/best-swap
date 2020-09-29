@@ -105,6 +105,7 @@ type Props = {
   transferFees: TransferFeesRD;
   getStakerPoolData: typeof midgardActions.getStakerPoolData;
   getPoolDataForAsset: typeof midgardActions.getPoolData;
+  getPoolAddress: typeof midgardActions.getPoolAddress;
   setTxResult: typeof appActions.setTxResult;
   setTxTimerModal: typeof appActions.setTxTimerModal;
   setTxHash: typeof appActions.setTxHash;
@@ -129,6 +130,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     txStatus,
     refreshBalance,
     refreshStakes,
+    getPoolAddress,
     getPoolDataForAsset,
     getStakerPoolData,
     resetTxStatus,
@@ -617,11 +619,11 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
     // if wallet is connected
     if (wallet) {
+      // get pool address before confirmation
+      getPoolAddress();
+
       setTxType(TxTypes.STAKE);
       handleOpenPrivateModal();
-      if (user?.type === 'walletconnect') {
-        handleConfirmStake();
-      }
     }
   };
 
@@ -733,7 +735,16 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     if (wallet) {
       setTxType(TxTypes.WITHDRAW);
       handleOpenPrivateModal();
-      if (user?.type === 'walletconnect') {
+    }
+  };
+
+  // called when pool address is loaded successfully
+  const handlePoolAddressConfirmed = () => {
+    // if wallet type is walletconnect, send the tx sign request to trustwallet
+    if (user?.type === 'walletconnect') {
+      if (txType === TxTypes.STAKE) {
+        handleConfirmStake();
+      } else if (txType === TxTypes.WITHDRAW) {
         handleConfirmWithdraw();
       }
     }
@@ -935,10 +946,10 @@ const PoolStake: React.FC<Props> = (props: Props) => {
             disabled={!isValidFundCaps}
           >
             {!isValidFundCaps && (
-            <Text type="danger" style={{ paddingTop: '10px' }}>
-              95% Funds Cap has been reached. You cannot stake right now,
-              come back later.
-            </Text>
+              <Text type="danger" style={{ paddingTop: '10px' }}>
+                95% Funds Cap has been reached. You cannot stake right now, come
+                back later.
+              </Text>
             )}
             <Row>
               <Col span={24} lg={12}>
@@ -1253,6 +1264,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
           visible={openPrivateModal}
           onOk={handleConfirmTransaction}
           onCancel={handleCancelPrivateModal}
+          onPoolAddressLoaded={handlePoolAddressConfirmed}
         />
       )}
       {!hasWallet && (
@@ -1290,6 +1302,7 @@ export default compose(
     {
       getStakerPoolData: midgardActions.getStakerPoolData,
       getPoolDataForAsset: midgardActions.getPoolData,
+      getPoolAddress: midgardActions.getPoolAddress,
       setTxResult: appActions.setTxResult,
       setTxTimerModal: appActions.setTxTimerModal,
       setTxHash: appActions.setTxHash,

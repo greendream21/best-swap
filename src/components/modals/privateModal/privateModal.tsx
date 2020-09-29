@@ -13,18 +13,22 @@ import { StyledModal, ModalContent, ModalIcon } from './privateModal.style';
 import { RootState } from '../../../redux/store';
 import { verifyPrivateKey } from '../../../helpers/utils/walletUtils';
 import usePrevious from '../../../hooks/usePrevious';
+import useTimeout from '../../../hooks/useTimeout';
 
 import { bncClient } from '../../../env';
 import showNotification from '../../uielements/notification';
 
+const MODAL_DISMISS_TIME = 15 * 1000; // 15s
+
 type Props = {
   visible: boolean;
   onOk?: () => void;
-  onCancel?: () => void;
+  onCancel: () => void;
+  onPoolAddressLoaded?: () => void;
 };
 
 const PrivateModal: React.FC<Props> = (props): JSX.Element => {
-  const { visible, onOk, onCancel } = props;
+  const { visible, onOk, onCancel, onPoolAddressLoaded = () => {} } = props;
 
   const history = useHistory();
   const dispatch = useDispatch();
@@ -40,6 +44,18 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
     (state: RootState) => state.Midgard.poolAddressLoading,
   );
   const walletType = user?.type ?? 'disconnected';
+
+  // dismiss modal after 15s automatically
+  useTimeout(() => {
+    showNotification({
+      type: 'info',
+      message: 'Transaction Confirmation Expired!',
+      description: 'Please confirm the transaction within 15s!',
+      duration: 10,
+    });
+
+    onCancel();
+  }, MODAL_DISMISS_TIME);
 
   // load pool address before making transaction
   const prevVisible = usePrevious(visible);
@@ -61,6 +77,9 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
   useEffect(() => {
     if (prevPoolAddressLoading === true && poolAddressLoading === false) {
       setAddressLoading(false);
+
+      // call onPoolAddressLoaded props
+      onPoolAddressLoaded();
 
       // if wallet is verified, confirm
       if (confirmed && onOk) {
@@ -263,6 +282,10 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
   const confirmBtnText = walletType === 'disconnected' ? 'CONNECT' : 'CONFIRM';
   const confirmLoading = confirmed && addressLoading;
 
+  const poolAddressLoadingStatus = poolAddressLoading
+    ? 'Loading Pool Address...'
+    : 'The Latest Pool Address is loaded successfully!';
+
   return (
     <StyledModal
       title={modalTitle}
@@ -276,6 +299,9 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
       cancelText="CANCEL"
     >
       {renderModalContent()}
+      <ModalContent>
+        <Label>{poolAddressLoadingStatus}</Label>
+      </ModalContent>
     </StyledModal>
   );
 };

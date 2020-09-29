@@ -63,7 +63,7 @@ type Props = {
   binanceData: BinanceState;
   history: H.History;
   txStatus: TxStatus;
-  getStakerPoolData: typeof midgardActions.getStakerPoolData;
+  getPoolAddress: typeof midgardActions.getPoolAddress;
   setTxTimerModal: typeof appActions.setTxTimerModal;
   resetTxStatus: typeof appActions.resetTxStatus;
   setTxHash: typeof appActions.setTxHash;
@@ -78,6 +78,7 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
     assetData,
     binanceData,
     pools,
+    getPoolAddress,
     resetTxStatus,
     setTxTimerModal,
     setTxHash,
@@ -143,6 +144,14 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
   const handleConfirmTransaction = () => {
     handleConfirmCreate();
     setOpenPrivateModal(false);
+  };
+
+  // called when pool address is loaded successfully
+  const handlePoolAddressConfirmed = () => {
+    // if wallet type is walletconnect, send the swap tx sign request to trustwallet
+    if (user?.type === 'walletconnect') {
+      handleConfirmCreate();
+    }
   };
 
   const handleDrag = useCallback(() => {
@@ -312,11 +321,10 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
     }
 
     if (wallet) {
-      handleOpenPrivateModal();
+      // get pool address before confirmation
+      getPoolAddress();
 
-      if (user?.type === 'walletconnect') {
-        handleConfirmCreate();
-      }
+      handleOpenPrivateModal();
     }
   };
 
@@ -430,6 +438,7 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
           visible={openPrivateModal}
           onOk={handleConfirmTransaction}
           onCancel={handleCancelPrivateModal}
+          onPoolAddressLoaded={handlePoolAddressConfirmed}
         />
       </div>
     );
@@ -537,7 +546,7 @@ export default compose(
       txStatus: state.App.txStatus,
     }),
     {
-      getStakerPoolData: midgardActions.getStakerPoolData,
+      getPoolAddress: midgardActions.getPoolAddress,
       setTxTimerModal: appActions.setTxTimerModal,
       resetTxStatus: appActions.resetTxStatus,
       setTxHash: appActions.setTxHash,
