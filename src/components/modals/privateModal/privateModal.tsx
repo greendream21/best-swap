@@ -282,10 +282,6 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
   const confirmBtnText = walletType === 'disconnected' ? 'CONNECT' : 'CONFIRM';
   const confirmLoading = confirmed && addressLoading;
 
-  const poolAddressLoadingStatus = poolAddressLoading
-    ? 'Loading Pool Address...'
-    : 'The Latest Pool Address is loaded successfully!';
-
   return (
     <StyledModal
       title={modalTitle}
@@ -299,9 +295,6 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
       cancelText="CANCEL"
     >
       {renderModalContent()}
-      <ModalContent>
-        <Label>{poolAddressLoadingStatus}</Label>
-      </ModalContent>
     </StyledModal>
   );
 };
