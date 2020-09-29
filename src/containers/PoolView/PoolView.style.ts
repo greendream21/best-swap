@@ -34,7 +34,7 @@ export const ContentWrapper = styled(ContentView)`
       `}
     }
 
-    padding-top: 20px;
+    padding-top: 10px;
     .pool-card {
       margin-bottom: 10px;
     }
@@ -63,6 +63,10 @@ export const PoolViewTools = styled.div`
       padding-left: 20px;
     }
   }
+`;
+
+export const PoolSearchWrapper = styled.div`
+  margin-top: 10px;
 `;
 
 export const ActionHeader = styled.div`

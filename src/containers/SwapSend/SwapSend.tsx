@@ -97,6 +97,7 @@ type Props = {
   basePriceAsset: string;
   priceIndex: PriceDataIndex;
   user: Maybe<User>;
+  getPoolAddress: typeof midgardActions.getPoolAddress;
   getPoolDataForAsset: typeof midgardActions.getPoolData;
   setTxResult: typeof appActions.setTxResult;
   setTxTimerModal: typeof appActions.setTxTimerModal;
@@ -116,6 +117,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     poolAddress,
     priceIndex,
     pools,
+    getPoolAddress,
     getPoolDataForAsset,
     refreshBalance,
     setTxResult,
@@ -306,7 +308,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
         showNotification({
           type: 'error',
           message: 'Swap Invalid',
-          description: `Swap information is not valid: ${error.toString()}`,
+          description: `Error: ${error.toString()}`,
         });
         setDragReset(true);
         resetTxStatus();
@@ -420,14 +422,22 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     const swapData = handleGetSwapData();
     if (swapData && validateSlip(swapData.slip)) {
       if (wallet) {
+        // get pool address before confirmation
+        getPoolAddress();
+
         handleOpenPrivateModal();
-        if (user?.type === 'walletconnect') {
-          handleConfirmSwap();
-        }
       } else {
         setInvalidAddress(true);
         setDragReset(true);
       }
+    }
+  };
+
+  // called when pool address is loaded successfully
+  const handlePoolAddressConfirmed = () => {
+    // if wallet type is walletconnect, send the swap tx sign request to trustwallet
+    if (user?.type === 'walletconnect') {
+      handleConfirmSwap();
     }
   };
 
@@ -824,6 +834,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
         visible={openPrivateModal}
         onOk={handleConfirmTransaction}
         onCancel={handleCancelPrivateModal}
+        onPoolAddressLoaded={handlePoolAddressConfirmed}
       />
       <Modal
         title="PLEASE ADD WALLET"
@@ -854,6 +865,7 @@ export default compose(
     }),
     {
       getPoolDataForAsset: midgardActions.getPoolData,
+      getPoolAddress: midgardActions.getPoolAddress,
       setTxResult: appActions.setTxResult,
       setTxTimerModal: appActions.setTxTimerModal,
       resetTxStatus: appActions.resetTxStatus,
