@@ -21,10 +21,11 @@ type Props = {
   visible: boolean;
   onOk?: () => void;
   onCancel?: () => void;
+  onPoolAddressLoaded?: () => void;
 };
 
 const PrivateModal: React.FC<Props> = (props): JSX.Element => {
-  const { visible, onOk, onCancel } = props;
+  const { visible, onOk, onCancel, onPoolAddressLoaded = () => {} } = props;
 
   const history = useHistory();
   const dispatch = useDispatch();
@@ -61,6 +62,9 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
   useEffect(() => {
     if (prevPoolAddressLoading === true && poolAddressLoading === false) {
       setAddressLoading(false);
+
+      // call onPoolAddressLoaded props
+      onPoolAddressLoaded();
 
       // if wallet is verified, confirm
       if (confirmed && onOk) {
@@ -263,6 +267,10 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
   const confirmBtnText = walletType === 'disconnected' ? 'CONNECT' : 'CONFIRM';
   const confirmLoading = confirmed && addressLoading;
 
+  const poolAddressLoadingStatus = poolAddressLoading
+    ? 'Loading Pool Address...'
+    : 'The Latest Pool Address is loaded successfully!';
+
   return (
     <StyledModal
       title={modalTitle}
@@ -276,6 +284,9 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
       cancelText="CANCEL"
     >
       {renderModalContent()}
+      <ModalContent>
+        <Label>{poolAddressLoadingStatus}</Label>
+      </ModalContent>
     </StyledModal>
   );
 };
