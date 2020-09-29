@@ -47,13 +47,6 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
 
   // dismiss modal after 15s automatically
   useTimeout(() => {
-    showNotification({
-      type: 'info',
-      message: 'Transaction Confirmation Expired!',
-      description: 'Please confirm the transaction within 15s!',
-      duration: 10,
-    });
-
     onCancel();
   }, MODAL_DISMISS_TIME);
 
