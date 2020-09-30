@@ -156,7 +156,7 @@ export function* getUserStakeData(
         const price = poolData?.price ?? 0;
         const { symbol = '', ticker = '' } = getAssetFromString(poolData.asset);
         const { poolUnits, assetDepth, runeDepth } = poolData;
-        const { stakeUnits } = userStakerData;
+        const { units: stakeUnits } = userStakerData;
 
         const poolUnitsBN = bnOrZero(poolUnits);
         const assetDepthBN = bnOrZero(assetDepth);
