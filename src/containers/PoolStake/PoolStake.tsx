@@ -208,7 +208,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
   const emptyStakerPoolData: StakersAssetData = {
     asset: tokenSymbol,
-    stakeUnits: '0',
+    units: '0',
     dateFirstStaked: 0,
   };
 
@@ -687,7 +687,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     const poolUnits = poolInfo?.poolUnits;
     const poolUnitsBN = bnOrZero(poolUnits);
 
-    const { stakeUnits }: StakersAssetData = stakersAssetData;
+    const { units: stakeUnits }: StakersAssetData = stakersAssetData;
     const stakeUnitsBN = bnOrZero(stakeUnits);
 
     const percent = poolUnits
@@ -869,7 +869,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
     // withdraw values
     const withdrawRate: number = withdrawPercentage / 100;
-    const { stakeUnits }: StakersAssetData = stakersAssetData;
+    const { units: stakeUnits }: StakersAssetData = stakersAssetData;
 
     const stakeUnitsBN = bnOrZero(stakeUnits);
 
@@ -1113,7 +1113,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   const renderYourShare = () => {
     const assetPrice = validBNOrZero(priceIndex[tokenSymbol]);
 
-    const { stakeUnits }: StakersAssetData = stakersAssetData;
+    const { units: stakeUnits }: StakersAssetData = stakersAssetData;
     const stakeUnitsBN = bnOrZero(stakeUnits);
     const loading = isLoading() || poolUnits === undefined;
 
