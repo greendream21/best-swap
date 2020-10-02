@@ -42,7 +42,7 @@ export const getShortAmount = (amount: BigNumber | number, decimal = 3) => {
 };
 
 export const getShortTokenAmount = (amount: TokenAmount) => {
-  if (formatTokenAmount(amount) === '0.00') {
+  if (formatTokenAmount(amount) === '0.00' && !amount.amount().isEqualTo(0)) {
     return formatTokenAmount(amount, 8);
   }
   return formatTokenAmount(amount);

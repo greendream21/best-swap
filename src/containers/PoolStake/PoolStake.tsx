@@ -16,6 +16,10 @@ import {
   validBNOrZero,
   bnOrZero,
   formatBN,
+  getSlipOnStake,
+  assetAmount,
+  baseAmount as getBaseAmount,
+  assetToBase,
 } from '@thorchain/asgardex-util';
 import {
   TokenAmount,
@@ -49,6 +53,9 @@ import {
   FeeParagraph,
   PopoverContent,
   PopoverIcon,
+  Switch,
+  RowWrapper,
+  AssetTypeLabel,
 } from './PoolStake.style';
 import {
   stakeRequest,
@@ -142,10 +149,11 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   const history = useHistory();
   const { symbol = '' } = useParams();
 
+  const { runePrice, priceIndex, pricePrefix } = usePrice();
+
   const tokenSymbol = symbol.toUpperCase();
   const tokenTicker = getTickerFormat(symbol);
-
-  const { runePrice, priceIndex, pricePrefix } = usePrice();
+  const tokenPrice = validBNOrZero(priceIndex[tokenSymbol]);
 
   const { isValidFundCaps } = useNetwork();
 
@@ -179,7 +187,12 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   const [withdrawPercentage, setWithdrawPercentage] = useState(50);
   const [runeAmount, setRuneAmount] = useState<TokenAmount>(tokenAmount(0));
   const [targetAmount, setTargetAmount] = useState<TokenAmount>(tokenAmount(0));
-  const [runePercent, setRunePercent] = useState<number>(0);
+  const [isSymStake, setSymStake] = useState(true);
+
+  // if stake asymmetrically, set the rune amount as 0
+  const runeAmountToSend = isSymStake ? runeAmount : tokenAmount(0);
+
+  const [sliderPercent, setPercentSlider] = useState<number>(0);
 
   const [dragReset, setDragReset] = useState<boolean>(true);
 
@@ -192,12 +205,13 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     if (
       selectedShareDetailTab === ShareDetailTabKeys.ADD &&
       runeAmount.amount().isGreaterThan(0) &&
-      targetAmount.amount().isGreaterThan(0)
+      targetAmount.amount().isGreaterThan(0) &&
+      isSymStake
     ) {
       return 'multi';
     }
     return 'single';
-  }, [selectedShareDetailTab, runeAmount, targetAmount]);
+  }, [selectedShareDetailTab, runeAmount, targetAmount, isSymStake]);
 
   const {
     bnbFeeAmount,
@@ -205,6 +219,15 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     hasSufficientBnbFee,
     getThresholdAmount,
   } = useFee(feeType);
+
+  const totalRuneAmount = getThresholdAmount(RUNE_SYMBOL).amount();
+  const totalTokenAmount = getThresholdAmount(tokenSymbol).amount();
+  // maximum token amount calculated by rune amount in balance and pool ratio
+  const maxTokenAmount = totalRuneAmount.multipliedBy(ratio);
+  // available token amount in the balance
+  const availableTokenAmount = maxTokenAmount.isLessThan(totalTokenAmount)
+    ? maxTokenAmount
+    : totalTokenAmount;
 
   const emptyStakerPoolData: StakersAssetData = {
     asset: tokenSymbol,
@@ -291,56 +314,70 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   const handleChangeTokenAmount = (assetSymbol: string, locked = false) => (
     value: BigNumber,
   ) => {
-    const totalSourceAmount = getThresholdAmount(assetSymbol).amount();
-    const totalTokenAmount = getThresholdAmount(tokenSymbol).amount();
-    const valueAsToken = tokenAmount(value);
+    const inputAmount = tokenAmount(value);
 
+    // asym stake
     if (!selectRatio && !locked) {
       if (assetSymbol === RUNE_SYMBOL) {
-        if (totalSourceAmount.isLessThan(valueAsToken.amount())) {
-          setRuneAmount(tokenAmount(totalSourceAmount));
-          setRunePercent(100);
+        // if input value is larger than rune amount in balance, set MAX rune amount
+        if (totalRuneAmount.isLessThan(inputAmount.amount())) {
+          setRuneAmount(tokenAmount(totalRuneAmount));
         } else {
-          setRuneAmount(valueAsToken);
+          setRuneAmount(inputAmount);
         }
       } else if (assetSymbol !== RUNE_SYMBOL) {
-        if (totalSourceAmount.isLessThan(valueAsToken.amount())) {
-          setTargetAmount(tokenAmount(totalSourceAmount));
+        // if input value is larger than max available token amount in balance, set MAX available token amount
+        if (availableTokenAmount.isLessThan(inputAmount.amount())) {
+          setTargetAmount(tokenAmount(availableTokenAmount));
+          setPercentSlider(100);
         } else {
-          setTargetAmount(valueAsToken);
+          setTargetAmount(inputAmount);
         }
       }
       return;
     }
 
+    // only sym stake
     if (assetSymbol === RUNE_SYMBOL) {
+      // validate rune amount
+      const runeValue = inputAmount
+        .amount()
+        .isLessThanOrEqualTo(totalRuneAmount)
+        ? inputAmount.amount()
+        : totalRuneAmount;
       // formula: newValue * ratio
-      const tokenValue = valueAsToken.amount().multipliedBy(ratio);
-      const tokenAmountBN = tokenValue.isLessThanOrEqualTo(totalTokenAmount)
+      const tokenValue = runeValue.multipliedBy(ratio);
+      const tokenAmountBN = tokenValue.isLessThanOrEqualTo(availableTokenAmount)
         ? tokenValue
-        : totalTokenAmount;
+        : availableTokenAmount;
+      const percent = tokenAmountBN
+        .dividedBy(availableTokenAmount)
+        .multipliedBy(100)
+        .toFixed(0);
 
-      if (totalSourceAmount.isLessThan(valueAsToken.amount())) {
-        setRuneAmount(tokenAmount(totalSourceAmount));
-        setTargetAmount(tokenAmount(tokenAmountBN));
-        setRunePercent(100);
-      } else {
-        setRuneAmount(valueAsToken);
-        setTargetAmount(tokenAmount(tokenAmountBN));
-      }
+      setRuneAmount(tokenAmount(runeValue));
+      setTargetAmount(tokenAmount(tokenAmountBN));
+      setPercentSlider(Number(percent));
     } else if (assetSymbol !== RUNE_SYMBOL) {
-      // formula: newValue / ratio
-      const tokenValue = valueAsToken.amount().dividedBy(ratio);
+      // validate token amount
+      const tokenValue = inputAmount
+        .amount()
+        .isLessThanOrEqualTo(availableTokenAmount)
+        ? inputAmount.amount()
+        : availableTokenAmount;
 
-      if (totalSourceAmount.isLessThan(valueAsToken.amount())) {
-        setRuneAmount(tokenAmount(tokenValue));
-        setTargetAmount(tokenAmount(totalSourceAmount));
-      } else {
-        setRuneAmount(tokenAmount(tokenValue));
-        setTargetAmount(valueAsToken);
-      }
+      // formula: newValue / ratio
+      const runeValue = tokenValue.dividedBy(ratio);
+      const percent = tokenValue
+        .dividedBy(availableTokenAmount)
+        .multipliedBy(100)
+        .toFixed(0);
+
+      setRuneAmount(tokenAmount(runeValue));
+      setTargetAmount(tokenAmount(tokenValue));
+      setPercentSlider(Number(percent));
     } else {
-      setTargetAmount(valueAsToken);
+      setTargetAmount(inputAmount);
     }
   };
 
@@ -350,25 +387,18 @@ const PoolStake: React.FC<Props> = (props: Props) => {
    * Note: Don't consider any fees in this function, since it sets values for tokenAmount,
    * which triggers `handleChangeTokenAmount` where all calculations for fees are happen
    */
-  const handleChangePercent = (tokenSymbol: string) => (amount: number) => {
-    const totalAmount = getThresholdAmount(tokenSymbol).amount();
-    const totalTokenAmount = getThresholdAmount(symbol).amount();
+  const handleChangePercent = (amount: number) => {
+    const value = availableTokenAmount.multipliedBy(amount).div(100);
 
-    const value = totalAmount.multipliedBy(amount).div(100);
+    // formula: token amount / ratio;
+    const runeValue = value.dividedBy(ratio);
+    const runeAmountBN = runeValue.isLessThanOrEqualTo(totalRuneAmount)
+      ? runeValue
+      : totalRuneAmount;
 
-    if (tokenSymbol === RUNE_SYMBOL) {
-      // formula: value * ratio);
-      const tokenValue = value.multipliedBy(ratio);
-      const tokenAmountBN = tokenValue.isLessThanOrEqualTo(totalTokenAmount)
-        ? tokenValue
-        : totalTokenAmount;
-
-      setRuneAmount(tokenAmount(value));
-      setTargetAmount(tokenAmount(tokenAmountBN));
-      setRunePercent(amount);
-    } else {
-      setTargetAmount(tokenAmount(value));
-    }
+    setTargetAmount(tokenAmount(value));
+    setRuneAmount(tokenAmount(runeAmountBN));
+    setPercentSlider(amount);
   };
 
   const handleOpenPrivateModal = useCallback(() => {
@@ -394,7 +424,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
         ? {
             sourceAsset: RUNE_SYMBOL,
             targetAsset: symbol,
-            sourceAmount: runeAmount,
+            sourceAmount: runeAmountToSend,
             targetAmount,
           }
         : {
@@ -406,6 +436,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
             ),
           };
 
+    // set the tx confirmation status
     resetTxStatus({
       type,
       value: 0,
@@ -428,7 +459,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       const URL = `/pool/${asset}`;
       setRuneAmount(tokenAmount(0));
       setTargetAmount(tokenAmount(0));
-      setRunePercent(0);
+      setPercentSlider(0);
       history.push(URL);
     },
     [history],
@@ -507,7 +538,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
             walletConnect: user.walletConnector,
             bncClient,
             walletAddress: user.wallet,
-            runeAmount,
+            runeAmount: runeAmountToSend,
             assetAmount: targetAmount,
             poolAddress: poolAddress || '',
             symbol,
@@ -516,7 +547,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
           response = await stakeRequest({
             bncClient,
             wallet,
-            runeAmount,
+            runeAmount: runeAmountToSend,
             tokenAmount: targetAmount,
             poolAddress,
             symbolTo: symbol,
@@ -563,6 +594,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       return;
     }
 
+    // if fund caps is invalid, show error notification
     if (!isValidFundCaps) {
       showNotification({
         type: 'error',
@@ -576,13 +608,15 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
     // Validate amounts to stake
     if (
-      runeAmount.amount().isLessThanOrEqualTo(0) &&
-      targetAmount.amount().isLessThanOrEqualTo(0)
+      (runeAmount.amount().isLessThanOrEqualTo(0) &&
+        targetAmount.amount().isLessThanOrEqualTo(0) &&
+        isSymStake) ||
+      (targetAmount.amount().isLessThanOrEqualTo(0) && !isSymStake)
     ) {
       showNotification({
         type: 'error',
         message: 'Stake Invalid',
-        description: 'You need to enter an amount to stake.',
+        description: 'You need to enter the amount to stake.',
       });
       setDragReset(true);
       return;
@@ -590,6 +624,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
     if (
       !isAsymStakeValidUser &&
+      isSymStake &&
       (runeAmount.amount().isLessThanOrEqualTo(0) ||
         targetAmount.amount().isLessThanOrEqualTo(0))
     ) {
@@ -707,9 +742,9 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     }
 
     const runeValue = withdrawData?.runeValue ?? baseAmount(0);
-    const runeAmount = baseToToken(runeValue);
+    const runeWithdrawAmount = baseToToken(runeValue);
 
-    if (runeAmount.amount().isLessThanOrEqualTo(1)) {
+    if (runeWithdrawAmount.amount().isLessThanOrEqualTo(1)) {
       showNotification({
         type: 'error',
         message: 'Invalid amount',
@@ -783,15 +818,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     </PopoverContent>
   );
 
-  // TODO: disabled the asym stake for temp
-  // const handleSwitchSelectRatio = () => {
-  //   // if lock status is switched from unlock to lock, re-calculate the output amount again
-  //   if (!selectRatio) {
-  //     handleChangeTokenAmount(RUNE_SYMBOL, true)(runeAmount.amount());
-  //   }
-  //   setSelectRatio(!selectRatio);
-  // };
-
   const renderStakeInfo = () => {
     const loading = isLoading();
 
@@ -854,9 +880,30 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     });
   };
 
-  const renderShareDetail = () => {
-    const tokenPrice = validBNOrZero(priceIndex[tokenSymbol]);
+  // get slip for stake
+  const stakeSlip = useMemo(() => {
+    const runeAssetAmount = assetAmount(runeAmountToSend.amount());
+    const targetAssetAmount = assetAmount(targetAmount.amount());
+    const runeBaseAmountValue = assetToBase(runeAssetAmount);
+    const targetBaseAmountValue = assetToBase(targetAssetAmount);
 
+    const stakeDataParam = {
+      asset: targetBaseAmountValue,
+      rune: runeBaseAmountValue,
+    };
+
+    const runeBalance = getBaseAmount(R);
+    const assetBalance = getBaseAmount(T);
+    const poolDataParam = {
+      runeBalance,
+      assetBalance,
+    };
+    const stakeSlip = getSlipOnStake(stakeDataParam, poolDataParam);
+
+    return stakeSlip.toFixed(2);
+  }, [runeAmountToSend, targetAmount, R, T]);
+
+  const renderShareDetail = () => {
     const tokensData: AssetPair[] = Object.keys(assets).map(tokenName => {
       const tokenData = assets[tokenName];
       const assetStr = tokenData?.asset;
@@ -961,30 +1008,20 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                 </Label>
               </Col>
             </Row>
+            <RowWrapper>
+              <Switch
+                checked={isSymStake}
+                onChange={setSymStake}
+                checkedChildren={2}
+                unCheckedChildren={1}
+              />
+              <Label>
+                Stake{' '}
+                <AssetTypeLabel type={!isSymStake}>one asset</AssetTypeLabel> |{' '}
+                <AssetTypeLabel type={isSymStake}>two asset</AssetTypeLabel>
+              </Label>
+            </RowWrapper>
             <div className="stake-card-wrapper">
-              <div className="coin-card-wrapper">
-                <CoinCard
-                  inputProps={{
-                    'data-test': 'stake-coin-input-rune',
-                    tabIndex: '0',
-                  }}
-                  data-test="coin-card-stake-coin-rune"
-                  asset="rune"
-                  amount={runeAmount}
-                  price={runePrice}
-                  priceIndex={priceIndex}
-                  unit={pricePrefix}
-                  onChange={handleChangeTokenAmount(RUNE_SYMBOL)}
-                  disabled={!isValidFundCaps}
-                />
-                <Slider
-                  value={runePercent}
-                  onChange={handleChangePercent(RUNE_SYMBOL)}
-                  withLabel
-                  tabIndex="-1"
-                  disabled={!isValidFundCaps}
-                />
-              </div>
               <div className="coin-card-wrapper">
                 <CoinCard
                   inputProps={{
@@ -1003,7 +1040,35 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                   disabled={!isValidFundCaps}
                   withSearch
                 />
+                <Slider
+                  value={sliderPercent}
+                  onChange={handleChangePercent}
+                  withLabel
+                  tabIndex="-1"
+                  disabled={!isValidFundCaps}
+                />
               </div>
+              {isSymStake && (
+                <div className="coin-card-wrapper">
+                  <CoinCard
+                    inputProps={{
+                      'data-test': 'stake-coin-input-rune',
+                      tabIndex: '0',
+                    }}
+                    data-test="coin-card-stake-coin-rune"
+                    asset="rune"
+                    amount={runeAmount}
+                    price={runePrice}
+                    priceIndex={priceIndex}
+                    unit={pricePrefix}
+                    onChange={handleChangeTokenAmount(RUNE_SYMBOL)}
+                    disabled={!isValidFundCaps}
+                  />
+                </div>
+              )}
+            </div>
+            <div>
+              <Label>SLIP: {stakeSlip}</Label>
             </div>
             <div className="stake-share-info-wrapper">
               <div className="share-status-wrapper">

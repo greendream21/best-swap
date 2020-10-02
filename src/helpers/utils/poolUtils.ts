@@ -213,9 +213,9 @@ export const stakeRequest = (
     // However, we are safe here, since we have already checked amounts of rune and token before
     const runeAmountNumber = runeAmountValue.toNumber();
     const tokenAmountNumber = tokenAmountValue.toNumber();
-    if (runeAmountValue.isGreaterThan(0) && tokenAmountValue.isGreaterThan(0)) {
-      const memo = getStakeMemo(symbolTo);
+    const memo = getStakeMemo(symbolTo);
 
+    if (runeAmountValue.isGreaterThan(0) && tokenAmountValue.isGreaterThan(0)) {
       const outputs: MultiTransfer[] = [
         {
           to: poolAddress,
@@ -237,15 +237,11 @@ export const stakeRequest = (
         .then((response: TransferResult) => resolve(response))
         .catch((error: Error) => reject(error));
     } else if (runeAmountValue.isLessThanOrEqualTo(0) && tokenAmount) {
-      const memo = getStakeMemo(symbolTo);
-
       bncClient
         .transfer(wallet, poolAddress, tokenAmountNumber, symbolTo, memo)
         .then((response: TransferResult) => resolve(response))
         .catch((error: Error) => reject(error));
     } else if (runeAmount && tokenAmountValue.isLessThanOrEqualTo(0)) {
-      const memo = getStakeMemo(symbolTo);
-
       bncClient
         .transfer(wallet, poolAddress, runeAmountNumber, RUNE_SYMBOL, memo)
         .then((response: TransferResult) => resolve(response))

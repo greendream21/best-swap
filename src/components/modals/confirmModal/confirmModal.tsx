@@ -81,6 +81,10 @@ const ConfirmModal: React.FC<Props> = (props): JSX.Element => {
       ? tokenAmount(txResult?.amount)
       : targetAmount;
 
+  const hasSourceAmount = !sourceAmount.amount().isEqualTo(0);
+  const hasOutputAmount = !outputAmount.amount().isEqualTo(0);
+  const hasAmount = hasSourceAmount && hasOutputAmount;
+
   const renderContent = () => {
     return (
       <ModalContent>
@@ -96,10 +100,14 @@ const ConfirmModal: React.FC<Props> = (props): JSX.Element => {
             />
           </div>
           <div className="asset-data-container">
-            <StepBar size={50} />
+            {hasAmount && <StepBar size={50} />}
             <div className="asset-pair">
-              <CoinData asset={source} assetValue={sourceAmount} />
-              <CoinData asset={target} assetValue={outputAmount} />
+              {hasSourceAmount && (
+                <CoinData asset={source} assetValue={sourceAmount} />
+              )}
+              {hasOutputAmount && (
+                <CoinData asset={target} assetValue={outputAmount} />
+              )}
             </div>
           </div>
         </Row>
