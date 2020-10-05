@@ -70,7 +70,10 @@ import { TxStatus, TxTypes, TxResult } from '../../redux/app/types';
 import { PriceDataIndex, PoolDataMap } from '../../redux/midgard/types';
 import { RootState } from '../../redux/store';
 import { getAssetFromString } from '../../redux/midgard/utils';
-import { PoolDetailStatusEnum } from '../../types/generated/midgard';
+import {
+  PoolDetailStatusEnum,
+  AssetDetail,
+} from '../../types/generated/midgard';
 import { TransferFeesRD, TransferFees } from '../../redux/binance/types';
 import {
   getAssetDataFromBalance,
@@ -91,6 +94,7 @@ type Props = {
   txResult?: TxResult;
   txStatus: TxStatus;
   assetData: AssetData[];
+  assetArray: AssetDetail[];
   poolAddress: string;
   poolData: PoolDataMap;
   pools: string[];
@@ -113,6 +117,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     transferFees,
     txStatus,
     assetData,
+    assetArray,
     poolData,
     poolAddress,
     priceIndex,
@@ -650,14 +655,24 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     [],
   );
 
-  // add rune data in the target token list
-  tokensData.push({
+  const runeData = {
     asset: RUNE_SYMBOL,
     price: runePrice,
-  });
+  };
+
+  // add rune data in the target token list
+  tokensData.push(runeData);
+
+  const assetInfo = assetArray.map(data => ({
+    asset: getAssetFromString(data.asset).symbol || '',
+  }));
+  assetInfo.push({ asset: RUNE_SYMBOL });
+
+  // include all pool tokens for source if wallet is disconnected
+  const sourceInfo = user?.wallet ? assetData : assetInfo;
 
   const { sourceData, targetData } = getValidSwapPairs(
-    assetData,
+    sourceInfo,
     tokensData,
     sourceSymbol,
     targetSymbol,
@@ -859,6 +874,7 @@ export default compose(
       poolAddress: state.Midgard.poolAddress,
       poolData: state.Midgard.poolData,
       pools: state.Midgard.pools,
+      assetArray: state.Midgard.assetArray,
       priceIndex: state.Midgard.priceIndex,
       basePriceAsset: state.Midgard.basePriceAsset,
       transferFees: state.Binance.transferFees,
