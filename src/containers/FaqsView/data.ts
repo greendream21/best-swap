@@ -52,7 +52,7 @@ export const faqs: Faq[] = [
   {
     question: 'Where can I provide feedback?',
     answer:
-      'Feedback is always appreciated and we encourage you to submit issues to gitlab (https://gitlab.com/thorchain/bepswap) or in telegram (https://t.me/thorchain_org).',
+      'Feedback is always appreciated and the team encourages you to submit issues to gitlab (https://gitlab.com/thorchain/bepswap) or in telegram (https://t.me/thorchain_org).',
   },
   {
     question: 'How can I get involved?',
