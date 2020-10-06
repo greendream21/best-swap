@@ -276,7 +276,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         const { target, values } = record;
         if (target) {
           const swapUrl = `/swap/${RUNE_SYMBOL}:${values.symbol}`;
-          const stakeUrl = `/stake/${values.symbol.toUpperCase()}`;
+          const stakeUrl = `/liquidity/${values.symbol.toUpperCase()}`;
 
           return (
             <ActionColumn>

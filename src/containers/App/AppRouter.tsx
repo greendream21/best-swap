@@ -36,7 +36,7 @@ const routes: AppRoute[] = [
     exact: true,
   },
   {
-    path: 'stake/:symbol',
+    path: 'liquidity/:symbol',
     component: asyncComponent(() => import('../PoolStake')),
     exact: true,
   },

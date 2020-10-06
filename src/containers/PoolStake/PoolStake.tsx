@@ -456,7 +456,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
   const handleSelectTraget = useCallback(
     (asset: string) => {
-      const URL = `/pool/${asset}`;
+      const URL = `/liquidity/${asset}`;
       setRuneAmount(tokenAmount(0));
       setTargetAmount(tokenAmount(0));
       setPercentSlider(0);
@@ -1063,7 +1063,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
             <div className="stake-share-info-wrapper">
               <div className="share-status-wrapper">
                 <Drag
-                  title="Drag to stake"
+                  title="Drag to add"
                   source="blue"
                   target="confirm"
                   reset={dragReset}
