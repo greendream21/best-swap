@@ -560,9 +560,9 @@ const PoolStake: React.FC<Props> = (props: Props) => {
         setOpenPrivateModal(false);
         showNotification({
           type: 'error',
-          message: 'Stake Invalid',
+          message: 'Add Liquidity Invalid',
           description: `${error?.toString() ??
-            'Stake information is not valid.'}`,
+            'Add information is not valid.'}`,
         });
         handleCloseModal();
         setDragReset(true);
@@ -588,9 +588,9 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     if (!isValidFundCaps) {
       showNotification({
         type: 'error',
-        message: 'Stake Invalid',
+        message: 'Add Liquidity Invalid',
         description:
-          '95% Funds Cap has been reached. You cannot stake right now, come back later.',
+          '95% Funds Cap has been reached. You cannot add right now, come back later.',
       });
       setDragReset(true);
       return;
@@ -605,8 +605,8 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     ) {
       showNotification({
         type: 'error',
-        message: 'Stake Invalid',
-        description: 'You need to enter the amount to stake.',
+        message: 'Add Liquidity Invalid',
+        description: 'You need to enter the amount to add.',
       });
       setDragReset(true);
       return;
@@ -620,8 +620,8 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     ) {
       showNotification({
         type: 'error',
-        message: 'Stake Invalid',
-        description: 'You cannot stake asymmetrically.',
+        message: 'Add Liquidity Invalid',
+        description: 'You cannot add asymmetrically.',
       });
       setDragReset(true);
       return;
@@ -922,7 +922,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
           >
             {!isValidFundCaps && (
               <Text type="danger" style={{ paddingTop: '10px' }}>
-                95% Funds Cap has been reached. You cannot stake right now, come
+                95% Funds Cap has been reached. You cannot add right now, come
                 back later.
               </Text>
             )}
@@ -1209,7 +1209,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
           <div className="placeholder-icon">
             <InfoOutlined />
           </div>
-          <h2>Loading of staked data for this pool failed.</h2>
+          <h2>Loading of added data for this pool failed.</h2>
           {msg && <p className="placeholder-label">{msg}</p>}
           <p className="placeholder-label">
             {' '}

@@ -132,9 +132,9 @@ const WalletView: React.FC<Props> = (props: Props): JSX.Element => {
       (error: Error) => <>{error.toString()}</>, // error
       (data: StakeData[]): JSX.Element =>
         data.length > 0 ? (
-          <>Your current stakes are:</>
+          <>Your current pool shares are:</>
         ) : (
-          <>You are currently not staked in any pool</>
+          <>You are currently not added in any pool</>
         ),
     )(stakeData);
 

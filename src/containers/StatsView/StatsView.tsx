@@ -65,7 +65,7 @@ const StatsView: React.FC<Props> = (props: Props): JSX.Element => {
               title="transactions"
               status={getValues(stats.transactions)}
             />
-            <StatusGroup title="stakers" status={getValues(stats.stakers)} />
+            <StatusGroup title="members" status={getValues(stats.stakers)} />
           </Col>
         </Row>
       )}

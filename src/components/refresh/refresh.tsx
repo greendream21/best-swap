@@ -40,8 +40,8 @@ const Refresh = (): JSX.Element => {
     } else if (pathname.includes('/swap')) {
       // swap
       dispatch(appActions.refreshSwapData());
-    } else if (pathname.includes('/stake')) {
-      // stake
+    } else if (pathname.includes('/liquidity')) {
+      // add liquidity
       const symbol = pathname.slice(pathname.lastIndexOf('/') + 1);
       dispatch(appActions.refreshStakeData(symbol));
     }

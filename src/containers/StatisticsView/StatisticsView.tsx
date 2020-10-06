@@ -47,7 +47,7 @@ const StatisticsView: React.FC<Props> = (props: Props): JSX.Element => {
         xl={{ span: 4 }}
       >
         <StyledStatistic
-          title="Total Staked"
+          title="Total Added Liquidity"
           value={getUSDValue(stats?.totalStaked ?? '0')}
           prefix={getPrefix()}
         />
@@ -60,7 +60,7 @@ const StatisticsView: React.FC<Props> = (props: Props): JSX.Element => {
         xl={{ span: 4 }}
       >
         <StyledStatistic
-          title="Total Staked Tx"
+          title="Total Added Tx"
           value={stats?.totalStakeTx ?? '0'}
         />
       </Col>

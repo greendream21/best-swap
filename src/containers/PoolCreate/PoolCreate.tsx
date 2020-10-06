@@ -299,9 +299,9 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
     if (!isValidFundCaps) {
       showNotification({
         type: 'error',
-        message: 'Stake Invalid',
+        message: 'Add Liquidity Invalid',
         description:
-          '95% Funds Cap has been reached. You cannot stake right now, come back later.',
+          '95% Funds Cap has been reached. You cannot add right now, come back later.',
       });
       setDragReset(true);
       return;
@@ -313,8 +313,8 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
     ) {
       showNotification({
         type: 'error',
-        message: 'Stake Invalid',
-        description: 'You need to enter an amount to stake.',
+        message: 'Add Liquidity Invalid',
+        description: 'You need to enter an amount to add.',
       });
       setDragReset(true);
       return;
@@ -380,7 +380,7 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
           ADD ASSETS
         </Label>
         <Label className="label-description" size="normal">
-          Select the maximum deposit to stake.
+          Select the maximum deposit to add.
         </Label>
         <Label className="label-no-padding" size="normal">
           Note: Pools always have RUNE as the base asset.
@@ -428,7 +428,7 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
             />
             {!isValidFundCaps && (
               <Text type="danger" style={{ paddingTop: '10px' }}>
-                95% Funds Cap has been reached. You cannot stake right now, come
+                95% Funds Cap has been reached. You cannot add right now, come
                 back later.
               </Text>
             )}

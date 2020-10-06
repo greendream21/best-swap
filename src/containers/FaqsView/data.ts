@@ -7,7 +7,7 @@ export type Faq = {
 export const faqs: Faq[] = [
   {
     question: 'What is BEPSwap?',
-    answer: `BEPSwap is a interface for the THORChain decentralised liquidity network and enables BEP2 assets to be swapped across liquidity pools on THORChain's decentralised liquidity network. Asset holders can also stake their unproductive assets and earn fees on swaps. THORNodes operate the network and split the responsibility of operating exchange infrastructure, asset management and trading software to enable assets to be swapped in a decentralised way.\n\nMore information can be found at https://docs.thorchain.org/ or https://rebase.foundation/network/thorchain/.`,
+    answer: `BEPSwap is a interface for the THORChain decentralised liquidity network and enables BEP2 assets to be swapped across liquidity pools on THORChain's decentralised liquidity network. Asset holders can also add their unproductive assets and earn fees on swaps. THORNodes operate the network and split the responsibility of operating exchange infrastructure, asset management and trading software to enable assets to be swapped in a decentralised way.\n\nMore information can be found at https://docs.thorchain.org/ or https://rebase.foundation/network/thorchain/.`,
   },
   {
     question: 'What assets are supported?',
@@ -37,12 +37,12 @@ export const faqs: Faq[] = [
   {
     question: 'What is staking?',
     answer:
-      'On THORChain, swappers access liquidity provided by agents who stake their unproductive assets to earn fees on every swap. Anyone can contribute liquidity to the pools by staking in the pool of their choice. BEPSwap will provide a live view of your returns and how much fees are being earned by providing liquidity. In this way assets become productive to the staker.',
+      'On THORChain, swappers access liquidity provided by agents who add their unproductive assets to earn fees on every swap. Anyone can contribute liquidity to the pools by staking in the pool of their choice. BEPSwap will provide a live view of your returns and how much fees are being earned by providing liquidity. In this way assets become productive to the pool member.',
   },
   {
-    question: 'How do I stake?',
+    question: 'How do I add liquidity?',
     answer:
-      'Click on STAKE from the header menu and select the pool you wish to stake in. eg. BNB. Use the slider to select the amount of asset you wish to stake, or enter an amount. BEPSwap will select the optimal ratio based on the current ratio (pool price) of assets in the pool; however you can override this if you want. Drag to stake, enter your password and youre done! Your stake should appear within a few minutes and can be viewed on the stake screen or within the wallet drawer.',
+      'Click on ADD from the header menu and select the pool you wish to add liquidity in. eg. BNB. Use the slider to select the amount of asset you wish to add liquidity, or enter an amount. BEPSwap will select the optimal ratio based on the current ratio (pool price) of assets in the pool; however you can override this if you want. Drag to add, enter your password and youre done! Your liquidity should appear within a few minutes and can be viewed on the add liquidity screen or within the wallet drawer.',
   },
   {
     question: 'BEPSwap is in testnet, when will mainnet go live?',
@@ -52,7 +52,7 @@ export const faqs: Faq[] = [
   {
     question: 'Where can I provide feedback?',
     answer:
-      'Feedback is always appreciated and the team encourages you to submit issues to gitlab (https://gitlab.com/thorchain/bepswap) or in telegram (https://t.me/thorchain_org).',
+      'Feedback is always appreciated and we encourage you to submit issues to gitlab (https://gitlab.com/thorchain/bepswap) or in telegram (https://t.me/thorchain_org).',
   },
   {
     question: 'How can I get involved?',
