@@ -28,6 +28,7 @@ const useFee = (feeType = 'single') => {
     (state: RootState) => state.Binance.transferFees,
   );
   const assetData = useSelector((state: RootState) => state.Wallet.assetData);
+  const user = useSelector((state: RootState) => state.Wallet.user);
 
   const runePrice = validBNOrZero(priceIndex[RUNE_SYMBOL]);
 
@@ -145,7 +146,8 @@ const useFee = (feeType = 'single') => {
       return tokenAmount(0);
     }
 
-    if (amountAfterBnbFee.isGreaterThan(thresholdAmount)) {
+    // if user wallet is connected and send amount is greater than bnb threshold amount, send the MAX amount
+    if (amountAfterBnbFee.isGreaterThan(thresholdAmount) && user?.wallet) {
       return tokenAmount(thresholdAmount);
     }
 
