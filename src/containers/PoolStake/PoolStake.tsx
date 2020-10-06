@@ -60,11 +60,9 @@ import {
 import {
   stakeRequest,
   withdrawRequest,
-  getPoolData,
   isAsymStakeValid,
 } from '../../helpers/utils/poolUtils';
 import { getTickerFormat } from '../../helpers/stringHelper';
-import TokenInfo from '../../components/uielements/tokens/tokenInfo';
 import { RootState } from '../../redux/store';
 import { User, AssetData } from '../../redux/wallet/types';
 import { Maybe, Nothing, AssetPair, FixmeType } from '../../types/bepswap';
@@ -161,20 +159,12 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
   // pool details
   const poolInfo = poolData[tokenSymbol] || {};
-  const assetDetail = assets?.[tokenSymbol] ?? {};
 
   const R = bnOrZero(poolInfo?.runeDepth);
   const T = bnOrZero(poolInfo?.assetDepth);
   const poolUnits = bnOrZero(poolInfo?.poolUnits);
   // pool ratio -> formula: 1 / (R / T) = T / R
   const ratio = R.isEqualTo(0) ? 1 : T.div(R);
-
-  const poolDetail = getPoolData(
-    tokenSymbol,
-    poolInfo,
-    assetDetail,
-    priceIndex,
-  );
 
   const wallet = user ? user.wallet : null;
   const hasWallet = wallet !== null;
@@ -818,68 +808,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     </PopoverContent>
   );
 
-  const renderStakeInfo = () => {
-    const loading = isLoading();
-
-    const {
-      depth,
-      volume24,
-      volumeAT,
-      totalSwaps,
-      totalStakers,
-      roi,
-    } = poolDetail;
-
-    const attrs = [
-      {
-        key: 'depth',
-        title: 'Depth',
-        value: `${pricePrefix} ${formatBaseAsTokenAmount(depth)}`,
-      },
-      {
-        key: 'vol24',
-        title: '24hr Volume',
-        value: `${pricePrefix} ${formatBaseAsTokenAmount(volume24)}`,
-      },
-      {
-        key: 'volAT',
-        title: 'All Time Volume',
-        value: `${pricePrefix} ${formatBaseAsTokenAmount(volumeAT)}`,
-      },
-      {
-        key: 'swaps',
-        title: 'Total Swaps',
-        value: totalSwaps.toString(),
-      },
-      {
-        key: 'stakers',
-        title: 'Total Stakers',
-        value: totalStakers.toString(),
-      },
-      {
-        key: 'roi',
-        title: 'Return To Date',
-        value: `${roi}%`,
-      },
-    ];
-
-    return attrs.map(info => {
-      const { title, value, key } = info;
-
-      return (
-        <Col className="token-info-card" key={key} xs={12} sm={8} md={6} lg={4}>
-          <TokenInfo
-            asset="RUNE"
-            target={tokenTicker}
-            value={value}
-            label={title}
-            loading={loading}
-          />
-        </Col>
-      );
-    });
-  };
-
   // get slip for stake
   const stakeSlip = useMemo(() => {
     const runeAssetAmount = assetAmount(runeAmountToSend.amount());
@@ -1296,7 +1224,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
   return (
     <ContentWrapper className="pool-stake-wrapper" transparent>
-      <Row className="stake-info-view">{renderStakeInfo()}</Row>
       <Row className="share-view" gutter={8}>
         {!stakersAssetData && stakerPoolDataError && (
           <Col className="your-share-view" md={24}>
