@@ -998,16 +998,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                 back later.
               </Text>
             )}
-            <Row>
-              <Col span={24} lg={12}>
-                <Label className="label-description" size="normal">
-                  Select the maximum deposit to stake.
-                </Label>
-                <Label className="label-no-padding" size="normal">
-                  Note: Pools always have RUNE as the base asset.
-                </Label>
-              </Col>
-            </Row>
             <RowWrapper>
               <Switch
                 checked={isSymStake}
@@ -1307,20 +1297,20 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   return (
     <ContentWrapper className="pool-stake-wrapper" transparent>
       <Row className="stake-info-view">{renderStakeInfo()}</Row>
-      <Row className="share-view">
+      <Row className="share-view" gutter={8}>
         {!stakersAssetData && stakerPoolDataError && (
           <Col className="your-share-view" md={24}>
             {renderStakeDataPoolError()}
           </Col>
         )}
-        {stakersAssetData && (
-          <Col className="your-share-view" span={24} lg={yourShareSpan}>
-            {renderYourShare()}
-          </Col>
-        )}
         {stakersAssetData && hasWallet && (
           <Col className="share-detail-view" span={24} lg={16}>
             {renderShareDetail()}
+          </Col>
+        )}
+        {stakersAssetData && (
+          <Col className="your-share-view" span={24} lg={yourShareSpan}>
+            {renderYourShare()}
           </Col>
         )}
       </Row>
