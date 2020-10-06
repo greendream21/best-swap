@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { palette, key } from 'styled-theme';
+import { Switch as UnStyledSwitch } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 
 import Paragraph from 'antd/lib/typography/Paragraph';
@@ -15,7 +16,6 @@ export const ContentWrapper = styled(ContentView)`
   padding: 0;
 
   .stake-info-view {
-
     .token-info-card {
       padding: 8px 8px 8px 0;
 
@@ -513,4 +513,26 @@ export const PopoverContent = styled.div`
 export const PopoverIcon = styled(InfoCircleOutlined)`
   color: ${palette('primary', 0)};
   margin: 0 10px;
+`;
+
+export const Switch = styled(UnStyledSwitch)`
+  background-color: ${palette('primary', 0)};
+  &.ant-switch-checked {
+    background-color: ${palette('primary', 0)};
+  }
+`;
+
+export const RowWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  .label-wrapper {
+    margin-left: 10px;
+  }
+`;
+
+export const AssetTypeLabel = styled.span`
+  color: ${({ type }: { type: boolean }) =>
+    type ? palette('primary', 0) : 'white'};
 `;
