@@ -91,8 +91,10 @@ export const getPoolData = (
   );
   const transaction = baseAmount(transactionResult);
 
-  // ROI (Return To Date)
-  const roiATResult = Number(poolDetail?.poolROI ?? 0);
+  /** RETURN TO DATE = poolEarned / poolDepth */
+  const poolEarned = bnOrZero(poolDetail?.poolEarned);
+  const poolDepth = bnOrZero(poolDetail?.poolDepth);
+  const roiATResult = Number(poolEarned.dividedBy(poolDepth).toFormat(2));
   const roi = Number((roiATResult * 100).toFixed(2));
 
   // APY (Annual Percent Yield)

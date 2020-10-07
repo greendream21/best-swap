@@ -28,15 +28,16 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
   const transaction = `${(Number(poolInfo?.swappingTxCount) || 0) +
     (Number(poolInfo?.stakingTxCount) || 0)}`;
 
-  /** pool earning = poolROI * poolStakedTotal */
-  const poolROI = bnOrZero(poolInfo?.poolROI);
-  const poolStakedTotal = bnOrZero(poolInfo?.poolStakedTotal);
-  const earning = getReducedPriceLabel(poolStakedTotal.multipliedBy(poolROI));
+  /** pool earning = poolEarned * runePrice */
+  const earning = getReducedPriceLabel(bnOrZero(poolInfo?.poolEarned));
 
   const totalStakers = `${stats?.totalStakers ?? '0'}`;
   const totalSwaps = `${poolInfo?.swappingTxCount ?? '0'}`;
 
-  const roiATResult = Number(poolInfo?.poolROI ?? 0);
+  /** RETURN TO DATE = poolEarned / poolDepth */
+  const poolEarned = bnOrZero(poolInfo?.poolEarned);
+  const poolDepth = bnOrZero(poolInfo?.poolDepth);
+  const roiATResult = Number(poolEarned.dividedBy(poolDepth).toFormat(2));
   const roi = Number((roiATResult * 100).toFixed(2));
 
   return (
