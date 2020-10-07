@@ -33,7 +33,7 @@ const TxLabel: React.FC<Props> = (props: Props): JSX.Element => {
   }
 
   if (type === TxDetailsTypeEnum.Stake) {
-    label = 'stake';
+    label = 'add liquidity';
     TxIcon = <DoubleRightOutlined />;
   }
 

@@ -60,8 +60,8 @@ const ConfirmModal: React.FC<Props> = (props): JSX.Element => {
       if (!isCompleted) return 'CREATING POOL';
       return 'POOL CREATED';
     } else if (txType === TxTypes.STAKE) {
-      if (!isCompleted) return 'YOU ARE STAKING';
-      return 'YOU STAKED';
+      if (!isCompleted) return 'YOU ARE ADDING';
+      return 'YOU ADDED';
     } else if (txType === TxTypes.WITHDRAW) {
       if (!isCompleted) return 'YOU ARE WITHDRAWING';
       return 'YOU WITHDRAWN';

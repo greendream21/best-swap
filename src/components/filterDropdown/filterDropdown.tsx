@@ -56,7 +56,7 @@ const FilterDropdown: React.FC<Props> = (props: Props): JSX.Element => {
     },
     {
       icon: <DoubleRightOutlined />,
-      title: 'STAKE',
+      title: 'ADD LIQUIDITY',
       key: TxDetailsTypeEnum.Stake,
     },
     {

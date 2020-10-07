@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 import { palette, key } from 'styled-theme';
-import { Switch as UnStyledSwitch } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 
 import Paragraph from 'antd/lib/typography/Paragraph';
@@ -12,6 +11,9 @@ import { media } from '../../helpers/styleHelper';
 // This needs to be refactored/rewritten pretty badly
 // We really must not use global classes for CSS we loose
 // all the reuseability/modularity that CSS provides us
+
+// TODO(Chris): Refactor all styles using styled-components, not inline styles
+
 export const ContentWrapper = styled(ContentView)`
   padding: 0;
 
@@ -180,7 +182,6 @@ export const ContentWrapper = styled(ContentView)`
       ${media.lg`
         display: flex;
         flex-direction: column;
-        
       `}
 
       .advanced-mode-btn {
@@ -440,15 +441,6 @@ export const ContentWrapper = styled(ContentView)`
         }
       }
     }
-
-    .share-detail-view {
-      padding-left: 0px;
-      padding-top: 8px;
-      ${media.sm`
-        padding-top: 0px;
-        padding-left: 8px;
-      `}
-    }
   }
 
   .your-share-wrapper,
@@ -513,26 +505,4 @@ export const PopoverContent = styled.div`
 export const PopoverIcon = styled(InfoCircleOutlined)`
   color: ${palette('primary', 0)};
   margin: 0 10px;
-`;
-
-export const Switch = styled(UnStyledSwitch)`
-  background-color: ${palette('primary', 0)};
-  &.ant-switch-checked {
-    background-color: ${palette('primary', 0)};
-  }
-`;
-
-export const RowWrapper = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-
-  .label-wrapper {
-    margin-left: 10px;
-  }
-`;
-
-export const AssetTypeLabel = styled.span`
-  color: ${({ type }: { type: boolean }) =>
-    type ? palette('primary', 0) : 'white'};
 `;

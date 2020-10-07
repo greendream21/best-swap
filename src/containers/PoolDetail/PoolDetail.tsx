@@ -192,7 +192,7 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
 
   const renderDetailCaption = (poolStats: PoolData, viewMode: string) => {
     const swapUrl = `/swap/${RUNE_SYMBOL}:${poolStats.values.symbol}`;
-    const stakeUrl = `/stake/${poolStats.values.symbol.toUpperCase()}`;
+    const liquidityUrl = `/liquidity/${poolStats.values.symbol.toUpperCase()}`;
 
     const targetName = `${getTokenName(tokenList, poolStats.values.symbol)} (${
       poolStats.target
@@ -210,10 +210,10 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
           <PoolCaptionPrice>{poolPrice}</PoolCaptionPrice>
         </PoolCaptionWrapper>
         <PoolCaptionButtonsWrapper>
-          <Link to={stakeUrl}>
+          <Link to={liquidityUrl}>
             <Button round="true" typevalue="outline">
               <DatabaseOutlined />
-              stake
+              add
             </Button>
           </Link>
           {poolStatus === PoolDetailStatusEnum.Enabled && (

@@ -53,18 +53,13 @@ import {
   FeeParagraph,
   PopoverContent,
   PopoverIcon,
-  Switch,
-  RowWrapper,
-  AssetTypeLabel,
 } from './PoolStake.style';
 import {
   stakeRequest,
   withdrawRequest,
-  getPoolData,
   isAsymStakeValid,
 } from '../../helpers/utils/poolUtils';
 import { getTickerFormat } from '../../helpers/stringHelper';
-import TokenInfo from '../../components/uielements/tokens/tokenInfo';
 import { RootState } from '../../redux/store';
 import { User, AssetData } from '../../redux/wallet/types';
 import { Maybe, Nothing, AssetPair, FixmeType } from '../../types/bepswap';
@@ -79,7 +74,7 @@ import { StakersAssetData } from '../../types/generated/midgard';
 import { getAssetFromString } from '../../redux/midgard/utils';
 import { TransferFeesRD, TransferFees } from '../../redux/binance/types';
 import { bnbBaseAmount } from '../../helpers/walletHelper';
-import { ShareDetailTabKeys, WithdrawData } from './types';
+import { TabKeys, WithdrawData } from './types';
 import showNotification from '../../components/uielements/notification';
 import {
   stakeRequestUsingWalletConnect,
@@ -161,7 +156,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
   // pool details
   const poolInfo = poolData[tokenSymbol] || {};
-  const assetDetail = assets?.[tokenSymbol] ?? {};
 
   const R = bnOrZero(poolInfo?.runeDepth);
   const T = bnOrZero(poolInfo?.assetDepth);
@@ -169,25 +163,17 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   // pool ratio -> formula: 1 / (R / T) = T / R
   const ratio = R.isEqualTo(0) ? 1 : T.div(R);
 
-  const poolDetail = getPoolData(
-    tokenSymbol,
-    poolInfo,
-    assetDetail,
-    priceIndex,
-  );
-
   const wallet = user ? user.wallet : null;
   const hasWallet = wallet !== null;
 
-  const [selectedShareDetailTab, setSelectedShareDetailTab] = useState<
-    ShareDetailTabKeys
-  >(ShareDetailTabKeys.ADD);
+  const [selectedTab, setSelectedTab] = useState<TabKeys>(TabKeys.ADD_SYM);
 
   const selectRatio = !isAsymStakeValidUser;
   const [withdrawPercentage, setWithdrawPercentage] = useState(50);
   const [runeAmount, setRuneAmount] = useState<TokenAmount>(tokenAmount(0));
   const [targetAmount, setTargetAmount] = useState<TokenAmount>(tokenAmount(0));
-  const [isSymStake, setSymStake] = useState(true);
+
+  const isSymStake = selectedTab === TabKeys.ADD_SYM;
 
   // if stake asymmetrically, set the rune amount as 0
   const runeAmountToSend = isSymStake ? runeAmount : tokenAmount(0);
@@ -203,7 +189,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
   const feeType = useMemo(() => {
     if (
-      selectedShareDetailTab === ShareDetailTabKeys.ADD &&
       runeAmount.amount().isGreaterThan(0) &&
       targetAmount.amount().isGreaterThan(0) &&
       isSymStake
@@ -211,7 +196,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       return 'multi';
     }
     return 'single';
-  }, [selectedShareDetailTab, runeAmount, targetAmount, isSymStake]);
+  }, [runeAmount, targetAmount, isSymStake]);
 
   const {
     bnbFeeAmount,
@@ -271,7 +256,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       setStakersAssetData(stakerPoolData[tokenSymbol]);
     } else if (stakerPoolDataError) {
       setStakersAssetData(emptyStakerPoolData);
-      setSelectedShareDetailTab(ShareDetailTabKeys.ADD);
+      setSelectedTab(TabKeys.ADD_SYM);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stakerPoolData, stakerPoolDataError]);
@@ -456,7 +441,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
   const handleSelectTraget = useCallback(
     (asset: string) => {
-      const URL = `/pool/${asset}`;
+      const URL = `/liquidity/${asset}`;
       setRuneAmount(tokenAmount(0));
       setTargetAmount(tokenAmount(0));
       setPercentSlider(0);
@@ -481,7 +466,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
     const txtLoading = <Text>Fee: ...</Text>;
     const isStakingBNB =
-      selectedShareDetailTab === ShareDetailTabKeys.ADD &&
+      selectedTab !== TabKeys.WITHDRAW &&
       targetAmount.amount().isGreaterThan(0);
 
     return (
@@ -570,9 +555,9 @@ const PoolStake: React.FC<Props> = (props: Props) => {
         setOpenPrivateModal(false);
         showNotification({
           type: 'error',
-          message: 'Stake Invalid',
+          message: 'Add Liquidity Invalid',
           description: `${error?.toString() ??
-            'Stake information is not valid.'}`,
+            'Add information is not valid.'}`,
         });
         handleCloseModal();
         setDragReset(true);
@@ -598,9 +583,9 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     if (!isValidFundCaps) {
       showNotification({
         type: 'error',
-        message: 'Stake Invalid',
+        message: 'Add Liquidity Invalid',
         description:
-          '95% Funds Cap has been reached. You cannot stake right now, come back later.',
+          '95% Funds Cap has been reached. You cannot add right now, come back later.',
       });
       setDragReset(true);
       return;
@@ -615,8 +600,8 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     ) {
       showNotification({
         type: 'error',
-        message: 'Stake Invalid',
-        description: 'You need to enter the amount to stake.',
+        message: 'Add Liquidity Invalid',
+        description: 'You need to enter the amount to add.',
       });
       setDragReset(true);
       return;
@@ -630,8 +615,8 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     ) {
       showNotification({
         type: 'error',
-        message: 'Stake Invalid',
-        description: 'You cannot stake asymmetrically.',
+        message: 'Add Liquidity Invalid',
+        description: 'You cannot add asymmetrically.',
       });
       setDragReset(true);
       return;
@@ -818,68 +803,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     </PopoverContent>
   );
 
-  const renderStakeInfo = () => {
-    const loading = isLoading();
-
-    const {
-      depth,
-      volume24,
-      volumeAT,
-      totalSwaps,
-      totalStakers,
-      roi,
-    } = poolDetail;
-
-    const attrs = [
-      {
-        key: 'depth',
-        title: 'Depth',
-        value: `${pricePrefix} ${formatBaseAsTokenAmount(depth)}`,
-      },
-      {
-        key: 'vol24',
-        title: '24hr Volume',
-        value: `${pricePrefix} ${formatBaseAsTokenAmount(volume24)}`,
-      },
-      {
-        key: 'volAT',
-        title: 'All Time Volume',
-        value: `${pricePrefix} ${formatBaseAsTokenAmount(volumeAT)}`,
-      },
-      {
-        key: 'swaps',
-        title: 'Total Swaps',
-        value: totalSwaps.toString(),
-      },
-      {
-        key: 'stakers',
-        title: 'Total Members',
-        value: totalStakers.toString(),
-      },
-      {
-        key: 'roi',
-        title: 'Return To Date',
-        value: `${roi}%`,
-      },
-    ];
-
-    return attrs.map(info => {
-      const { title, value, key } = info;
-
-      return (
-        <Col className="token-info-card" key={key} xs={12} sm={8} md={6} lg={4}>
-          <TokenInfo
-            asset="RUNE"
-            target={tokenTicker}
-            value={value}
-            label={title}
-            loading={loading}
-          />
-        </Col>
-      );
-    });
-  };
-
   // get slip for stake
   const stakeSlip = useMemo(() => {
     const runeAssetAmount = assetAmount(runeAmountToSend.amount());
@@ -980,114 +903,103 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
     const dragText = withdrawDisabled ? '24hr cooldown' : 'drag to withdraw';
 
+    const addLiquidityTab = (
+      <>
+        {!isValidFundCaps && (
+          <Text type="danger" style={{ paddingTop: '10px' }}>
+            95% Funds Cap has been reached. You cannot add right now, come back
+            later.
+          </Text>
+        )}
+        <div className="stake-card-wrapper">
+          <div className="coin-card-wrapper">
+            <CoinCard
+              inputProps={{
+                'data-test': 'stake-coin-input-target',
+                tabIndex: '0',
+              }}
+              data-test="coin-card-stake-coin-target"
+              asset={tokenTicker}
+              assetData={tokensData}
+              amount={targetAmount}
+              price={tokenPrice}
+              priceIndex={priceIndex}
+              unit={pricePrefix}
+              onChangeAsset={handleSelectTraget}
+              onChange={handleChangeTokenAmount(tokenSymbol)}
+              disabled={!isValidFundCaps}
+              withSearch
+            />
+            <Slider
+              value={sliderPercent}
+              onChange={handleChangePercent}
+              withLabel
+              tabIndex="-1"
+              disabled={!isValidFundCaps}
+            />
+          </div>
+          {isSymStake && (
+            <div className="coin-card-wrapper">
+              <CoinCard
+                inputProps={{
+                  'data-test': 'stake-coin-input-rune',
+                  tabIndex: '0',
+                }}
+                data-test="coin-card-stake-coin-rune"
+                asset="rune"
+                amount={runeAmount}
+                price={runePrice}
+                priceIndex={priceIndex}
+                unit={pricePrefix}
+                onChange={handleChangeTokenAmount(RUNE_SYMBOL)}
+                disabled={!isValidFundCaps}
+              />
+            </div>
+          )}
+        </div>
+        <div>
+          <Label>SLIP: {stakeSlip}</Label>
+        </div>
+        <div className="stake-share-info-wrapper">
+          <div className="share-status-wrapper">
+            <Drag
+              title="Drag to add"
+              source="blue"
+              target="confirm"
+              reset={dragReset}
+              disabled={disableDrag || !isValidFundCaps}
+              onConfirm={handleStake}
+              onDrag={handleDrag}
+            />
+          </div>
+          {renderFee()}
+        </div>
+      </>
+    );
+
+    const addAsymTabLabel = `Add ${tokenTicker}`;
+    const addSymTabLabel = `Add ${tokenTicker} + RUNE`;
+
     return (
       <div className="share-detail-wrapper">
-        <Tabs
-          withBorder
-          onChange={setSelectedShareDetailTab}
-          activeKey={selectedShareDetailTab}
-        >
+        <Tabs withBorder onChange={setSelectedTab} activeKey={selectedTab}>
           <TabPane
-            tab="Add"
-            key={ShareDetailTabKeys.ADD}
+            tab={addAsymTabLabel}
+            key={TabKeys.ADD_ASYM}
             disabled={!isValidFundCaps}
           >
-            {!isValidFundCaps && (
-              <Text type="danger" style={{ paddingTop: '10px' }}>
-                95% Funds Cap has been reached. You cannot stake right now, come
-                back later.
-              </Text>
-            )}
-            <Row>
-              <Col span={24} lg={12}>
-                <Label className="label-description" size="normal">
-                  Select the maximum deposit to stake.
-                </Label>
-                <Label className="label-no-padding" size="normal">
-                  Note: Pools always have RUNE as the base asset.
-                </Label>
-              </Col>
-            </Row>
-            <RowWrapper>
-              <Switch
-                checked={isSymStake}
-                onChange={setSymStake}
-                checkedChildren={2}
-                unCheckedChildren={1}
-              />
-              <Label>
-                Stake{' '}
-                <AssetTypeLabel type={!isSymStake}>one asset</AssetTypeLabel> |{' '}
-                <AssetTypeLabel type={isSymStake}>two asset</AssetTypeLabel>
-              </Label>
-            </RowWrapper>
-            <div className="stake-card-wrapper">
-              <div className="coin-card-wrapper">
-                <CoinCard
-                  inputProps={{
-                    'data-test': 'stake-coin-input-target',
-                    tabIndex: '0',
-                  }}
-                  data-test="coin-card-stake-coin-target"
-                  asset={tokenTicker}
-                  assetData={tokensData}
-                  amount={targetAmount}
-                  price={tokenPrice}
-                  priceIndex={priceIndex}
-                  unit={pricePrefix}
-                  onChangeAsset={handleSelectTraget}
-                  onChange={handleChangeTokenAmount(tokenSymbol)}
-                  disabled={!isValidFundCaps}
-                  withSearch
-                />
-                <Slider
-                  value={sliderPercent}
-                  onChange={handleChangePercent}
-                  withLabel
-                  tabIndex="-1"
-                  disabled={!isValidFundCaps}
-                />
-              </div>
-              {isSymStake && (
-                <div className="coin-card-wrapper">
-                  <CoinCard
-                    inputProps={{
-                      'data-test': 'stake-coin-input-rune',
-                      tabIndex: '0',
-                    }}
-                    data-test="coin-card-stake-coin-rune"
-                    asset="rune"
-                    amount={runeAmount}
-                    price={runePrice}
-                    priceIndex={priceIndex}
-                    unit={pricePrefix}
-                    onChange={handleChangeTokenAmount(RUNE_SYMBOL)}
-                    disabled={!isValidFundCaps}
-                  />
-                </div>
-              )}
-            </div>
-            <div>
-              <Label>SLIP: {stakeSlip}</Label>
-            </div>
-            <div className="stake-share-info-wrapper">
-              <div className="share-status-wrapper">
-                <Drag
-                  title="Drag to stake"
-                  source="blue"
-                  target="confirm"
-                  reset={dragReset}
-                  disabled={disableDrag || !isValidFundCaps}
-                  onConfirm={handleStake}
-                  onDrag={handleDrag}
-                />
-              </div>
-              {renderFee()}
-            </div>
+            {addLiquidityTab}
+          </TabPane>
+          <TabPane
+            tab={addSymTabLabel}
+            key={TabKeys.ADD_SYM}
+            disabled={!isValidFundCaps}
+          >
+            {addLiquidityTab}
           </TabPane>
           <TabPane
             tab="Withdraw"
-            key={ShareDetailTabKeys.WITHDRAW}
+            key={TabKeys.WITHDRAW}
             disabled={disableWithdraw}
           >
             <Label className="label-title" size="normal" weight="bold">
@@ -1195,14 +1107,19 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     const runeStakedShare = formatBaseAsTokenAmount(baseAmount(runeShare));
     const assetStakedShare = formatBaseAsTokenAmount(baseAmount(assetShare));
 
-    const runeStakedPrice = formatBaseAsTokenAmount(
-      baseAmount(runeShare.multipliedBy(runePrice)),
-    );
-    const assetStakedPrice = formatBaseAsTokenAmount(
-      baseAmount(assetShare.multipliedBy(assetPrice)),
+    const totalRuneValue = baseAmount(runeShare.multipliedBy(runePrice));
+    const totalAssetValue = baseAmount(assetShare.multipliedBy(assetPrice));
+    const totalValue = baseAmount(
+      totalRuneValue.amount().plus(totalAssetValue.amount()),
     );
 
+    const runeStakedPrice = formatBaseAsTokenAmount(totalRuneValue);
+    const assetStakedPrice = formatBaseAsTokenAmount(totalAssetValue);
+    const totalValuePrice = formatBaseAsTokenAmount(totalValue);
+
     const hasStake = hasWallet && stakeUnitsBN.isGreaterThan(0);
+    const liquidityUnitsAmount = baseAmount(stakeUnits);
+    const liquidityUnitsLabel = formatBaseAsTokenAmount(liquidityUnitsAmount);
 
     return (
       <>
@@ -1220,11 +1137,47 @@ const PoolStake: React.FC<Props> = (props: Props) => {
           )}
           {hasStake && (
             <>
-              <Label className="share-info-title" size="normal">
-                Your total share of the pool
-              </Label>
               <div className="your-share-info-wrapper">
+                <Label className="share-info-title" size="normal">
+                  Your Pool Share
+                </Label>
                 <div className="share-info-row">
+                  <div className="your-share-info">
+                    <Status
+                      title="Liquidity Units"
+                      value={liquidityUnitsLabel}
+                      loading={loading}
+                    />
+                  </div>
+                  <div className="your-share-info">
+                    <Status
+                      title="Pool Share"
+                      value={poolShare ? `${formatBN(poolShare)}%` : '...'}
+                      loading={loading}
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="your-share-info-wrapper">
+                <Label className="share-info-title" size="normal">
+                  CURRENT REDEMPTION VALUE
+                </Label>
+                <div className="share-info-row">
+                  <div className="your-share-info">
+                    <Status
+                      title={tokenTicker.toUpperCase()}
+                      value={assetStakedShare}
+                      loading={loading}
+                    />
+                    <Label
+                      className="your-share-price-label"
+                      size="normal"
+                      color="gray"
+                      loading={loading}
+                    >
+                      {`${pricePrefix} ${assetStakedPrice}`}
+                    </Label>
+                  </div>
                   <div className="your-share-info">
                     <Status
                       title="RUNE"
@@ -1240,42 +1193,17 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                       {`${pricePrefix} ${runeStakedPrice}`}
                     </Label>
                   </div>
-                  <div className="your-share-info">
-                    <Status
-                      title={tokenTicker.toUpperCase()}
-                      value={assetStakedShare}
-                      loading={loading}
-                    />
-
-                    <Label
-                      className="your-share-price-label"
-                      size="normal"
-                      color="gray"
-                      loading={loading}
-                    >
-                      {`${pricePrefix} ${assetStakedPrice}`}
-                    </Label>
-                  </div>
                 </div>
                 <div className="share-info-row">
                   <div className="your-share-info pool-share-info">
                     <Status
-                      title="Pool Share"
-                      value={poolShare ? `${formatBN(poolShare)}%` : '...'}
+                      title="Total Value"
+                      value={`${pricePrefix} ${totalValuePrice}`}
                       loading={loading}
                     />
                   </div>
                 </div>
               </div>
-              {!hasWallet && (
-                <Label
-                  className="label-title earning-label"
-                  size="normal"
-                  weight="bold"
-                >
-                  EARNINGS
-                </Label>
-              )}
             </>
           )}
         </div>
@@ -1291,7 +1219,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
           <div className="placeholder-icon">
             <InfoOutlined />
           </div>
-          <h2>Loading of staked data for this pool failed.</h2>
+          <h2>Loading of added data for this pool failed.</h2>
           {msg && <p className="placeholder-label">{msg}</p>}
           <p className="placeholder-label">
             {' '}
@@ -1306,21 +1234,20 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
   return (
     <ContentWrapper className="pool-stake-wrapper" transparent>
-      <Row className="stake-info-view">{renderStakeInfo()}</Row>
-      <Row className="share-view">
+      <Row className="share-view" gutter={8}>
         {!stakersAssetData && stakerPoolDataError && (
           <Col className="your-share-view" md={24}>
             {renderStakeDataPoolError()}
           </Col>
         )}
-        {stakersAssetData && (
-          <Col className="your-share-view" span={24} lg={yourShareSpan}>
-            {renderYourShare()}
-          </Col>
-        )}
         {stakersAssetData && hasWallet && (
           <Col className="share-detail-view" span={24} lg={16}>
             {renderShareDetail()}
+          </Col>
+        )}
+        {stakersAssetData && (
+          <Col className="your-share-view" span={24} lg={yourShareSpan}>
+            {renderYourShare()}
           </Col>
         )}
       </Row>
@@ -1340,7 +1267,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
           onCancel={hideWalletAlert}
           okText="ADD WALLET"
         >
-          <Label>Please add a wallet to swap tokens.</Label>
+          <Label>Please add a wallet to add liquidity.</Label>
         </Modal>
       )}
     </ContentWrapper>
