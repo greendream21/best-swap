@@ -44,7 +44,7 @@ export const stats = {
       value: '64',
     },
     {
-      title: 'Total Staked',
+      title: 'Total Pooled',
       key: 'totalStaked',
       value: '$756,000.23',
     },

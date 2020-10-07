@@ -1566,7 +1566,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * Returns an array containing the addresses for all stakers.
-         * @summary Get Stakers
+         * @summary Get Members
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -1953,7 +1953,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         },
         /**
          * Returns an array containing the addresses for all stakers.
-         * @summary Get Stakers
+         * @summary Get Members
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -2140,7 +2140,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         },
         /**
          * Returns an array containing the addresses for all stakers.
-         * @summary Get Stakers
+         * @summary Get Members
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -2316,7 +2316,7 @@ export class DefaultApi extends BaseAPI {
 
     /**
      * Returns an array containing the addresses for all stakers.
-     * @summary Get Stakers
+     * @summary Get Members
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi

@@ -114,7 +114,7 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
           xl={{ span: 12 }}
         >
           <StyledStatistic
-            title="Total Stakers"
+            title="Total Members"
             formatter={() => {
               if (loading) return <LabelLoader />;
               return <span>{totalStakers}</span>;
