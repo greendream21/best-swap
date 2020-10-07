@@ -196,7 +196,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       return 'multi';
     }
     return 'single';
-  }, [selectedTab, runeAmount, targetAmount, isSymStake]);
+  }, [runeAmount, targetAmount, isSymStake]);
 
   const {
     bnbFeeAmount,
@@ -1107,14 +1107,19 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     const runeStakedShare = formatBaseAsTokenAmount(baseAmount(runeShare));
     const assetStakedShare = formatBaseAsTokenAmount(baseAmount(assetShare));
 
-    const runeStakedPrice = formatBaseAsTokenAmount(
-      baseAmount(runeShare.multipliedBy(runePrice)),
-    );
-    const assetStakedPrice = formatBaseAsTokenAmount(
-      baseAmount(assetShare.multipliedBy(assetPrice)),
+    const totalRuneValue = baseAmount(runeShare.multipliedBy(runePrice));
+    const totalAssetValue = baseAmount(assetShare.multipliedBy(assetPrice));
+    const totalValue = baseAmount(
+      totalRuneValue.amount().plus(totalAssetValue.amount()),
     );
 
+    const runeStakedPrice = formatBaseAsTokenAmount(totalRuneValue);
+    const assetStakedPrice = formatBaseAsTokenAmount(totalAssetValue);
+    const totalValuePrice = formatBaseAsTokenAmount(totalValue);
+
     const hasStake = hasWallet && stakeUnitsBN.isGreaterThan(0);
+    const liquidityUnitsAmount = baseAmount(stakeUnits);
+    const liquidityUnitsLabel = formatBaseAsTokenAmount(liquidityUnitsAmount);
 
     return (
       <>
@@ -1132,11 +1137,47 @@ const PoolStake: React.FC<Props> = (props: Props) => {
           )}
           {hasStake && (
             <>
-              <Label className="share-info-title" size="normal">
-                Your total share of the pool
-              </Label>
               <div className="your-share-info-wrapper">
+                <Label className="share-info-title" size="normal">
+                  Your Pool Share
+                </Label>
                 <div className="share-info-row">
+                  <div className="your-share-info">
+                    <Status
+                      title="Liquidity Units"
+                      value={liquidityUnitsLabel}
+                      loading={loading}
+                    />
+                  </div>
+                  <div className="your-share-info">
+                    <Status
+                      title="Pool Share"
+                      value={poolShare ? `${formatBN(poolShare)}%` : '...'}
+                      loading={loading}
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="your-share-info-wrapper">
+                <Label className="share-info-title" size="normal">
+                  CURRENT REDEMPTION VALUE
+                </Label>
+                <div className="share-info-row">
+                  <div className="your-share-info">
+                    <Status
+                      title={tokenTicker.toUpperCase()}
+                      value={assetStakedShare}
+                      loading={loading}
+                    />
+                    <Label
+                      className="your-share-price-label"
+                      size="normal"
+                      color="gray"
+                      loading={loading}
+                    >
+                      {`${pricePrefix} ${assetStakedPrice}`}
+                    </Label>
+                  </div>
                   <div className="your-share-info">
                     <Status
                       title="RUNE"
@@ -1152,42 +1193,17 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                       {`${pricePrefix} ${runeStakedPrice}`}
                     </Label>
                   </div>
-                  <div className="your-share-info">
-                    <Status
-                      title={tokenTicker.toUpperCase()}
-                      value={assetStakedShare}
-                      loading={loading}
-                    />
-
-                    <Label
-                      className="your-share-price-label"
-                      size="normal"
-                      color="gray"
-                      loading={loading}
-                    >
-                      {`${pricePrefix} ${assetStakedPrice}`}
-                    </Label>
-                  </div>
                 </div>
                 <div className="share-info-row">
                   <div className="your-share-info pool-share-info">
                     <Status
-                      title="Pool Share"
-                      value={poolShare ? `${formatBN(poolShare)}%` : '...'}
+                      title="Total Value"
+                      value={`${pricePrefix} ${totalValuePrice}`}
                       loading={loading}
                     />
                   </div>
                 </div>
               </div>
-              {!hasWallet && (
-                <Label
-                  className="label-title earning-label"
-                  size="normal"
-                  weight="bold"
-                >
-                  EARNINGS
-                </Label>
-              )}
             </>
           )}
         </div>

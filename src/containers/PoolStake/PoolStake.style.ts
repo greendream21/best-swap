@@ -11,6 +11,9 @@ import { media } from '../../helpers/styleHelper';
 // This needs to be refactored/rewritten pretty badly
 // We really must not use global classes for CSS we loose
 // all the reuseability/modularity that CSS provides us
+
+// TODO(Chris): Refactor all styles using styled-components, not inline styles
+
 export const ContentWrapper = styled(ContentView)`
   padding: 0;
 
