@@ -853,7 +853,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       },
       {
         key: 'stakers',
-        title: 'Total Stakers',
+        title: 'Total Members',
         value: totalStakers.toString(),
       },
       {

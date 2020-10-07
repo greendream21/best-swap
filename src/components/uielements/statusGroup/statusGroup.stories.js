@@ -10,7 +10,7 @@ storiesOf('Components/StatusGroup', module).add('default', () => {
       <StatusGroup title="users" status={stats.users} />
       <StatusGroup title="transactions" status={stats.transactions} />
       <StatusGroup title="pools" status={stats.pools} />
-      <StatusGroup title="stakers" status={stats.stakers} />
+      <StatusGroup title="members" status={stats.stakers} />
     </div>
   );
 });
