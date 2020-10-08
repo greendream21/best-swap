@@ -2,7 +2,7 @@ import React from 'react';
 import styled, { css } from 'styled-components';
 import { palette } from 'styled-theme';
 import { Divider } from 'antd';
-import { CaretDownOutlined } from '@ant-design/icons';
+import { CaretDownOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { DividerProps } from 'antd/lib/divider';
 import Label from '../../label';
 import { cleanTag } from '../../../../helpers/styleHelper';
@@ -162,4 +162,21 @@ export const FooterLabel = styled(Label).attrs({
 })`
   letter-spacing: 0.416667px;
   padding: 0;
+`;
+
+export const RowFullWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;  
+`;
+
+export const PopoverContent = styled.div`
+  width: 300px;
+  font-size: '11px';
+  color: ${palette('text', 0)};
+`;
+
+export const PopoverIcon = styled(InfoCircleOutlined)`
+  color: ${palette('primary', 0)};
+  margin: 0 10px;
 `;
