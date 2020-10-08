@@ -19,7 +19,8 @@ import {
   LogoWrapper,
   HeaderActionButtons,
   HeaderCenterWrapper,
-  PopoverContent, PopoverIcon,
+  PopoverContent,
+  PopoverIcon,
 } from './header.style';
 
 import HeaderSetting from './headerSetting';
@@ -278,8 +279,9 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
 
   const renderPopoverContent = () => (
     <PopoverContent>
-      A Funds Cap is currently in place as the protocal balances security and demand on ChaosNet.
-      The cap maxes out at 95%. Please follow the project on Twitter @thorchain_org for announcements regarding cap raise.
+      A Funds Cap is currently in place as the protocal balances security and
+      demand on ChaosNet. The cap maxes out at 95%. Please follow the project on
+      Twitter @thorchain_org for announcements regarding cap raise.
     </PopoverContent>
   );
 
@@ -294,7 +296,10 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
             <HeaderSetting midgardBasePath={midgardBasePath} />
           </LogoWrapper>
           <HeaderCenterWrapper className="stake-header">
-            <Label weight="bold">{globalRuneStakeStatus} {!isValidFundCaps && '(Funds Cap Reached)'}</Label>
+            <Label weight="bold">
+              {globalRuneStakeStatus}{' '}
+              {!isValidFundCaps && '(Funds Cap Reached)'}
+            </Label>
             {!isValidFundCaps && (
               <Popover
                 content={renderPopoverContent}
@@ -305,11 +310,11 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
                   padding: '6px',
                   animationDuration: '0s !important',
                   animation: 'none !important',
-              }}
+                }}
               >
                 <PopoverIcon />
               </Popover>
-          )}
+            )}
           </HeaderCenterWrapper>
           <HeaderActionButtons>
             <ThemeSwitch />
@@ -356,7 +361,10 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
             </Link>
           </LogoWrapper>
           <HeaderCenterWrapper>
-            <Label weight="bold">{shortGlobalRuneStakeStatus} {!isValidFundCaps && '(Funds Cap Reached)'}</Label>
+            <Label weight="bold">
+              {shortGlobalRuneStakeStatus}{' '}
+              {!isValidFundCaps && '(Funds Cap Reached)'}
+            </Label>
           </HeaderCenterWrapper>
           <HeaderActionButtons>
             <ThemeSwitch />

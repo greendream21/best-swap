@@ -210,8 +210,13 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   // maximum token amount calculated by rune amount in balance and pool ratio
   const maxTokenAmount = totalRuneAmount.multipliedBy(ratio);
   // available token amount in the balance
-  const availableTokenAmount = maxTokenAmount.isLessThan(totalTokenAmount)
+  const availableTokenAmountForSymStake = maxTokenAmount.isLessThan(
+    totalTokenAmount,
+  )
     ? maxTokenAmount
+    : totalTokenAmount;
+  const availableTokenAmount = isSymStake
+    ? availableTokenAmountForSymStake
     : totalTokenAmount;
 
   const emptyStakerPoolData: StakersAssetData = {
@@ -277,6 +282,12 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     refreshStakerData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [symbol]);
+
+  // reset the percentage and amount when switching the tab
+  useEffect(() => {
+    handleChangePercent(0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSymStake]);
 
   const prevTxStatus = usePrevious(txStatus);
   // if tx is completed, should refresh staker details
@@ -469,8 +480,24 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       selectedTab !== TabKeys.WITHDRAW &&
       targetAmount.amount().isGreaterThan(0);
 
+    const toolTipContent = (
+      <PopoverContent>
+        {isStakingBNB && (
+          <>
+            <Text> (It will be substructed from BNB amount)</Text>
+            <br />
+          </>
+        )}
+        {wallet && hasSufficientBnbFeeInBalance && (
+          <Text style={{ paddingTop: '10px' }}>
+            Note: 0.1 BNB will be left in your wallet for the transaction fees.
+          </Text>
+        )}
+      </PopoverContent>
+    );
+
     return (
-      <FeeParagraph style={{ paddingTop: '10px' }}>
+      <FeeParagraph style={{ paddingTop: '10px' }} className="fee-paragraph">
         {RD.fold(
           () => txtLoading,
           () => txtLoading,
@@ -481,19 +508,20 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                 {bnbFeeAmount && (
                   <Text>Fee: {formatBnbAmount(bnbFeeAmount)}</Text>
                 )}
-                {isStakingBNB && (
-                  <Text> (It will be substructed from BNB amount)</Text>
-                )}
-                {wallet && bnbAmount && hasSufficientBnbFeeInBalance && (
-                  <>
-                    <br />
-                    <Text style={{ paddingTop: '10px' }}>
-                      Note: 0.1 BNB will be left in your wallet for the
-                      transaction fees.
-                    </Text>
-                  </>
-                )}
-                {wallet && bnbAmount && !hasSufficientBnbFeeInBalance && (
+                <Popover
+                  content={toolTipContent}
+                  getPopupContainer={getFeeTipPopupContainer}
+                  placement="topRight"
+                  overlayClassName="pool-filter-info"
+                  overlayStyle={{
+                    padding: '6px',
+                    animationDuration: '0s !important',
+                    animation: 'none !important',
+                  }}
+                >
+                  <PopoverIcon />
+                </Popover>
+                {wallet && !hasSufficientBnbFeeInBalance && (
                   <>
                     <br />
                     <Text type="danger" style={{ paddingTop: '10px' }}>
@@ -796,6 +824,10 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     )[0] as HTMLElement;
   };
 
+  const getFeeTipPopupContainer = () => {
+    return document.getElementsByClassName('fee-paragraph')[0] as HTMLElement;
+  };
+
   const renderPopoverContent = () => (
     <PopoverContent>
       To prevent attacks on the network, you must wait approx 24hrs (17280
@@ -903,6 +935,10 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
     const dragText = withdrawDisabled ? '24hr cooldown' : 'drag to withdraw';
 
+    const tokenToolTip = 'This is the asset you need to add to the pool.';
+    const runeToolTip =
+      'The amount of RUNE needed is calculated automatically based on the current ratio of assets in the pool.';
+
     const addLiquidityTab = (
       <>
         {!isValidFundCaps && (
@@ -921,6 +957,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
               data-test="coin-card-stake-coin-target"
               asset={tokenTicker}
               assetData={tokensData}
+              tooltip={tokenToolTip}
               amount={targetAmount}
               price={tokenPrice}
               priceIndex={priceIndex}
@@ -947,6 +984,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                 }}
                 data-test="coin-card-stake-coin-rune"
                 asset="rune"
+                tooltip={runeToolTip}
                 amount={runeAmount}
                 price={runePrice}
                 priceIndex={priceIndex}
@@ -959,6 +997,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
         </div>
         <div>
           <Label>SLIP: {stakeSlip}</Label>
+          {renderFee()}
         </div>
         <div className="stake-share-info-wrapper">
           <div className="share-status-wrapper">
@@ -972,7 +1011,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
               onDrag={handleDrag}
             />
           </div>
-          {renderFee()}
         </div>
       </>
     );
