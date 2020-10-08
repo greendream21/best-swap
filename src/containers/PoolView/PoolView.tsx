@@ -263,7 +263,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
 
   const renderPoolTable = (poolViewData: PoolData[], view: ViewType) => {
     const buttonCol = {
-      key: 'stake',
+      key: 'liquidity',
       title: (
         <ActionHeader>
           <Button onClick={handleGetPools} typevalue="outline" round="true">
@@ -276,13 +276,13 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         const { target, values } = record;
         if (target) {
           const swapUrl = `/swap/${RUNE_SYMBOL}:${values.symbol}`;
-          const stakeUrl = `/stake/${values.symbol.toUpperCase()}`;
+          const liquidityUrl = `/liquidity/${values.symbol.toUpperCase()}`;
 
           return (
             <ActionColumn>
               <div className="action-column-wrapper">
                 <Link
-                  to={stakeUrl}
+                  to={liquidityUrl}
                   onClick={ev => {
                     ev.stopPropagation();
                   }}
@@ -294,7 +294,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
                     color={!isValidFundCaps ? 'error' : 'primary'}
                   >
                     <DatabaseOutlined />
-                    stake
+                    Add
                   </Button>
                 </Link>
                 {poolStatus !== PoolDetailStatusEnum.Bootstrapped && (
@@ -450,7 +450,10 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     const filteredData = poolViewData
       .filter(poolItem => {
         const tokenSymbol = poolItem.values.symbol.toLowerCase();
-        const tokenName = getTokenName(tokenList, tokenSymbol.toUpperCase()).toLowerCase();
+        const tokenName = getTokenName(
+          tokenList,
+          tokenSymbol.toUpperCase(),
+        ).toLowerCase();
 
         return (
           tokenName.includes(keyword.toLowerCase()) ||

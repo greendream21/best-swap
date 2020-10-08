@@ -11,11 +11,13 @@ import { media } from '../../helpers/styleHelper';
 // This needs to be refactored/rewritten pretty badly
 // We really must not use global classes for CSS we loose
 // all the reuseability/modularity that CSS provides us
+
+// TODO(Chris): Refactor all styles using styled-components, not inline styles
+
 export const ContentWrapper = styled(ContentView)`
   padding: 0;
 
   .stake-info-view {
-
     .token-info-card {
       padding: 8px 8px 8px 0;
 
@@ -180,7 +182,6 @@ export const ContentWrapper = styled(ContentView)`
       ${media.lg`
         display: flex;
         flex-direction: column;
-        
       `}
 
       .advanced-mode-btn {
@@ -439,15 +440,6 @@ export const ContentWrapper = styled(ContentView)`
           }
         }
       }
-    }
-
-    .share-detail-view {
-      padding-left: 0px;
-      padding-top: 8px;
-      ${media.sm`
-        padding-top: 0px;
-        padding-left: 8px;
-      `}
     }
   }
 

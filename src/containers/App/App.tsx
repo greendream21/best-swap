@@ -40,7 +40,7 @@ const App: React.FC<Props> = (props: Props): JSX.Element => {
 
   return (
     <AppLayout data-test="bepswap-app">
-      <Header title="SWAP AND STAKE BEP2 ASSETS" />
+      <Header title="SWAP AND ADD BEP2 ASSETS" />
       <ContentWrapper>
         <ViewPanel>
           {renderBack()}

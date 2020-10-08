@@ -43,7 +43,7 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
         xl={{ span: 4 }}
       >
         <StyledStatistic
-          title="Total Staked"
+          title="Total Pooled"
           formatter={() => {
             if (loading) return <LabelLoader />;
             return <span>{getUSDValue(stats?.totalStaked ?? '0')}</span>;

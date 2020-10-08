@@ -409,7 +409,7 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
         <StyledAlertWrapper>
           <Alert
             message="Warning"
-            description="This product is in beta. Do not stake or swap large amounts of funds."
+            description="This product is in beta. Do not add liquidity or swap large amounts of funds."
             showIcon
             closable
             type="warning"

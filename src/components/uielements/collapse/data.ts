@@ -17,7 +17,7 @@ export const faqs: Faq[] = [
     answer,
   },
   {
-    question: 'How do I Stake?',
+    question: 'How do I Add Liquidity?',
     answer,
   },
   {

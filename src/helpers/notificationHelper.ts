@@ -38,7 +38,7 @@ export const showTxFinishNotification = (
       } else if (targetAmount.amount().isGreaterThan(0)) {
         description = targetTicker;
       }
-      description += ' Stake is completed!';
+      description += ' Add Liquidity is completed!';
     } else if (type === TxTypes.WITHDRAW) {
       description = `${sourceTicker}, ${targetTicker} Withdraw is completed!`;
     }
