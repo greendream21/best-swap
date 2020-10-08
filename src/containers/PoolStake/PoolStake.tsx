@@ -286,6 +286,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   // reset the percentage and amount when switching the tab
   useEffect(() => {
     handleChangePercent(0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSymStake]);
 
   const prevTxStatus = usePrevious(txStatus);

@@ -194,6 +194,12 @@ class CoinCard extends React.Component<Props, State> {
     onChangeAsset(asset);
   };
 
+  getToolTipPopupContainer = () => {
+    return document.getElementsByClassName(
+      'coinCard-wrapper',
+    )[0] as HTMLElement;
+  };
+
   renderMenu() {
     const {
       assetData,
@@ -243,12 +249,6 @@ class CoinCard extends React.Component<Props, State> {
       </CoinDropdownButton>
     );
   }
-
-  getToolTipPopupContainer = () => {
-    return document.getElementsByClassName(
-      'coinCard-wrapper',
-    )[0] as HTMLElement;
-  };
 
   render() {
     const {
