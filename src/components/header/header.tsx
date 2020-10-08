@@ -126,7 +126,7 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
       subscribeBinanceTransfers({ address: wallet, net: getNet() });
     }
   }, [wallet, subscribeBinanceTransfers, unSubscribeBinanceTransfers]);
-
+ 
   // wsTransferEvent has been updated
   useEffect(() => {
     const currentWsTransferEvent = RD.toNullable(wsTransferEvent);

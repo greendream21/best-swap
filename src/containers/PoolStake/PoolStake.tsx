@@ -934,6 +934,10 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
     const dragText = withdrawDisabled ? '24hr cooldown' : 'drag to withdraw';
 
+    const tokenToolTip = 'This is the asset you need to add to the pool.';
+    const runeToolTip =
+      'The amount of RUNE needed is calculated automatically based on the current ratio of assets in the pool.';
+
     const addLiquidityTab = (
       <>
         {!isValidFundCaps && (
@@ -952,6 +956,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
               data-test="coin-card-stake-coin-target"
               asset={tokenTicker}
               assetData={tokensData}
+              tooltip={tokenToolTip}
               amount={targetAmount}
               price={tokenPrice}
               priceIndex={priceIndex}
@@ -978,6 +983,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                 }}
                 data-test="coin-card-stake-coin-rune"
                 asset="rune"
+                tooltip={runeToolTip}
                 amount={runeAmount}
                 price={runePrice}
                 priceIndex={priceIndex}

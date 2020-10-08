@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { Dropdown } from 'antd';
+import { Dropdown, Popover } from 'antd';
 import { sortBy as _sortBy } from 'lodash';
 
 import BigNumber from 'bignumber.js';
@@ -23,6 +23,9 @@ import {
   DropdownIconHolder,
   FooterLabel,
   HorizontalDivider,
+  RowFullWrapper,
+  PopoverContent,
+  PopoverIcon,
 } from './coinCard.style';
 
 import Ref from '../../../../helpers/event/ref';
@@ -58,6 +61,7 @@ const DropdownCarret: React.FC<DropdownCarretProps> = ({
 
 type Props = {
   asset: string;
+  tooltip?: string;
   assetData: AssetPair[];
   amount: TokenAmount;
   price: BigNumber;
@@ -240,9 +244,16 @@ class CoinCard extends React.Component<Props, State> {
     );
   }
 
+  getToolTipPopupContainer = () => {
+    return document.getElementsByClassName(
+      'coinCard-wrapper',
+    )[0] as HTMLElement;
+  };
+
   render() {
     const {
       asset,
+      tooltip = '',
       amount,
       price,
       priceIndex,
@@ -268,12 +279,10 @@ class CoinCard extends React.Component<Props, State> {
       overflow: 'scroll',
     };
 
-    // TODO (Rudi): render dropown menu as bottom fixed sheet for mobile
     return (
       <Ref innerRef={this.handleRef}>
         <CoinCardWrapper className={`coinCard-wrapper ${className}`} {...props}>
           {title && <Label className="title-label">{title}</Label>}
-
           <Dropdown
             overlay={this.renderMenu()}
             trigger={[]}
@@ -281,7 +290,25 @@ class CoinCard extends React.Component<Props, State> {
             overlayStyle={dropdownOverlayStyle}
           >
             <CardBorderWrapper>
-              <AssetNameLabel>{asset}</AssetNameLabel>
+              {!!tooltip && (
+                <RowFullWrapper>
+                  <AssetNameLabel>{asset}</AssetNameLabel>
+                  <Popover
+                    content={<PopoverContent>{tooltip}</PopoverContent>}
+                    getPopupContainer={this.getToolTipPopupContainer}
+                    placement="bottomLeft"
+                    overlayClassName="pool-filter-info"
+                    overlayStyle={{
+                      padding: '6px',
+                      animationDuration: '0s !important',
+                      animation: 'none !important',
+                    }}
+                  >
+                    <PopoverIcon />
+                  </Popover>
+                </RowFullWrapper>
+              )}
+              {!tooltip && <AssetNameLabel>{asset}</AssetNameLabel>}
               <HorizontalDivider />
               <CardTopRow>
                 <AssetData>
