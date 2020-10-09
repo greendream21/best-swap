@@ -16,11 +16,9 @@ import { Maybe } from '../../types/bepswap';
 import {
   User,
   AssetData,
-  StakeData,
   StakeDataListLoadingState,
 } from '../../redux/wallet/types';
 import { RootState } from '../../redux/store';
-import { PriceDataIndex } from '../../redux/midgard/types';
 import {
   matchSwapDetailPair,
   matchPoolSymbol,
@@ -39,8 +37,6 @@ type ConnectedProps = {
   assetData: AssetData[];
   stakeData: StakeDataListLoadingState;
   loadingAssets: boolean;
-  priceIndex: PriceDataIndex;
-  basePriceAsset: string;
   pathname: string;
 };
 
@@ -53,8 +49,6 @@ const WalletView: React.FC<Props> = (props: Props): JSX.Element => {
     assetData,
     stakeData,
     loadingAssets,
-    priceIndex,
-    basePriceAsset,
     pathname,
     status,
   } = props;
@@ -74,9 +68,9 @@ const WalletView: React.FC<Props> = (props: Props): JSX.Element => {
     return result;
   };
 
-  const getStakeDataBySource = (symbol: string): Maybe<StakeData> => {
+  const getStakeDataBySource = (symbol: string): Maybe<AssetData> => {
     const sd = RD.toNullable(stakeData);
-    return sd && sd.find((data: StakeData) => symbol === data.targetSymbol);
+    return sd && sd.find((data: AssetData) => symbol === data.asset);
   };
 
   const handleSelectAsset = (key: number) => {
@@ -89,11 +83,11 @@ const WalletView: React.FC<Props> = (props: Props): JSX.Element => {
     history.push(URL);
   };
 
-  const handleSelectStake = (index: number, stakeData: StakeData[]) => {
+  const handleSelectStake = (index: number, stakeData: AssetData[]) => {
     const selected = stakeData[index];
-    const target = selected.targetSymbol;
+    const { asset } = selected;
 
-    const URL = `/pool/${target}`;
+    const URL = `/pool/${asset}`;
     history.push(URL);
   };
 
@@ -104,7 +98,7 @@ const WalletView: React.FC<Props> = (props: Props): JSX.Element => {
     return asset ? [asset] : [];
   };
 
-  const getSelectedStake = (): StakeData[] => {
+  const getSelectedStake = (): AssetData[] => {
     const symbol = matchPoolSymbol(pathname);
     const stake = getStakeDataBySource(symbol || '');
     return stake ? [stake] : [];
@@ -125,16 +119,16 @@ const WalletView: React.FC<Props> = (props: Props): JSX.Element => {
     return 'Connect your wallet';
   };
 
-  const renderStakeTitle = (stakeData: StakeDataListLoadingState) =>
+  const renderPoolShareTitle = (stakeData: StakeDataListLoadingState) =>
     RD.fold(
       () => <></>, // initial data
       () => <Loader />, // loading
       (error: Error) => <>{error.toString()}</>, // error
-      (data: StakeData[]): JSX.Element =>
+      (data: AssetData[]): JSX.Element =>
         data.length > 0 ? (
-          <>Your current pool shares are:</>
+          <>Liquidity Pool Shares:</>
         ) : (
-          <>You are currently not added in any pool</>
+          <>You currently do not have any liquidity</>
         ),
     )(stakeData);
 
@@ -161,29 +155,24 @@ const WalletView: React.FC<Props> = (props: Props): JSX.Element => {
           )}
           {!loadingAssets && (
             <CoinList
-              data-test="wallet-asset-list"
               data={sortedAssets}
               selected={selectedAsset as CoinListDataList}
-              priceIndex={priceIndex}
               onSelect={handleSelectAsset}
-              unit={basePriceAsset}
               type="wallet"
             />
           )}
         </TabPane>
-        <TabPane tab="stakes" key="stakes">
+        <TabPane tab="pool shares" key="pool shares">
           <Label className="asset-title-label">
-            {renderStakeTitle(stakeData)}
+            {renderPoolShareTitle(stakeData)}
           </Label>
           {sortedStakerData && (
             <CoinList
-              data-test="wallet-stakes-list"
               data={sortedStakerData}
-              priceIndex={priceIndex}
               selected={selectedStake as CoinListDataList}
-              onSelect={(key: number) =>
-                handleSelectStake(key, sortedStakerData)}
-              unit={basePriceAsset}
+              onSelect={(key: number) => {
+                handleSelectStake(key, sortedStakerData);
+              }}
             />
           )}
         </TabPane>
@@ -198,8 +187,6 @@ export default compose(
     assetData: state.Wallet.assetData,
     stakeData: state.Wallet.stakeData,
     loadingAssets: state.Wallet.loadingAssets,
-    priceIndex: state.Midgard.priceIndex,
-    basePriceAsset: state.Midgard.basePriceAsset,
     pathname: state.router.location.pathname,
   })),
   withRouter,

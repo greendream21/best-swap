@@ -11,8 +11,8 @@ import { push } from 'connected-react-router';
 import { isEmpty as _isEmpty } from 'lodash';
 
 import { AxiosResponse } from 'axios';
-import { Balance, Market, Address } from '@thorchain/asgardex-binance';
-import { bnOrZero, bn } from '@thorchain/asgardex-util';
+import { Balance, Address } from '@thorchain/asgardex-binance';
+import { bnOrZero } from '@thorchain/asgardex-util';
 import {
   baseToToken,
   baseAmount,
@@ -24,7 +24,7 @@ import * as api from '../../helpers/apiHelper';
 import { saveWallet, clearWallet } from '../../helpers/webStorageHelper';
 
 import * as actions from './actions';
-import { AssetData, StakeData } from './types';
+import { AssetData } from './types';
 import {
   StakersAddressData,
   PoolDetail,
@@ -76,21 +76,13 @@ export function* refreshBalance() {
       );
 
       try {
-        const markets: { result: Market[] } = yield call(
-          asgardexBncClient.getMarkets,
-          {},
-        );
         const filteredBalance = balances.filter(
           (balance: Balance) => !isBEP8Token(balance.symbol),
         );
         const coins = filteredBalance.map((coin: Balance) => {
-          const market = markets.result.find(
-            (market: Market) => market.base_asset_symbol === coin.symbol,
-          );
           return {
             asset: coin.symbol,
             assetValue: tokenAmount(coin.free),
-            price: market ? bnOrZero(market.list_price) : bn(0),
           } as AssetData;
         });
 
@@ -147,37 +139,30 @@ export function* getUserStakeData(
   );
 
   // Transform results of requests 1 + 2 into `StakeData[]`
-  const stakeDataList: StakeData[] = poolDataList.reduce(
-    (acc: StakeData[], poolData: PoolDetail) => {
+  const stakeDataList: AssetData[] = poolDataList.reduce(
+    (acc: AssetData[], poolData: PoolDetail) => {
       const userStakerData = poolData.asset
         ? poolDetailMap[poolData.asset]
         : null;
       if (userStakerData && poolData.asset) {
-        const price = poolData?.price ?? 0;
-        const { symbol = '', ticker = '' } = getAssetFromString(poolData.asset);
-        const { poolUnits, assetDepth, runeDepth } = poolData;
+        const { symbol = '' } = getAssetFromString(poolData.asset);
+        const { poolUnits, runeDepth } = poolData;
         const { units: stakeUnits } = userStakerData;
 
         const poolUnitsBN = bnOrZero(poolUnits);
-        const assetDepthBN = bnOrZero(assetDepth);
         const runeDepthBN = bnOrZero(runeDepth);
         const stakeUnitsBN = bnOrZero(stakeUnits);
 
-        const runeShare = poolUnitsBN
-          ? runeDepthBN.multipliedBy(stakeUnitsBN).div(poolUnitsBN)
-          : bn(0);
-        const assetShare = poolUnitsBN
-          ? assetDepthBN.multipliedBy(stakeUnitsBN).div(poolUnitsBN)
-          : bn(0);
+        // formula: units / poolUnits * runeDepth * 2
+        const value = stakeUnitsBN
+          .dividedBy(poolUnitsBN)
+          .multipliedBy(runeDepthBN)
+          .multipliedBy(2);
 
-        const stakeData: StakeData = {
-          targetSymbol: symbol,
-          target: ticker.toLowerCase(),
-          targetValue: baseToToken(baseAmount(assetShare)),
-          assetValue: baseToToken(baseAmount(runeShare)),
-          asset: 'rune',
-          price,
-        } as StakeData;
+        const stakeData: AssetData = {
+          asset: symbol,
+          assetValue: baseToToken(baseAmount(value)),
+        };
         return [...acc, stakeData];
       } else {
         return acc;
@@ -217,7 +202,7 @@ export function* tryGetUserStakeData(address: Address, pools: string[]) {
       // Unsafe type match of `basePath`: Can't be inferred by `tsc` from a return value of a Generator function - known TS/Generator/Saga issue
       const basePath: string = yield call(getApiBasePath, getNet(), noCache);
       // Unsafe: `StakeData[]` can't be inferred by `tsc` from a return value of a Generator function - known TS/Generator/Saga issue
-      const result: StakeData[] = yield call(
+      const result: AssetData[] = yield call(
         getUserStakeData,
         {
           address,

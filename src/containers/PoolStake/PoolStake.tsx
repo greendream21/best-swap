@@ -855,7 +855,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     };
     const stakeSlip = getSlipOnStake(stakeDataParam, poolDataParam);
 
-    return stakeSlip.toFixed(2);
+    return `${stakeSlip.multipliedBy(100).toFixed(2)}%`;
   }, [runeAmountToSend, targetAmount, R, T]);
 
   const renderShareDetail = () => {

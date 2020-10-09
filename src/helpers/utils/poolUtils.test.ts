@@ -70,17 +70,14 @@ describe('pool/utils/', () => {
       const assetA: AssetData = {
         asset: 'A',
         assetValue: tokenAmount(1),
-        price: bn(2),
       };
       const assetB: AssetData = {
         asset: 'B',
         assetValue: tokenAmount(1),
-        price: bn(2),
       };
       const assetWithSmallAmount: AssetData = {
         asset: 'C',
         assetValue: tokenAmount(0.005),
-        price: bn(2),
       };
       const assets: AssetData[] = [assetA, assetB, assetWithSmallAmount];
       const pools: string[] = ['A.A'];
@@ -92,17 +89,14 @@ describe('pool/utils/', () => {
       const assetA: AssetData = {
         asset: 'RUNE',
         assetValue: tokenAmount(1),
-        price: bn(2),
       };
       const assetB: AssetData = {
         asset: 'RUNE',
         assetValue: tokenAmount(1),
-        price: bn(2),
       };
       const assetC: AssetData = {
         asset: 'C',
         assetValue: tokenAmount(1),
-        price: bn(2),
       };
       const assets: AssetData[] = [assetA, assetB, assetC];
       const pools: string[] = ['A.A'];
@@ -124,6 +118,7 @@ describe('pool/utils/', () => {
       buyTxAverage: '32387',
       buyVolume: '32387',
       poolDepth: '399999598',
+      poolEarned: '1000000000',
       poolFeeAverage: '99800',
       poolFeesTotal: '199600',
       poolROI: '999.2768763636363',
@@ -165,6 +160,7 @@ describe('pool/utils/', () => {
       buyTxAverage: '0',
       buyVolume: '0',
       poolDepth: '400000',
+      poolEarned: '1000000',
       poolFeeAverage: '0',
       poolFeesTotal: '0',
       poolROI: '0.5',
@@ -215,9 +211,9 @@ describe('pool/utils/', () => {
         transaction: baseAmount(0),
         liqFee: baseAmount(0),
         runeStakedTotal: baseAmount(12865427860),
-        roi: 50,
-        apy: 39402.27,
-        poolROI12: bn(50),
+        roi: 250,
+        apy: 197011.34,
+        poolROI12: bn(250),
         totalSwaps: 0,
         totalStakers: 1,
         poolPrice: bn(1),
@@ -232,8 +228,8 @@ describe('pool/utils/', () => {
           volume24: '0.00',
           transaction: '0.00',
           liqFee: '0.00',
-          roi: '50%',
-          apy: '39402.27% APY',
+          roi: '250%',
+          apy: '197011.34% APY',
           runeStakedTotal: '128.65',
           poolPrice: '2.000',
         },
@@ -286,8 +282,8 @@ describe('pool/utils/', () => {
         transaction: baseAmount(16193),
         liqFee: baseAmount(99800),
         runeStakedTotal: baseAmount(12865427860),
-        roi: 99927.69,
-        apy: 78747552.53,
+        roi: 250,
+        apy: 197011.34,
         poolROI12: bn(50),
         totalSwaps: 1,
         totalStakers: 1,
@@ -303,8 +299,8 @@ describe('pool/utils/', () => {
           volume24: '0.00',
           transaction: '0.00',
           liqFee: '0.00',
-          roi: '99927.69%',
-          apy: '78747552.53% APY',
+          roi: '250%',
+          apy: '197011.34% APY',
           runeStakedTotal: '128.65',
           poolPrice: '0.000',
         },
