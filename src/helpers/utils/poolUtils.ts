@@ -93,7 +93,7 @@ export const getPoolData = (
 
   /** RETURN TO DATE = poolEarned / poolDepth */
   const poolEarned = bnOrZero(poolDetail?.poolEarned);
-  const poolDepth = bnOrZero(poolDetail?.poolDepth);
+  const poolDepth = bnOrZero(poolDetail?.runeDepth).multipliedBy(2);
   const roiATResult = Number(poolEarned.dividedBy(poolDepth).toFormat(2));
   const roi = Number((roiATResult * 100).toFixed(2));
 

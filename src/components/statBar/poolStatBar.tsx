@@ -36,7 +36,7 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
 
   /** RETURN TO DATE = poolEarned / poolDepth */
   const poolEarned = bnOrZero(poolInfo?.poolEarned);
-  const poolDepth = bnOrZero(poolInfo?.poolDepth);
+  const poolDepth = bnOrZero(poolInfo?.runeDepth).multipliedBy(2);
   const roiATResult = Number(poolEarned.dividedBy(poolDepth).toFormat(2));
   const roi = Number((roiATResult * 100).toFixed(2));
 
