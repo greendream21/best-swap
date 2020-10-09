@@ -262,7 +262,7 @@ export function* getPoolData() {
   yield takeEvery('GET_POOL_DATA_REQUEST', function*({
     payload,
   }: ReturnType<typeof actions.getPoolData>) {
-    const { assets, overrideAllPoolData, type = 'full' } = payload;
+    const { assets, overrideAllPoolData, type = 'simple' } = payload;
     try {
       const poolDetailsRespones: Array<PoolDetail[]> = yield all(
         assets.map((asset: string) => {
