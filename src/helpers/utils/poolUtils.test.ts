@@ -70,17 +70,14 @@ describe('pool/utils/', () => {
       const assetA: AssetData = {
         asset: 'A',
         assetValue: tokenAmount(1),
-        price: bn(2),
       };
       const assetB: AssetData = {
         asset: 'B',
         assetValue: tokenAmount(1),
-        price: bn(2),
       };
       const assetWithSmallAmount: AssetData = {
         asset: 'C',
         assetValue: tokenAmount(0.005),
-        price: bn(2),
       };
       const assets: AssetData[] = [assetA, assetB, assetWithSmallAmount];
       const pools: string[] = ['A.A'];
@@ -92,17 +89,14 @@ describe('pool/utils/', () => {
       const assetA: AssetData = {
         asset: 'RUNE',
         assetValue: tokenAmount(1),
-        price: bn(2),
       };
       const assetB: AssetData = {
         asset: 'RUNE',
         assetValue: tokenAmount(1),
-        price: bn(2),
       };
       const assetC: AssetData = {
         asset: 'C',
         assetValue: tokenAmount(1),
-        price: bn(2),
       };
       const assets: AssetData[] = [assetA, assetB, assetC];
       const pools: string[] = ['A.A'];

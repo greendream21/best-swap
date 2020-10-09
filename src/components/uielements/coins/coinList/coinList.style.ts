@@ -15,7 +15,7 @@ export const CoinListWrapper = styled.div`
   .coinList-row {
     width: 100%;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     height: ${(props: CoinListWrapperProps) =>
       props.size === 'small' ? '54px' : '74px'};

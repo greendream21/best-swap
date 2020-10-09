@@ -12,17 +12,14 @@ describe('walletHelper', () => {
   const tusdb: AssetData = {
     asset: 'TUSDB-000',
     assetValue: tokenAmount(1),
-    price: bn(1),
   };
   const bnb: AssetData = {
     asset: 'BNB',
     assetValue: tokenAmount(1),
-    price: bn(1),
   };
   const lok: AssetData = {
     asset: 'LOK-3C0',
     assetValue: tokenAmount(1),
-    price: bn(1),
   };
   describe('getAssetDataFromBalance', () => {
     it('returns source of LOK', () => {
