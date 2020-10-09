@@ -1,5 +1,5 @@
 import { Address } from '@thorchain/asgardex-binance';
-import { AssetData, User, StakeData } from './types';
+import { AssetData, User } from './types';
 
 export const saveWallet = (payload: User) =>
   ({ type: 'SAVE_WALLET', payload } as const);
@@ -18,7 +18,7 @@ export const refreshBalanceFailed = (payload: Error) =>
 export const refreshStakes = (payload: Address) =>
   ({ type: 'REFRESH_STAKES', payload } as const);
 
-export const refreshStakesSuccess = (payload: StakeData[]) =>
+export const refreshStakesSuccess = (payload: AssetData[]) =>
   ({ type: 'REFRESH_STAKES_SUCCESS', payload } as const);
 
 export const refreshStakesFailed = (payload: Error) =>

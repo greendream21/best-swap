@@ -1,22 +1,19 @@
 import React, { Fragment, useCallback } from 'react';
-import BigNumber from 'bignumber.js';
 
 import { Scrollbars } from 'react-custom-scrollbars';
-import { validBNOrZero } from '@thorchain/asgardex-util';
-import { TokenAmount } from '@thorchain/asgardex-token';
-import { CoinListWrapper, CoinListWrapperSize } from './coinList.style';
+import { tokenToBase } from '@thorchain/asgardex-token';
+
 import CoinData from '../coinData';
+import Label from '../../label';
+import { CoinListWrapper, CoinListWrapperSize } from './coinList.style';
 import { getTickerFormat } from '../../../../helpers/stringHelper';
-import { Maybe, Nothing } from '../../../../types/bepswap';
-import { StakeOrAssetData, isStakeData } from '../../../../redux/wallet/types';
-import { PriceDataIndex } from '../../../../redux/midgard/types';
+import { Maybe } from '../../../../types/bepswap';
+import { AssetData } from '../../../../redux/wallet/types';
 import { CoinDataWrapperType } from '../coinData/coinData.style';
 
-// This does not work anymore
-// export type CoinListDataList = AssetData[] | StakeData[]
-// ^ Maybe similar issue to "error on valid array with union type" https://github.com/microsoft/TypeScript/issues/36390
+import usePrice from '../../../../hooks/usePrice';
 
-export type CoinListDataList = StakeOrAssetData[];
+export type CoinListDataList = AssetData[];
 
 type Props = {
   data?: CoinListDataList;
@@ -24,8 +21,6 @@ type Props = {
   onSelect?: (key: number) => void;
   size?: CoinListWrapperSize;
   className?: string;
-  priceIndex: PriceDataIndex;
-  unit?: string;
   type?: CoinDataWrapperType;
 };
 
@@ -34,20 +29,13 @@ export const CoinList: React.FC<Props> = (props: Props): JSX.Element => {
     data = [],
     selected = [],
     onSelect = (_: number) => {},
-    priceIndex,
     size = 'small',
-    unit = 'RUNE',
     className = '',
-    type = 'normal',
+    type = 'liquidity',
     ...otherProps
   } = props;
 
-  const getPrice = useCallback(
-    (asset: string): BigNumber => {
-      return validBNOrZero(priceIndex[asset.toUpperCase()]);
-    },
-    [priceIndex],
-  );
+  const { getReducedPriceLabel } = usePrice();
 
   const toggleSelect = useCallback(
     (key: number) => () => {
@@ -56,6 +44,8 @@ export const CoinList: React.FC<Props> = (props: Props): JSX.Element => {
     [onSelect],
   );
 
+  const displayPrice = type === 'liquidity';
+
   return (
     <CoinListWrapper
       size={size}
@@ -63,21 +53,8 @@ export const CoinList: React.FC<Props> = (props: Props): JSX.Element => {
       {...otherProps}
     >
       <Scrollbars className="coinList-scroll">
-        {data.map((coinData: StakeOrAssetData, index: number) => {
-          let target: Maybe<string> = Nothing;
-          let targetValue: Maybe<TokenAmount> = Nothing;
-
+        {data.map((coinData: AssetData, index: number) => {
           const { asset, assetValue } = coinData;
-
-          let price;
-
-          if (isStakeData(coinData)) {
-            target = coinData.target;
-            targetValue = coinData.targetValue;
-            price = getPrice(target);
-          } else {
-            price = getPrice(asset);
-          }
 
           const tokenName = getTickerFormat(asset);
 
@@ -85,9 +62,11 @@ export const CoinList: React.FC<Props> = (props: Props): JSX.Element => {
             return <Fragment key={asset} />;
           }
 
-          const isPriceValid = !!priceIndex[asset.toUpperCase()];
           const isSelected = selected && selected.includes(coinData);
           const activeClass = isSelected ? 'active' : '';
+
+          const priceAmount = tokenToBase(assetValue);
+          const priceLabel = getReducedPriceLabel(priceAmount.amount());
 
           return (
             <div
@@ -96,17 +75,15 @@ export const CoinList: React.FC<Props> = (props: Props): JSX.Element => {
               key={index}
             >
               <CoinData
-                data-test={`coin-list-item-${tokenName}`}
                 asset={tokenName}
                 assetValue={assetValue}
-                target={target}
-                targetValue={targetValue}
-                price={price}
-                priceUnit={unit}
-                priceValid={isPriceValid}
                 size={size}
-                type={type}
               />
+              {displayPrice && (
+                <Label>
+                  {priceLabel}
+                </Label>
+              )}
             </div>
           );
         })}
