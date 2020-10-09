@@ -1,4 +1,3 @@
-import { bn } from '@thorchain/asgardex-util';
 import {
   tokenAmount,
   formatTokenAmount,
