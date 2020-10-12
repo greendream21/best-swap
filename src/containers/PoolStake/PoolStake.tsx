@@ -788,6 +788,10 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
   // called when pool address is loaded successfully
   const handlePoolAddressConfirmed = () => {
+    // if private modal is closed, don't process the tx
+    if (!openPrivateModal) {
+      return;
+    }
     // if wallet type is walletconnect, send the tx sign request to trustwallet
     if (user?.type === 'walletconnect') {
       if (txType === TxTypes.STAKE) {
