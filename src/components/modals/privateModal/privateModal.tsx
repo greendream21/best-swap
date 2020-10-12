@@ -68,7 +68,11 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
   // check if pool address is loaded
   const prevPoolAddressLoading = usePrevious(poolAddressLoading);
   useEffect(() => {
-    if (prevPoolAddressLoading === true && poolAddressLoading === false) {
+    if (
+      prevPoolAddressLoading === true &&
+      poolAddressLoading === false &&
+      visible
+    ) {
       setAddressLoading(false);
 
       // call onPoolAddressLoaded props
@@ -76,6 +80,8 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
 
       // if wallet is verified, confirm
       if (confirmed && onOk) {
+        console.log('address loading confirm', confirmed);
+
         onOk();
       }
     }
