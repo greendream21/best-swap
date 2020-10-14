@@ -97,7 +97,7 @@ const renderHeader = (
   );
 };
 
-defaults.global.defaultFontFamily = '\'Exo 2\'';
+defaults.global.defaultFontFamily = 'Exo 2';
 defaults.global.defaultFontSize = 14;
 defaults.global.defaultFontStyle = 'normal';
 
@@ -115,27 +115,19 @@ const renderChart = (
   const totalDisplayChart =
     type === 'LIQUIDITY' ? [...chartData.liquidity] : [...chartData.volume];
   const startDate = moment().subtract(7, 'days');
-  const filteredByTime = totalDisplayChart.filter(data => {
-    if (time === 'ALL') return true;
-    return moment.unix(data.time).isBetween(startDate, moment());
-  });
+  const filteredByTime =
+    time === 'ALL'
+      ? totalDisplayChart
+      : totalDisplayChart.filter(data => {
+          return moment.unix(data.time).isBetween(startDate, moment());
+        });
 
-  const filteredLabels: Array<string> = filteredByTime.map(data => {
+  const labels: Array<string> = filteredByTime.map(data => {
     return moment.unix(data.time).format('MMM DD');
   });
 
-  const filteredValues: Array<number> = filteredByTime.map(data =>
+  const values: Array<number> = filteredByTime.map(data =>
     Number(data.value.split(',').join('')),
-  );
-  const labels: Array<string> = filteredLabels.slice(
-    filteredLabels.length <= 5
-      ? 0
-      : filteredLabels.length - Math.floor(filteredLabels.length / 5) * 5 - 1,
-  );
-  const values: Array<number> = filteredValues.slice(
-    filteredValues.length <= 5
-      ? 0
-      : filteredValues.length - Math.floor(filteredValues.length / 5) * 5 - 1,
   );
 
   const data = (canvas: HTMLCanvasElement) => {
@@ -224,7 +216,9 @@ const renderChart = (
       callbacks: {
         label: ({ yLabel }: { yLabel: number }) => {
           const unit = basePrice === 'RUNE' ? 'ᚱ' : '$';
-          const label = `${unit}${new Intl.NumberFormat().format(Math.floor(yLabel))}`;
+          const label = `${unit}${new Intl.NumberFormat().format(
+            Math.floor(yLabel),
+          )}`;
           return label;
         },
       },
@@ -314,6 +308,7 @@ const PoolChart: React.FC<Props> = (props: Props): JSX.Element => {
   } = props;
   const [chartType, setChartType] = React.useState('VOLUME');
   const [chartTime, setChartTime] = React.useState('ALL');
+
   return (
     <ChartContainer
       gradientStart={backgroundGradientStart}
