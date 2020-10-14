@@ -294,7 +294,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
                     color={!isValidFundCaps ? 'error' : 'primary'}
                   >
                     <DatabaseOutlined />
-                    Add
+                    MANAGE
                   </Button>
                 </Link>
                 {poolStatus !== PoolDetailStatusEnum.Bootstrapped && (

@@ -68,7 +68,11 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
   // check if pool address is loaded
   const prevPoolAddressLoading = usePrevious(poolAddressLoading);
   useEffect(() => {
-    if (prevPoolAddressLoading === true && poolAddressLoading === false) {
+    if (
+      prevPoolAddressLoading === true &&
+      poolAddressLoading === false &&
+      visible
+    ) {
       setAddressLoading(false);
 
       // call onPoolAddressLoaded props
@@ -76,6 +80,8 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
 
       // if wallet is verified, confirm
       if (confirmed && onOk) {
+        console.log('address loading confirm', confirmed);
+
         onOk();
       }
     }
@@ -259,7 +265,7 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
     if (walletType === 'walletconnect') {
       return (
         <ModalContent>
-          <Label>CLICK CONFIRM TO SIGN WITH TRUSTWALLET!</Label>
+          <Label>CONFIRM TX USING YOUR TRUSTWALLET!</Label>
         </ModalContent>
       );
     }
@@ -275,6 +281,9 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
   const confirmBtnText = walletType === 'disconnected' ? 'CONNECT' : 'CONFIRM';
   const confirmLoading = confirmed && addressLoading;
 
+  // if the type of wallet is "walletconnect", remove footer
+  const footer = walletType !== 'walletconnect' ? undefined : null;
+
   return (
     <StyledModal
       title={modalTitle}
@@ -286,6 +295,7 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
       closable={false}
       okText={confirmBtnText}
       cancelText="CANCEL"
+      footer={footer}
     >
       {renderModalContent()}
     </StyledModal>

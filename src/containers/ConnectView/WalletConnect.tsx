@@ -84,8 +84,8 @@ const WalletConnectPane = (props: Props) => {
             walletConnector,
           });
 
-          // redirect to previous page
-          history.goBack();
+          // redirect to pool view page
+          history.push('/pools');
         })
         .catch(error => {
           // Error returned when rejected
