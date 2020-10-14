@@ -81,9 +81,8 @@ const LedgerConnector = (props: Props) => {
         duration: 3,
       });
 
-
-      // redirect to previous page
-      history.goBack();
+      // redirect to pool view page
+      history.push('/pools');
     } catch (err) {
       console.error('pk error', err.message, err.statusCode);
 
