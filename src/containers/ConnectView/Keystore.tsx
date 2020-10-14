@@ -90,8 +90,8 @@ const Keystore: React.FC<Props> = (props: Props): JSX.Element => {
       setPassword('');
       setKeystore(Nothing);
 
-      // redirect to previous page
-      history.goBack();
+      // redirect to pool view page
+      history.push('/pools');
     } catch (error) {
       setInvalideStatus(true);
       console.error(error);
