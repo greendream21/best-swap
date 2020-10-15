@@ -21,19 +21,15 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
 
   const { getReducedPriceLabel } = usePrice();
 
-  const liquidityValue = getReducedPriceLabel(
-    bnOrZero(poolInfo?.poolDepth ?? 0),
-  );
+  const liquidityValue = getReducedPriceLabel(bnOrZero(poolInfo?.poolDepth), 0);
 
-  const volume = getReducedPriceLabel(bnOrZero(poolInfo?.poolVolume ?? 0));
-  const volume24 = getReducedPriceLabel(
-    bnOrZero(poolInfo?.poolVolume24hr ?? 0),
-  );
+  const volume = getReducedPriceLabel(bnOrZero(poolInfo?.poolVolume), 0);
+  const volume24 = getReducedPriceLabel(bnOrZero(poolInfo?.poolVolume24hr), 0);
   const transaction = `${(Number(poolInfo?.swappingTxCount) || 0) +
     (Number(poolInfo?.stakingTxCount) || 0)}`;
 
   /** pool earning = poolEarned * runePrice */
-  const earning = getReducedPriceLabel(bnOrZero(poolInfo?.poolEarned));
+  const earning = getReducedPriceLabel(bnOrZero(poolInfo?.poolEarned), 0);
 
   const totalStakers = `${stats?.totalStakers ?? '0'}`;
   const totalSwaps = `${poolInfo?.swappingTxCount ?? '0'}`;
