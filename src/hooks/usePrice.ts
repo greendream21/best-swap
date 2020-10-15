@@ -35,10 +35,10 @@ const usePrice = () => {
   };
 
   // convert rune amount to the amount based in the selected asset
-  const getPrice = (value: BigNumber) => {
+  const getPrice = (value: BigNumber, decimal = 3) => {
     return formatBaseAsTokenAmount(
       baseAmount(value.multipliedBy(runePrice)),
-      3,
+      decimal,
     );
   };
 
@@ -56,8 +56,8 @@ const usePrice = () => {
   };
 
   // get price amount and prefix
-  const getReducedPriceLabel = (value: BigNumber) => {
-    return `${reducedPricePrefix}${getPrice(value)}`;
+  const getReducedPriceLabel = (value: BigNumber, decimal = 3) => {
+    return `${reducedPricePrefix}${getPrice(value, decimal)}`;
   };
 
   // get usd based price amount and prefix, fall back to rune if busd pool doesnt exist
