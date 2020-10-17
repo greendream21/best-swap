@@ -5,7 +5,7 @@ import moment from 'moment';
 import { compose } from 'redux';
 import { Row, Col } from 'antd';
 import { connect, useSelector } from 'react-redux';
-import { get as _get, random } from 'lodash';
+import { get as _get } from 'lodash';
 import { withRouter, useParams, Link } from 'react-router-dom';
 import { Token } from '@thorchain/asgardex-binance';
 import themes, { ThemeType } from '@thorchain/asgardex-theme';
@@ -39,6 +39,7 @@ import {
   PriceDataIndex,
   TxDetailData,
   RTVolumeData,
+  RTAggregateData,
 } from '../../redux/midgard/types';
 import { RUNE_SYMBOL } from '../../settings/assetData';
 import { PoolStatBar } from '../../components/statBar';
@@ -58,33 +59,14 @@ type Props = {
   priceIndex: PriceDataIndex;
   rtVolumeLoading: boolean;
   rtVolume: RTVolumeData;
+  rtAggregateLoading: boolean;
+  rtAggregate: RTAggregateData;
   tokenList: Token[];
   refreshTxStatus: boolean;
   getRTVolume: typeof midgardActions.getRTVolumeByAsset;
+  getRTAggregate: typeof midgardActions.getRTAggregateByAsset;
   getTxByAsset: typeof midgardActions.getTxByAsset;
   getPoolDetailByAsset: typeof midgardActions.getPoolDetailByAsset;
-};
-
-const generateRandomTimeSeries = (
-  minValue: number,
-  maxValue: number,
-  startDate: string,
-) => {
-  const series = [];
-  for (
-    let itr = moment(startDate);
-    itr.isBefore(moment.now());
-    itr = itr.add(1, 'day')
-  ) {
-    series.push({
-      time: itr.unix(),
-      value: (
-        minValue +
-        (random(100) / 100) * (maxValue - minValue)
-      ).toString(),
-    });
-  }
-  return series;
 };
 
 const PoolDetail: React.FC<Props> = (props: Props) => {
@@ -96,9 +78,12 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
     priceIndex,
     rtVolumeLoading,
     rtVolume,
+    rtAggregateLoading,
+    rtAggregate,
     tokenList,
     refreshTxStatus,
     getRTVolume,
+    getRTAggregate,
     getTxByAsset,
     getPoolDetailByAsset,
   } = props;
@@ -118,7 +103,7 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
   const theme = isLight ? themes.light : themes.dark;
 
   const chartData = useMemo(() => {
-    if (rtVolumeLoading) {
+    if (rtVolumeLoading || rtAggregateLoading) {
       return { liquidity: [], volume: [], loading: true };
     }
 
@@ -128,13 +113,24 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
         value: getUSDPrice(bnOrZero(volume?.totalVolume ?? '0')),
       };
     });
-
+    const liquiditySeriesData = rtAggregate?.map(liquidity => {
+      console.log('liquidity');
+      console.log(liquidity);
+      // return {
+      //   time: volume?.time ?? 0,
+      //   value: getUSDPrice(bnOrZero(volume?.totalVolume ?? '0')),
+      // };
+      return {
+        time: 0,
+        value: '',
+      };
+    });
     return {
-      liquidity: generateRandomTimeSeries(0, 15, '2020-05-01'),
+      liquidity: liquiditySeriesData,
       volume: volumeSeriesData,
       loading: false,
     };
-  }, [rtVolume, rtVolumeLoading, getUSDPrice]);
+  }, [rtVolume, rtVolumeLoading, rtAggregate, rtAggregateLoading, getUSDPrice]);
 
   const getTransactionInfo = useCallback(
     (asset: string, offset: number, limit: number) => {
@@ -189,6 +185,24 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
     const timeStamp: number = moment().unix();
     getRTVolumeInfo(tokenSymbol, 0, timeStamp, 'day');
   }, [getRTVolumeInfo, tokenSymbol]);
+
+  const getRTAggregateInfo = useCallback(
+    (
+      asset: string,
+      from: number,
+      to: number,
+      interval: '5min' | 'hour' | 'day' | 'week' | 'month' | 'year',
+    ) => {
+      getRTAggregate({ asset, from, to, interval });
+    },
+    [getRTAggregate],
+  );
+
+  useEffect(() => {
+    const timeStamp: number = moment().unix();
+    console.log('DHISHFSHKLFSJKH');
+    getRTAggregateInfo(tokenSymbol, 0, timeStamp, 'day');
+  }, [getRTAggregateInfo, tokenSymbol]);
 
   const renderDetailCaption = (poolStats: PoolData, viewMode: string) => {
     const swapUrl = `/swap/${RUNE_SYMBOL}:${poolStats.values.symbol}`;
@@ -313,9 +327,12 @@ export default compose(
       txData: state.Midgard.txData,
       rtVolumeLoading: state.Midgard.rtVolumeLoading,
       rtVolume: state.Midgard.rtVolume,
+      rtAggregateLoading: state.Midgard.rtAggregateLoading,
+      rtAggregate: state.Midgard.rtAggregate,
     }),
     {
       getRTVolume: midgardActions.getRTVolumeByAsset,
+      getRTAggregate: midgardActions.getRTAggregateByAsset,
       getTxByAsset: midgardActions.getTxByAsset,
       getPoolDetailByAsset: midgardActions.getPoolDetailByAsset,
     },
