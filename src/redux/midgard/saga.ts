@@ -21,6 +21,7 @@ import {
   GetStakerPoolDataPayload,
   GetTransactionPayload,
   GetRTVolumeByAssetPayload,
+  GetRTAggregateByAssetPayload,
 } from './types';
 import { AssetDetail } from '../../types/generated/midgard';
 
@@ -679,6 +680,51 @@ function* tryGetRTVolumeByAsset(payload: GetRTVolumeByAssetPayload) {
   );
 }
 
+export function* getRTAggregateByAsset() {
+  yield takeEvery('GET_RT_VOLUME_BY_ASSET', function*({
+    payload,
+  }: ReturnType<typeof actions.getRTAggregateByAsset>) {
+    try {
+      const data = yield call(tryGetRTAggregateByAsset, payload);
+      yield put(actions.getRTAggregateByAssetSuccess(data));
+    } catch (error) {
+      yield put(actions.getRTAggregateByAssetFailed(error));
+    }
+  });
+}
+
+function* tryGetRTAggregateByAsset(payload: GetRTAggregateByAssetPayload) {
+  for (let i = 0; i < MIDGARD_MAX_RETRY; i++) {
+    try {
+      const noCache = i > 0;
+      const { asset, from, to, interval } = payload;
+      // Unsafe: Can't infer type of `basePath` here - known TS/Generator/Saga issue
+      const basePath: string = yield call(getApiBasePath, getNet(), noCache);
+      const midgardApi = api.getMidgardDefaultApi(basePath);
+      const fn = midgardApi.getPoolAggChanges;
+      const { data }: UnpackPromiseResponse<typeof fn> = yield call(
+        {
+          context: midgardApi,
+          fn,
+        },
+        asset,
+        from,
+        to,
+        interval,
+      );
+
+      return data;
+    } catch (error) {
+      if (i < MIDGARD_MAX_RETRY - 1) {
+        yield delay(MIDGARD_RETRY_DELAY);
+      }
+    }
+  }
+  throw new Error(
+    'Midgard API request failed to get RT Volume changes by asset',
+  );
+}
+
 export function* getRTVolumeByAsset() {
   yield takeEvery('GET_RT_VOLUME_BY_ASSET', function*({
     payload,
@@ -707,6 +753,7 @@ export default function* rootSaga() {
     fork(getTxByAddressAsset),
     fork(getTxByAsset),
     fork(getRTVolumeByAsset),
+    fork(getRTAggregateByAsset),
     fork(getPoolDetailByAsset),
     fork(getNetworkInfo),
   ]);

@@ -2504,7 +2504,7 @@ export class DefaultApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public getPoolAggChanges(pool: string, interval: '5min' | 'hour' | 'day' | 'week' | 'month' | 'year', from: number, to: number, options?: any) {
+    public getPoolAggChanges(pool: string, from: number, to: number, interval: '5min' | 'hour' | 'day' | 'week' | 'month' | 'year', options?: any) {
         return DefaultApiFp(this.configuration).getPoolAggChanges(pool, interval, from, to, options)(this.axios, this.basePath);
     }
 

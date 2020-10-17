@@ -114,17 +114,12 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
       };
     });
     const liquiditySeriesData = rtAggregate?.map(liquidity => {
-      console.log('liquidity');
-      console.log(liquidity);
-      // return {
-      //   time: volume?.time ?? 0,
-      //   value: getUSDPrice(bnOrZero(volume?.totalVolume ?? '0')),
-      // };
       return {
-        time: 0,
-        value: '',
+        time: liquidity?.time ?? 0,
+        value: getUSDPrice(bnOrZero(liquidity?.poolVolume ?? '0')),
       };
     });
+    console.log('liquiditySeriesData',liquiditySeriesData)
     return {
       liquidity: liquiditySeriesData,
       volume: volumeSeriesData,
@@ -200,7 +195,6 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
 
   useEffect(() => {
     const timeStamp: number = moment().unix();
-    console.log('DHISHFSHKLFSJKH');
     getRTAggregateInfo(tokenSymbol, 0, timeStamp, 'day');
   }, [getRTAggregateInfo, tokenSymbol]);
 
