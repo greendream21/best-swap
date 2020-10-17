@@ -113,13 +113,14 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
         value: getUSDPrice(bnOrZero(volume?.totalVolume ?? '0')),
       };
     });
+    
     const liquiditySeriesData = rtAggregate?.map(liquidity => {
       return {
         time: liquidity?.time ?? 0,
-        value: getUSDPrice(bnOrZero(liquidity?.poolVolume ?? '0')),
+        value: getUSDPrice(bnOrZero((liquidity?.runeDepth as any) * 2 ?? '0')),
       };
     });
-    console.log('liquiditySeriesData',liquiditySeriesData)
+
     return {
       liquidity: liquiditySeriesData,
       volume: volumeSeriesData,
