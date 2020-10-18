@@ -146,7 +146,7 @@ export type State = {
   rtVolumeLoading: boolean;
   rtVolume: TotalVolChanges[];
   rtAggregateLoading: boolean;
-  rtAggregate: TotalVolChanges[];
+  rtAggregate: PoolAggChanges[];
   txCurData: Maybe<InlineResponse2001>;
   apiBasePath: ApiBasePathRD;
   thorchain: ThorchainData;
