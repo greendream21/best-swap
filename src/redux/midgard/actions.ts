@@ -10,6 +10,7 @@ import {
   GetTxByAssetPayload,
   GetPoolDataPayload,
   GetRTVolumeByAssetPayload,
+  GetRTAggregateByAssetPayload,
   GetPoolDetailByAssetPayload,
   ThorchainData,
 } from './types';
@@ -174,6 +175,15 @@ export const getRTVolumeByAssetSuccess = (payload: Array<TotalVolChanges>) =>
 export const getRTVolumeByAssetFailed = (payload: Error) =>
   ({ type: 'GET_RT_VOLUME_BY_ASSET_FAILED', payload } as const);
 
+export const getRTAggregateByAsset = (payload: GetRTAggregateByAssetPayload) =>
+  ({ type: 'GET_RT_AGGREGATE_BY_ASSET', payload } as const);
+
+export const getRTAggregateByAssetSuccess = (payload: Array<TotalVolChanges>) =>
+  ({ type: 'GET_RT_AGGREGATE_BY_ASSET_SUCCESS', payload } as const);
+
+export const getRTAggregateByAssetFailed = (payload: Error) =>
+  ({ type: 'GET_RT_AGGREGATE_BY_ASSET_FAILED', payload } as const);
+
 export const getNetworkInfo = () =>
   ({ type: 'GET_NETWORK_INFO_REQUEST' } as const);
 
@@ -228,6 +238,9 @@ export type MidgardActionTypes = ReturnType<
   | typeof getRTVolumeByAsset
   | typeof getRTVolumeByAssetSuccess
   | typeof getRTVolumeByAssetFailed
+  | typeof getRTAggregateByAsset
+  | typeof getRTAggregateByAssetSuccess
+  | typeof getRTAggregateByAssetFailed
   | typeof getPoolDetailByAsset
   | typeof getPoolDetailByAssetSuccess
   | typeof getPoolDetailByAssetFailed

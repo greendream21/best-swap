@@ -11,6 +11,7 @@ import {
   InlineResponse2001,
   TxDetailsTypeEnum,
   TotalVolChanges,
+  PoolAggChanges,
   NetworkInfo,
 } from '../../types/generated/midgard';
 
@@ -92,11 +93,20 @@ export type GetRTVolumeByAssetPayload = {
   type?: string;
 };
 
+export type GetRTAggregateByAssetPayload = {
+  asset: string;
+  from: number;
+  to: number;
+  interval: '5min' | 'hour' | 'day' | 'week' | 'month' | 'year';
+  type?: string;
+};
+
 export type GetPoolDetailByAssetPayload = {
   asset: string;
 };
 
 export type RTVolumeData = Array<TotalVolChanges>;
+export type RTAggregateData = Array<PoolAggChanges>;
 
 export type TxDetailData = RemoteData<Error, InlineResponse2001>;
 
@@ -135,6 +145,8 @@ export type State = {
   refreshTxStatus: boolean;
   rtVolumeLoading: boolean;
   rtVolume: TotalVolChanges[];
+  rtAggregateLoading: boolean;
+  rtAggregate: PoolAggChanges[];
   txCurData: Maybe<InlineResponse2001>;
   apiBasePath: ApiBasePathRD;
   thorchain: ThorchainData;
