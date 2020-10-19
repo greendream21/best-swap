@@ -64,6 +64,8 @@ const initState: State = {
   txCurData: {},
   rtVolumeLoading: false,
   rtVolume: [],
+  rtAggregateLoading: false,
+  rtAggregate: [],
   apiBasePath: initial,
   thorchain: {
     constants: {},
@@ -393,6 +395,23 @@ const reducer: Reducer<State, MidgardActionTypes> = (
         ...state,
         rtVolume: [],
         rtVolumeLoading: false,
+      };
+    case 'GET_RT_AGGREGATE_BY_ASSET':
+      return {
+        ...state,
+        rtAggregateLoading: true,
+      };
+    case 'GET_RT_AGGREGATE_BY_ASSET_SUCCESS':
+      return {
+        ...state,
+        rtAggregate: action.payload,
+        rtAggregateLoading: false,
+      };
+    case 'GET_RT_AGGREGATE_BY_ASSET_FAILED':
+      return {
+        ...state,
+        rtAggregate: [],
+        rtAggregateLoading: false,
       };
     case 'GET_API_BASEPATH_PENDING':
       return {
