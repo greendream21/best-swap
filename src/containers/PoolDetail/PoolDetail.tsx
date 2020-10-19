@@ -117,7 +117,7 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
     const liquiditySeriesData = rtAggregate?.map(liquidity => {
       return {
         time: liquidity?.time ?? 0,
-        value: getUSDPrice(bnOrZero((liquidity?.runeDepth as any) * 2 ?? '0')),
+        value: getUSDPrice(bnOrZero(liquidity?.runeDepth).multipliedBy(2)),
       };
     });
 
