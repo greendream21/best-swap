@@ -63,6 +63,14 @@ export function* getPoolViewData() {
         interval: 'day',
       }),
     );
+    yield put(
+      midgardActions.getRTAggregateByAsset({
+        asset: '',
+        from: 0,
+        to: timeStamp,
+        interval: 'day',
+      }),
+    );
   });
 }
 
