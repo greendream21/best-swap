@@ -3,6 +3,7 @@ import moment from 'moment';
 import { defaults } from 'react-chartjs-2';
 import Loader from '../utility/loaders/chart';
 import { abbreviateNumber } from '../../helpers/numberHelper';
+import { CodeIcon } from '../icons';
 
 import {
   ChartContainer,
@@ -13,6 +14,8 @@ import {
   LineChartContainer,
   LineChart,
   BlurWrapper,
+  ComingSoonWrapper,
+  ComingSoonText,
 } from './poolChart.style';
 
 type ChartDetail = {
@@ -275,9 +278,16 @@ const renderChart = (
 
   return (
     <LineChartContainer>
+      {type === 'LIQUIDITY' && (
+        <ComingSoonWrapper>
+          <CodeIcon />
+          <ComingSoonText>Coming Soon...</ComingSoonText>
+        </ComingSoonWrapper>
+      )}
+
       {chartData?.loading && <Loader />}
       {!chartData?.loading && (
-        <BlurWrapper>
+        <BlurWrapper isBlur={type === 'LIQUIDITY'}>
           <LineChart data={data} options={options} />
         </BlurWrapper>
       )}

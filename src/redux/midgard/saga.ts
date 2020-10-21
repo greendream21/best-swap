@@ -1,6 +1,7 @@
-import { all, takeEvery, put, fork, call, delay } from 'redux-saga/effects';
+import { all, takeEvery, put, fork, call, delay, select } from 'redux-saga/effects';
 import { isEmpty as _isEmpty } from 'lodash';
 import byzantine from '@thorchain/byzantine-module';
+import { RootState } from '../store';
 import { PoolDetail } from '../../types/generated/midgard/api';
 import { axiosRequest } from '../../helpers/apiHelper';
 import * as actions from './actions';
@@ -685,7 +686,15 @@ export function* getRTAggregateByAsset() {
     payload,
   }: ReturnType<typeof actions.getRTAggregateByAsset>) {
     try {
-      const data = yield call(tryGetRTAggregateByAsset, payload);
+      const params = payload;
+
+      // if asset is not specified, request all pools
+      if (!params.asset) {
+        const pools: string [] = yield select((state: RootState) => state.Midgard.pools);
+
+        params.asset = pools.join(',');
+      }
+      const data = yield call(tryGetRTAggregateByAsset, params);
       yield put(actions.getRTAggregateByAssetSuccess(data));
     } catch (error) {
       yield put(actions.getRTAggregateByAssetFailed(error));
