@@ -34,7 +34,6 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
   const totalStakers = `${stats?.totalStakers ?? '0'}`;
   const totalSwaps = `${poolInfo?.swappingTxCount ?? '0'}`;
 
-  /** RETURN TO DATE = poolEarned / poolDepth */
   const poolAPY = bnOrZero(poolInfo?.poolAPY);
   const poolAPYLabel = poolAPY.multipliedBy(100).toFixed(2);
 
