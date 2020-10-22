@@ -35,10 +35,8 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
   const totalSwaps = `${poolInfo?.swappingTxCount ?? '0'}`;
 
   /** RETURN TO DATE = poolEarned / poolDepth */
-  const poolEarned = bnOrZero(poolInfo?.poolEarned);
-  const poolDepth = bnOrZero(poolInfo?.runeDepth).multipliedBy(2);
-  const roiATResult = Number(poolEarned.dividedBy(poolDepth).toFormat(2));
-  const roi = Number((roiATResult * 100).toFixed(2));
+  const poolAPY = bnOrZero(poolInfo?.poolAPY);
+  const poolAPYLabel = poolAPY.multipliedBy(100).toFixed(2);
 
   return (
     <>
@@ -162,10 +160,10 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
           xl={{ span: 12 }}
         >
           <StyledStatistic
-            title="Return To Date"
+            title="APY"
             formatter={() => {
               if (loading) return <LabelLoader />;
-              return <span>{roi}</span>;
+              return <span>{poolAPYLabel}</span>;
             }}
             suffix={loading ? '' : '%'}
           />
