@@ -398,6 +398,14 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         sorter: (a: PoolData, b: PoolData) => Number(a.roi) - Number(b.roi),
         sortDirections: ['descend', 'ascend'],
       },
+      // {
+      //   key: 'apy',
+      //   title: 'APY',
+      //   dataIndex: ['values', 'apy'],
+      //   render: renderTextCell,
+      //   sorter: (a: PoolData, b: PoolData) => Number(a.apy) - Number(b.apy),
+      //   sortDirections: ['descend', 'ascend'],
+      // },
       buttonCol,
     ];
 
