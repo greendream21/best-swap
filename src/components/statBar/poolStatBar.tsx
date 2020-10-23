@@ -34,142 +34,77 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
   const totalStakers = `${stats?.totalStakers ?? '0'}`;
   const totalSwaps = `${poolInfo?.swappingTxCount ?? '0'}`;
 
-  /** RETURN TO DATE = poolEarned / poolDepth */
-  const poolEarned = bnOrZero(poolInfo?.poolEarned);
-  const poolDepth = bnOrZero(poolInfo?.runeDepth).multipliedBy(2);
-  const roiATResult = Number(poolEarned.dividedBy(poolDepth).toFormat(2));
-  const roi = Number((roiATResult * 100).toFixed(2));
+  const poolAPY = bnOrZero(poolInfo?.poolAPY);
+  const poolAPYLabel = `${poolAPY.multipliedBy(100).toFixed(2)} %`;
+
+  const poolStats = React.useMemo(
+    () => [
+      {
+        title: 'Total Liquidity',
+        value: liquidityValue,
+      },
+      {
+        title: 'Total Earnings',
+        value: earning,
+      },
+      {
+        title: 'Total Volume',
+        value: volume,
+      },
+      {
+        title: '24H Volume',
+        value: volume24,
+      },
+      {
+        title: 'Total Members',
+        value: totalStakers,
+      },
+      {
+        title: 'Total Swaps',
+        value: totalSwaps,
+      },
+      {
+        title: 'Total Transactions',
+        value: transaction,
+      },
+      {
+        title: 'APY',
+        value: poolAPYLabel,
+      },
+    ],
+    [
+      liquidityValue,
+      earning,
+      volume,
+      volume24,
+      totalStakers,
+      totalSwaps,
+      transaction,
+      poolAPYLabel,
+    ],
+  );
 
   return (
     <>
       <Row gutter={[16, 16]}>
-        <Col
-          xs={{ span: 24 }}
-          sm={{ span: 24 }}
-          md={{ span: 12 }}
-          lg={{ span: 12 }}
-          xl={{ span: 12 }}
-        >
-          <StyledStatistic
-            title="Total Liquidity"
-            formatter={() => {
-              if (loading) return <LabelLoader />;
-              return <span>{liquidityValue}</span>;
-            }}
-          />
-        </Col>
-        <Col
-          xs={{ span: 24 }}
-          sm={{ span: 24 }}
-          md={{ span: 12 }}
-          lg={{ span: 12 }}
-          xl={{ span: 12 }}
-        >
-          <StyledStatistic
-            title="Total Earnings"
-            formatter={() => {
-              if (loading) return <LabelLoader />;
-              return <span>{earning}</span>;
-            }}
-          />
-        </Col>
-      </Row>
-      <Row gutter={[16, 16]}>
-        <Col
-          xs={{ span: 24 }}
-          sm={{ span: 24 }}
-          md={{ span: 12 }}
-          lg={{ span: 12 }}
-          xl={{ span: 12 }}
-        >
-          <StyledStatistic
-            title="Total Volume"
-            formatter={() => {
-              if (loading) return <LabelLoader />;
-              return <span>{volume}</span>;
-            }}
-          />
-        </Col>
-        <Col
-          xs={{ span: 24 }}
-          sm={{ span: 24 }}
-          md={{ span: 12 }}
-          lg={{ span: 12 }}
-          xl={{ span: 12 }}
-        >
-          <StyledStatistic
-            title="24H Volume"
-            formatter={() => {
-              if (loading) return <LabelLoader />;
-              return <span>{volume24}</span>;
-            }}
-          />
-        </Col>
-      </Row>
-      <Row gutter={[16, 16]}>
-        <Col
-          xs={{ span: 24 }}
-          sm={{ span: 24 }}
-          md={{ span: 12 }}
-          lg={{ span: 12 }}
-          xl={{ span: 12 }}
-        >
-          <StyledStatistic
-            title="Total Members"
-            formatter={() => {
-              if (loading) return <LabelLoader />;
-              return <span>{totalStakers}</span>;
-            }}
-          />
-        </Col>
-        <Col
-          xs={{ span: 24 }}
-          sm={{ span: 24 }}
-          md={{ span: 12 }}
-          lg={{ span: 12 }}
-          xl={{ span: 12 }}
-        >
-          <StyledStatistic
-            title="Total Swaps"
-            formatter={() => {
-              if (loading) return <LabelLoader />;
-              return <span>{totalSwaps}</span>;
-            }}
-          />
-        </Col>
-      </Row>
-      <Row gutter={[16, 16]}>
-        <Col
-          xs={{ span: 24 }}
-          sm={{ span: 24 }}
-          md={{ span: 12 }}
-          lg={{ span: 12 }}
-          xl={{ span: 12 }}
-        >
-          <StyledStatistic
-            title="Total Transactions"
-            formatter={() => {
-              if (loading) return <LabelLoader />;
-              return <span>{transaction}</span>;
-            }}
-          />
-        </Col>
-        <Col
-          xs={{ span: 24 }}
-          sm={{ span: 24 }}
-          md={{ span: 12 }}
-          lg={{ span: 12 }}
-          xl={{ span: 12 }}
-        >
-          <StyledStatistic
-            title="Return To Date"
-            formatter={() => {
-              if (loading) return <LabelLoader />;
-              return <span>{roi}</span>;
-            }}
-            suffix={loading ? '' : '%'}
-          />
-        </Col>
+        {poolStats.map((statsProp, index) => (
+          <Col
+            key={index}
+            xs={{ span: 24 }}
+            sm={{ span: 24 }}
+            md={{ span: 12 }}
+            lg={{ span: 12 }}
+            xl={{ span: 12 }}
+          >
+            <StyledStatistic
+              title={statsProp.title}
+              formatter={() => {
+                if (loading) return <LabelLoader />;
+                return <span>{statsProp.value}</span>;
+              }}
+            />
+          </Col>
+        ))}
       </Row>
     </>
   );

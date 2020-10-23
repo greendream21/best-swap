@@ -717,9 +717,9 @@ function* tryGetRTAggregateByAsset(payload: GetRTAggregateByAssetPayload) {
           fn,
         },
         asset,
+        interval,
         from,
         to,
-        interval,
       );
 
       return data;

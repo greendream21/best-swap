@@ -99,11 +99,12 @@ export const getPoolData = (
 
   // APY (Annual Percent Yield)
   // Formula: poolROI / ((now - pool.genesis) / (seconds per day)) * 365
-  const poolGenesis = assetDetail?.dateCreated ?? 0;
-  const pastDays = (Date.now() / 1000 - poolGenesis) / (24 * 60 * 60);
-  const apy = poolGenesis
-    ? Number(((roiATResult / pastDays) * 365 * 100).toFixed(2))
-    : 0;
+
+  const apy = Number(
+    bnOrZero(poolDetail?.poolAPY)
+      .multipliedBy(100)
+      .toFixed(2),
+  );
 
   const poolROI12Data = poolDetail?.poolROI12 ?? 0;
   const poolROI12 = bn(poolROI12Data).multipliedBy(100);
@@ -125,7 +126,7 @@ export const getPoolData = (
   const transactionValue = `${formatBaseAsTokenAmount(transaction)}`;
   const liqFeeValue = `${formatBaseAsTokenAmount(liqFee)}`;
   const roiValue = `${roi}%`;
-  const apyValue = `${apy}% APY`;
+  const apyValue = `${apy}%`;
 
   return {
     pool: {

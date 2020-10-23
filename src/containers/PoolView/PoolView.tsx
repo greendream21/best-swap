@@ -14,7 +14,6 @@ import {
 } from '@ant-design/icons';
 import { Token } from '@thorchain/asgardex-binance';
 import { bnOrZero } from '@thorchain/asgardex-util';
-import { baseAmount, formatBaseAsTokenAmount } from '@thorchain/asgardex-token';
 import themes, { ThemeType } from '@thorchain/asgardex-theme';
 
 import Label from '../../components/uielements/label';
@@ -57,6 +56,7 @@ import {
   PoolDetailStatusEnum,
   StatsData,
   AssetDetail,
+  NetworkInfo,
 } from '../../types/generated/midgard/api';
 import showNotification from '../../components/uielements/notification';
 import { RUNE_SYMBOL } from '../../settings/assetData';
@@ -82,6 +82,8 @@ type Props = {
   poolLoading: boolean;
   assetLoading: boolean;
   poolDataLoading: boolean;
+  networkInfo: NetworkInfo;
+  networkInfoLoading: boolean;
   rtVolumeLoading: boolean;
   rtVolume: RTVolumeData;
   tokenList: Token[];
@@ -103,6 +105,8 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     poolLoading,
     assetLoading,
     poolDataLoading,
+    networkInfo,
+    networkInfoLoading,
     rtVolumeLoading,
     rtVolume,
     tokenList,
@@ -117,7 +121,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
   const [currentTxPage, setCurrentTxPage] = useState<number>(1);
   const [keyword, setKeyword] = useState<string>('');
   const history = useHistory();
-  const { reducedPricePrefix, priceIndex } = usePrice();
+  const { getUSDPrice, reducedPricePrefix, priceIndex } = usePrice();
 
   const themeType = useSelector((state: RootState) => state.App.themeType);
   const isLight = themeType === ThemeType.LIGHT;
@@ -140,13 +144,9 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     }
 
     const volumeSeriesData = rtVolume?.map(volume => {
-      const price = busdPrice === 'RUNE' ? 1 : Number(busdPrice);
-      const bnValue = bnOrZero(volume?.totalVolume ?? '0').dividedBy(price);
-      const amount = baseAmount(bnValue);
-
       return {
         time: volume?.time ?? 0,
-        value: formatBaseAsTokenAmount(amount),
+        value: getUSDPrice(bnOrZero(volume?.totalVolume)),
       };
     });
 
@@ -155,7 +155,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
       volume: volumeSeriesData,
       loading: false,
     };
-  }, [rtVolume, rtVolumeLoading, busdPrice]);
+  }, [rtVolume, rtVolumeLoading, getUSDPrice]);
 
   const getTransactionInfo = useCallback(
     (offset: number, limit: number) => {
@@ -391,11 +391,11 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         sortDirections: ['descend', 'ascend'],
       },
       {
-        key: 'roi',
-        title: 'Return To Date',
-        dataIndex: ['values', 'roi'],
+        key: 'apy',
+        title: 'APY',
+        dataIndex: ['values', 'apy'],
         render: renderTextCell,
-        sorter: (a: PoolData, b: PoolData) => Number(a.roi) - Number(b.roi),
+        sorter: (a: PoolData, b: PoolData) => Number(a.apy) - Number(b.apy),
         sortDirections: ['descend', 'ascend'],
       },
       buttonCol,
@@ -472,9 +472,14 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
 
   return (
     <ContentWrapper className="pool-view-wrapper">
-      <StatBar loading={loading} stats={stats} basePrice={busdPrice} />
+      <StatBar
+        loading={loading || networkInfoLoading}
+        stats={stats}
+        networkInfo={networkInfo}
+      />
       <div>
         <PoolChart
+          hasLiquidity={false}
           chartData={chartData}
           textColor={theme.palette.text[0]}
           lineColor={isLight ? '#436eb9' : '#1dd3e6'}
@@ -544,6 +549,8 @@ export default compose(
       refreshTxStatus: state.Midgard.refreshTxStatus,
       assetData: state.Wallet.assetData,
       user: state.Wallet.user,
+      networkInfo: state.Midgard.networkInfo,
+      networkInfoLoading: state.Midgard.networkInfoLoading,
       rtVolumeLoading: state.Midgard.rtVolumeLoading,
       rtVolume: state.Midgard.rtVolume,
     }),

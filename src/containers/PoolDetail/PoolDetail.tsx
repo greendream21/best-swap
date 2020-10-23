@@ -110,7 +110,7 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
     const volumeSeriesData = rtVolume?.map(volume => {
       return {
         time: volume?.time ?? 0,
-        value: getUSDPrice(bnOrZero(volume?.totalVolume ?? '0')),
+        value: getUSDPrice(bnOrZero(volume?.totalVolume)),
       };
     });
 
