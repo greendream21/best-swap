@@ -481,7 +481,6 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         loading={loading || networkInfoLoading}
         stats={stats}
         networkInfo={networkInfo}
-        basePrice={busdPrice}
       />
       <div>
         <PoolChart
