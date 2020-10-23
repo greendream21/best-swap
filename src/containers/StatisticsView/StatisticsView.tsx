@@ -1,231 +1,129 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { Row, Col } from 'antd';
 import { bnOrZero } from '@thorchain/asgardex-util';
-import { baseAmount, formatBaseAsTokenAmount } from '@thorchain/asgardex-token';
 
-import { StatsData } from '../../types/generated/midgard';
-import { getTickerFormat } from '../../helpers/stringHelper';
+import { StatsData, NetworkInfo } from '../../types/generated/midgard';
 import { RootState } from '../../redux/store';
-import { AssetDetailMap } from '../../redux/midgard/types';
 import { StyledStatistic } from './StatisticsView.style';
 
+import usePrice from '../../hooks/usePrice';
+
 type Props = {
-  assets: AssetDetailMap;
   stats: StatsData;
+  networkInfo: NetworkInfo;
 };
 
 const StatisticsView: React.FC<Props> = (props: Props): JSX.Element => {
-  const { assets, stats } = props;
+  const { stats, networkInfo } = props;
 
-  const busdToken = Object.keys(assets).find(
-    item => getTickerFormat(item) === 'busd',
-  );
-  const busdPrice = busdToken ? assets[busdToken]?.priceRune : 'RUNE';
+  const { getUSDPriceLabel } = usePrice();
 
-  const getUSDValue = useCallback(
-    (val: string) => {
-      const price = busdPrice === 'RUNE' ? 1 : Number(busdPrice);
-      const bnValue = bnOrZero(val).dividedBy(price);
-      const amount = baseAmount(bnValue);
-      return formatBaseAsTokenAmount(amount, 0);
-    },
-    [busdPrice],
-  );
+  const bondingAPYLabel = bnOrZero(networkInfo?.bondingAPY)
+    .multipliedBy(100)
+    .toFixed(2);
+  const liquidityAPYLabel = bnOrZero(networkInfo?.liquidityAPY)
+    .multipliedBy(100)
+    .toFixed(2);
 
-  const getPrefix = useCallback(() => {
-    return busdPrice === 'RUNE' ? 'ᚱ' : '$';
-  }, [busdPrice]);
+  const statsData = React.useMemo(() => {
+    return [
+      {
+        title: 'Total Pooled',
+        value: getUSDPriceLabel(bnOrZero(stats?.totalStaked)),
+      },
+      {
+        title: 'Total Depth',
+        value: getUSDPriceLabel(bnOrZero(stats?.totalDepth)),
+      },
+      {
+        title: 'Total Earned',
+        value: getUSDPriceLabel(bnOrZero(stats?.totalEarned)),
+      },
+      {
+        title: 'Total Volume',
+        value: getUSDPriceLabel(bnOrZero(stats?.totalVolume)),
+      },
+      {
+        title: '24HR Volume',
+        value: getUSDPriceLabel(bnOrZero(stats?.totalVolume24hr)),
+      },
+      {
+        title: 'Pool Count',
+        value: stats?.poolCount ?? '0',
+      },
+      {
+        title: 'Total Pooled Tx',
+        value: stats?.totalStakeTx ?? '0',
+      },
+      {
+        title: 'Total Tx',
+        value: stats?.totalTx ?? '0',
+      },
+      {
+        title: 'Daily Tx',
+        value: stats?.dailyTx ?? '0',
+      },
+      {
+        title: 'Monthly Tx',
+        value: stats?.monthlyTx ?? '0',
+      },
+      {
+        title: 'Total Users',
+        value: stats?.totalUsers ?? '0',
+      },
+      {
+        title: 'Daily Active Users',
+        value: stats?.dailyActiveUsers ?? '0',
+      },
+      {
+        title: 'Monthly Active Users',
+        value: stats?.monthlyActiveUsers ?? '0',
+      },
+      {
+        title: 'Total Asset Buys',
+        value: stats?.totalAssetBuys ?? '0',
+      },
+      {
+        title: 'Total Asset Sells',
+        value: stats?.totalAssetSells ?? '0',
+      },
+      {
+        title: 'Total Withdraw Tx',
+        value: stats?.totalWithdrawTx ?? '0',
+      },
+      {
+        title: 'Bonding APY',
+        value: `${bondingAPYLabel} %`,
+      },
+      {
+        title: 'Liquidity APY',
+        value: `${liquidityAPYLabel} %`,
+      },
+    ];
+  }, [stats, bondingAPYLabel, liquidityAPYLabel, getUSDPriceLabel]);
 
   return (
     <Row gutter={[16, 16]}>
-      <Col
-        xs={{ span: 24 }}
-        sm={{ span: 12 }}
-        md={{ span: 8 }}
-        lg={{ span: 8 }}
-        xl={{ span: 4 }}
-      >
-        <StyledStatistic
-          title="Total Pooled"
-          value={getUSDValue(stats?.totalStaked ?? '0')}
-          prefix={getPrefix()}
-        />
-      </Col>
-      <Col
-        xs={{ span: 24 }}
-        sm={{ span: 12 }}
-        md={{ span: 8 }}
-        lg={{ span: 8 }}
-        xl={{ span: 4 }}
-      >
-        <StyledStatistic
-          title="Total Pooled Tx"
-          value={stats?.totalStakeTx ?? '0'}
-        />
-      </Col>
-      <Col
-        xs={{ span: 24 }}
-        sm={{ span: 12 }}
-        md={{ span: 8 }}
-        lg={{ span: 8 }}
-        xl={{ span: 4 }}
-      >
-        <StyledStatistic
-          title="Total Earned"
-          value={getUSDValue(stats?.totalEarned ?? '0')}
-          prefix={getPrefix()}
-        />
-      </Col>
-      <Col
-        xs={{ span: 24 }}
-        sm={{ span: 12 }}
-        md={{ span: 8 }}
-        lg={{ span: 8 }}
-        xl={{ span: 4 }}
-      >
-        <StyledStatistic title="Total Tx" value={stats?.totalTx ?? '0'} />
-      </Col>
-      <Col
-        xs={{ span: 24 }}
-        sm={{ span: 12 }}
-        md={{ span: 8 }}
-        lg={{ span: 8 }}
-        xl={{ span: 4 }}
-      >
-        <StyledStatistic
-          title="Total Depth"
-          value={getUSDValue(stats?.totalDepth ?? '0')}
-          prefix={getPrefix()}
-        />
-      </Col>
-      <Col
-        xs={{ span: 24 }}
-        sm={{ span: 12 }}
-        md={{ span: 8 }}
-        lg={{ span: 8 }}
-        xl={{ span: 4 }}
-      >
-        <StyledStatistic title="Total Users" value={stats?.totalUsers} />
-      </Col>
-      <Col
-        xs={{ span: 24 }}
-        sm={{ span: 12 }}
-        md={{ span: 8 }}
-        lg={{ span: 8 }}
-        xl={{ span: 4 }}
-      >
-        <StyledStatistic
-          title="Total Volume"
-          value={getUSDValue(stats?.totalVolume ?? '0')}
-          prefix={getPrefix()}
-        />
-      </Col>
-      <Col
-        xs={{ span: 24 }}
-        sm={{ span: 12 }}
-        md={{ span: 8 }}
-        lg={{ span: 8 }}
-        xl={{ span: 4 }}
-      >
-        <StyledStatistic
-          title="24HR Volume"
-          value={getUSDValue(stats?.totalVolume24hr ?? '0')}
-          prefix={getPrefix()}
-        />
-      </Col>
-      <Col
-        xs={{ span: 24 }}
-        sm={{ span: 12 }}
-        md={{ span: 8 }}
-        lg={{ span: 8 }}
-        xl={{ span: 4 }}
-      >
-        <StyledStatistic
-          title="Total Asset Buys"
-          value={stats?.totalAssetBuys ?? '0'}
-        />
-      </Col>
-      <Col
-        xs={{ span: 24 }}
-        sm={{ span: 12 }}
-        md={{ span: 8 }}
-        lg={{ span: 8 }}
-        xl={{ span: 4 }}
-      >
-        <StyledStatistic
-          title="Total Asset Sells"
-          value={stats?.totalAssetSells ?? '0'}
-        />
-      </Col>
-      <Col
-        xs={{ span: 24 }}
-        sm={{ span: 12 }}
-        md={{ span: 8 }}
-        lg={{ span: 8 }}
-        xl={{ span: 4 }}
-      >
-        <StyledStatistic
-          title="Total Withdraw Tx"
-          value={stats?.totalWithdrawTx ?? '0'}
-        />
-      </Col>
-      <Col
-        xs={{ span: 24 }}
-        sm={{ span: 12 }}
-        md={{ span: 8 }}
-        lg={{ span: 8 }}
-        xl={{ span: 4 }}
-      >
-        <StyledStatistic title="Pool Count" value={stats?.poolCount ?? '0'} />
-      </Col>
-      <Col
-        xs={{ span: 24 }}
-        sm={{ span: 12 }}
-        md={{ span: 8 }}
-        lg={{ span: 8 }}
-        xl={{ span: 4 }}
-      >
-        <StyledStatistic
-          title="Daily Active Users"
-          value={stats?.dailyActiveUsers ?? '0'}
-        />
-      </Col>
-      <Col
-        xs={{ span: 24 }}
-        sm={{ span: 12 }}
-        md={{ span: 8 }}
-        lg={{ span: 8 }}
-        xl={{ span: 4 }}
-      >
-        <StyledStatistic title="Daily Tx" value={stats?.dailyTx ?? '0'} />
-      </Col>
-      <Col
-        xs={{ span: 24 }}
-        sm={{ span: 12 }}
-        md={{ span: 8 }}
-        lg={{ span: 8 }}
-        xl={{ span: 4 }}
-      >
-        <StyledStatistic
-          title="Monthly Active Users"
-          value={stats?.monthlyActiveUsers}
-        />
-      </Col>
-      <Col
-        xs={{ span: 24 }}
-        sm={{ span: 12 }}
-        md={{ span: 8 }}
-        lg={{ span: 8 }}
-        xl={{ span: 4 }}
-      >
-        <StyledStatistic title="Monthly Tx" value={stats?.monthlyTx} />
-      </Col>
+      {statsData.map((statProps, index) => {
+        return (
+          <Col
+            key={index}
+            xs={{ span: 24 }}
+            sm={{ span: 12 }}
+            md={{ span: 8 }}
+            lg={{ span: 8 }}
+            xl={{ span: 4 }}
+          >
+            <StyledStatistic {...statProps} />
+          </Col>
+        );
+      })}
     </Row>
   );
 };
 
 export default connect((state: RootState) => ({
   stats: state.Midgard.stats,
-  assets: state.Midgard.assets,
+  networkInfo: state.Midgard.networkInfo,
 }))(StatisticsView);
