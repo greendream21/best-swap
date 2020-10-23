@@ -485,6 +485,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
       />
       <div>
         <PoolChart
+          hasLiquidity={false}
           chartData={chartData}
           textColor={theme.palette.text[0]}
           lineColor={isLight ? '#436eb9' : '#1dd3e6'}
