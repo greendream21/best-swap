@@ -57,6 +57,7 @@ import {
   PoolDetailStatusEnum,
   StatsData,
   AssetDetail,
+  NetworkInfo,
 } from '../../types/generated/midgard/api';
 import showNotification from '../../components/uielements/notification';
 import { RUNE_SYMBOL } from '../../settings/assetData';
@@ -82,6 +83,8 @@ type Props = {
   poolLoading: boolean;
   assetLoading: boolean;
   poolDataLoading: boolean;
+  networkInfo: NetworkInfo;
+  networkInfoLoading: boolean;
   rtVolumeLoading: boolean;
   rtVolume: RTVolumeData;
   tokenList: Token[];
@@ -103,6 +106,8 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     poolLoading,
     assetLoading,
     poolDataLoading,
+    networkInfo,
+    networkInfoLoading,
     rtVolumeLoading,
     rtVolume,
     tokenList,
@@ -391,21 +396,13 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         sortDirections: ['descend', 'ascend'],
       },
       {
-        key: 'roi',
-        title: 'Return To Date',
-        dataIndex: ['values', 'roi'],
+        key: 'apy',
+        title: 'APY',
+        dataIndex: ['values', 'apy'],
         render: renderTextCell,
-        sorter: (a: PoolData, b: PoolData) => Number(a.roi) - Number(b.roi),
+        sorter: (a: PoolData, b: PoolData) => Number(a.apy) - Number(b.apy),
         sortDirections: ['descend', 'ascend'],
       },
-      // {
-      //   key: 'apy',
-      //   title: 'APY',
-      //   dataIndex: ['values', 'apy'],
-      //   render: renderTextCell,
-      //   sorter: (a: PoolData, b: PoolData) => Number(a.apy) - Number(b.apy),
-      //   sortDirections: ['descend', 'ascend'],
-      // },
       buttonCol,
     ];
 
@@ -480,7 +477,12 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
 
   return (
     <ContentWrapper className="pool-view-wrapper">
-      <StatBar loading={loading} stats={stats} basePrice={busdPrice} />
+      <StatBar
+        loading={loading || networkInfoLoading}
+        stats={stats}
+        networkInfo={networkInfo}
+        basePrice={busdPrice}
+      />
       <div>
         <PoolChart
           chartData={chartData}
@@ -552,6 +554,8 @@ export default compose(
       refreshTxStatus: state.Midgard.refreshTxStatus,
       assetData: state.Wallet.assetData,
       user: state.Wallet.user,
+      networkInfo: state.Midgard.networkInfo,
+      networkInfoLoading: state.Midgard.networkInfoLoading,
       rtVolumeLoading: state.Midgard.rtVolumeLoading,
       rtVolume: state.Midgard.rtVolume,
     }),

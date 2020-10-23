@@ -5,17 +5,19 @@ import { bnOrZero } from '@thorchain/asgardex-util';
 import { baseAmount, formatBaseAsTokenAmount } from '@thorchain/asgardex-token';
 
 import LabelLoader from '../utility/loaders/label';
-import { StatsData } from '../../types/generated/midgard/api';
+import { StatsData, NetworkInfo } from '../../types/generated/midgard/api';
 import { StyledStatistic } from './statBar.style';
 
 type Props = {
   stats: StatsData;
+  networkInfo: NetworkInfo;
   loading?: boolean;
   basePrice?: string;
 };
 
+// TODO: refactor stats elements
 const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
-  const { stats, basePrice = 'RUNE', loading } = props;
+  const { stats, networkInfo, basePrice = 'RUNE', loading } = props;
 
   const getUSDValue = useCallback(
     (val: string) => {
@@ -32,6 +34,13 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
     if (basePrice === 'RUNE') return 'ᚱ';
     return '$';
   }, [loading, basePrice]);
+
+  const bondingAPYLabel = bnOrZero(networkInfo?.bondingAPY)
+    .multipliedBy(100)
+    .toFixed(2);
+  const liquidityAPYLabel = bnOrZero(networkInfo?.liquidityAPY)
+    .multipliedBy(100)
+    .toFixed(2);
 
   return (
     <Row gutter={[16, 16]}>
@@ -90,10 +99,10 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
         xl={{ span: 4 }}
       >
         <StyledStatistic
-          title="Total Transactions"
+          title="BONDING APY"
           formatter={() => {
             if (loading) return <LabelLoader />;
-            return <span>{stats?.totalTx ?? '0'}</span>;
+            return <span>{bondingAPYLabel}%</span>;
           }}
         />
       </Col>
@@ -105,10 +114,10 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
         xl={{ span: 4 }}
       >
         <StyledStatistic
-          title="Total Pools"
+          title="LIQUIDITY APY"
           formatter={() => {
             if (loading) return <LabelLoader />;
-            return <span>{stats?.poolCount ?? '0'}</span>;
+            return <span>{liquidityAPYLabel}%</span>;
           }}
         />
       </Col>
