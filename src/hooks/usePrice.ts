@@ -43,10 +43,10 @@ const usePrice = () => {
   };
 
   // convert rune amount to the USD based amount
-  const getUSDPrice = (value: BigNumber) => {
+  const getUSDPrice = (value: BigNumber, decimal = 3) => {
     return formatBaseAsTokenAmount(
       baseAmount(value.dividedBy(busdPriceInRune)),
-      3,
+      decimal,
     );
   };
 
@@ -61,10 +61,10 @@ const usePrice = () => {
   };
 
   // get usd based price amount and prefix, fall back to rune if busd pool doesnt exist
-  const getUSDPriceLabel = (value: BigNumber) => {
+  const getUSDPriceLabel = (value: BigNumber, decimal = 0) => {
     const prefix = !busdPriceInRune.isEqualTo(0) ? '$' : 'ᚱ';
     const valueInUSD = !busdPriceInRune.isEqualTo(0)
-      ? getUSDPrice(value)
+      ? getUSDPrice(value, decimal)
       : value;
 
     return `${prefix} ${valueInUSD}`;

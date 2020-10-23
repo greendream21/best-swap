@@ -30,6 +30,7 @@ type ChartInfo = {
 };
 
 type Props = {
+  hasLiquidity?: boolean;
   chartData: ChartInfo;
   textColor: string;
   lineColor: string;
@@ -102,6 +103,7 @@ defaults.global.defaultFontSize = 14;
 defaults.global.defaultFontStyle = 'normal';
 
 const renderChart = (
+  hasLiquidity: boolean,
   chartData: ChartInfo,
   type: string,
   time: string,
@@ -278,7 +280,7 @@ const renderChart = (
 
   return (
     <LineChartContainer>
-      {type === 'LIQUIDITY' && (
+      {!hasLiquidity && type === 'LIQUIDITY' && (
         <ComingSoonWrapper>
           <CodeIcon />
           <ComingSoonText>Coming Soon...</ComingSoonText>
@@ -287,7 +289,7 @@ const renderChart = (
 
       {chartData?.loading && <Loader />}
       {!chartData?.loading && (
-        <BlurWrapper isBlur={type === 'LIQUIDITY'}>
+        <BlurWrapper isBlur={type === 'LIQUIDITY' && !hasLiquidity}>
           <LineChart data={data} options={options} />
         </BlurWrapper>
       )}
@@ -297,6 +299,7 @@ const renderChart = (
 
 const PoolChart: React.FC<Props> = (props: Props): JSX.Element => {
   const {
+    hasLiquidity = true,
     chartData,
     textColor,
     lineColor,
@@ -317,6 +320,7 @@ const PoolChart: React.FC<Props> = (props: Props): JSX.Element => {
     >
       {renderHeader(chartType, chartTime, setChartType, setChartTime)}
       {renderChart(
+        hasLiquidity,
         chartData,
         chartType,
         chartTime,
