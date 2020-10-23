@@ -14,7 +14,6 @@ import {
 } from '@ant-design/icons';
 import { Token } from '@thorchain/asgardex-binance';
 import { bnOrZero } from '@thorchain/asgardex-util';
-import { baseAmount, formatBaseAsTokenAmount } from '@thorchain/asgardex-token';
 import themes, { ThemeType } from '@thorchain/asgardex-theme';
 
 import Label from '../../components/uielements/label';
@@ -122,7 +121,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
   const [currentTxPage, setCurrentTxPage] = useState<number>(1);
   const [keyword, setKeyword] = useState<string>('');
   const history = useHistory();
-  const { reducedPricePrefix, priceIndex } = usePrice();
+  const { getUSDPrice, reducedPricePrefix, priceIndex } = usePrice();
 
   const themeType = useSelector((state: RootState) => state.App.themeType);
   const isLight = themeType === ThemeType.LIGHT;
@@ -145,13 +144,9 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     }
 
     const volumeSeriesData = rtVolume?.map(volume => {
-      const price = busdPrice === 'RUNE' ? 1 : Number(busdPrice);
-      const bnValue = bnOrZero(volume?.totalVolume ?? '0').dividedBy(price);
-      const amount = baseAmount(bnValue);
-
       return {
         time: volume?.time ?? 0,
-        value: formatBaseAsTokenAmount(amount),
+        value: getUSDPrice(bnOrZero(volume?.totalVolume)),
       };
     });
 
@@ -160,7 +155,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
       volume: volumeSeriesData,
       loading: false,
     };
-  }, [rtVolume, rtVolumeLoading, busdPrice]);
+  }, [rtVolume, rtVolumeLoading, getUSDPrice]);
 
   const getTransactionInfo = useCallback(
     (offset: number, limit: number) => {
