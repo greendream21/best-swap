@@ -42,11 +42,11 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
       },
       {
         title: 'Bonding APY',
-        value: bondingAPYLabel,
+        value: `${bondingAPYLabel} %`,
       },
       {
         title: 'Liquidity APY',
-        value: liquidityAPYLabel,
+        value: `${liquidityAPYLabel} %`,
       },
       {
         title: 'Total Earned',
