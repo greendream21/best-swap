@@ -57,20 +57,24 @@ export function* getPoolViewData() {
     const timeStamp: number = moment().unix();
     yield put(
       midgardActions.getRTVolumeByAsset({
-        asset: '',
+        asset: payload || '',
         from: 0,
         to: timeStamp,
         interval: 'day',
       }),
     );
-    yield put(
-      midgardActions.getRTAggregateByAsset({
-        asset: '',
-        from: 0,
-        to: timeStamp,
-        interval: 'day',
-      }),
-    );
+
+    // fetch RTAggregate only in pooldetail page
+    if (payload) {
+      yield put(
+        midgardActions.getRTAggregateByAsset({
+          asset: payload,
+          from: 0,
+          to: timeStamp,
+          interval: 'day',
+        }),
+      );
+    }
   });
 }
 

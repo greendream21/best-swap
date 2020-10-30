@@ -1,4 +1,12 @@
-import { all, takeEvery, put, fork, call, delay, select } from 'redux-saga/effects';
+import {
+  all,
+  takeEvery,
+  put,
+  fork,
+  call,
+  delay,
+  select,
+} from 'redux-saga/effects';
 import { isEmpty as _isEmpty } from 'lodash';
 import byzantine from '@thorchain/byzantine-module';
 import { RootState } from '../store';
@@ -682,17 +690,15 @@ function* tryGetRTVolumeByAsset(payload: GetRTVolumeByAssetPayload) {
 }
 
 export function* getRTAggregateByAsset() {
-  yield takeEvery('GET_RT_VOLUME_BY_ASSET', function*({
+  yield takeEvery('GET_RT_AGGREGATE_BY_ASSET', function*({
     payload,
   }: ReturnType<typeof actions.getRTAggregateByAsset>) {
     try {
       const params = payload;
 
-      // if asset is not specified, request all pools
+      // if asset is not specified, request fails
       if (!params.asset) {
-        const pools: string [] = yield select((state: RootState) => state.Midgard.pools);
-
-        params.asset = pools.join(',');
+        yield put(actions.getRTAggregateByAssetFailed(Error('Invalid symbol')));
       }
       const data = yield call(tryGetRTAggregateByAsset, params);
       yield put(actions.getRTAggregateByAssetSuccess(data));
