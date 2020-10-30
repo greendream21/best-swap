@@ -1,7 +1,6 @@
-import { all, takeEvery, put, fork, call, delay, select } from 'redux-saga/effects';
+import { all, takeEvery, put, fork, call, delay } from 'redux-saga/effects';
 import { isEmpty as _isEmpty } from 'lodash';
 import byzantine from '@thorchain/byzantine-module';
-import { RootState } from '../store';
 import { PoolDetail } from '../../types/generated/midgard/api';
 import { axiosRequest } from '../../helpers/apiHelper';
 import * as actions from './actions';
@@ -207,8 +206,9 @@ export function* getNetworkInfo() {
     try {
       const networkInfo = yield call(tryGetNetworkInfo);
       const { data: mimir } = yield call(getThorchainMimir);
+      const { data: queue } = yield call(getThorchainQueue);
 
-      yield put(actions.getThorchainDataSuccess({ mimir }));
+      yield put(actions.getThorchainDataSuccess({ mimir, queue }));
       yield put(actions.getNetworkInfoSuccess(networkInfo));
     } catch (error) {
       yield put(actions.getNetworkInfoFailed(error));
@@ -350,6 +350,13 @@ const getThorchainLastBlock = () => {
 const getThorchainMimir = () => {
   return axiosRequest({
     url: `${api.getThorchainBaseURL()}/mimir`,
+    method: 'GET',
+  });
+};
+
+const getThorchainQueue = () => {
+  return axiosRequest({
+    url: 'http://54.254.89.8:1317/thorchain/queue',
     method: 'GET',
   });
 };
@@ -682,7 +689,7 @@ function* tryGetRTVolumeByAsset(payload: GetRTVolumeByAssetPayload) {
 }
 
 export function* getRTAggregateByAsset() {
-  yield takeEvery('GET_RT_VOLUME_BY_ASSET', function*({
+  yield takeEvery('GET_RT_AGGREGATE_BY_ASSET', function*({
     payload,
   }: ReturnType<typeof actions.getRTAggregateByAsset>) {
     try {
@@ -690,9 +697,7 @@ export function* getRTAggregateByAsset() {
 
       // if asset is not specified, request all pools
       if (!params.asset) {
-        const pools: string [] = yield select((state: RootState) => state.Midgard.pools);
-
-        params.asset = pools.join(',');
+        yield put(actions.getRTAggregateByAssetFailed(Error('Invalid symbol')));
       }
       const data = yield call(tryGetRTAggregateByAsset, params);
       yield put(actions.getRTAggregateByAssetSuccess(data));

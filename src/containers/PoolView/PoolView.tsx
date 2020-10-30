@@ -68,6 +68,7 @@ import TxTable from '../../components/transaction/txTable';
 import { generateRandomTimeSeries } from './utils';
 import usePrice from '../../hooks/usePrice';
 import useNetwork from '../../hooks/useNetwork';
+import { ButtonColor } from '../../components/uielements/button/types';
 
 type Props = {
   history: H.History;
@@ -136,7 +137,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
   const busdPrice = busdToken ? assets[busdToken]?.priceRune ?? 'RUNE' : 'RUNE';
   const isDesktopView = Grid.useBreakpoint()?.lg ?? false;
 
-  const { isValidFundCaps } = useNetwork();
+  const { isValidFundCaps, outboundQueueLevel } = useNetwork();
 
   const chartData = useMemo(() => {
     if (rtVolumeLoading) {
@@ -278,6 +279,15 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
           const swapUrl = `/swap/${RUNE_SYMBOL}:${values.symbol}`;
           const liquidityUrl = `/liquidity/${values.symbol.toUpperCase()}`;
 
+          const buttonColors: {
+            [key: string]: ButtonColor;
+          } = {
+            GOOD: 'primary',
+            SLOW: 'warning',
+            BUSY: 'error',
+          };
+          const btnColor: ButtonColor = buttonColors[outboundQueueLevel];
+
           return (
             <ActionColumn>
               <div className="action-column-wrapper">
@@ -291,7 +301,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
                     style={{ margin: 'auto' }}
                     round="true"
                     typevalue="outline"
-                    color={!isValidFundCaps ? 'error' : 'primary'}
+                    color={!isValidFundCaps ? 'error' : btnColor}
                   >
                     <DatabaseOutlined />
                     MANAGE
@@ -304,9 +314,13 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
                       ev.stopPropagation();
                     }}
                   >
-                    <Button style={{ margin: 'auto' }} round="true">
+                    <Button
+                      style={{ margin: 'auto' }}
+                      round="true"
+                      color={btnColor}
+                    >
                       <SwapOutlined />
-                      swap
+                      SWAP
                     </Button>
                   </Link>
                 )}

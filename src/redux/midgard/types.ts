@@ -112,10 +112,16 @@ export type TxDetailData = RemoteData<Error, InlineResponse2001>;
 
 export type ApiBasePathRD = RemoteData<Error, string>;
 
+export type ThorchainQueue = {
+  swap?: string;
+  outbound?: string;
+};
+
 export type ThorchainData = {
   constants?: FixmeType;
   lastBlock?: FixmeType;
   mimir?: FixmeType;
+  queue?: ThorchainQueue;
 };
 
 export type State = {
