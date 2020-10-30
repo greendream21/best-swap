@@ -5,11 +5,9 @@ import {
   fork,
   call,
   delay,
-  select,
 } from 'redux-saga/effects';
 import { isEmpty as _isEmpty } from 'lodash';
 import byzantine from '@thorchain/byzantine-module';
-import { RootState } from '../store';
 import { PoolDetail } from '../../types/generated/midgard/api';
 import { axiosRequest } from '../../helpers/apiHelper';
 import * as actions from './actions';
