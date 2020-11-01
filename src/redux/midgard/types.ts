@@ -19,6 +19,11 @@ export type AssetDetailMap = {
   [asset: string]: AssetDetail;
 };
 
+export type GetAssetsPayload = {
+  assetDetailIndex: AssetDetailMap;
+  assetDetails: AssetDetail[];
+};
+
 export type PoolDataMap = {
   [symbol: string]: PoolDetail;
 };

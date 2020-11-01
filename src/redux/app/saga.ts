@@ -63,6 +63,35 @@ export function* getPoolViewData() {
         interval: 'day',
       }),
     );
+  });
+}
+
+// refresh data needed for pool view homepage
+export function* getPoolDetailViewData() {
+  yield takeEvery('GET_POOL_DETAIL_VIEW_DATA', function*({
+    payload,
+  }: ReturnType<typeof actions.getPoolViewData>) {
+    yield put(midgardActions.getPoolAddress());
+    yield put(midgardActions.getPoolAssets());
+    yield put(midgardActions.getNetworkInfo());
+    yield put(walletActions.refreshWallet());
+    yield put(
+      midgardActions.getTransactionWithRefresh({
+        asset: payload,
+        offset: 0,
+        limit: 10,
+      }),
+    );
+
+    const timeStamp: number = moment().unix();
+    yield put(
+      midgardActions.getRTVolumeByAsset({
+        asset: payload || '',
+        from: 0,
+        to: timeStamp,
+        interval: 'day',
+      }),
+    );
 
     // fetch RTAggregate only in pooldetail page
     if (payload) {
@@ -150,6 +179,7 @@ export default function* rootSaga() {
   yield all([
     fork(getBEPSwapData),
     fork(getPoolViewData),
+    fork(getPoolDetailViewData),
     fork(refreshSwapData),
     fork(refreshStakeData),
     fork(refreshTransactionData),
