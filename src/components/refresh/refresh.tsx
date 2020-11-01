@@ -24,19 +24,16 @@ const Refresh = (): JSX.Element => {
   }, REFRESH_INTERVAL);
 
   const handleRefresh = () => {
-    if (pathname === '/') {
+    if (pathname === '/' || pathname.includes('/pools')) {
       // poolview
       dispatch(appActions.getPoolViewData());
-    } else if (pathname.includes('/pools')) {
-      // pool detail view
-      dispatch(appActions.getPoolDetailViewData());
     } else if (pathname.includes('/pool') && pathname.includes('/new')) {
       // poolcreate
       dispatch(appActions.getPoolViewData());
     } else if (pathname.includes('/pool') && !pathname.includes('/new')) {
-      // pooldetails
+      // pool detail view
       const assetName = pathname.split('/');
-      dispatch(appActions.getPoolViewData(assetName[assetName.length - 1]));
+      dispatch(appActions.getPoolDetailViewData(assetName[assetName.length - 1]));
     } else if (pathname === '/transaction') {
       // transaction
       dispatch(appActions.refreshTransactionData());
