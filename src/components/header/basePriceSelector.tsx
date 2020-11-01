@@ -41,6 +41,14 @@ type Props = ComponentProps & ConnectedProps;
 
 type State = {};
 
+const priceIndexWhiteList = [
+  'RUNE',
+  'BUSD',
+  'BNB',
+  'BTCB',
+  'ETH',
+];
+
 class BasePriceSelector extends React.Component<Props, State> {
   handleClickItem = ({ key }: ClickParam) => {
     const { setBasePriceAsset } = this.props;
@@ -62,9 +70,9 @@ class BasePriceSelector extends React.Component<Props, State> {
 
     const menuItems = [];
     pools.forEach(data => {
-      const { symbol } = getAssetFromString(data);
+      const { symbol, ticker = '' } = getAssetFromString(data);
 
-      if (symbol) {
+      if (symbol && priceIndexWhiteList.includes(ticker.toUpperCase())) {
         menuItems.push({
           asset: symbol,
           key: symbol,
