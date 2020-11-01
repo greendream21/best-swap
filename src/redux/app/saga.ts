@@ -112,6 +112,7 @@ export function* refreshSwapData() {
   yield takeEvery('REFRESH_SWAP_DATA', function*() {
     yield put(midgardActions.getPools());
     yield put(midgardActions.getPoolAddress());
+    yield put(midgardActions.getNetworkInfo());
     yield put(walletActions.refreshWallet());
   });
 }
