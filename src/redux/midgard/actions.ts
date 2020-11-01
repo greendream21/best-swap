@@ -2,7 +2,7 @@ import { AssetSymbol } from '../../types/bepswap';
 import {
   GetStakerPoolDataPayload,
   PriceDataIndex,
-  AssetDetailMap,
+  GetAssetsPayload,
   GetTransactionPayload,
   GetTxByAddressTxIdPayload,
   GetTxByAddressAssetPayload,
@@ -15,7 +15,6 @@ import {
   ThorchainData,
 } from './types';
 import {
-  AssetDetail,
   PoolDetail,
   StatsData,
   StakersAssetData,
@@ -25,11 +24,7 @@ import {
   NetworkInfo,
 } from '../../types/generated/midgard';
 
-export type SetAssetsPayload = {
-  assetDetailIndex: AssetDetailMap;
-  assetDetails: AssetDetail[];
-};
-export const setAssets = (payload: SetAssetsPayload) =>
+export const setAssets = (payload: GetAssetsPayload) =>
   ({ type: 'SET_ASSETS', payload } as const);
 
 export const getPools = () => ({ type: 'GET_POOLS_REQUEST' } as const);
@@ -39,6 +34,15 @@ export const getPoolsSuccess = (payload: string[]) =>
 
 export const getPoolsFailed = (payload: Error) =>
   ({ type: 'GET_POOLS_FAILED', payload } as const);
+
+export const getPoolAssets = () =>
+  ({ type: 'GET_POOL_ASSETS_REQUEST' } as const);
+
+export const getPoolAssetsSuccess = (payload: GetAssetsPayload) =>
+  ({ type: 'GET_POOL_ASSETS_SUCCESS', payload } as const);
+
+export const getPoolAssetsFailed = (payload: Error) =>
+  ({ type: 'GET_POOL_ASSETS_FAILED', payload } as const);
 
 export const getPoolData = (payload: GetPoolDataPayload) =>
   ({ type: 'GET_POOL_DATA_REQUEST', payload } as const);
@@ -197,6 +201,9 @@ export type MidgardActionTypes = ReturnType<
   | typeof getPools
   | typeof getPoolsSuccess
   | typeof getPoolsFailed
+  | typeof getPoolAssets
+  | typeof getPoolAssetsSuccess
+  | typeof getPoolAssetsFailed
   | typeof getPoolData
   | typeof getPoolDataSuccess
   | typeof getPoolDataFailed

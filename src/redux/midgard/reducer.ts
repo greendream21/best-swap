@@ -100,6 +100,15 @@ const reducer: Reducer<State, MidgardActionTypes> = (
         runePrice: 0,
         error: Nothing,
       };
+    case 'GET_POOL_ASSETS_SUCCESS': {
+      const { payload } = action;
+      return {
+        ...state,
+        assets: payload.assetDetailIndex,
+        assetArray: payload.assetDetails,
+        assetLoading: false,
+      };
+    }
     case 'SET_ASSETS': {
       const { payload } = action;
       return {

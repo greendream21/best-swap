@@ -24,9 +24,12 @@ const Refresh = (): JSX.Element => {
   }, REFRESH_INTERVAL);
 
   const handleRefresh = () => {
-    if (pathname === '/' || pathname.includes('/pools')) {
+    if (pathname === '/') {
       // poolview
       dispatch(appActions.getPoolViewData());
+    } else if (pathname.includes('/pools')) {
+      // pool detail view
+      dispatch(appActions.getPoolDetailViewData());
     } else if (pathname.includes('/pool') && pathname.includes('/new')) {
       // poolcreate
       dispatch(appActions.getPoolViewData());

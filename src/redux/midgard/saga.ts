@@ -5,6 +5,9 @@ import {
   fork,
   call,
   delay,
+  race,
+  select,
+  take,
 } from 'redux-saga/effects';
 import { isEmpty as _isEmpty } from 'lodash';
 import byzantine from '@thorchain/byzantine-module';
@@ -21,6 +24,7 @@ import { getAssetDetailIndex, getPriceIndex } from './utils';
 import { NET, getNet } from '../../env';
 import { UnpackPromiseResponse } from '../../types/util';
 import {
+  GetAssetsPayload,
   GetTxByAddressPayload,
   GetTxByAddressTxIdPayload,
   GetTxByAssetPayload,
@@ -30,7 +34,7 @@ import {
   GetRTVolumeByAssetPayload,
   GetRTAggregateByAssetPayload,
 } from './types';
-import { AssetDetail } from '../../types/generated/midgard';
+import { RootState } from '../store';
 
 export const MIDGARD_MAX_RETRY = 3;
 export const MIDGARD_RETRY_DELAY = 1000; // ms
@@ -62,8 +66,6 @@ export function* getApiBasePath(net: NET, noCache = false) {
     throw new Error(error);
   }
 }
-
-type GetPoolsResult = { poolAssets: string[]; assetDetails: AssetDetail[] };
 
 function* tryGetPools() {
   for (let i = 0; i < MIDGARD_MAX_RETRY; i++) {
@@ -142,30 +144,53 @@ function* tryGetAssets(poolAssets: string[]) {
   throw new Error('Midgard API request failed to get pools');
 }
 
-export function* getPools() {
-  yield takeEvery('GET_POOLS_REQUEST', function*() {
+export function* getPoolAssets() {
+  yield takeEvery('GET_POOL_ASSETS_REQUEST', function*() {
     try {
-      // Unsafe: Can't infer type of `GetPoolsResult` in a Generator function - known TS/Generator/Saga issue
       const pools = yield call(tryGetPools);
 
       yield put(actions.getPoolsSuccess(pools));
 
       const assetDetails = yield call(tryGetAssets, pools);
       const assetDetailIndex = getAssetDetailIndex(assetDetails);
-      const assetsPayload: actions.SetAssetsPayload = {
+      const assetsPayload: GetAssetsPayload = {
         assetDetails,
         assetDetailIndex,
       };
 
-      yield put(actions.setAssets(assetsPayload));
+      yield put(actions.getPoolAssetsSuccess(assetsPayload));
 
       const baseTokenTicker = getBasePriceAsset() || 'RUNE';
       const priceIndex = getPriceIndex(assetDetails, baseTokenTicker);
       yield put(actions.setPriceIndex(priceIndex));
+    } catch (error) {
+      yield put(actions.getPoolsFailed(error));
+      yield put(actions.getPoolAssetsFailed(error));
+    }
+  });
+}
 
-      yield put(
-        actions.getPoolData({ assets: pools, overrideAllPoolData: true }),
-      );
+export function* getPools() {
+  yield takeEvery('GET_POOLS_REQUEST', function*() {
+    try {
+      // get pools and assets, set priceindex
+      yield put(actions.getPoolAssets());
+
+      // wait until getPoolAssets action is finished
+      const { success } = yield race({
+        success: take('GET_POOL_ASSETS_SUCCESS'),
+        failed: take('GET_POOL_ASSETS_FAILED'),
+      });
+
+      if (success) {
+        // if getPoolAssets action is successful, get pool details
+        const pools = yield select((state: RootState) => state.Midgard.pools);
+        yield put(
+          actions.getPoolData({ assets: pools, overrideAllPoolData: true }),
+        );
+      } else {
+        yield put(actions.getPoolsFailed(Error('GET POOL ASSETS FAILED')));
+      }
     } catch (error) {
       yield put(actions.getPoolsFailed(error));
     }
@@ -753,6 +778,7 @@ export function* getRTVolumeByAsset() {
 
 export default function* rootSaga() {
   yield all([
+    fork(getPoolAssets),
     fork(getPools),
     fork(getPoolData),
     fork(getStats),
