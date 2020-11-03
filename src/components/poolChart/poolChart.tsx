@@ -11,7 +11,8 @@ import {
   TypeContainer,
   TimeContainer,
   HeaderToggle,
-  LineChartContainer,
+  ChartWrapper,
+  BarChart,
   LineChart,
   BlurWrapper,
   ComingSoonWrapper,
@@ -279,7 +280,7 @@ const renderChart = (
   };
 
   return (
-    <LineChartContainer>
+    <ChartWrapper>
       {!hasLiquidity && type === 'LIQUIDITY' && (
         <ComingSoonWrapper>
           <CodeIcon />
@@ -290,10 +291,11 @@ const renderChart = (
       {chartData?.loading && <Loader />}
       {!chartData?.loading && (
         <BlurWrapper isBlur={type === 'LIQUIDITY' && !hasLiquidity}>
-          <LineChart data={data} options={options} />
+          {type === 'LIQUIDITY' && <LineChart data={data} options={options} />}
+          {type !== 'LIQUIDITY' && <BarChart data={data} options={options} />}
         </BlurWrapper>
       )}
-    </LineChartContainer>
+    </ChartWrapper>
   );
 };
 
