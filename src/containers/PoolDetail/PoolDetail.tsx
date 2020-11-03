@@ -38,7 +38,6 @@ import {
   PoolDataMap,
   PriceDataIndex,
   TxDetailData,
-  RTVolumeData,
   RTAggregateData,
 } from '../../redux/midgard/types';
 import { RUNE_SYMBOL } from '../../settings/assetData';
@@ -50,6 +49,11 @@ import { PoolDetailStatusEnum } from '../../types/generated/midgard';
 
 import usePrice from '../../hooks/usePrice';
 
+type ChartData = {
+  time: number;
+  value: string;
+};
+
 type Props = {
   history: H.History;
   txData: TxDetailData;
@@ -57,13 +61,10 @@ type Props = {
   poolDetailedDataLoading: boolean;
   assets: AssetDetailMap;
   priceIndex: PriceDataIndex;
-  rtVolumeLoading: boolean;
-  rtVolume: RTVolumeData;
   rtAggregateLoading: boolean;
   rtAggregate: RTAggregateData;
   tokenList: Token[];
   refreshTxStatus: boolean;
-  getRTVolume: typeof midgardActions.getRTVolumeByAsset;
   getRTAggregate: typeof midgardActions.getRTAggregateByAsset;
   getTxByAsset: typeof midgardActions.getTxByAsset;
   getPoolDetailByAsset: typeof midgardActions.getPoolDetailByAsset;
@@ -76,13 +77,10 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
     poolDetailedDataLoading,
     txData,
     priceIndex,
-    rtVolumeLoading,
-    rtVolume,
     rtAggregateLoading,
     rtAggregate,
     tokenList,
     refreshTxStatus,
-    getRTVolume,
     getRTAggregate,
     getTxByAsset,
     getPoolDetailByAsset,
@@ -103,22 +101,26 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
   const theme = isLight ? themes.light : themes.dark;
 
   const chartData = useMemo(() => {
-    if (rtVolumeLoading || rtAggregateLoading) {
+    if (rtAggregateLoading) {
       return { liquidity: [], volume: [], loading: true };
     }
 
-    const volumeSeriesData = rtVolume?.map(volume => {
-      return {
-        time: volume?.time ?? 0,
-        value: getUSDPrice(bnOrZero(volume?.totalVolume)),
-      };
-    });
+    const volumeSeriesData: ChartData[] = [];
+    const liquiditySeriesData: ChartData[] = [];
 
-    const liquiditySeriesData = rtAggregate?.map(liquidity => {
-      return {
-        time: liquidity?.time ?? 0,
-        value: getUSDPrice(bnOrZero(liquidity?.runeDepth).multipliedBy(2)),
+    rtAggregate.forEach(data => {
+      const time = data?.time ?? 0;
+      const volumeData = {
+        time,
+        value: getUSDPrice(bnOrZero(data?.poolVolume).multipliedBy(2)),
       };
+      const liquidityData = {
+        time,
+        value: getUSDPrice(bnOrZero(data?.runeDepth).multipliedBy(2)),
+      };
+
+      volumeSeriesData.push(volumeData);
+      liquiditySeriesData.push(liquidityData);
     });
 
     return {
@@ -126,7 +128,7 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
       volume: volumeSeriesData,
       loading: false,
     };
-  }, [rtVolume, rtVolumeLoading, rtAggregate, rtAggregateLoading, getUSDPrice]);
+  }, [rtAggregate, rtAggregateLoading, getUSDPrice]);
 
   const getTransactionInfo = useCallback(
     (asset: string, offset: number, limit: number) => {
@@ -164,23 +166,6 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
     },
     [getTransactionInfo, tokenSymbol],
   );
-
-  const getRTVolumeInfo = useCallback(
-    (
-      asset: string,
-      from: number,
-      to: number,
-      interval: '5min' | 'hour' | 'day' | 'week' | 'month' | 'year',
-    ) => {
-      getRTVolume({ asset, from, to, interval });
-    },
-    [getRTVolume],
-  );
-
-  useEffect(() => {
-    const timeStamp: number = moment().unix();
-    getRTVolumeInfo(tokenSymbol, 0, timeStamp, 'day');
-  }, [getRTVolumeInfo, tokenSymbol]);
 
   const getRTAggregateInfo = useCallback(
     (
@@ -320,13 +305,10 @@ export default compose(
       assets: state.Midgard.assets,
       priceIndex: state.Midgard.priceIndex,
       txData: state.Midgard.txData,
-      rtVolumeLoading: state.Midgard.rtVolumeLoading,
-      rtVolume: state.Midgard.rtVolume,
       rtAggregateLoading: state.Midgard.rtAggregateLoading,
       rtAggregate: state.Midgard.rtAggregate,
     }),
     {
-      getRTVolume: midgardActions.getRTVolumeByAsset,
       getRTAggregate: midgardActions.getRTAggregateByAsset,
       getTxByAsset: midgardActions.getTxByAsset,
       getPoolDetailByAsset: midgardActions.getPoolDetailByAsset,
