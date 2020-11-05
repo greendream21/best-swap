@@ -24,9 +24,14 @@ type ChartDetail = {
   time: number;
 };
 
+type ChartDataType = {
+  allTime: ChartDetail[];
+  week: ChartDetail[];
+};
+
 type ChartInfo = {
-  liquidity: Array<ChartDetail>;
-  volume: Array<ChartDetail>;
+  liquidity: ChartDataType;
+  volume: ChartDataType;
   loading: boolean;
 };
 
@@ -64,16 +69,10 @@ const PoolChart: React.FC<Props> = (props: Props): JSX.Element => {
   const [chartTime, setChartTime] = React.useState('ALL');
 
   const totalDisplayChart =
-    chartType === 'LIQUIDITY'
-      ? [...chartData.liquidity]
-      : [...chartData.volume];
-  const startDate = moment().subtract(7, 'days');
+    chartType === 'LIQUIDITY' ? chartData.liquidity : chartData.volume;
+
   const filteredByTime =
-    chartTime === 'ALL'
-      ? totalDisplayChart
-      : totalDisplayChart.filter(data => {
-          return moment.unix(data.time).isBetween(startDate, moment());
-        });
+    chartTime === 'ALL' ? totalDisplayChart.allTime : totalDisplayChart.week;
 
   const labels: Array<string> = filteredByTime.map(data => {
     return moment.unix(data.time).format('MMM DD');
@@ -83,68 +82,71 @@ const PoolChart: React.FC<Props> = (props: Props): JSX.Element => {
     Number(data.value.split(',').join('')),
   );
 
-  const data = useCallback((canvas: HTMLCanvasElement) => {
-    const ctx = canvas.getContext('2d');
-    let gradientStroke: CanvasGradient;
+  const data = useCallback(
+    (canvas: HTMLCanvasElement) => {
+      const ctx = canvas.getContext('2d');
+      let gradientStroke: CanvasGradient;
 
-    if (ctx) {
-      gradientStroke = ctx.createLinearGradient(0, 100, 0, 300);
-      gradientStroke.addColorStop(0, gradientStart);
-      gradientStroke.addColorStop(1, gradientStop);
+      if (ctx) {
+        gradientStroke = ctx.createLinearGradient(0, 100, 0, 300);
+        gradientStroke.addColorStop(0, gradientStart);
+        gradientStroke.addColorStop(1, gradientStop);
+        return {
+          labels,
+          datasets: [
+            {
+              fill: true,
+              lineTension: 0.5,
+              backgroundColor: gradientStroke,
+              borderColor: lineColor,
+              borderCapStyle: 'butt',
+              borderDash: [],
+              borderDashOffset: 0.0,
+              borderJoinStyle: 'miter',
+              borderWidth: 2,
+              pointBorderColor: lineColor,
+              pointBackgroundColor: '#fff',
+              pointBorderWidth: 1,
+              pointHoverRadius: 1,
+              pointHoverBackgroundColor: 'rgba(75,192,192,1)',
+              pointHoverBorderColor: 'rgba(220,220,220,1)',
+              pointHoverBorderWidth: 1,
+              pointRadius: 1,
+              pointHitRadius: 50,
+              data: values,
+            },
+          ],
+        };
+      }
+
       return {
         labels,
         datasets: [
           {
-            fill: true,
-            lineTension: 0.5,
-            backgroundColor: gradientStroke,
-            borderColor: lineColor,
+            fill: false,
+            lineTension: 0.2,
+            borderColor: '#436eb9',
             borderCapStyle: 'butt',
             borderDash: [],
             borderDashOffset: 0.0,
             borderJoinStyle: 'miter',
             borderWidth: 2,
-            pointBorderColor: lineColor,
+            pointBorderColor: '#436eb9',
             pointBackgroundColor: '#fff',
             pointBorderWidth: 1,
             pointHoverRadius: 1,
             pointHoverBackgroundColor: 'rgba(75,192,192,1)',
             pointHoverBorderColor: 'rgba(220,220,220,1)',
-            pointHoverBorderWidth: 1,
+            pointHoverBorderWidth: 0,
             pointRadius: 1,
             pointHitRadius: 50,
             data: values,
           },
         ],
       };
-    }
-
-    return {
-      labels,
-      datasets: [
-        {
-          fill: false,
-          lineTension: 0.2,
-          borderColor: '#436eb9',
-          borderCapStyle: 'butt',
-          borderDash: [],
-          borderDashOffset: 0.0,
-          borderJoinStyle: 'miter',
-          borderWidth: 2,
-          pointBorderColor: '#436eb9',
-          pointBackgroundColor: '#fff',
-          pointBorderWidth: 1,
-          pointHoverRadius: 1,
-          pointHoverBackgroundColor: 'rgba(75,192,192,1)',
-          pointHoverBorderColor: 'rgba(220,220,220,1)',
-          pointHoverBorderWidth: 0,
-          pointRadius: 1,
-          pointHitRadius: 50,
-          data: values,
-        },
-      ],
-    };
-  }, [gradientStart, gradientStop, labels, lineColor, values]);
+    },
+    [gradientStart, gradientStop, labels, lineColor, values],
+  );
 
   const options = useMemo(
     () => ({
