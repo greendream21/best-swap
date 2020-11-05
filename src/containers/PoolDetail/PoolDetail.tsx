@@ -1,12 +1,11 @@
 /* eslint-disable no-underscore-dangle */
 import React, { useEffect, useCallback, useMemo, useState } from 'react';
-import * as H from 'history';
 import moment from 'moment';
 import { compose } from 'redux';
 import { Row, Col } from 'antd';
 import { connect, useSelector } from 'react-redux';
 import { get as _get } from 'lodash';
-import { withRouter, useParams, Link } from 'react-router-dom';
+import { withRouter, useParams, Link, useHistory } from 'react-router-dom';
 import { Token } from '@thorchain/asgardex-binance';
 import themes, { ThemeType } from '@thorchain/asgardex-theme';
 import { bnOrZero } from '@thorchain/asgardex-util';
@@ -29,7 +28,7 @@ import {
   ChartContainer,
 } from './PoolDetail.style';
 
-import { getPoolData } from '../../helpers/utils/poolUtils';
+import { getPoolData, isValidPool } from '../../helpers/utils/poolUtils';
 import { PoolData } from '../../helpers/utils/types';
 import { RootState } from '../../redux/store';
 
@@ -55,11 +54,11 @@ type ChartData = {
 };
 
 type Props = {
-  history: H.History;
   txData: TxDetailData;
   poolDetailedData: PoolDataMap;
   poolDetailedDataLoading: boolean;
   assets: AssetDetailMap;
+  pools: string[];
   priceIndex: PriceDataIndex;
   rtAggregateLoading: boolean;
   rtAggregate: RTAggregateData;
@@ -73,6 +72,7 @@ type Props = {
 const PoolDetail: React.FC<Props> = (props: Props) => {
   const {
     assets,
+    pools,
     poolDetailedData,
     poolDetailedDataLoading,
     txData,
@@ -89,8 +89,10 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
   const { getUSDPrice, pricePrefix, runePrice } = usePrice();
   const [currentTxPage, setCurrentTxPage] = useState<number>(1);
 
+  const history = useHistory();
   const { symbol = '' } = useParams();
   const tokenSymbol = symbol.toUpperCase();
+
   const busdToken = Object.keys(assets).find(
     item => getTickerFormat(item) === 'busd',
   );
@@ -158,6 +160,13 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
       getTransactionInfo(tokenSymbol, 0, 10);
     }
   }, [getTransactionInfo, tokenSymbol, refreshTxStatus]);
+
+  // check if asset pool is valid
+  useEffect(() => {
+    if (!isValidPool(pools, symbol)) {
+      history.push('/');
+    }
+  }, [pools, history, symbol]);
 
   const handlePagination = useCallback(
     (page: number) => {
@@ -303,6 +312,7 @@ export default compose(
       poolDetailedDataLoading: state.Midgard.poolDetailedDataLoading,
       refreshTxStatus: state.Midgard.refreshTxStatus,
       assets: state.Midgard.assets,
+      pools: state.Midgard.pools,
       priceIndex: state.Midgard.priceIndex,
       txData: state.Midgard.txData,
       rtAggregateLoading: state.Midgard.rtAggregateLoading,

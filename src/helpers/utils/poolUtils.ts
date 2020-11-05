@@ -28,6 +28,28 @@ import { RUNE_SYMBOL } from '../../settings/assetData';
 
 // TODO: Refactor pool utils
 
+/**
+ * return if asset pool is valid or not
+ * @param pools array of pool asset symbols
+ * @param symbol asset symbol
+ */
+export const isValidPool = (pools: string[], symbol: string) => {
+  if (!symbol) {
+    return false;
+  }
+
+  const availableAssets = pools.map(
+    chainString => getAssetFromString(chainString).symbol,
+  );
+  availableAssets.push(RUNE_SYMBOL);
+
+  if (!availableAssets.includes(symbol)) {
+    return false;
+  }
+
+  return true;
+};
+
 export const isAsymStakeValid = () => {
   return localStorage.getItem('ASYM') === 'true';
 };
@@ -53,8 +75,6 @@ export const getAvailableTokensToCreate = (
     return unique && !isSmallAmount;
   });
 };
-
-// TODO(Chris): Refactor utils
 
 /**
  * return pool detail data
