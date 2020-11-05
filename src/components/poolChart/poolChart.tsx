@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import moment from 'moment';
 import { defaults } from 'react-chartjs-2';
 import Loader from '../utility/loaders/chart';
@@ -43,83 +43,33 @@ type Props = {
   basePrice?: string;
 };
 
-const renderHeader = (
-  type: string,
-  time: string,
-  onTypeChange: Dispatch<SetStateAction<string>>,
-  onTimeChange: Dispatch<SetStateAction<string>>,
-) => {
-  return (
-    <HeaderContainer>
-      <TypeContainer>
-        <HeaderToggle
-          primary={type === 'LIQUIDITY'}
-          onClick={() => {
-            if (type !== 'LIQUIDITY') {
-              onTypeChange('LIQUIDITY');
-            }
-          }}
-        >
-          Liquidity
-        </HeaderToggle>
-        <HeaderToggle
-          primary={type === 'VOLUME'}
-          onClick={() => {
-            if (type !== 'VOLUME') {
-              onTypeChange('VOLUME');
-            }
-          }}
-        >
-          Volume
-        </HeaderToggle>
-      </TypeContainer>
-      <TimeContainer>
-        <HeaderToggle
-          primary={time === 'WEEK'}
-          onClick={() => {
-            if (time !== 'WEEK') {
-              onTimeChange('WEEK');
-            }
-          }}
-        >
-          1 Week
-        </HeaderToggle>
-        <HeaderToggle
-          primary={time === 'ALL'}
-          onClick={() => {
-            if (time !== 'ALL') {
-              onTimeChange('ALL');
-            }
-          }}
-        >
-          All Time
-        </HeaderToggle>
-      </TimeContainer>
-    </HeaderContainer>
-  );
-};
-
 defaults.global.defaultFontFamily = 'Exo 2';
 defaults.global.defaultFontSize = 14;
 defaults.global.defaultFontStyle = 'normal';
 
-const renderChart = (
-  hasLiquidity: boolean,
-  chartData: ChartInfo,
-  type: string,
-  time: string,
-  textColor: string,
-  lineColor: string,
-  gradientStart: string,
-  gradientStop: string,
-  viewMode: string,
-  basePrice: string,
-) => {
+const PoolChart: React.FC<Props> = (props: Props): JSX.Element => {
+  const {
+    hasLiquidity = true,
+    chartData,
+    textColor,
+    lineColor,
+    gradientStart,
+    gradientStop,
+    backgroundGradientStart,
+    backgroundGradientStop,
+    viewMode,
+    basePrice = 'RUNE',
+  } = props;
+  const [chartType, setChartType] = React.useState('VOLUME');
+  const [chartTime, setChartTime] = React.useState('ALL');
+
   const totalDisplayChart =
-    type === 'LIQUIDITY' ? [...chartData.liquidity] : [...chartData.volume];
+    chartType === 'LIQUIDITY'
+      ? [...chartData.liquidity]
+      : [...chartData.volume];
   const startDate = moment().subtract(7, 'days');
   const filteredByTime =
-    time === 'ALL'
+    chartTime === 'ALL'
       ? totalDisplayChart
       : totalDisplayChart.filter(data => {
           return moment.unix(data.time).isBetween(startDate, moment());
@@ -133,7 +83,7 @@ const renderChart = (
     Number(data.value.split(',').join('')),
   );
 
-  const data = (canvas: HTMLCanvasElement) => {
+  const data = useCallback((canvas: HTMLCanvasElement) => {
     const ctx = canvas.getContext('2d');
     let gradientStroke: CanvasGradient;
 
@@ -194,145 +144,161 @@ const renderChart = (
         },
       ],
     };
-  };
+  }, [gradientStart, gradientStop, labels, lineColor, values]);
 
-  const options = {
-    maintainAspectRatio: false,
-    title: {
-      display: false,
-    },
-    legend: {
-      display: false,
-    },
-    layout: {
-      padding: {
-        left: '10px',
-        right: '10px',
-        top: '10px',
-        bottom: '10px',
+  const options = useMemo(
+    () => ({
+      maintainAspectRatio: false,
+      title: {
+        display: false,
       },
-    },
-    animation: {
-      duration: 700,
-    },
-    tooltips: {
-      callbacks: {
-        label: ({ yLabel }: { yLabel: number }) => {
-          const unit = basePrice === 'RUNE' ? 'ᚱ' : '$';
-          const label = `${unit}${new Intl.NumberFormat().format(
-            Math.floor(yLabel),
-          )}`;
-          return label;
+      legend: {
+        display: false,
+      },
+      layout: {
+        padding: {
+          left: '10px',
+          right: '10px',
+          top: '10px',
+          bottom: '10px',
         },
       },
-    },
-    scales: {
-      xAxes: [
-        {
-          gridLines: {
-            display: false,
+      animation: {
+        duration: 700,
+      },
+      tooltips: {
+        callbacks: {
+          label: ({ yLabel }: { yLabel: number }) => {
+            const unit = basePrice === 'RUNE' ? 'ᚱ' : '$';
+            const label = `${unit}${new Intl.NumberFormat().format(
+              Math.floor(yLabel),
+            )}`;
+            return label;
           },
-          ticks: {
-            fontSize: '14',
-            fontColor: textColor,
-            maxTicksLimit: viewMode === 'desktop-view' ? 5 : 3,
-            autoSkipPadding: 5,
-            maxRotation: 0,
-            callback(value: string) {
-              if (Number(value) === 0) {
-                return '0';
-              }
-              return value;
+        },
+      },
+      scales: {
+        xAxes: [
+          {
+            gridLines: {
+              display: false,
             },
-          },
-        },
-      ],
-      yAxes: [
-        {
-          type: 'linear',
-          stacked: true,
-          id: 'value',
-          ticks: {
-            autoSkip: true,
-            maxTicksLimit: viewMode === 'desktop-view' ? 4 : 3,
-            callback(value: string) {
-              if (basePrice === 'RUNE') {
+            ticks: {
+              fontSize: '14',
+              fontColor: textColor,
+              maxTicksLimit: viewMode === 'desktop-view' ? 5 : 3,
+              autoSkipPadding: 5,
+              maxRotation: 0,
+              callback(value: string) {
                 if (Number(value) === 0) {
-                  return 'ᚱ0';
+                  return '0';
                 }
-                return `ᚱ${abbreviateNumber(Number(value))}`;
-              }
-              if (Number(value) === 0) {
-                return '$0';
-              }
-              return `$${abbreviateNumber(Number(value))}`;
+                return value;
+              },
             },
-            padding: 10,
-            fontSize: '14',
-            fontColor: textColor,
           },
-          gridLines: {
-            display: false,
+        ],
+        yAxes: [
+          {
+            type: 'linear',
+            stacked: true,
+            id: 'value',
+            ticks: {
+              autoSkip: true,
+              maxTicksLimit: viewMode === 'desktop-view' ? 4 : 3,
+              callback(value: string) {
+                if (basePrice === 'RUNE') {
+                  if (Number(value) === 0) {
+                    return 'ᚱ0';
+                  }
+                  return `ᚱ${abbreviateNumber(Number(value))}`;
+                }
+                if (Number(value) === 0) {
+                  return '$0';
+                }
+                return `$${abbreviateNumber(Number(value))}`;
+              },
+              padding: 10,
+              fontSize: '14',
+              fontColor: textColor,
+            },
+            gridLines: {
+              display: false,
+            },
           },
-        },
-      ],
-    },
+        ],
+      },
+    }),
+    [basePrice, textColor, viewMode],
+  );
+
+  const renderChart = () => {
+    return (
+      <ChartWrapper>
+        {!hasLiquidity && chartType === 'LIQUIDITY' && (
+          <ComingSoonWrapper>
+            <CodeIcon />
+            <ComingSoonText>Coming Soon...</ComingSoonText>
+          </ComingSoonWrapper>
+        )}
+
+        {chartData?.loading && <Loader />}
+        {!chartData?.loading && (
+          <BlurWrapper isBlur={chartType === 'LIQUIDITY' && !hasLiquidity}>
+            {chartType === 'LIQUIDITY' && (
+              <LineChart data={data} options={options} />
+            )}
+            {chartType !== 'LIQUIDITY' && (
+              <BarChart data={data} options={options} />
+            )}
+          </BlurWrapper>
+        )}
+      </ChartWrapper>
+    );
   };
 
-  return (
-    <ChartWrapper>
-      {!hasLiquidity && type === 'LIQUIDITY' && (
-        <ComingSoonWrapper>
-          <CodeIcon />
-          <ComingSoonText>Coming Soon...</ComingSoonText>
-        </ComingSoonWrapper>
-      )}
-
-      {chartData?.loading && <Loader />}
-      {!chartData?.loading && (
-        <BlurWrapper isBlur={type === 'LIQUIDITY' && !hasLiquidity}>
-          {type === 'LIQUIDITY' && <LineChart data={data} options={options} />}
-          {type !== 'LIQUIDITY' && <BarChart data={data} options={options} />}
-        </BlurWrapper>
-      )}
-    </ChartWrapper>
-  );
-};
-
-const PoolChart: React.FC<Props> = (props: Props): JSX.Element => {
-  const {
-    hasLiquidity = true,
-    chartData,
-    textColor,
-    lineColor,
-    gradientStart,
-    gradientStop,
-    backgroundGradientStart,
-    backgroundGradientStop,
-    viewMode,
-    basePrice = 'RUNE',
-  } = props;
-  const [chartType, setChartType] = React.useState('VOLUME');
-  const [chartTime, setChartTime] = React.useState('ALL');
+  const renderHeader = () => {
+    return (
+      <HeaderContainer>
+        <TypeContainer>
+          <HeaderToggle
+            primary={chartType === 'LIQUIDITY'}
+            onClick={() => setChartType('LIQUIDITY')}
+          >
+            Liquidity
+          </HeaderToggle>
+          <HeaderToggle
+            primary={chartType === 'VOLUME'}
+            onClick={() => setChartType('VOLUME')}
+          >
+            Volume
+          </HeaderToggle>
+        </TypeContainer>
+        <TimeContainer>
+          <HeaderToggle
+            primary={chartTime === 'WEEK'}
+            onClick={() => setChartTime('WEEK')}
+          >
+            1 Week
+          </HeaderToggle>
+          <HeaderToggle
+            primary={chartTime === 'ALL'}
+            onClick={() => setChartTime('ALL')}
+          >
+            All Time
+          </HeaderToggle>
+        </TimeContainer>
+      </HeaderContainer>
+    );
+  };
 
   return (
     <ChartContainer
       gradientStart={backgroundGradientStart}
       gradientStop={backgroundGradientStop}
     >
-      {renderHeader(chartType, chartTime, setChartType, setChartTime)}
-      {renderChart(
-        hasLiquidity,
-        chartData,
-        chartType,
-        chartTime,
-        textColor,
-        lineColor,
-        gradientStart,
-        gradientStop,
-        viewMode,
-        basePrice,
-      )}
+      {renderHeader()}
+      {renderChart()}
     </ChartContainer>
   );
 };
