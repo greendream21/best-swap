@@ -279,7 +279,7 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
 
   const renderPopoverContent = () => (
     <PopoverContent>
-      A Funds Cap is currently in place as the protocal balances security and
+      A Funds Cap is currently in place as the protocol balances security and
       demand on ChaosNet. The cap maxes out at 95%. Please follow the project on
       Twitter @thorchain_org for announcements regarding cap raise.
     </PopoverContent>

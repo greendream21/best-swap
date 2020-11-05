@@ -1,6 +1,5 @@
 /* eslint-disable no-underscore-dangle */
 import React, { useEffect, useCallback, useMemo, useState } from 'react';
-import moment from 'moment';
 import { compose } from 'redux';
 import { Row, Col } from 'antd';
 import { connect, useSelector } from 'react-redux';
@@ -48,9 +47,21 @@ import { PoolDetailStatusEnum } from '../../types/generated/midgard';
 
 import usePrice from '../../hooks/usePrice';
 
-type ChartData = {
+type ChartDataValue = {
   time: number;
   value: string;
+};
+
+type ChartData = {
+  liquidity: {
+    allTime: ChartDataValue[];
+    week: ChartDataValue[];
+  };
+  volume: {
+    allTime: ChartDataValue[];
+    week: ChartDataValue[];
+  };
+  loading: boolean;
 };
 
 type Props = {
@@ -102,15 +113,26 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
   const isLight = themeType === ThemeType.LIGHT;
   const theme = isLight ? themes.light : themes.dark;
 
-  const chartData = useMemo(() => {
+  const chartData: ChartData = useMemo(() => {
     if (rtAggregateLoading) {
-      return { liquidity: [], volume: [], loading: true };
+      return {
+        liquidity: {
+          allTime: [],
+          week: [],
+        },
+        volume: {
+          allTime: [],
+          week: [],
+        },
+        loading: true,
+      };
     }
+    const { allTimeData, weekData } = rtAggregate;
 
-    const volumeSeriesData: ChartData[] = [];
-    const liquiditySeriesData: ChartData[] = [];
+    const volumeSeriesDataAT: ChartDataValue[] = [];
+    const liquiditySeriesDataAT: ChartDataValue[] = [];
 
-    rtAggregate.forEach(data => {
+    allTimeData.forEach(data => {
       const time = data?.time ?? 0;
       const volumeData = {
         time,
@@ -121,13 +143,37 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
         value: getUSDPrice(bnOrZero(data?.runeDepth).multipliedBy(2)),
       };
 
-      volumeSeriesData.push(volumeData);
-      liquiditySeriesData.push(liquidityData);
+      volumeSeriesDataAT.push(volumeData);
+      liquiditySeriesDataAT.push(liquidityData);
+    });
+
+    const volumeSeriesDataWeek: ChartDataValue[] = [];
+    const liquiditySeriesDataWeek: ChartDataValue[] = [];
+
+    weekData.forEach(data => {
+      const time = data?.time ?? 0;
+      const volumeData = {
+        time,
+        value: getUSDPrice(bnOrZero(data?.poolVolume).multipliedBy(2)),
+      };
+      const liquidityData = {
+        time,
+        value: getUSDPrice(bnOrZero(data?.runeDepth).multipliedBy(2)),
+      };
+
+      volumeSeriesDataWeek.push(volumeData);
+      liquiditySeriesDataWeek.push(liquidityData);
     });
 
     return {
-      liquidity: liquiditySeriesData,
-      volume: volumeSeriesData,
+      liquidity: {
+        allTime: liquiditySeriesDataAT,
+        week: liquiditySeriesDataWeek,
+      },
+      volume: {
+        allTime: volumeSeriesDataAT,
+        week: volumeSeriesDataWeek,
+      },
       loading: false,
     };
   }, [rtAggregate, rtAggregateLoading, getUSDPrice]);
@@ -176,22 +222,9 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
     [getTransactionInfo, tokenSymbol],
   );
 
-  const getRTAggregateInfo = useCallback(
-    (
-      asset: string,
-      from: number,
-      to: number,
-      interval: '5min' | 'hour' | 'day' | 'week' | 'month' | 'year',
-    ) => {
-      getRTAggregate({ asset, from, to, interval });
-    },
-    [getRTAggregate],
-  );
-
   useEffect(() => {
-    const timeStamp: number = moment().unix();
-    getRTAggregateInfo(tokenSymbol, 0, timeStamp, 'day');
-  }, [getRTAggregateInfo, tokenSymbol]);
+    getRTAggregate({ asset: tokenSymbol });
+  }, [getRTAggregate, tokenSymbol]);
 
   const renderDetailCaption = (poolStats: PoolData, viewMode: string) => {
     const swapUrl = `/swap/${RUNE_SYMBOL}:${poolStats.values.symbol}`;

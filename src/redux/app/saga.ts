@@ -7,7 +7,6 @@ import {
   race,
   take,
 } from 'redux-saga/effects';
-import moment from 'moment';
 
 import * as actions from './actions';
 import * as binanceActions from '../binance/actions';
@@ -54,15 +53,8 @@ export function* getPoolViewData() {
       }),
     );
 
-    const timeStamp: number = moment().unix();
-    yield put(
-      midgardActions.getRTVolumeByAsset({
-        asset: payload || '',
-        from: 0,
-        to: timeStamp,
-        interval: 'day',
-      }),
-    );
+    // get volume chart data for AT and Last week
+    yield put(midgardActions.getRTVolumeByAsset({}));
   });
 }
 
@@ -83,14 +75,10 @@ export function* getPoolDetailViewData() {
       }),
     );
 
-    const timeStamp: number = moment().unix();
     if (payload) {
       yield put(
         midgardActions.getRTAggregateByAsset({
           asset: payload,
-          from: 0,
-          to: timeStamp,
-          interval: 'day',
         }),
       );
     }

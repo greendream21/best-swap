@@ -91,27 +91,36 @@ export type GetTxByAssetPayload = {
 };
 
 export type GetRTVolumeByAssetPayload = {
-  asset: string;
-  from: number;
-  to: number;
-  interval: '5min' | 'hour' | 'day' | 'week' | 'month' | 'year';
+  asset?: string;
+  from?: number;
+  to?: number;
+  interval?: '5min' | 'hour' | 'day' | 'week' | 'month' | 'year';
   type?: string;
 };
 
 export type GetRTAggregateByAssetPayload = {
-  asset: string;
-  from: number;
-  to: number;
-  interval: '5min' | 'hour' | 'day' | 'week' | 'month' | 'year';
+  asset?: string;
+  from?: number;
+  to?: number;
+  interval?: '5min' | 'hour' | 'day' | 'week' | 'month' | 'year';
   type?: string;
+};
+
+export type GetRTVolumeData = {
+  allTimeData: Array<TotalVolChanges>;
+  weekData: Array<TotalVolChanges>;
 };
 
 export type GetPoolDetailByAssetPayload = {
   asset: string;
 };
 
-export type RTVolumeData = Array<TotalVolChanges>;
-export type RTAggregateData = Array<PoolAggChanges>;
+export type RTVolumeData = GetRTVolumeData;
+
+export type RTAggregateData = {
+  allTimeData: Array<PoolAggChanges>;
+  weekData: Array<PoolAggChanges>;
+};
 
 export type TxDetailData = RemoteData<Error, InlineResponse2001>;
 
@@ -149,9 +158,9 @@ export type State = {
   txData: TxDetailData;
   refreshTxStatus: boolean;
   rtVolumeLoading: boolean;
-  rtVolume: TotalVolChanges[];
+  rtVolume: RTVolumeData;
   rtAggregateLoading: boolean;
-  rtAggregate: PoolAggChanges[];
+  rtAggregate: RTAggregateData;
   txCurData: Maybe<InlineResponse2001>;
   apiBasePath: ApiBasePathRD;
   thorchain: ThorchainData;

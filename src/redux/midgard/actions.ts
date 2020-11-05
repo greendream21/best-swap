@@ -10,6 +10,8 @@ import {
   GetTxByAssetPayload,
   GetPoolDataPayload,
   GetRTVolumeByAssetPayload,
+  GetRTVolumeData,
+  RTAggregateData,
   GetRTAggregateByAssetPayload,
   GetPoolDetailByAssetPayload,
   ThorchainData,
@@ -20,7 +22,6 @@ import {
   StakersAssetData,
   ThorchainEndpoints,
   InlineResponse2001,
-  TotalVolChanges,
   NetworkInfo,
 } from '../../types/generated/midgard';
 
@@ -173,7 +174,7 @@ export const getStatsFailed = (payload: Error) =>
 export const getRTVolumeByAsset = (payload: GetRTVolumeByAssetPayload) =>
   ({ type: 'GET_RT_VOLUME_BY_ASSET', payload } as const);
 
-export const getRTVolumeByAssetSuccess = (payload: Array<TotalVolChanges>) =>
+export const getRTVolumeByAssetSuccess = (payload: GetRTVolumeData) =>
   ({ type: 'GET_RT_VOLUME_BY_ASSET_SUCCESS', payload } as const);
 
 export const getRTVolumeByAssetFailed = (payload: Error) =>
@@ -182,7 +183,7 @@ export const getRTVolumeByAssetFailed = (payload: Error) =>
 export const getRTAggregateByAsset = (payload: GetRTAggregateByAssetPayload) =>
   ({ type: 'GET_RT_AGGREGATE_BY_ASSET', payload } as const);
 
-export const getRTAggregateByAssetSuccess = (payload: Array<TotalVolChanges>) =>
+export const getRTAggregateByAssetSuccess = (payload: RTAggregateData) =>
   ({ type: 'GET_RT_AGGREGATE_BY_ASSET_SUCCESS', payload } as const);
 
 export const getRTAggregateByAssetFailed = (payload: Error) =>

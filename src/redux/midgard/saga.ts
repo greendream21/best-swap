@@ -10,6 +10,7 @@ import {
   take,
 } from 'redux-saga/effects';
 import { isEmpty as _isEmpty } from 'lodash';
+import moment from 'moment';
 import byzantine from '@thorchain/byzantine-module';
 import { PoolDetail } from '../../types/generated/midgard/api';
 import { axiosRequest } from '../../helpers/apiHelper';
@@ -684,7 +685,12 @@ function* tryGetRTVolumeByAsset(payload: GetRTVolumeByAssetPayload) {
   for (let i = 0; i < MIDGARD_MAX_RETRY; i++) {
     try {
       const noCache = i > 0;
-      const { asset, from, to, interval } = payload;
+      const {
+        asset = '',
+        from = 0,
+        to = moment().unix(),
+        interval = 'day',
+      } = payload;
       // Unsafe: Can't infer type of `basePath` here - known TS/Generator/Saga issue
       const basePath: string = yield call(getApiBasePath, getNet(), noCache);
       const midgardApi = api.getMidgardDefaultApi(basePath);
@@ -712,30 +718,16 @@ function* tryGetRTVolumeByAsset(payload: GetRTVolumeByAssetPayload) {
   );
 }
 
-export function* getRTAggregateByAsset() {
-  yield takeEvery('GET_RT_AGGREGATE_BY_ASSET', function*({
-    payload,
-  }: ReturnType<typeof actions.getRTAggregateByAsset>) {
-    try {
-      const params = payload;
-
-      // if asset is not specified, request fails
-      if (!params.asset) {
-        yield put(actions.getRTAggregateByAssetFailed(Error('Invalid symbol')));
-      }
-      const data = yield call(tryGetRTAggregateByAsset, params);
-      yield put(actions.getRTAggregateByAssetSuccess(data));
-    } catch (error) {
-      yield put(actions.getRTAggregateByAssetFailed(error));
-    }
-  });
-}
-
 function* tryGetRTAggregateByAsset(payload: GetRTAggregateByAssetPayload) {
   for (let i = 0; i < MIDGARD_MAX_RETRY; i++) {
     try {
       const noCache = i > 0;
-      const { asset, from, to, interval } = payload;
+      const {
+        asset = '',
+        from = 0,
+        to = moment().unix(),
+        interval = 'day',
+      } = payload;
       // Unsafe: Can't infer type of `basePath` here - known TS/Generator/Saga issue
       const basePath: string = yield call(getApiBasePath, getNet(), noCache);
       const midgardApi = api.getMidgardDefaultApi(basePath);
@@ -763,13 +755,81 @@ function* tryGetRTAggregateByAsset(payload: GetRTAggregateByAssetPayload) {
   );
 }
 
+export function* getRTAggregateByAsset() {
+  yield takeEvery('GET_RT_AGGREGATE_BY_ASSET', function*({
+    payload,
+  }: ReturnType<typeof actions.getRTAggregateByAsset>) {
+    try {
+      // if asset is not specified, request fails
+      if (!payload.asset) {
+        yield put(actions.getRTAggregateByAssetFailed(Error('Invalid symbol')));
+      }
+
+      const curTime = moment().unix();
+      const weekAgoTime = moment()
+        .subtract(7, 'days')
+        .unix();
+
+      const allTimeParams: GetRTAggregateByAssetPayload = {
+        ...payload,
+        interval: 'day',
+        from: 0,
+        to: curTime,
+      };
+
+      const weekParams: GetRTAggregateByAssetPayload = {
+        ...payload,
+        interval: 'hour',
+        from: weekAgoTime,
+        to: curTime,
+      };
+
+      const allTimeData = yield call(tryGetRTAggregateByAsset, allTimeParams);
+      const weekData = yield call(tryGetRTAggregateByAsset, weekParams);
+      yield put(
+        actions.getRTAggregateByAssetSuccess({
+          allTimeData,
+          weekData,
+        }),
+      );
+    } catch (error) {
+      yield put(actions.getRTAggregateByAssetFailed(error));
+    }
+  });
+}
+
 export function* getRTVolumeByAsset() {
   yield takeEvery('GET_RT_VOLUME_BY_ASSET', function*({
     payload,
   }: ReturnType<typeof actions.getRTVolumeByAsset>) {
     try {
-      const data = yield call(tryGetRTVolumeByAsset, payload);
-      yield put(actions.getRTVolumeByAssetSuccess(data));
+      const curTime = moment().unix();
+      const weekAgoTime = moment()
+        .subtract(7, 'days')
+        .unix();
+
+      const allTimeParams: GetRTVolumeByAssetPayload = {
+        ...payload,
+        interval: 'day',
+        from: 0,
+        to: curTime,
+      };
+
+      const weekParams: GetRTVolumeByAssetPayload = {
+        ...payload,
+        interval: 'hour',
+        from: weekAgoTime,
+        to: curTime,
+      };
+
+      const allTimeData = yield call(tryGetRTVolumeByAsset, allTimeParams);
+      const weekData = yield call(tryGetRTVolumeByAsset, weekParams);
+      yield put(
+        actions.getRTVolumeByAssetSuccess({
+          allTimeData,
+          weekData,
+        }),
+      );
     } catch (error) {
       yield put(actions.getRTVolumeByAssetFailed(error));
     }
