@@ -166,7 +166,7 @@ const PoolChart: React.FC<Props> = (props: Props): JSX.Element => {
         },
       },
       animation: {
-        duration: 700,
+        duration: 0,
       },
       tooltips: {
         callbacks: {
