@@ -2,7 +2,7 @@ import { AssetSymbol } from '../../types/bepswap';
 import {
   GetStakerPoolDataPayload,
   PriceDataIndex,
-  AssetDetailMap,
+  GetAssetsPayload,
   GetTransactionPayload,
   GetTxByAddressTxIdPayload,
   GetTxByAddressAssetPayload,
@@ -10,26 +10,22 @@ import {
   GetTxByAssetPayload,
   GetPoolDataPayload,
   GetRTVolumeByAssetPayload,
+  GetRTVolumeData,
+  RTAggregateData,
   GetRTAggregateByAssetPayload,
   GetPoolDetailByAssetPayload,
   ThorchainData,
 } from './types';
 import {
-  AssetDetail,
   PoolDetail,
   StatsData,
   StakersAssetData,
   ThorchainEndpoints,
   InlineResponse2001,
-  TotalVolChanges,
   NetworkInfo,
 } from '../../types/generated/midgard';
 
-export type SetAssetsPayload = {
-  assetDetailIndex: AssetDetailMap;
-  assetDetails: AssetDetail[];
-};
-export const setAssets = (payload: SetAssetsPayload) =>
+export const setAssets = (payload: GetAssetsPayload) =>
   ({ type: 'SET_ASSETS', payload } as const);
 
 export const getPools = () => ({ type: 'GET_POOLS_REQUEST' } as const);
@@ -39,6 +35,15 @@ export const getPoolsSuccess = (payload: string[]) =>
 
 export const getPoolsFailed = (payload: Error) =>
   ({ type: 'GET_POOLS_FAILED', payload } as const);
+
+export const getPoolAssets = () =>
+  ({ type: 'GET_POOL_ASSETS_REQUEST' } as const);
+
+export const getPoolAssetsSuccess = (payload: GetAssetsPayload) =>
+  ({ type: 'GET_POOL_ASSETS_SUCCESS', payload } as const);
+
+export const getPoolAssetsFailed = (payload: Error) =>
+  ({ type: 'GET_POOL_ASSETS_FAILED', payload } as const);
 
 export const getPoolData = (payload: GetPoolDataPayload) =>
   ({ type: 'GET_POOL_DATA_REQUEST', payload } as const);
@@ -169,7 +174,7 @@ export const getStatsFailed = (payload: Error) =>
 export const getRTVolumeByAsset = (payload: GetRTVolumeByAssetPayload) =>
   ({ type: 'GET_RT_VOLUME_BY_ASSET', payload } as const);
 
-export const getRTVolumeByAssetSuccess = (payload: Array<TotalVolChanges>) =>
+export const getRTVolumeByAssetSuccess = (payload: GetRTVolumeData) =>
   ({ type: 'GET_RT_VOLUME_BY_ASSET_SUCCESS', payload } as const);
 
 export const getRTVolumeByAssetFailed = (payload: Error) =>
@@ -178,7 +183,7 @@ export const getRTVolumeByAssetFailed = (payload: Error) =>
 export const getRTAggregateByAsset = (payload: GetRTAggregateByAssetPayload) =>
   ({ type: 'GET_RT_AGGREGATE_BY_ASSET', payload } as const);
 
-export const getRTAggregateByAssetSuccess = (payload: Array<TotalVolChanges>) =>
+export const getRTAggregateByAssetSuccess = (payload: RTAggregateData) =>
   ({ type: 'GET_RT_AGGREGATE_BY_ASSET_SUCCESS', payload } as const);
 
 export const getRTAggregateByAssetFailed = (payload: Error) =>
@@ -197,6 +202,9 @@ export type MidgardActionTypes = ReturnType<
   | typeof getPools
   | typeof getPoolsSuccess
   | typeof getPoolsFailed
+  | typeof getPoolAssets
+  | typeof getPoolAssetsSuccess
+  | typeof getPoolAssetsFailed
   | typeof getPoolData
   | typeof getPoolDataSuccess
   | typeof getPoolDataFailed

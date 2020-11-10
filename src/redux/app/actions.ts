@@ -6,6 +6,9 @@ export const getBEPSwapData = () => ({ type: 'GET_BEPSWAP_DATA' } as const);
 export const getPoolViewData = (payload?: string) =>
   ({ type: 'GET_POOL_VIEW_DATA', payload } as const);
 
+export const getPoolDetailViewData = (payload?: string) =>
+  ({ type: 'GET_POOL_DETAIL_VIEW_DATA', payload } as const);
+
 export const refreshSwapData = () => ({ type: 'REFRESH_SWAP_DATA' } as const);
 
 /** payload: pool symbol for stake */
@@ -51,6 +54,7 @@ export const setTheme = (payload: string) =>
 export type AppActionsTypes = ReturnType<
   | typeof getBEPSwapData
   | typeof getPoolViewData
+  | typeof getPoolDetailViewData
   | typeof refreshSwapData
   | typeof refreshStakeData
   | typeof refreshTransactionData

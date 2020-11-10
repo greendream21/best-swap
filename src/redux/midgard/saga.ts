@@ -1,5 +1,16 @@
-import { all, takeEvery, put, fork, call, delay } from 'redux-saga/effects';
+import {
+  all,
+  takeEvery,
+  put,
+  fork,
+  call,
+  delay,
+  race,
+  select,
+  take,
+} from 'redux-saga/effects';
 import { isEmpty as _isEmpty } from 'lodash';
+import moment from 'moment';
 import byzantine from '@thorchain/byzantine-module';
 import { PoolDetail } from '../../types/generated/midgard/api';
 import { axiosRequest } from '../../helpers/apiHelper';
@@ -14,6 +25,7 @@ import { getAssetDetailIndex, getPriceIndex } from './utils';
 import { NET, getNet } from '../../env';
 import { UnpackPromiseResponse } from '../../types/util';
 import {
+  GetAssetsPayload,
   GetTxByAddressPayload,
   GetTxByAddressTxIdPayload,
   GetTxByAssetPayload,
@@ -23,7 +35,7 @@ import {
   GetRTVolumeByAssetPayload,
   GetRTAggregateByAssetPayload,
 } from './types';
-import { AssetDetail } from '../../types/generated/midgard';
+import { RootState } from '../store';
 
 export const MIDGARD_MAX_RETRY = 3;
 export const MIDGARD_RETRY_DELAY = 1000; // ms
@@ -55,8 +67,6 @@ export function* getApiBasePath(net: NET, noCache = false) {
     throw new Error(error);
   }
 }
-
-type GetPoolsResult = { poolAssets: string[]; assetDetails: AssetDetail[] };
 
 function* tryGetPools() {
   for (let i = 0; i < MIDGARD_MAX_RETRY; i++) {
@@ -135,30 +145,53 @@ function* tryGetAssets(poolAssets: string[]) {
   throw new Error('Midgard API request failed to get pools');
 }
 
-export function* getPools() {
-  yield takeEvery('GET_POOLS_REQUEST', function*() {
+export function* getPoolAssets() {
+  yield takeEvery('GET_POOL_ASSETS_REQUEST', function*() {
     try {
-      // Unsafe: Can't infer type of `GetPoolsResult` in a Generator function - known TS/Generator/Saga issue
       const pools = yield call(tryGetPools);
 
       yield put(actions.getPoolsSuccess(pools));
 
       const assetDetails = yield call(tryGetAssets, pools);
       const assetDetailIndex = getAssetDetailIndex(assetDetails);
-      const assetsPayload: actions.SetAssetsPayload = {
+      const assetsPayload: GetAssetsPayload = {
         assetDetails,
         assetDetailIndex,
       };
 
-      yield put(actions.setAssets(assetsPayload));
+      yield put(actions.getPoolAssetsSuccess(assetsPayload));
 
       const baseTokenTicker = getBasePriceAsset() || 'RUNE';
       const priceIndex = getPriceIndex(assetDetails, baseTokenTicker);
       yield put(actions.setPriceIndex(priceIndex));
+    } catch (error) {
+      yield put(actions.getPoolsFailed(error));
+      yield put(actions.getPoolAssetsFailed(error));
+    }
+  });
+}
 
-      yield put(
-        actions.getPoolData({ assets: pools, overrideAllPoolData: true }),
-      );
+export function* getPools() {
+  yield takeEvery('GET_POOLS_REQUEST', function*() {
+    try {
+      // get pools and assets, set priceindex
+      yield put(actions.getPoolAssets());
+
+      // wait until getPoolAssets action is finished
+      const { success } = yield race({
+        success: take('GET_POOL_ASSETS_SUCCESS'),
+        failed: take('GET_POOL_ASSETS_FAILED'),
+      });
+
+      if (success) {
+        // if getPoolAssets action is successful, get pool details
+        const pools = yield select((state: RootState) => state.Midgard.pools);
+        yield put(
+          actions.getPoolData({ assets: pools, overrideAllPoolData: true }),
+        );
+      } else {
+        yield put(actions.getPoolsFailed(Error('GET POOL ASSETS FAILED')));
+      }
     } catch (error) {
       yield put(actions.getPoolsFailed(error));
     }
@@ -660,7 +693,12 @@ function* tryGetRTVolumeByAsset(payload: GetRTVolumeByAssetPayload) {
   for (let i = 0; i < MIDGARD_MAX_RETRY; i++) {
     try {
       const noCache = i > 0;
-      const { asset, from, to, interval } = payload;
+      const {
+        asset = '',
+        from = 0,
+        to = moment().unix(),
+        interval = 'day',
+      } = payload;
       // Unsafe: Can't infer type of `basePath` here - known TS/Generator/Saga issue
       const basePath: string = yield call(getApiBasePath, getNet(), noCache);
       const midgardApi = api.getMidgardDefaultApi(basePath);
@@ -688,30 +726,16 @@ function* tryGetRTVolumeByAsset(payload: GetRTVolumeByAssetPayload) {
   );
 }
 
-export function* getRTAggregateByAsset() {
-  yield takeEvery('GET_RT_AGGREGATE_BY_ASSET', function*({
-    payload,
-  }: ReturnType<typeof actions.getRTAggregateByAsset>) {
-    try {
-      const params = payload;
-
-      // if asset is not specified, request all pools
-      if (!params.asset) {
-        yield put(actions.getRTAggregateByAssetFailed(Error('Invalid symbol')));
-      }
-      const data = yield call(tryGetRTAggregateByAsset, params);
-      yield put(actions.getRTAggregateByAssetSuccess(data));
-    } catch (error) {
-      yield put(actions.getRTAggregateByAssetFailed(error));
-    }
-  });
-}
-
 function* tryGetRTAggregateByAsset(payload: GetRTAggregateByAssetPayload) {
   for (let i = 0; i < MIDGARD_MAX_RETRY; i++) {
     try {
       const noCache = i > 0;
-      const { asset, from, to, interval } = payload;
+      const {
+        asset = '',
+        from = 0,
+        to = moment().unix(),
+        interval = 'day',
+      } = payload;
       // Unsafe: Can't infer type of `basePath` here - known TS/Generator/Saga issue
       const basePath: string = yield call(getApiBasePath, getNet(), noCache);
       const midgardApi = api.getMidgardDefaultApi(basePath);
@@ -739,13 +763,81 @@ function* tryGetRTAggregateByAsset(payload: GetRTAggregateByAssetPayload) {
   );
 }
 
+export function* getRTAggregateByAsset() {
+  yield takeEvery('GET_RT_AGGREGATE_BY_ASSET', function*({
+    payload,
+  }: ReturnType<typeof actions.getRTAggregateByAsset>) {
+    try {
+      // if asset is not specified, request fails
+      if (!payload.asset) {
+        yield put(actions.getRTAggregateByAssetFailed(Error('Invalid symbol')));
+      }
+
+      const curTime = moment().unix();
+      const weekAgoTime = moment()
+        .subtract(7, 'days')
+        .unix();
+
+      const allTimeParams: GetRTAggregateByAssetPayload = {
+        ...payload,
+        interval: 'day',
+        from: 0,
+        to: curTime,
+      };
+
+      const weekParams: GetRTAggregateByAssetPayload = {
+        ...payload,
+        interval: 'hour',
+        from: weekAgoTime,
+        to: curTime,
+      };
+
+      const allTimeData = yield call(tryGetRTAggregateByAsset, allTimeParams);
+      const weekData = yield call(tryGetRTAggregateByAsset, weekParams);
+      yield put(
+        actions.getRTAggregateByAssetSuccess({
+          allTimeData,
+          weekData,
+        }),
+      );
+    } catch (error) {
+      yield put(actions.getRTAggregateByAssetFailed(error));
+    }
+  });
+}
+
 export function* getRTVolumeByAsset() {
   yield takeEvery('GET_RT_VOLUME_BY_ASSET', function*({
     payload,
   }: ReturnType<typeof actions.getRTVolumeByAsset>) {
     try {
-      const data = yield call(tryGetRTVolumeByAsset, payload);
-      yield put(actions.getRTVolumeByAssetSuccess(data));
+      const curTime = moment().unix();
+      const weekAgoTime = moment()
+        .subtract(7, 'days')
+        .unix();
+
+      const allTimeParams: GetRTVolumeByAssetPayload = {
+        ...payload,
+        interval: 'day',
+        from: 0,
+        to: curTime,
+      };
+
+      const weekParams: GetRTVolumeByAssetPayload = {
+        ...payload,
+        interval: 'hour',
+        from: weekAgoTime,
+        to: curTime,
+      };
+
+      const allTimeData = yield call(tryGetRTVolumeByAsset, allTimeParams);
+      const weekData = yield call(tryGetRTVolumeByAsset, weekParams);
+      yield put(
+        actions.getRTVolumeByAssetSuccess({
+          allTimeData,
+          weekData,
+        }),
+      );
     } catch (error) {
       yield put(actions.getRTVolumeByAssetFailed(error));
     }
@@ -754,6 +846,7 @@ export function* getRTVolumeByAsset() {
 
 export default function* rootSaga() {
   yield all([
+    fork(getPoolAssets),
     fork(getPools),
     fork(getPoolData),
     fork(getStats),

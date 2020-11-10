@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { palette } from 'styled-theme';
-import { Line } from 'react-chartjs-2';
+import { Line, Bar } from 'react-chartjs-2';
 
 import { media } from '../../helpers/styleHelper';
 
@@ -80,7 +80,7 @@ export const HeaderToggle = styled.span`
   `}
 `;
 
-export const LineChartContainer = styled.div`
+export const ChartWrapper = styled.div`
   margin-top: 10px;
   position: relative;
   width: calc(100% - 10px);
@@ -92,6 +92,11 @@ export const LineChartContainer = styled.div`
 `;
 
 export const LineChart = styled(Line)`
+  width: 100%;
+  font-family: 'Exo 2';
+`;
+
+export const BarChart = styled(Bar)`
   width: 100%;
   font-family: 'Exo 2';
 `;

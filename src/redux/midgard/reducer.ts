@@ -63,9 +63,15 @@ const initState: State = {
   refreshTxStatus: false,
   txCurData: {},
   rtVolumeLoading: false,
-  rtVolume: [],
+  rtVolume: {
+    allTimeData: [],
+    weekData: [],
+  },
   rtAggregateLoading: false,
-  rtAggregate: [],
+  rtAggregate: {
+    allTimeData: [],
+    weekData: [],
+  },
   apiBasePath: initial,
   thorchain: {
     constants: {},
@@ -104,6 +110,15 @@ const reducer: Reducer<State, MidgardActionTypes> = (
         runePrice: 0,
         error: Nothing,
       };
+    case 'GET_POOL_ASSETS_SUCCESS': {
+      const { payload } = action;
+      return {
+        ...state,
+        assets: payload.assetDetailIndex,
+        assetArray: payload.assetDetails,
+        assetLoading: false,
+      };
+    }
     case 'SET_ASSETS': {
       const { payload } = action;
       return {
@@ -397,7 +412,6 @@ const reducer: Reducer<State, MidgardActionTypes> = (
     case 'GET_RT_VOLUME_BY_ASSET_FAILED':
       return {
         ...state,
-        rtVolume: [],
         rtVolumeLoading: false,
       };
     case 'GET_RT_AGGREGATE_BY_ASSET':
@@ -414,7 +428,6 @@ const reducer: Reducer<State, MidgardActionTypes> = (
     case 'GET_RT_AGGREGATE_BY_ASSET_FAILED':
       return {
         ...state,
-        rtAggregate: [],
         rtAggregateLoading: false,
       };
     case 'GET_API_BASEPATH_PENDING':

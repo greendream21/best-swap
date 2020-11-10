@@ -7,7 +7,6 @@ import {
   race,
   take,
 } from 'redux-saga/effects';
-import moment from 'moment';
 
 import * as actions from './actions';
 import * as binanceActions from '../binance/actions';
@@ -54,15 +53,35 @@ export function* getPoolViewData() {
       }),
     );
 
-    const timeStamp: number = moment().unix();
+    // get volume chart data for AT and Last week
+    yield put(midgardActions.getRTVolumeByAsset({}));
+  });
+}
+
+// refresh data needed for pool view homepage
+export function* getPoolDetailViewData() {
+  yield takeEvery('GET_POOL_DETAIL_VIEW_DATA', function*({
+    payload,
+  }: ReturnType<typeof actions.getPoolViewData>) {
+    yield put(midgardActions.getPoolAddress());
+    yield put(midgardActions.getPoolAssets());
+    yield put(midgardActions.getNetworkInfo());
+    yield put(walletActions.refreshWallet());
     yield put(
-      midgardActions.getRTVolumeByAsset({
-        asset: '',
-        from: 0,
-        to: timeStamp,
-        interval: 'day',
+      midgardActions.getTransactionWithRefresh({
+        asset: payload,
+        offset: 0,
+        limit: 10,
       }),
     );
+
+    if (payload) {
+      yield put(
+        midgardActions.getRTAggregateByAsset({
+          asset: payload,
+        }),
+      );
+    }
   });
 }
 
@@ -71,6 +90,7 @@ export function* refreshSwapData() {
   yield takeEvery('REFRESH_SWAP_DATA', function*() {
     yield put(midgardActions.getPools());
     yield put(midgardActions.getPoolAddress());
+    yield put(midgardActions.getNetworkInfo());
     yield put(walletActions.refreshWallet());
     yield put(midgardActions.getNetworkInfo());
   });
@@ -139,6 +159,7 @@ export default function* rootSaga() {
   yield all([
     fork(getBEPSwapData),
     fork(getPoolViewData),
+    fork(getPoolDetailViewData),
     fork(refreshSwapData),
     fork(refreshStakeData),
     fork(refreshTransactionData),

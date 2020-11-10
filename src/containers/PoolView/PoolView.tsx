@@ -5,7 +5,6 @@ import { compose } from 'redux';
 import { connect, useSelector } from 'react-redux';
 import { withRouter, useHistory, Link } from 'react-router-dom';
 import { Row, Col, Grid } from 'antd';
-import moment from 'moment';
 import {
   SearchOutlined,
   SyncOutlined,
@@ -141,19 +140,46 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
 
   const chartData = useMemo(() => {
     if (rtVolumeLoading) {
-      return { liquidity: [], volume: [], loading: true };
+      return {
+        liquidity: {
+          allTime: [],
+          week: [],
+        },
+        volume: {
+          allTime: [],
+          week: [],
+        },
+        loading: true,
+      };
     }
 
-    const volumeSeriesData = rtVolume?.map(volume => {
+    const { allTimeData, weekData } = rtVolume;
+
+    const allTimeVolumeData = allTimeData?.map(volume => {
       return {
         time: volume?.time ?? 0,
         value: getUSDPrice(bnOrZero(volume?.totalVolume)),
       };
     });
 
+    const weekVolumeData = weekData?.map(volume => {
+      return {
+        time: volume?.time ?? 0,
+        value: getUSDPrice(bnOrZero(volume?.totalVolume)),
+      };
+    });
+
+    const randomSeries = generateRandomTimeSeries(0, 15, '2020-05-01');
+
     return {
-      liquidity: generateRandomTimeSeries(0, 15, '2020-05-01'),
-      volume: volumeSeriesData,
+      liquidity: {
+        allTime: randomSeries,
+        week: randomSeries,
+      },
+      volume: {
+        allTime: allTimeVolumeData,
+        week: weekVolumeData,
+      },
       loading: false,
     };
   }, [rtVolume, rtVolumeLoading, getUSDPrice]);
@@ -165,17 +191,6 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     [getTransactions],
   );
 
-  const getRTVolumeInfo = useCallback(
-    (
-      from: number,
-      to: number,
-      interval: '5min' | 'hour' | 'day' | 'week' | 'month' | 'year',
-    ) => {
-      getRTVolume({ asset: '', from, to, interval });
-    },
-    [getRTVolume],
-  );
-
   useEffect(() => {
     if (refreshTxStatus) setCurrentTxPage(1);
   }, [refreshTxStatus]);
@@ -185,9 +200,8 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
   }, [currentTxPage, getTransactionInfo]);
 
   useEffect(() => {
-    const timeStamp: number = moment().unix();
-    getRTVolumeInfo(0, timeStamp, 'day');
-  }, [getRTVolumeInfo]);
+    getRTVolume({});
+  }, [getRTVolume]);
 
   const handleGetPools = () => {
     getPools();

@@ -1,12 +1,10 @@
 /* eslint-disable no-underscore-dangle */
 import React, { useEffect, useCallback, useMemo, useState } from 'react';
-import * as H from 'history';
-import moment from 'moment';
 import { compose } from 'redux';
 import { Row, Col } from 'antd';
 import { connect, useSelector } from 'react-redux';
 import { get as _get } from 'lodash';
-import { withRouter, useParams, Link } from 'react-router-dom';
+import { withRouter, useParams, Link, useHistory } from 'react-router-dom';
 import { Token } from '@thorchain/asgardex-binance';
 import themes, { ThemeType } from '@thorchain/asgardex-theme';
 import { bnOrZero } from '@thorchain/asgardex-util';
@@ -29,7 +27,7 @@ import {
   ChartContainer,
 } from './PoolDetail.style';
 
-import { getPoolData } from '../../helpers/utils/poolUtils';
+import { getPoolData, isValidPool } from '../../helpers/utils/poolUtils';
 import { PoolData } from '../../helpers/utils/types';
 import { RootState } from '../../redux/store';
 
@@ -38,7 +36,6 @@ import {
   PoolDataMap,
   PriceDataIndex,
   TxDetailData,
-  RTVolumeData,
   RTAggregateData,
 } from '../../redux/midgard/types';
 import { RUNE_SYMBOL } from '../../settings/assetData';
@@ -50,20 +47,34 @@ import { PoolDetailStatusEnum } from '../../types/generated/midgard';
 
 import usePrice from '../../hooks/usePrice';
 
+type ChartDataValue = {
+  time: number;
+  value: string;
+};
+
+type ChartData = {
+  liquidity: {
+    allTime: ChartDataValue[];
+    week: ChartDataValue[];
+  };
+  volume: {
+    allTime: ChartDataValue[];
+    week: ChartDataValue[];
+  };
+  loading: boolean;
+};
+
 type Props = {
-  history: H.History;
   txData: TxDetailData;
   poolDetailedData: PoolDataMap;
   poolDetailedDataLoading: boolean;
   assets: AssetDetailMap;
+  pools: string[];
   priceIndex: PriceDataIndex;
-  rtVolumeLoading: boolean;
-  rtVolume: RTVolumeData;
   rtAggregateLoading: boolean;
   rtAggregate: RTAggregateData;
   tokenList: Token[];
   refreshTxStatus: boolean;
-  getRTVolume: typeof midgardActions.getRTVolumeByAsset;
   getRTAggregate: typeof midgardActions.getRTAggregateByAsset;
   getTxByAsset: typeof midgardActions.getTxByAsset;
   getPoolDetailByAsset: typeof midgardActions.getPoolDetailByAsset;
@@ -72,17 +83,15 @@ type Props = {
 const PoolDetail: React.FC<Props> = (props: Props) => {
   const {
     assets,
+    pools,
     poolDetailedData,
     poolDetailedDataLoading,
     txData,
     priceIndex,
-    rtVolumeLoading,
-    rtVolume,
     rtAggregateLoading,
     rtAggregate,
     tokenList,
     refreshTxStatus,
-    getRTVolume,
     getRTAggregate,
     getTxByAsset,
     getPoolDetailByAsset,
@@ -91,8 +100,10 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
   const { getUSDPrice, pricePrefix, runePrice } = usePrice();
   const [currentTxPage, setCurrentTxPage] = useState<number>(1);
 
+  const history = useHistory();
   const { symbol = '' } = useParams();
   const tokenSymbol = symbol.toUpperCase();
+
   const busdToken = Object.keys(assets).find(
     item => getTickerFormat(item) === 'busd',
   );
@@ -102,31 +113,70 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
   const isLight = themeType === ThemeType.LIGHT;
   const theme = isLight ? themes.light : themes.dark;
 
-  const chartData = useMemo(() => {
-    if (rtVolumeLoading || rtAggregateLoading) {
-      return { liquidity: [], volume: [], loading: true };
-    }
-
-    const volumeSeriesData = rtVolume?.map(volume => {
+  const chartData: ChartData = useMemo(() => {
+    if (rtAggregateLoading) {
       return {
-        time: volume?.time ?? 0,
-        value: getUSDPrice(bnOrZero(volume?.totalVolume)),
+        liquidity: {
+          allTime: [],
+          week: [],
+        },
+        volume: {
+          allTime: [],
+          week: [],
+        },
+        loading: true,
       };
+    }
+    const { allTimeData, weekData } = rtAggregate;
+
+    const volumeSeriesDataAT: ChartDataValue[] = [];
+    const liquiditySeriesDataAT: ChartDataValue[] = [];
+
+    allTimeData.forEach(data => {
+      const time = data?.time ?? 0;
+      const volumeData = {
+        time,
+        value: getUSDPrice(bnOrZero(data?.poolVolume).multipliedBy(2)),
+      };
+      const liquidityData = {
+        time,
+        value: getUSDPrice(bnOrZero(data?.runeDepth).multipliedBy(2)),
+      };
+
+      volumeSeriesDataAT.push(volumeData);
+      liquiditySeriesDataAT.push(liquidityData);
     });
 
-    const liquiditySeriesData = rtAggregate?.map(liquidity => {
-      return {
-        time: liquidity?.time ?? 0,
-        value: getUSDPrice(bnOrZero(liquidity?.runeDepth).multipliedBy(2)),
+    const volumeSeriesDataWeek: ChartDataValue[] = [];
+    const liquiditySeriesDataWeek: ChartDataValue[] = [];
+
+    weekData.forEach(data => {
+      const time = data?.time ?? 0;
+      const volumeData = {
+        time,
+        value: getUSDPrice(bnOrZero(data?.poolVolume).multipliedBy(2)),
       };
+      const liquidityData = {
+        time,
+        value: getUSDPrice(bnOrZero(data?.runeDepth).multipliedBy(2)),
+      };
+
+      volumeSeriesDataWeek.push(volumeData);
+      liquiditySeriesDataWeek.push(liquidityData);
     });
 
     return {
-      liquidity: liquiditySeriesData,
-      volume: volumeSeriesData,
+      liquidity: {
+        allTime: liquiditySeriesDataAT,
+        week: liquiditySeriesDataWeek,
+      },
+      volume: {
+        allTime: volumeSeriesDataAT,
+        week: volumeSeriesDataWeek,
+      },
       loading: false,
     };
-  }, [rtVolume, rtVolumeLoading, rtAggregate, rtAggregateLoading, getUSDPrice]);
+  }, [rtAggregate, rtAggregateLoading, getUSDPrice]);
 
   const getTransactionInfo = useCallback(
     (asset: string, offset: number, limit: number) => {
@@ -157,6 +207,13 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
     }
   }, [getTransactionInfo, tokenSymbol, refreshTxStatus]);
 
+  // check if asset pool is valid
+  useEffect(() => {
+    if (!isValidPool(pools, symbol)) {
+      history.push('/');
+    }
+  }, [pools, history, symbol]);
+
   const handlePagination = useCallback(
     (page: number) => {
       setCurrentTxPage(page);
@@ -165,39 +222,9 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
     [getTransactionInfo, tokenSymbol],
   );
 
-  const getRTVolumeInfo = useCallback(
-    (
-      asset: string,
-      from: number,
-      to: number,
-      interval: '5min' | 'hour' | 'day' | 'week' | 'month' | 'year',
-    ) => {
-      getRTVolume({ asset, from, to, interval });
-    },
-    [getRTVolume],
-  );
-
   useEffect(() => {
-    const timeStamp: number = moment().unix();
-    getRTVolumeInfo(tokenSymbol, 0, timeStamp, 'day');
-  }, [getRTVolumeInfo, tokenSymbol]);
-
-  const getRTAggregateInfo = useCallback(
-    (
-      asset: string,
-      from: number,
-      to: number,
-      interval: '5min' | 'hour' | 'day' | 'week' | 'month' | 'year',
-    ) => {
-      getRTAggregate({ asset, from, to, interval });
-    },
-    [getRTAggregate],
-  );
-
-  useEffect(() => {
-    const timeStamp: number = moment().unix();
-    getRTAggregateInfo(tokenSymbol, 0, timeStamp, 'day');
-  }, [getRTAggregateInfo, tokenSymbol]);
+    getRTAggregate({ asset: tokenSymbol });
+  }, [getRTAggregate, tokenSymbol]);
 
   const renderDetailCaption = (poolStats: PoolData, viewMode: string) => {
     const swapUrl = `/swap/${RUNE_SYMBOL}:${poolStats.values.symbol}`;
@@ -318,15 +345,13 @@ export default compose(
       poolDetailedDataLoading: state.Midgard.poolDetailedDataLoading,
       refreshTxStatus: state.Midgard.refreshTxStatus,
       assets: state.Midgard.assets,
+      pools: state.Midgard.pools,
       priceIndex: state.Midgard.priceIndex,
       txData: state.Midgard.txData,
-      rtVolumeLoading: state.Midgard.rtVolumeLoading,
-      rtVolume: state.Midgard.rtVolume,
       rtAggregateLoading: state.Midgard.rtAggregateLoading,
       rtAggregate: state.Midgard.rtAggregate,
     }),
     {
-      getRTVolume: midgardActions.getRTVolumeByAsset,
       getRTAggregate: midgardActions.getRTAggregateByAsset,
       getTxByAsset: midgardActions.getTxByAsset,
       getPoolDetailByAsset: midgardActions.getPoolDetailByAsset,
