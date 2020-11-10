@@ -239,8 +239,9 @@ export function* getNetworkInfo() {
     try {
       const networkInfo = yield call(tryGetNetworkInfo);
       const { data: mimir } = yield call(getThorchainMimir);
+      const { data: queue } = yield call(getThorchainQueue);
 
-      yield put(actions.getThorchainDataSuccess({ mimir }));
+      yield put(actions.getThorchainDataSuccess({ mimir, queue }));
       yield put(actions.getNetworkInfoSuccess(networkInfo));
     } catch (error) {
       yield put(actions.getNetworkInfoFailed(error));
@@ -382,6 +383,13 @@ const getThorchainLastBlock = () => {
 const getThorchainMimir = () => {
   return axiosRequest({
     url: `${api.getThorchainBaseURL()}/mimir`,
+    method: 'GET',
+  });
+};
+
+const getThorchainQueue = () => {
+  return axiosRequest({
+    url: `${api.getThorchainBaseURL()}/queue`,
     method: 'GET',
   });
 };

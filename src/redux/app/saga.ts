@@ -92,6 +92,7 @@ export function* refreshSwapData() {
     yield put(midgardActions.getPoolAddress());
     yield put(midgardActions.getNetworkInfo());
     yield put(walletActions.refreshWallet());
+    yield put(midgardActions.getNetworkInfo());
   });
 }
 

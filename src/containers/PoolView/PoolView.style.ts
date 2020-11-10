@@ -1,6 +1,8 @@
 import { Pagination } from 'antd';
+import { InfoCircleOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import { palette } from 'styled-theme';
+
 import ContentView from '../../components/utility/contentView';
 import { media } from '../../helpers/styleHelper';
 import Table from '../../components/uielements/table';
@@ -181,4 +183,16 @@ export const StyledPagination = styled(Pagination)`
       }
     }
   }
+`;
+
+
+export const PopoverContent = styled.div`
+  width: 300px;
+  font-size: '11px';
+  color: ${palette('text', 0)};
+`;
+
+export const PopoverIcon = styled(InfoCircleOutlined)`
+  color: ${palette('primary', 0)};
+  margin: 0 10px;
 `;

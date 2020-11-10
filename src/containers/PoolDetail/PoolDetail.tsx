@@ -11,8 +11,11 @@ import { bnOrZero } from '@thorchain/asgardex-util';
 
 import { SwapOutlined, DatabaseOutlined } from '@ant-design/icons';
 
+import useNetwork from '../../hooks/useNetwork';
+
 import Label from '../../components/uielements/label';
 import Button from '../../components/uielements/button';
+import { ButtonColor } from '../../components/uielements/button/types';
 
 import * as midgardActions from '../../redux/midgard/actions';
 
@@ -99,6 +102,8 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
 
   const { getUSDPrice, pricePrefix, runePrice } = usePrice();
   const [currentTxPage, setCurrentTxPage] = useState<number>(1);
+
+  const { outboundQueueLevel, isValidFundCaps } = useNetwork();
 
   const history = useHistory();
   const { symbol = '' } = useParams();
@@ -237,7 +242,16 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
     const poolPrice = `${pricePrefix} ${bnOrZero(poolInfo?.price)
       .multipliedBy(runePrice)
       .toFixed(3)}`;
+
     const poolStatus = poolInfo?.status ?? null;
+    const buttonColors: {
+      [key: string]: ButtonColor;
+    } = {
+      GOOD: 'primary',
+      SLOW: 'warning',
+      BUSY: 'error',
+    };
+    const btnColor: ButtonColor = buttonColors[outboundQueueLevel];
 
     return (
       <Col className={`pool-caption-container ${viewMode}`}>
@@ -247,14 +261,21 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
         </PoolCaptionWrapper>
         <PoolCaptionButtonsWrapper>
           <Link to={liquidityUrl}>
-            <Button round="true" typevalue="outline">
+            <Button
+              round="true"
+              typevalue="outline"
+              color={!isValidFundCaps ? 'error' : btnColor}
+            >
               <DatabaseOutlined />
               add
             </Button>
           </Link>
           {poolStatus === PoolDetailStatusEnum.Enabled && (
             <Link to={swapUrl}>
-              <Button round="true">
+              <Button
+                round="true"
+                color={!isValidFundCaps ? 'error' : btnColor}
+              >
                 <SwapOutlined />
                 swap
               </Button>

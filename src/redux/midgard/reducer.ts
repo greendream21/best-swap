@@ -77,6 +77,10 @@ const initState: State = {
     constants: {},
     lastBlock: {},
     mimir: {},
+    queue: {
+      swap: '0',
+      outbound: '0',
+    },
   },
   networkInfo: {},
   networkInfoLoading: false,

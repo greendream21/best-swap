@@ -9,12 +9,40 @@ import {
 import { RootState } from '../redux/store';
 import { abbreviateNumberFromString } from '../helpers/numberHelper';
 
+export enum QueueLevel {
+  GOOD = 'GOOD', // queue < 10
+  SLOW = 'SLOW', // 10 < queue < 30
+  BUSY = 'BUSY', // 30 < queue
+}
+
+const QUEUE_BUSY_LEVEL = 30;
+const QUEUE_SLOW_LEVEL = 10;
+
+const getOutboundBusyLabel = (action: 'Swap' | 'Add') =>
+  `${action} is temporarily unavailable. Please try again shortly.`;
+
+const OUTBOUND_BUSY_TOOLTIP =
+  'Swap & Add actions may be temporarily unavailable due to network congestion.';
+
 const useNetwork = () => {
   const { networkInfo, thorchain: thorchainData } = useSelector(
     (state: RootState) => state.Midgard,
   );
 
-  const { mimir } = thorchainData;
+  const { mimir, queue } = thorchainData;
+
+  const outboundQueue = Number(queue?.outbound ?? 0);
+
+  const getQueueLevel = (queueValue: number) => {
+    if (queueValue > QUEUE_BUSY_LEVEL) return QueueLevel.BUSY;
+    if (queueValue > QUEUE_SLOW_LEVEL) return QueueLevel.SLOW;
+    return QueueLevel.GOOD;
+  };
+
+  const outboundQueueLevel: QueueLevel = getQueueLevel(outboundQueue);
+  const isOutboundBusy = outboundQueueLevel === QueueLevel.BUSY;
+  console.log('outboundqueue', outboundQueue);
+  console.log('outboundQueueLevel', outboundQueueLevel);
 
   const maxStakeRuneAmount: BaseAmount = baseAmount(
     bnOrZero(mimir?.['mimir//MAXIMUMSTAKERUNE']),
@@ -54,6 +82,11 @@ const useNetwork = () => {
     globalRuneStakeStatus,
     shortGlobalRuneStakeStatus,
     isValidFundCaps,
+    QueueLevel,
+    outboundQueueLevel,
+    isOutboundBusy,
+    getOutboundBusyLabel,
+    OUTBOUND_BUSY_TOOLTIP,
   };
 };
 
