@@ -389,7 +389,7 @@ const getThorchainMimir = () => {
 
 const getThorchainQueue = () => {
   return axiosRequest({
-    url: 'http://54.254.89.8:1317/thorchain/queue',
+    url: `${api.getThorchainBaseURL()}/queue`,
     method: 'GET',
   });
 };
