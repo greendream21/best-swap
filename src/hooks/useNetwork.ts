@@ -18,6 +18,12 @@ export enum QueueLevel {
 const QUEUE_BUSY_LEVEL = 30;
 const QUEUE_SLOW_LEVEL = 10;
 
+const getOutboundBusyLabel = (action: 'Swap' | 'Add') =>
+  `${action} is temporarily unavailable. Please try again shortly.`;
+
+const OUTBOUND_BUSY_TOOLTIP =
+  'Swap & Add actions may be temporarily unavailable due to network congestion.';
+
 const useNetwork = () => {
   const { networkInfo, thorchain: thorchainData } = useSelector(
     (state: RootState) => state.Midgard,
@@ -34,6 +40,7 @@ const useNetwork = () => {
   };
 
   const outboundQueueLevel: QueueLevel = getQueueLevel(outboundQueue);
+  const isOutboundBusy = outboundQueueLevel === QueueLevel.BUSY;
   console.log('outboundqueue', outboundQueue);
   console.log('outboundQueueLevel', outboundQueueLevel);
 
@@ -77,6 +84,9 @@ const useNetwork = () => {
     isValidFundCaps,
     QueueLevel,
     outboundQueueLevel,
+    isOutboundBusy,
+    getOutboundBusyLabel,
+    OUTBOUND_BUSY_TOOLTIP,
   };
 };
 

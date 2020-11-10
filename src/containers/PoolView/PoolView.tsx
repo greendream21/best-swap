@@ -4,7 +4,7 @@ import * as H from 'history';
 import { compose } from 'redux';
 import { connect, useSelector } from 'react-redux';
 import { withRouter, useHistory, Link } from 'react-router-dom';
-import { Row, Col, Grid } from 'antd';
+import { Row, Col, Grid, Popover } from 'antd';
 import {
   SearchOutlined,
   SyncOutlined,
@@ -32,6 +32,8 @@ import {
   PoolViewTools,
   PoolSearchWrapper,
   StyledTable as Table,
+  PopoverContent,
+  PopoverIcon,
 } from './PoolView.style';
 import {
   getAvailableTokensToCreate,
@@ -39,6 +41,7 @@ import {
 } from '../../helpers/utils/poolUtils';
 import { PoolData } from '../../helpers/utils/types';
 import { getTickerFormat, getTokenName } from '../../helpers/stringHelper';
+import { getAppContainer } from '../../helpers/elementHelper';
 
 import * as midgardActions from '../../redux/midgard/actions';
 import { RootState } from '../../redux/store';
@@ -136,7 +139,12 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
   const busdPrice = busdToken ? assets[busdToken]?.priceRune ?? 'RUNE' : 'RUNE';
   const isDesktopView = Grid.useBreakpoint()?.lg ?? false;
 
-  const { isValidFundCaps, outboundQueueLevel } = useNetwork();
+  const {
+    isValidFundCaps,
+    outboundQueueLevel,
+    OUTBOUND_BUSY_TOOLTIP,
+    isOutboundBusy,
+  } = useNetwork();
 
   const chartData = useMemo(() => {
     if (rtVolumeLoading) {
@@ -277,14 +285,42 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
   };
 
   const renderPoolTable = (poolViewData: PoolData[], view: ViewType) => {
+    const buttonColors: {
+      [key: string]: ButtonColor;
+    } = {
+      GOOD: 'primary',
+      SLOW: 'warning',
+      BUSY: 'error',
+    };
+    const btnColor: ButtonColor = buttonColors[outboundQueueLevel];
+
     const buttonCol = {
-      key: 'liquidity',
+      key: 'refresh',
       title: (
         <ActionHeader>
-          <Button onClick={handleGetPools} typevalue="outline" round="true">
+          <Button
+            onClick={handleGetPools}
+            typevalue="outline"
+            round="true"
+            color={!isValidFundCaps ? 'error' : btnColor}
+          >
             <SyncOutlined />
             refresh
           </Button>
+          {isOutboundBusy && (
+            <Popover
+              content={<PopoverContent>{OUTBOUND_BUSY_TOOLTIP}</PopoverContent>}
+              getPopupContainer={getAppContainer}
+              placement="topRight"
+              overlayStyle={{
+                padding: '6px',
+                animationDuration: '0s !important',
+                animation: 'none !important',
+              }}
+            >
+              <PopoverIcon />
+            </Popover>
+          )}
         </ActionHeader>
       ),
       render: (text: string, record: PoolData) => {
@@ -292,15 +328,6 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         if (target) {
           const swapUrl = `/swap/${RUNE_SYMBOL}:${values.symbol}`;
           const liquidityUrl = `/liquidity/${values.symbol.toUpperCase()}`;
-
-          const buttonColors: {
-            [key: string]: ButtonColor;
-          } = {
-            GOOD: 'primary',
-            SLOW: 'warning',
-            BUSY: 'error',
-          };
-          const btnColor: ButtonColor = buttonColors[outboundQueueLevel];
 
           return (
             <ActionColumn>
