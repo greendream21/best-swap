@@ -122,7 +122,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
   const [currentTxPage, setCurrentTxPage] = useState<number>(1);
   const [keyword, setKeyword] = useState<string>('');
 
-  const isDesktopView = Grid.useBreakpoint().md;
+  const isDesktopView = Grid.useBreakpoint()?.md ?? true;
   const history = useHistory();
   const { getUSDPrice, reducedPricePrefix, priceIndex } = usePrice();
 

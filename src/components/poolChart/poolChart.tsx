@@ -52,7 +52,7 @@ defaults.global.defaultFontFamily = 'Exo 2';
 defaults.global.defaultFontSize = 14;
 defaults.global.defaultFontStyle = 'normal';
 
-const PoolChart: React.FC<Props> = (props: Props): JSX.Element => {
+const PoolChart: React.FC<Props> = React.memo((props: Props): JSX.Element => {
   const {
     hasLiquidity = true,
     chartData,
@@ -303,6 +303,6 @@ const PoolChart: React.FC<Props> = (props: Props): JSX.Element => {
       {renderChart()}
     </ChartContainer>
   );
-};
+});
 
 export default PoolChart;
