@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
+import { Grid } from 'antd';
 import * as RD from '@devexperts/remote-data-ts';
 import { FormattedDate, FormattedTime } from 'react-intl';
 
@@ -20,7 +21,7 @@ import {
   InlineResponse2001,
   TxDetailsTypeEnum,
 } from '../../types/generated/midgard';
-import { ViewType, Maybe } from '../../types/bepswap';
+import { Maybe } from '../../types/bepswap';
 
 import * as midgardActions from '../../redux/midgard/actions';
 import { TxDetailData } from '../../redux/midgard/types';
@@ -46,6 +47,8 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
   const { user, txData, txCurData, refreshTxStatus, getTxByAddress } = props;
   const [filter, setFilter] = useState('all');
   const [page, setPage] = useState(1);
+
+  const isDesktopView = Grid.useBreakpoint().lg;
 
   const limit = 5;
 
@@ -93,7 +96,6 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
 
   const renderTxTable = (
     data: TxDetails[],
-    view: ViewType,
     loading: boolean,
   ) => {
     const filterCol = {
@@ -193,7 +195,7 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
       },
     ];
 
-    const columns = view === ViewType.DESKTOP ? desktopColumns : mobileColumns;
+    const columns = isDesktopView ? desktopColumns : mobileColumns;
 
     return (
       <Table
@@ -209,10 +211,10 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
     return (
       <ContentWrapper>
         <ContentWrapper className="transaction-view-wrapper desktop-view">
-          {renderTxTable(data, ViewType.DESKTOP, loading)}
+          {renderTxTable(data, loading)}
         </ContentWrapper>
         <ContentWrapper className="transaction-view-wrapper mobile-view">
-          {renderTxTable(data, ViewType.MOBILE, loading)}
+          {renderTxTable(data, loading)}
         </ContentWrapper>
         {count ? (
           <StyledPagination

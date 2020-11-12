@@ -50,7 +50,7 @@ import {
   RTVolumeData,
 } from '../../redux/midgard/types';
 import { getAssetFromString } from '../../redux/midgard/utils';
-import { ViewType, Maybe } from '../../types/bepswap';
+import { Maybe } from '../../types/bepswap';
 import {
   PoolDetailStatusEnum,
   StatsData,
@@ -68,6 +68,7 @@ import { generateRandomTimeSeries } from './utils';
 import usePrice from '../../hooks/usePrice';
 import useNetwork from '../../hooks/useNetwork';
 import { ButtonColor } from '../../components/uielements/button/types';
+import { PoolViewData } from './types';
 
 type Props = {
   history: H.History;
@@ -120,6 +121,8 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
   );
   const [currentTxPage, setCurrentTxPage] = useState<number>(1);
   const [keyword, setKeyword] = useState<string>('');
+
+  const isDesktopView = Grid.useBreakpoint().md;
   const history = useHistory();
   const { getUSDPrice, reducedPricePrefix, priceIndex } = usePrice();
 
@@ -134,12 +137,8 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     item => getTickerFormat(item) === 'busd',
   );
   const busdPrice = busdToken ? assets[busdToken]?.priceRune ?? 'RUNE' : 'RUNE';
-  const isDesktopView = Grid.useBreakpoint()?.lg ?? false;
 
-  const {
-    isValidFundCaps,
-    outboundQueueLevel,
-  } = useNetwork();
+  const { isValidFundCaps, outboundQueueLevel } = useNetwork();
 
   const chartData = useMemo(() => {
     if (rtVolumeLoading) {
@@ -206,10 +205,6 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     getRTVolume({});
   }, [getRTVolume]);
 
-  const handleGetPools = () => {
-    getPools();
-  };
-
   const handleNewPool = () => {
     if (!wallet) {
       showNotification({
@@ -250,51 +245,60 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     [],
   );
 
-  const renderTextCell = (text: string) => {
-    if (loading) {
-      return <LabelLoader />;
-    }
-    return <span>{text}</span>;
+  const renderTextCell = useCallback(
+    (text: string) => {
+      if (loading) {
+        return <LabelLoader />;
+      }
+      return <span>{text}</span>;
+    },
+    [loading],
+  );
+
+  const renderCell = useCallback(
+    (text: string) => {
+      if (loading) {
+        return <LabelLoader />;
+      }
+      return (
+        <span>
+          {reducedPricePrefix} {text}
+        </span>
+      );
+    },
+    [loading, reducedPricePrefix],
+  );
+
+  const renderPoolPriceCell = useCallback(
+    (text: string) => {
+      if (assetLoading) {
+        return <LabelLoader />;
+      }
+      return (
+        <span>
+          {reducedPricePrefix} {text}
+        </span>
+      );
+    },
+    [assetLoading, reducedPricePrefix],
+  );
+
+  const buttonColors: {
+    [key: string]: ButtonColor;
+  } = {
+    GOOD: 'primary',
+    SLOW: 'warning',
+    BUSY: 'error',
   };
+  const btnColor: ButtonColor = buttonColors[outboundQueueLevel];
 
-  const renderCell = (text: string) => {
-    if (loading) {
-      return <LabelLoader />;
-    }
-    return (
-      <span>
-        {reducedPricePrefix} {text}
-      </span>
-    );
-  };
-
-  const renderPoolPriceCell = (text: string) => {
-    if (assetLoading) {
-      return <LabelLoader />;
-    }
-    return (
-      <span>
-        {reducedPricePrefix} {text}
-      </span>
-    );
-  };
-
-  const renderPoolTable = (poolViewData: PoolData[], view: ViewType) => {
-    const buttonColors: {
-      [key: string]: ButtonColor;
-    } = {
-      GOOD: 'primary',
-      SLOW: 'warning',
-      BUSY: 'error',
-    };
-    const btnColor: ButtonColor = buttonColors[outboundQueueLevel];
-
-    const buttonCol = {
+  const buttonCol = useMemo(
+    () => ({
       key: 'refresh',
       title: (
         <ActionHeader>
           <Button
-            onClick={handleGetPools}
+            onClick={getPools}
             typevalue="outline"
             round="true"
             color={!isValidFundCaps ? 'error' : btnColor}
@@ -351,8 +355,12 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
           );
         }
       },
-    };
-    const mobileColumns = [
+    }),
+    [btnColor, getPools, isValidFundCaps, poolStatus],
+  );
+
+  const mobileColumns = useMemo(
+    () => [
       {
         key: 'pool',
         title: 'pool',
@@ -366,8 +374,12 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         ),
       },
       buttonCol,
-    ];
-    const desktopColumns = [
+    ],
+    [buttonCol],
+  );
+
+  const desktopColumns = useMemo(
+    () => [
       {
         key: 'pool',
         title: 'pool',
@@ -435,13 +447,62 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         sortDirections: ['descend', 'ascend'],
       },
       buttonCol,
-    ];
+    ],
+    [renderCell, renderTextCell, renderPoolPriceCell, buttonCol, tokenList],
+  );
 
-    const columnData = {
-      desktop: desktopColumns,
-      mobile: mobileColumns,
-    };
-    const columns = columnData[view] || desktopColumns;
+  // calculate data to show in the pool list
+
+  const poolViewData: PoolViewData[] = useMemo(
+    () =>
+      pools.map((poolName, index) => {
+        const { symbol = '' } = getAssetFromString(poolName);
+
+        const poolInfo = poolData[symbol] || {};
+        const assetDetail: AssetDetail = assets?.[symbol] ?? {};
+
+        const poolDataDetail: PoolData = getPoolData(
+          symbol,
+          poolInfo,
+          assetDetail,
+          priceIndex,
+        );
+
+        return {
+          ...poolDataDetail,
+          status: poolInfo?.status ?? null,
+          key: index,
+        };
+      }),
+    [assets, poolData, pools, priceIndex],
+  );
+
+  const filteredData = useMemo(
+    () =>
+      poolViewData
+        .filter(poolItem => {
+          const tokenSymbol = poolItem.values.symbol.toLowerCase();
+          const tokenName = getTokenName(
+            tokenList,
+            tokenSymbol.toUpperCase(),
+          ).toLowerCase();
+
+          return (
+            tokenName.includes(keyword.toLowerCase()) ||
+            tokenSymbol.includes(keyword.toLowerCase())
+          );
+        })
+        .filter(poolData => {
+          return (
+            (poolStatus === PoolDetailStatusEnum.Enabled && !poolData.status) ||
+            poolData.status === poolStatus
+          );
+        }),
+    [poolViewData, keyword, poolStatus, tokenList],
+  );
+
+  const renderPoolTable = () => {
+    const columns = isDesktopView ? desktopColumns : mobileColumns;
 
     return (
       <Table
@@ -454,56 +515,12 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
           };
         }}
         columns={columns}
-        dataSource={poolViewData}
+        dataSource={filteredData}
         loading={poolLoading}
         rowKey="key"
         key={poolStatus}
       />
     );
-  };
-
-  const renderPoolList = (view: ViewType) => {
-    const poolViewData = pools.map((poolName, index) => {
-      const { symbol = '' } = getAssetFromString(poolName);
-
-      const poolInfo = poolData[symbol] || {};
-      const assetDetail: AssetDetail = assets?.[symbol] ?? {};
-
-      const poolDataDetail: PoolData = getPoolData(
-        symbol,
-        poolInfo,
-        assetDetail,
-        priceIndex,
-      );
-
-      return {
-        ...poolDataDetail,
-        status: poolInfo?.status ?? null,
-        key: index,
-      };
-    });
-
-    const filteredData = poolViewData
-      .filter(poolItem => {
-        const tokenSymbol = poolItem.values.symbol.toLowerCase();
-        const tokenName = getTokenName(
-          tokenList,
-          tokenSymbol.toUpperCase(),
-        ).toLowerCase();
-
-        return (
-          tokenName.includes(keyword.toLowerCase()) ||
-          tokenSymbol.includes(keyword.toLowerCase())
-        );
-      })
-      .filter(poolData => {
-        return (
-          (poolStatus === PoolDetailStatusEnum.Enabled && !poolData.status) ||
-          poolData.status === poolStatus
-        );
-      });
-
-    return renderPoolTable(filteredData, view);
   };
 
   return (
@@ -547,12 +564,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
           onChange={onChangeKeywordHandler}
         />
       </PoolSearchWrapper>
-      <div className="pool-list-view desktop-view">
-        {renderPoolList(ViewType.DESKTOP)}
-      </div>
-      <div className="pool-list-view mobile-view">
-        {renderPoolList(ViewType.MOBILE)}
-      </div>
+      <div className="pool-list-view">{renderPoolTable()}</div>
       <TransactionWrapper>
         <Label size="large" weight="bold" color="primary">
           Transactions
