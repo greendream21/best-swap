@@ -506,11 +506,3 @@ export const PopoverIcon = styled(InfoCircleOutlined)`
   color: ${palette('primary', 0)};
   margin: 0 10px;
 `;
-
-export const ColWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding-top: 10px;
-`;

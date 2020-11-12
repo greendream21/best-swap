@@ -4,7 +4,7 @@ import * as H from 'history';
 import { compose } from 'redux';
 import { connect, useSelector } from 'react-redux';
 import { withRouter, useHistory, Link } from 'react-router-dom';
-import { Row, Col, Grid, Popover } from 'antd';
+import { Row, Col, Grid } from 'antd';
 import {
   SearchOutlined,
   SyncOutlined,
@@ -32,8 +32,6 @@ import {
   PoolViewTools,
   PoolSearchWrapper,
   StyledTable as Table,
-  PopoverContent,
-  PopoverIcon,
 } from './PoolView.style';
 import {
   getAvailableTokensToCreate,
@@ -41,7 +39,6 @@ import {
 } from '../../helpers/utils/poolUtils';
 import { PoolData } from '../../helpers/utils/types';
 import { getTickerFormat, getTokenName } from '../../helpers/stringHelper';
-import { getAppContainer } from '../../helpers/elementHelper';
 
 import * as midgardActions from '../../redux/midgard/actions';
 import { RootState } from '../../redux/store';
@@ -142,8 +139,6 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
   const {
     isValidFundCaps,
     outboundQueueLevel,
-    OUTBOUND_BUSY_TOOLTIP,
-    isOutboundBusy,
   } = useNetwork();
 
   const chartData = useMemo(() => {
@@ -307,20 +302,6 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
             <SyncOutlined />
             refresh
           </Button>
-          {isOutboundBusy && (
-            <Popover
-              content={<PopoverContent>{OUTBOUND_BUSY_TOOLTIP}</PopoverContent>}
-              getPopupContainer={getAppContainer}
-              placement="topRight"
-              overlayStyle={{
-                padding: '6px',
-                animationDuration: '0s !important',
-                animation: 'none !important',
-              }}
-            >
-              <PopoverIcon />
-            </Popover>
-          )}
         </ActionHeader>
       ),
       render: (text: string, record: PoolData) => {

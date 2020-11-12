@@ -53,7 +53,6 @@ import {
   FeeParagraph,
   PopoverContent,
   PopoverIcon,
-  ColWrapper,
 } from './PoolStake.style';
 import {
   stakeRequest,
@@ -151,7 +150,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   const tokenTicker = getTickerFormat(symbol);
   const tokenPrice = validBNOrZero(priceIndex[tokenSymbol]);
 
-  const { isValidFundCaps, isOutboundBusy, getOutboundBusyLabel } = useNetwork();
+  const { isValidFundCaps } = useNetwork();
 
   const isAsymStakeValidUser = isAsymStakeValid();
 
@@ -1011,19 +1010,10 @@ const PoolStake: React.FC<Props> = (props: Props) => {
               source="blue"
               target="confirm"
               reset={dragReset}
-              disabled={disableDrag || !isValidFundCaps || isOutboundBusy}
+              disabled={disableDrag || !isValidFundCaps}
               onConfirm={handleStake}
               onDrag={handleDrag}
             />
-            {isOutboundBusy && (
-              <ColWrapper>
-                <Text type="danger">
-                  The network is currently experiencing delays signing outgoing
-                  transactions.
-                </Text>
-                <Text type="danger">{getOutboundBusyLabel('Add')}</Text>
-              </ColWrapper>
-            )}
           </div>
         </div>
       </>
