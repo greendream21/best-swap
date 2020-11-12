@@ -61,7 +61,7 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
       {poolStats.map((statsProps, index) => (
         <Col
           key={index}
-          xs={{ span: 24 }}
+          xs={{ span: 12 }}
           sm={{ span: 12 }}
           md={{ span: 8 }}
           lg={{ span: 8 }}

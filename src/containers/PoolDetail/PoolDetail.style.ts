@@ -27,20 +27,6 @@ export const ContentWrapper = styled(ContentView)`
       `}
     }
   }
-
-  .detail-info-view {
-    display: none;
-    ${media.lg`
-      display: flex;
-    `}
-
-    &.mobile-view {
-      display: flex;
-      ${media.lg`
-        display: none;
-      `}
-    }
-  }
 `;
 
 export const PoolCaptionWrapper = styled.div`

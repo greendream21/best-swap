@@ -297,15 +297,15 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
       <Row className="detail-info-header">
         {renderDetailCaption(poolStats)}
       </Row>
-      <Row className={`detail-info-view ${viewModeClass}`}>
-        <Col span={8}>
+      <Row className="detail-info-view">
+        <Col xs={24} sm={24} md={8}>
           <PoolStatBar
             stats={poolStats}
             poolInfo={poolInfo}
             loading={poolDetailedDataLoading}
           />
         </Col>
-        <Col span={16}>
+        <Col xs={24} sm={24} md={16}>
           <ChartContainer>
             <PoolChart
               chartData={chartData}
