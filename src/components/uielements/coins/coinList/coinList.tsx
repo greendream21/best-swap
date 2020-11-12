@@ -76,7 +76,7 @@ export const CoinList: React.FC<Props> = (props: Props): JSX.Element => {
             >
               <CoinData
                 asset={tokenName}
-                assetValue={assetValue}
+                assetValue={!displayPrice ? assetValue : undefined}
                 size={size}
               />
               {displayPrice && (

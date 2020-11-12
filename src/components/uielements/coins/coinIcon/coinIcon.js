@@ -7,7 +7,7 @@ import { CoinIconWrapper } from './coinIcon.style';
 import { coinIconGroup } from '../../../icons/coinIcons';
 import { coinIconsFromTrustWallet } from '../../../../settings/logoData';
 
-const CoinIcon = React.memo(props => {
+const CoinIcon = props => {
   const { type, size, className, ...otherProps } = props;
 
   const renderCoinIcon = () => {
@@ -46,7 +46,7 @@ const CoinIcon = React.memo(props => {
       {renderCoinIcon()}
     </CoinIconWrapper>
   );
-});
+};
 
 CoinIcon.propTypes = {
   type: PropTypes.string,
