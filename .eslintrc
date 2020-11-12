@@ -3,6 +3,7 @@
   "parser": "@typescript-eslint/parser",
   "extends": [
     "airbnb",
+    "airbnb/hooks",
     "plugin:css-modules/recommended",
     "plugin:@typescript-eslint/recommended",
     "prettier/@typescript-eslint"
@@ -95,7 +96,7 @@
       { "extensions": [".js", ".jsx", ".ts", ".tsx"] }
     ],
     "react-hooks/rules-of-hooks": "error",
-    "react-hooks/exhaustive-deps": "warn",
+    "react-hooks/exhaustive-deps": "error",
     "react/jsx-props-no-spreading": [
       "error",
       {
