@@ -42,7 +42,6 @@ import {
   PopoverContainer,
   FeeParagraph,
   SliderSwapWrapper,
-  ColWrapper,
 } from './SwapSend.style';
 import {
   getTickerFormat,
@@ -83,7 +82,6 @@ import {
 import { RUNE_SYMBOL } from '../../settings/assetData';
 import usePrevious from '../../hooks/usePrevious';
 import useFee from '../../hooks/useFee';
-import useNetwork from '../../hooks/useNetwork';
 
 import { SwapSendView } from './types';
 import showNotification from '../../components/uielements/notification';
@@ -150,8 +148,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
 
   const history = useHistory();
   const maxSlip = 30;
-
-  const { isOutboundBusy, getOutboundBusyLabel } = useNetwork();
 
   const [address, setAddress] = useState<string>('');
   const [invalidAddress, setInvalidAddress] = useState<boolean>(false);
@@ -704,7 +700,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     poolData?.[targetSymbol]?.status === PoolDetailStatusEnum.Enabled;
 
   const disableDrag =
-    isOutboundBusy ||
     !hasSufficientBnbFeeInBalance ||
     !isSourcePoolEnabled ||
     !isTargetPoolEnabled;
@@ -847,15 +842,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
             onConfirm={handleEndDrag}
             onDrag={handleDrag}
           />
-          {isOutboundBusy && (
-            <ColWrapper>
-              <Text type="danger">
-                The network is currently experiencing delays signing outgoing
-                transactions.
-              </Text>
-              <Text type="danger">{getOutboundBusyLabel('Swap')}</Text>
-            </ColWrapper>
-          )}
         </div>
         {renderFee()}
       </SwapAssetCard>
