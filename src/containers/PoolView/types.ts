@@ -1,5 +1,5 @@
-import { PoolDetailStatusEnum } from './../../types/generated/midgard/api';
 import { PoolData } from '../../helpers/utils/types';
+import { PoolDetailStatusEnum } from '../../types/generated/midgard/api';
 
 type PoolViewKey = {
   key: number,

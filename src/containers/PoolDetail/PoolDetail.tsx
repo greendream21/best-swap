@@ -1,7 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 import React, { useEffect, useCallback, useMemo, useState } from 'react';
 import { compose } from 'redux';
-import { Row, Col } from 'antd';
+import { Row, Col, Grid } from 'antd';
 import { connect, useSelector } from 'react-redux';
 import { get as _get } from 'lodash';
 import { withRouter, useParams, Link, useHistory } from 'react-router-dom';
@@ -104,6 +104,8 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
   const [currentTxPage, setCurrentTxPage] = useState<number>(1);
 
   const { outboundQueueLevel, isValidFundCaps } = useNetwork();
+  const isDesktopView = Grid.useBreakpoint().md;
+  const viewModeClass = isDesktopView ? 'desktop-view' : 'mobile-view';
 
   const history = useHistory();
   const { symbol = '' } = useParams();
@@ -231,7 +233,7 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
     getRTAggregate({ asset: tokenSymbol });
   }, [getRTAggregate, tokenSymbol]);
 
-  const renderDetailCaption = (poolStats: PoolData, viewMode: string) => {
+  const renderDetailCaption = (poolStats: PoolData) => {
     const swapUrl = `/swap/${RUNE_SYMBOL}:${poolStats.values.symbol}`;
     const liquidityUrl = `/liquidity/${poolStats.values.symbol.toUpperCase()}`;
 
@@ -254,7 +256,7 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
     const btnColor: ButtonColor = buttonColors[outboundQueueLevel];
 
     return (
-      <Col className={`pool-caption-container ${viewMode}`}>
+      <Col className={`pool-caption-container ${viewModeClass}`}>
         <PoolCaptionWrapper>
           <PoolCaptionTitle>{targetName}</PoolCaptionTitle>
           <PoolCaptionPrice>{poolPrice}</PoolCaptionPrice>
@@ -293,10 +295,9 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
   return (
     <ContentWrapper className="pool-detail-wrapper" transparent>
       <Row className="detail-info-header">
-        {renderDetailCaption(poolStats, 'desktop-view')}
-        {renderDetailCaption(poolStats, 'mobile-view')}
+        {renderDetailCaption(poolStats)}
       </Row>
-      <Row className="detail-info-view desktop-view">
+      <Row className={`detail-info-view ${viewModeClass}`}>
         <Col span={8}>
           <PoolStatBar
             stats={poolStats}
@@ -314,28 +315,10 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
               backgroundGradientStop={isLight ? '#ffffff' : '#0f1922'}
               gradientStart={isLight ? '#c5d3f0' : '#365979'}
               gradientStop={isLight ? '#ffffff' : '#0f1922'}
-              viewMode="desktop-view"
+              viewMode={viewModeClass}
               basePrice={busdPrice}
             />
           </ChartContainer>
-        </Col>
-      </Row>
-      <Row className="detail-info-view mobile-view">
-        <Col span={24}>
-          <PoolStatBar stats={poolStats} poolInfo={poolInfo} />
-        </Col>
-        <Col span={24}>
-          <PoolChart
-            chartData={chartData}
-            textColor={theme.palette.text[0]}
-            lineColor={isLight ? '#436eb9' : '#1dd3e6'}
-            backgroundGradientStart={isLight ? '#e4ebf8' : '#365979'}
-            backgroundGradientStop={isLight ? '#ffffff' : '#0f1922'}
-            gradientStart={isLight ? '#c5d3f0' : '#365979'}
-            gradientStop={isLight ? '#ffffff' : '#0f1922'}
-            viewMode="mobile-view"
-            basePrice={busdPrice}
-          />
         </Col>
       </Row>
       <Row className="detail-transaction-view">

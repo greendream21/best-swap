@@ -501,9 +501,9 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     [poolViewData, keyword, poolStatus, tokenList],
   );
 
-  const renderPoolTable = () => {
-    const columns = isDesktopView ? desktopColumns : mobileColumns;
+  const columns = isDesktopView ? desktopColumns : mobileColumns;
 
+  const renderPoolTable = useMemo(() => {
     return (
       <Table
         onRow={(record: PoolData) => {
@@ -518,10 +518,9 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         dataSource={filteredData}
         loading={poolLoading}
         rowKey="key"
-        key={poolStatus}
       />
     );
-  };
+  }, [columns, filteredData, poolLoading, history]);
 
   return (
     <ContentWrapper className="pool-view-wrapper">
@@ -564,7 +563,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
           onChange={onChangeKeywordHandler}
         />
       </PoolSearchWrapper>
-      <div className="pool-list-view">{renderPoolTable()}</div>
+      <div className="pool-list-view">{renderPoolTable}</div>
       <TransactionWrapper>
         <Label size="large" weight="bold" color="primary">
           Transactions
