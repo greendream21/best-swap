@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { CheckOutlined } from '@ant-design/icons';
 import DynamicCoin from '../dynamicCoin';
@@ -7,9 +7,10 @@ import { CoinIconWrapper } from './coinIcon.style';
 import { coinIconGroup } from '../../../icons/coinIcons';
 import { coinIconsFromTrustWallet } from '../../../../settings/logoData';
 
-class CoinIcon extends Component {
-  renderCoinIcon = () => {
-    const { type, size } = this.props;
+const CoinIcon = props => {
+  const { type, size, className, ...otherProps } = props;
+
+  const renderCoinIcon = () => {
     const coinIcon = coinIconGroup[type.toLowerCase()] || '';
     const liveIcon = coinIconsFromTrustWallet[type.toUpperCase()] || '';
 
@@ -35,20 +36,17 @@ class CoinIcon extends Component {
     return <DynamicCoin type={type} size={size} />;
   };
 
-  render() {
-    const { type, className, ...props } = this.props;
-
-    return (
-      <CoinIconWrapper
-        type={type}
-        className={`coinIcon-wrapper ${className}`}
-        {...props}
-      >
-        {this.renderCoinIcon()}
-      </CoinIconWrapper>
-    );
-  }
-}
+  return (
+    <CoinIconWrapper
+      type={type}
+      size={size}
+      className={`coinIcon-wrapper ${className}`}
+      {...otherProps}
+    >
+      {renderCoinIcon()}
+    </CoinIconWrapper>
+  );
+};
 
 CoinIcon.propTypes = {
   type: PropTypes.string,

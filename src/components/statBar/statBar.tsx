@@ -29,12 +29,12 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
   const poolStats = React.useMemo(
     () => [
       {
-        title: 'Total Pooled',
-        value: getUSDPriceLabel(bnOrZero(stats?.totalStaked)),
-      },
-      {
         title: 'Total Volume',
         value: getUSDPriceLabel(bnOrZero(stats?.totalVolume)),
+      },
+      {
+        title: '24H Volume',
+        value: getUSDPriceLabel(bnOrZero(stats?.totalVolume24hr)),
       },
       {
         title: 'Total Users',

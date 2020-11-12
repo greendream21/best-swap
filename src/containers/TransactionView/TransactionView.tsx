@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
+import { Grid } from 'antd';
 import * as RD from '@devexperts/remote-data-ts';
 import { FormattedDate, FormattedTime } from 'react-intl';
 
@@ -20,7 +21,7 @@ import {
   InlineResponse2001,
   TxDetailsTypeEnum,
 } from '../../types/generated/midgard';
-import { ViewType, Maybe } from '../../types/bepswap';
+import { Maybe } from '../../types/bepswap';
 
 import * as midgardActions from '../../redux/midgard/actions';
 import { TxDetailData } from '../../redux/midgard/types';
@@ -46,6 +47,8 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
   const { user, txData, txCurData, refreshTxStatus, getTxByAddress } = props;
   const [filter, setFilter] = useState('all');
   const [page, setPage] = useState(1);
+
+  const isDesktopView = Grid.useBreakpoint().lg;
 
   const limit = 5;
 
@@ -91,109 +94,108 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
     }
   }, [refreshTxStatus, prevRefreshTxStatus]);
 
+  const filterCol = useMemo(() => ({
+    key: 'filter',
+    width: 200,
+    align: 'center',
+    title: <FilterDropdown value={filter} onClick={handleSelectFilter} />,
+    render: (text: string, rowData: TxDetails) => {
+      const { type } = rowData;
+
+      return <TxLabel type={type} />;
+    },
+  }), [filter]);
+
+  const desktopColumns = useMemo(() => ([
+    filterCol,
+    {
+      key: 'history',
+      title: 'history',
+      align: 'center',
+      render: (text: string, rowData: TxDetails) => {
+        return <TxInfo data={rowData} />;
+      },
+    },
+    {
+      key: 'date',
+      title: 'date',
+      align: 'center',
+      width: 200,
+      render: (text: string, rowData: TxDetails) => {
+        const { date: timestamp = 0 } = rowData;
+        const date = new Date(timestamp * 1000);
+        return (
+          <>
+            <FormattedDate
+              value={date}
+              year="numeric"
+              month="long"
+              day="2-digit"
+            />{' '}
+            <FormattedTime
+              value={date}
+              hour="numeric"
+              minute="numeric"
+              second="numeric"
+            />
+          </>
+        );
+      },
+    },
+  ]), [filterCol]);
+
+  const mobileColumns = useMemo(() => ([
+    {
+      key: 'history',
+      align: 'center',
+      title: (
+        <MobileColumeHeader>
+          <div className="mobile-col-title">history</div>
+          <div className="mobile-col-filter">
+            <FilterDropdown value={filter} onClick={handleSelectFilter} />
+          </div>
+        </MobileColumeHeader>
+      ),
+      render: (_: string, rowData: TxDetails) => {
+        const { type, date: timestamp = 0, in: _in } = rowData;
+        const date = new Date(timestamp * 1000);
+
+        return (
+          <div className="tx-history-row">
+            <div className="tx-history-data">
+              <TxLabel type={type} />
+              <div className="tx-history-detail">
+                <p>
+                  <FormattedDate
+                    value={date}
+                    year="numeric"
+                    month="2-digit"
+                    day="2-digit"
+                  />{' '}
+                  <FormattedTime
+                    value={date}
+                    hour="2-digit"
+                    minute="2-digit"
+                    second="2-digit"
+                    hour12={false}
+                  />
+                </p>
+              </div>
+            </div>
+            <div className="tx-history-info">
+              <TxInfo data={rowData} />
+            </div>
+          </div>
+        );
+      },
+    },
+  ]), [filter]);
+
   const renderTxTable = (
     data: TxDetails[],
-    view: ViewType,
     loading: boolean,
   ) => {
-    const filterCol = {
-      key: 'filter',
-      width: 200,
-      align: 'center',
-      title: <FilterDropdown value={filter} onClick={handleSelectFilter} />,
-      render: (text: string, rowData: TxDetails) => {
-        const { type } = rowData;
-
-        return <TxLabel type={type} />;
-      },
-    };
-
-    const desktopColumns = [
-      filterCol,
-      {
-        key: 'history',
-        title: 'history',
-        align: 'center',
-        render: (text: string, rowData: TxDetails) => {
-          return <TxInfo data={rowData} />;
-        },
-      },
-      {
-        key: 'date',
-        title: 'date',
-        align: 'center',
-        width: 200,
-        render: (text: string, rowData: TxDetails) => {
-          const { date: timestamp = 0 } = rowData;
-          const date = new Date(timestamp * 1000);
-          return (
-            <>
-              <FormattedDate
-                value={date}
-                year="numeric"
-                month="long"
-                day="2-digit"
-              />{' '}
-              <FormattedTime
-                value={date}
-                hour="numeric"
-                minute="numeric"
-                second="numeric"
-              />
-            </>
-          );
-        },
-      },
-    ];
-
-    const mobileColumns = [
-      {
-        key: 'history',
-        align: 'center',
-        title: (
-          <MobileColumeHeader>
-            <div className="mobile-col-title">history</div>
-            <div className="mobile-col-filter">
-              <FilterDropdown value={filter} onClick={handleSelectFilter} />
-            </div>
-          </MobileColumeHeader>
-        ),
-        render: (_: string, rowData: TxDetails) => {
-          const { type, date: timestamp = 0, in: _in } = rowData;
-          const date = new Date(timestamp * 1000);
-
-          return (
-            <div className="tx-history-row">
-              <div className="tx-history-data">
-                <TxLabel type={type} />
-                <div className="tx-history-detail">
-                  <p>
-                    <FormattedDate
-                      value={date}
-                      year="numeric"
-                      month="2-digit"
-                      day="2-digit"
-                    />{' '}
-                    <FormattedTime
-                      value={date}
-                      hour="2-digit"
-                      minute="2-digit"
-                      second="2-digit"
-                      hour12={false}
-                    />
-                  </p>
-                </div>
-              </div>
-              <div className="tx-history-info">
-                <TxInfo data={rowData} />
-              </div>
-            </div>
-          );
-        },
-      },
-    ];
-
-    const columns = view === ViewType.DESKTOP ? desktopColumns : mobileColumns;
+    const columns = isDesktopView ? desktopColumns : mobileColumns;
 
     return (
       <Table
@@ -208,11 +210,8 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
   const pageContent = (data: TxDetails[], count: number, loading: boolean) => {
     return (
       <ContentWrapper>
-        <ContentWrapper className="transaction-view-wrapper desktop-view">
-          {renderTxTable(data, ViewType.DESKTOP, loading)}
-        </ContentWrapper>
-        <ContentWrapper className="transaction-view-wrapper mobile-view">
-          {renderTxTable(data, ViewType.MOBILE, loading)}
+        <ContentWrapper className="transaction-view-wrapper">
+          {renderTxTable(data, loading)}
         </ContentWrapper>
         {count ? (
           <StyledPagination
