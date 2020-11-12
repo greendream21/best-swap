@@ -6,6 +6,14 @@ import { Menu, MenuItem } from './filterMenu.style';
 import Input from '../input';
 import { AssetPair } from '../../../types/bepswap';
 
+const style: React.CSSProperties = {
+  maxHeight: '400px',
+  overflowY: 'auto',
+  fontWeight: 'bold',
+  textTransform: 'uppercase',
+  letterSpacing: '1px',
+};
+
 type Props = {
   onSelect?: (value: string) => void;
   filterFunction: (item: AssetPair, searchTerm: string) => boolean;
@@ -58,7 +66,7 @@ const FilterMenu: React.FC<Props> = ({
   );
 
   return (
-    <Menu {...otherProps} selectedKeys={selectedKeys} onClick={handleClick}>
+    <Menu {...otherProps} style={style} selectedKeys={selectedKeys} onClick={handleClick}>
       {searchEnabled && (
         <Menu.Item disabled key="_search">
           <Input
