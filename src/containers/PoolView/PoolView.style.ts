@@ -24,18 +24,6 @@ export const ContentWrapper = styled(ContentView)`
   }
 
   .pool-list-view {
-    display: none;
-    ${media.sm`
-      display: block;
-    `}
-
-    &.mobile-view {
-      display: block;
-      ${media.sm`
-        display: none;
-      `}
-    }
-
     padding-top: 10px;
     .pool-card {
       margin-bottom: 10px;

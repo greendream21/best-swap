@@ -35,8 +35,6 @@ const useNetwork = () => {
 
   const outboundQueueLevel: QueueLevel = getQueueLevel(outboundQueue);
   const isOutboundBusy = outboundQueueLevel === QueueLevel.BUSY;
-  console.log('outboundqueue', outboundQueue);
-  console.log('outboundQueueLevel', outboundQueueLevel);
 
   const maxStakeRuneAmount: BaseAmount = baseAmount(
     bnOrZero(mimir?.['mimir//MAXIMUMSTAKERUNE']),
