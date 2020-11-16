@@ -4,7 +4,7 @@ import * as H from 'history';
 import { compose } from 'redux';
 import { connect, useSelector } from 'react-redux';
 import { withRouter, useHistory, Link } from 'react-router-dom';
-import { Row, Col, Grid } from 'antd';
+import { Row, Col, Grid, Popover } from 'antd';
 import {
   SearchOutlined,
   SyncOutlined,
@@ -32,6 +32,8 @@ import {
   PoolViewTools,
   PoolSearchWrapper,
   StyledTable as Table,
+  PopoverContent,
+  PopoverIcon,
 } from './PoolView.style';
 import {
   getAvailableTokensToCreate,
@@ -39,6 +41,7 @@ import {
 } from '../../helpers/utils/poolUtils';
 import { PoolData } from '../../helpers/utils/types';
 import { getTickerFormat, getTokenName } from '../../helpers/stringHelper';
+import { getAppContainer } from '../../helpers/elementHelper';
 
 import * as midgardActions from '../../redux/midgard/actions';
 import { RootState } from '../../redux/store';
@@ -67,7 +70,6 @@ import TxTable from '../../components/transaction/txTable';
 import { generateRandomTimeSeries } from './utils';
 import usePrice from '../../hooks/usePrice';
 import useNetwork from '../../hooks/useNetwork';
-import { ButtonColor } from '../../components/uielements/button/types';
 import { PoolViewData } from './types';
 
 type Props = {
@@ -138,7 +140,12 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
   );
   const busdPrice = busdToken ? assets[busdToken]?.priceRune ?? 'RUNE' : 'RUNE';
 
-  const { isValidFundCaps, outboundQueueLevel } = useNetwork();
+  const {
+    isValidFundCaps,
+    statusColor,
+    isOutboundDelayed,
+    getOutboundBusyTooltip,
+  } = useNetwork();
 
   const chartData = useMemo(() => {
     if (rtVolumeLoading) {
@@ -283,14 +290,29 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     [assetLoading, reducedPricePrefix],
   );
 
-  const buttonColors: {
-    [key: string]: ButtonColor;
-  } = {
-    GOOD: 'primary',
-    SLOW: 'warning',
-    BUSY: 'error',
-  };
-  const btnColor: ButtonColor = buttonColors[outboundQueueLevel];
+  const withOutboundTooltip = useCallback(
+    (Component: JSX.Element) => {
+      if (!isOutboundDelayed) {
+        return Component;
+      }
+
+      return (
+        <Popover
+          content={<PopoverContent>{getOutboundBusyTooltip()}</PopoverContent>}
+          getPopupContainer={getAppContainer}
+          placement="topRight"
+          overlayStyle={{
+            padding: '6px',
+            animationDuration: '0s !important',
+            animation: 'none !important',
+          }}
+        >
+          {Component}
+        </Popover>
+      );
+    },
+    [isOutboundDelayed, getOutboundBusyTooltip],
+  );
 
   const buttonCol = useMemo(
     () => ({
@@ -301,11 +323,27 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
             onClick={getPools}
             typevalue="outline"
             round="true"
-            color={!isValidFundCaps ? 'error' : btnColor}
+            color={!isValidFundCaps ? 'error' : statusColor}
           >
             <SyncOutlined />
             refresh
           </Button>
+          {isOutboundDelayed && (
+            <Popover
+              content={
+                <PopoverContent>{getOutboundBusyTooltip()}</PopoverContent>
+              }
+              getPopupContainer={getAppContainer}
+              placement="topRight"
+              overlayStyle={{
+                padding: '6px',
+                animationDuration: '0s !important',
+                animation: 'none !important',
+              }}
+            >
+              <PopoverIcon color={statusColor} />
+            </Popover>
+          )}
         </ActionHeader>
       ),
       render: (text: string, record: PoolData) => {
@@ -317,25 +355,9 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
           return (
             <ActionColumn>
               <div className="action-column-wrapper">
-                <Link
-                  to={liquidityUrl}
-                  onClick={ev => {
-                    ev.stopPropagation();
-                  }}
-                >
-                  <Button
-                    style={{ margin: 'auto' }}
-                    round="true"
-                    typevalue="outline"
-                    color={!isValidFundCaps ? 'error' : btnColor}
-                  >
-                    <DatabaseOutlined />
-                    MANAGE
-                  </Button>
-                </Link>
-                {poolStatus !== PoolDetailStatusEnum.Bootstrapped && (
+                {withOutboundTooltip(
                   <Link
-                    to={swapUrl}
+                    to={liquidityUrl}
                     onClick={ev => {
                       ev.stopPropagation();
                     }}
@@ -343,20 +365,47 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
                     <Button
                       style={{ margin: 'auto' }}
                       round="true"
-                      color={btnColor}
+                      typevalue="outline"
+                      color={!isValidFundCaps ? 'error' : statusColor}
                     >
-                      <SwapOutlined />
-                      SWAP
+                      <DatabaseOutlined />
+                      MANAGE
                     </Button>
-                  </Link>
+                  </Link>,
                 )}
+                {poolStatus !== PoolDetailStatusEnum.Bootstrapped &&
+                  withOutboundTooltip(
+                    <Link
+                      to={swapUrl}
+                      onClick={ev => {
+                        ev.stopPropagation();
+                      }}
+                    >
+                      <Button
+                        style={{ margin: 'auto' }}
+                        round="true"
+                        color={statusColor}
+                      >
+                        <SwapOutlined />
+                        SWAP
+                      </Button>
+                    </Link>,
+                  )}
               </div>
             </ActionColumn>
           );
         }
       },
     }),
-    [btnColor, getPools, isValidFundCaps, poolStatus],
+    [
+      statusColor,
+      getPools,
+      isValidFundCaps,
+      poolStatus,
+      isOutboundDelayed,
+      getOutboundBusyTooltip,
+      withOutboundTooltip,
+    ],
   );
 
   const mobileColumns = useMemo(

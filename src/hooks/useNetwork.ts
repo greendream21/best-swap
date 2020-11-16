@@ -35,6 +35,24 @@ const useNetwork = () => {
 
   const outboundQueueLevel: QueueLevel = getQueueLevel(outboundQueue);
   const isOutboundBusy = outboundQueueLevel === QueueLevel.BUSY;
+  const isOutboundDelayed =
+    outboundQueueLevel === QueueLevel.BUSY ||
+    outboundQueueLevel === QueueLevel.SLOW;
+
+  const getOutboundBusyTooltip = () => {
+    return 'The network is currently experiencing delays signing outgoing transactions.';
+  };
+
+  type StatusColor = 'primary' | 'warning' | 'error';
+
+  const statusColors: {
+    [key: string]: StatusColor;
+  } = {
+    GOOD: 'primary',
+    SLOW: 'warning',
+    BUSY: 'error',
+  };
+  const statusColor: StatusColor = statusColors[outboundQueueLevel];
 
   const maxStakeRuneAmount: BaseAmount = baseAmount(
     bnOrZero(mimir?.['mimir//MAXIMUMSTAKERUNE']),
@@ -76,7 +94,10 @@ const useNetwork = () => {
     isValidFundCaps,
     QueueLevel,
     outboundQueueLevel,
+    isOutboundDelayed,
     isOutboundBusy,
+    statusColor,
+    getOutboundBusyTooltip,
   };
 };
 

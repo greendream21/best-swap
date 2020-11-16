@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { palette } from 'styled-theme';
+import { InfoCircleOutlined } from '@ant-design/icons';
 import Pagination from 'antd/lib/pagination';
 import ContentView from '../../components/utility/contentView';
 import { media } from '../../helpers/styleHelper';
@@ -175,4 +176,15 @@ export const StyledPagination = styled(Pagination)`
 
 export const ChartContainer = styled.div`
   margin-left: 16px;
+`;
+
+export const PopoverContent = styled.div`
+  width: 300px;
+  font-size: '11px';
+  color: ${palette('text', 0)};
+`;
+
+export const PopoverIcon = styled(InfoCircleOutlined)`
+  color: ${props => palette(props.color, 0)};
+  margin: 0 10px;
 `;

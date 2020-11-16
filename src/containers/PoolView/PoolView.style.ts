@@ -173,7 +173,6 @@ export const StyledPagination = styled(Pagination)`
   }
 `;
 
-
 export const PopoverContent = styled.div`
   width: 300px;
   font-size: '11px';
@@ -181,6 +180,6 @@ export const PopoverContent = styled.div`
 `;
 
 export const PopoverIcon = styled(InfoCircleOutlined)`
-  color: ${palette('primary', 0)};
+  color: ${props => palette(props.color, 0)};
   margin: 0 10px;
 `;

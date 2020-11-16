@@ -1,12 +1,10 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Dropdown, Row } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
-import { ClickParam } from 'antd/lib/menu';
-import { keyBy } from 'lodash';
-
 import Menu from '../uielements/menu';
 import ConnectionStatus from '../uielements/connectionStatus';
 
+import useNetwork from '../../hooks/useNetwork';
 import { asgardexBncClient } from '../../env';
 import { Maybe } from '../../types/bepswap';
 import { getHostnameFromUrl } from '../../helpers/apiHelper';
@@ -26,11 +24,24 @@ type Props = {
 
 const HeaderSetting: React.FC<Props> = (props: Props): JSX.Element => {
   const { midgardBasePath } = props;
-  const [currentItem, setCurrentItem] = useState<string>('');
+
+  const {
+    statusColor: status,
+    outboundQueueLevel,
+  } = useNetwork();
 
   // Midgard IP on devnet OR on test|chaos|mainnet
   const midgardUrl =
     (midgardBasePath && getHostnameFromUrl(midgardBasePath)) || '';
+
+  const statusColor = useMemo(() => {
+    if (status === 'primary') return 'green';
+    if (status === 'warning') return 'yellow';
+    return 'red';
+  }, [status]);
+  const queueLevelStr = useMemo(() => {
+    return `OUTBOUND Queue: ${outboundQueueLevel}`;
+  }, [outboundQueueLevel]);
 
   const menuItems: MenuItem[] = useMemo(
     () => [
@@ -46,20 +57,19 @@ const HeaderSetting: React.FC<Props> = (props: Props): JSX.Element => {
         url: midgardUrl,
         status: 'green',
       },
+      {
+        key: 'thornode',
+        label: 'THORNODE',
+        url: queueLevelStr,
+        status: statusColor,
+      },
     ],
-    [midgardUrl],
+    [midgardUrl, statusColor, queueLevelStr],
   );
-  const items = keyBy(menuItems, 'key');
-  const { status = 'green' } = items[currentItem] || {};
-
-  const handleClickItem = ({ key }: ClickParam) => {
-    setCurrentItem(key);
-  };
 
   const menu = useMemo(
     () => (
       <Menu
-        onClick={handleClickItem}
         style={{
           fontWeight: 'bold',
           textTransform: 'uppercase',
@@ -106,7 +116,7 @@ const HeaderSetting: React.FC<Props> = (props: Props): JSX.Element => {
   return (
     <Dropdown overlay={menu} trigger={['click']}>
       <a className="ant-dropdown-link" href="/">
-        <ConnectionStatus color={status} />
+        <ConnectionStatus color={statusColor} />
         <DownOutlined />
       </a>
     </Dropdown>
