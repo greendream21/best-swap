@@ -1,7 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 import React, { useEffect, useCallback, useMemo, useState } from 'react';
 import { compose } from 'redux';
-import { Row, Col, Grid } from 'antd';
+import { Row, Col, Grid, Popover } from 'antd';
 import { connect, useSelector } from 'react-redux';
 import { get as _get } from 'lodash';
 import { withRouter, useParams, Link, useHistory } from 'react-router-dom';
@@ -15,7 +15,6 @@ import useNetwork from '../../hooks/useNetwork';
 
 import Label from '../../components/uielements/label';
 import Button from '../../components/uielements/button';
-import { ButtonColor } from '../../components/uielements/button/types';
 
 import * as midgardActions from '../../redux/midgard/actions';
 
@@ -28,11 +27,14 @@ import {
   TransactionWrapper,
   StyledPagination,
   ChartContainer,
+  PopoverContent,
+  PopoverIcon,
 } from './PoolDetail.style';
 
 import { getPoolData, isValidPool } from '../../helpers/utils/poolUtils';
 import { PoolData } from '../../helpers/utils/types';
 import { RootState } from '../../redux/store';
+import { getAppContainer } from '../../helpers/elementHelper';
 
 import {
   AssetDetailMap,
@@ -103,7 +105,12 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
   const { getUSDPrice, pricePrefix, runePrice } = usePrice();
   const [currentTxPage, setCurrentTxPage] = useState<number>(1);
 
-  const { outboundQueueLevel, isValidFundCaps } = useNetwork();
+  const {
+    isValidFundCaps,
+    statusColor,
+    isOutboundDelayed,
+    getOutboundBusyTooltip,
+  } = useNetwork();
   const isDesktopView = Grid.useBreakpoint().md;
   const viewModeClass = isDesktopView ? 'desktop-view' : 'mobile-view';
 
@@ -246,14 +253,6 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
       .toFixed(3)}`;
 
     const poolStatus = poolInfo?.status ?? null;
-    const buttonColors: {
-      [key: string]: ButtonColor;
-    } = {
-      GOOD: 'primary',
-      SLOW: 'warning',
-      BUSY: 'error',
-    };
-    const btnColor: ButtonColor = buttonColors[outboundQueueLevel];
 
     return (
       <Col className={`pool-caption-container ${viewModeClass}`}>
@@ -262,11 +261,27 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
           <PoolCaptionPrice>{poolPrice}</PoolCaptionPrice>
         </PoolCaptionWrapper>
         <PoolCaptionButtonsWrapper>
+          {isOutboundDelayed && (
+            <Popover
+              content={
+                <PopoverContent>{getOutboundBusyTooltip()}</PopoverContent>
+              }
+              getPopupContainer={getAppContainer}
+              placement="topRight"
+              overlayStyle={{
+                padding: '6px',
+                animationDuration: '0s !important',
+                animation: 'none !important',
+              }}
+            >
+              <PopoverIcon color={statusColor} />
+            </Popover>
+          )}
           <Link to={liquidityUrl}>
             <Button
               round="true"
               typevalue="outline"
-              color={!isValidFundCaps ? 'error' : btnColor}
+              color={!isValidFundCaps ? 'error' : statusColor}
             >
               <DatabaseOutlined />
               add
@@ -276,7 +291,7 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
             <Link to={swapUrl}>
               <Button
                 round="true"
-                color={!isValidFundCaps ? 'error' : btnColor}
+                color={!isValidFundCaps ? 'error' : statusColor}
               >
                 <SwapOutlined />
                 swap
@@ -294,9 +309,7 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
 
   return (
     <ContentWrapper className="pool-detail-wrapper" transparent>
-      <Row className="detail-info-header">
-        {renderDetailCaption(poolStats)}
-      </Row>
+      <Row className="detail-info-header">{renderDetailCaption(poolStats)}</Row>
       <Row className="detail-info-view">
         <Col xs={24} sm={24} md={8}>
           <PoolStatBar
