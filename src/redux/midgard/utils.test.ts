@@ -6,6 +6,7 @@ import {
   getAssetDetailIndex,
   getPriceIndex,
   getAssetFromString,
+  getEoDTime,
 } from './utils';
 import {
   ThorchainEndpoint,
@@ -94,10 +95,7 @@ describe('redux/midgard/utils/', () => {
       expect(result).toEqual(expected);
     });
     it('should return an emtpy {} if no asset or symbols in list', () => {
-      const data = [
-        emptyAsset,
-        emptyAsset,
-      ] as Array<PoolDataMock>;
+      const data = [emptyAsset, emptyAsset] as Array<PoolDataMock>;
       const result = getAssetDetailIndex(data);
       result;
       expect(result).toStrictEqual({});
@@ -163,6 +161,16 @@ describe('redux/midgard/utils/', () => {
     it('returns an asset without any values if the passing value is undefined', () => {
       const result = getAssetFromString(undefined);
       expect(result).toEqual({});
+    });
+  });
+
+  describe('getEoDTime', () => {
+    it('should be always same timestamp for the same day', () => {
+      const time1 = getEoDTime();
+
+      const time2 = getEoDTime();
+
+      expect(time2).toBe(time1);
     });
   });
 });

@@ -10,7 +10,6 @@ import {
   take,
 } from 'redux-saga/effects';
 import { isEmpty as _isEmpty } from 'lodash';
-import moment from 'moment';
 import byzantine from '@thorchain/byzantine-module';
 import { PoolDetail, AssetDetail } from '../../types/generated/midgard/api';
 import { axiosRequest } from '../../helpers/apiHelper';
@@ -25,6 +24,8 @@ import {
   getAssetDetailIndex,
   getPriceIndex,
   getOrderedPoolString,
+  getEoDTime,
+  getWeekAgoTime,
 } from './utils';
 import { NET, getNet } from '../../env';
 import { UnpackPromiseResponse } from '../../types/util';
@@ -679,7 +680,7 @@ function* tryGetRTVolumeByAsset(payload: GetRTVolumeByAssetPayload) {
       const {
         asset = '',
         from = 0,
-        to = moment().unix(),
+        to = getEoDTime(),
         interval = 'day',
       } = payload;
       // Unsafe: Can't infer type of `basePath` here - known TS/Generator/Saga issue
@@ -716,7 +717,7 @@ function* tryGetRTAggregateByAsset(payload: GetRTAggregateByAssetPayload) {
       const {
         asset = '',
         from = 0,
-        to = moment().unix(),
+        to = getEoDTime(),
         interval = 'day',
       } = payload;
       // Unsafe: Can't infer type of `basePath` here - known TS/Generator/Saga issue
@@ -756,10 +757,8 @@ export function* getRTAggregateByAsset() {
         yield put(actions.getRTAggregateByAssetFailed(Error('Invalid symbol')));
       }
 
-      const curTime = moment().unix();
-      const weekAgoTime = moment()
-        .subtract(7, 'days')
-        .unix();
+      const curTime = getEoDTime();
+      const weekAgoTime = getWeekAgoTime();
 
       const allTimeParams: GetRTAggregateByAssetPayload = {
         ...payload,
@@ -794,10 +793,8 @@ export function* getRTVolumeByAsset() {
     payload,
   }: ReturnType<typeof actions.getRTVolumeByAsset>) {
     try {
-      const curTime = moment().unix();
-      const weekAgoTime = moment()
-        .subtract(7, 'days')
-        .unix();
+      const curTime = getEoDTime();
+      const weekAgoTime = getWeekAgoTime();
 
       const allTimeParams: GetRTVolumeByAssetPayload = {
         ...payload,
