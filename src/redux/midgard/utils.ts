@@ -1,5 +1,7 @@
 import { Token } from '@thorchain/asgardex-binance';
 import { bn } from '@thorchain/asgardex-util';
+import moment from 'moment';
+
 import { RUNE_SYMBOL } from '../../settings/assetData';
 
 import { Nothing, Maybe } from '../../types/bepswap';
@@ -137,4 +139,27 @@ export const getOrderedPoolString = (pools: string[]) => {
   const sortedPools = pools.sort((a, b) => a.localeCompare(b));
 
   return sortedPools.join();
+};
+
+export const getEoDTime = () => {
+  return moment()
+    .set({
+      hour: 23,
+      minute: 59,
+      second: 59,
+      millisecond: 999,
+    })
+    .unix();
+};
+
+export const getWeekAgoTime = () => {
+  return moment()
+    .subtract(7, 'days')
+    .set({
+      hour: 23,
+      minute: 59,
+      second: 59,
+      millisecond: 999,
+    })
+    .unix();
 };
