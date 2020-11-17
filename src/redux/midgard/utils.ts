@@ -132,3 +132,9 @@ export const getTokenInfo = (
 
   return token ? [token] : [];
 };
+
+export const getOrderedPoolString = (pools: string[]) => {
+  const sortedPools = pools.sort((a, b) => a.localeCompare(b));
+
+  return sortedPools.join();
+};

@@ -1,6 +1,6 @@
 import { Reducer } from 'redux';
 import { initial, success, pending, failure } from '@devexperts/remote-data-ts';
-
+import { uniqWith as _uniqWith, isEqual as _isEqual } from 'lodash';
 import { bn } from '@thorchain/asgardex-util';
 import {
   getBNBPoolAddress,
@@ -114,17 +114,14 @@ const reducer: Reducer<State, MidgardActionTypes> = (
       const { payload } = action;
       return {
         ...state,
-        assets: payload.assetDetailIndex,
-        assetArray: payload.assetDetails,
-        assetLoading: false,
-      };
-    }
-    case 'SET_ASSETS': {
-      const { payload } = action;
-      return {
-        ...state,
-        assets: payload.assetDetailIndex,
-        assetArray: payload.assetDetails,
+        assets: {
+          ...state.assets,
+          ...payload.assetDetailIndex,
+        },
+        assetArray: _uniqWith(
+          [...state.assetArray, ...payload.assetDetails],
+          _isEqual,
+        ),
         assetLoading: false,
       };
     }
@@ -138,7 +135,7 @@ const reducer: Reducer<State, MidgardActionTypes> = (
       return {
         ...state,
         poolLoading: false,
-        pools: action.payload,
+        pools: _uniqWith([...state.pools, ...action.payload], _isEqual),
       };
     case 'GET_POOLS_FAILED':
       return {
@@ -172,7 +169,7 @@ const reducer: Reducer<State, MidgardActionTypes> = (
       };
     case 'GET_POOL_DATA_SUCCESS': {
       const { payload } = action;
-      const { poolDetails = [], overrideAllPoolData = true } = payload;
+      const { poolDetails = [] } = payload;
       // Transform `PoolDetail[]` into `PoolDataMap` before storing data into state
       const newPoolData = poolDetails.reduce(
         (acc: PoolDataMap, poolDetail: PoolDetail) => {
@@ -186,16 +183,13 @@ const reducer: Reducer<State, MidgardActionTypes> = (
         },
         {} as PoolDataMap,
       );
-      // Check whether to override all state.poolData or just with latest result
-      const poolData = overrideAllPoolData
-        ? newPoolData
-        : {
-            ...state.poolData,
-            ...newPoolData,
-          };
+
       return {
         ...state,
-        poolData,
+        poolData: {
+          ...state.poolData,
+          ...newPoolData,
+        },
         poolDataLoading: false,
       };
     }

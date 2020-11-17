@@ -15,6 +15,7 @@ import {
   GetRTAggregateByAssetPayload,
   GetPoolDetailByAssetPayload,
   ThorchainData,
+  PoolStatus,
 } from './types';
 import {
   PoolDetail,
@@ -25,10 +26,8 @@ import {
   NetworkInfo,
 } from '../../types/generated/midgard';
 
-export const setAssets = (payload: GetAssetsPayload) =>
-  ({ type: 'SET_ASSETS', payload } as const);
-
-export const getPools = () => ({ type: 'GET_POOLS_REQUEST' } as const);
+export const getPools = (payload?: PoolStatus) =>
+  ({ type: 'GET_POOLS_REQUEST', payload } as const);
 
 export const getPoolsSuccess = (payload: string[]) =>
   ({ type: 'GET_POOLS_SUCCESS', payload } as const);
@@ -36,8 +35,8 @@ export const getPoolsSuccess = (payload: string[]) =>
 export const getPoolsFailed = (payload: Error) =>
   ({ type: 'GET_POOLS_FAILED', payload } as const);
 
-export const getPoolAssets = () =>
-  ({ type: 'GET_POOL_ASSETS_REQUEST' } as const);
+export const getPoolAssets = (payload?: PoolStatus) =>
+  ({ type: 'GET_POOL_ASSETS_REQUEST', payload } as const);
 
 export const getPoolAssetsSuccess = (payload: GetAssetsPayload) =>
   ({ type: 'GET_POOL_ASSETS_SUCCESS', payload } as const);
@@ -215,7 +214,6 @@ export type MidgardActionTypes = ReturnType<
   | typeof getPoolAddressSuccess
   | typeof getPoolAddressFailed
   | typeof getRunePrice
-  | typeof setAssets
   | typeof setBasePriceAsset
   | typeof setPriceIndex
   | typeof getTransaction

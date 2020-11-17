@@ -138,6 +138,8 @@ export type ThorchainData = {
   queue?: ThorchainQueue;
 };
 
+export type PoolStatus = 'enabled' | 'bootstrap' | 'suspended' | undefined;
+
 export type State = {
   assets: AssetDetailMap;
   assetArray: AssetDetail[];

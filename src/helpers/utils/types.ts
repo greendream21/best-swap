@@ -43,7 +43,6 @@ export type PoolData = {
   liqFee: BaseAmount;
   roi: number;
   apy: number;
-  poolROI12: BigNumber;
   totalSwaps: number;
   totalStakers: number;
   runeStakedTotal: BaseAmount;
