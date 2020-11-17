@@ -170,6 +170,7 @@ export const ContentWrapper = styled(ContentView)`
           .cooldown-info {
             display: flex;
             align-items: center;
+            margin-top: 8px;
             .label-wrapper {
               margin-right: 4px;
             }

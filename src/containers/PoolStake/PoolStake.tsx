@@ -468,8 +468,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     const wallet = user ? user.wallet : null;
     const bnbAmount = bnbBaseAmount(assetData);
 
-    // Helper to format BNB amounts properly (we can't use `formatTokenAmountCurrency`)
-    // TODO (@Veado) Update `formatTokenAmountCurrency` of `asgardex-token` (now in `asgardex-util`) to accept decimals
     const formatBnbAmount = (value: BaseAmount) => {
       const token = baseToToken(value);
       return `${token.amount().toString()} BNB`;
@@ -488,7 +486,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
             <br />
           </>
         )}
-        {wallet && hasSufficientBnbFeeInBalance && (
+        {wallet && (
           <Text style={{ paddingTop: '10px' }}>
             Note: 0.1 BNB will be left in your wallet for the transaction fees.
           </Text>
@@ -899,7 +897,9 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       percentage: withdrawPercentage,
     };
 
-    const disableWithdraw = stakeUnitsBN.isEqualTo(0);
+    const hasNoStakeUnits = stakeUnitsBN.isEqualTo(0);
+    // eslint-disable-next-line quotes
+    const hasNoUnitsLabel = "You don't have any shares in this pool.";
 
     const sourceTokenAmount = baseToToken(runeBaseAmount);
     const sourcePrice = baseToToken(runeBaseAmount)
@@ -1039,11 +1039,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
           >
             {addLiquidityTab}
           </TabPane>
-          <TabPane
-            tab="Withdraw"
-            key={TabKeys.WITHDRAW}
-            disabled={disableWithdraw}
-          >
+          <TabPane tab="Withdraw" key={TabKeys.WITHDRAW}>
             <Label className="label-title" size="normal" weight="bold">
               ADJUST WITHDRAWAL
             </Label>
@@ -1096,31 +1092,35 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                   source="blue"
                   target="confirm"
                   reset={dragReset}
-                  disabled={disableDrag || withdrawDisabled}
                   onConfirm={handleWithdraw}
                   onDrag={handleDrag}
                 />
-                {!!withdrawDisabled && (
-                  <div className="cooldown-info">
-                    <Label>
-                      You must wait {remainingTimeString} until you can withdraw
-                      again.
-                    </Label>
-                    <Popover
-                      content={renderPopoverContent}
-                      getPopupContainer={getCooldownPopupContainer}
-                      placement="bottomLeft"
-                      overlayClassName="pool-filter-info"
-                      overlayStyle={{
-                        padding: '6px',
-                        animationDuration: '0s !important',
-                        animation: 'none !important',
-                      }}
-                    >
-                      <PopoverIcon />
-                    </Popover>
-                  </div>
-                )}
+                <div className="cooldown-info">
+                  {hasNoStakeUnits && (
+                    <Text type="danger">{hasNoUnitsLabel}</Text>
+                  )}
+                  {!!withdrawDisabled && (
+                    <>
+                      <Label>
+                        You must wait {remainingTimeString} until you can
+                        withdraw again.
+                      </Label>
+                      <Popover
+                        content={renderPopoverContent}
+                        getPopupContainer={getCooldownPopupContainer}
+                        placement="bottomLeft"
+                        overlayClassName="pool-filter-info"
+                        overlayStyle={{
+                          padding: '6px',
+                          animationDuration: '0s !important',
+                          animation: 'none !important',
+                        }}
+                      >
+                        <PopoverIcon />
+                      </Popover>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           </TabPane>
