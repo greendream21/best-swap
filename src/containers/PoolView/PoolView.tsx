@@ -212,6 +212,19 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     getRTVolume({});
   }, [getRTVolume]);
 
+  const handleSelectPoolStatus = useCallback(
+    (status: PoolDetailStatusEnum) => {
+      selectPoolStatus(status);
+
+      if (status === PoolDetailStatusEnum.Enabled) {
+        getPools('enabled');
+      } else {
+        getPools('bootstrap');
+      }
+    },
+    [selectPoolStatus, getPools],
+  );
+
   const handleNewPool = () => {
     if (!wallet) {
       showNotification({
@@ -603,7 +616,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         />
       </div>
       <PoolViewTools>
-        <PoolFilter selected={poolStatus} onClick={selectPoolStatus} />
+        <PoolFilter selected={poolStatus} onClick={handleSelectPoolStatus} />
         <div className="add-new-pool" onClick={handleNewPool}>
           <AddIcon />
           {isDesktopView && (
