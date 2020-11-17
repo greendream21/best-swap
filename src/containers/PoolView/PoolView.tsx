@@ -252,6 +252,14 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     [],
   );
 
+  const handleRefresh = useCallback(() => {
+    if (poolStatus === PoolDetailStatusEnum.Enabled) {
+      getPools('enabled');
+    } else {
+      getPools('bootstrap');
+    }
+  }, [getPools, poolStatus]);
+
   const renderTextCell = useCallback(
     (text: string) => {
       if (loading) {
@@ -320,7 +328,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
       title: (
         <ActionHeader>
           <Button
-            onClick={getPools}
+            onClick={handleRefresh}
             typevalue="outline"
             round="true"
             color={!isValidFundCaps ? 'error' : statusColor}
@@ -399,12 +407,12 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     }),
     [
       statusColor,
-      getPools,
       isValidFundCaps,
       poolStatus,
       isOutboundDelayed,
       getOutboundBusyTooltip,
       withOutboundTooltip,
+      handleRefresh,
     ],
   );
 

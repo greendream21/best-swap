@@ -5,7 +5,6 @@ import {
   WS,
 } from '@thorchain/asgardex-binance';
 import {
-  bn,
   bnOrZero,
   validBNOrZero,
   isValidBN,
@@ -126,9 +125,6 @@ export const getPoolData = (
       .toFixed(2),
   );
 
-  const poolROI12Data = poolDetail?.poolROI12 ?? 0;
-  const poolROI12 = bn(poolROI12Data).multipliedBy(100);
-
   // poolFeeAverage * runePrice
   const liqFeeResult = bnOrZero(poolDetail?.poolFeeAverage).multipliedBy(
     runePrice,
@@ -162,7 +158,6 @@ export const getPoolData = (
     liqFee,
     roi,
     apy,
-    poolROI12,
     totalSwaps,
     totalStakers,
     runeStakedTotal,
