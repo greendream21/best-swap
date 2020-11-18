@@ -48,7 +48,6 @@ import { RootState } from '../../redux/store';
 import { AssetData, User } from '../../redux/wallet/types';
 import {
   PoolDataMap,
-  AssetDetailMap,
   TxDetailData,
   RTVolumeData,
 } from '../../redux/midgard/types';
@@ -57,7 +56,6 @@ import { Maybe } from '../../types/bepswap';
 import {
   PoolDetailStatusEnum,
   StatsData,
-  AssetDetail,
   NetworkInfo,
 } from '../../types/generated/midgard/api';
 import showNotification from '../../components/uielements/notification';
@@ -79,11 +77,9 @@ type Props = {
   txData: TxDetailData;
   refreshTxStatus: boolean;
   stats: StatsData;
-  assets: AssetDetailMap;
   assetData: AssetData[];
   user: Maybe<User>;
   poolLoading: boolean;
-  assetLoading: boolean;
   poolDataLoading: boolean;
   networkInfo: NetworkInfo;
   networkInfoLoading: boolean;
@@ -102,11 +98,9 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     txData,
     refreshTxStatus,
     stats,
-    assets,
     assetData,
     user,
     poolLoading,
-    assetLoading,
     poolDataLoading,
     networkInfo,
     networkInfoLoading,
@@ -126,7 +120,12 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
 
   const isDesktopView = Grid.useBreakpoint()?.md ?? true;
   const history = useHistory();
-  const { getUSDPrice, reducedPricePrefix, priceIndex } = usePrice();
+  const {
+    getUSDPrice,
+    reducedPricePrefix,
+    priceIndex,
+    hasBUSDPrice,
+  } = usePrice();
 
   const themeType = useSelector((state: RootState) => state.App.themeType);
   const isLight = themeType === ThemeType.LIGHT;
@@ -134,11 +133,6 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
 
   const loading = poolLoading || poolDataLoading;
   const wallet: Maybe<string> = user ? user.wallet : null;
-
-  const busdToken = Object.keys(assets).find(
-    item => getTickerFormat(item) === 'busd',
-  );
-  const busdPrice = busdToken ? assets[busdToken]?.priceRune ?? 'RUNE' : 'RUNE';
 
   const {
     isValidFundCaps,
@@ -299,7 +293,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
 
   const renderPoolPriceCell = useCallback(
     (text: string) => {
-      if (assetLoading) {
+      if (poolLoading) {
         return <LabelLoader />;
       }
       return (
@@ -308,7 +302,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         </span>
       );
     },
-    [assetLoading, reducedPricePrefix],
+    [poolLoading, reducedPricePrefix],
   );
 
   const withOutboundTooltip = useCallback(
@@ -529,12 +523,9 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         const { symbol = '' } = getAssetFromString(poolName);
 
         const poolInfo = poolData[symbol] || {};
-        const assetDetail: AssetDetail = assets?.[symbol] ?? {};
-
         const poolDataDetail: PoolData = getPoolData(
           symbol,
           poolInfo,
-          assetDetail,
           priceIndex,
         );
 
@@ -544,7 +535,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
           key: index,
         };
       }),
-    [assets, poolData, pools, priceIndex],
+    [poolData, pools, priceIndex],
   );
 
   const filteredData = useMemo(
@@ -612,7 +603,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
           gradientStart={isLight ? '#c5d3f0' : '#365979'}
           gradientStop={isLight ? '#ffffff' : '#0f1922'}
           viewMode={isDesktopView ? 'desktop-view' : 'mobile-view'}
-          basePrice={busdPrice}
+          hasBUSDPrice={hasBUSDPrice}
         />
       </div>
       <PoolViewTools>
@@ -660,9 +651,7 @@ export default compose(
       pools: state.Midgard.pools,
       poolData: state.Midgard.poolData,
       stats: state.Midgard.stats,
-      assets: state.Midgard.assets,
       poolLoading: state.Midgard.poolLoading,
-      assetLoading: state.Midgard.assetLoading,
       poolDataLoading: state.Midgard.poolDataLoading,
       txData: state.Midgard.txData,
       refreshTxStatus: state.Midgard.refreshTxStatus,

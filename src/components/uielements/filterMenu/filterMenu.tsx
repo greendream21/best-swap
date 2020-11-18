@@ -4,7 +4,6 @@ import { ClickParam } from 'antd/lib/menu';
 import { Menu, MenuItem } from './filterMenu.style';
 
 import Input from '../input';
-import { AssetPair } from '../../../types/bepswap';
 
 const style: React.CSSProperties = {
   maxHeight: '400px',
@@ -16,11 +15,11 @@ const style: React.CSSProperties = {
 
 type Props = {
   onSelect?: (value: string) => void;
-  filterFunction: (item: AssetPair, searchTerm: string) => boolean;
+  filterFunction: (item: string, searchTerm: string) => boolean;
   searchEnabled?: boolean;
-  cellRenderer: (data: AssetPair) => { key: string; node: JSX.Element };
-  data: AssetPair[];
-  disableItemFilter?: (item: AssetPair) => boolean;
+  cellRenderer: (data: string) => { key: string; node: JSX.Element };
+  data: string[];
+  disableItemFilter?: (item: string) => boolean;
   placeholder?: string;
   selectedKeys?: string[];
 };
@@ -57,7 +56,7 @@ const FilterMenu: React.FC<Props> = ({
     [],
   );
 
-  const filteredData: AssetPair[] = useMemo(
+  const filteredData: string[] = useMemo(
     () =>
       searchTerm === ''
         ? data
@@ -66,7 +65,12 @@ const FilterMenu: React.FC<Props> = ({
   );
 
   return (
-    <Menu {...otherProps} style={style} selectedKeys={selectedKeys} onClick={handleClick}>
+    <Menu
+      {...otherProps}
+      style={style}
+      selectedKeys={selectedKeys}
+      onClick={handleClick}
+    >
       {searchEnabled && (
         <Menu.Item disabled key="_search">
           <Input
@@ -79,7 +83,7 @@ const FilterMenu: React.FC<Props> = ({
           />
         </Menu.Item>
       )}
-      {filteredData.map((item: AssetPair) => {
+      {filteredData.map((item: string) => {
         const { key, node } = cellRenderer(item);
         const disableItem = disableItemFilter(item);
 

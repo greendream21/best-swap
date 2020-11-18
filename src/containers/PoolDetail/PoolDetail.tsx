@@ -47,7 +47,7 @@ import { RUNE_SYMBOL } from '../../settings/assetData';
 import { PoolStatBar } from '../../components/statBar';
 import PoolChart from '../../components/poolChart';
 import TxTable from '../../components/transaction/txTable';
-import { getTickerFormat, getTokenName } from '../../helpers/stringHelper';
+import { getTokenName } from '../../helpers/stringHelper';
 import { PoolDetailStatusEnum } from '../../types/generated/midgard';
 
 import usePrice from '../../hooks/usePrice';
@@ -87,7 +87,6 @@ type Props = {
 
 const PoolDetail: React.FC<Props> = (props: Props) => {
   const {
-    assets,
     pools,
     poolDetailedData,
     poolDetailedDataLoading,
@@ -102,7 +101,7 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
     getPoolDetailByAsset,
   } = props;
 
-  const { getUSDPrice, pricePrefix, runePrice } = usePrice();
+  const { getUSDPrice, pricePrefix, runePrice, hasBUSDPrice } = usePrice();
   const [currentTxPage, setCurrentTxPage] = useState<number>(1);
 
   const {
@@ -117,11 +116,6 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
   const history = useHistory();
   const { symbol = '' } = useParams();
   const tokenSymbol = symbol.toUpperCase();
-
-  const busdToken = Object.keys(assets).find(
-    item => getTickerFormat(item) === 'busd',
-  );
-  const busdPrice = busdToken ? assets[busdToken]?.priceRune ?? 'RUNE' : 'RUNE';
 
   const themeType = useSelector((state: RootState) => state.App.themeType);
   const isLight = themeType === ThemeType.LIGHT;
@@ -304,8 +298,7 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
   };
 
   const poolInfo = poolDetailedData[tokenSymbol] || {};
-  const assetDetail = assets?.[tokenSymbol];
-  const poolStats = getPoolData(tokenSymbol, poolInfo, assetDetail, priceIndex);
+  const poolStats = getPoolData(tokenSymbol, poolInfo, priceIndex);
 
   return (
     <ContentWrapper className="pool-detail-wrapper" transparent>
@@ -329,7 +322,7 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
               gradientStart={isLight ? '#c5d3f0' : '#365979'}
               gradientStop={isLight ? '#ffffff' : '#0f1922'}
               viewMode={viewModeClass}
-              basePrice={busdPrice}
+              hasBUSDPrice={hasBUSDPrice}
             />
           </ChartContainer>
         </Col>
@@ -361,7 +354,6 @@ export default compose(
       poolDetailedData: state.Midgard.poolDetailedData,
       poolDetailedDataLoading: state.Midgard.poolDetailedDataLoading,
       refreshTxStatus: state.Midgard.refreshTxStatus,
-      assets: state.Midgard.assets,
       pools: state.Midgard.pools,
       priceIndex: state.Midgard.priceIndex,
       txData: state.Midgard.txData,

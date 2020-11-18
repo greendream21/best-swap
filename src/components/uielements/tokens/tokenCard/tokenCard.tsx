@@ -8,13 +8,12 @@ import { TokenCardWrapper } from './tokenCard.style';
 
 import TokenSelect from '../tokenSelect';
 import TokenInput from '../tokenInput';
-import { AssetPair } from '../../../../types/bepswap';
 import { PriceDataIndex } from '../../../../redux/midgard/types';
 import { TokenInputProps } from '../tokenInput/types';
 
 type Props = {
   asset: string;
-  assetData: AssetPair[];
+  assetData: string[];
   amount: TokenAmount;
   price: BigNumber;
   priceIndex: PriceDataIndex;
@@ -58,7 +57,7 @@ const TokenCard: React.FC<Props> = (props: Props): JSX.Element => {
   const priceResult = amount.amount().multipliedBy(price);
   const priceValue = `${formatBNCurrency(priceResult)}`;
   const tokenSelectDataTest = `${dataTest}-select`;
-  const sortedAssetData = _sortBy(assetData, ['asset']);
+  const sortedAssetData = _sortBy(assetData);
 
   return (
     <TokenCardWrapper
