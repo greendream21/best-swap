@@ -31,7 +31,7 @@ import {
 import Ref from '../../../../helpers/event/ref';
 import clickedInNode from '../../../../helpers/event/clickedInNode';
 import { PriceDataIndex } from '../../../../redux/midgard/types';
-import { FixmeType, AssetPair } from '../../../../types/bepswap';
+import { FixmeType } from '../../../../types/bepswap';
 
 type DropdownCarretProps = {
   open: boolean;
@@ -62,7 +62,7 @@ const DropdownCarret: React.FC<DropdownCarretProps> = ({
 type Props = {
   asset: string;
   tooltip?: string;
-  assetData: AssetPair[];
+  assetData: string[];
   amount: TokenAmount;
   price: BigNumber;
   priceIndex: PriceDataIndex;
@@ -211,7 +211,7 @@ class CoinCard extends React.Component<Props, State> {
       disabled,
       'data-test': dataTest,
     } = this.props;
-    const sortedAssetData = _sortBy(assetData, ['asset']);
+    const sortedAssetData = _sortBy(assetData);
 
     return (
       <Ref innerRef={this.handleMenuRef}>

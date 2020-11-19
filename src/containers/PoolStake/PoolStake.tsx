@@ -62,10 +62,9 @@ import {
 import { getTickerFormat } from '../../helpers/stringHelper';
 import { RootState } from '../../redux/store';
 import { User, AssetData } from '../../redux/wallet/types';
-import { Maybe, Nothing, AssetPair, FixmeType } from '../../types/bepswap';
+import { Maybe, Nothing, FixmeType } from '../../types/bepswap';
 import { TxStatus, TxTypes, TxResult } from '../../redux/app/types';
 import {
-  AssetDetailMap,
   StakerPoolData,
   PoolDataMap,
   ThorchainData,
@@ -97,8 +96,8 @@ type Props = {
   user: Maybe<User>;
   assetData: AssetData[];
   poolAddress: Maybe<string>;
+  pools: string[];
   poolData: PoolDataMap;
-  assets: AssetDetailMap;
   stakerPoolData: Maybe<StakerPoolData>;
   stakerPoolDataLoading: boolean;
   stakerPoolDataError: Maybe<Error>;
@@ -120,8 +119,8 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   const {
     transferFees,
     user,
-    assets,
     assetData,
+    pools,
     poolData,
     poolAddress,
     poolLoading,
@@ -861,15 +860,9 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   }, [runeAmountToSend, targetAmount, R, T]);
 
   const renderShareDetail = () => {
-    const tokensData: AssetPair[] = Object.keys(assets).map(tokenName => {
-      const tokenData = assets[tokenName];
-      const assetStr = tokenData?.asset;
-      const asset = assetStr ? getAssetFromString(assetStr) : null;
-
-      return {
-        asset: asset?.symbol ?? '',
-      };
-    });
+    const tokensData: string[] = pools.map(
+      assetStr => getAssetFromString(assetStr)?.symbol ?? '',
+    );
 
     // withdraw values
     const withdrawRate: number = withdrawPercentage / 100;
@@ -1324,8 +1317,8 @@ export default compose(
       user: state.Wallet.user,
       assetData: state.Wallet.assetData,
       poolAddress: state.Midgard.poolAddress,
+      pools: state.Midgard.pools,
       poolData: state.Midgard.poolData,
-      assets: state.Midgard.assets,
       poolLoading: state.Midgard.poolLoading,
       stakerPoolData: state.Midgard.stakerPoolData,
       stakerPoolDataLoading: state.Midgard.stakerPoolDataLoading,

@@ -18,10 +18,11 @@ const usePrice = () => {
   const basePriceAsset = useSelector(
     (state: RootState) => state.Midgard.basePriceAsset,
   );
-  const assets = useSelector((state: RootState) => state.Midgard.assets);
+  const poolData = useSelector((state: RootState) => state.Midgard.poolData);
 
   const runePrice = validBNOrZero(priceIndex[RUNE_SYMBOL]);
-  const busdPriceInRune = bnOrZero(assets?.[BUSD_SYMBOL]?.priceRune);
+  const busdPriceInRune = bnOrZero(poolData?.[BUSD_SYMBOL]?.price);
+  const hasBUSDPrice = !busdPriceInRune.isEqualTo(0);
 
   const pricePrefix =
     basePriceAsset === BUSD_SYMBOL
@@ -44,10 +45,13 @@ const usePrice = () => {
 
   // convert rune amount to the USD based amount
   const getUSDPrice = (value: BigNumber, decimal = 3) => {
-    return formatBaseAsTokenAmount(
-      baseAmount(value.dividedBy(busdPriceInRune)),
-      decimal,
-    );
+    if (!busdPriceInRune.isEqualTo(0)) {
+      return formatBaseAsTokenAmount(
+        baseAmount(value.dividedBy(busdPriceInRune)),
+        decimal,
+      );
+    }
+    return formatBaseAsTokenAmount(baseAmount(value), decimal);
   };
 
   // get price amount and prefix
@@ -65,7 +69,7 @@ const usePrice = () => {
     const prefix = !busdPriceInRune.isEqualTo(0) ? '$' : 'ᚱ';
     const valueInUSD = !busdPriceInRune.isEqualTo(0)
       ? getUSDPrice(value, decimal)
-      : value;
+      : formatBaseAsTokenAmount(baseAmount(value), decimal);
 
     return `${prefix} ${valueInUSD}`;
   };
@@ -87,6 +91,7 @@ const usePrice = () => {
   return {
     runePrice,
     busdPriceInRune,
+    hasBUSDPrice,
     priceIndex,
     basePriceAsset,
     pricePrefix,

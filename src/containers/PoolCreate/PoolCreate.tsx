@@ -44,7 +44,7 @@ import { RootState } from '../../redux/store';
 import { TxStatus, TxTypes } from '../../redux/app/types';
 import { State as BinanceState } from '../../redux/binance/types';
 import { PriceDataIndex } from '../../redux/midgard/types';
-import { Maybe, AssetPair, FixmeType } from '../../types/bepswap';
+import { Maybe, FixmeType } from '../../types/bepswap';
 import { User, AssetData } from '../../redux/wallet/types';
 
 import useNetwork from '../../hooks/useNetwork';
@@ -334,10 +334,9 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
 
     const runePrice = validBNOrZero(priceIndex[RUNE_SYMBOL]);
     const tokensData = getAvailableTokensToCreate(assetData, pools);
-    // AssetData[] -> AssetPair[]
-    const coinDardData = tokensData.map<AssetPair>((detail: AssetData) => ({
-      asset: detail.asset || '',
-    }));
+    const assetListData = tokensData.map<string>(
+      (detail: AssetData) => detail.asset || '',
+    );
 
     const tokenPrice = validBNOrZero(
       runeAmount
@@ -398,7 +397,7 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
           />
           <CoinCard
             asset={target}
-            assetData={coinDardData}
+            assetData={assetListData}
             amount={targetAmount}
             price={tokenPrice}
             priceIndex={priceIndex}

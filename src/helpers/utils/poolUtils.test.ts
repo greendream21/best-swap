@@ -1,10 +1,7 @@
 import { WS } from '@thorchain/asgardex-binance';
 import { bn } from '@thorchain/asgardex-util';
 import { tokenAmount, baseAmount } from '@thorchain/asgardex-token';
-import {
-  AssetDetailMap,
-  PriceDataIndex,
-} from '../../redux/midgard/types';
+import { PriceDataIndex } from '../../redux/midgard/types';
 import { RUNE_SYMBOL } from '../../settings/assetData';
 import {
   withdrawResult,
@@ -17,19 +14,6 @@ import {
   PoolDetail,
   PoolDetailStatusEnum,
 } from '../../types/generated/midgard';
-
-const assets: AssetDetailMap = {
-  BNB: {
-    asset: 'BNB.BNB',
-    dateCreated: 1597628327,
-    priceRune: '26.496460693841062',
-  },
-  'FSN-F1B': {
-    asset: 'BNB.FSN-F1B',
-    dateCreated: 1597628327,
-    priceRune: '26.496460693841062',
-  },
-};
 
 describe.skip('pool/utils/', () => {
   describe('witdrawResult', () => {
@@ -225,12 +209,7 @@ describe.skip('pool/utils/', () => {
           poolPrice: '2.000',
         },
       };
-      const result = getPoolData(
-        'FSN-F1B',
-        fsnPoolDetail,
-        assets['FSN-F1B'],
-        priceIndex,
-      );
+      const result = getPoolData('FSN-F1B', fsnPoolDetail, priceIndex);
 
       expect(result.asset).toEqual(expected.asset);
       expect(result.target).toEqual(expected.target);
@@ -295,7 +274,7 @@ describe.skip('pool/utils/', () => {
           poolPrice: '0.000',
         },
       };
-      const result = getPoolData('BNB', bnbPoolDetail, assets.BNB, priceIndex);
+      const result = getPoolData('BNB', bnbPoolDetail, priceIndex);
 
       expect(result.asset).toEqual(expected.asset);
       expect(result.target).toEqual(expected.target);

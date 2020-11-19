@@ -35,7 +35,7 @@ export const getPoolsSuccess = (payload: string[]) =>
 export const getPoolsFailed = (payload: Error) =>
   ({ type: 'GET_POOLS_FAILED', payload } as const);
 
-export const getPoolAssets = (payload?: PoolStatus) =>
+export const getPoolAssets = (payload: string[]) =>
   ({ type: 'GET_POOL_ASSETS_REQUEST', payload } as const);
 
 export const getPoolAssetsSuccess = (payload: GetAssetsPayload) =>

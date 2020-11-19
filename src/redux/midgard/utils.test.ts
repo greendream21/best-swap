@@ -106,8 +106,8 @@ describe('redux/midgard/utils/', () => {
     it('should return prices indexes based on RUNE price', () => {
       const result = getPriceIndex(
         [
-          { asset: 'BNB.TOMOB-1E1', priceRune: '0.3333333333333333' },
-          { asset: 'BNB.BNB', priceRune: '2206.896551724138' },
+          { asset: 'BNB.TOMOB-1E1', price: '0.3333333333333333' },
+          { asset: 'BNB.BNB', price: '2206.896551724138' },
         ],
         'AAA',
       );
@@ -121,9 +121,9 @@ describe('redux/midgard/utils/', () => {
     it('should return a prices indexes based on BBB price', () => {
       const result = getPriceIndex(
         [
-          { asset: 'AAA.AAA-AAA', priceRune: '4' },
-          { asset: 'BBB.BBB-BBB', priceRune: '2' },
-          { asset: 'CCC.CCC-CCC', priceRune: '10' },
+          { asset: 'AAA.AAA-AAA', price: '4' },
+          { asset: 'BBB.BBB-BBB', price: '2' },
+          { asset: 'CCC.CCC-CCC', price: '10' },
         ],
         'BBB-BBB',
       );

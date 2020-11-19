@@ -29,14 +29,7 @@ import {
 import { PoolDataMap } from '../../redux/midgard/types';
 import { getAssetFromString } from '../../redux/midgard/utils';
 import { PoolDetail } from '../../types/generated/midgard/api';
-import {
-  FixmeType,
-  Nothing,
-  Maybe,
-  SwapType,
-  Pair,
-  AssetPair,
-} from '../../types/bepswap';
+import { FixmeType, Nothing, Maybe, SwapType, Pair } from '../../types/bepswap';
 import { SwapData } from './types';
 
 import { RUNE_SYMBOL } from '../../settings/assetData';
@@ -49,24 +42,22 @@ import { RUNE_SYMBOL } from '../../settings/assetData';
  * @param targetSymbol target symbol for swap
  */
 export const getValidSwapPairs = (
-  sourceInfo: AssetPair[],
-  targetInfo: AssetPair[],
+  sourceInfo: string[],
+  targetInfo: string[],
   sourceSymbol: string,
   targetSymbol: string,
 ) => {
-  const poolAssets = targetInfo.map(
-    data => getAssetFromString(data.asset).symbol,
-  );
-  const sourceData = sourceInfo.filter((data: AssetPair) => {
-    const symbol = getAssetFromString(data.asset).symbol;
+  const poolAssets = targetInfo.map(asset => getAssetFromString(asset).symbol);
+  const sourceAssets = sourceInfo.filter(asset => {
+    const symbol = getAssetFromString(asset).symbol;
     return symbol !== sourceSymbol && poolAssets.includes(symbol);
   });
-  const targetData = targetInfo.filter(
-    (data: AssetPair) => getAssetFromString(data.asset).symbol !== targetSymbol,
+  const targetAssets = targetInfo.filter(
+    asset => getAssetFromString(asset).symbol !== targetSymbol,
   );
   return {
-    sourceData,
-    targetData,
+    sourceAssets,
+    targetAssets,
   };
 };
 

@@ -14,7 +14,6 @@ import {
   baseAmount,
   formatBaseAsTokenAmount,
 } from '@thorchain/asgardex-token';
-import { AssetDetail } from '../../types/generated/midgard/api';
 import { getStakeMemo, getWithdrawMemo } from '../memoHelper';
 import { getTickerFormat } from '../stringHelper';
 import { PriceDataIndex } from '../../redux/midgard/types';
@@ -84,7 +83,6 @@ export const getAvailableTokensToCreate = (
 export const getPoolData = (
   symbol: string,
   poolDetail: PoolDetail,
-  assetDetail: AssetDetail,
   priceIndex: PriceDataIndex,
 ): PoolData => {
   const asset = 'RUNE';

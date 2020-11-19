@@ -6,16 +6,15 @@ import FilterMenu from '../../filterMenu';
 import { getTickerFormat } from '../../../../helpers/stringHelper';
 import CoinData from '../coinData';
 import { PriceDataIndex } from '../../../../redux/midgard/types';
-import { AssetPair } from '../../../../types/bepswap';
 
-const filterFunction = (item: AssetPair, searchTerm: string) => {
-  const tokenName = getTickerFormat(item.asset);
+const filterFunction = (asset: string, searchTerm: string) => {
+  const tokenName = getTickerFormat(asset);
   return tokenName.toLowerCase().indexOf(searchTerm.toLowerCase()) === 0;
 };
 
 type Props = {
   asset: string;
-  assetData: AssetPair[];
+  assetData: string[];
   priceIndex: PriceDataIndex;
   unit: string;
   searchDisable: string[];
@@ -40,16 +39,15 @@ const CoinCardMenu: React.FC<Props> = (props: Props): JSX.Element => {
 
   const filteredData = useMemo(
     () =>
-      assetData.filter(item => {
-        const tokenName = getTickerFormat(item.asset);
+      assetData.filter(assetSymbol => {
+        const tokenName = getTickerFormat(assetSymbol);
         return tokenName.toLowerCase() !== asset.toLowerCase();
       }),
     [assetData, asset],
   );
 
   const cellRenderer = useCallback(
-    (data: AssetPair) => {
-      const { asset } = data;
+    asset => {
       const key = asset || 'unknown-key';
       const tokenName = getTickerFormat(asset);
 
@@ -70,8 +68,8 @@ const CoinCardMenu: React.FC<Props> = (props: Props): JSX.Element => {
   );
 
   const disableItemFilterHandler = useCallback(
-    (item: AssetPair) => {
-      const tokenName = getTickerFormat(item.asset).toLowerCase();
+    asset => {
+      const tokenName = getTickerFormat(asset).toLowerCase();
       return searchDisable.indexOf(tokenName) > -1;
     },
     [searchDisable],
@@ -84,7 +82,7 @@ const CoinCardMenu: React.FC<Props> = (props: Props): JSX.Element => {
       searchEnabled={withSearch}
       filterFunction={filterFunction}
       cellRenderer={cellRenderer}
-      disableItemFilter={(a: AssetPair) => disableItemFilterHandler(a)}
+      disableItemFilter={(a: string) => disableItemFilterHandler(a)}
       onSelect={onSelect}
       data={filteredData}
     />

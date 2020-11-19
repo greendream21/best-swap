@@ -5,12 +5,7 @@ import { connect } from 'react-redux';
 import { withRouter, useHistory, useParams } from 'react-router-dom';
 import { SwapOutlined, LockOutlined, UnlockOutlined } from '@ant-design/icons';
 import { TransferResult } from '@thorchain/asgardex-binance';
-import {
-  bnOrZero,
-  isValidBN,
-  bn,
-  validBNOrZero,
-} from '@thorchain/asgardex-util';
+import { isValidBN, bn, validBNOrZero } from '@thorchain/asgardex-util';
 
 import BigNumber from 'bignumber.js';
 import * as RD from '@devexperts/remote-data-ts';
@@ -63,17 +58,14 @@ import AddressInput from '../../components/uielements/addressInput';
 import ContentTitle from '../../components/uielements/contentTitle';
 import Slider from '../../components/uielements/slider';
 import StepBar from '../../components/uielements/stepBar';
-import { Maybe, Nothing, TokenData, FixmeType } from '../../types/bepswap';
+import { Maybe, Nothing, FixmeType } from '../../types/bepswap';
 import { User, AssetData } from '../../redux/wallet/types';
 import { TxStatus, TxTypes, TxResult } from '../../redux/app/types';
 
 import { PriceDataIndex, PoolDataMap } from '../../redux/midgard/types';
 import { RootState } from '../../redux/store';
 import { getAssetFromString } from '../../redux/midgard/utils';
-import {
-  PoolDetailStatusEnum,
-  AssetDetail,
-} from '../../types/generated/midgard';
+import { PoolDetailStatusEnum } from '../../types/generated/midgard';
 import { TransferFeesRD, TransferFees } from '../../redux/binance/types';
 import {
   getAssetDataFromBalance,
@@ -94,7 +86,6 @@ type Props = {
   txResult?: TxResult;
   txStatus: TxStatus;
   assetData: AssetData[];
-  assetArray: AssetDetail[];
   poolAddress: string;
   poolData: PoolDataMap;
   pools: string[];
@@ -117,7 +108,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     transferFees,
     txStatus,
     assetData,
-    assetArray,
     poolData,
     poolAddress,
     priceIndex,
@@ -135,6 +125,43 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   const swapPair = getSymbolPair(symbolpair);
   const sourceSymbol = swapPair?.source || '';
   const targetSymbol = swapPair?.target || '';
+
+  const swapSource = getTickerFormat(sourceSymbol);
+  const swapTarget = getTickerFormat(targetSymbol);
+
+  const enabledPools: string[] = useMemo(
+    () =>
+      Object.keys(poolData).reduce(
+        (result: string[], tokenName: string) => {
+          const tokenData = poolData[tokenName];
+
+          if (tokenData?.status === PoolDetailStatusEnum.Enabled) {
+            const asset = getAssetFromString(tokenData?.asset)?.symbol ?? '';
+            result.push(asset);
+          }
+          return result;
+        },
+        [RUNE_SYMBOL],
+      ),
+    [poolData],
+  );
+
+  // include all pool tokens for source if wallet is disconnected
+  const assetsInWallet: string[] = useMemo(
+    () => (user?.wallet ? assetData.map(data => data.asset) : enabledPools),
+    [assetData, enabledPools, user],
+  );
+
+  const { sourceAssets, targetAssets } = useMemo(
+    () =>
+      getValidSwapPairs(
+        assetsInWallet,
+        enabledPools,
+        sourceSymbol,
+        targetSymbol,
+      ),
+    [assetsInWallet, enabledPools, sourceSymbol, targetSymbol],
+  );
 
   const runePrice = validBNOrZero(priceIndex[RUNE_SYMBOL]);
 
@@ -181,7 +208,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [txStatus]);
 
-  const handleGetSwapData = (): Maybe<SwapData> => {
+  const swapData = useMemo((): Maybe<SwapData> => {
     if (!sourceSymbol || !targetSymbol) {
       return Nothing;
     }
@@ -196,9 +223,14 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
       inputValueAfterRune,
       runePrice,
     );
-  };
-
-  const swapData = handleGetSwapData();
+  }, [
+    poolData,
+    runePrice,
+    sourceSymbol,
+    targetSymbol,
+    getAmountAfterFee,
+    xValue,
+  ]);
 
   const isValidRecipient = async () => {
     return asgardexBncClient.validateAddress(address);
@@ -261,8 +293,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   };
 
   const handleConfirmSwap = async () => {
-    const swapData = handleGetSwapData();
-
     if (user && sourceSymbol && targetSymbol && swapData) {
       const tokenAmountToSwap = xValue;
 
@@ -423,8 +453,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
       return;
     }
 
-    // Validate calculation + slip
-    const swapData = handleGetSwapData();
     if (swapData && validateSlip(swapData.slip)) {
       if (wallet) {
         // get pool address before confirmation
@@ -625,62 +653,12 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     !sourceSymbol ||
     !targetSymbol ||
     !Object.keys(poolData).length ||
-    !isValidSwap(pools, sourceSymbol, targetSymbol)
+    !isValidSwap(pools, sourceSymbol, targetSymbol) ||
+    !swapData
   ) {
     return <Loader />;
   }
 
-  const swapSource = getTickerFormat(sourceSymbol);
-  const swapTarget = getTickerFormat(targetSymbol);
-
-  // TODO: need to be refactored
-  const tokensData: TokenData[] = Object.keys(poolData).reduce(
-    (result: TokenData[], tokenName: string) => {
-      const tokenData = poolData[tokenName];
-      const assetStr = tokenData?.asset;
-      const asset = assetStr ? getAssetFromString(assetStr) : null;
-      const price = bnOrZero(tokenData?.price);
-
-      if (
-        tokenData.status &&
-        tokenData.status === PoolDetailStatusEnum.Enabled
-      ) {
-        result.push({
-          asset: asset?.symbol ?? '',
-          price,
-        });
-      }
-      return result;
-    },
-    [],
-  );
-
-  const runeData = {
-    asset: RUNE_SYMBOL,
-    price: runePrice,
-  };
-
-  // add rune data in the target token list
-  tokensData.push(runeData);
-
-  const assetInfo = assetArray.map(data => ({
-    asset: getAssetFromString(data.asset).symbol || '',
-  }));
-  assetInfo.push({ asset: RUNE_SYMBOL });
-
-  // include all pool tokens for source if wallet is disconnected
-  const sourceInfo = user?.wallet ? assetData : assetInfo;
-
-  const { sourceData, targetData } = getValidSwapPairs(
-    sourceInfo,
-    tokensData,
-    sourceSymbol,
-    targetSymbol,
-  );
-
-  if (!swapData) {
-    return <Loader />;
-  }
   const { slip, outputAmount, outputPrice } = swapData;
 
   const sourcePriceBN = bn(priceIndex[sourceSymbol]);
@@ -720,7 +698,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
             <TokenCard
               inputTitle="input"
               asset={swapSource}
-              assetData={sourceData}
+              assetData={sourceAssets}
               amount={xValue}
               price={sourcePrice}
               priceIndex={priceIndex}
@@ -753,7 +731,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
                 'data-test': 'coincard-target-input',
               }}
               asset={swapTarget}
-              assetData={targetData}
+              assetData={targetAssets}
               amount={outputAmount}
               price={targetPrice}
               priceIndex={priceIndex}
@@ -874,7 +852,6 @@ export default compose(
       poolAddress: state.Midgard.poolAddress,
       poolData: state.Midgard.poolData,
       pools: state.Midgard.pools,
-      assetArray: state.Midgard.assetArray,
       priceIndex: state.Midgard.priceIndex,
       basePriceAsset: state.Midgard.basePriceAsset,
       transferFees: state.Binance.transferFees,

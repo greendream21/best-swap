@@ -15,7 +15,6 @@ import {
   PoolDetail,
   PoolDetailStatusEnum,
 } from '../../types/generated/midgard';
-import { AssetPair } from '../../types/bepswap';
 import { PoolDataMap } from '../../redux/midgard/types';
 import { SwapData } from './types';
 
@@ -137,53 +136,41 @@ describe('swap/utils/', () => {
 
   describe('getValidSwapPairs', () => {
     it('should filter source and target data', () => {
-      const assetInfo: AssetPair[] = [
-        { asset: 'BNB.BNB' },
-        { asset: 'BNB.BOLT-E42' },
-        { asset: 'BNB.FTM-585' },
-        { asset: 'BNB.LOK-3C0' },
-        { asset: 'BNB.BTC' },
-        { asset: 'BNB.ETH' },
+      const assetInfo: string[] = [
+        'BNB.BNB',
+        'BNB.BOLT-E42',
+        'BNB.FTM-585',
+        'BNB.LOK-3C0',
+        'BNB.BTC',
+        'BNB.ETH',
       ];
 
-      const poolInfo: AssetPair[] = [
-        { asset: 'BNB.BNB' },
-        { asset: 'BNB.BOLT-E42' },
-        { asset: 'BNB.LOK-3C0' },
-      ];
+      const poolInfo: string[] = ['BNB.BNB', 'BNB.BOLT-E42', 'BNB.LOK-3C0'];
 
       const result = getValidSwapPairs(assetInfo, poolInfo, RUNE_SYMBOL, 'BNB');
       const expected = {
-        sourceData: [
-          { asset: 'BNB.BNB' },
-          { asset: 'BNB.BOLT-E42' },
-          { asset: 'BNB.LOK-3C0' },
-        ],
-        targetData: [{ asset: 'BNB.BOLT-E42' }, { asset: 'BNB.LOK-3C0' }],
+        sourceAssets: ['BNB.BNB', 'BNB.BOLT-E42', 'BNB.LOK-3C0'],
+        targetAssets: ['BNB.BOLT-E42', 'BNB.LOK-3C0'],
       };
       expect(result).toEqual(expected);
     });
 
     it('shouldnt filter anything from empty pair', () => {
-      const assetInfo: AssetPair[] = [
-        { asset: 'BNB.BNB' },
-        { asset: 'BNB.BOLT-E42' },
-        { asset: 'BNB.FTM-585' },
-        { asset: 'BNB.LOK-3C0' },
-        { asset: 'BNB.BTC' },
-        { asset: 'BNB.ETH' },
+      const assetInfo: string[] = [
+        'BNB.BNB',
+        'BNB.BOLT-E42',
+        'BNB.FTM-585',
+        'BNB.LOK-3C0',
+        'BNB.BTC',
+        'BNB.ETH',
       ];
 
-      const poolInfo: AssetPair[] = [
-        { asset: 'BNB.BNB' },
-        { asset: 'BNB.BOLT-E42' },
-        { asset: 'BNB.LOK-3C0' },
-      ];
+      const poolInfo: string[] = ['BNB.BNB', 'BNB.BOLT-E42', 'BNB.LOK-3C0'];
 
       const result = getValidSwapPairs(assetInfo, poolInfo, '', '');
       const expected = {
-        sourceData: poolInfo,
-        targetData: poolInfo,
+        sourceAssets: poolInfo,
+        targetAssets: poolInfo,
       };
       expect(result).toEqual(expected);
     });

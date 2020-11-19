@@ -5,9 +5,6 @@ import {
   fork,
   call,
   delay,
-  race,
-  select,
-  take,
 } from 'redux-saga/effects';
 import { isEmpty as _isEmpty } from 'lodash';
 import byzantine from '@thorchain/byzantine-module';
@@ -41,7 +38,6 @@ import {
   GetRTAggregateByAssetPayload,
   PoolStatus,
 } from './types';
-import { RootState } from '../store';
 
 export const MIDGARD_MAX_RETRY = 3;
 export const MIDGARD_RETRY_DELAY = 1000; // ms
@@ -158,11 +154,7 @@ export function* getPoolAssets() {
     payload,
   }: ReturnType<typeof actions.getPoolAssets>) {
     try {
-      const pools = yield call(tryGetPools, payload);
-
-      yield put(actions.getPoolsSuccess(pools));
-
-      const assetDetails: AssetDetail[] = yield call(tryGetAssets, pools);
+      const assetDetails: AssetDetail[] = yield call(tryGetAssets, payload);
       const assetDetailIndex = getAssetDetailIndex(assetDetails);
       const assetsPayload: GetAssetsPayload = {
         assetDetails,
@@ -170,10 +162,6 @@ export function* getPoolAssets() {
       };
 
       yield put(actions.getPoolAssetsSuccess(assetsPayload));
-
-      const baseTokenTicker = getBasePriceAsset() || 'RUNE';
-      const priceIndex = getPriceIndex(assetDetails, baseTokenTicker);
-      yield put(actions.setPriceIndex(priceIndex));
     } catch (error) {
       yield put(actions.getPoolsFailed(error));
       yield put(actions.getPoolAssetsFailed(error));
@@ -186,24 +174,14 @@ export function* getPools() {
     payload,
   }: ReturnType<typeof actions.getPools>) {
     try {
-      // get pools and assets, set priceindex
-      yield put(actions.getPoolAssets(payload));
+      // get pools
+      const pools = yield call(tryGetPools, payload);
 
-      // wait until getPoolAssets action is finished
-      const { success } = yield race({
-        success: take('GET_POOL_ASSETS_SUCCESS'),
-        failed: take('GET_POOL_ASSETS_FAILED'),
-      });
+      yield put(actions.getPoolsSuccess(pools));
 
-      if (success) {
-        // if getPoolAssets action is successful, get pool details
-        const pools = yield select((state: RootState) => state.Midgard.pools);
-        yield put(
-          actions.getPoolData({ assets: pools, overrideAllPoolData: true }),
-        );
-      } else {
-        yield put(actions.getPoolsFailed(Error('GET POOL ASSETS FAILED')));
-      }
+      yield put(
+        actions.getPoolData({ assets: pools, overrideAllPoolData: true }),
+      );
     } catch (error) {
       yield put(actions.getPoolsFailed(error));
     }
@@ -294,6 +272,10 @@ export function* getPoolData() {
         sortedAssets,
         type,
       );
+
+      const baseTokenTicker = getBasePriceAsset() || 'RUNE';
+      const priceIndex = getPriceIndex(poolDetails, baseTokenTicker);
+      yield put(actions.setPriceIndex(priceIndex));
 
       yield put(
         actions.getPoolDataSuccess({

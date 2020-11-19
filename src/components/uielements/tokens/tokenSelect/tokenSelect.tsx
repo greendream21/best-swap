@@ -14,7 +14,7 @@ import TokenMenu from './tokenMenu';
 import TokenData from '../tokenData';
 import Ref from '../../../../helpers/event/ref';
 import clickedInNode from '../../../../helpers/event/clickedInNode';
-import { AssetPair, FixmeType } from '../../../../types/bepswap';
+import { FixmeType } from '../../../../types/bepswap';
 import { PriceDataIndex } from '../../../../redux/midgard/types';
 
 type DropdownCarretProps = {
@@ -29,17 +29,13 @@ const DropdownCarret: React.FC<DropdownCarretProps> = (
   const { open, onClick = () => {}, className = '' } = props;
   return (
     <DropdownIconHolder>
-      <DropdownIcon
-        open={open}
-        className={className}
-        onClick={onClick}
-      />
+      <DropdownIcon open={open} className={className} onClick={onClick} />
     </DropdownIconHolder>
   );
 };
 
 type Props = {
-  assetData: AssetPair[];
+  assetData: string[];
   asset: string;
   price: BigNumber;
   priceIndex: PriceDataIndex;
@@ -178,10 +174,7 @@ class TokenSelect extends React.Component<Props, State> {
           visible={openDropdown}
         >
           <TokenSelectWrapper className={`tokenSelect-wrapper ${className}`}>
-            <TokenData
-              asset={asset}
-              priceValue={formatBN(price)}
-            />
+            <TokenData asset={asset} priceValue={formatBN(price)} />
             {this.renderDropDownButton()}
           </TokenSelectWrapper>
         </Dropdown>
