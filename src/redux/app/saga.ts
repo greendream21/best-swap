@@ -64,7 +64,6 @@ export function* getPoolDetailViewData() {
     payload,
   }: ReturnType<typeof actions.getPoolViewData>) {
     yield put(midgardActions.getPoolAddress());
-    yield put(midgardActions.getPoolAssets());
     yield put(midgardActions.getNetworkInfo());
     yield put(walletActions.refreshWallet());
     yield put(

@@ -7,6 +7,7 @@ import { RUNE_SYMBOL } from '../../settings/assetData';
 import { Nothing, Maybe } from '../../types/bepswap';
 import { PriceDataIndex, AssetDetailMap } from './types';
 import {
+  PoolDetail,
   AssetDetail,
   ThorchainEndpoints,
   ThorchainEndpoint,
@@ -50,7 +51,7 @@ export const getAssetDetailIndex = (
 };
 
 export const getPriceIndex = (
-  assets: AssetDetail[],
+  poolDetails: PoolDetail[],
   baseAssetSymbol: string,
 ): PriceDataIndex => {
   let baseTokenPrice = bn(0);
@@ -59,21 +60,21 @@ export const getPriceIndex = (
     baseTokenPrice = bn(1);
   }
 
-  const baseTokenInfo = assets.find(assetInfo => {
-    const { asset = '' } = assetInfo;
+  const baseTokenInfo = poolDetails.find(poolDetail => {
+    const { asset = '' } = poolDetail;
     const { symbol } = getAssetFromString(asset);
     return symbol === baseAssetSymbol;
   });
 
-  baseTokenPrice = bn(baseTokenInfo?.priceRune ?? 1);
+  baseTokenPrice = bn(baseTokenInfo?.price ?? 1);
 
   let priceDataIndex: PriceDataIndex = {
     // formula: 1 / baseTokenPrice
     [RUNE_SYMBOL]: bn(1).div(baseTokenPrice),
   };
 
-  assets.forEach(assetInfo => {
-    const { asset = '', priceRune } = assetInfo;
+  poolDetails.forEach(poolDetail => {
+    const { asset = '', price: priceRune } = poolDetail;
 
     let price = bn(0);
     if (priceRune && baseTokenPrice) {
