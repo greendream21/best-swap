@@ -23,6 +23,7 @@ import {
   getOrderedPoolString,
   getEoDTime,
   getWeekAgoTime,
+  getAssetSymbolFromPayload,
 } from './utils';
 import { NET, getNet } from '../../env';
 import { UnpackPromiseResponse } from '../../types/util';
@@ -37,6 +38,7 @@ import {
   GetRTVolumeByAssetPayload,
   GetRTAggregateByAssetPayload,
   PoolStatus,
+  PoolDataMap,
 } from './types';
 
 export const MIDGARD_MAX_RETRY = 3;
@@ -273,13 +275,26 @@ export function* getPoolData() {
         type,
       );
 
+      const poolData = poolDetails.reduce(
+        (acc: PoolDataMap, poolDetail: PoolDetail) => {
+          const symbol = getAssetSymbolFromPayload(poolDetail);
+          return symbol
+            ? {
+                ...acc,
+                [symbol]: poolDetail,
+              }
+            : acc;
+        },
+        {} as PoolDataMap,
+      );
+
       const baseTokenTicker = getBasePriceAsset() || 'RUNE';
-      const priceIndex = getPriceIndex(poolDetails, baseTokenTicker);
+      const priceIndex = getPriceIndex(poolData, baseTokenTicker);
       yield put(actions.setPriceIndex(priceIndex));
 
       yield put(
         actions.getPoolDataSuccess({
-          poolDetails,
+          poolData,
           overrideAllPoolData,
         }),
       );

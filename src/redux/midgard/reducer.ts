@@ -9,10 +9,10 @@ import {
   getAssetSymbolFromPayload,
 } from './utils';
 import { getBasePriceAsset } from '../../helpers/webStorageHelper';
-import { State, PoolDataMap, StakerPoolData } from './types';
+import { State, StakerPoolData } from './types';
 import { MidgardActionTypes } from './actions';
 import { Nothing } from '../../types/bepswap';
-import { PoolDetail, StakersAssetData } from '../../types/generated/midgard';
+import { StakersAssetData } from '../../types/generated/midgard';
 
 // set base price asset to BUSD as a default
 const basePriceAsset = getBasePriceAsset() || 'BUSD';
@@ -96,7 +96,7 @@ const reducer: Reducer<State, MidgardActionTypes> = (
       return {
         ...state,
         basePriceAsset: payload,
-        priceIndex: getPriceIndex(state.assetArray, payload),
+        priceIndex: getPriceIndex(state.poolData, payload),
       };
     }
     case 'SET_PRICE_INDEX':
@@ -169,26 +169,13 @@ const reducer: Reducer<State, MidgardActionTypes> = (
       };
     case 'GET_POOL_DATA_SUCCESS': {
       const { payload } = action;
-      const { poolDetails = [] } = payload;
-      // Transform `PoolDetail[]` into `PoolDataMap` before storing data into state
-      const newPoolData = poolDetails.reduce(
-        (acc: PoolDataMap, poolDetail: PoolDetail) => {
-          const symbol = getAssetSymbolFromPayload(poolDetail);
-          return symbol
-            ? {
-                ...acc,
-                [symbol]: poolDetail,
-              }
-            : acc;
-        },
-        {} as PoolDataMap,
-      );
+      const { poolData = {} } = payload;
 
       return {
         ...state,
         poolData: {
           ...state.poolData,
-          ...newPoolData,
+          ...poolData,
         },
         poolDataLoading: false,
       };
