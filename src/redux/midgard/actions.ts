@@ -16,6 +16,7 @@ import {
   GetPoolDetailByAssetPayload,
   ThorchainData,
   PoolStatus,
+  PoolDataMap,
 } from './types';
 import {
   PoolDetail,
@@ -48,7 +49,7 @@ export const getPoolData = (payload: GetPoolDataPayload) =>
   ({ type: 'GET_POOL_DATA_REQUEST', payload } as const);
 
 type GetPoolDataSuccessPayload = {
-  poolDetails: PoolDetail[];
+  poolData: PoolDataMap;
   overrideAllPoolData: boolean;
 };
 export const getPoolDataSuccess = (payload: GetPoolDataSuccessPayload) =>

@@ -562,8 +562,6 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     [poolViewData, keyword, poolStatus, tokenList],
   );
 
-  console.log('isDesktopView', isDesktopView);
-
   const columns = isDesktopView ? desktopColumns : mobileColumns;
 
   const renderPoolTable = useMemo(() => {
