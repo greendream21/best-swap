@@ -3,6 +3,8 @@ import { key, palette } from 'styled-theme';
 import { Table } from 'antd';
 import { darken } from 'polished';
 
+import { media } from '../../../helpers/styleHelper';
+
 export const TableWrapper = styled(Table)`
   .ant-table-thead > tr > th {
     height: 70px;
@@ -67,5 +69,12 @@ export const TableWrapper = styled(Table)`
     > td {
     background-color: ${props =>
       darken(0.05, props.theme.palette.background[2])} !important;
+  }
+
+  .ant-table-cell {
+    padding: 8px;
+    ${media.sm`
+      padding: 16px 16px;
+    `}
   }
 `;
