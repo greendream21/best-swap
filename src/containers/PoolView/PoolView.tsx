@@ -432,14 +432,40 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         render: ({ target }: { target: string }) => (
           <Row>
             <Col xs={24} style={{ display: 'flex', justifyContent: 'center' }}>
-              <CoinIcon type={target} />
+              <CoinIcon type={target} size="small" />
             </Col>
           </Row>
         ),
       },
-      buttonCol,
+      {
+        key: 'poolprice',
+        title: 'pool price',
+        dataIndex: ['values', 'poolPrice'],
+        render: renderPoolPriceCell,
+        sorter: (a: PoolData, b: PoolData) => a.poolPrice.minus(b.poolPrice),
+        sortDirections: ['descend', 'ascend'],
+      },
+      {
+        key: 'depth',
+        title: 'depth',
+        dataIndex: ['values', 'depth'],
+        render: renderCell,
+        sorter: (a: PoolData, b: PoolData) =>
+          a.depth.amount().minus(b.depth.amount()),
+        sortDirections: ['descend', 'ascend'],
+        defaultSortOrder: 'descend',
+      },
+      {
+        key: 'volume24',
+        title: '24h vol',
+        dataIndex: ['values', 'volume24'],
+        render: renderCell,
+        sorter: (a: PoolData, b: PoolData) =>
+          a.volume24.amount().minus(b.volume24.amount()),
+        sortDirections: ['descend', 'ascend'],
+      },
     ],
-    [buttonCol],
+    [renderCell, renderPoolPriceCell],
   );
 
   const desktopColumns = useMemo(
