@@ -1,9 +1,16 @@
 import React, { useMemo, useCallback } from 'react';
 import moment from 'moment';
 import { defaults } from 'react-chartjs-2';
+import { Grid } from 'antd';
+import { useSelector } from 'react-redux';
+import themes, { ThemeType } from '@thorchain/asgardex-theme';
+
+import { RootState } from '../../redux/store';
 import Loader from '../utility/loaders/chart';
 import { abbreviateNumber } from '../../helpers/numberHelper';
 import { CodeIcon } from '../icons';
+
+import usePrice from '../../hooks/usePrice';
 
 import {
   ChartContainer,
@@ -38,14 +45,6 @@ type ChartInfo = {
 type Props = {
   hasLiquidity?: boolean;
   chartData: ChartInfo;
-  textColor: string;
-  lineColor: string;
-  gradientStart: string;
-  gradientStop: string;
-  backgroundGradientStart: string;
-  backgroundGradientStop: string;
-  viewMode: string;
-  hasBUSDPrice?: boolean;
 };
 
 defaults.global.defaultFontFamily = 'Exo 2';
@@ -54,20 +53,27 @@ defaults.global.defaultFontStyle = 'normal';
 
 const PoolChart: React.FC<Props> = React.memo(
   (props: Props): JSX.Element => {
-    const {
-      hasLiquidity = true,
-      chartData,
-      textColor,
-      lineColor,
-      gradientStart,
-      gradientStop,
-      backgroundGradientStart,
-      backgroundGradientStop,
-      viewMode,
-      hasBUSDPrice = false,
-    } = props;
+    const { hasLiquidity = true, chartData } = props;
     const [chartType, setChartType] = React.useState('VOLUME');
     const [chartTime, setChartTime] = React.useState('ALL');
+
+    const { hasBUSDPrice } = usePrice();
+    const isDesktopView = Grid.useBreakpoint()?.md ?? false;
+
+    const themeType = useSelector((state: RootState) => state.App.themeType);
+    const isLight = themeType === ThemeType.LIGHT;
+    const theme = isLight ? themes.light : themes.dark;
+    const colors = useMemo(
+      () => ({
+        text: theme.palette.text[0],
+        line: isLight ? '#436eb9' : '#1dd3e6',
+        backgroundGradientStart: isLight ? '#e4ebf8' : '#365979',
+        backgroundGradientStop: isLight ? '#ffffff' : '#0f1922',
+        gradientStart: isLight ? '#c5d3f0' : '#365979',
+        gradientStop: isLight ? '#ffffff' : '#0f1922',
+      }),
+      [isLight, theme],
+    );
 
     const totalDisplayChart =
       chartType === 'LIQUIDITY' ? chartData.liquidity : chartData.volume;
@@ -90,8 +96,8 @@ const PoolChart: React.FC<Props> = React.memo(
 
         if (ctx) {
           gradientStroke = ctx.createLinearGradient(0, 100, 0, 300);
-          gradientStroke.addColorStop(0, gradientStart);
-          gradientStroke.addColorStop(1, gradientStop);
+          gradientStroke.addColorStop(0, colors.gradientStart);
+          gradientStroke.addColorStop(1, colors.gradientStop);
           return {
             labels,
             datasets: [
@@ -99,13 +105,13 @@ const PoolChart: React.FC<Props> = React.memo(
                 fill: true,
                 lineTension: 0.5,
                 backgroundColor: gradientStroke,
-                borderColor: lineColor,
+                borderColor: colors.line,
                 borderCapStyle: 'butt',
                 borderDash: [],
                 borderDashOffset: 0.0,
                 borderJoinStyle: 'miter',
                 borderWidth: 2,
-                pointBorderColor: lineColor,
+                pointBorderColor: colors.line,
                 pointBackgroundColor: '#fff',
                 pointBorderWidth: 1,
                 pointHoverRadius: 1,
@@ -146,7 +152,7 @@ const PoolChart: React.FC<Props> = React.memo(
           ],
         };
       },
-      [gradientStart, gradientStop, labels, lineColor, values],
+      [colors, labels, values],
     );
 
     const options = useMemo(
@@ -188,8 +194,8 @@ const PoolChart: React.FC<Props> = React.memo(
               },
               ticks: {
                 fontSize: '14',
-                fontColor: textColor,
-                maxTicksLimit: viewMode === 'desktop-view' ? 5 : 3,
+                fontColor: colors.text,
+                maxTicksLimit: isDesktopView ? 5 : 3,
                 autoSkipPadding: 5,
                 maxRotation: 0,
                 callback(value: string) {
@@ -208,7 +214,7 @@ const PoolChart: React.FC<Props> = React.memo(
               id: 'value',
               ticks: {
                 autoSkip: true,
-                maxTicksLimit: viewMode === 'desktop-view' ? 4 : 3,
+                maxTicksLimit: isDesktopView ? 4 : 3,
                 callback(value: string) {
                   if (!hasBUSDPrice) {
                     if (Number(value) === 0) {
@@ -223,7 +229,7 @@ const PoolChart: React.FC<Props> = React.memo(
                 },
                 padding: 10,
                 fontSize: '14',
-                fontColor: textColor,
+                fontColor: colors.text,
               },
               gridLines: {
                 display: false,
@@ -232,7 +238,7 @@ const PoolChart: React.FC<Props> = React.memo(
           ],
         },
       }),
-      [hasBUSDPrice, textColor, viewMode],
+      [hasBUSDPrice, colors, isDesktopView],
     );
 
     const renderChart = () => {
@@ -297,8 +303,8 @@ const PoolChart: React.FC<Props> = React.memo(
 
     return (
       <ChartContainer
-        gradientStart={backgroundGradientStart}
-        gradientStop={backgroundGradientStop}
+        gradientStart={colors.backgroundGradientStart}
+        gradientStop={colors.backgroundGradientStop}
       >
         {renderHeader()}
         {renderChart()}

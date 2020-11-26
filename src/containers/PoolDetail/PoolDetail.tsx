@@ -2,11 +2,10 @@
 import React, { useEffect, useCallback, useMemo, useState } from 'react';
 import { compose } from 'redux';
 import { Row, Col, Grid, Popover } from 'antd';
-import { connect, useSelector } from 'react-redux';
+import { connect } from 'react-redux';
 import { get as _get } from 'lodash';
 import { withRouter, useParams, Link, useHistory } from 'react-router-dom';
 import { Token } from '@thorchain/asgardex-binance';
-import themes, { ThemeType } from '@thorchain/asgardex-theme';
 import { bnOrZero } from '@thorchain/asgardex-util';
 
 import { SwapOutlined, DatabaseOutlined } from '@ant-design/icons';
@@ -101,7 +100,7 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
     getPoolDetailByAsset,
   } = props;
 
-  const { getUSDPrice, pricePrefix, runePrice, hasBUSDPrice } = usePrice();
+  const { getUSDPrice, pricePrefix, runePrice } = usePrice();
   const [currentTxPage, setCurrentTxPage] = useState<number>(1);
 
   const {
@@ -116,10 +115,6 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
   const history = useHistory();
   const { symbol = '' } = useParams();
   const tokenSymbol = symbol.toUpperCase();
-
-  const themeType = useSelector((state: RootState) => state.App.themeType);
-  const isLight = themeType === ThemeType.LIGHT;
-  const theme = isLight ? themes.light : themes.dark;
 
   const chartData: ChartData = useMemo(() => {
     if (rtAggregateLoading) {
@@ -313,17 +308,7 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
         </Col>
         <Col xs={24} sm={24} md={16}>
           <ChartContainer>
-            <PoolChart
-              chartData={chartData}
-              textColor={theme.palette.text[0]}
-              lineColor={isLight ? '#436eb9' : '#1dd3e6'}
-              backgroundGradientStart={isLight ? '#e4ebf8' : '#365979'}
-              backgroundGradientStop={isLight ? '#ffffff' : '#0f1922'}
-              gradientStart={isLight ? '#c5d3f0' : '#365979'}
-              gradientStop={isLight ? '#ffffff' : '#0f1922'}
-              viewMode={viewModeClass}
-              hasBUSDPrice={hasBUSDPrice}
-            />
+            <PoolChart chartData={chartData} />
           </ChartContainer>
         </Col>
       </Row>

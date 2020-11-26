@@ -2,7 +2,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import * as H from 'history';
 import { compose } from 'redux';
-import { connect, useSelector } from 'react-redux';
+import { connect } from 'react-redux';
 import { withRouter, useHistory, Link } from 'react-router-dom';
 import { Row, Col, Grid, Popover } from 'antd';
 import {
@@ -13,7 +13,6 @@ import {
 } from '@ant-design/icons';
 import { Token } from '@thorchain/asgardex-binance';
 import { bnOrZero } from '@thorchain/asgardex-util';
-import themes, { ThemeType } from '@thorchain/asgardex-theme';
 
 import Label from '../../components/uielements/label';
 import AddIcon from '../../components/uielements/addIcon';
@@ -79,6 +78,7 @@ type Props = {
   stats: StatsData;
   assetData: AssetData[];
   user: Maybe<User>;
+  statsLoading: boolean;
   poolLoading: boolean;
   poolDataLoading: boolean;
   networkInfo: NetworkInfo;
@@ -100,6 +100,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     stats,
     assetData,
     user,
+    statsLoading,
     poolLoading,
     poolDataLoading,
     networkInfo,
@@ -120,16 +121,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
 
   const isDesktopView = Grid.useBreakpoint()?.md ?? true;
   const history = useHistory();
-  const {
-    getUSDPrice,
-    reducedPricePrefix,
-    priceIndex,
-    hasBUSDPrice,
-  } = usePrice();
-
-  const themeType = useSelector((state: RootState) => state.App.themeType);
-  const isLight = themeType === ThemeType.LIGHT;
-  const theme = isLight ? themes.light : themes.dark;
+  const { getUSDPrice, reducedPricePrefix, priceIndex } = usePrice();
 
   const loading = poolLoading || poolDataLoading;
   const wallet: Maybe<string> = user ? user.wallet : null;
@@ -612,23 +604,12 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
   return (
     <ContentWrapper className="pool-view-wrapper">
       <StatBar
-        loading={loading || networkInfoLoading}
+        loading={statsLoading || networkInfoLoading}
         stats={stats}
         networkInfo={networkInfo}
       />
       <div>
-        <PoolChart
-          hasLiquidity={false}
-          chartData={chartData}
-          textColor={theme.palette.text[0]}
-          lineColor={isLight ? '#436eb9' : '#1dd3e6'}
-          backgroundGradientStart={isLight ? '#e4ebf8' : '#365979'}
-          backgroundGradientStop={isLight ? '#ffffff' : '#0f1922'}
-          gradientStart={isLight ? '#c5d3f0' : '#365979'}
-          gradientStop={isLight ? '#ffffff' : '#0f1922'}
-          viewMode={isDesktopView ? 'desktop-view' : 'mobile-view'}
-          hasBUSDPrice={hasBUSDPrice}
-        />
+        <PoolChart hasLiquidity={false} chartData={chartData} />
       </div>
       <PoolViewTools>
         <PoolFilter selected={poolStatus} onClick={handleSelectPoolStatus} />
@@ -675,6 +656,7 @@ export default compose(
       pools: state.Midgard.pools,
       poolData: state.Midgard.poolData,
       stats: state.Midgard.stats,
+      statsLoading: state.Midgard.statsLoading,
       poolLoading: state.Midgard.poolLoading,
       poolDataLoading: state.Midgard.poolDataLoading,
       txData: state.Midgard.txData,

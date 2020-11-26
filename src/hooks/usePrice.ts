@@ -1,3 +1,5 @@
+import { useMemo, useCallback } from 'react';
+
 import { BigNumber } from 'bignumber.js';
 import { useDispatch, useSelector } from 'react-redux';
 import { bn, validBNOrZero, bnOrZero } from '@thorchain/asgardex-util';
@@ -20,73 +22,110 @@ const usePrice = () => {
   );
   const poolData = useSelector((state: RootState) => state.Midgard.poolData);
 
-  const runePrice = validBNOrZero(priceIndex[RUNE_SYMBOL]);
-  const busdPriceInRune = bnOrZero(poolData?.[BUSD_SYMBOL]?.price);
-  const hasBUSDPrice = !busdPriceInRune.isEqualTo(0);
+  const runePrice = useMemo(() => validBNOrZero(priceIndex[RUNE_SYMBOL]), [
+    priceIndex,
+  ]);
+  const busdPriceInRune = useMemo(
+    () => bnOrZero(poolData?.[BUSD_SYMBOL]?.price),
+    [poolData],
+  );
+  const hasBUSDPrice = useMemo(() => !busdPriceInRune.isEqualTo(0), [
+    busdPriceInRune,
+  ]);
 
-  const pricePrefix =
-    basePriceAsset === BUSD_SYMBOL
-      ? '$'
-      : getTickerFormat(basePriceAsset).toUpperCase();
+  const pricePrefix = useMemo(
+    () =>
+      basePriceAsset === BUSD_SYMBOL
+        ? '$'
+        : getTickerFormat(basePriceAsset).toUpperCase(),
+    [basePriceAsset],
+  );
 
-  const reducedPricePrefix = basePriceAsset === BUSD_SYMBOL ? '$' : '';
+  const reducedPricePrefix = useMemo(
+    () => (basePriceAsset === BUSD_SYMBOL ? '$' : ''),
+    [basePriceAsset],
+  );
 
-  const setBasePriceAsset = (symbol: string) => {
-    dispatch(midgardActions.setBasePriceAsset(symbol));
-  };
+  const setBasePriceAsset = useCallback(
+    (symbol: string) => {
+      dispatch(midgardActions.setBasePriceAsset(symbol));
+    },
+    [dispatch],
+  );
 
   // convert rune amount to the amount based in the selected asset
-  const getPrice = (value: BigNumber, decimal = 3) => {
-    return formatBaseAsTokenAmount(
-      baseAmount(value.multipliedBy(runePrice)),
-      decimal,
-    );
-  };
-
-  // convert rune amount to the USD based amount
-  const getUSDPrice = (value: BigNumber, decimal = 3) => {
-    if (!busdPriceInRune.isEqualTo(0)) {
+  const getPrice = useCallback(
+    (value: BigNumber, decimal = 3) => {
       return formatBaseAsTokenAmount(
-        baseAmount(value.dividedBy(busdPriceInRune)),
+        baseAmount(value.multipliedBy(runePrice)),
         decimal,
       );
-    }
-    return formatBaseAsTokenAmount(baseAmount(value), decimal);
-  };
+    },
+    [runePrice],
+  );
+
+  // convert rune amount to the USD based amount
+  const getUSDPrice = useCallback(
+    (value: BigNumber, decimal = 3) => {
+      if (!busdPriceInRune.isEqualTo(0)) {
+        return formatBaseAsTokenAmount(
+          baseAmount(value.dividedBy(busdPriceInRune)),
+          decimal,
+        );
+      }
+      return formatBaseAsTokenAmount(baseAmount(value), decimal);
+    },
+    [busdPriceInRune],
+  );
 
   // get price amount and prefix
-  const getPriceLabel = (value: BigNumber) => {
-    return `${pricePrefix} ${getPrice(value)}`;
-  };
+  const getPriceLabel = useCallback(
+    (value: BigNumber) => {
+      return `${pricePrefix} ${getPrice(value)}`;
+    },
+    [getPrice, pricePrefix],
+  );
 
   // get price amount and prefix
-  const getReducedPriceLabel = (value: BigNumber, decimal = 3) => {
-    return `${reducedPricePrefix}${getPrice(value, decimal)}`;
-  };
+  const getReducedPriceLabel = useCallback(
+    (value: BigNumber, decimal = 3) => {
+      return `${reducedPricePrefix}${getPrice(value, decimal)}`;
+    },
+    [getPrice, reducedPricePrefix],
+  );
 
   // get usd based price amount and prefix, fall back to rune if busd pool doesnt exist
-  const getUSDPriceLabel = (value: BigNumber, decimal = 0) => {
-    const prefix = !busdPriceInRune.isEqualTo(0) ? '$' : 'ᚱ';
-    const valueInUSD = !busdPriceInRune.isEqualTo(0)
-      ? getUSDPrice(value, decimal)
-      : formatBaseAsTokenAmount(baseAmount(value), decimal);
+  const getUSDPriceLabel = useCallback(
+    (value: BigNumber, decimal = 0) => {
+      const prefix = !busdPriceInRune.isEqualTo(0) ? '$' : 'ᚱ';
+      const valueInUSD = !busdPriceInRune.isEqualTo(0)
+        ? getUSDPrice(value, decimal)
+        : formatBaseAsTokenAmount(baseAmount(value), decimal);
 
-    return `${prefix} ${valueInUSD}`;
-  };
+      return `${prefix} ${valueInUSD}`;
+    },
+    [getUSDPrice, busdPriceInRune],
+  );
 
   // convert rune price to usd price
-  const convertPriceToUSD = (price: BigNumber) => {
-    const priceInUSD = !busdPriceInRune.isEqualTo(0)
-      ? price.dividedBy(busdPriceInRune)
-      : bn(0);
+  const convertPriceToUSD = useCallback(
+    (price: BigNumber) => {
+      const priceInUSD = !busdPriceInRune.isEqualTo(0)
+        ? price.dividedBy(busdPriceInRune)
+        : bn(0);
 
-    return priceInUSD.toNumber().toFixed(3);
-  };
+      return priceInUSD.toNumber().toFixed(3);
+    },
+    [busdPriceInRune],
+  );
 
   // get rune price in usd with prefix
-  const getPriceInUSD = (price: BigNumber) => {
-    return `$ ${convertPriceToUSD(price)}`;
-  };
+  const getPriceInUSD = useCallback(
+    (price: BigNumber) => {
+      return `$ ${convertPriceToUSD(price)}`;
+    },
+    [convertPriceToUSD],
+  );
 
   return {
     runePrice,
