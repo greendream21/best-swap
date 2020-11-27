@@ -208,6 +208,7 @@ const TxTable: React.FC<Props> = React.memo(
         loading={loading}
         columns={isDesktopView ? desktopColumns : mobileColumns}
         dataSource={txData._tag === 'RemoteSuccess' ? txData.value.txs : []}
+        size="small"
       />
     );
   },

@@ -51,11 +51,11 @@ export const TxInfoWrapper = styled.div`
 
 export const Seperator = styled.div`
   width: 0px;
-  height: 30px;
+  height: 20px;
   margin: 0 6px;
   border-left: 1px solid ${palette('gray', 1)};
   ${media.sm`
-    height: 40px;
+    height: 30px;
     margin: 0 10px;
   `}
 `;

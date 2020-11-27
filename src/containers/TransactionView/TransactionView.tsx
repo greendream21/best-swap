@@ -50,7 +50,7 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
 
   const isDesktopView = Grid.useBreakpoint().lg;
 
-  const limit = 5;
+  const limit = 10;
 
   const allTxTypeParams = `${TxDetailsTypeEnum.Swap},${TxDetailsTypeEnum.DoubleSwap},${TxDetailsTypeEnum.Stake},${TxDetailsTypeEnum.Unstake}`;
 
@@ -202,6 +202,7 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
         columns={columns}
         dataSource={data}
         rowKey={(record: TxDetails, index: number) => index}
+        size="small"
         loading={loading}
       />
     );
