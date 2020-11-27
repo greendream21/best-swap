@@ -135,8 +135,8 @@ export const getPoolData = (
   const runeStakedTotal = baseAmount(bnOrZero(poolDetail?.runeStakedTotal));
   const runeStakedTotalValue = `${formatBaseAsTokenAmount(runeStakedTotal)}`;
 
-  const depthValue = `${formatBaseAsTokenAmount(depth)}`;
-  const volume24Value = `${formatBaseAsTokenAmount(volume24)}`;
+  const depthValue = `${formatBaseAsTokenAmount(depth, 0)}`;
+  const volume24Value = `${formatBaseAsTokenAmount(volume24, 0)}`;
   const transactionValue = `${formatBaseAsTokenAmount(transaction)}`;
   const liqFeeValue = `${formatBaseAsTokenAmount(liqFee)}`;
   const roiValue = `${roi}%`;

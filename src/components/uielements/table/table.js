@@ -5,12 +5,13 @@ import { TableWrapper } from './table.style';
 
 class Table extends Component {
   render() {
-    const { className, ...props } = this.props;
+    const { className, size, ...props } = this.props;
 
     return (
       <TableWrapper
         className={`table-wrapper ${className}`}
         pagination={false}
+        sizeValue={size}
         {...props}
       />
     );

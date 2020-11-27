@@ -7,7 +7,8 @@ import { media } from '../../../helpers/styleHelper';
 
 export const TableWrapper = styled(Table)`
   .ant-table-thead > tr > th {
-    height: 70px;
+    height: ${props => (props.sizeValue === 'small' ? '52px' : '70px')};
+
     border-top: none;
     border-radius: none;
     border-color: ${palette('gray', 0)};
@@ -47,7 +48,7 @@ export const TableWrapper = styled(Table)`
   }
 
   .ant-table-tbody > tr > td {
-    height: 64px;
+    height: ${props => (props.sizeValue === 'small' ? '48px' : '64px')};
     border-color: ${palette('gray', 0)};
     color: ${palette('text', 0)};
     background-color: ${palette('background', 1)};
@@ -72,9 +73,25 @@ export const TableWrapper = styled(Table)`
   }
 
   .ant-table-cell {
-    padding: 8px;
-    ${media.sm`
-      padding: 16px 16px;
+    padding-top: 4px;
+    padding-right: 2px;
+    padding-left: 2px;
+    padding-bottom: 2px;
+    ${media.lg`
+      padding-top: 8px;
+      padding-right: 4px;
+      padding-left: 4px;
+      padding-bottom: 8px;
     `}
+
+    &:first-child {
+      padding-left: 12px;
+    }
+    &:last-child {
+      padding-right: 12px;
+    }
+
+    padding-top: ${props => props.sizeValue === 'small' && '0px'} !important;
+    padding-bottom: ${props => props.sizeValue === 'small' && '0px'} !important;
   }
 `;

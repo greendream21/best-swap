@@ -25,10 +25,10 @@ export const TxStatusWrapper = styled.div`
     cursor: pointer;
   }
 
-  height: 30px;
+  height: 20px;
   padding: 8px 8px;
   ${media.sm`
-    height: 40px;
+    height: 30px;
     padding: 10px 18px;
   `}
 
