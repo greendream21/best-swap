@@ -1,8 +1,10 @@
 import React from 'react';
+
 import { storiesOf } from '@storybook/react';
 
+import { TxDetailsTypeEnum } from 'types/generated/midgard';
+
 import TxLabel from './txLabel';
-import { TxDetailsTypeEnum } from '../../../types/generated/midgard';
 
 storiesOf('Components/Transaction/TxLabel', module).add('default', () => {
   return (

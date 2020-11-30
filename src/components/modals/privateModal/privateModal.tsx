@@ -1,22 +1,26 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
-import { Form } from 'antd';
-import { LockOutlined } from '@ant-design/icons';
+
 import { useSelector, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+
+import { LockOutlined } from '@ant-design/icons';
 import { delay } from '@thorchain/asgardex-util';
+import { Form } from 'antd';
 
-import Input from '../../uielements/input';
-import Label from '../../uielements/label';
 
-import * as midgardActions from '../../../redux/midgard/actions';
-import { StyledModal, ModalContent, ModalIcon } from './privateModal.style';
-import { RootState } from '../../../redux/store';
-import { verifyPrivateKey } from '../../../helpers/utils/walletUtils';
-import usePrevious from '../../../hooks/usePrevious';
-import useTimeout from '../../../hooks/useTimeout';
+import * as midgardActions from 'redux/midgard/actions';
+import { RootState } from 'redux/store';
+
+import usePrevious from 'hooks/usePrevious';
+import useTimeout from 'hooks/useTimeout';
+
+import { verifyPrivateKey } from 'helpers/utils/walletUtils';
 
 import { bncClient } from '../../../env';
+import Input from '../../uielements/input';
+import Label from '../../uielements/label';
 import showNotification from '../../uielements/notification';
+import { StyledModal, ModalContent, ModalIcon } from './privateModal.style';
 
 const MODAL_DISMISS_TIME = 15 * 1000; // 15s
 

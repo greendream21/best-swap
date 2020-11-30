@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
-import Nprogress from 'nprogress';
+
 import ReactPlaceholder from 'react-placeholder';
+
+import Nprogress from 'nprogress';
 
 import 'nprogress/nprogress.css';
 import 'react-placeholder/lib/reactPlaceholder.css';

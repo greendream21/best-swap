@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { palette } from 'styled-theme';
+
 import Modal from '../../uielements/modal';
 
 export const StyledModal = styled(Modal)`

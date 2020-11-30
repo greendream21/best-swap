@@ -4,8 +4,10 @@ import {
   formatBaseAsTokenAmount,
   baseAmount,
 } from '@thorchain/asgardex-token';
+
+import { AssetData } from 'redux/wallet/types';
+
 import { getAssetDataFromBalance, bnbBaseAmount } from './walletHelper';
-import { AssetData } from '../redux/wallet/types';
 
 describe('walletHelper', () => {
   const tusdb: AssetData = {

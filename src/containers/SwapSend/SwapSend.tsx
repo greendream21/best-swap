@@ -1,30 +1,74 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
-import * as H from 'history';
-import { compose } from 'redux';
+
 import { connect } from 'react-redux';
 import { withRouter, useHistory, useParams } from 'react-router-dom';
+
 import { SwapOutlined, LockOutlined, UnlockOutlined } from '@ant-design/icons';
-import { TransferResult } from '@thorchain/asgardex-binance';
-import { isValidBN, bn, validBNOrZero } from '@thorchain/asgardex-util';
-
-import BigNumber from 'bignumber.js';
 import * as RD from '@devexperts/remote-data-ts';
-
+import { TransferResult } from '@thorchain/asgardex-binance';
 import {
   TokenAmount,
   tokenAmount,
   baseToToken,
   BaseAmount,
 } from '@thorchain/asgardex-token';
+import { isValidBN, bn, validBNOrZero } from '@thorchain/asgardex-util';
 import Text from 'antd/lib/typography/Text';
-import Button from '../../components/uielements/button';
-import Label from '../../components/uielements/label';
-import Drag from '../../components/uielements/drag';
-import TokenCard from '../../components/uielements/tokens/tokenCard';
-import Modal from '../../components/uielements/modal';
-import PrivateModal from '../../components/modals/privateModal';
-import { bncClient, asgardexBncClient } from '../../env';
+import BigNumber from 'bignumber.js';
+import * as H from 'history';
+import { compose } from 'redux';
 
+import PrivateModal from 'components/modals/privateModal';
+import AddressInput from 'components/uielements/addressInput';
+import Button from 'components/uielements/button';
+import ContentTitle from 'components/uielements/contentTitle';
+import Drag from 'components/uielements/drag';
+import Label from 'components/uielements/label';
+import Modal from 'components/uielements/modal';
+import showNotification from 'components/uielements/notification';
+import Slider from 'components/uielements/slider';
+import StepBar from 'components/uielements/stepBar';
+import TokenCard from 'components/uielements/tokens/tokenCard';
+import Loader from 'components/utility/loaders/pageLoader';
+
+import * as appActions from 'redux/app/actions';
+import { TxStatus, TxTypes, TxResult } from 'redux/app/types';
+import { TransferFeesRD, TransferFees } from 'redux/binance/types';
+import * as midgardActions from 'redux/midgard/actions';
+import { PriceDataIndex, PoolDataMap } from 'redux/midgard/types';
+import { getAssetFromString } from 'redux/midgard/utils';
+import { RootState } from 'redux/store';
+import * as walletActions from 'redux/wallet/actions';
+import { User, AssetData } from 'redux/wallet/types';
+
+import useFee from 'hooks/useFee';
+import usePrevious from 'hooks/usePrevious';
+
+import {
+  getTickerFormat,
+  getSymbolPair,
+  isShortFormatPossible,
+} from 'helpers/stringHelper';
+import {
+  getSwapData,
+  confirmSwap,
+  getValidSwapPairs,
+  isValidSwap,
+} from 'helpers/utils/swapUtils';
+import { swapRequestUsingWalletConnect } from 'helpers/utils/trustwalletUtils';
+import { SwapData } from 'helpers/utils/types';
+import {
+  getAssetDataFromBalance,
+  bnbBaseAmount,
+} from 'helpers/walletHelper';
+
+import { RUNE_SYMBOL } from 'settings/assetData';
+import { CONFIRM_DISMISS_TIME } from 'settings/constants';
+
+import { Maybe, Nothing, FixmeType } from 'types/bepswap';
+import { PoolDetailStatusEnum } from 'types/generated/midgard';
+
+import { bncClient, asgardexBncClient } from '../../env';
 import {
   ContentWrapper,
   SwapAssetCard,
@@ -38,48 +82,7 @@ import {
   FeeParagraph,
   SliderSwapWrapper,
 } from './SwapSend.style';
-import {
-  getTickerFormat,
-  getSymbolPair,
-  isShortFormatPossible,
-} from '../../helpers/stringHelper';
-import {
-  getSwapData,
-  confirmSwap,
-  getValidSwapPairs,
-  isValidSwap,
-} from '../../helpers/utils/swapUtils';
-import { SwapData } from '../../helpers/utils/types';
-
-import * as appActions from '../../redux/app/actions';
-import * as walletActions from '../../redux/wallet/actions';
-import * as midgardActions from '../../redux/midgard/actions';
-import AddressInput from '../../components/uielements/addressInput';
-import ContentTitle from '../../components/uielements/contentTitle';
-import Slider from '../../components/uielements/slider';
-import StepBar from '../../components/uielements/stepBar';
-import { Maybe, Nothing, FixmeType } from '../../types/bepswap';
-import { User, AssetData } from '../../redux/wallet/types';
-import { TxStatus, TxTypes, TxResult } from '../../redux/app/types';
-
-import { PriceDataIndex, PoolDataMap } from '../../redux/midgard/types';
-import { RootState } from '../../redux/store';
-import { getAssetFromString } from '../../redux/midgard/utils';
-import { PoolDetailStatusEnum } from '../../types/generated/midgard';
-import { TransferFeesRD, TransferFees } from '../../redux/binance/types';
-import {
-  getAssetDataFromBalance,
-  bnbBaseAmount,
-} from '../../helpers/walletHelper';
-import { RUNE_SYMBOL } from '../../settings/assetData';
-import usePrevious from '../../hooks/usePrevious';
-import useFee from '../../hooks/useFee';
-
 import { SwapSendView } from './types';
-import showNotification from '../../components/uielements/notification';
-import { swapRequestUsingWalletConnect } from '../../helpers/utils/trustwalletUtils';
-import Loader from '../../components/utility/loaders/pageLoader';
-import { CONFIRM_DISMISS_TIME } from '../../settings/constants';
 
 type Props = {
   history: H.History;

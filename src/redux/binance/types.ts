@@ -1,3 +1,4 @@
+import { RemoteData } from '@devexperts/remote-data-ts';
 import {
   Token,
   TickerStatistics,
@@ -7,9 +8,9 @@ import {
   Market,
   WS,
 } from '@thorchain/asgardex-binance';
-import { RemoteData } from '@devexperts/remote-data-ts';
 import { BaseAmount } from '@thorchain/asgardex-token';
-import { Maybe } from '../../types/bepswap';
+
+import { Maybe } from 'types/bepswap';
 
 export type TransferEventRD = RemoteData<Error, WS.TransferEvent>;
 

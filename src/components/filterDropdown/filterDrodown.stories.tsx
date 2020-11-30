@@ -1,8 +1,10 @@
 import React from 'react';
+
 import { storiesOf } from '@storybook/react';
 
+import { TxDetailsTypeEnum } from 'types/generated/midgard';
+
 import FilterDropdown from './filterDropdown';
-import { TxDetailsTypeEnum } from '../../types/generated/midgard';
 
 storiesOf('Components/FilterDropdown', module).add('default', () => {
   return (

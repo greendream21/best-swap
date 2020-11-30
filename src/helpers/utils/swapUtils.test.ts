@@ -1,6 +1,16 @@
 import { WS } from '@thorchain/asgardex-binance';
-import { bn } from '@thorchain/asgardex-util';
 import { tokenAmount, baseAmount } from '@thorchain/asgardex-token';
+import { bn } from '@thorchain/asgardex-util';
+
+import { PoolDataMap } from 'redux/midgard/types';
+
+import { RUNE_SYMBOL } from 'settings/assetData';
+
+import {
+  PoolDetail,
+  PoolDetailStatusEnum,
+} from 'types/generated/midgard';
+
 import {
   isValidSwap,
   parseTransfer,
@@ -11,14 +21,7 @@ import {
   validateSwap,
   SwapErrorMsg,
 } from './swapUtils';
-import {
-  PoolDetail,
-  PoolDetailStatusEnum,
-} from '../../types/generated/midgard';
-import { PoolDataMap } from '../../redux/midgard/types';
 import { SwapData } from './types';
-
-import { RUNE_SYMBOL } from '../../settings/assetData';
 
 const bnbPoolInfo: PoolDetail = {
   asset: 'BNB.BNB',

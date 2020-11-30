@@ -1,14 +1,17 @@
 import React, { useMemo } from 'react';
-import { Dropdown, Row } from 'antd';
+
 import { DownOutlined } from '@ant-design/icons';
-import Menu from '../uielements/menu';
-import ConnectionStatus from '../uielements/connectionStatus';
+import { Dropdown, Row } from 'antd';
 
-import useNetwork from '../../hooks/useNetwork';
+import useNetwork from 'hooks/useNetwork';
+
+import { getHostnameFromUrl } from 'helpers/apiHelper';
+
+import { Maybe } from 'types/bepswap';
+
 import { asgardexBncClient } from '../../env';
-import { Maybe } from '../../types/bepswap';
-import { getHostnameFromUrl } from '../../helpers/apiHelper';
-
+import ConnectionStatus from '../uielements/connectionStatus';
+import Menu from '../uielements/menu';
 import { ConnectionMenuItem } from './header.style';
 
 type MenuItem = {
@@ -25,10 +28,7 @@ type Props = {
 const HeaderSetting: React.FC<Props> = (props: Props): JSX.Element => {
   const { midgardBasePath } = props;
 
-  const {
-    statusColor: status,
-    outboundQueueLevel,
-  } = useNetwork();
+  const { statusColor: status, outboundQueueLevel } = useNetwork();
 
   // Midgard IP on devnet OR on test|chaos|mainnet
   const midgardUrl =

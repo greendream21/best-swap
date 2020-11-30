@@ -1,8 +1,8 @@
-import { BigNumber } from 'bignumber.js';
 import { useMemo } from 'react';
+
 import { useSelector } from 'react-redux';
+
 import * as RD from '@devexperts/remote-data-ts';
-import { bn, validBNOrZero } from '@thorchain/asgardex-util';
 import {
   TokenAmount,
   tokenAmount,
@@ -10,15 +10,19 @@ import {
   BaseAmount,
   baseAmount,
 } from '@thorchain/asgardex-token';
+import { bn, validBNOrZero } from '@thorchain/asgardex-util';
+import { BigNumber } from 'bignumber.js';
 
-import { TransferFeesRD } from '../redux/binance/types';
 
-import { RootState } from '../redux/store';
-import { RUNE_SYMBOL } from '../settings/assetData';
+import { TransferFeesRD } from 'redux/binance/types';
+import { RootState } from 'redux/store';
+
 import {
   bnbBaseAmount,
   getAssetDataFromBalance,
-} from '../helpers/walletHelper';
+} from 'helpers/walletHelper';
+
+import { RUNE_SYMBOL } from 'settings/assetData';
 
 const useFee = (feeType = 'single') => {
   const priceIndex = useSelector(

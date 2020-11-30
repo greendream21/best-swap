@@ -1,4 +1,5 @@
-import { Maybe } from '../../types/bepswap';
+import { Maybe } from 'types/bepswap';
+
 import { TxTypes, TxStatus, TxResult } from './types';
 
 export const getBEPSwapData = () => ({ type: 'GET_BEPSWAP_DATA' } as const);

@@ -1,4 +1,13 @@
-import { AssetSymbol } from '../../types/bepswap';
+import { AssetSymbol } from 'types/bepswap';
+import {
+  PoolDetail,
+  StatsData,
+  StakersAssetData,
+  ThorchainEndpoints,
+  InlineResponse2001,
+  NetworkInfo,
+} from 'types/generated/midgard';
+
 import {
   GetStakerPoolDataPayload,
   PriceDataIndex,
@@ -18,14 +27,6 @@ import {
   PoolStatus,
   PoolDataMap,
 } from './types';
-import {
-  PoolDetail,
-  StatsData,
-  StakersAssetData,
-  ThorchainEndpoints,
-  InlineResponse2001,
-  NetworkInfo,
-} from '../../types/generated/midgard';
 
 export const getPools = (payload?: PoolStatus) =>
   ({ type: 'GET_POOLS_REQUEST', payload } as const);

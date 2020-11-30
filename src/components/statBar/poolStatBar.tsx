@@ -1,14 +1,16 @@
 import React from 'react';
-import { Row, Col } from 'antd';
 
 import { bnOrZero } from '@thorchain/asgardex-util';
+import { Row, Col } from 'antd';
+
+import usePrice from 'hooks/usePrice';
+
+import { PoolData } from 'helpers/utils/types';
+
+import { PoolDetail } from 'types/generated/midgard';
 
 import LabelLoader from '../utility/loaders/label';
-import { PoolData } from '../../helpers/utils/types';
 import { StyledStatistic } from './statBar.style';
-import { PoolDetail } from '../../types/generated/midgard';
-
-import usePrice from '../../hooks/usePrice';
 
 type Props = {
   stats: PoolData;

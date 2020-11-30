@@ -1,6 +1,8 @@
 import { tokenToBase, BaseAmount, baseAmount } from '@thorchain/asgardex-token';
-import { Nothing, Maybe } from '../types/bepswap';
-import { AssetData } from '../redux/wallet/types';
+
+import { AssetData } from 'redux/wallet/types';
+
+import { Nothing, Maybe } from 'types/bepswap';
 
 /**
  * return asset data from the user's balance

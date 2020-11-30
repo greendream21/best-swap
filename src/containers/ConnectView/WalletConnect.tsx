@@ -1,19 +1,24 @@
 import React, { useRef, useEffect } from 'react';
+
+// import { crypto } from '@binance-chain/javascript-sdk';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import PropTypes from 'prop-types';
-// import { crypto } from '@binance-chain/javascript-sdk';
-import { Row } from 'antd';
+
 import WalletConnect, { IAccount } from '@trustwallet/walletconnect';
 import WalletConnectQRCodeModal from '@walletconnect/qrcode-modal';
+import { Row } from 'antd';
+import PropTypes from 'prop-types';
+
+
+import Label from 'components/uielements/label';
+import showNotification from 'components/uielements/notification';
+
+import { RootState } from 'redux/store';
+import * as walletActions from 'redux/wallet/actions';
+
+import { Maybe } from 'types/bepswap';
 
 import { ContentWrapper, QRCodeWrapper } from './ConnectView.style';
-
-import * as walletActions from '../../redux/wallet/actions';
-import Label from '../../components/uielements/label';
-import { Maybe } from '../../types/bepswap';
-import showNotification from '../../components/uielements/notification';
-import { RootState } from '../../redux/store';
 
 type Props = {
   saveWallet: typeof walletActions.saveWallet;

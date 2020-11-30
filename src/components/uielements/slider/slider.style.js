@@ -1,6 +1,6 @@
+import { Slider } from 'antd';
 import styled from 'styled-components';
 import { palette } from 'styled-theme';
-import { Slider } from 'antd';
 
 export const SliderWrapper = styled(Slider)`
   &.ant-slider {

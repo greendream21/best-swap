@@ -1,7 +1,6 @@
+import { Input } from 'antd';
 import styled from 'styled-components';
 import { palette } from 'styled-theme';
-
-import { Input } from 'antd';
 
 export const CoinInputAdvancedView = styled(Input)`
   width: 100%;

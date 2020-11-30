@@ -1,9 +1,11 @@
 import React from 'react';
 
 import { bnOrZero, formatBN } from '@thorchain/asgardex-util';
+
+import { TxDetails, TxDetailsTypeEnum } from 'types/generated/midgard';
+
 import TxStatus from '../txStatus';
 import { TxInfoWrapper, Seperator, Dash } from './txInfo.style';
-import { TxDetails, TxDetailsTypeEnum } from '../../../types/generated/midgard';
 
 type Props = {
   data: TxDetails;
@@ -109,7 +111,8 @@ const TxInfo: React.FC<Props> = (props: Props): JSX.Element => {
     const inData1 = _in?.coins?.[0];
     const inData2 = _in?.coins?.[1];
     // eslint-disable-next-line no-nested-ternary
-    const inData = (inData1 && inData2) ? [inData1, inData2] : inData1 ? [inData1] : [];
+    const inData =
+      inData1 && inData2 ? [inData1, inData2] : inData1 ? [inData1] : [];
 
     return (
       <TxInfoWrapper className="txInfo-wrapper stake-tx">

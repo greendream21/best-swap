@@ -1,9 +1,12 @@
 import React from 'react';
+
 import { Link } from 'react-router-dom';
+
 import { SwitcherOutlined } from '@ant-design/icons';
-import WalletButton from '../walletButton';
+
 
 import Label from '../label';
+import WalletButton from '../walletButton';
 import { AddWalletWrapper } from './AddWallet.style';
 
 const AddWallet: React.FC = (): JSX.Element => (

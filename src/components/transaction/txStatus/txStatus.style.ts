@@ -1,7 +1,9 @@
 import styled from 'styled-components';
 import { palette } from 'styled-theme';
+
+import { media } from 'helpers/styleHelper';
+
 import { RoundValue } from './txStatus';
-import { media } from '../../../helpers/styleHelper';
 
 export const TxStatusWrapper = styled.div`
   display: flex;

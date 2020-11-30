@@ -1,11 +1,12 @@
-import * as url from 'url';
 import axios, { AxiosInstance } from 'axios';
 import rateLimit from 'axios-rate-limit';
+import * as url from 'url';
 
-import { DefaultApi } from '../types/generated/midgard';
-import { Maybe, Nothing } from '../types/bepswap';
-import { envOrDefault } from './envHelper';
+import { Maybe, Nothing } from 'types/bepswap';
+import { DefaultApi } from 'types/generated/midgard';
+
 import { isMainnet } from '../env';
+import { envOrDefault } from './envHelper';
 
 export const BINANCE_TESTNET_URL = envOrDefault(
   process.env.REACT_APP_BINANCE_TESTNET_URL,

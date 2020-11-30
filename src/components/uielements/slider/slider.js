@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+
 import PropTypes from 'prop-types';
 
 import { SliderWrapper, SliderLabel } from './slider.style';

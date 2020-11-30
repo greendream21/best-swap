@@ -7,6 +7,7 @@ import {
   Token,
   WS,
 } from '@thorchain/asgardex-binance';
+
 import { NET } from '../../env';
 import { TransferFeesRD } from './types';
 
@@ -80,13 +81,11 @@ export const getBinanceOpenOrdersSuccess = (payload: OrderList) =>
 export const getBinanceOpenOrdersFailed = (payload: Error) =>
   ({ type: 'GET_BINANCE_OPEN_ORDERS_FAILED', payload } as const);
 
-
 export const getBinanceFees = (net: NET) =>
   ({ type: 'GET_BINANCE_FEES', net } as const);
 
 export const getBinanceTransferFeesResult = (result: TransferFeesRD) =>
   ({ type: 'GET_BINANCE_TRANSFER_FEES_RESULT', result } as const);
-
 
 /* /////////////////////////////////////////////////////////////
 // ws
@@ -99,8 +98,9 @@ export type SubscribeBinanceTransfersPayload = {
   address: string;
   net: NET;
 };
-export const subscribeBinanceTransfers = (payload: SubscribeBinanceTransfersPayload) =>
-  ({ type: 'SUBSCRIBE_BINANCE_TRANSFERS', payload } as const);
+export const subscribeBinanceTransfers = (
+  payload: SubscribeBinanceTransfersPayload,
+) => ({ type: 'SUBSCRIBE_BINANCE_TRANSFERS', payload } as const);
 
 export const subscribeBinanceTransfersFailed = (error: Error) =>
   ({ type: 'SUBSCRIBE_BINANCE_TRANSFERS_FAILED', error } as const);

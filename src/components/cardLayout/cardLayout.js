@@ -2,11 +2,8 @@
 /* eslint-disable operator-linebreak */
 import styled, { css } from 'styled-components';
 import { palette } from 'styled-theme';
-import {
-  provideResponsiveShow,
-  media,
-  cleanTag,
-} from '../../helpers/styleHelper';
+
+import { provideResponsiveShow, media, cleanTag } from 'helpers/styleHelper';
 
 const Row = styled.div`
   display: flex;

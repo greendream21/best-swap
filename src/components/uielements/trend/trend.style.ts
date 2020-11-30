@@ -3,7 +3,7 @@ import { palette } from 'styled-theme';
 
 type TrendWrapperProps = {
   trend: boolean;
-}
+};
 
 export const TrendWrapper = styled.span`
   display: flex;

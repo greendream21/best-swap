@@ -1,11 +1,15 @@
 import React from 'react';
+
 import ReactDOM from 'react-dom';
+
 import BigNumber from 'bignumber.js';
+
+import { DEFAULT_BN_FORMAT } from 'settings/constants';
+
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
-import './settings/appStyle/global.css';
-import { DEFAULT_BN_FORMAT } from './settings/constants';
+import 'settings/appStyle/global.css';
 
 // Set default format - it can be updated in future (i18n)
 BigNumber.config({ FORMAT: DEFAULT_BN_FORMAT });

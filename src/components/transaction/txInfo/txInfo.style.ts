@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { palette } from 'styled-theme';
-import { media } from '../../../helpers/styleHelper';
+
+import { media } from 'helpers/styleHelper';
 
 export const TxInfoWrapper = styled.div`
   display: flex;

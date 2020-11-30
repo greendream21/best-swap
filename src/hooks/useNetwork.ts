@@ -1,13 +1,16 @@
 import { useSelector } from 'react-redux';
-import { bnOrZero } from '@thorchain/asgardex-util';
+
 import {
   BaseAmount,
   baseAmount,
   formatBaseAsTokenAmount,
 } from '@thorchain/asgardex-token';
+import { bnOrZero } from '@thorchain/asgardex-util';
 
-import { RootState } from '../redux/store';
-import { abbreviateNumberFromString } from '../helpers/numberHelper';
+
+import { RootState } from 'redux/store';
+
+import { abbreviateNumberFromString } from 'helpers/numberHelper';
 
 export enum QueueLevel {
   GOOD = 'GOOD', // queue < 10

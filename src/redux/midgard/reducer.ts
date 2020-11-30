@@ -1,18 +1,21 @@
-import { Reducer } from 'redux';
 import { initial, success, pending, failure } from '@devexperts/remote-data-ts';
-import { uniqWith as _uniqWith, isEqual as _isEqual } from 'lodash';
 import { bn } from '@thorchain/asgardex-util';
+import { uniqWith as _uniqWith, isEqual as _isEqual } from 'lodash';
+import { Reducer } from 'redux';
+
+import { getBasePriceAsset } from 'helpers/webStorageHelper';
+
+import { Nothing } from 'types/bepswap';
+import { StakersAssetData } from 'types/generated/midgard';
+
+import { MidgardActionTypes } from './actions';
+import { State, StakerPoolData } from './types';
 import {
   getBNBPoolAddress,
   getPoolAddress,
   getPriceIndex,
   getAssetSymbolFromPayload,
 } from './utils';
-import { getBasePriceAsset } from '../../helpers/webStorageHelper';
-import { State, StakerPoolData } from './types';
-import { MidgardActionTypes } from './actions';
-import { Nothing } from '../../types/bepswap';
-import { StakersAssetData } from '../../types/generated/midgard';
 
 // set base price asset to BUSD as a default
 const basePriceAsset = getBasePriceAsset() || 'BUSD';

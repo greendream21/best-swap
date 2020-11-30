@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { palette, size, key } from 'styled-theme';
-import { media } from '../../../helpers/styleHelper';
+
+import { media } from 'helpers/styleHelper';
 
 export const HeaderWrapper = styled.div`
   display: flex;

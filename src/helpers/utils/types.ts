@@ -1,6 +1,7 @@
-import BigNumber from 'bignumber.js';
 import { TokenAmount, BaseAmount } from '@thorchain/asgardex-token';
-import { FixmeType, Maybe } from '../../types/bepswap';
+import BigNumber from 'bignumber.js';
+
+import { FixmeType, Maybe } from 'types/bepswap';
 
 export type SwapData = {
   symbolFrom: string;

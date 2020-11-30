@@ -1,14 +1,17 @@
 import React from 'react';
-import { mount } from 'enzyme';
+
 import { create } from 'react-test-renderer';
 
-import { TxDetailsTypeEnum } from '../../types/generated/midgard';
+import { mount } from 'enzyme';
+
+import { TxDetailsTypeEnum } from 'types/generated/midgard';
+
 import FilterDropdown, { FilterValue } from './filterDropdown';
 
 describe('FilterDropdown', () => {
   const props: {
-    onClick: () => {},
-    value: FilterValue,
+    onClick: () => void;
+    value: FilterValue;
   } = {
     onClick: jest.fn(),
     value: TxDetailsTypeEnum.Swap,

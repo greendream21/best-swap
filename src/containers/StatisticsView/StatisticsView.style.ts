@@ -1,6 +1,6 @@
+import { Statistic } from 'antd';
 import styled from 'styled-components';
 import { palette } from 'styled-theme';
-import { Statistic } from 'antd';
 
 export const StyledStatistic = styled(Statistic)`
   background: ${palette('background', 0)};

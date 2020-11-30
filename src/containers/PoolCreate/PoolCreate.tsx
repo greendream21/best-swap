@@ -1,15 +1,10 @@
 import React, { useState, useCallback } from 'react';
-import * as H from 'history';
-import { compose } from 'redux';
+
 import { connect } from 'react-redux';
 import { withRouter, useHistory, useParams } from 'react-router-dom';
-import { Row, Col, Spin } from 'antd';
-import { get as _get } from 'lodash';
 
-import Text from 'antd/lib/typography/Text';
-
-import BigNumber from 'bignumber.js';
 import { TransferResult } from '@thorchain/asgardex-binance';
+import { TokenAmount, tokenAmount } from '@thorchain/asgardex-token';
 import {
   bn,
   validBNOrZero,
@@ -17,41 +12,48 @@ import {
   bnOrZero,
   formatBNCurrency,
 } from '@thorchain/asgardex-util';
-import { TokenAmount, tokenAmount } from '@thorchain/asgardex-token';
-import { bncClient } from '../../env';
+import { Row, Col, Spin } from 'antd';
+import Text from 'antd/lib/typography/Text';
+import BigNumber from 'bignumber.js';
+import * as H from 'history';
+import { get as _get } from 'lodash';
+import { compose } from 'redux';
 
-import Modal from '../../components/uielements/modal';
-import Label from '../../components/uielements/label';
-import Status from '../../components/uielements/status';
-import CoinIcon from '../../components/uielements/coins/coinIcon';
-import CoinCard from '../../components/uielements/coins/coinCard';
-import Drag from '../../components/uielements/drag';
-import { greyArrowIcon } from '../../components/icons';
-import PrivateModal from '../../components/modals/privateModal';
-import showNotification from '../../components/uielements/notification';
 
-import * as appActions from '../../redux/app/actions';
-import * as midgardActions from '../../redux/midgard/actions';
+import { greyArrowIcon } from 'components/icons';
+import PrivateModal from 'components/modals/privateModal';
+import CoinCard from 'components/uielements/coins/coinCard';
+import CoinIcon from 'components/uielements/coins/coinIcon';
+import Drag from 'components/uielements/drag';
+import Label from 'components/uielements/label';
+import Modal from 'components/uielements/modal';
+import showNotification from 'components/uielements/notification';
+import Status from 'components/uielements/status';
 
-import { ContentWrapper, LoaderWrapper } from './PoolCreate.style';
-import { getTickerFormat } from '../../helpers/stringHelper';
+import * as appActions from 'redux/app/actions';
+import { TxStatus, TxTypes } from 'redux/app/types';
+import { State as BinanceState } from 'redux/binance/types';
+import * as midgardActions from 'redux/midgard/actions';
+import { PriceDataIndex } from 'redux/midgard/types';
+import { RootState } from 'redux/store';
+import { User, AssetData } from 'redux/wallet/types';
+
+import useNetwork from 'hooks/useNetwork';
+
+import { getTickerFormat } from 'helpers/stringHelper';
 import {
   createPoolRequest,
   getAvailableTokensToCreate,
-} from '../../helpers/utils/poolUtils';
+} from 'helpers/utils/poolUtils';
+import { stakeRequestUsingWalletConnect } from 'helpers/utils/trustwalletUtils';
 
-import { RootState } from '../../redux/store';
-import { TxStatus, TxTypes } from '../../redux/app/types';
-import { State as BinanceState } from '../../redux/binance/types';
-import { PriceDataIndex } from '../../redux/midgard/types';
-import { Maybe, FixmeType } from '../../types/bepswap';
-import { User, AssetData } from '../../redux/wallet/types';
+import { RUNE_SYMBOL } from 'settings/assetData';
+import { CONFIRM_DISMISS_TIME } from 'settings/constants';
 
-import useNetwork from '../../hooks/useNetwork';
+import { Maybe, FixmeType } from 'types/bepswap';
 
-import { stakeRequestUsingWalletConnect } from '../../helpers/utils/trustwalletUtils';
-import { CONFIRM_DISMISS_TIME } from '../../settings/constants';
-import { RUNE_SYMBOL } from '../../settings/assetData';
+import { bncClient } from '../../env';
+import { ContentWrapper, LoaderWrapper } from './PoolCreate.style';
 
 type Props = {
   assetData: AssetData[];

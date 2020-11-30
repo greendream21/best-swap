@@ -1,8 +1,10 @@
-import showNotification from '../components/uielements/notification';
+import showNotification from 'components/uielements/notification';
+
+import { TxStatus, TxTypes, TxResult } from 'redux/app/types';
+
+import { Maybe } from 'types/bepswap';
 
 import { getTickerFormat } from './stringHelper';
-import { TxStatus, TxTypes, TxResult } from '../redux/app/types';
-import { Maybe } from '../types/bepswap';
 
 export const showTxFinishNotification = (
   txStatus: TxStatus,

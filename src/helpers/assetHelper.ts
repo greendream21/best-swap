@@ -1,5 +1,6 @@
 import { get as _get } from 'lodash';
-import { tokenNames } from '../settings/assetData';
+
+import { tokenNames } from 'settings/assetData';
 
 /**
  * get name of token for testnet or mainnet

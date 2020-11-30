@@ -1,9 +1,11 @@
 import React from 'react';
+
 import { FolderAddFilled } from '@ant-design/icons';
+
+import { Maybe } from 'types/bepswap';
 
 import Button from '../button';
 import { Props as ButtonProps } from '../button/button';
-import { Maybe } from '../../../types/bepswap';
 
 type ComponentProps = {
   connected?: boolean;

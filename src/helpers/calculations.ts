@@ -1,6 +1,7 @@
-import BigNumber from 'bignumber.js';
 import { TokenAmount, tokenAmount } from '@thorchain/asgardex-token';
-import { Maybe } from '../types/bepswap';
+import BigNumber from 'bignumber.js';
+
+import { Maybe } from 'types/bepswap';
 
 export type DoubleSwapCalcData = {
   X: TokenAmount;

@@ -1,10 +1,10 @@
 import React from 'react';
-import { AssetInfoWrapper } from './assetInfo.style';
+
+import { getTickerFormat } from 'helpers/stringHelper';
 
 import Coin from '../../coins/coin';
 import { CoinSize } from '../../coins/coin/types';
-
-import { getTickerFormat } from '../../../../helpers/stringHelper';
+import { AssetInfoWrapper } from './assetInfo.style';
 
 type Props = {
   asset: string;

@@ -1,7 +1,4 @@
-import {
-  isPoolPage,
-  matchSwapDetailPair,
-} from './routerHelper';
+import { isPoolPage, matchSwapDetailPair } from './routerHelper';
 
 describe('routeHelper', () => {
   describe('isPoolPage', () => {

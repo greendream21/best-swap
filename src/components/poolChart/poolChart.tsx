@@ -1,17 +1,21 @@
 import React, { useMemo, useCallback } from 'react';
-import moment from 'moment';
+
 import { defaults } from 'react-chartjs-2';
-import { Grid } from 'antd';
 import { useSelector } from 'react-redux';
+
 import themes, { ThemeType } from '@thorchain/asgardex-theme';
+import { Grid } from 'antd';
+import moment from 'moment';
 
-import { RootState } from '../../redux/store';
-import Loader from '../utility/loaders/chart';
-import { abbreviateNumber } from '../../helpers/numberHelper';
+
+import { RootState } from 'redux/store';
+
+import usePrice from 'hooks/usePrice';
+
+import { abbreviateNumber } from 'helpers/numberHelper';
+
 import { CodeIcon } from '../icons';
-
-import usePrice from '../../hooks/usePrice';
-
+import Loader from '../utility/loaders/chart';
 import {
   ChartContainer,
   HeaderContainer,

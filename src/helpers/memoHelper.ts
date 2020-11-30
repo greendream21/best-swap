@@ -1,14 +1,10 @@
-import { Maybe } from '../types/bepswap';
+import { Maybe } from 'types/bepswap';
 
 const getAssetFormat = (symbol: Maybe<string>) => {
   return `BNB.${symbol}`;
 };
 
-export const getSwapMemo = (
-  symbol: string,
-  addr: string,
-  sliplimit = '',
-) => {
+export const getSwapMemo = (symbol: string, addr: string, sliplimit = '') => {
   return `SWAP:${getAssetFormat(symbol)}:${addr}:${sliplimit}`;
 };
 

@@ -3,6 +3,7 @@
 import React, { ReactNode } from 'react';
 
 import { ModalProps } from 'antd/lib/modal';
+
 import { ModalWrapper } from './modal.style';
 
 interface Props extends ModalProps {

@@ -1,37 +1,41 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { compose } from 'redux';
-import { connect } from 'react-redux';
-import { Grid } from 'antd';
-import * as RD from '@devexperts/remote-data-ts';
-import { FormattedDate, FormattedTime } from 'react-intl';
 
-import Table from '../../components/uielements/table';
-import Label from '../../components/uielements/label';
-import FilterDropdown from '../../components/filterDropdown';
-import TxLabel from '../../components/transaction/txLabel';
-import TxInfo from '../../components/transaction/txInfo';
+import { FormattedDate, FormattedTime } from 'react-intl';
+import { connect } from 'react-redux';
+
+import * as RD from '@devexperts/remote-data-ts';
+import { Grid } from 'antd';
+import { compose } from 'redux';
+
+
+import FilterDropdown from 'components/filterDropdown';
+import TxInfo from 'components/transaction/txInfo';
+import TxLabel from 'components/transaction/txLabel';
+import AddWallet from 'components/uielements/addWallet';
+import Label from 'components/uielements/label';
+import Table from 'components/uielements/table';
+
+import * as midgardActions from 'redux/midgard/actions';
+import { TxDetailData } from 'redux/midgard/types';
+import { RootState } from 'redux/store';
+import { User } from 'redux/wallet/types';
+
+import usePrevious from 'hooks/usePrevious';
+
+import { Maybe } from 'types/bepswap';
+import {
+  TxDetails,
+  InlineResponse2001,
+  TxDetailsTypeEnum,
+} from 'types/generated/midgard';
 
 import {
   ContentWrapper,
   StyledPagination,
   MobileColumeHeader,
 } from './TransactionView.style';
-import {
-  TxDetails,
-  InlineResponse2001,
-  TxDetailsTypeEnum,
-} from '../../types/generated/midgard';
-import { Maybe } from '../../types/bepswap';
 
-import * as midgardActions from '../../redux/midgard/actions';
-import { TxDetailData } from '../../redux/midgard/types';
-import { User } from '../../redux/wallet/types';
-import { RootState } from '../../redux/store';
-import AddWallet from '../../components/uielements/addWallet';
-
-import usePrevious from '../../hooks/usePrevious';
-
-type ComponentProps = {};
+type ComponentProps = Record<string, never>;
 
 type ConnectedProps = {
   user: Maybe<User>;
@@ -94,107 +98,113 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
     }
   }, [refreshTxStatus, prevRefreshTxStatus]);
 
-  const filterCol = useMemo(() => ({
-    key: 'filter',
-    width: 200,
-    align: 'center',
-    title: <FilterDropdown value={filter} onClick={handleSelectFilter} />,
-    render: (text: string, rowData: TxDetails) => {
-      const { type } = rowData;
-
-      return <TxLabel type={type} />;
-    },
-  }), [filter]);
-
-  const desktopColumns = useMemo(() => ([
-    filterCol,
-    {
-      key: 'history',
-      title: 'history',
-      align: 'center',
-      render: (text: string, rowData: TxDetails) => {
-        return <TxInfo data={rowData} />;
-      },
-    },
-    {
-      key: 'date',
-      title: 'date',
-      align: 'center',
+  const filterCol = useMemo(
+    () => ({
+      key: 'filter',
       width: 200,
-      render: (text: string, rowData: TxDetails) => {
-        const { date: timestamp = 0 } = rowData;
-        const date = new Date(timestamp * 1000);
-        return (
-          <>
-            <FormattedDate
-              value={date}
-              year="numeric"
-              month="long"
-              day="2-digit"
-            />{' '}
-            <FormattedTime
-              value={date}
-              hour="numeric"
-              minute="numeric"
-              second="numeric"
-            />
-          </>
-        );
-      },
-    },
-  ]), [filterCol]);
-
-  const mobileColumns = useMemo(() => ([
-    {
-      key: 'history',
       align: 'center',
-      title: (
-        <MobileColumeHeader>
-          <div className="mobile-col-title">history</div>
-          <div className="mobile-col-filter">
-            <FilterDropdown value={filter} onClick={handleSelectFilter} />
-          </div>
-        </MobileColumeHeader>
-      ),
-      render: (_: string, rowData: TxDetails) => {
-        const { type, date: timestamp = 0, in: _in } = rowData;
-        const date = new Date(timestamp * 1000);
+      title: <FilterDropdown value={filter} onClick={handleSelectFilter} />,
+      render: (text: string, rowData: TxDetails) => {
+        const { type } = rowData;
 
-        return (
-          <div className="tx-history-row">
-            <div className="tx-history-data">
-              <TxLabel type={type} />
-              <div className="tx-history-detail">
-                <p>
-                  <FormattedDate
-                    value={date}
-                    year="numeric"
-                    month="2-digit"
-                    day="2-digit"
-                  />{' '}
-                  <FormattedTime
-                    value={date}
-                    hour="2-digit"
-                    minute="2-digit"
-                    second="2-digit"
-                    hour12={false}
-                  />
-                </p>
+        return <TxLabel type={type} />;
+      },
+    }),
+    [filter],
+  );
+
+  const desktopColumns = useMemo(
+    () => [
+      filterCol,
+      {
+        key: 'history',
+        title: 'history',
+        align: 'center',
+        render: (text: string, rowData: TxDetails) => {
+          return <TxInfo data={rowData} />;
+        },
+      },
+      {
+        key: 'date',
+        title: 'date',
+        align: 'center',
+        width: 200,
+        render: (text: string, rowData: TxDetails) => {
+          const { date: timestamp = 0 } = rowData;
+          const date = new Date(timestamp * 1000);
+          return (
+            <>
+              <FormattedDate
+                value={date}
+                year="numeric"
+                month="long"
+                day="2-digit"
+              />{' '}
+              <FormattedTime
+                value={date}
+                hour="numeric"
+                minute="numeric"
+                second="numeric"
+              />
+            </>
+          );
+        },
+      },
+    ],
+    [filterCol],
+  );
+
+  const mobileColumns = useMemo(
+    () => [
+      {
+        key: 'history',
+        align: 'center',
+        title: (
+          <MobileColumeHeader>
+            <div className="mobile-col-title">history</div>
+            <div className="mobile-col-filter">
+              <FilterDropdown value={filter} onClick={handleSelectFilter} />
+            </div>
+          </MobileColumeHeader>
+        ),
+        render: (_: string, rowData: TxDetails) => {
+          const { type, date: timestamp = 0, in: _in } = rowData;
+          const date = new Date(timestamp * 1000);
+
+          return (
+            <div className="tx-history-row">
+              <div className="tx-history-data">
+                <TxLabel type={type} />
+                <div className="tx-history-detail">
+                  <p>
+                    <FormattedDate
+                      value={date}
+                      year="numeric"
+                      month="2-digit"
+                      day="2-digit"
+                    />{' '}
+                    <FormattedTime
+                      value={date}
+                      hour="2-digit"
+                      minute="2-digit"
+                      second="2-digit"
+                      hour12={false}
+                    />
+                  </p>
+                </div>
+              </div>
+              <div className="tx-history-info">
+                <TxInfo data={rowData} />
               </div>
             </div>
-            <div className="tx-history-info">
-              <TxInfo data={rowData} />
-            </div>
-          </div>
-        );
+          );
+        },
       },
-    },
-  ]), [filter]);
+    ],
+    [filter],
+  );
 
-  const renderTxTable = (
-    data: TxDetails[],
-    loading: boolean,
-  ) => {
+  const renderTxTable = (data: TxDetails[], loading: boolean) => {
     const columns = isDesktopView ? desktopColumns : mobileColumns;
 
     return (

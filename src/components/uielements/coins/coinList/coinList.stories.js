@@ -1,8 +1,9 @@
 import React from 'react';
+
 import { storiesOf } from '@storybook/react';
 
-import CoinList from './index';
 import { assetsData, stakeData } from './data';
+import CoinList from './index';
 
 storiesOf('Components/Coins/CoinList', module).add('default', () => {
   return (

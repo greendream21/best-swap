@@ -1,16 +1,22 @@
 import React, { useCallback } from 'react';
+
+
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
+
 import { Row, Col } from 'antd';
 
-import { Link } from 'react-router-dom';
-import { ContentWrapper } from './StatsView.style';
+import Label from 'components/uielements/label';
+import StatusGroup from 'components/uielements/statusGroup';
+import WalletButton from 'components/uielements/walletButton';
+
+import { RootState } from 'redux/store';
+import { User } from 'redux/wallet/types';
+
+import { Maybe, FixmeType } from 'types/bepswap';
+
 import { stats } from './data';
-import StatusGroup from '../../components/uielements/statusGroup';
-import { RootState } from '../../redux/store';
-import { Maybe, FixmeType } from '../../types/bepswap';
-import { User } from '../../redux/wallet/types';
-import WalletButton from '../../components/uielements/walletButton';
-import Label from '../../components/uielements/label';
+import { ContentWrapper } from './StatsView.style';
 
 type Props = {
   user: Maybe<User>;

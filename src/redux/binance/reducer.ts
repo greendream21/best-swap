@@ -1,8 +1,10 @@
-import { Reducer } from 'redux';
 import { initial, pending, success, failure } from '@devexperts/remote-data-ts';
-import { State } from './types';
+import { Reducer } from 'redux';
+
+import { Nothing } from 'types/bepswap';
+
 import { BinanceActionTypes } from './actions';
-import { Nothing } from '../../types/bepswap';
+import { State } from './types';
 
 const initState: State = {
   tokenList: [],

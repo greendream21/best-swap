@@ -1,14 +1,17 @@
 /* eslint-disable react/no-unescaped-entities */
 import React, { useCallback } from 'react';
-import { Popover } from 'antd';
-import {
-  CheckCircleOutlined,
-  FieldTimeOutlined,
-} from '@ant-design/icons';
 
-import { PoolFilterWrapper, PopoverContent, PopoverIcon } from './poolFilter.style';
+import { CheckCircleOutlined, FieldTimeOutlined } from '@ant-design/icons';
+import { Popover } from 'antd';
+
+import { PoolDetailStatusEnum } from 'types/generated/midgard/api';
+
 import Button from '../uielements/button';
-import { PoolDetailStatusEnum } from '../../types/generated/midgard/api';
+import {
+  PoolFilterWrapper,
+  PopoverContent,
+  PopoverIcon,
+} from './poolFilter.style';
 
 type Props = {
   selected: PoolDetailStatusEnum;
@@ -31,13 +34,10 @@ const PoolFilter: React.FC<Props> = (props: Props): JSX.Element => {
 
   const renderPopoverContent = () => (
     <PopoverContent>
-      Pools don't immediately become enabled on THORChain and must
-      participate in a liquidity competition to become enabled.
-
-      Every 50k blocks (approx 3 days), the pool with the most
-      liquidity wins & becomes enabled.
-
-      During this time swapping is disabled but liquidity can be added & withdrawn.
+      Pools don't immediately become enabled on THORChain and must participate
+      in a liquidity competition to become enabled. Every 50k blocks (approx 3
+      days), the pool with the most liquidity wins & becomes enabled. During
+      this time swapping is disabled but liquidity can be added & withdrawn.
     </PopoverContent>
   );
 

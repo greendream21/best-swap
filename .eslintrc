@@ -1,6 +1,11 @@
 // Severity codes: 0 = off, 1 = warn, 2 = error
 {
   "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2020,
+    "sourceType": "module",
+    "project": "./tsconfig.json"
+  },
   "extends": [
     "airbnb",
     "airbnb/hooks",
@@ -23,7 +28,7 @@
   "settings": {
     "import/resolver": {
       "node": {
-        "moduleDirectory": ["node_modules", "src"],
+        "paths": ["src"],
         "extensions": [".js", ".jsx", ".ts", ".tsx"]
       }
     }
@@ -71,6 +76,7 @@
       }
     ],
     "no-constant-condition": 0,
+    "no-nested-ternary": 0,
     "import/no-dynamic-require": 0,
     "import/no-extraneous-dependencies": 0,
     "import/prefer-default-export": 0,
@@ -121,6 +127,7 @@
     "@typescript-eslint/no-empty-function": "off",
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/no-use-before-define": "off",
+    "@typescript-eslint/explicit-module-boundary-types": 0,
     "@typescript-eslint/no-unused-vars": [
       "error",
       {
@@ -138,6 +145,73 @@
         "jsx": "never",
         "ts": "never",
         "tsx": "never"
+      }
+    ],
+    "import/order": [
+      "error",
+      {
+        "groups": [
+          ["builtin", "external", "internal"],
+          ["parent", "sibling", "index"]
+        ],
+        "pathGroups": [
+          {
+            "group": "builtin",
+            "pattern": "react-**",
+            "position": "before"
+          },
+          {
+            "group": "builtin",
+            "pattern": "react",
+            "position": "before"
+          },
+          {
+            "group": "internal",
+            "pattern": "containers/**",
+            "position": "after"
+          },
+          {
+            "group": "internal",
+            "pattern": "components/**",
+            "position": "after"
+          },
+          {
+            "group": "internal",
+            "pattern": "redux/**",
+            "position": "after"
+          },
+          {
+            "group": "internal",
+            "pattern": "hooks/**",
+            "position": "after"
+          },
+          {
+            "group": "internal",
+            "pattern": "helpers/**",
+            "position": "after"
+          },
+          {
+            "group": "internal",
+            "pattern": "settings/**",
+            "position": "after"
+          },
+          {
+            "group": "internal",
+            "pattern": "types/**",
+            "position": "after"
+          },
+          {
+            "group": "internal",
+            "pattern": "assets/**",
+            "position": "after"
+          }
+        ],
+        "pathGroupsExcludedImportTypes": ["builtin"],
+        "newlines-between": "always",
+        "alphabetize": {
+          "order": "asc",
+          "caseInsensitive": true
+        }
       }
     ]
   }

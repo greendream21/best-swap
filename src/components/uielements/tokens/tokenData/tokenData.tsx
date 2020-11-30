@@ -1,9 +1,8 @@
 import React from 'react';
 
-import { TokenDataWrapper } from './tokenData.style';
-
 import Coin from '../../coins/coin';
 import { CoinSize } from '../../coins/coin/types';
+import { TokenDataWrapper } from './tokenData.style';
 
 type Props = {
   asset: string;

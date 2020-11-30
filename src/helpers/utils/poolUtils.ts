@@ -5,24 +5,24 @@ import {
   WS,
 } from '@thorchain/asgardex-binance';
 import {
-  bnOrZero,
-  validBNOrZero,
-  isValidBN,
-} from '@thorchain/asgardex-util';
-import {
   TokenAmount,
   baseAmount,
   formatBaseAsTokenAmount,
 } from '@thorchain/asgardex-token';
+import { bnOrZero, validBNOrZero, isValidBN } from '@thorchain/asgardex-util';
+
+import { PriceDataIndex } from 'redux/midgard/types';
+import { getAssetFromString } from 'redux/midgard/utils';
+import { AssetData } from 'redux/wallet/types';
+
+import { RUNE_SYMBOL } from 'settings/assetData';
+
+import { FixmeType, Maybe } from 'types/bepswap';
+import { PoolDetail } from 'types/generated/midgard';
+
 import { getStakeMemo, getWithdrawMemo } from '../memoHelper';
 import { getTickerFormat } from '../stringHelper';
-import { PriceDataIndex } from '../../redux/midgard/types';
-import { PoolDetail } from '../../types/generated/midgard';
-import { getAssetFromString } from '../../redux/midgard/utils';
-import { AssetData } from '../../redux/wallet/types';
-import { FixmeType, Maybe } from '../../types/bepswap';
 import { PoolData } from './types';
-import { RUNE_SYMBOL } from '../../settings/assetData';
 
 // TODO: Refactor pool utils
 

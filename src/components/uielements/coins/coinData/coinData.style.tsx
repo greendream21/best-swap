@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { palette } from 'styled-theme';
-import { Maybe } from '../../../../types/bepswap';
+
+import { Maybe } from 'types/bepswap';
 
 export type CoinDataWrapperSize = 'small' | 'big';
 export type CoinDataWrapperType = 'wallet' | 'normal';

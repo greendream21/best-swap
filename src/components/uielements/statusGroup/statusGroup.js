@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
+
 import PropTypes from 'prop-types';
 
-import { StatusGroupWrapper } from './statusGroup.style';
 import Label from '../label';
+import { StatusGroupWrapper } from './statusGroup.style';
 
 class StatusGroup extends Component {
   render() {

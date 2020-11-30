@@ -1,20 +1,21 @@
 import React, { useMemo } from 'react';
-import { Row } from 'antd';
-import { FullscreenExitOutlined, CloseOutlined } from '@ant-design/icons';
 
+import { FullscreenExitOutlined, CloseOutlined } from '@ant-design/icons';
 import { tokenAmount } from '@thorchain/asgardex-token';
-import StepBar from '../../uielements/stepBar';
-import TxTimer from '../../uielements/txTimer';
+import { Row } from 'antd';
+
+import { MAX_VALUE } from 'redux/app/const';
+import { TxStatus, TxResult, TxTypes } from 'redux/app/types';
+
+import { BINANCE_TX_BASE_URL } from 'helpers/apiHelper';
+import { getTickerFormat } from 'helpers/stringHelper';
+
 import Button from '../../uielements/button';
 import CoinData from '../../uielements/coins/coinData';
+import StepBar from '../../uielements/stepBar';
 import Trend from '../../uielements/trend';
-
+import TxTimer from '../../uielements/txTimer';
 import { StyledModal, ModalContent } from './confirmModal.style';
-
-import { getTickerFormat } from '../../../helpers/stringHelper';
-import { TxStatus, TxResult, TxTypes } from '../../../redux/app/types';
-import { BINANCE_TX_BASE_URL } from '../../../helpers/apiHelper';
-import { MAX_VALUE } from '../../../redux/app/const';
 
 type Props = {
   txStatus: TxStatus;

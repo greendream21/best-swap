@@ -1,25 +1,26 @@
 import React, { useState, useCallback } from 'react';
-import { useHistory } from 'react-router-dom';
-import { WalletOutlined, SyncOutlined } from '@ant-design/icons';
+
 import { connect } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+
+import { WalletOutlined, SyncOutlined } from '@ant-design/icons';
+import { delay } from '@thorchain/asgardex-util';
 import copy from 'copy-to-clipboard';
 
-import { delay } from '@thorchain/asgardex-util';
-import Button from '../../components/uielements/button';
-import Label from '../../components/uielements/label';
-import WalletButton from '../../components/uielements/walletButton';
+
+import Button from 'components/uielements/button';
+import Label from 'components/uielements/label';
+import showNotification from 'components/uielements/notification';
+import WalletButton from 'components/uielements/walletButton';
+
+import { RootState } from 'redux/store';
+import * as walletActions from 'redux/wallet/actions';
+import { User } from 'redux/wallet/types';
+
+import { Maybe } from 'types/bepswap';
+
+import { WalletDrawerWrapper, Drawer } from './WalletDrawer.style';
 import WalletView from './WalletView';
-
-import {
-  WalletDrawerWrapper,
-  Drawer,
-} from './WalletDrawer.style';
-
-import * as walletActions from '../../redux/wallet/actions';
-import { RootState } from '../../redux/store';
-import { User } from '../../redux/wallet/types';
-import { Maybe } from '../../types/bepswap';
-import showNotification from '../../components/uielements/notification';
 
 type Props = {
   user: Maybe<User>;

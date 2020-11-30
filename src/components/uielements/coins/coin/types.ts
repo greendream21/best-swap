@@ -1,1 +1,1 @@
-export type CoinSize = 'small' | 'big'
+export type CoinSize = 'small' | 'big';

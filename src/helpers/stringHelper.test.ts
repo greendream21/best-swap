@@ -1,3 +1,5 @@
+import { Pair } from 'types/bepswap';
+
 import {
   getTickerFormat,
   getSymbolPair,
@@ -5,7 +7,6 @@ import {
   isShortFormatPossible,
   getShortAmount,
 } from './stringHelper';
-import { Pair } from '../types/bepswap';
 
 describe('helpers/stringHelper/', () => {
   // getTickerFormat

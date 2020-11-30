@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
+
 import PropTypes from 'prop-types';
 
-import { FormGroupWrapper } from './formGroup.style';
 import Label from '../label';
+import { FormGroupWrapper } from './formGroup.style';
 
 class FormGroup extends Component {
   render() {

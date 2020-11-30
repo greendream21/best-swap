@@ -1,6 +1,6 @@
+import { Collapse } from 'antd';
 import styled from 'styled-components';
 import { palette, key } from 'styled-theme';
-import { Collapse } from 'antd';
 
 const { Panel: AntPanel } = Collapse;
 

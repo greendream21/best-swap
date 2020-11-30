@@ -1,3 +1,15 @@
+import { failure, success } from '@devexperts/remote-data-ts';
+import {
+  Token,
+  Market,
+  TickerStatistics,
+  Account,
+  TxPage,
+  OrderList,
+  WS,
+} from '@thorchain/asgardex-binance';
+import { Method, AxiosResponse, AxiosRequestConfig } from 'axios';
+import { eventChannel, END } from 'redux-saga';
 import {
   all,
   delay,
@@ -8,32 +20,22 @@ import {
   take,
 } from 'redux-saga/effects';
 
-import { Method, AxiosResponse, AxiosRequestConfig } from 'axios';
-import {
-  Token,
-  Market,
-  TickerStatistics,
-  Account,
-  TxPage,
-  OrderList,
-  WS,
-} from '@thorchain/asgardex-binance';
-import { eventChannel, END } from 'redux-saga';
-import { failure, success } from '@devexperts/remote-data-ts';
-import * as actions from './actions';
 import {
   getBinanceURL,
   getBinanceMainnetURL,
   getHeaders,
   binanceRequest as axiosRequest,
-} from '../../helpers/apiHelper';
-import { getTickerFormat } from '../../helpers/stringHelper';
-import { getTokenName } from '../../helpers/assetHelper';
-import { Maybe, Nothing, FixmeType } from '../../types/bepswap';
+} from 'helpers/apiHelper';
+import { getTokenName } from 'helpers/assetHelper';
+import { getTransferFeeds } from 'helpers/binanceHelper';
+import { envOrDefault } from 'helpers/envHelper';
+import { getTickerFormat } from 'helpers/stringHelper';
+
+import { Maybe, Nothing, FixmeType } from 'types/bepswap';
+
 import { NET, getNet } from '../../env';
-import { envOrDefault } from '../../helpers/envHelper';
+import * as actions from './actions';
 import { Fees } from './types';
-import { getTransferFeeds } from '../../helpers/binanceHelper';
 
 /* /////////////////////////////////////////////////////////////
 // api
@@ -169,9 +171,7 @@ export function* getBinanceOpenOrders() {
 
     const params = {
       method: 'get' as Method,
-      url: getBinanceURL(
-        `orders/open?address=${address}&symbol=${symbol}`,
-      ),
+      url: getBinanceURL(`orders/open?address=${address}&symbol=${symbol}`),
       headers: getHeaders(),
     };
 
@@ -191,9 +191,7 @@ export function* getBinanceOpenOrders() {
 function* tryGetBinanceFees(net: NET) {
   const endpoint = 'fees';
   const url =
-    net === NET.MAIN
-      ? getBinanceMainnetURL(endpoint)
-      : getBinanceURL(endpoint);
+    net === NET.MAIN ? getBinanceMainnetURL(endpoint) : getBinanceURL(endpoint);
   const params = {
     method: 'get' as Method,
     url,

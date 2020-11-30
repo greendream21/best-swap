@@ -1,8 +1,12 @@
 import React from 'react';
+
+
 import ContentLoader from 'react-content-loader';
-import themes, { ThemeType } from '@thorchain/asgardex-theme';
 import { useSelector } from 'react-redux';
-import { RootState } from '../../../../redux/store';
+
+import themes, { ThemeType } from '@thorchain/asgardex-theme';
+
+import { RootState } from 'redux/store';
 
 const LabelLoader = () => {
   const themeType = useSelector((state: RootState) => state.App.themeType);

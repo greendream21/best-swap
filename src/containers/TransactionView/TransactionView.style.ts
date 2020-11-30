@@ -1,8 +1,10 @@
+import { Pagination } from 'antd';
 import styled from 'styled-components';
 import { palette } from 'styled-theme';
-import { Pagination } from 'antd';
-import ContentView from '../../components/utility/contentView';
-import { media } from '../../helpers/styleHelper';
+
+import ContentView from 'components/utility/contentView';
+
+import { media } from 'helpers/styleHelper';
 
 export const ContentWrapper = styled(ContentView)`
   padding: 10px;

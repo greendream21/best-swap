@@ -1,17 +1,21 @@
 import React, { useState } from 'react';
+
 import { useHistory } from 'react-router-dom';
 
-import { Row, Col, notification, InputNumber } from 'antd';
 import { ArrowRightOutlined } from '@ant-design/icons';
 import { ledger, crypto } from '@binance-chain/javascript-sdk';
 import u2f_transport from '@ledgerhq/hw-transport-u2f';
+import { Row, Col, notification, InputNumber } from 'antd';
 
-import Label from '../../components/uielements/label';
-import Button from '../../components/uielements/button';
-import { getAppContainer } from '../../helpers/elementHelper';
+
+import Button from 'components/uielements/button';
+import Label from 'components/uielements/label';
+
+import * as walletActions from 'redux/wallet/actions';
+
+import { getAppContainer } from 'helpers/elementHelper';
 
 import { asgardexBncClient } from '../../env';
-import * as walletActions from '../../redux/wallet/actions';
 
 ledger.transports.u2f = u2f_transport;
 
@@ -46,7 +50,7 @@ const LedgerConnector = (props: Props) => {
 
     console.log('[+] LEDGER DEBUG: GETTING PUBLIC KEY');
     // get public key
-    const pk =  (await app.getPublicKey(hdPath)).pk;
+    const pk = (await app.getPublicKey(hdPath)).pk;
 
     // get address from pubkey
     const address = crypto.getAddressFromPublicKey(
@@ -61,7 +65,7 @@ const LedgerConnector = (props: Props) => {
     });
 
     try {
-          console.log('[+] LEDGER DEBUG: SHOWING ADDRESS');
+      console.log('[+] LEDGER DEBUG: SHOWING ADDRESS');
       // REQUESTS THE USER TO CONFIRM ADDRESS>
       const _ = await app.showAddress(asgardexBncClient.getPrefix(), hdPath); // results
 

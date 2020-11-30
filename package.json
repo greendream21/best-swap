@@ -23,9 +23,8 @@
     "cy:open:dev": "CYPRESS_baseUrl=http://localhost:3000 yarn cy:open",
     "cy:verify": "cypress verify",
     "deploy": "firebase deploy",
-    "lint": "yarn lint:js && yarn lint:ts",
-    "lint:js": "eslint 'src/**/*.{js,jsx}' --fix",
-    "lint:ts": "eslint 'src/**/*.{ts,tsx}' --fix",
+    "lint": "eslint 'src/**/*.{js,jsx,ts,tsx}' --fix",
+    "eslint": "eslint 'src/**/*.{js,jsx,ts,tsx}'",
     "lint:watch": "esw --clear --watch --color src/**/*.{js,jsx,ts,tsx}",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook -o ./build/storybook",
@@ -70,7 +69,7 @@
     "css-loader": "3.4.2",
     "dotenv": "8.2.0",
     "dotenv-expand": "5.1.0",
-    "eslint": "^6.8.0",
+    "eslint": "^7.14.0",
     "eslint-config-react-app": "^5.1.0",
     "eslint-loader": "3.0.3",
     "eslint-plugin-flowtype": "4.6.0",
@@ -163,8 +162,8 @@
     "@types/redux": "^3.6.0",
     "@types/redux-logger": "^3.0.7",
     "@types/styled-components": "^4.4.2",
-    "@typescript-eslint/eslint-plugin": "2.17.0",
-    "@typescript-eslint/parser": "^2.17.0",
+    "@typescript-eslint/eslint-plugin": "4.8.2",
+    "@typescript-eslint/parser": "^4.8.2",
     "ajv": "^6.11.0",
     "babel-loader": "^8.0.6",
     "chalk": "^3.0.0",
@@ -179,6 +178,7 @@
     "eslint-plugin-css-modules": "^2.11.0",
     "eslint-plugin-import": "^2.20.0",
     "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-react": "^7.18.0",
     "eslint-watch": "^6.0.1",
     "git-revision-webpack-plugin": "^3.0.4",
@@ -253,7 +253,9 @@
       "[/\\\\]node_modules[/\\\\].+\\.(js|jsx|ts|tsx)$",
       "^.+\\.module\\.(css|sass|scss)$"
     ],
-    "modulePaths": [],
+    "modulePaths": [
+      "src"
+    ],
     "moduleNameMapper": {
       "^react-native$": "react-native-web",
       "^.+\\.module\\.(css|sass|scss)$": "identity-obj-proxy"

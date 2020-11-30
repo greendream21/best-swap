@@ -1,11 +1,14 @@
-import styled from 'styled-components';
-import { Popover } from 'antd';
 import Icon from '@ant-design/icons';
-import { palette } from 'styled-theme';
+import { Popover } from 'antd';
 import Paragraph from 'antd/lib/typography/Paragraph';
-import ContentView from '../../components/utility/contentView';
-import { media, cleanTag } from '../../helpers/styleHelper';
-import { transition } from '../../settings/style-util';
+import styled from 'styled-components';
+import { palette } from 'styled-theme';
+
+import ContentView from 'components/utility/contentView';
+
+import { media, cleanTag } from 'helpers/styleHelper';
+
+import { transition } from 'settings/style-util';
 
 export const SwapAssetCard = styled.div`
   display: flex;

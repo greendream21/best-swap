@@ -1,19 +1,23 @@
 import { WS } from '@thorchain/asgardex-binance';
-import { bn } from '@thorchain/asgardex-util';
 import { tokenAmount, baseAmount } from '@thorchain/asgardex-token';
-import { PriceDataIndex } from '../../redux/midgard/types';
-import { RUNE_SYMBOL } from '../../settings/assetData';
+import { bn } from '@thorchain/asgardex-util';
+
+import { PriceDataIndex } from 'redux/midgard/types';
+import { AssetData } from 'redux/wallet/types';
+
+import { RUNE_SYMBOL } from 'settings/assetData';
+
+import {
+  PoolDetail,
+  PoolDetailStatusEnum,
+} from 'types/generated/midgard';
+
 import {
   withdrawResult,
   getAvailableTokensToCreate,
   getPoolData,
 } from './poolUtils';
 import { PoolData } from './types';
-import { AssetData } from '../../redux/wallet/types';
-import {
-  PoolDetail,
-  PoolDetailStatusEnum,
-} from '../../types/generated/midgard';
 
 describe.skip('pool/utils/', () => {
   describe('witdrawResult', () => {

@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
+
 import ReactPlaceholder from 'react-placeholder';
+
 import PropTypes from 'prop-types';
 import 'react-placeholder/lib/reactPlaceholder.css';
 

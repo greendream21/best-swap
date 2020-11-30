@@ -1,11 +1,13 @@
 import { tokenAmount } from '@thorchain/asgardex-token';
+
+import { Fees, TransferFee, Fee, DexFees } from 'redux/binance/types';
+
 import {
   getTransferFeeds,
   isFee,
   isTransferFee,
   isDexFees,
 } from './binanceHelper';
-import { Fees, TransferFee, Fee, DexFees } from '../redux/binance/types';
 
 describe('helpers/binanceHelpers', () => {
   const fee = {

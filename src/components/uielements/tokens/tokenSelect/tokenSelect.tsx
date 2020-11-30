@@ -1,21 +1,24 @@
 import React from 'react';
-import { Dropdown } from 'antd';
 
-import BigNumber from 'bignumber.js';
 import { delay, formatBN } from '@thorchain/asgardex-util';
+import { Dropdown } from 'antd';
+import BigNumber from 'bignumber.js';
+
+import { PriceDataIndex } from 'redux/midgard/types';
+
+import clickedInNode from 'helpers/event/clickedInNode';
+import Ref from 'helpers/event/ref';
+
+import { FixmeType } from 'types/bepswap';
+
+import TokenData from '../tokenData';
+import TokenMenu from './tokenMenu';
 import {
   TokenSelectWrapper,
   TokenDropdownButton,
   DropdownIconHolder,
   DropdownIcon,
 } from './tokenSelect.style';
-
-import TokenMenu from './tokenMenu';
-import TokenData from '../tokenData';
-import Ref from '../../../../helpers/event/ref';
-import clickedInNode from '../../../../helpers/event/clickedInNode';
-import { FixmeType } from '../../../../types/bepswap';
-import { PriceDataIndex } from '../../../../redux/midgard/types';
 
 type DropdownCarretProps = {
   className?: string;

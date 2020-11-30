@@ -1,8 +1,9 @@
 import React from 'react';
+
 import { CollapseProps } from 'antd/lib/collapse';
 
-import { CollapseWrapper, Panel } from './collapse.style';
 import Label from '../label';
+import { CollapseWrapper, Panel } from './collapse.style';
 import { Faq } from './data';
 
 export type ComponentProps = {

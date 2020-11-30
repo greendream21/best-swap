@@ -1,8 +1,10 @@
+import { Menu as Unstyled } from 'antd';
 import styled from 'styled-components';
 import { palette } from 'styled-theme';
-import { Menu as Unstyled } from 'antd';
+
+import { media } from 'helpers/styleHelper';
+
 import Button from '../uielements/button';
-import { media } from '../../helpers/styleHelper';
 
 export const Menu = styled(Unstyled)`
   background: ${palette('background', 1)};

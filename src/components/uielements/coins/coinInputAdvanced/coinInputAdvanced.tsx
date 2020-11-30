@@ -1,9 +1,12 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+
+import { bn, isValidBN } from '@thorchain/asgardex-util';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import BigNumber from 'bignumber.js';
-import { bn, isValidBN } from '@thorchain/asgardex-util';
+
+import { emptyString } from 'helpers/stringHelper';
+
 import { CoinInputAdvancedView } from './coinInputAdvanced.view';
-import { emptyString } from '../../../../helpers/stringHelper';
 
 // const formatNumber = (value: string, minimumFractionDigits: number) => {
 //   return Number(value || 0).toLocaleString(undefined, {

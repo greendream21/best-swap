@@ -1,6 +1,6 @@
+import { Input } from 'antd';
 import styled from 'styled-components';
 import { palette, key } from 'styled-theme';
-import { Input } from 'antd';
 
 const fontSettings = {
   small: {

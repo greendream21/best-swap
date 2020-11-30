@@ -1,10 +1,10 @@
 import styled from 'styled-components';
 
-export type StatusDirection = 'horizontal' | 'vertical'
+export type StatusDirection = 'horizontal' | 'vertical';
 
 type StatusWrapperProps = {
-  direction: StatusDirection
-}
+  direction: StatusDirection;
+};
 export const StatusWrapper = styled.div<StatusWrapperProps>`
   display: flex;
   flex-direction: ${props =>

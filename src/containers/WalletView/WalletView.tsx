@@ -1,30 +1,37 @@
 import React from 'react';
-import { compose } from 'redux';
+
 import { connect } from 'react-redux';
 import { withRouter, Link, useHistory } from 'react-router-dom';
-import { sortBy as _sortBy } from 'lodash';
 
 import * as RD from '@devexperts/remote-data-ts';
-import { WalletViewWrapper } from './WalletView.style';
-import { Loader } from './loader';
-import Tabs from '../../components/uielements/tabs';
-import Label from '../../components/uielements/label';
-import Button from '../../components/uielements/button';
-import CoinList from '../../components/uielements/coins/coinList';
-import { CoinListDataList } from '../../components/uielements/coins/coinList/coinList';
-import { Maybe } from '../../types/bepswap';
+import { sortBy as _sortBy } from 'lodash';
+import { compose } from 'redux';
+
+
+import Button from 'components/uielements/button';
+import CoinList from 'components/uielements/coins/coinList';
+import { CoinListDataList } from 'components/uielements/coins/coinList/coinList';
+import Label from 'components/uielements/label';
+import Tabs from 'components/uielements/tabs';
+
+import { RootState } from 'redux/store';
 import {
   User,
   AssetData,
   StakeDataListLoadingState,
-} from '../../redux/wallet/types';
-import { RootState } from '../../redux/store';
+} from 'redux/wallet/types';
+
 import {
   matchSwapDetailPair,
   matchPoolSymbol,
-} from '../../helpers/routerHelper';
+} from 'helpers/routerHelper';
 
-import { RUNE_SYMBOL } from '../../settings/assetData';
+import { RUNE_SYMBOL } from 'settings/assetData';
+
+import { Maybe } from 'types/bepswap';
+
+import { Loader } from './loader';
+import { WalletViewWrapper } from './WalletView.style';
 
 const { TabPane } = Tabs;
 
@@ -41,17 +48,10 @@ type ConnectedProps = {
 };
 
 type Props = ComponentProps & ConnectedProps;
-type State = {};
+type State = Record<string, never>;
 
 const WalletView: React.FC<Props> = (props: Props): JSX.Element => {
-  const {
-    user,
-    assetData,
-    stakeData,
-    loadingAssets,
-    pathname,
-    status,
-  } = props;
+  const { user, assetData, stakeData, loadingAssets, pathname, status } = props;
 
   const history = useHistory();
 

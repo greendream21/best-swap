@@ -1,3 +1,13 @@
+import { Balance, Address } from '@thorchain/asgardex-binance';
+import {
+  baseToToken,
+  baseAmount,
+  tokenAmount,
+} from '@thorchain/asgardex-token';
+import { bnOrZero } from '@thorchain/asgardex-util';
+import { AxiosResponse } from 'axios';
+import { push } from 'connected-react-router';
+import { isEmpty as _isEmpty } from 'lodash';
 import {
   all,
   takeEvery,
@@ -7,30 +17,17 @@ import {
   delay,
   select,
 } from 'redux-saga/effects';
-import { push } from 'connected-react-router';
-import { isEmpty as _isEmpty } from 'lodash';
 
-import { AxiosResponse } from 'axios';
-import { Balance, Address } from '@thorchain/asgardex-binance';
-import { bnOrZero } from '@thorchain/asgardex-util';
-import {
-  baseToToken,
-  baseAmount,
-  tokenAmount,
-} from '@thorchain/asgardex-token';
-import { RootState } from '../store';
-import * as api from '../../helpers/apiHelper';
+import * as api from 'helpers/apiHelper';
+import { isBEP8Token } from 'helpers/utils/walletUtils';
+import { saveWallet, clearWallet } from 'helpers/webStorageHelper';
 
-import { saveWallet, clearWallet } from '../../helpers/webStorageHelper';
-
-import * as actions from './actions';
-import { AssetData } from './types';
 import {
   StakersAddressData,
   PoolDetail,
   StakersAssetData,
-} from '../../types/generated/midgard';
-import { getAssetFromString } from '../midgard/utils';
+} from 'types/generated/midgard';
+import { UnpackPromiseResponse } from 'types/util';
 
 import { asgardexBncClient, getNet } from '../../env';
 import {
@@ -38,8 +35,10 @@ import {
   MIDGARD_MAX_RETRY,
   MIDGARD_RETRY_DELAY,
 } from '../midgard/saga';
-import { UnpackPromiseResponse } from '../../types/util';
-import { isBEP8Token } from '../../helpers/utils/walletUtils';
+import { getAssetFromString } from '../midgard/utils';
+import { RootState } from '../store';
+import * as actions from './actions';
+import { AssetData } from './types';
 
 export function* saveWalletSaga() {
   yield takeEvery('SAVE_WALLET', function*({

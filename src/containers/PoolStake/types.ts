@@ -1,5 +1,5 @@
-import BigNumber from 'bignumber.js';
 import { BaseAmount } from '@thorchain/asgardex-token';
+import BigNumber from 'bignumber.js';
 
 export enum TabKeys {
   ADD_SYM = 'ADD_SYM',

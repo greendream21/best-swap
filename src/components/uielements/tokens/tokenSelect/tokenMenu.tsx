@@ -1,12 +1,14 @@
 import React, { useMemo } from 'react';
-import { get as _get } from 'lodash';
 
 import { bn, formatBN } from '@thorchain/asgardex-util';
+import { get as _get } from 'lodash';
+
+import { PriceDataIndex } from 'redux/midgard/types';
+
+import { getTickerFormat } from 'helpers/stringHelper';
+
 import FilterMenu from '../../filterMenu';
 import TokenData from '../tokenData';
-
-import { getTickerFormat } from '../../../../helpers/stringHelper';
-import { PriceDataIndex } from '../../../../redux/midgard/types';
 
 const filterFunction = (item: string, searchTerm: string): boolean => {
   const tokenName = getTickerFormat(item);

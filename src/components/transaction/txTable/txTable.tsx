@@ -1,22 +1,26 @@
 /* eslint-disable no-underscore-dangle */
 import React, { useCallback, useMemo } from 'react';
-import { Grid, Tag } from 'antd';
+
 import { LinkOutlined } from '@ant-design/icons';
 import { formatBaseAsTokenAmount, baseAmount } from '@thorchain/asgardex-token';
+import { Grid, Tag } from 'antd';
 import { ColumnType } from 'antd/lib/table';
 import moment from 'moment';
 
-import { TxDetailData } from '../../../redux/midgard/types';
-import { getAssetFromString } from '../../../redux/midgard/utils';
+import { TxDetailData } from 'redux/midgard/types';
+import { getAssetFromString } from 'redux/midgard/utils';
+
+import { BINANCE_TX_BASE_URL } from 'helpers/apiHelper';
+
+import { FixmeType } from 'types/bepswap';
 import {
   TxDetails,
   TxDetailsTypeEnum,
   Coin,
-} from '../../../types/generated/midgard';
-import { BINANCE_TX_BASE_URL } from '../../../helpers/apiHelper';
+} from 'types/generated/midgard';
+
 import Table from '../../uielements/table';
 import { StyledText, StyledLink, StyledLinkText } from './txTable.style';
-import { FixmeType } from '../../../types/bepswap';
 
 type Props = {
   txData: TxDetailData;

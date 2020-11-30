@@ -1,15 +1,16 @@
 import React from 'react';
+
+import { TokenAmount, tokenAmount } from '@thorchain/asgardex-token';
+import { bn, formatBNCurrency } from '@thorchain/asgardex-util';
+import BigNumber from 'bignumber.js';
 import { sortBy as _sortBy } from 'lodash';
 
-import BigNumber from 'bignumber.js';
-import { bn, formatBNCurrency } from '@thorchain/asgardex-util';
-import { TokenAmount, tokenAmount } from '@thorchain/asgardex-token';
-import { TokenCardWrapper } from './tokenCard.style';
+import { PriceDataIndex } from 'redux/midgard/types';
 
-import TokenSelect from '../tokenSelect';
 import TokenInput from '../tokenInput';
-import { PriceDataIndex } from '../../../../redux/midgard/types';
 import { TokenInputProps } from '../tokenInput/types';
+import TokenSelect from '../tokenSelect';
+import { TokenCardWrapper } from './tokenCard.style';
 
 type Props = {
   asset: string;

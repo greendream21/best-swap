@@ -1,21 +1,43 @@
 /* eslint-disable no-underscore-dangle */
 import React, { useEffect, useCallback, useMemo, useState } from 'react';
-import { compose } from 'redux';
-import { Row, Col, Grid, Popover } from 'antd';
+
 import { connect } from 'react-redux';
-import { get as _get } from 'lodash';
 import { withRouter, useParams, Link, useHistory } from 'react-router-dom';
-import { Token } from '@thorchain/asgardex-binance';
-import { bnOrZero } from '@thorchain/asgardex-util';
 
 import { SwapOutlined, DatabaseOutlined } from '@ant-design/icons';
+import { Token } from '@thorchain/asgardex-binance';
+import { bnOrZero } from '@thorchain/asgardex-util';
+import { Row, Col, Grid, Popover } from 'antd';
+import { get as _get } from 'lodash';
+import { compose } from 'redux';
 
-import useNetwork from '../../hooks/useNetwork';
+import PoolChart from 'components/poolChart';
+import { PoolStatBar } from 'components/statBar';
+import TxTable from 'components/transaction/txTable';
+import Button from 'components/uielements/button';
+import Label from 'components/uielements/label';
 
-import Label from '../../components/uielements/label';
-import Button from '../../components/uielements/button';
+import * as midgardActions from 'redux/midgard/actions';
+import {
+  AssetDetailMap,
+  PoolDataMap,
+  PriceDataIndex,
+  TxDetailData,
+  RTAggregateData,
+} from 'redux/midgard/types';
+import { RootState } from 'redux/store';
 
-import * as midgardActions from '../../redux/midgard/actions';
+import useNetwork from 'hooks/useNetwork';
+import usePrice from 'hooks/usePrice';
+
+import { getAppContainer } from 'helpers/elementHelper';
+import { getTokenName } from 'helpers/stringHelper';
+import { getPoolData, isValidPool } from 'helpers/utils/poolUtils';
+import { PoolData } from 'helpers/utils/types';
+
+import { RUNE_SYMBOL } from 'settings/assetData';
+
+import { PoolDetailStatusEnum } from 'types/generated/midgard';
 
 import {
   ContentWrapper,
@@ -29,27 +51,6 @@ import {
   PopoverContent,
   PopoverIcon,
 } from './PoolDetail.style';
-
-import { getPoolData, isValidPool } from '../../helpers/utils/poolUtils';
-import { PoolData } from '../../helpers/utils/types';
-import { RootState } from '../../redux/store';
-import { getAppContainer } from '../../helpers/elementHelper';
-
-import {
-  AssetDetailMap,
-  PoolDataMap,
-  PriceDataIndex,
-  TxDetailData,
-  RTAggregateData,
-} from '../../redux/midgard/types';
-import { RUNE_SYMBOL } from '../../settings/assetData';
-import { PoolStatBar } from '../../components/statBar';
-import PoolChart from '../../components/poolChart';
-import TxTable from '../../components/transaction/txTable';
-import { getTokenName } from '../../helpers/stringHelper';
-import { PoolDetailStatusEnum } from '../../types/generated/midgard';
-
-import usePrice from '../../hooks/usePrice';
 
 type ChartDataValue = {
   time: number;

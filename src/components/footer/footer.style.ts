@@ -1,7 +1,8 @@
+import { Layout } from 'antd';
 import styled from 'styled-components';
 import { size, key, palette } from 'styled-theme';
-import { Layout } from 'antd';
-import { media } from '../../helpers/styleHelper';
+
+import { media } from 'helpers/styleHelper';
 
 export const FooterItem = styled.div`
   .footer-logo {

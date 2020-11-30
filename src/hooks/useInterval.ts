@@ -8,7 +8,10 @@ export const INACTIVE_INTERVAL = NaN;
  * @param callback Callback called on each interval
  * @param delay  Delay in ms
  */
-const useInterval = (callback: () => void, delay: number = INACTIVE_INTERVAL) => {
+const useInterval = (
+  callback: () => void,
+  delay: number = INACTIVE_INTERVAL,
+) => {
   const savedCallback = useRef(callback);
 
   // Remember the latest function.

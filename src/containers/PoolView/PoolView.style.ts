@@ -1,11 +1,12 @@
-import { Pagination } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
+import { Pagination } from 'antd';
 import styled from 'styled-components';
 import { palette } from 'styled-theme';
 
-import ContentView from '../../components/utility/contentView';
-import { media } from '../../helpers/styleHelper';
-import Table from '../../components/uielements/table';
+import Table from 'components/uielements/table';
+import ContentView from 'components/utility/contentView';
+
+import { media } from 'helpers/styleHelper';
 
 export const ContentWrapper = styled(ContentView)`
   display: flex;

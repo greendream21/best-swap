@@ -2,17 +2,18 @@ import { Token } from '@thorchain/asgardex-binance';
 import { bn } from '@thorchain/asgardex-util';
 import moment from 'moment';
 
-import { RUNE_SYMBOL } from '../../settings/assetData';
+import { RUNE_SYMBOL } from 'settings/assetData';
 
-import { Nothing, Maybe } from '../../types/bepswap';
-import { PriceDataIndex, AssetDetailMap, PoolDataMap } from './types';
+import { Nothing, Maybe } from 'types/bepswap';
 import {
   AssetDetail,
   ThorchainEndpoints,
   ThorchainEndpoint,
   StakersAssetData,
-} from '../../types/generated/midgard';
-import { Asset } from '../../types/midgard';
+} from 'types/generated/midgard';
+import { Asset } from 'types/midgard';
+
+import { PriceDataIndex, AssetDetailMap, PoolDataMap } from './types';
 
 export const getAssetSymbolFromPayload = (
   payload: Pick<StakersAssetData, 'asset'>,
@@ -34,7 +35,7 @@ export const getPoolAddress = (endpoints: ThorchainEndpoints): Maybe<string> =>
 
 export const getAssetDetailIndex = (
   assets: AssetDetail[],
-): AssetDetailMap | {} => {
+): AssetDetailMap | Record<string, never> => {
   let assetDataIndex = {};
 
   assets.forEach(assetInfo => {
