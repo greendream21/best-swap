@@ -1,14 +1,21 @@
 import React, { useCallback } from 'react';
+
+import { TokenAmount, tokenAmount } from '@thorchain/asgardex-token';
+import { bn, delay, formatBN, validBNOrZero } from '@thorchain/asgardex-util';
 import { Dropdown, Popover } from 'antd';
+import BigNumber from 'bignumber.js';
 import { sortBy as _sortBy } from 'lodash';
 
-import BigNumber from 'bignumber.js';
-import { bn, delay, formatBN, validBNOrZero } from '@thorchain/asgardex-util';
-import { TokenAmount, tokenAmount } from '@thorchain/asgardex-token';
+import { PriceDataIndex } from 'redux/midgard/types';
+
+import clickedInNode from 'helpers/event/clickedInNode';
+import Ref from 'helpers/event/ref';
+
+import { FixmeType } from 'types/bepswap';
+
 import Label from '../../label';
 import Selection from '../../selection';
 import CoinInputAdvanced from '../coinInputAdvanced';
-import CoinCardMenu from './coinCardMenu';
 import {
   AssetCardFooter,
   AssetData,
@@ -27,11 +34,7 @@ import {
   PopoverContent,
   PopoverIcon,
 } from './coinCard.style';
-
-import Ref from '../../../../helpers/event/ref';
-import clickedInNode from '../../../../helpers/event/clickedInNode';
-import { PriceDataIndex } from '../../../../redux/midgard/types';
-import { FixmeType } from '../../../../types/bepswap';
+import CoinCardMenu from './coinCardMenu';
 
 type DropdownCarretProps = {
   open: boolean;

@@ -1,4 +1,11 @@
 import { bn } from '@thorchain/asgardex-util';
+
+import {
+  ThorchainEndpoint,
+  ThorchainEndpoints,
+} from 'types/generated/midgard';
+
+import { PriceDataIndex } from './types';
 import {
   getAssetSymbolFromPayload,
   getBNBPoolAddress,
@@ -8,11 +15,6 @@ import {
   getAssetFromString,
   getEoDTime,
 } from './utils';
-import {
-  ThorchainEndpoint,
-  ThorchainEndpoints,
-} from '../../types/generated/midgard';
-import { PriceDataIndex } from './types';
 
 type PoolDataMock = { asset?: string };
 

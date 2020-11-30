@@ -1,9 +1,9 @@
-import styled from 'styled-components';
-import { key, palette } from 'styled-theme';
 import { Table } from 'antd';
 import { darken } from 'polished';
+import styled from 'styled-components';
+import { key, palette } from 'styled-theme';
 
-import { media } from '../../../helpers/styleHelper';
+import { media } from 'helpers/styleHelper';
 
 export const TableWrapper = styled(Table)`
   .ant-table-thead > tr > th {

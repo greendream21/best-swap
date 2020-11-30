@@ -1,6 +1,8 @@
 import styled from 'styled-components';
 import { palette } from 'styled-theme';
-import { boxShadow } from '../../../settings/style-util';
+
+import { boxShadow } from 'settings/style-util';
+
 import Label from '../label';
 
 export const DragWrapper = styled.div`

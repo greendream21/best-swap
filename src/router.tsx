@@ -1,13 +1,19 @@
+
 import React from 'react';
+
 import { connect } from 'react-redux';
-import { ConnectedRouter } from 'connected-react-router';
 import { Route } from 'react-router-dom';
-import * as H from 'history';
+
 import { ConfigProvider } from 'antd';
 import en_US from 'antd/es/locale-provider/en_US'; // same as default `locale` of `antd`
+import { ConnectedRouter } from 'connected-react-router';
+import * as H from 'history';
 
-import asyncComponent from './helpers/AsyncFunc';
-import { RootState } from './redux/store';
+
+import { RootState } from 'redux/store';
+
+import asyncComponent from 'helpers/AsyncFunc';
+
 import { isMainnet } from './env';
 
 const maintenanceRoute = [

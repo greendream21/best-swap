@@ -1,11 +1,13 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { CheckOutlined } from '@ant-design/icons';
-import DynamicCoin from '../dynamicCoin';
 
-import { CoinIconWrapper } from './coinIcon.style';
+import { CheckOutlined } from '@ant-design/icons';
+import PropTypes from 'prop-types';
+
+import { coinIconsFromTrustWallet } from 'settings/logoData';
+
 import { coinIconGroup } from '../../../icons/coinIcons';
-import { coinIconsFromTrustWallet } from '../../../../settings/logoData';
+import DynamicCoin from '../dynamicCoin';
+import { CoinIconWrapper } from './coinIcon.style';
 
 const CoinIcon = props => {
   const { type, size, className, ...otherProps } = props;

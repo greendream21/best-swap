@@ -1,7 +1,8 @@
 import React from 'react';
+
 import { Route, Switch } from 'react-router-dom';
 
-import asyncComponent from '../../helpers/AsyncFunc';
+import asyncComponent from 'helpers/AsyncFunc';
 
 type AppRoute = {
   path: string;

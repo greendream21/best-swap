@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { TokenInfoWrapper } from './tokenInfo.style';
 import Label from '../../label';
+import { TokenInfoWrapper } from './tokenInfo.style';
 
 type Props = {
   asset: string;

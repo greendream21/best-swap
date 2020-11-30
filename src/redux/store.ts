@@ -1,10 +1,10 @@
-import { createStore, combineReducers, applyMiddleware } from 'redux';
-import { createBrowserHistory as createHistory } from 'history';
 import { connectRouter, routerMiddleware } from 'connected-react-router';
+import { createBrowserHistory as createHistory } from 'history';
+import { createStore, combineReducers, applyMiddleware } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
-import thunk from 'redux-thunk';
-import createSagaMiddleware from 'redux-saga';
 import logger from 'redux-logger';
+import createSagaMiddleware from 'redux-saga';
+import thunk from 'redux-thunk';
 
 import reducers from './reducers';
 import rootSaga from './sagas';

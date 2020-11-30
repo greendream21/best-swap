@@ -1,17 +1,22 @@
 import React, { Fragment, useCallback } from 'react';
 
 import { Scrollbars } from 'react-custom-scrollbars';
+
 import { tokenToBase } from '@thorchain/asgardex-token';
 
-import CoinData from '../coinData';
-import Label from '../../label';
-import { CoinListWrapper, CoinListWrapperSize } from './coinList.style';
-import { getTickerFormat } from '../../../../helpers/stringHelper';
-import { Maybe } from '../../../../types/bepswap';
-import { AssetData } from '../../../../redux/wallet/types';
-import { CoinDataWrapperType } from '../coinData/coinData.style';
 
-import usePrice from '../../../../hooks/usePrice';
+import { AssetData } from 'redux/wallet/types';
+
+import usePrice from 'hooks/usePrice';
+
+import { getTickerFormat } from 'helpers/stringHelper';
+
+import { Maybe } from 'types/bepswap';
+
+import Label from '../../label';
+import CoinData from '../coinData';
+import { CoinDataWrapperType } from '../coinData/coinData.style';
+import { CoinListWrapper, CoinListWrapperSize } from './coinList.style';
 
 export type CoinListDataList = AssetData[];
 
@@ -79,11 +84,7 @@ export const CoinList: React.FC<Props> = (props: Props): JSX.Element => {
                 assetValue={!displayPrice ? assetValue : undefined}
                 size={size}
               />
-              {displayPrice && (
-                <Label>
-                  {priceLabel}
-                </Label>
-              )}
+              {displayPrice && <Label>{priceLabel}</Label>}
             </div>
           );
         })}

@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
+
 import { PlusOutlined, DeleteFilled } from '@ant-design/icons';
 
+import Input from '../input';
 import {
   AddressInputWrapper,
   PopoverContainer,
   PopoverContent,
 } from './addressInput.style';
-import Input from '../input';
 
 type Props = {
   value?: string;

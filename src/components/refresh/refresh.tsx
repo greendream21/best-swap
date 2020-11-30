@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
-import { SyncOutlined } from '@ant-design/icons';
+
+
 import { useDispatch } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 
+import { SyncOutlined } from '@ant-design/icons';
+
+import * as appActions from 'redux/app/actions';
+
+import useInterval from 'hooks/useInterval';
+
 import { StyledButton } from './refresh.style';
-
-import * as appActions from '../../redux/app/actions';
-
-import useInterval from '../../hooks/useInterval';
 
 const Refresh = (): JSX.Element => {
   const dispatch = useDispatch();
@@ -33,7 +36,9 @@ const Refresh = (): JSX.Element => {
     } else if (pathname.includes('/pool') && !pathname.includes('/new')) {
       // pool detail view
       const assetName = pathname.split('/');
-      dispatch(appActions.getPoolDetailViewData(assetName[assetName.length - 1]));
+      dispatch(
+        appActions.getPoolDetailViewData(assetName[assetName.length - 1]),
+      );
     } else if (pathname === '/transaction') {
       // transaction
       dispatch(appActions.refreshTransactionData());

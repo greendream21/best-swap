@@ -1,8 +1,9 @@
 import React from 'react';
+
 import styled from 'styled-components';
 
-import { StatusWrapper, StatusDirection } from './status.style';
 import Label from '../label';
+import { StatusWrapper, StatusDirection } from './status.style';
 
 const NoWrapLabel = styled(Label)`
   white-space: nowrap;

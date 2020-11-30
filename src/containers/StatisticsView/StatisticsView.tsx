@@ -1,13 +1,18 @@
 import React from 'react';
+
 import { connect } from 'react-redux';
-import { Row, Col } from 'antd';
+
 import { bnOrZero } from '@thorchain/asgardex-util';
+import { Row, Col } from 'antd';
 
-import { StatsData, NetworkInfo } from '../../types/generated/midgard';
-import { RootState } from '../../redux/store';
+
+import { RootState } from 'redux/store';
+
+import usePrice from 'hooks/usePrice';
+
+import { StatsData, NetworkInfo } from 'types/generated/midgard';
+
 import { StyledStatistic } from './StatisticsView.style';
-
-import usePrice from '../../hooks/usePrice';
 
 type Props = {
   stats: StatsData;

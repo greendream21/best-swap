@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+
 import { LeftOutlined, SyncOutlined } from '@ant-design/icons';
+import PropTypes from 'prop-types';
 
 import Label from '../label';
 import { HeaderWrapper } from './viewHeader.style';

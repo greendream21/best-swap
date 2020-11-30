@@ -1,3 +1,3 @@
-import { ReactComponent as TelegramIcon } from '../../assets/SVG/telegram.svg';
+import { ReactComponent as TelegramIcon } from 'assets/SVG/telegram.svg';
 
 export { TelegramIcon };

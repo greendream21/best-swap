@@ -1,12 +1,15 @@
-import { Reducer } from 'redux';
 import { initial, success, pending, failure } from '@devexperts/remote-data-ts';
 import { tokenAmount } from '@thorchain/asgardex-token';
-import { getWallet } from '../../helpers/webStorageHelper';
-import { State, User } from './types';
-import { WalletActionsTypes } from './actions';
-import { Nothing, Maybe } from '../../types/bepswap';
+import { Reducer } from 'redux';
 
-import { RUNE_SYMBOL } from '../../settings/assetData';
+import { getWallet } from 'helpers/webStorageHelper';
+
+import { RUNE_SYMBOL } from 'settings/assetData';
+
+import { Nothing, Maybe } from 'types/bepswap';
+
+import { WalletActionsTypes } from './actions';
+import { State, User } from './types';
 
 const initialUser: Maybe<User> = getWallet();
 

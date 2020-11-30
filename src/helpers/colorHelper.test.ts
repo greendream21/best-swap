@@ -8,7 +8,7 @@ describe('helpers/colorHelper/', () => {
       const result = rainbowStop(10);
       expect(result).toEqual('#ff0000');
     });
-});
+  });
 
   // getIntFromName
 

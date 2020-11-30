@@ -2,10 +2,11 @@
 /* eslint-disable implicit-arrow-linebreak */
 
 import React from 'react';
+
 import { omit } from 'lodash';
 import { css } from 'styled-components';
 
-import { FixmeType } from '../types/bepswap';
+import { FixmeType } from 'types/bepswap';
 
 type MediaQueriesType = {
   [key: string]: string;

@@ -1,11 +1,11 @@
 import React from 'react';
 
-import BigNumber from 'bignumber.js';
 import { formatBN, bn } from '@thorchain/asgardex-util';
-import { CoinButtonWrapper } from './coinButton.style';
-import CoinIcon from '../coinIcon';
-import Label from '../../label';
+import BigNumber from 'bignumber.js';
 
+import Label from '../../label';
+import CoinIcon from '../coinIcon';
+import { CoinButtonWrapper } from './coinButton.style';
 
 type Props = {
   cointype: string;

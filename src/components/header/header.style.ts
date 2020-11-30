@@ -1,7 +1,8 @@
+import { InfoCircleOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import { palette, size, key } from 'styled-theme';
-import { InfoCircleOutlined } from '@ant-design/icons';
-import { media } from '../../helpers/styleHelper';
+
+import { media } from 'helpers/styleHelper';
 
 export const StyledAlertWrapper = styled.div`
   display: flex;

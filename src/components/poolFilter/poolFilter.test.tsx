@@ -1,12 +1,14 @@
 import React from 'react';
+
 import { mount } from 'enzyme';
 
-import { PoolDetailStatusEnum } from '../../types/generated/midgard';
+import { PoolDetailStatusEnum } from 'types/generated/midgard';
+
 import PoolFilter from './poolFilter';
 
 describe('PoolFilter', () => {
   const props: {
-    onClick: () => {};
+    onClick: () => void;
     selected: PoolDetailStatusEnum;
   } = {
     onClick: jest.fn(),

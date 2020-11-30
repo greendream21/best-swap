@@ -1,5 +1,6 @@
 import styled from 'styled-components';
-import { media } from '../../../../helpers/styleHelper';
+
+import { media } from 'helpers/styleHelper';
 
 export const TokenCardWrapper = styled.div`
   display: flex;

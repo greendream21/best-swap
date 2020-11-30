@@ -1,6 +1,7 @@
+import { InputNumber } from 'antd';
 import styled from 'styled-components';
 import { palette, key } from 'styled-theme';
-import { InputNumber } from 'antd';
+
 import { InputNumberWrapperColor, InputNumberWrapperSize } from './types';
 
 const fontSettings = {

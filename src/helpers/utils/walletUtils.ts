@@ -1,5 +1,6 @@
 import { crypto } from '@binance-chain/javascript-sdk';
-import { asgardexBncClient,  bncClient } from '../../env';
+
+import { asgardexBncClient, bncClient } from '../../env';
 
 /** verify keystore file with password
  * return address and error fields

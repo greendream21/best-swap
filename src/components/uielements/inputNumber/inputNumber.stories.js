@@ -1,6 +1,7 @@
 import React from 'react';
-import { storiesOf } from '@storybook/react';
+
 import { text, radios, withKnobs } from '@storybook/addon-knobs';
+import { storiesOf } from '@storybook/react';
 import { Row } from 'antd';
 
 import InputNumber from './inputNumber';

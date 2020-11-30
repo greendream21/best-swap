@@ -1,13 +1,16 @@
 import React from 'react';
 
 import { baseToToken, baseAmount } from '@thorchain/asgardex-token';
+
+import { getAssetFromString } from 'redux/midgard/utils';
+
+import { BINANCE_TX_BASE_URL } from 'helpers/apiHelper';
+import { getShortTokenAmount } from 'helpers/stringHelper';
+
+import { Coin } from 'types/generated/midgard';
+
 import Label from '../../uielements/label';
 import { TxStatusWrapper, TxStatusContent, Seperator } from './txStatus.style';
-
-import { Coin } from '../../../types/generated/midgard';
-import { getAssetFromString } from '../../../redux/midgard/utils';
-import { getShortTokenAmount } from '../../../helpers/stringHelper';
-import { BINANCE_TX_BASE_URL } from '../../../helpers/apiHelper';
 
 export type RoundValue = 'left' | 'right';
 
@@ -33,7 +36,6 @@ const TxStatus: React.FC<Props> = (props: Props): JSX.Element => {
           const amountValue = getShortTokenAmount(tokenAmount);
 
           return (
-
             <TxStatusContent className="tx-status-content" key={index}>
               <p className="txStatus-amount">{amountValue}</p>
               <p className="txStatus-asset">{assetValue}</p>

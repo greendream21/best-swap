@@ -2,7 +2,7 @@ import {
   TxDetails,
   TxDetailsTypeEnum,
   TxDetailsStatusEnum,
-} from '../../../types/generated/midgard';
+} from 'types/generated/midgard';
 
 export const txData1: TxDetails = {
   pool: 'BNB',

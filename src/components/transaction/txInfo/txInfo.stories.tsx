@@ -1,7 +1,9 @@
 import React from 'react';
+
 import { storiesOf } from '@storybook/react';
-import TxInfo from './txInfo';
+
 import { txData1, txData2, txData3, txData4 } from './data';
+import TxInfo from './txInfo';
 
 storiesOf('Components/Transaction/TxInfo', module).add('default', () => {
   return (

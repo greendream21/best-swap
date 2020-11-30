@@ -1,11 +1,14 @@
 import React, { useCallback, useState, useEffect, useMemo } from 'react';
+
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
+
+import useInterval, { INACTIVE_INTERVAL } from 'hooks/useInterval';
+import usePrevious from 'hooks/usePrevious';
+
 import { ConfirmIcon, RefundIcon } from '../../icons/timerIcons';
 import { TxTimerWrapper } from './txTimer.style';
-import useInterval, { INACTIVE_INTERVAL } from '../../../hooks/useInterval';
 
 import 'react-circular-progressbar/dist/styles.css';
-import usePrevious from '../../../hooks/usePrevious';
 
 interface Props {
   status: boolean;

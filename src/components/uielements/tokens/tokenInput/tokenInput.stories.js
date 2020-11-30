@@ -1,7 +1,8 @@
 import React from 'react';
-import { storiesOf } from '@storybook/react';
 
+import { storiesOf } from '@storybook/react';
 import { tokenAmount } from '@thorchain/asgardex-token';
+
 import TokenInput from './tokenInput';
 
 storiesOf('Components/Tokens/TokenInput', module).add('default', () => {

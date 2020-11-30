@@ -1,8 +1,10 @@
+import { CaretDownOutlined } from '@ant-design/icons';
 import styled, { css } from 'styled-components';
 import { palette } from 'styled-theme';
-import { CaretDownOutlined } from '@ant-design/icons';
-import { transition } from '../../../../settings/style-util';
-import { cleanTag } from '../../../../helpers/styleHelper';
+
+import { cleanTag } from 'helpers/styleHelper';
+
+import { transition } from 'settings/style-util';
 
 export const TokenSelectWrapper = styled.div`
   display: flex;

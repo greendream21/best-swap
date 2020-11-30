@@ -1,6 +1,6 @@
+import { Switch } from 'antd';
 import styled from 'styled-components';
 import { palette } from 'styled-theme';
-import { Switch } from 'antd';
 
 export const StyledSwitch = styled(Switch)`
   background-color: ${palette('background', 2)};

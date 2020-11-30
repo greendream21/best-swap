@@ -1,8 +1,10 @@
 import React from 'react';
+
 import { storiesOf } from '@storybook/react';
 
+import { PoolDetailStatusEnum } from 'types/generated/midgard';
+
 import PoolFilter from './poolFilter';
-import { PoolDetailStatusEnum } from '../../types/generated/midgard';
 
 storiesOf('Components/PoolFilter', module).add('default', () => {
   return (

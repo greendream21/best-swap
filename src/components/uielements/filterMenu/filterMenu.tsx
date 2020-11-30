@@ -1,9 +1,10 @@
 import React, { useCallback, useState, useMemo } from 'react';
+
 import { SearchOutlined } from '@ant-design/icons';
 import { ClickParam } from 'antd/lib/menu';
-import { Menu, MenuItem } from './filterMenu.style';
 
 import Input from '../input';
+import { Menu, MenuItem } from './filterMenu.style';
 
 const style: React.CSSProperties = {
   maxHeight: '400px',

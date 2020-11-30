@@ -1,5 +1,6 @@
-import { bn } from '@thorchain/asgardex-util';
 import { tokenAmount } from '@thorchain/asgardex-token';
+import { bn } from '@thorchain/asgardex-util';
+
 import {
   getYValue,
   getZValue,

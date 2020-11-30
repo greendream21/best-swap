@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
-import { RefundIcon, ConfirmIcon, TimerFullIcon } from '../../icons/timerIcons';
-import useInterval, { INACTIVE_INTERVAL } from '../../../hooks/useInterval';
 
+import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
+
+import useInterval, { INACTIVE_INTERVAL } from 'hooks/useInterval';
+
+import { RefundIcon, ConfirmIcon, TimerFullIcon } from '../../icons/timerIcons';
 import { TxProgressWrapper } from './txProgress.style';
 
 import 'react-circular-progressbar/dist/styles.css';

@@ -1,7 +1,8 @@
-import BigNumber from 'bignumber.js';
 import { Token } from '@thorchain/asgardex-binance';
 import { TokenAmount, formatTokenAmount } from '@thorchain/asgardex-token';
-import { Maybe, Nothing, Pair } from '../types/bepswap';
+import BigNumber from 'bignumber.js';
+
+import { Maybe, Nothing, Pair } from 'types/bepswap';
 
 export const getSymbolPair = (symbolPair?: string): Pair => ({
   source: symbolPair?.split(':')[0]?.toUpperCase() ?? Nothing,

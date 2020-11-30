@@ -1,10 +1,11 @@
-import { Reducer } from 'redux';
 import { tokenAmount } from '@thorchain/asgardex-token';
+import { Reducer } from 'redux';
+
+import { getTheme, saveTheme } from 'helpers/webStorageHelper';
 
 import { AppActionsTypes } from './actions';
 import { MIN_VALUE, MAX_VALUE } from './const';
 import { State } from './types';
-import { getTheme, saveTheme } from '../../helpers/webStorageHelper';
 
 const defaultTheme: string = getTheme();
 const valueInRange = (v: number) => v >= MIN_VALUE && v <= MAX_VALUE;

@@ -1,8 +1,8 @@
+import { Popover } from 'antd';
 import styled from 'styled-components';
 import { palette } from 'styled-theme';
-import { Popover } from 'antd';
 
-import { transition } from '../../../settings/style-util';
+import { transition } from 'settings/style-util';
 
 type AddressInputWrapperProps = {
   status: boolean;

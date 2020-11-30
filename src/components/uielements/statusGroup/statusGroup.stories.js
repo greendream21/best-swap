@@ -1,8 +1,9 @@
 import React from 'react';
+
 import { storiesOf } from '@storybook/react';
 
-import StatusGroup from './statusGroup';
 import { stats } from './data';
+import StatusGroup from './statusGroup';
 
 storiesOf('Components/StatusGroup', module).add('default', () => {
   return (

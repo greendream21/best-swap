@@ -1,13 +1,18 @@
 import React from 'react';
-import { Provider as ReduxProvider, useSelector } from 'react-redux';
-import { ThemeProvider } from 'styled-components';
-import themes, { ThemeType } from '@thorchain/asgardex-theme';
+
 import { IntlProvider } from 'react-intl';
-import { store as reduxStore, history, RootState } from './redux/store';
+import { Provider as ReduxProvider, useSelector } from 'react-redux';
+
+import themes, { ThemeType } from '@thorchain/asgardex-theme';
+import { ThemeProvider } from 'styled-components';
+
+import WebFontLoader from 'components/utility/webfontloader';
+
+import { store as reduxStore, history, RootState } from 'redux/store';
+
+import { AppHolder, fontConfig } from 'settings/appStyle';
 
 import Routes from './router';
-import { AppHolder, fontConfig } from './settings/appStyle';
-import WebFontLoader from './components/utility/webfontloader';
 
 const Main = () => {
   const themeType = useSelector((state: RootState) => state.App.themeType);

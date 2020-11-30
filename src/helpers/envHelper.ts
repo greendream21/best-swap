@@ -1,4 +1,4 @@
-import { Nothing, Maybe } from '../types/bepswap';
+import { Nothing, Maybe } from 'types/bepswap';
 
 /**
  * Returns a given ENV if it's valid only or returns a default value

@@ -1,8 +1,10 @@
-import styled from 'styled-components';
-import { palette } from 'styled-theme';
 import { Line, Bar } from 'react-chartjs-2';
 
-import { media } from '../../helpers/styleHelper';
+import styled from 'styled-components';
+import { palette } from 'styled-theme';
+
+
+import { media } from 'helpers/styleHelper';
 
 type HeaderToggleProps = {
   primary?: boolean;

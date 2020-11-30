@@ -1,5 +1,5 @@
 import React, { useCallback, ReactNode } from 'react';
-import { Dropdown } from 'antd';
+
 import {
   DatabaseOutlined,
   SwapOutlined,
@@ -9,10 +9,12 @@ import {
   CaretDownOutlined,
   FilterOutlined,
 } from '@ant-design/icons';
+import { Dropdown } from 'antd';
 import { ClickParam } from 'antd/lib/menu';
 import { keyBy as _keyBy } from 'lodash';
 
-import { TxDetailsTypeEnum } from '../../types/generated/midgard';
+import { TxDetailsTypeEnum } from 'types/generated/midgard';
+
 import { Menu, DesktopButton, MobileButton } from './filterDropdown.style';
 
 export type FilterValue =

@@ -1,9 +1,11 @@
 import React, { useRef, useCallback } from 'react';
 
 import BigNumber from 'bignumber.js';
-import { TokenInputWrapper } from './tokenInput.style';
+
+import { FixmeType, Maybe } from 'types/bepswap';
+
 import CoinInputAdvanced from '../../coins/coinInputAdvanced';
-import { FixmeType, Maybe } from '../../../../types/bepswap';
+import { TokenInputWrapper } from './tokenInput.style';
 import { TokenInputProps } from './types';
 
 type Props = {

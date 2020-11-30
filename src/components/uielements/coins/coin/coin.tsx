@@ -1,13 +1,17 @@
 import React, { useMemo } from 'react';
 
-import { CoinWrapper, CoinsWrapper } from './coin.style';
+import { coinGroup } from 'settings';
+
+import { getTickerFormat } from 'helpers/stringHelper';
+
+import { coinIconsFromTrustWallet } from 'settings/logoData';
+
+import { Nothing, Maybe } from 'types/bepswap';
+
 import CoinIcon from '../coinIcon';
 import DynamicCoin from '../dynamicCoin';
+import { CoinWrapper, CoinsWrapper } from './coin.style';
 import { CoinSize } from './types';
-import { Nothing, Maybe } from '../../../../types/bepswap';
-import { coinGroup } from '../../../../settings';
-import { coinIconsFromTrustWallet } from '../../../../settings/logoData';
-import { getTickerFormat } from '../../../../helpers/stringHelper';
 
 type Props = {
   type: string;

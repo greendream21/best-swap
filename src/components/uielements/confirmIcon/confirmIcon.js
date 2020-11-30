@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
+
 import { CheckOutlined } from '@ant-design/icons';
+
 import { IconWrapper } from './confirmIcon.style';
 
 class ConfirmIcon extends Component {

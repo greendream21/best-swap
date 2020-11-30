@@ -1,11 +1,16 @@
 import React, { ReactNode, useEffect } from 'react';
-import { Layout } from 'antd';
+
 import { connect } from 'react-redux';
+
 import * as RD from '@devexperts/remote-data-ts';
-import { RootState } from '../../redux/store';
-import { ApiBasePathRD } from '../../redux/midgard/types';
-import { TransferEventRD } from '../../redux/binance/types';
-import showNotification from '../../components/uielements/notification';
+import { Layout } from 'antd';
+
+
+import showNotification from 'components/uielements/notification';
+
+import { TransferEventRD } from 'redux/binance/types';
+import { ApiBasePathRD } from 'redux/midgard/types';
+import { RootState } from 'redux/store';
 
 type ComponentProps = {
   children?: ReactNode;

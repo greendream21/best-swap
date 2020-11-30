@@ -1,6 +1,7 @@
 import { RemoteData } from '@devexperts/remote-data-ts';
 import BigNumber from 'bignumber.js';
-import { Maybe, FixmeType } from '../../types/bepswap';
+
+import { Maybe, FixmeType } from 'types/bepswap';
 import {
   AssetDetail,
   PoolDetail,
@@ -13,7 +14,7 @@ import {
   TotalVolChanges,
   PoolAggChanges,
   NetworkInfo,
-} from '../../types/generated/midgard';
+} from 'types/generated/midgard';
 
 export type AssetDetailMap = {
   [asset: string]: AssetDetail;

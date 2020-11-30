@@ -1,8 +1,9 @@
 /* eslint-disable react/no-unescaped-entities */
 import React, { Component } from 'react';
 
-import Label from '../../components/uielements/label';
-import Logo from '../../components/uielements/logo';
+import Label from 'components/uielements/label';
+import Logo from 'components/uielements/logo';
+
 import { AppLayout } from './style';
 
 class Page500 extends Component {

@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
+
 import { connect } from 'react-redux';
 
 import { Row, Col } from 'antd';
-import Tabs from '../../components/uielements/tabs';
-import { ContentWrapper } from './ConnectView.style';
 
-import Keystore from './Keystore';
-import WalletConnect from './WalletConnect';
-import Ledger from './Ledger';
 
-import * as walletActions from '../../redux/wallet/actions';
+import Tabs from 'components/uielements/tabs';
+
+import * as walletActions from 'redux/wallet/actions';
+
 import { isMainnet } from '../../env';
+import { ContentWrapper } from './ConnectView.style';
+import Keystore from './Keystore';
+import Ledger from './Ledger';
+import WalletConnect from './WalletConnect';
 
 const { TabPane } = Tabs;
 

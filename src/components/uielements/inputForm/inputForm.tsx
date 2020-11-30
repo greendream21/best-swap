@@ -1,9 +1,10 @@
 import React from 'react';
 
 import { TokenAmount, tokenAmount } from '@thorchain/asgardex-token';
-import { InputFormWrapper } from './inputForm.style';
+
 import InputNumber from '../inputNumber';
 import Label from '../label';
+import { InputFormWrapper } from './inputForm.style';
 
 type Props = {
   title: string;

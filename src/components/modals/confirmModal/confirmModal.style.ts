@@ -1,8 +1,9 @@
 import styled from 'styled-components';
 import { palette } from 'styled-theme';
 
+import { media } from 'helpers/styleHelper';
+
 import Modal from '../../uielements/modal';
-import { media } from '../../../helpers/styleHelper';
 
 export const StyledModal = styled(Modal)`
   &.ant-modal {

@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { InfoOutlined } from '@ant-design/icons';
 
-import { TooltipIconWrapper } from './tooltipIcon.style';
+import { InfoOutlined } from '@ant-design/icons';
+import PropTypes from 'prop-types';
+
 import Button from '../button';
+import { TooltipIconWrapper } from './tooltipIcon.style';
 
 class TooltipIcon extends Component {
   render() {

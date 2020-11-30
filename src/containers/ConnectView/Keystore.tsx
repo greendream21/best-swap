@@ -1,24 +1,28 @@
 import React, { useState, useCallback } from 'react';
-import { useHistory } from 'react-router-dom';
-import { crypto } from '@binance-chain/javascript-sdk';
+
 import { FilePicker } from 'react-file-picker';
-import { Row, Input, Form, Tooltip } from 'antd';
+import { useHistory } from 'react-router-dom';
+
 import {
   QuestionCircleOutlined,
   UploadOutlined,
   CheckCircleTwoTone,
 } from '@ant-design/icons';
-
+import { crypto } from '@binance-chain/javascript-sdk';
 import { delay } from '@thorchain/asgardex-util';
-import { ContentWrapper, KeystoreTitle } from './ConnectView.style';
+import { Row, Input, Form, Tooltip } from 'antd';
 
-import Label from '../../components/uielements/label';
-import Button from '../../components/uielements/button';
-import FormGroup from '../../components/uielements/formGroup';
-import * as walletActions from '../../redux/wallet/actions';
 
-import { Maybe, Nothing, FixmeType } from '../../types/bepswap';
+import Button from 'components/uielements/button';
+import FormGroup from 'components/uielements/formGroup';
+import Label from 'components/uielements/label';
+
+import * as walletActions from 'redux/wallet/actions';
+
+import { Maybe, Nothing, FixmeType } from 'types/bepswap';
+
 import { asgardexBncClient } from '../../env';
+import { ContentWrapper, KeystoreTitle } from './ConnectView.style';
 
 type Props = {
   saveWallet: typeof walletActions.saveWallet;

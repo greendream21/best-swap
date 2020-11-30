@@ -1,7 +1,8 @@
+import { Drawer as AntdDrawer } from 'antd';
 import styled from 'styled-components';
 import { palette } from 'styled-theme';
-import { Drawer as AntdDrawer } from 'antd';
-import { media } from '../../helpers/styleHelper';
+
+import { media } from 'helpers/styleHelper';
 
 export const WalletDrawerWrapper = styled.div`
   position: relative;

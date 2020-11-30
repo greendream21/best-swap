@@ -1,6 +1,7 @@
 import { RemoteData } from '@devexperts/remote-data-ts';
 import { TokenAmount } from '@thorchain/asgardex-token';
-import { FixmeType, Maybe, Address } from '../../types/bepswap';
+
+import { FixmeType, Maybe, Address } from 'types/bepswap';
 
 export type WalletType = 'keystore' | 'walletconnect' | 'ledger';
 
@@ -12,11 +13,11 @@ export interface User {
   wallet: Address;
   keystore?: FixmeType;
   ledger?: FixmeType;
-  hdPath?: number [];
+  hdPath?: number[];
   walletConnector?: FixmeType;
 }
 
-export type EmptyUser = {};
+export type EmptyUser = Record<string, never>;
 
 export interface AssetData {
   asset: string;

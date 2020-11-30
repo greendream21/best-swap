@@ -1,16 +1,17 @@
+import { crypto } from '@binance-chain/javascript-sdk';
+import { Coin, SignedSend } from '@binance-chain/javascript-sdk/lib/types';
 import {
   TokenAmount,
   BaseAmount,
   tokenAmount,
   tokenToBase,
 } from '@thorchain/asgardex-token';
-import { crypto } from '@binance-chain/javascript-sdk';
-import { Coin, SignedSend } from '@binance-chain/javascript-sdk/lib/types';
 import base64js from 'base64-js';
 
-import { getSwapMemo, getWithdrawMemo, getStakeMemo } from '../memoHelper';
-import { FixmeType, Maybe } from '../../types/bepswap';
+import { FixmeType, Maybe } from 'types/bepswap';
+
 import { CHAIN_ID } from '../../env';
+import { getSwapMemo, getWithdrawMemo, getStakeMemo } from '../memoHelper';
 import { BncResponse } from './types';
 
 // TODO: implement the exact types and remove all FixmeTypes
@@ -122,11 +123,11 @@ export const getSendOrderMsg = ({
 }: GetSendOrderMsgParam) => {
   // 1. sort denoms by alphabet order
   // 2. validate coins with zero amounts
-  const coins: Coin[] = Coin
-    .sort((a, b) => a.denom.localeCompare(b.denom))
-    .filter(data => {
-      return data.amount > 0;
-    });
+  const coins: Coin[] = Coin.sort((a, b) =>
+    a.denom.localeCompare(b.denom),
+  ).filter(data => {
+    return data.amount > 0;
+  });
 
   // if coin data is invalid, return null
   if (!coins.length) {

@@ -1,12 +1,14 @@
 import { baseAmount } from '@thorchain/asgardex-token';
-import { Maybe, Nothing } from '../types/bepswap';
+
 import {
   Fees,
   TransferFees,
   DexFees,
   Fee,
   TransferFee,
-} from '../redux/binance/types';
+} from 'redux/binance/types';
+
+import { Maybe, Nothing } from 'types/bepswap';
 
 /**
  * Type guard for runtime checks of `Fee`
@@ -37,7 +39,10 @@ export const getTransferFeeds = (fees: Fees): Maybe<TransferFees> =>
       const single = dataItem.fixed_fee_params.fee;
       const multi = dataItem.multi_transfer_fee;
       if (single && multi) {
-        return { single: baseAmount(single), multi: baseAmount(multi) } as TransferFees;
+        return {
+          single: baseAmount(single),
+          multi: baseAmount(multi),
+        } as TransferFees;
       }
       return Nothing;
     }

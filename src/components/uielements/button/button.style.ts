@@ -1,8 +1,15 @@
-import styled from 'styled-components';
-import { palette, key } from 'styled-theme';
 import { Button } from 'antd';
 import { ButtonProps } from 'antd/lib/button';
-import { ButtonColor, ButtonSize, ButtonWeight, ButtonType, ButtonRound } from './types';
+import styled from 'styled-components';
+import { palette, key } from 'styled-theme';
+
+import {
+  ButtonColor,
+  ButtonSize,
+  ButtonWeight,
+  ButtonType,
+  ButtonRound,
+} from './types';
 
 const fontSettings = {
   small: {

@@ -1,13 +1,15 @@
 import React from 'react';
+
+import { bnOrZero } from '@thorchain/asgardex-util';
 import { Row, Col } from 'antd';
 import _ from 'lodash';
-import { bnOrZero } from '@thorchain/asgardex-util';
+
+import usePrice from 'hooks/usePrice';
+
+import { StatsData, NetworkInfo } from 'types/generated/midgard/api';
 
 import LabelLoader from '../utility/loaders/label';
-import { StatsData, NetworkInfo } from '../../types/generated/midgard/api';
 import { StyledStatistic } from './statBar.style';
-
-import usePrice from '../../hooks/usePrice';
 
 type Props = {
   stats: StatsData;

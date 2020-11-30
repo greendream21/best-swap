@@ -1,15 +1,18 @@
 import { useMemo, useCallback } from 'react';
 
-import { BigNumber } from 'bignumber.js';
 import { useDispatch, useSelector } from 'react-redux';
-import { bn, validBNOrZero, bnOrZero } from '@thorchain/asgardex-util';
+
 import { formatBaseAsTokenAmount, baseAmount } from '@thorchain/asgardex-token';
+import { bn, validBNOrZero, bnOrZero } from '@thorchain/asgardex-util';
+import { BigNumber } from 'bignumber.js';
 
-import { RootState } from '../redux/store';
-import * as midgardActions from '../redux/midgard/actions';
 
-import { getTickerFormat } from '../helpers/stringHelper';
-import { RUNE_SYMBOL, BUSD_SYMBOL } from '../settings/assetData';
+import * as midgardActions from 'redux/midgard/actions';
+import { RootState } from 'redux/store';
+
+import { getTickerFormat } from 'helpers/stringHelper';
+
+import { RUNE_SYMBOL, BUSD_SYMBOL } from 'settings/assetData';
 
 const usePrice = () => {
   const dispatch = useDispatch();

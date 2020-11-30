@@ -1,7 +1,8 @@
 import { ThemeType } from '@thorchain/asgardex-theme';
 
-import { Maybe } from '../types/bepswap';
-import { User, WalletType } from '../redux/wallet/types';
+import { User, WalletType } from 'redux/wallet/types';
+
+import { Maybe } from 'types/bepswap';
 
 export const WALLET_ADDRESS = 'WALLET_ADDRESS';
 export const KEY_STORE = 'KEY_STORE';

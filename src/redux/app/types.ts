@@ -1,6 +1,7 @@
 import { TokenAmount } from '@thorchain/asgardex-token';
 import BigNumber from 'bignumber.js';
-import { Maybe } from '../../types/bepswap';
+
+import { Maybe } from 'types/bepswap';
 /**
  * Tx types
  */

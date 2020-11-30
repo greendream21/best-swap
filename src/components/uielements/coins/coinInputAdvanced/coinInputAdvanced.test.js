@@ -1,5 +1,6 @@
 import { renderHook, act } from '@testing-library/react-hooks';
 import { bn } from '@thorchain/asgardex-util';
+
 import {
   useCoinCardInputBehaviour,
   isBroadcastable,

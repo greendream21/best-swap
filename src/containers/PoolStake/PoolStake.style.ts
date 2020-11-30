@@ -1,11 +1,12 @@
+import { InfoCircleOutlined } from '@ant-design/icons';
+import Paragraph from 'antd/lib/typography/Paragraph';
 import styled from 'styled-components';
 import { palette, key } from 'styled-theme';
-import { InfoCircleOutlined } from '@ant-design/icons';
 
-import Paragraph from 'antd/lib/typography/Paragraph';
-import ContentView from '../../components/utility/contentView';
-import UnstyledTabs from '../../components/uielements/tabs';
-import { media } from '../../helpers/styleHelper';
+import UnstyledTabs from 'components/uielements/tabs';
+import ContentView from 'components/utility/contentView';
+
+import { media } from 'helpers/styleHelper';
 
 // TODO:
 // This needs to be refactored/rewritten pretty badly

@@ -1,13 +1,4 @@
-import BigNumber from 'bignumber.js';
 import { TransferResult, WS } from '@thorchain/asgardex-binance';
-import {
-  bn,
-  isValidBN,
-  getDoubleSwapSlip,
-  getSwapSlip,
-  baseAmount as getBaseAmount,
-  PoolData,
-} from '@thorchain/asgardex-util';
 import {
   TokenAmount,
   BaseAmount,
@@ -16,8 +7,24 @@ import {
   baseAmount,
   tokenToBase,
 } from '@thorchain/asgardex-token';
+import {
+  bn,
+  isValidBN,
+  getDoubleSwapSlip,
+  getSwapSlip,
+  baseAmount as getBaseAmount,
+  PoolData,
+} from '@thorchain/asgardex-util';
+import BigNumber from 'bignumber.js';
 
-import { getSwapMemo } from '../memoHelper';
+import { PoolDataMap } from 'redux/midgard/types';
+import { getAssetFromString } from 'redux/midgard/utils';
+
+import { RUNE_SYMBOL } from 'settings/assetData';
+
+import { FixmeType, Nothing, Maybe, SwapType, Pair } from 'types/bepswap';
+import { PoolDetail } from 'types/generated/midgard/api';
+
 import {
   getZValue,
   getPx,
@@ -26,13 +33,8 @@ import {
   SingleSwapCalcData,
   DoubleSwapCalcData,
 } from '../calculations';
-import { PoolDataMap } from '../../redux/midgard/types';
-import { getAssetFromString } from '../../redux/midgard/utils';
-import { PoolDetail } from '../../types/generated/midgard/api';
-import { FixmeType, Nothing, Maybe, SwapType, Pair } from '../../types/bepswap';
+import { getSwapMemo } from '../memoHelper';
 import { SwapData } from './types';
-
-import { RUNE_SYMBOL } from '../../settings/assetData';
 
 /**
  * return all valid swap pairs

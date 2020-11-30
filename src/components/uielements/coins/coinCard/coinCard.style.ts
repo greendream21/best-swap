@@ -1,11 +1,14 @@
 import React from 'react';
+
+import { CaretDownOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { Divider } from 'antd';
+import { DividerProps } from 'antd/lib/divider';
 import styled, { css } from 'styled-components';
 import { palette } from 'styled-theme';
-import { Divider } from 'antd';
-import { CaretDownOutlined, InfoCircleOutlined } from '@ant-design/icons';
-import { DividerProps } from 'antd/lib/divider';
+
+import { cleanTag } from 'helpers/styleHelper';
+
 import Label from '../../label';
-import { cleanTag } from '../../../../helpers/styleHelper';
 import Coin from '../coin';
 
 export const CoinCardWrapper = styled.div`
@@ -143,10 +146,12 @@ export const VerticalDivider = styled(Divider).attrs({
 `;
 
 type HorizontalDividerProps = {
-  color?: string
-}
+  color?: string;
+};
 
-export const HorizontalDivider = styled<React.SFC<DividerProps & HorizontalDividerProps>>(Divider)`
+export const HorizontalDivider = styled<
+  React.SFC<DividerProps & HorizontalDividerProps>
+>(Divider)`
   &.ant-divider {
     margin: ${props => (props?.color === 'primary' ? '4px 0' : '2px 0')};
 
@@ -167,7 +172,7 @@ export const FooterLabel = styled(Label).attrs({
 export const RowFullWrapper = styled.div`
   display: flex;
   justify-content: space-between;
-  align-items: center;  
+  align-items: center;
 `;
 
 export const PopoverContent = styled.div`

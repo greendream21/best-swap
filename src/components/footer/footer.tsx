@@ -1,5 +1,7 @@
 import React from 'react';
+
 import { Link } from 'react-router-dom';
+
 import Icon, {
   TwitterOutlined,
   RedditOutlined,
@@ -7,14 +9,16 @@ import Icon, {
   GithubOutlined,
   BranchesOutlined,
 } from '@ant-design/icons';
-import { TelegramIcon } from '../icons/telegramicon';
 
+
+import { Maybe } from 'types/bepswap';
+
+import { TelegramIcon } from '../icons/telegramicon';
 import Logo from '../uielements/logo';
 import { StyledFooter, FooterContainer, FooterItem } from './footer.style';
-import { Maybe } from '../../types/bepswap';
 
 type Props = {
-  commitHash: Maybe<string>
+  commitHash: Maybe<string>;
 };
 
 const Footer: React.FC<Props> = ({ commitHash }): JSX.Element => {

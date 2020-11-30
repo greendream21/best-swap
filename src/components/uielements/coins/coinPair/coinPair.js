@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { CaretRightOutlined } from '@ant-design/icons';
 
-import { CoinPairWrapper } from './coinPair.style';
+import { CaretRightOutlined } from '@ant-design/icons';
+import PropTypes from 'prop-types';
+
 import CoinIcon from '../coinIcon';
+import { CoinPairWrapper } from './coinPair.style';
 
 class CoinPair extends Component {
   render() {

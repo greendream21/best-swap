@@ -1,14 +1,19 @@
 import React, { useCallback } from 'react';
+
 import { match, withRouter, useLocation, useHistory } from 'react-router-dom';
+
 import { LeftOutlined } from '@ant-design/icons';
 
-import AppLayout from './AppLayout';
-import ViewPanel from '../../components/viewPanel';
-import Header from '../../components/header';
-import Footer from '../../components/footer';
-import AppRouter from './AppRouter';
+
+import Footer from 'components/footer';
+import Header from 'components/header';
+import ViewPanel from 'components/viewPanel';
+
+import { COMMIT_HASH } from 'helpers/envHelper';
+
 import { ContentWrapper, BackLink } from './App.style';
-import { COMMIT_HASH } from '../../helpers/envHelper';
+import AppLayout from './AppLayout';
+import AppRouter from './AppRouter';
 
 type Props = {
   match: match;
@@ -28,9 +33,10 @@ const App: React.FC<Props> = (props: Props): JSX.Element => {
       return <></>;
     }
     return (
-      <BackLink onClick={() => {
-        history.push('/pools');
-      }}
+      <BackLink
+        onClick={() => {
+          history.push('/pools');
+        }}
       >
         <LeftOutlined />
         <span>Back</span>

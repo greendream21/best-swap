@@ -1,4 +1,5 @@
 import { Address } from '@thorchain/asgardex-binance';
+
 import { AssetData, User } from './types';
 
 export const saveWallet = (payload: User) =>
@@ -24,8 +25,7 @@ export const refreshStakesSuccess = (payload: AssetData[]) =>
 export const refreshStakesFailed = (payload: Error) =>
   ({ type: 'REFRESH_STAKES_FAILED', payload } as const);
 
-export const refreshWallet = () =>
-({ type: 'REFRESH_WALLET' } as const);
+export const refreshWallet = () => ({ type: 'REFRESH_WALLET' } as const);
 
 export type WalletActionsTypes = ReturnType<
   | typeof saveWallet

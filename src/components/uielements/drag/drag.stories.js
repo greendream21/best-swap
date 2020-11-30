@@ -1,5 +1,6 @@
 /* eslint-disable no-alert */
 import React from 'react';
+
 import { storiesOf } from '@storybook/react';
 
 import Drag from './drag';

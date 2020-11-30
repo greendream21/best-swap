@@ -1,12 +1,14 @@
 import React from 'react';
+
 import {
   SwapOutlined,
   DoubleRightOutlined,
   ImportOutlined,
 } from '@ant-design/icons';
 
+import { TxDetailsTypeEnum } from 'types/generated/midgard';
+
 import { TxLabelWrapper } from './txLabel.style';
-import { TxDetailsTypeEnum } from '../../../types/generated/midgard';
 
 type Props = {
   type?: TxDetailsTypeEnum;
@@ -40,9 +42,7 @@ const TxLabel: React.FC<Props> = (props: Props): JSX.Element => {
   return (
     <TxLabelWrapper className="txLabel-wrapper">
       <p>{label}</p>
-      <div className="tx-label-icon">
-        {TxIcon}
-      </div>
+      <div className="tx-label-icon">{TxIcon}</div>
     </TxLabelWrapper>
   );
 };

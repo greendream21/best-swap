@@ -8,4 +8,4 @@ export type Asset = {
   chain?: string;
   symbol?: string;
   ticker?: string;
-}
+};

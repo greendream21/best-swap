@@ -1,5 +1,6 @@
 import { notification } from 'antd';
-import { getAppContainer } from '../../../helpers/elementHelper';
+
+import { getAppContainer } from 'helpers/elementHelper';
 
 type NotificationType = {
   type: 'open' | 'success' | 'info' | 'warning' | 'error';

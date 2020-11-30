@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { palette } from 'styled-theme';
-import { transition } from '../../../../settings/style-util';
+
+import { transition } from 'settings/style-util';
 
 export type CoinListWrapperSize = 'small' | 'big';
 

@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
+
 import PropTypes from 'prop-types';
 
-import { LogoWrapper } from './logo.style';
 import { logoData } from './data';
+import { LogoWrapper } from './logo.style';
 
 class Logo extends Component {
   render() {

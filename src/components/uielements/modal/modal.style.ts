@@ -1,6 +1,6 @@
+import { Modal } from 'antd';
 import styled from 'styled-components';
 import { palette } from 'styled-theme';
-import { Modal } from 'antd';
 
 export const ModalWrapper = styled(Modal)`
   text-transform: uppercase;

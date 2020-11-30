@@ -1,6 +1,6 @@
+import { InfoCircleOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import { palette } from 'styled-theme';
-import { InfoCircleOutlined } from '@ant-design/icons';
 
 export const PoolFilterWrapper = styled.div`
   display: flex;

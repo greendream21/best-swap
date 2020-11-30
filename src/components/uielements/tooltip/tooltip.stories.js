@@ -1,8 +1,9 @@
 import React from 'react';
+
 import { storiesOf } from '@storybook/react';
 
-import Tooltip from './tooltip';
 import Button from '../button';
+import Tooltip from './tooltip';
 
 storiesOf('Components/ToolTip', module).add('default', () => {
   return (

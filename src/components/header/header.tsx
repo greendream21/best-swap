@@ -1,18 +1,49 @@
 import React, { useCallback, useEffect } from 'react';
-import { useHistory, Link } from 'react-router-dom';
-import { connect } from 'react-redux';
 
-import { Alert, Grid, Popover } from 'antd';
+
+import { connect } from 'react-redux';
+import { useHistory, Link } from 'react-router-dom';
 
 import { WalletOutlined } from '@ant-design/icons';
-
 import * as RD from '@devexperts/remote-data-ts';
+import { Alert, Grid, Popover } from 'antd';
 
-import Logo from '../uielements/logo';
-import TxProgress from '../uielements/txProgress';
+import WalletDrawer from 'containers/WalletView/WalletDrawer';
+
+import * as appActions from 'redux/app/actions';
+import { MAX_VALUE } from 'redux/app/const';
+import { TxStatus, TxResult, TxTypes } from 'redux/app/types';
+import * as binanceActions from 'redux/binance/actions';
+import { TransferEventRD } from 'redux/binance/types';
+import { RootState } from 'redux/store';
+import { User } from 'redux/wallet/types';
+
+import useNetwork from 'hooks/useNetwork';
+
+import { showTxFinishNotification } from 'helpers/notificationHelper';
+import { getSymbolPair } from 'helpers/stringHelper';
+import {
+  withdrawResult,
+  WithdrawResultParams,
+} from 'helpers/utils/poolUtils';
+import { getTxResult } from 'helpers/utils/swapUtils';
+import {
+  getBetaConfirm,
+  saveBetaConfirm,
+} from 'helpers/webStorageHelper';
+
+import { Maybe, Nothing, Pair } from 'types/bepswap';
+
+import { getNet, isMainnet } from '../../env';
 import ConfirmModal from '../modals/confirmModal';
+import Refresh from '../refresh';
+import Label from '../uielements/label';
+import Logo from '../uielements/logo';
 import showNotification from '../uielements/notification';
-
+import ThemeSwitch from '../uielements/themeSwitch';
+import TxProgress from '../uielements/txProgress';
+import WalletButton from '../uielements/walletButton';
+import BasePriceSelector from './basePriceSelector';
 import {
   StyledAlertWrapper,
   StyledHeader,
@@ -22,40 +53,7 @@ import {
   PopoverContent,
   PopoverIcon,
 } from './header.style';
-
 import HeaderSetting from './headerSetting';
-import WalletDrawer from '../../containers/WalletView/WalletDrawer';
-
-import Label from '../uielements/label';
-import ThemeSwitch from '../uielements/themeSwitch';
-import WalletButton from '../uielements/walletButton';
-import BasePriceSelector from './basePriceSelector';
-import Refresh from '../refresh';
-
-import { Maybe, Nothing, Pair } from '../../types/bepswap';
-import { RootState } from '../../redux/store';
-import { User } from '../../redux/wallet/types';
-import { TransferEventRD } from '../../redux/binance/types';
-
-import * as appActions from '../../redux/app/actions';
-import * as binanceActions from '../../redux/binance/actions';
-
-import { MAX_VALUE } from '../../redux/app/const';
-import { TxStatus, TxResult, TxTypes } from '../../redux/app/types';
-import { getNet, isMainnet } from '../../env';
-import useNetwork from '../../hooks/useNetwork';
-
-import { getSymbolPair } from '../../helpers/stringHelper';
-import {
-  getBetaConfirm,
-  saveBetaConfirm,
-} from '../../helpers/webStorageHelper';
-import { getTxResult } from '../../helpers/utils/swapUtils';
-import {
-  withdrawResult,
-  WithdrawResultParams,
-} from '../../helpers/utils/poolUtils';
-import { showTxFinishNotification } from '../../helpers/notificationHelper';
 
 type ConnectedProps = {
   user: Maybe<User>;

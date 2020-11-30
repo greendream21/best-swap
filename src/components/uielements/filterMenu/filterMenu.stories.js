@@ -1,9 +1,11 @@
 import React from 'react';
+
 import { storiesOf } from '@storybook/react';
 
-import FilterMenu from './filterMenu';
+import { getTickerFormat } from 'helpers/stringHelper';
+
 import CoinData from '../coins/coinData';
-import { getTickerFormat } from '../../../helpers/stringHelper';
+import FilterMenu from './filterMenu';
 
 function filterFunction(item, searchTerm) {
   const tokenName = getTickerFormat(item.asset);
