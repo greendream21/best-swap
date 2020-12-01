@@ -57,7 +57,7 @@ export function* getPoolViewData() {
   });
 }
 
-// refresh data needed for pool view homepage
+// refresh data needed for pool detail page
 export function* getPoolDetailViewData() {
   yield takeEvery('GET_POOL_DETAIL_VIEW_DATA', function*({
     payload,
@@ -79,6 +79,8 @@ export function* getPoolDetailViewData() {
           asset: payload,
         }),
       );
+
+      yield put(midgardActions.getPoolEarningDetails(payload));
     }
   });
 }

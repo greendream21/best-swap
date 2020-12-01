@@ -17,6 +17,11 @@ import * as H from 'history';
 import { compose } from 'redux';
 
 import PoolChart from 'components/poolChart';
+import {
+  ChartDetail,
+  ChartValues,
+  ChartData,
+} from 'components/poolChart/types';
 import PoolFilter from 'components/poolFilter';
 import StatBar from 'components/statBar';
 import TxTable from 'components/transaction/txTable';
@@ -29,11 +34,7 @@ import showNotification from 'components/uielements/notification';
 import LabelLoader from 'components/utility/loaders/label';
 
 import * as midgardActions from 'redux/midgard/actions';
-import {
-  PoolDataMap,
-  TxDetailData,
-  RTVolumeData,
-} from 'redux/midgard/types';
+import { PoolDataMap, TxDetailData, RTVolumeData } from 'redux/midgard/types';
 import { getAssetFromString } from 'redux/midgard/utils';
 import { RootState } from 'redux/store';
 import { AssetData, User } from 'redux/wallet/types';
@@ -71,7 +72,6 @@ import {
   PopoverIcon,
 } from './PoolView.style';
 import { PoolViewData } from './types';
-import { generateRandomTimeSeries } from './utils';
 
 type Props = {
   history: H.History;
@@ -122,6 +122,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
   );
   const [currentTxPage, setCurrentTxPage] = useState<number>(1);
   const [keyword, setKeyword] = useState<string>('');
+  const [selectedChart, setSelectedChart] = useState('Volume');
 
   const isDesktopView = Grid.useBreakpoint()?.md ?? true;
   const history = useHistory();
@@ -137,51 +138,65 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     getOutboundBusyTooltip,
   } = useNetwork();
 
-  const chartData = useMemo(() => {
+  const chartData: ChartData = useMemo(() => {
+    const defaultChartValues: ChartValues = {
+      allTime: [],
+      week: [],
+    };
+
     if (rtVolumeLoading) {
       return {
-        liquidity: {
-          allTime: [],
-          week: [],
+        Liquidity: {
+          comingSoon: true,
         },
-        volume: {
-          allTime: [],
-          week: [],
+        Volume: {
+          values: defaultChartValues,
+          loading: true,
         },
-        loading: true,
       };
     }
 
     const { allTimeData, weekData } = rtVolume;
 
-    const allTimeVolumeData = allTimeData?.map(volume => {
-      return {
-        time: volume?.time ?? 0,
-        value: getUSDPrice(bnOrZero(volume?.totalVolume)),
-      };
-    });
+    const allTimeVolumeData: ChartDetail[] =
+      allTimeData?.map(volume => {
+        return {
+          time: volume?.time ?? 0,
+          value: getUSDPrice(bnOrZero(volume?.totalVolume)),
+        };
+      }) ?? [];
 
-    const weekVolumeData = weekData?.map(volume => {
-      return {
-        time: volume?.time ?? 0,
-        value: getUSDPrice(bnOrZero(volume?.totalVolume)),
-      };
-    });
-
-    const randomSeries = generateRandomTimeSeries(0, 15, '2020-05-01');
+    const weekVolumeData: ChartDetail[] =
+      weekData?.map(volume => {
+        return {
+          time: volume?.time ?? 0,
+          value: getUSDPrice(bnOrZero(volume?.totalVolume)),
+        };
+      }) ?? [];
 
     return {
-      liquidity: {
-        allTime: randomSeries,
-        week: randomSeries,
+      Liquidity: {
+        comingSoon: true,
       },
-      volume: {
-        allTime: allTimeVolumeData,
-        week: weekVolumeData,
+      Volume: {
+        values: {
+          allTime: allTimeVolumeData,
+          week: weekVolumeData,
+        },
+        loading: false,
+        type: 'bar',
       },
-      loading: false,
     };
   }, [rtVolume, rtVolumeLoading, getUSDPrice]);
+
+  const renderChart = () => (
+    <PoolChart
+      chartIndexes={['Liquidity', 'Volume']}
+      chartData={chartData}
+      selectedIndex={selectedChart}
+      selectChart={setSelectedChart}
+    />
+  );
 
   const getTransactionInfo = useCallback(
     (offset: number, limit: number) => {
@@ -612,9 +627,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         stats={stats}
         networkInfo={networkInfo}
       />
-      <div>
-        <PoolChart hasLiquidity={false} chartData={chartData} />
-      </div>
+      <div>{renderChart()}</div>
       <PoolViewTools>
         <PoolFilter selected={poolStatus} onClick={handleSelectPoolStatus} />
         <div className="add-new-pool" onClick={handleNewPool}>

@@ -177,7 +177,10 @@ export const StyledPagination = styled(Pagination)`
 `;
 
 export const ChartContainer = styled.div`
-  margin-left: 16px;
+  margin-left: 0px;
+  ${media.md`
+    margin-left: 16px;
+  `}
 `;
 
 export const PopoverContent = styled.div`
