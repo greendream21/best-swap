@@ -3,7 +3,6 @@ import { Line, Bar } from 'react-chartjs-2';
 import styled from 'styled-components';
 import { palette } from 'styled-theme';
 
-
 import { media } from 'helpers/styleHelper';
 
 type HeaderToggleProps = {
@@ -24,8 +23,8 @@ export const ChartContainer = styled.div`
   padding: 5px;
   border-radius: 4px;
   width: 100%;
-  height: 100%;  
-  ${media.lg`
+  height: 100%;
+  ${media.sm`
     padding: 10px 20px;
     height: 362px;
   `}

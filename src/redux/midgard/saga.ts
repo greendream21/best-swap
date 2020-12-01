@@ -9,7 +9,11 @@ import {
   getBasePriceAsset,
 } from 'helpers/webStorageHelper';
 
-import { PoolDetail, AssetDetail } from 'types/generated/midgard/api';
+import {
+  PoolDetail,
+  AssetDetail,
+  PoolEarningDetail,
+} from 'types/generated/midgard/api';
 import { UnpackPromiseResponse } from 'types/util';
 
 import { NET, getNet } from '../../env';
@@ -816,6 +820,58 @@ export function* getRTVolumeByAsset() {
   });
 }
 
+function* tryGetPoolEarningDetails(payload: string) {
+  for (let i = 0; i < MIDGARD_MAX_RETRY; i++) {
+    try {
+      const noCache = i > 0;
+      // Unsafe: Can't infer type of `basePath` here - known TS/Generator/Saga issue
+      const basePath: string = yield call(getApiBasePath, getNet(), noCache);
+      const midgardApi = api.getMidgardDefaultApi(basePath);
+      const fn = midgardApi.getEarningDetail;
+      const { data }: UnpackPromiseResponse<typeof fn> = yield call(
+        {
+          context: midgardApi,
+          fn,
+        },
+        payload,
+      );
+
+      return data;
+    } catch (error) {
+      if (i < MIDGARD_MAX_RETRY - 1) {
+        yield delay(MIDGARD_RETRY_DELAY);
+      }
+    }
+  }
+  throw new Error(
+    'Midgard API request failed to get RT Volume changes by asset',
+  );
+}
+
+export function* getPoolEarningDetails() {
+  yield takeEvery('GET_POOL_EARNING_DETAILS', function*({
+    payload,
+  }: ReturnType<typeof actions.getPoolEarningDetails>) {
+    try {
+      const symbol = payload;
+
+      const poolEarningDetail: PoolEarningDetail = yield call(
+        tryGetPoolEarningDetails,
+        symbol,
+      );
+
+      yield put(
+        actions.getPoolEarningDetailsSuccess({
+          symbol,
+          poolEarningDetail,
+        }),
+      );
+    } catch (error) {
+      yield put(actions.getPoolEarningDetailsFailed(error));
+    }
+  });
+}
+
 export default function* rootSaga() {
   yield all([
     fork(getPoolAssets),
@@ -833,6 +889,7 @@ export default function* rootSaga() {
     fork(getTxByAsset),
     fork(getRTVolumeByAsset),
     fork(getRTAggregateByAsset),
+    fork(getPoolEarningDetails),
     fork(getPoolDetailByAsset),
     fork(getNetworkInfo),
   ]);

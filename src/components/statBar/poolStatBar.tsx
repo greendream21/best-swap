@@ -7,7 +7,7 @@ import usePrice from 'hooks/usePrice';
 
 import { PoolData } from 'helpers/utils/types';
 
-import { PoolDetail } from 'types/generated/midgard';
+import { PoolDetail, PoolEarningDetail } from 'types/generated/midgard';
 
 import LabelLoader from '../utility/loaders/label';
 import { StyledStatistic } from './statBar.style';
@@ -16,10 +16,11 @@ type Props = {
   stats: PoolData;
   loading?: boolean;
   poolInfo: PoolDetail;
+  poolEarning: PoolEarningDetail;
 };
 
 const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
-  const { stats, poolInfo, loading } = props;
+  const { stats, poolInfo, poolEarning, loading } = props;
 
   const { getReducedPriceLabel } = usePrice();
 
@@ -39,6 +40,15 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
   const poolAPY = bnOrZero(poolInfo?.poolAPY);
   const poolAPYLabel = `${poolAPY.multipliedBy(100).toFixed(2)} %`;
 
+  const totalPoolEarning = getReducedPriceLabel(
+    bnOrZero(poolEarning?.totalPoolEarning),
+    0,
+  );
+  const totalPoolFee = getReducedPriceLabel(
+    bnOrZero(poolEarning?.totalPoolFee),
+    0,
+  );
+
   const poolStats = React.useMemo(
     () => [
       {
@@ -56,6 +66,14 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
       {
         title: '24H Volume',
         value: volume24,
+      },
+      {
+        title: 'Total Earnings',
+        value: totalPoolEarning,
+      },
+      {
+        title: 'Total Fees',
+        value: totalPoolFee,
       },
       {
         title: 'Total Members',
@@ -83,6 +101,8 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
       totalSwaps,
       transaction,
       poolAPYLabel,
+      totalPoolEarning,
+      totalPoolFee,
     ],
   );
 

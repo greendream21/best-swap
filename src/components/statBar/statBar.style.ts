@@ -5,15 +5,15 @@ import { palette } from 'styled-theme';
 export const StyledStatistic = styled(Statistic)`
   background: ${palette('background', 0)};
   text-transform: uppercase;
-  padding: 10px 20px;
+  padding: 4px 16px;
   border-radius: 4px;
-  height: 79px;
+  height: 60px;
 
   &:before {
     content: '';
     position: absolute;
     width: 6px;
-    height: 79px;
+    height: 60px;
     left: 8px;
     top: 8px;
     border-bottom-left-radius: 3px;
@@ -30,7 +30,7 @@ export const StyledStatistic = styled(Statistic)`
   }
 
   .ant-statistic-content {
-    margin-top: 12px;
+    margin-top: 6px;
     display: flex;
 
     span {

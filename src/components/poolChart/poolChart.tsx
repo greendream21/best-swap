@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo } from 'react';
 
 import { defaults } from 'react-chartjs-2';
 import { useSelector } from 'react-redux';
@@ -6,7 +6,6 @@ import { useSelector } from 'react-redux';
 import themes, { ThemeType } from '@thorchain/asgardex-theme';
 import { Grid } from 'antd';
 import moment from 'moment';
-
 
 import { RootState } from 'redux/store';
 
@@ -29,26 +28,14 @@ import {
   ComingSoonWrapper,
   ComingSoonText,
 } from './poolChart.style';
-
-type ChartDetail = {
-  value: string;
-  time: number;
-};
-
-type ChartDataType = {
-  allTime: ChartDetail[];
-  week: ChartDetail[];
-};
-
-type ChartInfo = {
-  liquidity: ChartDataType;
-  volume: ChartDataType;
-  loading: boolean;
-};
+import { ChartData, ChartTimeFrame } from './types';
+import { getDisplayData, getRandomChartData } from './utils';
 
 type Props = {
-  hasLiquidity?: boolean;
-  chartData: ChartInfo;
+  chartData: ChartData;
+  chartIndexes: string[];
+  selectedIndex: string;
+  selectChart: (value: string) => void;
 };
 
 defaults.global.defaultFontFamily = 'Exo 2';
@@ -57,9 +44,10 @@ defaults.global.defaultFontStyle = 'normal';
 
 const PoolChart: React.FC<Props> = React.memo(
   (props: Props): JSX.Element => {
-    const { hasLiquidity = true, chartData } = props;
-    const [chartType, setChartType] = React.useState('VOLUME');
-    const [chartTime, setChartTime] = React.useState('ALL');
+    const { chartIndexes = [], chartData, selectedIndex, selectChart } = props;
+    const [chartTimeframe, setChartTimeframe] = React.useState<ChartTimeFrame>(
+      'allTime',
+    );
 
     const { hasBUSDPrice } = usePrice();
     const isDesktopView = Grid.useBreakpoint()?.md ?? false;
@@ -78,12 +66,14 @@ const PoolChart: React.FC<Props> = React.memo(
       }),
       [isLight, theme],
     );
+    const randomData = useMemo(() => getRandomChartData(), []);
 
-    const totalDisplayChart =
-      chartType === 'LIQUIDITY' ? chartData.liquidity : chartData.volume;
-
-    const filteredByTime =
-      chartTime === 'ALL' ? totalDisplayChart.allTime : totalDisplayChart.week;
+    const selectedChartData = chartData?.[selectedIndex];
+    const isComingSoonChart = selectedChartData?.comingSoon ?? false;
+    const isChartLoading = selectedChartData?.loading ?? false;
+    const selectedChartType = selectedChartData?.type ?? 'bar';
+    const selectedChartValues = selectedChartData?.values;
+    const filteredByTime = selectedChartValues?.[chartTimeframe] ?? [];
 
     const labels: Array<string> = filteredByTime.map(data => {
       return moment.unix(data.time).format('MMM DD');
@@ -93,70 +83,20 @@ const PoolChart: React.FC<Props> = React.memo(
       Number(data.value.split(',').join('')),
     );
 
-    const data = useCallback(
-      (canvas: HTMLCanvasElement) => {
-        const ctx = canvas.getContext('2d');
-        let gradientStroke: CanvasGradient;
+    const getData = useMemo(() => getDisplayData({ labels, values, colors }), [
+      labels,
+      values,
+      colors,
+    ]);
 
-        if (ctx) {
-          gradientStroke = ctx.createLinearGradient(0, 100, 0, 300);
-          gradientStroke.addColorStop(0, colors.gradientStart);
-          gradientStroke.addColorStop(1, colors.gradientStop);
-          return {
-            labels,
-            datasets: [
-              {
-                fill: true,
-                lineTension: 0.5,
-                backgroundColor: gradientStroke,
-                borderColor: colors.line,
-                borderCapStyle: 'butt',
-                borderDash: [],
-                borderDashOffset: 0.0,
-                borderJoinStyle: 'miter',
-                borderWidth: 2,
-                pointBorderColor: colors.line,
-                pointBackgroundColor: '#fff',
-                pointBorderWidth: 1,
-                pointHoverRadius: 1,
-                pointHoverBackgroundColor: 'rgba(75,192,192,1)',
-                pointHoverBorderColor: 'rgba(220,220,220,1)',
-                pointHoverBorderWidth: 1,
-                pointRadius: 1,
-                pointHitRadius: 50,
-                data: values,
-              },
-            ],
-          };
-        }
-
-        return {
-          labels,
-          datasets: [
-            {
-              fill: false,
-              lineTension: 0.2,
-              borderColor: '#436eb9',
-              borderCapStyle: 'butt',
-              borderDash: [],
-              borderDashOffset: 0.0,
-              borderJoinStyle: 'miter',
-              borderWidth: 2,
-              pointBorderColor: '#436eb9',
-              pointBackgroundColor: '#fff',
-              pointBorderWidth: 1,
-              pointHoverRadius: 1,
-              pointHoverBackgroundColor: 'rgba(75,192,192,1)',
-              pointHoverBorderColor: 'rgba(220,220,220,1)',
-              pointHoverBorderWidth: 0,
-              pointRadius: 1,
-              pointHitRadius: 50,
-              data: values,
-            },
-          ],
-        };
-      },
-      [colors, labels, values],
+    const getRandomSeries = useMemo(
+      () =>
+        getDisplayData({
+          labels: randomData.labels,
+          values: randomData.values,
+          colors,
+        }),
+      [randomData, colors],
     );
 
     const options = useMemo(
@@ -245,58 +185,59 @@ const PoolChart: React.FC<Props> = React.memo(
       [hasBUSDPrice, colors, isDesktopView],
     );
 
-    const renderChart = () => {
+    const renderComingSoonChart = () => {
       return (
-        <ChartWrapper>
-          {!hasLiquidity && chartType === 'LIQUIDITY' && (
-            <ComingSoonWrapper>
-              <CodeIcon />
-              <ComingSoonText>Coming Soon...</ComingSoonText>
-            </ComingSoonWrapper>
-          )}
-
-          {chartData?.loading && <Loader />}
-          {!chartData?.loading && (
-            <BlurWrapper isBlur={chartType === 'LIQUIDITY' && !hasLiquidity}>
-              {chartType === 'LIQUIDITY' && (
-                <LineChart data={data} options={options} />
-              )}
-              {chartType !== 'LIQUIDITY' && (
-                <BarChart data={data} options={options} />
-              )}
-            </BlurWrapper>
-          )}
-        </ChartWrapper>
+        <>
+          <ComingSoonWrapper>
+            <CodeIcon />
+            <ComingSoonText>Coming Soon...</ComingSoonText>
+          </ComingSoonWrapper>
+          <BlurWrapper isBlur>
+            <LineChart data={getRandomSeries} options={options} />
+          </BlurWrapper>
+        </>
       );
+    };
+
+    const renderChart = () => {
+      if (isComingSoonChart) {
+        return renderComingSoonChart();
+      }
+
+      if (isChartLoading) {
+        return <Loader />;
+      }
+
+      if (selectedChartType === 'bar') {
+        return <BarChart data={getData} options={options} />;
+      }
+
+      return <LineChart data={getData} options={options} />;
     };
 
     const renderHeader = () => {
       return (
         <HeaderContainer>
           <TypeContainer>
-            <HeaderToggle
-              primary={chartType === 'LIQUIDITY'}
-              onClick={() => setChartType('LIQUIDITY')}
-            >
-              Liquidity
-            </HeaderToggle>
-            <HeaderToggle
-              primary={chartType === 'VOLUME'}
-              onClick={() => setChartType('VOLUME')}
-            >
-              Volume
-            </HeaderToggle>
+            {chartIndexes.map(chartIndex => (
+              <HeaderToggle
+                primary={selectedIndex === chartIndex}
+                onClick={() => selectChart(chartIndex)}
+              >
+                {chartIndex}
+              </HeaderToggle>
+            ))}
           </TypeContainer>
           <TimeContainer>
             <HeaderToggle
-              primary={chartTime === 'WEEK'}
-              onClick={() => setChartTime('WEEK')}
+              primary={chartTimeframe === 'week'}
+              onClick={() => setChartTimeframe('week')}
             >
               1 Week
             </HeaderToggle>
             <HeaderToggle
-              primary={chartTime === 'ALL'}
-              onClick={() => setChartTime('ALL')}
+              primary={chartTimeframe === 'allTime'}
+              onClick={() => setChartTimeframe('allTime')}
             >
               All Time
             </HeaderToggle>
@@ -311,7 +252,7 @@ const PoolChart: React.FC<Props> = React.memo(
         gradientStop={colors.backgroundGradientStop}
       >
         {renderHeader()}
-        {renderChart()}
+        <ChartWrapper>{renderChart()}</ChartWrapper>
       </ChartContainer>
     );
   },

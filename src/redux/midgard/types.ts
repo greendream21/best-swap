@@ -14,6 +14,7 @@ import {
   TotalVolChanges,
   PoolAggChanges,
   NetworkInfo,
+  PoolEarningDetail,
 } from 'types/generated/midgard';
 
 export type AssetDetailMap = {
@@ -28,6 +29,15 @@ export type GetAssetsPayload = {
 export type PoolDataMap = {
   [symbol: string]: PoolDetail;
 };
+
+export type PoolEarningDetailsMap = {
+  [symbol: string]: PoolEarningDetail;
+};
+
+export type GetPoolEarningDetailsPayload = {
+  symbol: string;
+  poolEarningDetail: PoolEarningDetail;
+}
 
 export type GetPoolDataPayload = {
   assets: string[];
@@ -152,6 +162,12 @@ export type State = {
   poolAddressLoading: boolean;
   poolData: PoolDataMap;
   poolDetailedData: PoolDataMap;
+  poolEarningDetails: PoolEarningDetailsMap;
+  poolLoading: boolean;
+  assetLoading: boolean;
+  poolDataLoading: boolean;
+  poolDetailedDataLoading: boolean;
+  poolEarningDetailsLoading: boolean;
   stakerPoolData: Maybe<StakerPoolData>;
   stakerPoolDataLoading: boolean;
   stakerPoolDataError: Maybe<Error>;
@@ -159,10 +175,6 @@ export type State = {
   basePriceAsset: string; // set base price asset as a RUNE
   priceIndex: PriceDataIndex;
   error: Maybe<Error>;
-  poolLoading: boolean;
-  assetLoading: boolean;
-  poolDataLoading: boolean;
-  poolDetailedDataLoading: boolean;
   statsLoading: boolean;
   txData: TxDetailData;
   refreshTxStatus: boolean;
