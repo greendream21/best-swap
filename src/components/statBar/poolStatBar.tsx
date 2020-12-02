@@ -68,11 +68,11 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
         value: volume24,
       },
       {
-        title: 'Total Earnings',
+        title: 'Total Earning',
         value: totalPoolEarning,
       },
       {
-        title: 'Total Fees',
+        title: 'Total Fee',
         value: totalPoolFee,
       },
       {
