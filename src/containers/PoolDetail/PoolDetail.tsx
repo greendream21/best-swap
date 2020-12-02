@@ -66,6 +66,7 @@ type Props = {
   poolEarningDetailsLoading: boolean;
   assets: AssetDetailMap;
   pools: string[];
+  poolLoading: boolean;
   priceIndex: PriceDataIndex;
   rtAggregateLoading: boolean;
   rtAggregate: RTAggregateData;
@@ -80,6 +81,7 @@ type Props = {
 const PoolDetail: React.FC<Props> = (props: Props) => {
   const {
     pools,
+    poolLoading,
     poolDetailedData,
     poolDetailedDataLoading,
     poolEarningDetails,
@@ -229,10 +231,10 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
 
   // check if asset pool is valid
   useEffect(() => {
-    if (!isValidPool(pools, symbol)) {
+    if (!poolLoading && !isValidPool(pools, symbol)) {
       history.push('/');
     }
-  }, [pools, history, symbol]);
+  }, [pools, history, symbol, poolLoading]);
 
   const handlePagination = useCallback(
     (page: number) => {
@@ -359,6 +361,7 @@ export default compose(
       poolEarningDetailsLoading: state.Midgard.poolEarningDetailsLoading,
       refreshTxStatus: state.Midgard.refreshTxStatus,
       pools: state.Midgard.pools,
+      poolLoading: state.Midgard.poolLoading,
       priceIndex: state.Midgard.priceIndex,
       txData: state.Midgard.txData,
       rtAggregateLoading: state.Midgard.rtAggregateLoading,
