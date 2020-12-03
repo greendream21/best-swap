@@ -2,7 +2,7 @@
 import React, { useEffect, useCallback, useMemo, useState } from 'react';
 
 import { connect } from 'react-redux';
-import { withRouter, useParams, Link, useHistory } from 'react-router-dom';
+import { withRouter, useParams, Link } from 'react-router-dom';
 
 import { SwapOutlined, DatabaseOutlined } from '@ant-design/icons';
 import { Token } from '@thorchain/asgardex-binance';
@@ -38,7 +38,7 @@ import usePrice from 'hooks/usePrice';
 
 import { getAppContainer } from 'helpers/elementHelper';
 import { getTokenName } from 'helpers/stringHelper';
-import { getPoolData, isValidPool } from 'helpers/utils/poolUtils';
+import { getPoolData } from 'helpers/utils/poolUtils';
 import { PoolData } from 'helpers/utils/types';
 
 import { RUNE_SYMBOL } from 'settings/assetData';
@@ -65,8 +65,6 @@ type Props = {
   poolEarningDetails: PoolEarningDetailsMap;
   poolEarningDetailsLoading: boolean;
   assets: AssetDetailMap;
-  pools: string[];
-  poolLoading: boolean;
   priceIndex: PriceDataIndex;
   rtAggregateLoading: boolean;
   rtAggregate: RTAggregateData;
@@ -80,8 +78,6 @@ type Props = {
 
 const PoolDetail: React.FC<Props> = (props: Props) => {
   const {
-    pools,
-    poolLoading,
     poolDetailedData,
     poolDetailedDataLoading,
     poolEarningDetails,
@@ -111,7 +107,6 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
   const isDesktopView = Grid.useBreakpoint().md;
   const viewModeClass = isDesktopView ? 'desktop-view' : 'mobile-view';
 
-  const history = useHistory();
   const { symbol = '' } = useParams();
   const tokenSymbol = symbol.toUpperCase();
 
@@ -228,13 +223,6 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
       getTransactionInfo(tokenSymbol, 0, 10);
     }
   }, [getTransactionInfo, tokenSymbol, refreshTxStatus]);
-
-  // check if asset pool is valid
-  useEffect(() => {
-    if (!poolLoading && !isValidPool(pools, symbol)) {
-      history.push('/');
-    }
-  }, [pools, history, symbol, poolLoading]);
 
   const handlePagination = useCallback(
     (page: number) => {
@@ -360,8 +348,6 @@ export default compose(
       poolEarningDetails: state.Midgard.poolEarningDetails,
       poolEarningDetailsLoading: state.Midgard.poolEarningDetailsLoading,
       refreshTxStatus: state.Midgard.refreshTxStatus,
-      pools: state.Midgard.pools,
-      poolLoading: state.Midgard.poolLoading,
       priceIndex: state.Midgard.priceIndex,
       txData: state.Midgard.txData,
       rtAggregateLoading: state.Midgard.rtAggregateLoading,
