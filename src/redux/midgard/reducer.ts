@@ -35,6 +35,11 @@ const initState: State = {
   poolDataLoading: false,
   poolDetailedDataLoading: true,
   poolEarningDetailsLoading: false,
+  rtStats: {
+    allTimeData: [],
+    weekData: [],
+  },
+  rtStatsLoading: false,
   stats: {
     dailyActiveUsers: '0',
     dailyTx: '0',
@@ -67,11 +72,6 @@ const initState: State = {
   txData: initial,
   refreshTxStatus: false,
   txCurData: {},
-  rtVolumeLoading: false,
-  rtVolume: {
-    allTimeData: [],
-    weekData: [],
-  },
   rtAggregateLoading: false,
   rtAggregate: {
     allTimeData: [],
@@ -164,6 +164,24 @@ const reducer: Reducer<State, MidgardActionTypes> = (
       return {
         ...state,
         statsLoading: false,
+        error: action.payload,
+      };
+    case 'GET_RT_STATS_CHANEGS':
+      return {
+        ...state,
+        rtStatsLoading: true,
+        error: Nothing,
+      };
+    case 'GET_RT_STATS_CHANEGS_SUCCESS':
+      return {
+        ...state,
+        rtStatsLoading: false,
+        rtStats: action.payload,
+      };
+    case 'GET_RT_STATS_CHANEGS_FAILED':
+      return {
+        ...state,
+        rtStatsLoading: false,
         error: action.payload,
       };
     case 'GET_POOL_EARNING_DETAILS':
@@ -408,22 +426,6 @@ const reducer: Reducer<State, MidgardActionTypes> = (
       return {
         ...state,
         txData: failure(action.payload),
-      };
-    case 'GET_RT_VOLUME_BY_ASSET':
-      return {
-        ...state,
-        rtVolumeLoading: true,
-      };
-    case 'GET_RT_VOLUME_BY_ASSET_SUCCESS':
-      return {
-        ...state,
-        rtVolume: action.payload,
-        rtVolumeLoading: false,
-      };
-    case 'GET_RT_VOLUME_BY_ASSET_FAILED':
-      return {
-        ...state,
-        rtVolumeLoading: false,
       };
     case 'GET_RT_AGGREGATE_BY_ASSET':
       return {

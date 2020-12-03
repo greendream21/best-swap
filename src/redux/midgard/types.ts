@@ -11,10 +11,10 @@ import {
   ThorchainEndpoint,
   InlineResponse2001,
   TxDetailsTypeEnum,
-  TotalVolChanges,
   PoolAggChanges,
   NetworkInfo,
   PoolEarningDetail,
+  StatsChanges,
 } from 'types/generated/midgard';
 
 export type AssetDetailMap = {
@@ -37,7 +37,7 @@ export type PoolEarningDetailsMap = {
 export type GetPoolEarningDetailsPayload = {
   symbol: string;
   poolEarningDetail: PoolEarningDetail;
-}
+};
 
 export type GetPoolDataPayload = {
   assets: string[];
@@ -101,32 +101,30 @@ export type GetTxByAssetPayload = {
   type?: string;
 };
 
-export type GetRTVolumeByAssetPayload = {
-  asset?: string;
+export type Interval = '5min' | 'hour' | 'day' | 'week' | 'month' | 'year';
+
+export type GetRTStatsPayload = {
   from?: number;
   to?: number;
-  interval?: '5min' | 'hour' | 'day' | 'week' | 'month' | 'year';
-  type?: string;
+  interval?: Interval;
 };
 
 export type GetRTAggregateByAssetPayload = {
   asset?: string;
   from?: number;
   to?: number;
-  interval?: '5min' | 'hour' | 'day' | 'week' | 'month' | 'year';
+  interval?: Interval;
   type?: string;
 };
 
-export type GetRTVolumeData = {
-  allTimeData: Array<TotalVolChanges>;
-  weekData: Array<TotalVolChanges>;
+export type RTStatsData = {
+  allTimeData: Array<StatsChanges>;
+  weekData: Array<StatsChanges>;
 };
 
 export type GetPoolDetailByAssetPayload = {
   asset: string;
 };
-
-export type RTVolumeData = GetRTVolumeData;
 
 export type RTAggregateData = {
   allTimeData: Array<PoolAggChanges>;
@@ -156,6 +154,8 @@ export type State = {
   assetArray: AssetDetail[];
   pools: string[];
   stats: StatsData;
+  rtStats: RTStatsData;
+  rtStatsLoading: boolean;
   poolAddressData: Maybe<ThorchainEndpoints>;
   bnbPoolAddress: Maybe<ThorchainEndpoint>;
   poolAddress: Maybe<string>;
@@ -178,8 +178,6 @@ export type State = {
   statsLoading: boolean;
   txData: TxDetailData;
   refreshTxStatus: boolean;
-  rtVolumeLoading: boolean;
-  rtVolume: RTVolumeData;
   rtAggregateLoading: boolean;
   rtAggregate: RTAggregateData;
   txCurData: Maybe<InlineResponse2001>;

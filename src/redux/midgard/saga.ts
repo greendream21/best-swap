@@ -26,8 +26,8 @@ import {
   GetTxByAddressAssetPayload,
   GetStakerPoolDataPayload,
   GetTransactionPayload,
-  GetRTVolumeByAssetPayload,
   GetRTAggregateByAssetPayload,
+  GetRTStatsPayload,
   PoolStatus,
   PoolDataMap,
 } from './types';
@@ -669,43 +669,6 @@ export function* setBasePriceAsset() {
   });
 }
 
-function* tryGetRTVolumeByAsset(payload: GetRTVolumeByAssetPayload) {
-  for (let i = 0; i < MIDGARD_MAX_RETRY; i++) {
-    try {
-      const noCache = i > 0;
-      const {
-        asset = '',
-        from = 0,
-        to = getEoDTime(),
-        interval = 'day',
-      } = payload;
-      // Unsafe: Can't infer type of `basePath` here - known TS/Generator/Saga issue
-      const basePath: string = yield call(getApiBasePath, getNet(), noCache);
-      const midgardApi = api.getMidgardDefaultApi(basePath);
-      const fn = midgardApi.getTotalVolChanges;
-      const { data }: UnpackPromiseResponse<typeof fn> = yield call(
-        {
-          context: midgardApi,
-          fn,
-        },
-        interval,
-        from,
-        to,
-        asset,
-      );
-
-      return data;
-    } catch (error) {
-      if (i < MIDGARD_MAX_RETRY - 1) {
-        yield delay(MIDGARD_RETRY_DELAY);
-      }
-    }
-  }
-  throw new Error(
-    'Midgard API request failed to get RT Volume changes by asset',
-  );
-}
-
 function* tryGetRTAggregateByAsset(payload: GetRTAggregateByAssetPayload) {
   for (let i = 0; i < MIDGARD_MAX_RETRY; i++) {
     try {
@@ -784,38 +747,73 @@ export function* getRTAggregateByAsset() {
   });
 }
 
-export function* getRTVolumeByAsset() {
-  yield takeEvery('GET_RT_VOLUME_BY_ASSET', function*({
+function* trygetRTStats(payload: GetRTStatsPayload) {
+  for (let i = 0; i < MIDGARD_MAX_RETRY; i++) {
+    try {
+      const noCache = i > 0;
+      const {
+        from = 0,
+        to = getEoDTime(),
+        interval = 'day',
+      } = payload;
+      // Unsafe: Can't infer type of `basePath` here - known TS/Generator/Saga issue
+      const basePath: string = yield call(getApiBasePath, getNet(), noCache);
+      const midgardApi = api.getMidgardDefaultApi(basePath);
+      const fn = midgardApi.getStatsChanges;
+      const { data }: UnpackPromiseResponse<typeof fn> = yield call(
+        {
+          context: midgardApi,
+          fn,
+        },
+        interval,
+        from,
+        to,
+      );
+
+      return data;
+    } catch (error) {
+      if (i < MIDGARD_MAX_RETRY - 1) {
+        yield delay(MIDGARD_RETRY_DELAY);
+      }
+    }
+  }
+  throw new Error(
+    'Midgard API request failed to get RT Volume changes by asset',
+  );
+}
+
+export function* getRTStats() {
+  yield takeEvery('GET_RT_STATS_CHANEGS', function*({
     payload,
-  }: ReturnType<typeof actions.getRTVolumeByAsset>) {
+  }: ReturnType<typeof actions.getRTStats>) {
     try {
       const curTime = getEoDTime();
       const weekAgoTime = getWeekAgoTime();
 
-      const allTimeParams: GetRTVolumeByAssetPayload = {
+      const allTimeParams: GetRTStatsPayload = {
         ...payload,
         interval: 'day',
         from: 0,
         to: curTime,
       };
 
-      const weekParams: GetRTVolumeByAssetPayload = {
+      const weekParams: GetRTStatsPayload = {
         ...payload,
         interval: 'hour',
         from: weekAgoTime,
         to: curTime,
       };
 
-      const allTimeData = yield call(tryGetRTVolumeByAsset, allTimeParams);
-      const weekData = yield call(tryGetRTVolumeByAsset, weekParams);
+      const allTimeData = yield call(trygetRTStats, allTimeParams);
+      const weekData = yield call(trygetRTStats, weekParams);
       yield put(
-        actions.getRTVolumeByAssetSuccess({
+        actions.getRTStatsSuccess({
           allTimeData,
           weekData,
         }),
       );
     } catch (error) {
-      yield put(actions.getRTVolumeByAssetFailed(error));
+      yield put(actions.getRTStatsFailed(error));
     }
   });
 }
@@ -878,6 +876,7 @@ export default function* rootSaga() {
     fork(getPools),
     fork(getPoolData),
     fork(getStats),
+    fork(getRTStats),
     fork(getStakerPoolData),
     fork(getPoolAddress),
     fork(setBasePriceAsset),
@@ -887,7 +886,6 @@ export default function* rootSaga() {
     fork(getTxByAddressTxId),
     fork(getTxByAddressAsset),
     fork(getTxByAsset),
-    fork(getRTVolumeByAsset),
     fork(getRTAggregateByAsset),
     fork(getPoolEarningDetails),
     fork(getPoolDetailByAsset),
