@@ -26,7 +26,7 @@ export const ChartContainer = styled.div`
   height: 100%;
   ${media.sm`
     padding: 10px 20px;
-    height: 362px;
+    height: 288px;
   `}
   background-image: ${(props: ChartContainerProps) =>
     `linear-gradient(to bottom, ${props.gradientStart}, ${props.gradientStop})`};

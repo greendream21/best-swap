@@ -79,8 +79,6 @@ export function* getPoolDetailViewData() {
           asset: payload,
         }),
       );
-
-      yield put(midgardActions.getPoolEarningDetails(payload));
     }
   });
 }

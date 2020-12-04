@@ -29,7 +29,6 @@ import {
   PriceDataIndex,
   TxDetailData,
   RTAggregateData,
-  PoolEarningDetailsMap,
 } from 'redux/midgard/types';
 import { RootState } from 'redux/store';
 
@@ -62,8 +61,6 @@ type Props = {
   txData: TxDetailData;
   poolDetailedData: PoolDataMap;
   poolDetailedDataLoading: boolean;
-  poolEarningDetails: PoolEarningDetailsMap;
-  poolEarningDetailsLoading: boolean;
   assets: AssetDetailMap;
   priceIndex: PriceDataIndex;
   rtAggregateLoading: boolean;
@@ -73,15 +70,12 @@ type Props = {
   getRTAggregate: typeof midgardActions.getRTAggregateByAsset;
   getTxByAsset: typeof midgardActions.getTxByAsset;
   getPoolDetailByAsset: typeof midgardActions.getPoolDetailByAsset;
-  getPoolEarningDetails: typeof midgardActions.getPoolEarningDetails;
 };
 
 const PoolDetail: React.FC<Props> = (props: Props) => {
   const {
     poolDetailedData,
     poolDetailedDataLoading,
-    poolEarningDetails,
-    poolEarningDetailsLoading,
     txData,
     priceIndex,
     rtAggregateLoading,
@@ -91,7 +85,6 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
     getRTAggregate,
     getTxByAsset,
     getPoolDetailByAsset,
-    getPoolEarningDetails,
   } = props;
 
   const { getUSDPrice, pricePrefix, runePrice } = usePrice();
@@ -210,10 +203,6 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
   }, [getPoolDetailByAsset, tokenSymbol]);
 
   useEffect(() => {
-    getPoolEarningDetails(tokenSymbol);
-  }, [getPoolEarningDetails, tokenSymbol]);
-
-  useEffect(() => {
     getTransactionInfo(tokenSymbol, 0, 10);
   }, [getTransactionInfo, tokenSymbol]);
 
@@ -300,7 +289,6 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
   };
 
   const poolInfo = poolDetailedData[tokenSymbol] || {};
-  const poolEarning = poolEarningDetails[tokenSymbol] || {};
   const poolStats = getPoolData(tokenSymbol, poolInfo, priceIndex);
 
   return (
@@ -311,8 +299,7 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
           <PoolStatBar
             stats={poolStats}
             poolInfo={poolInfo}
-            poolEarning={poolEarning}
-            loading={poolDetailedDataLoading && poolEarningDetailsLoading}
+            loading={poolDetailedDataLoading}
           />
         </Col>
         <Col xs={24} sm={24} md={16}>
@@ -345,8 +332,6 @@ export default compose(
       tokenList: state.Binance.tokenList,
       poolDetailedData: state.Midgard.poolDetailedData,
       poolDetailedDataLoading: state.Midgard.poolDetailedDataLoading,
-      poolEarningDetails: state.Midgard.poolEarningDetails,
-      poolEarningDetailsLoading: state.Midgard.poolEarningDetailsLoading,
       refreshTxStatus: state.Midgard.refreshTxStatus,
       priceIndex: state.Midgard.priceIndex,
       txData: state.Midgard.txData,
@@ -357,7 +342,6 @@ export default compose(
       getRTAggregate: midgardActions.getRTAggregateByAsset,
       getTxByAsset: midgardActions.getTxByAsset,
       getPoolDetailByAsset: midgardActions.getPoolDetailByAsset,
-      getPoolEarningDetails: midgardActions.getPoolEarningDetails,
     },
   ),
   withRouter,

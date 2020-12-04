@@ -7,7 +7,7 @@ import usePrice from 'hooks/usePrice';
 
 import { PoolData } from 'helpers/utils/types';
 
-import { PoolDetail, PoolEarningDetail } from 'types/generated/midgard';
+import { PoolDetail } from 'types/generated/midgard';
 
 import LabelLoader from '../utility/loaders/label';
 import { StyledStatistic } from './statBar.style';
@@ -16,17 +16,15 @@ type Props = {
   stats: PoolData;
   loading?: boolean;
   poolInfo: PoolDetail;
-  poolEarning: PoolEarningDetail;
 };
 
 const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
-  const { stats, poolInfo, poolEarning, loading } = props;
+  const { stats, poolInfo, loading } = props;
 
   const { getReducedPriceLabel } = usePrice();
 
   const liquidityValue = getReducedPriceLabel(bnOrZero(poolInfo?.poolDepth), 0);
 
-  const volume = getReducedPriceLabel(bnOrZero(poolInfo?.poolVolume), 0);
   const volume24 = getReducedPriceLabel(bnOrZero(poolInfo?.poolVolume24hr), 0);
   const transaction = `${(Number(poolInfo?.swappingTxCount) || 0) +
     (Number(poolInfo?.stakingTxCount) || 0)}`;
@@ -40,12 +38,8 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
   const poolAPY = bnOrZero(poolInfo?.poolAPY);
   const poolAPYLabel = `${poolAPY.multipliedBy(100).toFixed(2)} %`;
 
-  const totalPoolEarning = getReducedPriceLabel(
-    bnOrZero(poolEarning?.totalPoolEarning),
-    0,
-  );
   const totalPoolFee = getReducedPriceLabel(
-    bnOrZero(poolEarning?.totalPoolFee),
+    bnOrZero(poolInfo?.poolFeesTotal),
     0,
   );
 
@@ -56,20 +50,12 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
         value: liquidityValue,
       },
       {
-        title: 'Total Earnings',
-        value: earning,
-      },
-      {
-        title: 'Total Volume',
-        value: volume,
-      },
-      {
         title: '24H Volume',
         value: volume24,
       },
       {
         title: 'Total Earning',
-        value: totalPoolEarning,
+        value: earning,
       },
       {
         title: 'Total Fee',
@@ -95,13 +81,11 @@ const Statistics: React.FC<Props> = (props: Props): JSX.Element => {
     [
       liquidityValue,
       earning,
-      volume,
       volume24,
       totalStakers,
       totalSwaps,
       transaction,
       poolAPYLabel,
-      totalPoolEarning,
       totalPoolFee,
     ],
   );
