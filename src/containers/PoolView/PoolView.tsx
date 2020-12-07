@@ -128,7 +128,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     () => [
       'Volume',
       'Total Pooled',
-      'Total Swaps',
+      'Total Swap',
       'Total Add',
       'Total Withdraw',
       'Liquidity',
@@ -138,7 +138,8 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
 
   const isDesktopView = Grid.useBreakpoint()?.md ?? true;
   const history = useHistory();
-  const { getUSDPrice, reducedPricePrefix, priceIndex } = usePrice();
+  const { getUSDPrice, reducedPricePrefix, priceIndex, hasBUSDPrice } = usePrice();
+  const chartValueUnit = useMemo(() => !hasBUSDPrice ? 'ᚱ' : '$', [hasBUSDPrice]);
 
   const loading = poolLoading || poolDataLoading;
   const wallet: Maybe<string> = user ? user.wallet : null;
@@ -259,14 +260,16 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
           allTime: allTimeVolumeData,
           week: weekVolumeData,
         },
+        unit: chartValueUnit,
       },
       'Total Pooled': {
         values: {
           allTime: allTimeTotalPooledData,
           week: weekTotalPooledData,
         },
+        unit: chartValueUnit,
       },
-      'Total Swaps': {
+      'Total Swap': {
         values: {
           allTime: allTimeTotalSwapsData,
           week: weekTotalSwapsData,
@@ -285,7 +288,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         },
       },
     };
-  }, [rtStats, rtStatsLoading, initialChartData, getUSDPrice]);
+  }, [rtStats, rtStatsLoading, initialChartData, chartValueUnit, getUSDPrice]);
 
   const renderChart = () => (
     <PoolChart

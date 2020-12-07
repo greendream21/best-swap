@@ -9,8 +9,6 @@ import moment from 'moment';
 
 import { RootState } from 'redux/store';
 
-import usePrice from 'hooks/usePrice';
-
 import { abbreviateNumber } from 'helpers/numberHelper';
 
 import { CodeIcon } from '../icons';
@@ -49,7 +47,6 @@ const PoolChart: React.FC<Props> = React.memo(
       'allTime',
     );
 
-    const { hasBUSDPrice } = usePrice();
     const isDesktopView = Grid.useBreakpoint()?.md ?? false;
 
     const themeType = useSelector((state: RootState) => state.App.themeType);
@@ -73,6 +70,7 @@ const PoolChart: React.FC<Props> = React.memo(
     const isChartLoading = selectedChartData?.loading ?? false;
     const selectedChartType = selectedChartData?.type ?? 'bar';
     const selectedChartValues = selectedChartData?.values;
+    const unit = selectedChartData?.unit ?? '';
     const filteredByTime = selectedChartValues?.[chartTimeframe] ?? [];
 
     const labels: Array<string> = filteredByTime.map(data => {
@@ -122,7 +120,6 @@ const PoolChart: React.FC<Props> = React.memo(
         tooltips: {
           callbacks: {
             label: ({ yLabel }: { yLabel: number }) => {
-              const unit = !hasBUSDPrice ? 'ᚱ' : '$';
               const label = `${unit}${new Intl.NumberFormat().format(
                 Math.floor(yLabel),
               )}`;
@@ -160,16 +157,10 @@ const PoolChart: React.FC<Props> = React.memo(
                 autoSkip: true,
                 maxTicksLimit: isDesktopView ? 4 : 3,
                 callback(value: string) {
-                  if (!hasBUSDPrice) {
-                    if (Number(value) === 0) {
-                      return 'ᚱ0';
-                    }
-                    return `ᚱ${abbreviateNumber(Number(value))}`;
-                  }
                   if (Number(value) === 0) {
-                    return '$0';
+                    return `${unit}0`;
                   }
-                  return `$${abbreviateNumber(Number(value))}`;
+                  return `${unit}${abbreviateNumber(Number(value))}`;
                 },
                 padding: 10,
                 fontSize: '14',
@@ -182,7 +173,7 @@ const PoolChart: React.FC<Props> = React.memo(
           ],
         },
       }),
-      [hasBUSDPrice, colors, isDesktopView],
+      [unit, colors, isDesktopView],
     );
 
     const renderComingSoonChart = () => {
