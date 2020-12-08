@@ -118,6 +118,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     getRTStats,
   } = props;
 
+  const isDesktopView = Grid.useBreakpoint()?.md ?? true;
   const [poolStatus, selectPoolStatus] = useState<PoolDetailStatusEnum>(
     PoolDetailStatusEnum.Enabled,
   );
@@ -125,18 +126,17 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
   const [keyword, setKeyword] = useState<string>('');
   const [selectedChart, setSelectedChart] = useState('Volume');
   const statsChartIndexes = useMemo(
-    () => [
+    () => isDesktopView ? [
       'Volume',
-      'Total Pooled',
-      'Total Swap',
-      'Total Add',
-      'Total Withdraw',
+      'Pooled',
+      'Swap',
+      'Add',
+      'Withdraw',
       'Liquidity',
-    ],
-    [],
+    ] : ['Volume', 'Pooled'],
+    [isDesktopView],
   );
 
-  const isDesktopView = Grid.useBreakpoint()?.md ?? true;
   const history = useHistory();
   const { getUSDPrice, reducedPricePrefix, priceIndex, hasBUSDPrice } = usePrice();
   const chartValueUnit = useMemo(() => !hasBUSDPrice ? 'ᚱ' : '$', [hasBUSDPrice]);
@@ -262,26 +262,26 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         },
         unit: chartValueUnit,
       },
-      'Total Pooled': {
+      Pooled: {
         values: {
           allTime: allTimeTotalPooledData,
           week: weekTotalPooledData,
         },
         unit: chartValueUnit,
       },
-      'Total Swap': {
+      Swap: {
         values: {
           allTime: allTimeTotalSwapsData,
           week: weekTotalSwapsData,
         },
       },
-      'Total Add': {
+      Add: {
         values: {
           allTime: allTimeTotalAddData,
           week: weekTotalAddData,
         },
       },
-      'Total Withdraw': {
+      Withdraw: {
         values: {
           allTime: allTimeTotalWithdrawData,
           week: weekTotalWithdrawData,
