@@ -53,7 +53,7 @@ export function* getPoolViewData() {
     );
 
     // get volume chart data for AT and Last week
-    yield put(midgardActions.getRTVolumeByAsset({}));
+    yield put(midgardActions.getRTStats({}));
   });
 }
 

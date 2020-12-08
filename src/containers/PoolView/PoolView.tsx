@@ -34,7 +34,7 @@ import showNotification from 'components/uielements/notification';
 import LabelLoader from 'components/utility/loaders/label';
 
 import * as midgardActions from 'redux/midgard/actions';
-import { PoolDataMap, TxDetailData, RTVolumeData } from 'redux/midgard/types';
+import { PoolDataMap, TxDetailData, RTStatsData } from 'redux/midgard/types';
 import { getAssetFromString } from 'redux/midgard/utils';
 import { RootState } from 'redux/store';
 import { AssetData, User } from 'redux/wallet/types';
@@ -57,6 +57,7 @@ import {
   PoolDetailStatusEnum,
   StatsData,
   NetworkInfo,
+  StatsChanges,
 } from 'types/generated/midgard/api';
 
 import {
@@ -87,12 +88,12 @@ type Props = {
   poolDataLoading: boolean;
   networkInfo: NetworkInfo;
   networkInfoLoading: boolean;
-  rtVolumeLoading: boolean;
-  rtVolume: RTVolumeData;
+  rtStats: RTStatsData;
+  rtStatsLoading: boolean;
   tokenList: Token[];
   getPools: typeof midgardActions.getPools;
   getTransactions: typeof midgardActions.getTransaction;
-  getRTVolume: typeof midgardActions.getRTVolumeByAsset;
+  getRTStats: typeof midgardActions.getRTStats;
 };
 
 const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
@@ -109,12 +110,12 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     poolDataLoading,
     networkInfo,
     networkInfoLoading,
-    rtVolumeLoading,
-    rtVolume,
+    rtStats,
+    rtStatsLoading,
     tokenList,
     getPools,
     getTransactions,
-    getRTVolume,
+    getRTStats,
   } = props;
 
   const [poolStatus, selectPoolStatus] = useState<PoolDetailStatusEnum>(
@@ -123,10 +124,22 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
   const [currentTxPage, setCurrentTxPage] = useState<number>(1);
   const [keyword, setKeyword] = useState<string>('');
   const [selectedChart, setSelectedChart] = useState('Volume');
+  const statsChartIndexes = useMemo(
+    () => [
+      'Volume',
+      'Total Pooled',
+      'Total Swap',
+      'Total Add',
+      'Total Withdraw',
+      'Liquidity',
+    ],
+    [],
+  );
 
   const isDesktopView = Grid.useBreakpoint()?.md ?? true;
   const history = useHistory();
-  const { getUSDPrice, reducedPricePrefix, priceIndex } = usePrice();
+  const { getUSDPrice, reducedPricePrefix, priceIndex, hasBUSDPrice } = usePrice();
+  const chartValueUnit = useMemo(() => !hasBUSDPrice ? 'ᚱ' : '$', [hasBUSDPrice]);
 
   const loading = poolLoading || poolDataLoading;
   const wallet: Maybe<string> = user ? user.wallet : null;
@@ -138,41 +151,105 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     getOutboundBusyTooltip,
   } = useNetwork();
 
-  const chartData: ChartData = useMemo(() => {
+  const initialChartData = useMemo(() => {
+    const initialData: ChartData = {};
     const defaultChartValues: ChartValues = {
       allTime: [],
       week: [],
     };
 
-    if (rtVolumeLoading) {
-      return {
-        Liquidity: {
-          comingSoon: true,
-        },
-        Volume: {
-          values: defaultChartValues,
-          loading: true,
-        },
+    statsChartIndexes.forEach(chartIndex => {
+      initialData[chartIndex] = {
+        values: defaultChartValues,
+        loading: true,
       };
+    });
+
+    initialData.Liquidity = {
+      comingSoon: true,
+    };
+
+    return initialData;
+  }, [statsChartIndexes]);
+
+  const chartData: ChartData = useMemo(() => {
+    if (rtStatsLoading) {
+      return initialChartData;
     }
 
-    const { allTimeData, weekData } = rtVolume;
+    const { allTimeData, weekData } = rtStats;
+    const allTimeVolumeData: ChartDetail[] = [];
+    const weekVolumeData: ChartDetail[] = [];
+    const allTimeTotalPooledData: ChartDetail[] = [];
+    const weekTotalPooledData: ChartDetail[] = [];
+    const allTimeTotalSwapsData: ChartDetail[] = [];
+    const weekTotalSwapsData: ChartDetail[] = [];
+    const allTimeTotalAddData: ChartDetail[] = [];
+    const weekTotalAddData: ChartDetail[] = [];
+    const allTimeTotalWithdrawData: ChartDetail[] = [];
+    const weekTotalWithdrawData: ChartDetail[] = [];
 
-    const allTimeVolumeData: ChartDetail[] =
-      allTimeData?.map(volume => {
-        return {
-          time: volume?.time ?? 0,
-          value: getUSDPrice(bnOrZero(volume?.totalVolume)),
-        };
-      }) ?? [];
+    const getChartData = (data: StatsChanges) => {
+      const time = data?.time ?? 0;
+      const volume = {
+        time,
+        value: getUSDPrice(bnOrZero(data?.totalVolume)),
+      };
+      const totalPooled = {
+        time,
+        value: getUSDPrice(bnOrZero(data?.totalRuneDepth)),
+      };
 
-    const weekVolumeData: ChartDetail[] =
-      weekData?.map(volume => {
-        return {
-          time: volume?.time ?? 0,
-          value: getUSDPrice(bnOrZero(volume?.totalVolume)),
-        };
-      }) ?? [];
+      const buyCount = data?.buyCount ?? 0;
+      const sellCount = data?.sellCount ?? 0;
+      const swapCount = buyCount + sellCount;
+      // buyCount + sellCount
+      const totalSwaps = {
+        time,
+        value: String(swapCount),
+      };
+
+      const totalAdd = { time, value: String(data?.stakeCount ?? 0) };
+      const totalWithdraw = { time, value: String(data?.withdrawCount ?? 0) };
+
+      return {
+        volume,
+        totalPooled,
+        totalSwaps,
+        totalAdd,
+        totalWithdraw,
+      };
+    };
+
+    allTimeData.forEach(data => {
+      const {
+        volume,
+        totalPooled,
+        totalSwaps,
+        totalAdd,
+        totalWithdraw,
+      } = getChartData(data);
+      allTimeVolumeData.push(volume);
+      allTimeTotalPooledData.push(totalPooled);
+      allTimeTotalSwapsData.push(totalSwaps);
+      allTimeTotalAddData.push(totalAdd);
+      allTimeTotalWithdrawData.push(totalWithdraw);
+    });
+
+    weekData.forEach(data => {
+      const {
+        volume,
+        totalPooled,
+        totalSwaps,
+        totalAdd,
+        totalWithdraw,
+      } = getChartData(data);
+      weekVolumeData.push(volume);
+      weekTotalPooledData.push(totalPooled);
+      weekTotalSwapsData.push(totalSwaps);
+      weekTotalAddData.push(totalAdd);
+      weekTotalWithdrawData.push(totalWithdraw);
+    });
 
     return {
       Liquidity: {
@@ -183,15 +260,39 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
           allTime: allTimeVolumeData,
           week: weekVolumeData,
         },
-        loading: false,
-        type: 'bar',
+        unit: chartValueUnit,
+      },
+      'Total Pooled': {
+        values: {
+          allTime: allTimeTotalPooledData,
+          week: weekTotalPooledData,
+        },
+        unit: chartValueUnit,
+      },
+      'Total Swap': {
+        values: {
+          allTime: allTimeTotalSwapsData,
+          week: weekTotalSwapsData,
+        },
+      },
+      'Total Add': {
+        values: {
+          allTime: allTimeTotalAddData,
+          week: weekTotalAddData,
+        },
+      },
+      'Total Withdraw': {
+        values: {
+          allTime: allTimeTotalWithdrawData,
+          week: weekTotalWithdrawData,
+        },
       },
     };
-  }, [rtVolume, rtVolumeLoading, getUSDPrice]);
+  }, [rtStats, rtStatsLoading, initialChartData, chartValueUnit, getUSDPrice]);
 
   const renderChart = () => (
     <PoolChart
-      chartIndexes={['Liquidity', 'Volume']}
+      chartIndexes={statsChartIndexes}
       chartData={chartData}
       selectedIndex={selectedChart}
       selectChart={setSelectedChart}
@@ -214,8 +315,8 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
   }, [currentTxPage, getTransactionInfo]);
 
   useEffect(() => {
-    getRTVolume({});
-  }, [getRTVolume]);
+    getRTStats({});
+  }, [getRTStats]);
 
   const handleSelectPoolStatus = useCallback(
     (status: PoolDetailStatusEnum) => {
@@ -682,13 +783,13 @@ export default compose(
       user: state.Wallet.user,
       networkInfo: state.Midgard.networkInfo,
       networkInfoLoading: state.Midgard.networkInfoLoading,
-      rtVolumeLoading: state.Midgard.rtVolumeLoading,
-      rtVolume: state.Midgard.rtVolume,
+      rtStatsLoading: state.Midgard.rtStatsLoading,
+      rtStats: state.Midgard.rtStats,
     }),
     {
       getPools: midgardActions.getPools,
       getTransactions: midgardActions.getTransaction,
-      getRTVolume: midgardActions.getRTVolumeByAsset,
+      getRTStats: midgardActions.getRTStats,
     },
   ),
   withRouter,

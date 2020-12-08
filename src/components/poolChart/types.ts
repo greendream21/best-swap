@@ -15,6 +15,7 @@ export type ChartObject = {
   loading?: boolean;
   comingSoon?: boolean;
   type?: ChartView;
+  unit?: string;
 }
 
 export type ChartData = {
