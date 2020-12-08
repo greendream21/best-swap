@@ -224,13 +224,13 @@ const PoolChart: React.FC<Props> = React.memo(
               primary={chartTimeframe === 'week'}
               onClick={() => setChartTimeframe('week')}
             >
-              1 Week
+              Week
             </HeaderToggle>
             <HeaderToggle
               primary={chartTimeframe === 'allTime'}
               onClick={() => setChartTimeframe('allTime')}
             >
-              All Time
+              All
             </HeaderToggle>
           </TimeContainer>
         </HeaderContainer>
