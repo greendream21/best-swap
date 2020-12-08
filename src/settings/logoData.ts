@@ -136,6 +136,7 @@ export const coinIconsFromTrustWallet: Record<string, string> = {
   UND: 'UND-EBC',
   UPX: 'UPX-F3E',
   USDH: 'USDH-5B5',
+  USDT: 'USDT-6D8',
   USDSB: 'USDSB-1AC',
   VDX: 'VDX-A17',
   VIDT: 'VIDT-F53',
