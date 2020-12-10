@@ -128,12 +128,12 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
   const statsChartIndexes = useMemo(
     () => isDesktopView ? [
       'Volume',
+      'Liquidity',
       'Pooled',
       'Swap',
       'Add',
       'Withdraw',
-      'Liquidity',
-    ] : ['Volume', 'Pooled'],
+    ] : ['Volume', 'Liquidity'],
     [isDesktopView],
   );
 
@@ -180,6 +180,8 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     const { allTimeData, weekData } = rtStats;
     const allTimeVolumeData: ChartDetail[] = [];
     const weekVolumeData: ChartDetail[] = [];
+    const allTimeLiquidityData: ChartDetail[] = [];
+    const weekLiquidityData: ChartDetail[] = [];
     const allTimeTotalPooledData: ChartDetail[] = [];
     const weekTotalPooledData: ChartDetail[] = [];
     const allTimeTotalSwapsData: ChartDetail[] = [];
@@ -197,7 +199,11 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
       };
       const totalPooled = {
         time,
-        value: getUSDPrice(bnOrZero(data?.totalRuneDepth)),
+        value: String(data?.totalRuneDepth ?? 0),
+      };
+      const liquidity = {
+        time,
+        value: getUSDPrice(bnOrZero(data?.totalRuneDepth).multipliedBy(2)),
       };
 
       const buyCount = data?.buyCount ?? 0;
@@ -214,6 +220,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
 
       return {
         volume,
+        liquidity,
         totalPooled,
         totalSwaps,
         totalAdd,
@@ -224,12 +231,14 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     allTimeData.forEach(data => {
       const {
         volume,
+        liquidity,
         totalPooled,
         totalSwaps,
         totalAdd,
         totalWithdraw,
       } = getChartData(data);
       allTimeVolumeData.push(volume);
+      allTimeLiquidityData.push(liquidity);
       allTimeTotalPooledData.push(totalPooled);
       allTimeTotalSwapsData.push(totalSwaps);
       allTimeTotalAddData.push(totalAdd);
@@ -239,12 +248,14 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     weekData.forEach(data => {
       const {
         volume,
+        liquidity,
         totalPooled,
         totalSwaps,
         totalAdd,
         totalWithdraw,
       } = getChartData(data);
       weekVolumeData.push(volume);
+      weekLiquidityData.push(liquidity);
       weekTotalPooledData.push(totalPooled);
       weekTotalSwapsData.push(totalSwaps);
       weekTotalAddData.push(totalAdd);
@@ -252,9 +263,6 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     });
 
     return {
-      Liquidity: {
-        comingSoon: true,
-      },
       Volume: {
         values: {
           allTime: allTimeVolumeData,
@@ -262,12 +270,21 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         },
         unit: chartValueUnit,
       },
+      Liquidity: {
+        values: {
+          allTime: allTimeLiquidityData,
+          week: weekLiquidityData,
+        },
+        unit: chartValueUnit,
+        type: 'line',
+      },
       Pooled: {
         values: {
           allTime: allTimeTotalPooledData,
           week: weekTotalPooledData,
         },
-        unit: chartValueUnit,
+        unit: 'ᚱ',
+        type: 'line',
       },
       Swap: {
         values: {
