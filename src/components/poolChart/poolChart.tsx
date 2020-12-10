@@ -36,7 +36,7 @@ type Props = {
   selectChart: (value: string) => void;
 };
 
-defaults.global.defaultFontFamily = 'Exo 2';
+// https://www.chartjs.org/docs/latest/general/fonts.html#missing-fonts
 defaults.global.defaultFontSize = 14;
 defaults.global.defaultFontStyle = 'normal';
 
@@ -118,6 +118,8 @@ const PoolChart: React.FC<Props> = React.memo(
           duration: 0,
         },
         tooltips: {
+          titleFontSize: 18,
+          bodyFontSize: 16,
           callbacks: {
             label: ({ yLabel }: { yLabel: number }) => {
               const label = `${unit}${new Intl.NumberFormat().format(
@@ -134,7 +136,7 @@ const PoolChart: React.FC<Props> = React.memo(
                 display: false,
               },
               ticks: {
-                fontSize: '14',
+                fontSize: 14,
                 fontColor: colors.text,
                 maxTicksLimit: isDesktopView ? 5 : 3,
                 autoSkipPadding: 5,
@@ -163,7 +165,7 @@ const PoolChart: React.FC<Props> = React.memo(
                   return `${unit}${abbreviateNumber(Number(value))}`;
                 },
                 padding: 10,
-                fontSize: '14',
+                fontSize: 14,
                 fontColor: colors.text,
               },
               gridLines: {
@@ -176,7 +178,7 @@ const PoolChart: React.FC<Props> = React.memo(
       [unit, colors, isDesktopView],
     );
 
-    const renderComingSoonChart = () => {
+    const renderComingSoonChart = useMemo(() => {
       return (
         <>
           <ComingSoonWrapper>
@@ -188,11 +190,11 @@ const PoolChart: React.FC<Props> = React.memo(
           </BlurWrapper>
         </>
       );
-    };
+    }, [getRandomSeries, options]);
 
     const renderChart = () => {
       if (isComingSoonChart) {
-        return renderComingSoonChart();
+        return renderComingSoonChart;
       }
 
       if (isChartLoading) {
