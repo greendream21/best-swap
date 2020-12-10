@@ -18,9 +18,9 @@ describe('helpers/numberHelper/', () => {
       expect(result).toEqual('4.108 B');
     });
 
-    it('should return short number with t', () => {
+    it('should return short number with T', () => {
       const result = abbreviateNumber(84310979328923, 3);
-      expect(result).toEqual('84.311 t');
+      expect(result).toEqual('84.311 T');
     });
   });
 });
