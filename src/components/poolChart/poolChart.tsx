@@ -122,6 +122,10 @@ const PoolChart: React.FC<Props> = React.memo(
           bodyFontSize: 16,
           callbacks: {
             label: ({ yLabel }: { yLabel: number }) => {
+              // if greater than 100M
+              if (yLabel > 100000000) {
+                return `${unit}${abbreviateNumber(yLabel, 0)}`;
+              }
               const label = `${unit}${new Intl.NumberFormat().format(
                 Math.floor(yLabel),
               )}`;
