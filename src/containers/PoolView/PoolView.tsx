@@ -11,6 +11,7 @@ import {
   DatabaseOutlined,
 } from '@ant-design/icons';
 import { Token } from '@thorchain/asgardex-binance';
+import { formatBaseAsTokenAmount, baseAmount } from '@thorchain/asgardex-token';
 import { bnOrZero } from '@thorchain/asgardex-util';
 import { Row, Col, Grid, Popover } from 'antd';
 import * as H from 'history';
@@ -199,7 +200,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
       };
       const totalPooled = {
         time,
-        value: String(data?.totalRuneDepth ?? 0),
+        value: formatBaseAsTokenAmount(baseAmount(bnOrZero(data?.totalRuneDepth))),
       };
       const liquidity = {
         time,

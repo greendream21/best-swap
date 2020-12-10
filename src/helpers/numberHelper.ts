@@ -4,7 +4,7 @@ export const abbreviateNumber = (
   decimal: number = 0,
 ): string => {
   let newValue = value;
-  const suffixes = ['', 'K', 'M', 'B', 't', 'q', 'Q', 's'];
+  const suffixes = ['', 'K', 'M', 'B', 'T', 'Q', 'Q', 's'];
   let suffixNum = 0;
 
   while (newValue >= 1000) {
