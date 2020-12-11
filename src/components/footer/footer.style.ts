@@ -5,6 +5,10 @@ import { size, key, palette } from 'styled-theme';
 import { media } from 'helpers/styleHelper';
 
 export const FooterItem = styled.div`
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
   .footer-logo {
     #Thorchain_logo-copy {
       > :not(:first-child) {
@@ -30,14 +34,19 @@ export const StyledFooter = styled.div`
   justify-content: space-between;
   align-items: center;
   flex-direction: column;
-  width: 100vw;
-  padding: 40px 20px;
+  width: 100%;
+  padding: 10px 10px;
+
+  ${media.md`
+    padding: 40px 20px;
+  `}
+
 
   > ${FooterItem} {
     margin-bottom: 20px;
   }
 
-  ${media.sm`
+  ${media.md`
     > ${FooterItem} {
       margin-bottom: 0;
     }
@@ -54,9 +63,6 @@ export const StyledFooter = styled.div`
   /* TODO: Refactor these to avoid using classnames */
   .footer-logo {
     cursor: pointer;
-    img {
-      height: 30px;
-    }
   }
 
   .footer-links-bar {
@@ -64,14 +70,17 @@ export const StyledFooter = styled.div`
     justify-content: space-between;
     align-items: center;
 
-
     a {
       font-size: ${key('sizes.font.normal', '12px')};
       font-weight: bold;
       color: ${palette('text', 1)};
       letter-spacing: 1px;
       cursor: pointer;
-      padding-left: 50px;
+      padding-left: 8px;
+
+      ${media.md`
+        padding-left: 50px;
+      `};
     }
     a:first-child {
       padding-left: 0;
