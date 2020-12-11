@@ -10,7 +10,6 @@ import Icon, {
   BranchesOutlined,
 } from '@ant-design/icons';
 
-
 import { Maybe } from 'types/bepswap';
 
 import { TelegramIcon } from '../icons/telegramicon';
@@ -36,6 +35,9 @@ const Footer: React.FC<Props> = ({ commitHash }): JSX.Element => {
         </FooterItem>
         <FooterItem>
           <div className="footer-links-bar">
+            <Link to="/tools">TOOLS</Link>
+            <Link to="/explorer">EXPLORERS</Link>
+            <Link to="/education">EDUCATION</Link>
             <Link to="/stats">STATS</Link>
             <Link to="/faqs">FAQS</Link>
           </div>
