@@ -421,20 +421,6 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     [loading, reducedPricePrefix],
   );
 
-  const renderPoolPriceCell = useCallback(
-    (text: string) => {
-      if (poolLoading) {
-        return <LabelLoader />;
-      }
-      return (
-        <span>
-          {reducedPricePrefix} {text}
-        </span>
-      );
-    },
-    [poolLoading, reducedPricePrefix],
-  );
-
   const withOutboundTooltip = useCallback(
     (Component: JSX.Element) => {
       if (!isOutboundDelayed) {
@@ -571,7 +557,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         key: 'poolprice',
         title: 'pool price',
         dataIndex: ['values', 'poolPrice'],
-        render: renderPoolPriceCell,
+        render: renderCell,
         sorter: (a: PoolData, b: PoolData) => a.poolPrice.minus(b.poolPrice),
         sortDirections: ['descend', 'ascend'],
       },
@@ -595,7 +581,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         sortDirections: ['descend', 'ascend'],
       },
     ],
-    [renderCell, renderPoolPriceCell],
+    [renderCell],
   );
 
   const desktopColumns = useMemo(
@@ -635,7 +621,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         key: 'poolprice',
         title: 'pool price',
         dataIndex: ['values', 'poolPrice'],
-        render: renderPoolPriceCell,
+        render: renderCell,
         sorter: (a: PoolData, b: PoolData) => a.poolPrice.minus(b.poolPrice),
         sortDirections: ['descend', 'ascend'],
       },
@@ -668,7 +654,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
       },
       buttonCol,
     ],
-    [renderCell, renderTextCell, renderPoolPriceCell, buttonCol, tokenList],
+    [renderCell, renderTextCell, buttonCol, tokenList],
   );
 
   // calculate data to show in the pool list
