@@ -25,7 +25,7 @@ import {
   BlurWrapper,
   ComingSoonWrapper,
   ComingSoonText,
-} from './poolChart.style';
+} from './chart.style';
 import { ChartData, ChartTimeFrame } from './types';
 import { getDisplayData, getRandomChartData } from './utils';
 
@@ -40,7 +40,7 @@ type Props = {
 defaults.global.defaultFontSize = 14;
 defaults.global.defaultFontStyle = 'normal';
 
-const PoolChart: React.FC<Props> = React.memo(
+const DefaultChart: React.FC<Props> = React.memo(
   (props: Props): JSX.Element => {
     const { chartIndexes = [], chartData, selectedIndex, selectChart } = props;
     const [chartTimeframe, setChartTimeframe] = React.useState<ChartTimeFrame>(
@@ -255,4 +255,4 @@ const PoolChart: React.FC<Props> = React.memo(
   },
 );
 
-export default PoolChart;
+export default DefaultChart;
