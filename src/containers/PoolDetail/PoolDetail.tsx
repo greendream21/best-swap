@@ -11,12 +11,12 @@ import { Row, Col, Grid, Popover } from 'antd';
 import { get as _get } from 'lodash';
 import { compose } from 'redux';
 
-import PoolChart from 'components/poolChart';
+import Chart from 'components/chart';
 import {
   ChartDetail,
   ChartValues,
   ChartData,
-} from 'components/poolChart/types';
+} from 'components/chart/types';
 import { PoolStatBar } from 'components/statBar';
 import TxTable from 'components/transaction/txTable';
 import Button from 'components/uielements/button';
@@ -180,7 +180,7 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
 
   const renderChart = () => (
     <ChartContainer>
-      <PoolChart
+      <Chart
         chartIndexes={['Liquidity', 'Volume']}
         chartData={chartData}
         selectedIndex={selectedChart}
