@@ -221,10 +221,7 @@ const reducer: Reducer<State, MidgardActionTypes> = (
 
       return {
         ...state,
-        poolData: {
-          ...state.poolData,
-          ...poolData,
-        },
+        poolData,
         poolDataLoading: false,
       };
     }
