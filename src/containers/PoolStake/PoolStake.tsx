@@ -248,7 +248,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     getPoolDataForAsset({
       assets: [symbol],
       overrideAllPoolData: false,
-      type: 'full',
     });
 
     if (user) {
@@ -731,7 +730,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   };
 
   const getWithdrawPoolSharePercent = () => {
-    const poolInfo = poolData?.[symbol];
     const poolUnits = poolInfo?.poolUnits;
     const poolUnitsBN = bnOrZero(poolUnits);
 

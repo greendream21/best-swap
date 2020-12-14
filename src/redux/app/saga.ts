@@ -62,6 +62,7 @@ export function* getPoolDetailViewData() {
   yield takeEvery('GET_POOL_DETAIL_VIEW_DATA', function*({
     payload,
   }: ReturnType<typeof actions.getPoolViewData>) {
+    yield put(midgardActions.getPools());
     yield put(midgardActions.getPoolAddress());
     yield put(midgardActions.getNetworkInfo());
     yield put(walletActions.refreshWallet());
@@ -101,6 +102,7 @@ export function* refreshStakeData() {
   }: ReturnType<typeof actions.refreshStakeData>) {
     const symbol = payload;
 
+    yield put(midgardActions.getPools());
     yield put(midgardActions.getPoolAddress());
     yield put(midgardActions.getNetworkInfo());
     yield put(walletActions.refreshWallet());
@@ -108,13 +110,6 @@ export function* refreshStakeData() {
     const user = yield select((state: RootState) => state.Wallet.user);
 
     if (user.wallet) {
-      yield put(
-        midgardActions.getPoolData({
-          assets: [symbol],
-          overrideAllPoolData: false,
-          type: 'full',
-        }),
-      );
       yield put(
         midgardActions.getStakerPoolData({
           asset: symbol,
