@@ -10,6 +10,8 @@ import * as appActions from 'redux/app/actions';
 
 import useInterval from 'hooks/useInterval';
 
+import { matchPage, matchParam } from 'helpers/routerHelper';
+
 import { StyledButton } from './refresh.style';
 
 const Refresh = (): JSX.Element => {
@@ -27,28 +29,28 @@ const Refresh = (): JSX.Element => {
   }, REFRESH_INTERVAL);
 
   const handleRefresh = () => {
-    if (pathname === '/' || pathname.includes('/pools')) {
-      // poolview
+    if (matchPage.isHomePage(pathname)) {
       dispatch(appActions.getPoolViewData());
-    } else if (pathname.includes('/pool') && pathname.includes('/new')) {
-      // poolcreate
+    } else if (matchPage.isPoolCreatePage(pathname)) {
       dispatch(appActions.getPoolViewData());
-    } else if (pathname.includes('/pool') && !pathname.includes('/new')) {
-      // pool detail view
-      const assetName = pathname.split('/');
-      dispatch(
-        appActions.getPoolDetailViewData(assetName[assetName.length - 1]),
-      );
-    } else if (pathname === '/transaction') {
-      // transaction
+    } else if (matchPage.isPoolDetailPage(pathname)) {
+      const assetName = matchParam.matchPoolDetailSymbol(pathname);
+
+      if (assetName) {
+        dispatch(
+          appActions.getPoolDetailViewData(assetName[assetName.length - 1]),
+        );
+      }
+    } else if (matchPage.isTransactionPage(pathname)) {
       dispatch(appActions.refreshTransactionData());
-    } else if (pathname.includes('/swap')) {
-      // swap
+    } else if (matchPage.isSwapPage(pathname)) {
       dispatch(appActions.refreshSwapData());
-    } else if (pathname.includes('/liquidity')) {
-      // add liquidity
-      const symbol = pathname.slice(pathname.lastIndexOf('/') + 1);
-      dispatch(appActions.refreshStakeData(symbol));
+    } else if (matchPage.isAddLiquidityPage(pathname)) {
+      const symbol = matchParam.matchAddLiquiditySymbol(pathname);
+
+      if (symbol) {
+        dispatch(appActions.refreshStakeData(symbol));
+      }
     }
 
     setLoading(true);

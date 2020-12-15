@@ -483,7 +483,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       <PopoverContent>
         {isStakingBNB && (
           <>
-            <Text> (It will be substructed from BNB amount)</Text>
+            <Text> (It will be subtracted from BNB amount)</Text>
             <br />
           </>
         )}

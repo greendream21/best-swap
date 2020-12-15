@@ -14,7 +14,35 @@ const routes: AppRoute[] = [
   {
     path: '',
     component: asyncComponent(() => import('../PoolView')),
-    exact: true,
+  },
+  {
+    path: 'pools',
+    component: asyncComponent(() => import('../PoolView')),
+  },
+  {
+    path: 'pool/:symbol',
+    component: asyncComponent(() => import('../PoolDetail')),
+  },
+  // URI Format: swap/RUNE-67C:BNB
+  {
+    path: 'swap/:symbolpair',
+    component: asyncComponent(() => import('../SwapSend')),
+  },
+  {
+    path: 'pool/:symbol/new',
+    component: asyncComponent(() => import('../PoolCreate')),
+  },
+  {
+    path: 'liquidity/:symbol',
+    component: asyncComponent(() => import('../PoolStake')),
+  },
+  {
+    path: 'connect',
+    component: asyncComponent(() => import('../ConnectView')),
+  },
+  {
+    path: 'faqs',
+    component: asyncComponent(() => import('../FaqsView')),
   },
   {
     path: 'tools',
@@ -31,39 +59,6 @@ const routes: AppRoute[] = [
   {
     path: 'apidoc',
     component: asyncComponent(() => import('../ApiDocView')),
-  },
-  // URI Format: swap/RUNE-67C:BNB
-  {
-    path: 'swap/:symbolpair',
-    component: asyncComponent(() => import('../SwapSend')),
-  },
-  {
-    path: 'pools',
-    component: asyncComponent(() => import('../PoolView')),
-    exact: true,
-  },
-  {
-    path: 'pool/:symbol/new',
-    component: asyncComponent(() => import('../PoolCreate')),
-    exact: true,
-  },
-  {
-    path: 'pool/:symbol',
-    component: asyncComponent(() => import('../PoolDetail')),
-    exact: true,
-  },
-  {
-    path: 'liquidity/:symbol',
-    component: asyncComponent(() => import('../PoolStake')),
-    exact: true,
-  },
-  {
-    path: 'connect',
-    component: asyncComponent(() => import('../ConnectView')),
-  },
-  {
-    path: 'faqs',
-    component: asyncComponent(() => import('../FaqsView')),
   },
   {
     path: 'transaction',

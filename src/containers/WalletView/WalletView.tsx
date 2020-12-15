@@ -23,7 +23,7 @@ import {
 
 import {
   matchSwapDetailPair,
-  matchPoolSymbol,
+  matchAddLiquiditySymbol,
 } from 'helpers/routerHelper';
 
 import { RUNE_SYMBOL } from 'settings/assetData';
@@ -93,13 +93,13 @@ const WalletView: React.FC<Props> = (props: Props): JSX.Element => {
 
   const getSelectedAsset = (): AssetData[] => {
     const symbolPair = matchSwapDetailPair(pathname);
-    const asset = getAssetBySource(symbolPair?.source ?? '');
+    const asset = getAssetBySource(symbolPair?.target ?? '');
 
     return asset ? [asset] : [];
   };
 
   const getSelectedStake = (): AssetData[] => {
-    const symbol = matchPoolSymbol(pathname);
+    const symbol = matchAddLiquiditySymbol(pathname);
     const stake = getStakeDataBySource(symbol || '');
     return stake ? [stake] : [];
   };
