@@ -622,7 +622,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
               {considerBnb && hasBnbFee && (
                 <Text>
                   {' '}
-                  (It will be substructed from your entered BNB value)
+                  (It will be subtracted from your entered BNB value)
                 </Text>
               )}
               {wallet && bnbAmount && hasSufficientBnbFeeInBalance && (
