@@ -33,6 +33,7 @@ import { get as _get } from 'lodash';
 import { compose } from 'redux';
 
 import PrivateModal from 'components/modals/privateModal';
+import SlipVerifyModal from 'components/modals/slipVerifyModal';
 import AddWallet from 'components/uielements/addWallet';
 import CoinCard from 'components/uielements/coins/coinCard';
 import CoinData from 'components/uielements/coins/coinData';
@@ -169,6 +170,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   const hasWallet = wallet !== null;
 
   const [selectedTab, setSelectedTab] = useState<TabKeys>(TabKeys.ADD_SYM);
+  const [visibleSlipConfirmModal, setVisibleSlipConfirmModal] = useState(false);
 
   const selectRatio = !isAsymStakeValidUser;
   const [withdrawPercentage, setWithdrawPercentage] = useState(50);
@@ -398,6 +400,14 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     setPercentSlider(amount);
   };
 
+  const handleOpenSlipConfirmModal = useCallback(() => {
+    setVisibleSlipConfirmModal(true);
+  }, [setVisibleSlipConfirmModal]);
+
+  const handleCloseSlipConfirmModal = useCallback(() => {
+    setVisibleSlipConfirmModal(false);
+  }, [setVisibleSlipConfirmModal]);
+
   const handleOpenPrivateModal = useCallback(() => {
     setOpenPrivateModal(true);
   }, [setOpenPrivateModal]);
@@ -415,23 +425,35 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     setDragReset(false);
   }, [setDragReset]);
 
+  const handleConfirmStakeSlip = useCallback(() => {
+    handleCloseSlipConfirmModal();
+    // if wallet is connected
+    if (wallet) {
+      // get pool address before confirmation
+      getPoolAddress();
+
+      setTxType(TxTypes.STAKE);
+      handleOpenPrivateModal();
+    }
+  }, [wallet, getPoolAddress, handleOpenPrivateModal, handleCloseSlipConfirmModal]);
+
   const handleStartTimer = (type: TxTypes) => {
     const txData =
       type === TxTypes.STAKE
         ? {
-            sourceAsset: RUNE_SYMBOL,
-            targetAsset: symbol,
-            sourceAmount: runeAmountToSend,
-            targetAmount,
-          }
+          sourceAsset: RUNE_SYMBOL,
+          targetAsset: symbol,
+          sourceAmount: runeAmountToSend,
+          targetAmount,
+        }
         : {
-            sourceAsset: RUNE_SYMBOL,
-            targetAsset: symbol,
-            sourceAmount: baseToToken(withdrawData?.runeValue ?? baseAmount(0)),
-            targetAmount: baseToToken(
-              withdrawData?.tokenValue ?? baseAmount(0),
-            ),
-          };
+          sourceAsset: RUNE_SYMBOL,
+          targetAsset: symbol,
+          sourceAmount: baseToToken(withdrawData?.runeValue ?? baseAmount(0)),
+          targetAmount: baseToToken(
+            withdrawData?.tokenValue ?? baseAmount(0),
+          ),
+        };
 
     // set the tx confirmation status
     resetTxStatus({
@@ -664,6 +686,14 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       return;
     }
 
+    // check slip percentage for asymm stake
+    if (!isSymStake) {
+      if (stakeSlipPercent > 5) {
+        handleOpenSlipConfirmModal();
+        return;
+      }
+    }
+
     // if wallet is connected
     if (wallet) {
       // get pool address before confirmation
@@ -837,6 +867,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     </PopoverContent>
   );
 
+
   // get slip for stake
   const stakeSlip = useMemo(() => {
     const runeAssetAmount = assetAmount(runeAmountToSend.amount());
@@ -857,8 +888,10 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     };
     const stakeSlip = getSlipOnStake(stakeDataParam, poolDataParam);
 
-    return `${stakeSlip.multipliedBy(100).toFixed(2)}%`;
+    return stakeSlip;
   }, [runeAmountToSend, targetAmount, R, T]);
+
+  const stakeSlipPercent = useMemo(() => Number(stakeSlip.multipliedBy(100).toFixed(0)), [stakeSlip]);
 
   const renderShareDetail = () => {
     const tokensData: string[] = pools.map(
@@ -937,6 +970,8 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     const runeToolTip =
       'The amount of RUNE needed is calculated automatically based on the current ratio of assets in the pool.';
 
+    const stakeSlipValue = `${stakeSlip.multipliedBy(100).toFixed(2)}%`;
+
     const addLiquidityTab = (
       <>
         {!isValidFundCaps && (
@@ -994,7 +1029,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
           )}
         </div>
         <div>
-          <Label>SLIP: {stakeSlip}</Label>
+          <Label>SLIP: {stakeSlipValue}</Label>
           {renderFee()}
         </div>
         <div className="stake-share-info-wrapper">
@@ -1288,12 +1323,20 @@ const PoolStake: React.FC<Props> = (props: Props) => {
         )}
       </Row>
       {hasWallet && (
-        <PrivateModal
-          visible={openPrivateModal}
-          onOk={handleConfirmTransaction}
-          onCancel={handleCancelPrivateModal}
-          onPoolAddressLoaded={handlePoolAddressConfirmed}
-        />
+        <>
+          <PrivateModal
+            visible={openPrivateModal}
+            onOk={handleConfirmTransaction}
+            onCancel={handleCancelPrivateModal}
+            onPoolAddressLoaded={handlePoolAddressConfirmed}
+          />
+          <SlipVerifyModal
+            visible={visibleSlipConfirmModal}
+            slipPercent={stakeSlipPercent}
+            onCancel={handleCloseSlipConfirmModal}
+            onConfirm={handleConfirmStakeSlip}
+          />
+        </>
       )}
       {!hasWallet && (
         <Modal

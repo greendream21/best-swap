@@ -8,17 +8,16 @@ import { delay } from '@thorchain/asgardex-util';
 import copy from 'copy-to-clipboard';
 
 
-import Button from 'components/uielements/button';
-import Label from 'components/uielements/label';
-import showNotification from 'components/uielements/notification';
-import WalletButton from 'components/uielements/walletButton';
-
 import { RootState } from 'redux/store';
 import * as walletActions from 'redux/wallet/actions';
 import { User } from 'redux/wallet/types';
 
 import { Maybe } from 'types/bepswap';
 
+import Button from '../../components/uielements/button';
+import Label from '../../components/uielements/label';
+import showNotification from '../../components/uielements/notification';
+import WalletButton from '../../components/uielements/walletButton';
 import { WalletDrawerWrapper, Drawer } from './WalletDrawer.style';
 import WalletView from './WalletView';
 

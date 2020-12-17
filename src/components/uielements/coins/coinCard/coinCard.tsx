@@ -8,11 +8,10 @@ import { sortBy as _sortBy } from 'lodash';
 
 import { PriceDataIndex } from 'redux/midgard/types';
 
-import clickedInNode from 'helpers/event/clickedInNode';
-import Ref from 'helpers/event/ref';
-
 import { FixmeType } from 'types/bepswap';
 
+import clickedInNode from '../../../../helpers/event/clickedInNode';
+import Ref from '../../../../helpers/event/ref';
 import Label from '../../label';
 import Selection from '../../selection';
 import CoinInputAdvanced from '../coinInputAdvanced';

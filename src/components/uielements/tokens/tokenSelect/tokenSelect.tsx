@@ -6,11 +6,10 @@ import BigNumber from 'bignumber.js';
 
 import { PriceDataIndex } from 'redux/midgard/types';
 
-import clickedInNode from 'helpers/event/clickedInNode';
-import Ref from 'helpers/event/ref';
-
 import { FixmeType } from 'types/bepswap';
 
+import clickedInNode from '../../../../helpers/event/clickedInNode';
+import Ref from '../../../../helpers/event/ref';
 import TokenData from '../tokenData';
 import TokenMenu from './tokenMenu';
 import {

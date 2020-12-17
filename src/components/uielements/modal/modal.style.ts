@@ -63,15 +63,20 @@ export const ModalWrapper = styled(Modal)`
     &:first-child {
       border-right: 1px solid ${palette('gray', 0)};
     }
+
+    &.disabled,
     &:hover,
     &:active,
     &:focus {
       color: ${palette('primary', 0)};
+      background-color: ${palette('background', 1)} !important;
     }
+
 
     &.ant-btn-primary {
       color: ${palette('primary', 0)};
       border-color: ${palette('gray', 0)};
+
       &:hover,
       &:active,
       &:focus {
