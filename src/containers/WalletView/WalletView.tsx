@@ -8,12 +8,6 @@ import { sortBy as _sortBy } from 'lodash';
 import { compose } from 'redux';
 
 
-import Button from 'components/uielements/button';
-import CoinList from 'components/uielements/coins/coinList';
-import { CoinListDataList } from 'components/uielements/coins/coinList/coinList';
-import Label from 'components/uielements/label';
-import Tabs from 'components/uielements/tabs';
-
 import { RootState } from 'redux/store';
 import {
   User,
@@ -30,6 +24,11 @@ import { RUNE_SYMBOL } from 'settings/assetData';
 
 import { Maybe } from 'types/bepswap';
 
+import Button from '../../components/uielements/button';
+import CoinList from '../../components/uielements/coins/coinList';
+import { CoinListDataList } from '../../components/uielements/coins/coinList/coinList';
+import Label from '../../components/uielements/label';
+import Tabs from '../../components/uielements/tabs';
 import { Loader } from './loader';
 import { WalletViewWrapper } from './WalletView.style';
 
