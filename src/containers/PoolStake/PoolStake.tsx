@@ -690,6 +690,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     if (!isSymStake) {
       if (stakeSlipPercent > 5) {
         handleOpenSlipConfirmModal();
+        setDragReset(true);
         return;
       }
     }
