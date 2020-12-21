@@ -19,6 +19,7 @@ import * as H from 'history';
 import { compose } from 'redux';
 
 import PrivateModal from 'components/modals/privateModal';
+import SlipVerifyModal from 'components/modals/slipVerifyModal';
 import AddressInput from 'components/uielements/addressInput';
 import Button from 'components/uielements/button';
 import ContentTitle from 'components/uielements/contentTitle';
@@ -132,6 +133,8 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   const swapSource = getTickerFormat(sourceSymbol);
   const swapTarget = getTickerFormat(targetSymbol);
 
+  const [visibleSlipConfirmModal, setVisibleSlipConfirmModal] = useState(false);
+
   const enabledPools: string[] = useMemo(
     () =>
       Object.keys(poolData).reduce(
@@ -177,7 +180,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   } = useFee();
 
   const history = useHistory();
-  const maxSlip = 30;
+  const MAX_SLIP_LIMIT = 5;
 
   const [address, setAddress] = useState<string>('');
   const [invalidAddress, setInvalidAddress] = useState<boolean>(false);
@@ -360,6 +363,14 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     setOpenPrivateModal(false);
   };
 
+  const handleOpenSlipConfirmModal = useCallback(() => {
+    setVisibleSlipConfirmModal(true);
+  }, [setVisibleSlipConfirmModal]);
+
+  const handleCloseSlipConfirmModal = useCallback(() => {
+    setVisibleSlipConfirmModal(false);
+  }, [setVisibleSlipConfirmModal]);
+
   const handleOpenPrivateModal = useCallback(() => {
     setOpenPrivateModal(true);
   }, [setOpenPrivateModal]);
@@ -368,6 +379,17 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     setOpenPrivateModal(false);
     setDragReset(true);
   }, [setOpenPrivateModal, setDragReset]);
+
+  const handleConfirmSlip = useCallback(() => {
+    handleCloseSlipConfirmModal();
+    // if wallet is connected
+    if (user?.wallet) {
+      // get pool address before confirmation
+      getPoolAddress();
+
+      handleOpenPrivateModal();
+    }
+  }, [user, getPoolAddress, handleOpenPrivateModal, handleCloseSlipConfirmModal]);
 
   const handleDrag = useCallback(() => {
     setDragReset(false);
@@ -384,15 +406,8 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   }, [setOpenWalletAlert, setDragReset]);
 
   const validateSlip = (slip: BigNumber) => {
-    if (slip.isGreaterThanOrEqualTo(maxSlip)) {
-      showNotification({
-        type: 'error',
-        message: 'Swap Invalid',
-        description: `Slip ${slip.toFormat(
-          2,
-          BigNumber.ROUND_DOWN,
-        )}% is too high, try less than ${maxSlip}%.`,
-      });
+    if (slip.isGreaterThanOrEqualTo(MAX_SLIP_LIMIT)) {
+      handleOpenSlipConfirmModal();
       setDragReset(true);
       return false;
     }
@@ -663,6 +678,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   }
 
   const { slip, outputAmount, outputPrice } = swapData;
+  const slipPercent = slip.toNumber();
 
   const sourcePriceBN = bn(priceIndex[sourceSymbol]);
   const sourcePrice = isValidBN(sourcePriceBN) ? sourcePriceBN : outputPrice;
@@ -831,6 +847,12 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
         onOk={handleConfirmTransaction}
         onCancel={handleCancelPrivateModal}
         onPoolAddressLoaded={handlePoolAddressConfirmed}
+      />
+      <SlipVerifyModal
+        visible={visibleSlipConfirmModal}
+        slipPercent={slipPercent}
+        onCancel={handleCloseSlipConfirmModal}
+        onConfirm={handleConfirmSlip}
       />
       <Modal
         title="PLEASE ADD WALLET"

@@ -1,7 +1,9 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 
 import { Form } from 'antd';
 import { ModalProps } from 'antd/lib/modal';
+
+import usePrevious from 'hooks/usePrevious';
 
 import Input from '../../uielements/input';
 import Label from '../../uielements/label';
@@ -15,10 +17,19 @@ export interface Props extends ModalProps {
 };
 
 const VerifyModal: React.FC<Props> = (props: Props): JSX.Element => {
-  const { description, verifyLevel, verifyText = 'CONFIRM', onConfirm, ...otherProps } = props;
+  const { description, verifyLevel, verifyText = 'CONFIRM', onConfirm, visible, ...otherProps } = props;
 
   const [confirmTextValue, setConfirmTextValue] = useState('');
   const [invalidText, setInvalidText] = useState(true);
+
+  const prevVisible = usePrevious(visible);
+  useEffect(() => {
+    // if modal is closed, reset confirm input
+    if (prevVisible === true && visible === false) {
+      setConfirmTextValue('');
+      setInvalidText(true);
+    }
+  }, [visible, prevVisible]);
 
   const handleConfirm = useCallback(() => {
     if (confirmTextValue === verifyText) {
@@ -72,6 +83,7 @@ const VerifyModal: React.FC<Props> = (props: Props): JSX.Element => {
 
   return (
     <Styled.Modal
+      visible={visible}
       okText="CONFIRM"
       cancelText="CANCEL"
       okButtonProps={{
