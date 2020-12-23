@@ -738,7 +738,7 @@ export function* getRTAggregateByAsset() {
 
       const weekParams: GetRTAggregateByAssetPayload = {
         ...payload,
-        interval: 'hour',
+        interval: 'day',
         from: weekAgoTime,
         to: curTime,
       };
@@ -809,7 +809,7 @@ export function* getRTStats() {
 
       const weekParams: GetRTStatsPayload = {
         ...payload,
-        interval: 'hour',
+        interval: 'day',
         from: weekAgoTime,
         to: curTime,
       };
