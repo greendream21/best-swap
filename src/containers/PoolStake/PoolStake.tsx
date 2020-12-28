@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { connect } from 'react-redux';
 import { withRouter, useHistory, useParams } from 'react-router-dom';
 
-import { InboxOutlined, InfoOutlined } from '@ant-design/icons';
+import { LinkOutlined, InboxOutlined, InfoOutlined } from '@ant-design/icons';
 import * as RD from '@devexperts/remote-data-ts';
 import { TransferResult } from '@thorchain/asgardex-binance';
 import {
@@ -63,6 +63,7 @@ import useNetwork from 'hooks/useNetwork';
 import usePrevious from 'hooks/usePrevious';
 import usePrice from 'hooks/usePrice';
 
+import { getRuneStakeURL } from 'helpers/routerHelper';
 import { getTickerFormat } from 'helpers/stringHelper';
 import {
   stakeRequest,
@@ -88,6 +89,7 @@ import {
   FeeParagraph,
   PopoverContent,
   PopoverIcon,
+  RuneStakeView,
 } from './PoolStake.style';
 import { TabKeys, WithdrawData } from './types';
 
@@ -1276,6 +1278,16 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                   </div>
                 </div>
               </div>
+              <RuneStakeView>
+                <a
+                  href={getRuneStakeURL(user?.wallet)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Label>View on RuneStake.Info</Label>
+                  <LinkOutlined />
+                </a>
+              </RuneStakeView>
             </>
           )}
         </div>

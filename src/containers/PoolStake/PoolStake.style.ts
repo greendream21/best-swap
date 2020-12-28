@@ -508,3 +508,20 @@ export const PopoverIcon = styled(InfoCircleOutlined)`
   color: ${palette('primary', 0)};
   margin: 0 10px;
 `;
+
+export const RuneStakeView = styled.div`
+  a {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    color: ${palette('primary', 0)};
+
+    .label-wrapper {
+      color: ${palette('primary', 0)};
+    }
+    svg {
+      margin-left: 8px;
+    }
+  }
+`;

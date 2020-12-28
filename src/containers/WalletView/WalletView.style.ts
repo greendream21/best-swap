@@ -49,3 +49,20 @@ export const LoaderWrapper = styled.div`
   margin: 20px 0;
   height: 100%;
 `;
+
+export const RuneStakeView = styled.div`
+  a {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    color: ${palette('primary', 0)};
+
+    .label-wrapper {
+      color: ${palette('primary', 0)};
+    }
+    svg {
+      margin-left: 8px;
+    }
+  }
+`;

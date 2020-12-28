@@ -31,3 +31,7 @@ export const CoinListWrapper = styled.div`
     }
   }
 `;
+
+export const StyledLink = styled.a`
+  margin-left: 12px;
+`;
