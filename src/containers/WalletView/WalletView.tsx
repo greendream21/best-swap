@@ -1,12 +1,13 @@
 import React from 'react';
 
+
 import { connect } from 'react-redux';
 import { withRouter, Link, useHistory } from 'react-router-dom';
 
+import { LinkOutlined } from '@ant-design/icons';
 import * as RD from '@devexperts/remote-data-ts';
 import { sortBy as _sortBy } from 'lodash';
 import { compose } from 'redux';
-
 
 import { RootState } from 'redux/store';
 import {
@@ -18,6 +19,7 @@ import {
 import {
   matchSwapDetailPair,
   matchAddLiquiditySymbol,
+  getRuneStakeURL,
 } from 'helpers/routerHelper';
 
 import { RUNE_SYMBOL } from 'settings/assetData';
@@ -30,7 +32,7 @@ import { CoinListDataList } from '../../components/uielements/coins/coinList/coi
 import Label from '../../components/uielements/label';
 import Tabs from '../../components/uielements/tabs';
 import { Loader } from './loader';
-import { WalletViewWrapper } from './WalletView.style';
+import { WalletViewWrapper, RuneStakeView } from './WalletView.style';
 
 const { TabPane } = Tabs;
 
@@ -86,7 +88,7 @@ const WalletView: React.FC<Props> = (props: Props): JSX.Element => {
     const selected = stakeData[index];
     const { asset } = selected;
 
-    const URL = `/pool/${asset}`;
+    const URL = `/liquidity/${asset}`;
     history.push(URL);
   };
 
@@ -125,10 +127,22 @@ const WalletView: React.FC<Props> = (props: Props): JSX.Element => {
       (error: Error) => <>{error.toString()}</>, // error
       (data: AssetData[]): JSX.Element =>
         data.length > 0 ? (
-          <>Liquidity Pool Shares:</>
+          <>
+            <RuneStakeView>
+              <a
+                href={getRuneStakeURL(user?.wallet)}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Label>View on RuneStake.Info</Label>
+                <LinkOutlined />
+              </a>
+            </RuneStakeView>
+            <Label>Liquidity Pool Shares:</Label>
+          </>
         ) : (
           <>You currently do not have any liquidity</>
-        ),
+          ),
     )(stakeData);
 
   const hasWallet = user && user.wallet;

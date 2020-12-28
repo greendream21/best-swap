@@ -33,7 +33,7 @@ export const CoinList: React.FC<Props> = (props: Props): JSX.Element => {
   const {
     data = [],
     selected = [],
-    onSelect = (_: number) => {},
+    onSelect = (_: number) => { },
     size = 'small',
     className = '',
     type = 'liquidity',

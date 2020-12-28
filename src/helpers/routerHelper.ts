@@ -84,3 +84,10 @@ export const matchParam = {
   matchAddLiquiditySymbol,
   matchPoolDetailSymbol,
 };
+
+export const getRuneStakeURL = (address?: string) => {
+  if (address) {
+    return `https://app.runestake.info/home?address=${address}`;
+  }
+  return 'https://runestake.info';
+};
