@@ -41,7 +41,6 @@ export type GetPoolEarningDetailsPayload = {
 
 export type GetPoolDataPayload = {
   assets: string[];
-  overrideAllPoolData: boolean;
   type?: 'simple' | 'full';
 };
 

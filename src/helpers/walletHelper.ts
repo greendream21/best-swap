@@ -4,6 +4,8 @@ import { AssetData } from 'redux/wallet/types';
 
 import { Nothing, Maybe } from 'types/bepswap';
 
+import { asgardexBncClient } from '../env';
+
 /**
  * return asset data from the user's balance
  * @param assetData asset data in the user's wallet balance
@@ -31,4 +33,8 @@ export const bnbBaseAmount = (assetData: AssetData[]): BaseAmount => {
   const bnbAsset = getAssetDataFromBalance(assetData, 'BNB');
   const amount = bnbAsset?.assetValue;
   return amount ? tokenToBase(amount) : baseAmount(0);
+};
+
+export const isValidRecipient = async (address: string) => {
+  return asgardexBncClient.validateAddress(address);
 };

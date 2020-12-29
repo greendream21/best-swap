@@ -12,7 +12,7 @@ import {
   baseToToken,
   BaseAmount,
 } from '@thorchain/asgardex-token';
-import { isValidBN, bn, validBNOrZero } from '@thorchain/asgardex-util';
+import { isValidBN, bn } from '@thorchain/asgardex-util';
 import Text from 'antd/lib/typography/Text';
 import BigNumber from 'bignumber.js';
 import * as H from 'history';
@@ -44,6 +44,7 @@ import { User, AssetData } from 'redux/wallet/types';
 
 import useFee from 'hooks/useFee';
 import usePrevious from 'hooks/usePrevious';
+import usePrice from 'hooks/usePrice';
 
 import {
   getTickerFormat,
@@ -61,6 +62,7 @@ import { SwapData } from 'helpers/utils/types';
 import {
   getAssetDataFromBalance,
   bnbBaseAmount,
+  isValidRecipient,
 } from 'helpers/walletHelper';
 
 import { RUNE_SYMBOL } from 'settings/assetData';
@@ -69,7 +71,7 @@ import { CONFIRM_DISMISS_TIME } from 'settings/constants';
 import { Maybe, Nothing, FixmeType } from 'types/bepswap';
 import { PoolDetailStatusEnum } from 'types/generated/midgard';
 
-import { bncClient, asgardexBncClient } from '../../env';
+import { bncClient } from '../../env';
 import {
   ContentWrapper,
   SwapAssetCard,
@@ -84,6 +86,8 @@ import {
   SliderSwapWrapper,
 } from './SwapSend.style';
 import { SwapSendView } from './types';
+
+const MAX_SLIP_LIMIT = 5;
 
 type Props = {
   history: H.History;
@@ -125,16 +129,26 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     resetTxStatus,
   } = props;
 
+  const history = useHistory();
   const { symbolpair } = useParams();
+  const { runePrice } = usePrice();
+
   const swapPair = getSymbolPair(symbolpair);
   const sourceSymbol = swapPair?.source || '';
   const targetSymbol = swapPair?.target || '';
 
+  // return to home page if swap router is not valid
+  if (!sourceSymbol || !targetSymbol) {
+    history.push('/pools');
+  }
+
   const swapSource = getTickerFormat(sourceSymbol);
   const swapTarget = getTickerFormat(targetSymbol);
+  const walletAddress = useMemo(() => (user ? user.wallet : null), [user]);
 
   const [visibleSlipConfirmModal, setVisibleSlipConfirmModal] = useState(false);
 
+  // get all enabled pool assets
   const enabledPools: string[] = useMemo(
     () =>
       Object.keys(poolData).reduce(
@@ -152,12 +166,13 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     [poolData],
   );
 
-  // include all pool tokens for source if wallet is disconnected
+  // include all pool assets for the source input if wallet is disconnected
   const assetsInWallet: string[] = useMemo(
-    () => (user?.wallet ? assetData.map(data => data.asset) : enabledPools),
-    [assetData, enabledPools, user],
+    () => (walletAddress ? assetData.map(data => data.asset) : enabledPools),
+    [assetData, enabledPools, walletAddress],
   );
 
+  // get available swap pairs to show in the dropdown
   const { sourceAssets, targetAssets } = useMemo(
     () =>
       getValidSwapPairs(
@@ -169,8 +184,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     [assetsInWallet, enabledPools, sourceSymbol, targetSymbol],
   );
 
-  const runePrice = validBNOrZero(priceIndex[RUNE_SYMBOL]);
-
   const {
     hasSufficientRuneFee,
     hasSufficientBnbFee,
@@ -178,9 +191,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     getAmountAfterFee,
     getThresholdAmount,
   } = useFee();
-
-  const history = useHistory();
-  const MAX_SLIP_LIMIT = 5;
 
   const [address, setAddress] = useState<string>('');
   const [invalidAddress, setInvalidAddress] = useState<boolean>(false);
@@ -199,17 +209,14 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   // if tx is completed, should refresh balance
   useEffect(() => {
     if (prevTxStatus?.status === true && txStatus.status === false) {
-      user && refreshBalance(user.wallet);
+      walletAddress && refreshBalance(walletAddress);
 
       const assets = [sourceSymbol, targetSymbol].filter(
         asset => asset !== RUNE_SYMBOL,
       );
 
       // refresh pool data
-      getPoolDataForAsset({
-        assets,
-        overrideAllPoolData: false,
-      });
+      getPoolDataForAsset({ assets });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [txStatus]);
@@ -238,10 +245,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     xValue,
   ]);
 
-  const isValidRecipient = async () => {
-    return asgardexBncClient.validateAddress(address);
-  };
-
   const handleChangeAddress = useCallback(
     (address: string) => {
       setAddress(address);
@@ -256,50 +259,91 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     return sourceSymbol?.toUpperCase() === 'BNB';
   }, [sourceSymbol]);
 
-  const handleChangePercent = (percent: number) => {
-    const thresholdAmount = getThresholdAmount(sourceSymbol).amount();
+  const handleChangePercent = useCallback(
+    (percent: number) => {
+      const thresholdAmount = getThresholdAmount(sourceSymbol).amount();
 
-    // formula (totalAmount * percent) / 100
-    const newValue = thresholdAmount.multipliedBy(percent).div(100);
+      // formula (totalAmount * percent) / 100
+      const newValue = thresholdAmount.multipliedBy(percent).div(100);
 
-    if (thresholdAmount.isLessThan(newValue)) {
-      setXValue(tokenAmount(thresholdAmount));
-      setPercent(percent);
-    } else {
-      setXValue(tokenAmount(newValue));
-      setPercent(percent);
+      if (thresholdAmount.isLessThan(newValue)) {
+        setXValue(tokenAmount(thresholdAmount));
+        setPercent(percent);
+      } else {
+        setXValue(tokenAmount(newValue));
+        setPercent(percent);
+      }
+    },
+    [sourceSymbol, getThresholdAmount],
+  );
+
+  const handleChangeValue = useCallback(
+    (value: BigNumber) => {
+      const newValue = tokenAmount(value);
+
+      // if wallet is disconnected, just set the value
+      if (!walletAddress) {
+        setXValue(newValue);
+        return;
+      }
+
+      const thresholdAmount = getThresholdAmount(sourceSymbol).amount();
+
+      if (thresholdAmount.isLessThanOrEqualTo(newValue.amount())) {
+        setXValue(tokenAmount(thresholdAmount));
+        setPercent(100);
+      } else {
+        setXValue(newValue);
+        setPercent(
+          newValue
+            .amount()
+            .multipliedBy(100)
+            .div(thresholdAmount)
+            .toNumber(),
+        );
+      }
+    },
+    [walletAddress, sourceSymbol, getThresholdAmount],
+  );
+
+  const handleStartTimer = useCallback(() => {
+    const targetAmount = swapData?.outputAmount;
+
+    if (sourceSymbol && targetSymbol && targetAmount) {
+      resetTxStatus({
+        type: TxTypes.SWAP,
+        value: 0,
+        modal: true,
+        status: true,
+        startTime: Date.now(),
+        info: symbolpair,
+        txData: {
+          sourceAsset: sourceSymbol,
+          targetAsset: targetSymbol,
+          sourceAmount: xValue,
+          targetAmount,
+        },
+      });
+
+      // dismiss modal after 1s
+      setTimeout(() => {
+        setTxTimerModal(false);
+        setDragReset(true);
+      }, CONFIRM_DISMISS_TIME);
     }
-  };
+  }, [
+    sourceSymbol,
+    targetSymbol,
+    swapData,
+    xValue,
+    symbolpair,
+    resetTxStatus,
+    setTxTimerModal,
+    setDragReset,
+  ]);
 
-  const handleChangeValue = (value: BigNumber) => {
-    const newValue = tokenAmount(value);
-    const wallet = user ? user.wallet : null;
-
-    // if wallet is disconnected, just set the value
-    if (!wallet) {
-      setXValue(newValue);
-      return;
-    }
-
-    const thresholdAmount = getThresholdAmount(sourceSymbol).amount();
-
-    if (thresholdAmount.isLessThanOrEqualTo(newValue.amount())) {
-      setXValue(tokenAmount(thresholdAmount));
-      setPercent(100);
-    } else {
-      setXValue(newValue);
-      setPercent(
-        newValue
-          .amount()
-          .multipliedBy(100)
-          .div(thresholdAmount)
-          .toNumber(),
-      );
-    }
-  };
-
-  const handleConfirmSwap = async () => {
-    if (user && sourceSymbol && targetSymbol && swapData) {
+  const handleConfirmSwap = useCallback(async () => {
+    if (user && walletAddress && sourceSymbol && targetSymbol && swapData) {
       const tokenAmountToSwap = xValue;
 
       try {
@@ -310,7 +354,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
           response = await swapRequestUsingWalletConnect({
             walletConnect: user.walletConnector,
             bncClient,
-            walletAddress: user.wallet,
+            walletAddress,
             source: sourceSymbol,
             target: targetSymbol,
             amount: tokenAmountToSwap,
@@ -322,7 +366,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
         } else {
           response = await confirmSwap(
             bncClient,
-            user.wallet,
+            walletAddress,
             sourceSymbol,
             targetSymbol,
             tokenAmountToSwap,
@@ -356,12 +400,26 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
         console.error(error); // eslint-disable-line no-console
       }
     }
-  };
+  }, [
+    user,
+    walletAddress,
+    poolAddress,
+    sourceSymbol,
+    targetSymbol,
+    swapData,
+    address,
+    xValue,
+    slipProtection,
+    handleStartTimer,
+    resetTxStatus,
+    setTxResult,
+    setTxHash,
+  ]);
 
-  const handleConfirmTransaction = () => {
+  const handleConfirmTransaction = useCallback(() => {
     handleConfirmSwap();
     setOpenPrivateModal(false);
-  };
+  }, [handleConfirmSwap]);
 
   const handleOpenSlipConfirmModal = useCallback(() => {
     setVisibleSlipConfirmModal(true);
@@ -383,13 +441,18 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   const handleConfirmSlip = useCallback(() => {
     handleCloseSlipConfirmModal();
     // if wallet is connected
-    if (user?.wallet) {
+    if (walletAddress) {
       // get pool address before confirmation
       getPoolAddress();
 
       handleOpenPrivateModal();
     }
-  }, [user, getPoolAddress, handleOpenPrivateModal, handleCloseSlipConfirmModal]);
+  }, [
+    walletAddress,
+    getPoolAddress,
+    handleOpenPrivateModal,
+    handleCloseSlipConfirmModal,
+  ]);
 
   const handleDrag = useCallback(() => {
     setDragReset(false);
@@ -405,14 +468,17 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     setDragReset(true);
   }, [setOpenWalletAlert, setDragReset]);
 
-  const validateSlip = (slip: BigNumber) => {
-    if (slip.isGreaterThanOrEqualTo(MAX_SLIP_LIMIT)) {
-      handleOpenSlipConfirmModal();
-      setDragReset(true);
-      return false;
-    }
-    return true;
-  };
+  const validateSlip = useCallback(
+    (slip: BigNumber) => {
+      if (slip.isGreaterThanOrEqualTo(MAX_SLIP_LIMIT)) {
+        handleOpenSlipConfirmModal();
+        setDragReset(true);
+        return false;
+      }
+      return true;
+    },
+    [handleOpenSlipConfirmModal],
+  );
 
   /**
    * Handler for moving drag slider to the end
@@ -420,11 +486,9 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
    * That's the point we do first validation
    *
    */
-  const handleEndDrag = async () => {
-    const wallet = user ? user.wallet : null;
-
+  const handleEndDrag = useCallback(async () => {
     // Validate existing wallet
-    if (!wallet) {
+    if (!walletAddress) {
       setOpenWalletAlert(true);
       setDragReset(true);
       return;
@@ -464,7 +528,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     }
 
     // Validate address to send to
-    const isValidRecipientValue = await isValidRecipient();
+    const isValidRecipientValue = await isValidRecipient(address);
     if (view === SwapSendView.SEND && !isValidRecipientValue) {
       setInvalidAddress(true);
       setDragReset(true);
@@ -472,108 +536,88 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     }
 
     if (swapData && validateSlip(swapData.slip)) {
-      if (wallet) {
-        // get pool address before confirmation
-        getPoolAddress();
+      // get pool address before confirmation
+      getPoolAddress();
 
-        handleOpenPrivateModal();
-      } else {
-        setInvalidAddress(true);
-        setDragReset(true);
-      }
+      handleOpenPrivateModal();
     }
-  };
+  }, [
+    walletAddress,
+    address,
+    sourceSymbol,
+    view,
+    xValue,
+    swapData,
+    validateSlip,
+    getPoolAddress,
+    handleOpenPrivateModal,
+    hasSufficientBnbFee,
+    hasSufficientRuneFee,
+  ]);
 
   // called when pool address is loaded successfully
-  const handlePoolAddressConfirmed = () => {
+  const handlePoolAddressConfirmed = useCallback(() => {
     // if wallet type is walletconnect, send the swap tx sign request to trustwallet
     if (user?.type === 'walletconnect') {
       handleConfirmSwap();
     }
-  };
+  }, [user, handleConfirmSwap]);
 
-  const handleStartTimer = useCallback(() => {
-    const targetAmount = swapData?.outputAmount;
-
-    if (sourceSymbol && targetSymbol && targetAmount) {
-      resetTxStatus({
-        type: TxTypes.SWAP,
-        value: 0,
-        modal: true,
-        status: true,
-        startTime: Date.now(),
-        info: symbolpair,
-        txData: {
-          sourceAsset: sourceSymbol,
-          targetAsset: targetSymbol,
-          sourceAmount: xValue,
-          targetAmount,
-        },
-      });
-
-      // dismiss modal after 1s
-      setTimeout(() => {
-        setTxTimerModal(false);
-        setDragReset(true);
-      }, CONFIRM_DISMISS_TIME);
-    }
-  }, [
-    sourceSymbol,
-    targetSymbol,
-    swapData,
-    xValue,
-    symbolpair,
-    resetTxStatus,
-    setTxTimerModal,
-    setDragReset,
-  ]);
-
-  const handleChangeSwapType = (toSend: boolean) => {
+  const handleChangeSwapType = useCallback((toSend: boolean) => {
     const view = toSend ? SwapSendView.SEND : SwapSendView.DETAIL;
     setView(view);
-  };
+  }, []);
 
-  const handleSwitchSlipProtection = () => {
+  const handleSwitchSlipProtection = useCallback(() => {
     setSlipProtection(!slipProtection);
-  };
+  }, [slipProtection]);
 
-  const handleChangeSource = (asset: string) => {
-    const selectedToken = getTickerFormat(asset);
-    const target = getTickerFormat(targetSymbol);
+  const handleChangeSource = useCallback(
+    (asset: string) => {
+      const selectedToken = getTickerFormat(asset);
+      const target = getTickerFormat(targetSymbol);
 
-    if (sourceSymbol && targetSymbol) {
-      const URL =
-        selectedToken === target
-          ? `/swap/${targetSymbol}:${sourceSymbol}`
-          : `/swap/${asset}:${targetSymbol}`;
-      history.push(URL);
-    } else {
-      // eslint-disable-next-line no-console
-      console.error(
-        `Could not parse target / source pair: ${targetSymbol} / ${sourceSymbol}`,
-      );
-    }
-  };
+      if (sourceSymbol && targetSymbol) {
+        setXValue(tokenAmount(0));
 
-  const handleSelectTarget = (asset: string) => {
-    const selectedToken = getTickerFormat(asset);
-    const source = getTickerFormat(sourceSymbol);
+        const URL =
+          selectedToken === target
+            ? `/swap/${targetSymbol}:${sourceSymbol}`
+            : `/swap/${asset}:${targetSymbol}`;
+        history.push(URL);
+      } else {
+        console.error(
+          `Could not parse target / source pair: ${targetSymbol} / ${sourceSymbol}`,
+        );
+      }
+    },
+    [sourceSymbol, targetSymbol, history],
+  );
 
-    if (sourceSymbol && targetSymbol) {
-      const URL =
-        source === selectedToken
-          ? `/swap/${targetSymbol}:${sourceSymbol}`
-          : `/swap/${sourceSymbol}:${asset}`;
-      history.push(URL);
-    } else {
-      // eslint-disable-next-line no-console
-      console.error(
-        `Could not parse target / source pair: ${targetSymbol} / ${sourceSymbol}`,
-      );
-    }
-  };
+  const handleSelectTarget = useCallback(
+    (asset: string) => {
+      const selectedToken = getTickerFormat(asset);
+      const source = getTickerFormat(sourceSymbol);
 
-  const handleReversePair = () => {
+      if (sourceSymbol && targetSymbol) {
+        setXValue(tokenAmount(0));
+
+        const URL =
+          source === selectedToken
+            ? `/swap/${targetSymbol}:${sourceSymbol}`
+            : `/swap/${sourceSymbol}:${asset}`;
+        history.push(URL);
+      } else {
+        // eslint-disable-next-line no-console
+        console.error(
+          `Could not parse target / source pair: ${targetSymbol} / ${sourceSymbol}`,
+        );
+      }
+    },
+    [sourceSymbol, targetSymbol, history],
+  );
+
+  const handleReversePair = useCallback(() => {
     if (sourceSymbol && targetSymbol) {
       setXValue(tokenAmount(0));
       const URL = `/swap/${targetSymbol}:${sourceSymbol}`;
@@ -584,38 +628,34 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
         `Could not parse target / source pair: ${targetSymbol} / ${sourceSymbol}`,
       );
     }
-  };
+  }, [sourceSymbol, targetSymbol, history]);
 
-  const handleSelectSourceAmount = (amount: number) => {
-    const sourceAsset = getAssetDataFromBalance(assetData, sourceSymbol);
+  const handleSelectSourceAmount = useCallback(
+    (amount: number) => {
+      const sourceAsset = getAssetDataFromBalance(assetData, sourceSymbol);
 
-    if (!sourceAsset) {
-      return;
-    }
+      if (!sourceAsset) {
+        return;
+      }
 
-    const totalAmount = sourceAsset.assetValue.amount() ?? bn(0);
-    // formula (totalAmount * amount) / 100
-    const xValueBN = totalAmount.multipliedBy(amount).div(100);
-    setXValue(tokenAmount(xValueBN));
-  };
+      const totalAmount = sourceAsset.assetValue.amount() ?? bn(0);
+      // formula (totalAmount * amount) / 100
+      const xValueBN = totalAmount.multipliedBy(amount).div(100);
+      setXValue(tokenAmount(xValueBN));
+    },
+    [sourceSymbol, assetData],
+  );
 
   const getPopupContainer = () => {
     return document.getElementsByClassName('slip-protection')[0] as HTMLElement;
-  };
-
-  const renderProtectPopoverContent = () => {
-    return <PopoverContent>Protect my price (within 3%)</PopoverContent>;
   };
 
   /**
    * Renders fee
    */
   const renderFee = () => {
-    const wallet = user ? user.wallet : null;
     const bnbAmount = bnbBaseAmount(assetData);
 
-    // Helper to format BNB amounts properly (we can't use `formatTokenAmountCurrency`)
-    // TODO (@Veado) Update `formatTokenAmountCurrency` of `asgardex-token` (now in `asgardex-util`) to accept decimals
     const formatBnbAmount = (value: BaseAmount) => {
       const token = baseToToken(value);
       return `${token.amount().toString()} BNB + 1 RUNE`;
@@ -640,7 +680,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
                   (It will be subtracted from your entered BNB value)
                 </Text>
               )}
-              {wallet && bnbAmount && hasSufficientBnbFeeInBalance && (
+              {walletAddress && bnbAmount && hasSufficientBnbFeeInBalance && (
                 <>
                   <br />
                   <Text style={{ paddingTop: '10px' }}>
@@ -649,7 +689,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
                   </Text>
                 </>
               )}
-              {wallet && bnbAmount && !hasSufficientBnbFeeInBalance && (
+              {walletAddress && bnbAmount && !hasSufficientBnbFeeInBalance && (
                 <>
                   <br />
                   <Text type="danger" style={{ paddingTop: '10px' }}>
@@ -668,8 +708,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
 
   // render
   if (
-    !sourceSymbol ||
-    !targetSymbol ||
     !Object.keys(poolData).length ||
     !isValidSwap(pools, sourceSymbol, targetSymbol) ||
     !swapData
@@ -705,7 +743,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     ? `SLIP ${slip.toFormat(2, BigNumber.ROUND_DOWN)}%`
     : Nothing;
 
-  // TODO: all components need to be refactored to accept symbols instead of tickers
   return (
     <ContentWrapper className="swap-detail-wrapper">
       <SwapAssetCard>
@@ -780,7 +817,11 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
               <CardFormHolder className="slip-protection">
                 <CardForm>
                   <PopoverContainer
-                    content={renderProtectPopoverContent()}
+                    content={(
+                      <PopoverContent>
+                        Protect my price (within 3%)
+                      </PopoverContent>
+                    )}
                     getPopupContainer={getPopupContainer}
                     placement="left"
                     visible

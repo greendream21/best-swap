@@ -249,10 +249,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     getStakerPoolDetail();
 
     // refresh pool data
-    getPoolDataForAsset({
-      assets: [symbol],
-      overrideAllPoolData: false,
-    });
+    getPoolDataForAsset({ assets: [symbol] });
 
     if (user) {
       const wallet = user.wallet;
@@ -276,7 +273,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     // refresh pool data
     getPoolDataForAsset({
       assets: [symbol],
-      overrideAllPoolData: false,
       type: 'full',
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -437,25 +433,30 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       setTxType(TxTypes.STAKE);
       handleOpenPrivateModal();
     }
-  }, [wallet, getPoolAddress, handleOpenPrivateModal, handleCloseSlipConfirmModal]);
+  }, [
+    wallet,
+    getPoolAddress,
+    handleOpenPrivateModal,
+    handleCloseSlipConfirmModal,
+  ]);
 
   const handleStartTimer = (type: TxTypes) => {
     const txData =
       type === TxTypes.STAKE
         ? {
-          sourceAsset: RUNE_SYMBOL,
-          targetAsset: symbol,
-          sourceAmount: runeAmountToSend,
-          targetAmount,
-        }
+            sourceAsset: RUNE_SYMBOL,
+            targetAsset: symbol,
+            sourceAmount: runeAmountToSend,
+            targetAmount,
+          }
         : {
-          sourceAsset: RUNE_SYMBOL,
-          targetAsset: symbol,
-          sourceAmount: baseToToken(withdrawData?.runeValue ?? baseAmount(0)),
-          targetAmount: baseToToken(
-            withdrawData?.tokenValue ?? baseAmount(0),
-          ),
-        };
+            sourceAsset: RUNE_SYMBOL,
+            targetAsset: symbol,
+            sourceAmount: baseToToken(withdrawData?.runeValue ?? baseAmount(0)),
+            targetAmount: baseToToken(
+              withdrawData?.tokenValue ?? baseAmount(0),
+            ),
+          };
 
     // set the tx confirmation status
     resetTxStatus({
@@ -870,7 +871,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     </PopoverContent>
   );
 
-
   // get slip for stake
   const stakeSlip = useMemo(() => {
     const runeAssetAmount = assetAmount(runeAmountToSend.amount());
@@ -894,7 +894,10 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     return stakeSlip;
   }, [runeAmountToSend, targetAmount, R, T]);
 
-  const stakeSlipPercent = useMemo(() => Number(stakeSlip.multipliedBy(100).toFixed(0)), [stakeSlip]);
+  const stakeSlipPercent = useMemo(
+    () => Number(stakeSlip.multipliedBy(100).toFixed(0)),
+    [stakeSlip],
+  );
 
   const renderShareDetail = () => {
     const tokensData: string[] = pools.map(

@@ -1,6 +1,14 @@
 import byzantine from '@thorchain/byzantine-module';
 import { isEmpty as _isEmpty } from 'lodash';
-import { all, takeEvery, put, fork, call, delay, select } from 'redux-saga/effects';
+import {
+  all,
+  takeEvery,
+  put,
+  fork,
+  call,
+  delay,
+  select,
+} from 'redux-saga/effects';
 
 import { axiosRequest } from 'helpers/apiHelper';
 import * as api from 'helpers/apiHelper';
@@ -152,7 +160,7 @@ function* tryGetAssets(poolAssets: string[]) {
 }
 
 export function* getPoolAssets() {
-  yield takeEvery('GET_POOL_ASSETS_REQUEST', function* ({
+  yield takeEvery('GET_POOL_ASSETS_REQUEST', function*({
     payload,
   }: ReturnType<typeof actions.getPoolAssets>) {
     try {
@@ -172,7 +180,7 @@ export function* getPoolAssets() {
 }
 
 export function* getPools() {
-  yield takeEvery('GET_POOLS_REQUEST', function* ({
+  yield takeEvery('GET_POOLS_REQUEST', function*({
     payload,
   }: ReturnType<typeof actions.getPools>) {
     try {
@@ -181,9 +189,7 @@ export function* getPools() {
 
       yield put(actions.getPoolsSuccess(pools));
 
-      yield put(
-        actions.getPoolData({ assets: pools, overrideAllPoolData: true }),
-      );
+      yield put(actions.getPoolData({ assets: pools }));
     } catch (error) {
       yield put(actions.getPoolsFailed(error));
     }
@@ -191,7 +197,7 @@ export function* getPools() {
 }
 
 export function* getStats() {
-  yield takeEvery('GET_STATS_REQUEST', function* () {
+  yield takeEvery('GET_STATS_REQUEST', function*() {
     try {
       // Unsafe: Can't infer type of `GetStatsResult` in a Generator function - known TS/Generator/Saga issue
       const stats = yield call(tryGetStats);
@@ -227,7 +233,7 @@ function* tryGetNetworkInfo() {
 }
 
 export function* getNetworkInfo() {
-  yield takeEvery('GET_NETWORK_INFO_REQUEST', function* () {
+  yield takeEvery('GET_NETWORK_INFO_REQUEST', function*() {
     try {
       const networkInfo = yield call(tryGetNetworkInfo);
       const { data: mimir } = yield call(getThorchainMimir);
@@ -263,10 +269,10 @@ function* tryGetPoolDataFromAsset(
 }
 
 export function* getPoolData() {
-  yield takeEvery('GET_POOL_DATA_REQUEST', function* ({
+  yield takeEvery('GET_POOL_DATA_REQUEST', function*({
     payload,
   }: ReturnType<typeof actions.getPoolData>) {
-    const { assets, overrideAllPoolData, type = 'simple' } = payload;
+    const { assets, type = 'simple' } = payload;
     try {
       // sort assets to support cache by sending fixed request URL.
       const sortedAssets = getOrderedPoolString(assets);
@@ -277,16 +283,18 @@ export function* getPoolData() {
       );
 
       // merge pool data to the current pool data state
-      const curPoolData = yield select((state: RootState) => state.Midgard.poolData);
+      const curPoolData = yield select(
+        (state: RootState) => state.Midgard.poolData,
+      );
 
       const newPoolData = poolDetails.reduce(
         (acc: PoolDataMap, poolDetail: PoolDetail) => {
           const symbol = getAssetSymbolFromPayload(poolDetail);
           return symbol
             ? {
-              ...acc,
-              [symbol]: poolDetail,
-            }
+                ...acc,
+                [symbol]: poolDetail,
+              }
             : acc;
         },
         {} as PoolDataMap,
@@ -304,7 +312,6 @@ export function* getPoolData() {
       yield put(
         actions.getPoolDataSuccess({
           poolData: mergedPoolData,
-          overrideAllPoolData,
         }),
       );
     } catch (error) {
@@ -314,7 +321,7 @@ export function* getPoolData() {
 }
 
 export function* getPoolDetailByAsset() {
-  yield takeEvery('GET_POOL_DETAIL_BY_ASSET', function* ({
+  yield takeEvery('GET_POOL_DETAIL_BY_ASSET', function*({
     payload,
   }: ReturnType<typeof actions.getPoolDetailByAsset>) {
     const { asset } = payload;
@@ -385,7 +392,7 @@ const getThorchainQueue = () => {
 };
 
 export function* getStakerPoolData() {
-  yield takeEvery('GET_STAKER_POOL_DATA_REQUEST', function* ({
+  yield takeEvery('GET_STAKER_POOL_DATA_REQUEST', function*({
     payload,
   }: ReturnType<typeof actions.getStakerPoolData>) {
     try {
@@ -431,7 +438,7 @@ function* tryGetPoolAddressRequest() {
 }
 
 export function* getPoolAddress() {
-  yield takeEvery('GET_POOL_ADDRESSES_REQUEST', function* () {
+  yield takeEvery('GET_POOL_ADDRESSES_REQUEST', function*() {
     try {
       const data = yield call(tryGetPoolAddressRequest);
       yield put(actions.getPoolAddressSuccess(data));
@@ -470,7 +477,7 @@ function* tryGetTransactions(payload: GetTransactionPayload) {
 }
 
 export function* getTransactions() {
-  yield takeEvery('GET_TRANSACTION', function* ({
+  yield takeEvery('GET_TRANSACTION', function*({
     payload,
   }: ReturnType<typeof actions.getTransaction>) {
     try {
@@ -483,7 +490,7 @@ export function* getTransactions() {
 }
 
 export function* getTransactionWithRefresh() {
-  yield takeEvery('GET_TRANSACTION_WITH_REFRESH', function* ({
+  yield takeEvery('GET_TRANSACTION_WITH_REFRESH', function*({
     payload,
   }: ReturnType<typeof actions.getTransaction>) {
     try {
@@ -524,7 +531,7 @@ function* tryGetTxByAddress(payload: GetTxByAddressPayload) {
 }
 
 export function* getTxByAddress() {
-  yield takeEvery('GET_TX_BY_ADDRESS', function* ({
+  yield takeEvery('GET_TX_BY_ADDRESS', function*({
     payload,
   }: ReturnType<typeof actions.getTxByAddress>) {
     try {
@@ -568,7 +575,7 @@ function* tryTxByAddressTxId(payload: GetTxByAddressTxIdPayload) {
 }
 
 export function* getTxByAddressTxId() {
-  yield takeEvery('GET_TX_BY_ADDRESS_TXID', function* ({
+  yield takeEvery('GET_TX_BY_ADDRESS_TXID', function*({
     payload,
   }: ReturnType<typeof actions.getTxByAddressTxId>) {
     try {
@@ -614,7 +621,7 @@ function* tryGetTxByAddressAsset(payload: GetTxByAddressAssetPayload) {
 }
 
 export function* getTxByAddressAsset() {
-  yield takeEvery('GET_TX_BY_ADDRESS_ASSET', function* ({
+  yield takeEvery('GET_TX_BY_ADDRESS_ASSET', function*({
     payload,
   }: ReturnType<typeof actions.getTxByAddressAsset>) {
     try {
@@ -659,7 +666,7 @@ function* tryGetTxByAsset(payload: GetTxByAssetPayload) {
 }
 
 export function* getTxByAsset() {
-  yield takeEvery('GET_TX_BY_ASSET', function* ({
+  yield takeEvery('GET_TX_BY_ASSET', function*({
     payload,
   }: ReturnType<typeof actions.getTxByAsset>) {
     try {
@@ -672,7 +679,7 @@ export function* getTxByAsset() {
 }
 
 export function* setBasePriceAsset() {
-  yield takeEvery('SET_BASE_PRICE_ASSET', function* ({
+  yield takeEvery('SET_BASE_PRICE_ASSET', function*({
     payload,
   }: ReturnType<typeof actions.setBasePriceAsset>) {
     yield call(saveBasePriceAsset, payload);
@@ -717,7 +724,7 @@ function* tryGetRTAggregateByAsset(payload: GetRTAggregateByAssetPayload) {
 }
 
 export function* getRTAggregateByAsset() {
-  yield takeEvery('GET_RT_AGGREGATE_BY_ASSET', function* ({
+  yield takeEvery('GET_RT_AGGREGATE_BY_ASSET', function*({
     payload,
   }: ReturnType<typeof actions.getRTAggregateByAsset>) {
     try {
@@ -761,11 +768,7 @@ function* trygetRTStats(payload: GetRTStatsPayload) {
   for (let i = 0; i < MIDGARD_MAX_RETRY; i++) {
     try {
       const noCache = i > 0;
-      const {
-        from = 0,
-        to = getEoDTime(),
-        interval = 'day',
-      } = payload;
+      const { from = 0, to = getEoDTime(), interval = 'day' } = payload;
       // Unsafe: Can't infer type of `basePath` here - known TS/Generator/Saga issue
       const basePath: string = yield call(getApiBasePath, getNet(), noCache);
       const midgardApi = api.getMidgardDefaultApi(basePath);
@@ -793,7 +796,7 @@ function* trygetRTStats(payload: GetRTStatsPayload) {
 }
 
 export function* getRTStats() {
-  yield takeEvery('GET_RT_STATS_CHANEGS', function* ({
+  yield takeEvery('GET_RT_STATS_CHANEGS', function*({
     payload,
   }: ReturnType<typeof actions.getRTStats>) {
     try {
@@ -857,7 +860,7 @@ function* tryGetPoolEarningDetails(payload: string) {
 }
 
 export function* getPoolEarningDetails() {
-  yield takeEvery('GET_POOL_EARNING_DETAILS', function* ({
+  yield takeEvery('GET_POOL_EARNING_DETAILS', function*({
     payload,
   }: ReturnType<typeof actions.getPoolEarningDetails>) {
     try {
