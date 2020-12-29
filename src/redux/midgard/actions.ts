@@ -52,8 +52,8 @@ export const getPoolData = (payload: GetPoolDataPayload) =>
 
 type GetPoolDataSuccessPayload = {
   poolData: PoolDataMap;
-  overrideAllPoolData: boolean;
 };
+
 export const getPoolDataSuccess = (payload: GetPoolDataSuccessPayload) =>
   ({ type: 'GET_POOL_DATA_SUCCESS', payload } as const);
 
@@ -176,13 +176,14 @@ export const getStatsFailed = (payload: Error) =>
 export const getPoolEarningDetails = (payload: string) =>
   ({ type: 'GET_POOL_EARNING_DETAILS', payload } as const);
 
-export const getPoolEarningDetailsSuccess = (payload: GetPoolEarningDetailsPayload) =>
-  ({ type: 'GET_POOL_EARNING_DETAILS_SUCCESS', payload } as const);
+export const getPoolEarningDetailsSuccess = (
+  payload: GetPoolEarningDetailsPayload,
+) => ({ type: 'GET_POOL_EARNING_DETAILS_SUCCESS', payload } as const);
 
 export const getPoolEarningDetailsFailed = (payload: Error) =>
   ({ type: 'GET_POOL_EARNING_DETAILS_FAILED', payload } as const);
 
-  export const getRTStats = (payload: GetRTStatsPayload) =>
+export const getRTStats = (payload: GetRTStatsPayload) =>
   ({ type: 'GET_RT_STATS_CHANEGS', payload } as const);
 
 export const getRTStatsSuccess = (payload: RTStatsData) =>

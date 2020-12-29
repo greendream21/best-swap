@@ -97,6 +97,7 @@
     "react/jsx-uses-vars": 2,
     "react/jsx-no-bind": 0,
     "react/react-in-jsx-scope": 2,
+    "react/jsx-wrap-multilines": 0,
     "react/jsx-filename-extension": [
       2,
       { "extensions": [".js", ".jsx", ".ts", ".tsx"] }
