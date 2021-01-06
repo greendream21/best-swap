@@ -1,5 +1,7 @@
 import { matchPath } from 'react-router-dom';
 
+import queryString from 'query-string';
+
 import { Maybe, Nothing, Pair } from 'types/bepswap';
 
 import { getSymbolPair } from './stringHelper';
@@ -90,4 +92,12 @@ export const getRuneStakeURL = (address?: string) => {
     return `https://app.runestake.info/home?address=${address}`;
   }
   return 'https://runestake.info';
+};
+
+export const getTxViewURL = ({ type, offset }: { type: string, offset: number }) => {
+  const query = queryString.stringify({ type, offset }, { encode: true });
+
+  if (!query) return '/transaction';
+
+  return `/transaction?${query}`;
 };

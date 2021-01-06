@@ -18,7 +18,7 @@ import { isMainnet } from './env';
 
 const maintenanceRoute = [
   {
-    path: '',
+    path: '*',
     component: asyncComponent(() => import('./containers/500')),
   },
 ];
