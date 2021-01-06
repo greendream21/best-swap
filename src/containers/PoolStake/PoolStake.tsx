@@ -59,6 +59,7 @@ import * as walletActions from 'redux/wallet/actions';
 import { User, AssetData } from 'redux/wallet/types';
 
 import useFee from 'hooks/useFee';
+import useMidgard from 'hooks/useMidgard';
 import useNetwork from 'hooks/useNetwork';
 import usePrevious from 'hooks/usePrevious';
 import usePrice from 'hooks/usePrice';
@@ -145,6 +146,8 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     setTxHash,
     setTxTimerModal,
   } = props;
+
+  const { isValidPool } = useMidgard();
 
   const history = useHistory();
   const { symbol = '' } = useParams();
@@ -1318,6 +1321,11 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   };
 
   const yourShareSpan = hasWallet ? 8 : 24;
+
+  if (!isValidPool(symbol)) {
+    history.push('/pools');
+    return null;
+  }
 
   return (
     <ContentWrapper className="pool-stake-wrapper" transparent>
