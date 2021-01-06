@@ -2,7 +2,7 @@
 import React, { useEffect, useCallback, useMemo, useState } from 'react';
 
 import { connect } from 'react-redux';
-import { withRouter, useHistory, useParams, Link } from 'react-router-dom';
+import { withRouter, useParams, Link } from 'react-router-dom';
 
 import { SwapOutlined, DatabaseOutlined } from '@ant-design/icons';
 import { Token } from '@thorchain/asgardex-binance';
@@ -21,6 +21,7 @@ import { PoolStatBar } from 'components/statBar';
 import TxTable from 'components/transaction/txTable';
 import Button from 'components/uielements/button';
 import Label from 'components/uielements/label';
+import Loader from 'components/utility/loaders/pageLoader';
 
 import * as midgardActions from 'redux/midgard/actions';
 import {
@@ -89,7 +90,6 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
   } = props;
 
   const { isValidPool } = useMidgard();
-  const history = useHistory();
 
   const { getUSDPrice, pricePrefix, runePrice } = usePrice();
   const [currentTxPage, setCurrentTxPage] = useState<number>(1);
@@ -293,8 +293,7 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
   };
 
   if (!isValidPool(symbol)) {
-    history.push('/pools');
-    return null;
+    return <Loader />;
   }
 
   const poolInfo = poolDetailedData[tokenSymbol] || {};

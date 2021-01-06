@@ -43,6 +43,7 @@ import Modal from 'components/uielements/modal';
 import showNotification from 'components/uielements/notification';
 import Slider from 'components/uielements/slider';
 import Status from 'components/uielements/status';
+import Loader from 'components/utility/loaders/pageLoader';
 
 import * as appActions from 'redux/app/actions';
 import { TxStatus, TxTypes, TxResult } from 'redux/app/types';
@@ -1323,8 +1324,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   const yourShareSpan = hasWallet ? 8 : 24;
 
   if (!isValidPool(symbol)) {
-    history.push('/pools');
-    return null;
+    return <Loader />;
   }
 
   return (
