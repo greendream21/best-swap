@@ -1,12 +1,13 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+
 
 import { FormattedDate, FormattedTime } from 'react-intl';
 import { connect } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 
 import * as RD from '@devexperts/remote-data-ts';
 import { Grid } from 'antd';
 import { compose } from 'redux';
-
 
 import FilterDropdown from 'components/filterDropdown';
 import TxInfo from 'components/transaction/txInfo';
@@ -21,6 +22,9 @@ import { RootState } from 'redux/store';
 import { User } from 'redux/wallet/types';
 
 import usePrevious from 'hooks/usePrevious';
+import useQuery from 'hooks/useQuery';
+
+import { getTxViewURL } from 'helpers/routerHelper';
 
 import { Maybe } from 'types/bepswap';
 import {
@@ -47,47 +51,53 @@ type ConnectedProps = {
 
 type Props = ComponentProps & ConnectedProps;
 
+const PAGE_LIMIT = 10;
+const allTxTypeParams = `${TxDetailsTypeEnum.Swap},${TxDetailsTypeEnum.DoubleSwap},${TxDetailsTypeEnum.Stake},${TxDetailsTypeEnum.Unstake}`;
+
 const Transaction: React.FC<Props> = (props): JSX.Element => {
   const { user, txData, txCurData, refreshTxStatus, getTxByAddress } = props;
-  const [filter, setFilter] = useState('all');
-  const [page, setPage] = useState(1);
+
+  const history = useHistory();
+  const query = useQuery();
+  const { type = 'all', offset = 0 } = query;
+
+  const [filter, setFilter] = useState<string>(type as string);
+  const [page, setPage] = useState<number>(Number(offset) + 1);
 
   const isDesktopView = Grid.useBreakpoint().lg;
 
-  const limit = 10;
-
-  const allTxTypeParams = `${TxDetailsTypeEnum.Swap},${TxDetailsTypeEnum.DoubleSwap},${TxDetailsTypeEnum.Stake},${TxDetailsTypeEnum.Unstake}`;
-
-  const txTypesPair: { [key: string]: string } = {
+  const txTypesPair: { [key: string]: string } = useMemo(() => ({
     all: allTxTypeParams,
     swap: TxDetailsTypeEnum.Swap,
     doubleSwap: TxDetailsTypeEnum.DoubleSwap,
     stake: TxDetailsTypeEnum.Stake,
     unstake: TxDetailsTypeEnum.Unstake,
-  };
+  }), []);
 
-  const getTxDetails = () => {
+  const handleSelectFilter = useCallback((value: string) => {
+    setFilter(value);
+
+    history.push(getTxViewURL({ type: value, offset: page - 1 }));
+  }, [history, page]);
+
+  const handleChangePage = useCallback((value: number) => {
+    setPage(value);
+
+    history.push(getTxViewURL({ type: filter, offset: value - 1 }));
+  }, [history, filter]);
+
+  useEffect(() => {
     const address = user?.wallet ?? null;
 
     if (address) {
       getTxByAddress({
         address,
-        offset: (page - 1) * limit,
-        limit,
+        offset: (page - 1) * PAGE_LIMIT,
+        limit: PAGE_LIMIT,
         type: txTypesPair[filter],
       });
     }
-  };
-
-  const handleSelectFilter = (value: string) => {
-    setFilter(value);
-    setPage(1);
-  };
-
-  useEffect(() => {
-    getTxDetails();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, filter]);
+  }, [page, filter, user, txTypesPair, getTxByAddress]);
 
   // reset filter, page after refresh
   const prevRefreshTxStatus = usePrevious(refreshTxStatus);
@@ -110,7 +120,7 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
         return <TxLabel type={type} />;
       },
     }),
-    [filter],
+    [filter, handleSelectFilter],
   );
 
   const desktopColumns = useMemo(
@@ -201,7 +211,7 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
         },
       },
     ],
-    [filter],
+    [filter, handleSelectFilter],
   );
 
   const renderTxTable = (data: TxDetails[], loading: boolean) => {
@@ -227,9 +237,10 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
         {count ? (
           <StyledPagination
             current={page}
-            onChange={setPage}
-            pageSize={limit}
+            onChange={handleChangePage}
+            pageSize={PAGE_LIMIT}
             total={count}
+            showSizeChanger={false}
           />
         ) : (
           ''

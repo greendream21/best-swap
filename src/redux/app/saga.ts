@@ -133,7 +133,7 @@ export function* refreshTransactionData() {
         midgardActions.getTxByAddress({
           address: user.wallet,
           offset: 0,
-          limit: 5,
+          limit: 10,
           type: allTxTypeParams,
         }),
       );

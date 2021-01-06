@@ -8,6 +8,7 @@ import {
   isSwapPage,
   isAddLiquidityPage,
   isTransactionPage,
+  getTxViewURL,
 } from './routerHelper';
 
 describe('routerHelper', () => {
@@ -163,6 +164,13 @@ describe('routerHelper', () => {
     it('should be invalid for wrong path', () => {
       const result = isTransactionPage('/tx');
       expect(result).toBeFalsy();
+    });
+  });
+
+  describe('getTxViewURL', () => {
+    it('should be valid for correct path', () => {
+      const result = getTxViewURL({ type: 'all', offset: 1 });
+      expect(result).toBe('/transaction?offset=1&type=all');
     });
   });
 });
