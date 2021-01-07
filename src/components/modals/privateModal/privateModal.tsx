@@ -7,7 +7,6 @@ import { LockOutlined } from '@ant-design/icons';
 import { delay } from '@thorchain/asgardex-util';
 import { Form } from 'antd';
 
-
 import * as midgardActions from 'redux/midgard/actions';
 import { RootState } from 'redux/store';
 
@@ -49,9 +48,15 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
   );
   const walletType = user?.type ?? 'disconnected';
 
+  console.log('visible:', visible);
+  console.log('validating:', validating);
+  console.log('confirmed:', confirmed);
+  console.log('addressLoading:', addressLoading);
+  console.log('poolAddressLoading:', poolAddressLoading);
+
   // dismiss modal after 15s automatically
   useTimeout(() => {
-    onCancel();
+    handleCancel();
   }, MODAL_DISMISS_TIME);
 
   // load pool address before making transaction
@@ -89,8 +94,14 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
         onOk();
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [poolAddressLoading]);
+  }, [
+    poolAddressLoading,
+    prevPoolAddressLoading,
+    visible,
+    confirmed,
+    onOk,
+    onPoolAddressLoaded,
+  ]);
 
   const handleLedgerVerifyFailed = () => {
     console.log('LEDGER DEBUG: VERIFY FAILED');
@@ -112,6 +123,8 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
       description: 'Transaction was signed successfully.',
       duration: 5,
     });
+
+    // close modal and confirm transaction after signing ledger without clicking confirm button
     handleConfirm();
   };
 
@@ -134,14 +147,17 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
       return;
     }
 
-    await bncClient.useLedgerSigningDelegate(
-      ledger,
-      handleLedgerPresign,
-      handleLedgerVerifySuccess,
-      handleLedgerVerifyFailed,
-      hdPath,
-    );
-    handleConfirm();
+    try {
+      await bncClient.useLedgerSigningDelegate(
+        ledger,
+        handleLedgerPresign,
+        handleLedgerVerifySuccess,
+        handleLedgerVerifyFailed,
+        hdPath,
+      );
+    } catch (error) {
+      console.log('ledger verify error: ', error);
+    }
   };
 
   const onChangePasswordHandler = useCallback(
@@ -176,6 +192,8 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
 
     // confirm if ledger is verified
     if (walletType === 'ledger' && !validating) {
+      await delay(200);
+
       handleConfirm();
       return;
     }
@@ -214,6 +232,8 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
       setPassword('');
       setInvalidPassword(false);
       setValidating(false);
+      setAddressLoading(true);
+      setConfirmed(false);
       onCancel();
     }
   }, [onCancel]);
