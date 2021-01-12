@@ -59,51 +59,31 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
     handleCancel();
   }, MODAL_DISMISS_TIME);
 
-  // load pool address before making transaction
-  const prevVisible = usePrevious(visible);
-  useEffect(() => {
-    // if private modal is open
-    if (prevVisible === false && visible === true) {
-      dispatch(midgardActions.getPoolAddress());
-
-      // if wallet type is ledger, ask users to verify ledger
-      if (walletType === 'ledger') {
-        verifyLedger();
-      }
+  const handleConfirm = useCallback(() => {
+    console.log('DEBUG: CONFIRMING');
+    if (!onOk) {
+      return;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [visible]);
 
-  // check if pool address is loaded
-  const prevPoolAddressLoading = usePrevious(poolAddressLoading);
-  useEffect(() => {
-    if (
-      prevPoolAddressLoading === true &&
-      poolAddressLoading === false &&
-      visible
-    ) {
-      setAddressLoading(false);
-
-      // call onPoolAddressLoaded props
-      onPoolAddressLoaded();
-
-      // if wallet is verified, confirm
-      if (confirmed && onOk) {
-        console.log('address loading confirm', confirmed);
-
-        onOk();
-      }
+    if (!addressLoading) {
+      onOk();
+    } else {
+      setConfirmed(true);
     }
-  }, [
-    poolAddressLoading,
-    prevPoolAddressLoading,
-    visible,
-    confirmed,
-    onOk,
-    onPoolAddressLoaded,
-  ]);
+  }, [addressLoading, onOk]);
 
-  const handleLedgerVerifyFailed = () => {
+  const handleCancel = useCallback(() => {
+    if (onCancel) {
+      setPassword('');
+      setInvalidPassword(false);
+      setValidating(false);
+      setAddressLoading(true);
+      setConfirmed(false);
+      onCancel();
+    }
+  }, [onCancel]);
+
+  const handleLedgerVerifyFailed = useCallback(() => {
     console.log('LEDGER DEBUG: VERIFY FAILED');
     setValidating(false);
     showNotification({
@@ -112,9 +92,12 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
       description: 'Please verify your ledger again!',
       duration: 10,
     });
-  };
 
-  const handleLedgerVerifySuccess = () => {
+    // close modal
+    handleCancel();
+  }, [handleCancel]);
+
+  const handleLedgerVerifySuccess = useCallback(() => {
     console.log('LEDGER DEBUG: VERIFY SUCCESS');
     setValidating(false);
     showNotification({
@@ -126,9 +109,9 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
 
     // close modal and confirm transaction after signing ledger without clicking confirm button
     handleConfirm();
-  };
+  }, [handleConfirm]);
 
-  const handleLedgerPresign = () => {
+  const handleLedgerPresign = useCallback(() => {
     console.log('LEDGER DEBUG: PRESIGN CALLED');
     showNotification({
       type: 'info',
@@ -136,9 +119,9 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
       description: 'Please approve the transaction on your ledger.',
       duration: 5,
     });
-  };
+  }, []);
 
-  const verifyLedger = async () => {
+  const verifyLedger = useCallback(async () => {
     const ledger = user?.ledger;
     const hdPath = user?.hdPath;
 
@@ -158,7 +141,49 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
     } catch (error) {
       console.log('ledger verify error: ', error);
     }
-  };
+  }, [user, handleLedgerPresign, handleLedgerVerifySuccess, handleLedgerVerifyFailed]);
+
+  // load pool address before making transaction
+  const prevVisible = usePrevious(visible);
+  useEffect(() => {
+    // if private modal is open
+    if (prevVisible === false && visible === true) {
+      dispatch(midgardActions.getPoolAddress());
+
+      // if wallet type is ledger, ask users to verify ledger
+      if (walletType === 'ledger') {
+        verifyLedger();
+      }
+    }
+  }, [visible, prevVisible, walletType, dispatch, verifyLedger]);
+
+  // check if pool address is loaded
+  const prevPoolAddressLoading = usePrevious(poolAddressLoading);
+  useEffect(() => {
+    if (
+      prevPoolAddressLoading === true &&
+      poolAddressLoading === false &&
+      visible
+    ) {
+      setAddressLoading(false);
+
+      // call onPoolAddressLoaded props
+      onPoolAddressLoaded();
+
+      // if wallet is verified, confirm
+      if (confirmed && onOk) {
+        console.log('pool address loading confirmed:', confirmed);
+        onOk();
+      }
+    }
+  }, [
+    poolAddressLoading,
+    prevPoolAddressLoading,
+    visible,
+    confirmed,
+    onOk,
+    onPoolAddressLoaded,
+  ]);
 
   const onChangePasswordHandler = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -168,33 +193,12 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
     [setPassword, setInvalidPassword],
   );
 
-  const handleConfirm = useCallback(() => {
-    console.log('DEBUG: CONFIRMING');
-    if (!onOk) {
-      return;
-    }
-
-    if (!addressLoading) {
-      onOk();
-    } else {
-      setConfirmed(true);
-    }
-  }, [addressLoading, onOk]);
-
   const handleOK = useCallback(async () => {
     console.log('DEBUG: OK');
     const address = user?.wallet;
 
     // prevent confirm if wallet is disconnected
     if (!address) {
-      return;
-    }
-
-    // confirm if ledger is verified
-    if (walletType === 'ledger' && !validating) {
-      await delay(200);
-
-      handleConfirm();
       return;
     }
 
@@ -216,27 +220,11 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
       return;
     }
 
-    // if trustwallet is connected, check if session is valid
-    if (walletType === 'walletconnect' && user?.walletConnector) {
-      handleConfirm();
-    }
-
     // if wallet is disconnected, go to wallet connect page
     if (walletType === 'disconnected') {
       history.push('/connect');
     }
-  }, [user, walletType, validating, history, password, handleConfirm]);
-
-  const handleCancel = useCallback(() => {
-    if (onCancel) {
-      setPassword('');
-      setInvalidPassword(false);
-      setValidating(false);
-      setAddressLoading(true);
-      setConfirmed(false);
-      onCancel();
-    }
-  }, [onCancel]);
+  }, [user, walletType, history, password, handleConfirm]);
 
   const modalTitle = useMemo(() => {
     if (walletType === 'keystore') return 'PASSWORD CONFIRMATION';
@@ -281,7 +269,7 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
     if (walletType === 'ledger') {
       return (
         <ModalContent>
-          <Label>CLICK CONFIRM TO SIGN WITH LEDGER!</Label>
+          <Label>CONFIRM TX USING YOUR LEDGER!</Label>
         </ModalContent>
       );
     }
@@ -305,8 +293,8 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
   const confirmBtnText = walletType === 'disconnected' ? 'CONNECT' : 'CONFIRM';
   const confirmLoading = confirmed && addressLoading;
 
-  // if the type of wallet is "walletconnect", remove footer
-  const footer = walletType !== 'walletconnect' ? undefined : null;
+  // show footer (confirm/cancel) for only keystore wallet
+  const footer = walletType === 'keystore' ? null : undefined;
 
   return (
     <StyledModal
