@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect } from 'react';
 
-
 import { connect } from 'react-redux';
 import { useHistory, Link } from 'react-router-dom';
 
@@ -22,15 +21,9 @@ import useNetwork from 'hooks/useNetwork';
 
 import { showTxFinishNotification } from 'helpers/notificationHelper';
 import { getSymbolPair } from 'helpers/stringHelper';
-import {
-  withdrawResult,
-  WithdrawResultParams,
-} from 'helpers/utils/poolUtils';
+import { withdrawResult, WithdrawResultParams } from 'helpers/utils/poolUtils';
 import { getTxResult } from 'helpers/utils/swapUtils';
-import {
-  getBetaConfirm,
-  saveBetaConfirm,
-} from 'helpers/webStorageHelper';
+import { getBetaConfirm, saveBetaConfirm } from 'helpers/webStorageHelper';
 
 import { Maybe, Nothing, Pair } from 'types/bepswap';
 
@@ -52,6 +45,7 @@ import {
   HeaderCenterWrapper,
   PopoverContent,
   PopoverIcon,
+  TooltipContent,
 } from './header.style';
 import HeaderSetting from './headerSetting';
 
@@ -184,7 +178,7 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
     if (txStatus.type !== undefined) {
       setTxTimerModal(true);
     } else {
-      history.push('/transaction');
+      history.push('/tx');
     }
   }, [setTxTimerModal, txStatus, history]);
 
@@ -283,6 +277,34 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
     </PopoverContent>
   );
 
+  const renderTxProgress = () => {
+    return (
+      <Popover
+        content={<TooltipContent>View Transaction</TooltipContent>}
+        getPopupContainer={getPopupContainer}
+        placement="bottom"
+        overlayStyle={{
+          padding: '6px',
+          animationDuration: '0s !important',
+          animation: 'none !important',
+        }}
+      >
+        <div>
+          <TxProgress
+            status={status}
+            value={value}
+            maxValue={MAX_VALUE}
+            maxSec={45}
+            startTime={startTime}
+            onClick={handleClickTxProgress}
+            onChange={handleChangeTxProgress}
+            onEnd={handleEndTxProgress}
+          />
+        </div>
+      </Popover>
+    );
+  };
+
   const renderHeader = (isDesktopView: boolean) => {
     if (isDesktopView) {
       return (
@@ -317,18 +339,7 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
           <HeaderActionButtons>
             <ThemeSwitch />
             <BasePriceSelector />
-            {wallet && (
-              <TxProgress
-                status={status}
-                value={value}
-                maxValue={MAX_VALUE}
-                maxSec={45}
-                startTime={startTime}
-                onClick={handleClickTxProgress}
-                onChange={handleChangeTxProgress}
-                onEnd={handleEndTxProgress}
-              />
-            )}
+            {renderTxProgress()}
             {!wallet && (
               <Link to="/connect">
                 <WalletButton

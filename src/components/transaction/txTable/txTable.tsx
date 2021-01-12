@@ -1,5 +1,7 @@
 /* eslint-disable no-underscore-dangle */
-import React, { useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
+
+import { useSelector, useDispatch } from 'react-redux';
 
 import { LinkOutlined } from '@ant-design/icons';
 import { formatBaseAsTokenAmount, baseAmount } from '@thorchain/asgardex-token';
@@ -7,24 +9,30 @@ import { Grid, Tag } from 'antd';
 import { ColumnType } from 'antd/lib/table';
 import moment from 'moment';
 
-import { TxDetailData } from 'redux/midgard/types';
+import Label from 'components/uielements/label';
+
+import { getTx } from 'redux/midgard/actions';
+import { TxDetailType } from 'redux/midgard/types';
 import { getAssetFromString } from 'redux/midgard/utils';
+import { RootState } from 'redux/store';
+
+import usePrevious from 'hooks/usePrevious';
 
 import { BINANCE_TX_BASE_URL } from 'helpers/apiHelper';
 
+import { TX_PUBLIC_PAGE_LIMIT } from 'settings/constants';
+
 import { FixmeType } from 'types/bepswap';
-import {
-  TxDetails,
-  TxDetailsTypeEnum,
-  Coin,
-} from 'types/generated/midgard';
+import { TxDetails, TxDetailsTypeEnum, Coin } from 'types/generated/midgard';
 
 import Table from '../../uielements/table';
-import { StyledText, StyledLink, StyledLinkText } from './txTable.style';
-
-type Props = {
-  txData: TxDetailData;
-};
+import {
+  StyledText,
+  StyledLink,
+  StyledLinkText,
+  TransactionWrapper,
+  StyledPagination,
+} from './txTable.style';
 
 type Column = 'address' | 'date' | 'type' | 'in' | 'out';
 
@@ -40,11 +48,49 @@ const tags: Record<TxDetailsTypeEnum, string> = {
   gas: '#f50',
 };
 
+type Props = {
+  address?: string;
+  txId?: string;
+  asset?: string;
+  type?: TxDetailType;
+  limit?: number;
+};
+
 const TxTable: React.FC<Props> = React.memo(
   (props: Props): JSX.Element => {
-    const { txData } = props;
+    const { address, txId, asset, type, limit = TX_PUBLIC_PAGE_LIMIT } = props;
+
+    const dispatch = useDispatch();
+    const txData = useSelector((state: RootState) => state.Midgard.txData);
+    const txRefreshing = useSelector((state: RootState) => state.Midgard.txRefreshing);
+
     const isDesktopView = Grid.useBreakpoint()?.lg ?? false;
     const loading = txData._tag !== 'RemoteSuccess';
+
+    const [currentTxPage, setCurrentTxPage] = useState<number>(1);
+
+    useEffect(() => {
+      const offset = (currentTxPage - 1) * limit;
+
+      dispatch(
+        getTx({
+          address,
+          txId,
+          asset,
+          type,
+          offset,
+          limit,
+        }),
+      );
+    }, [address, txId, asset, type, limit, currentTxPage, dispatch]);
+
+    // reset filter, page after refresh
+    const prevRefreshTxStatus = usePrevious(txRefreshing);
+    useEffect(() => {
+      if (!txRefreshing && prevRefreshTxStatus) {
+        setCurrentTxPage(1);
+      }
+    }, [txRefreshing, prevRefreshTxStatus]);
 
     const truncateAddress = useCallback((address: string) => {
       if (address && address.length > 9) {
@@ -208,12 +254,25 @@ const TxTable: React.FC<Props> = React.memo(
     );
 
     return (
-      <Table
-        loading={loading}
-        columns={isDesktopView ? desktopColumns : mobileColumns}
-        dataSource={txData._tag === 'RemoteSuccess' ? txData.value.txs : []}
-        size="small"
-      />
+      <TransactionWrapper>
+        <Label size="big" color="primary">
+          Transactions (
+          {txData._tag === 'RemoteSuccess' ? txData.value.count : 0})
+        </Label>
+        <Table
+          loading={loading}
+          columns={isDesktopView ? desktopColumns : mobileColumns}
+          dataSource={txData._tag === 'RemoteSuccess' ? txData.value.txs : []}
+          size="small"
+        />
+        <StyledPagination
+          defaultCurrent={1}
+          current={currentTxPage}
+          total={txData._tag === 'RemoteSuccess' ? txData.value.count : 0}
+          showSizeChanger={false}
+          onChange={setCurrentTxPage}
+        />
+      </TransactionWrapper>
     );
   },
 );

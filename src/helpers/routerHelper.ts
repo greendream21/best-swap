@@ -4,6 +4,7 @@ import queryString from 'query-string';
 
 import { Maybe, Nothing, Pair } from 'types/bepswap';
 
+import { TxFilter } from '../containers/TransactionView/types';
 import { getSymbolPair } from './stringHelper';
 
 /**
@@ -34,7 +35,7 @@ export const isAddLiquidityPage = (path: string): boolean =>
   isValidPage(path, '/liquidity/:symbol');
 
 export const isTransactionPage = (path: string): boolean =>
-  isValidPage(path, '/transaction');
+  isValidPage(path, '/tx');
 
 export const matchPage = {
   isHomePage,
@@ -94,10 +95,21 @@ export const getRuneStakeURL = (address?: string) => {
   return 'https://runestake.info';
 };
 
-export const getTxViewURL = ({ type, offset }: { type: string, offset: number }) => {
-  const query = queryString.stringify({ type, offset }, { encode: true });
+export const getTxViewURL = (txFilter: TxFilter) => {
+  const { address, txId, asset, offset } = txFilter;
 
-  if (!query) return '/transaction';
+  const newFilter = {
+    ...txFilter,
+    limit: undefined,
+    address: address || undefined,
+    txId: txId || undefined,
+    asset: asset || undefined,
+    offset: offset && Number.isNaN(offset) ? undefined : offset,
+  };
 
-  return `/transaction?${query}`;
+  const query = queryString.stringify(newFilter, { encode: true });
+
+  if (!query) return '/tx';
+
+  return `/tx?${query}`;
 };

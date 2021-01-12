@@ -67,7 +67,7 @@ const WalletDrawer: React.FC<Props> = props => {
 
   const handleGotoTransaction = () => {
     onClose();
-    history.push('/transaction');
+    history.push('/tx');
   };
 
   const status = wallet ? 'connected' : 'disconnected';

@@ -38,7 +38,7 @@ const Refresh = (): JSX.Element => {
 
       if (assetName) {
         dispatch(
-          appActions.getPoolDetailViewData(assetName[assetName.length - 1]),
+          appActions.getPoolDetailViewData(assetName),
         );
       }
     } else if (matchPage.isTransactionPage(pathname)) {

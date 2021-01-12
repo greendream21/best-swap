@@ -1,5 +1,5 @@
 /* eslint-disable no-underscore-dangle */
-import React, { useEffect, useCallback, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { connect } from 'react-redux';
 import { withRouter, useParams, Link } from 'react-router-dom';
@@ -20,7 +20,6 @@ import {
 import { PoolStatBar } from 'components/statBar';
 import TxTable from 'components/transaction/txTable';
 import Button from 'components/uielements/button';
-import Label from 'components/uielements/label';
 import Loader from 'components/utility/loaders/pageLoader';
 
 import * as midgardActions from 'redux/midgard/actions';
@@ -28,7 +27,6 @@ import {
   AssetDetailMap,
   PoolDataMap,
   PriceDataIndex,
-  TxDetailData,
   RTAggregateData,
 } from 'redux/midgard/types';
 import { RootState } from 'redux/store';
@@ -52,15 +50,12 @@ import {
   PoolCaptionTitle,
   PoolCaptionPrice,
   PoolCaptionButtonsWrapper,
-  TransactionWrapper,
-  StyledPagination,
   ChartContainer,
   PopoverContent,
   PopoverIcon,
 } from './PoolDetail.style';
 
 type Props = {
-  txData: TxDetailData;
   poolDetailedData: PoolDataMap;
   poolDetailedDataLoading: boolean;
   assets: AssetDetailMap;
@@ -68,9 +63,7 @@ type Props = {
   rtAggregateLoading: boolean;
   rtAggregate: RTAggregateData;
   tokenList: Token[];
-  refreshTxStatus: boolean;
   getRTAggregate: typeof midgardActions.getRTAggregateByAsset;
-  getTxByAsset: typeof midgardActions.getTxByAsset;
   getPoolDetailByAsset: typeof midgardActions.getPoolDetailByAsset;
 };
 
@@ -78,21 +71,17 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
   const {
     poolDetailedData,
     poolDetailedDataLoading,
-    txData,
     priceIndex,
     rtAggregateLoading,
     rtAggregate,
     tokenList,
-    refreshTxStatus,
     getRTAggregate,
-    getTxByAsset,
     getPoolDetailByAsset,
   } = props;
 
   const { isValidPool } = useMidgard();
 
   const { getUSDPrice, pricePrefix, runePrice } = usePrice();
-  const [currentTxPage, setCurrentTxPage] = useState<number>(1);
   const [selectedChart, setSelectedChart] = useState('Volume');
 
   const {
@@ -193,37 +182,11 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
     </ChartContainer>
   );
 
-  const getTransactionInfo = useCallback(
-    (asset: string, offset: number, limit: number) => {
-      getTxByAsset({ asset, offset, limit });
-    },
-    [getTxByAsset],
-  );
-
   useEffect(() => {
     getPoolDetailByAsset({
       asset: tokenSymbol,
     });
   }, [getPoolDetailByAsset, tokenSymbol]);
-
-  useEffect(() => {
-    getTransactionInfo(tokenSymbol, 0, 10);
-  }, [getTransactionInfo, tokenSymbol]);
-
-  useEffect(() => {
-    if (refreshTxStatus) {
-      setCurrentTxPage(1);
-      getTransactionInfo(tokenSymbol, 0, 10);
-    }
-  }, [getTransactionInfo, tokenSymbol, refreshTxStatus]);
-
-  const handlePagination = useCallback(
-    (page: number) => {
-      setCurrentTxPage(page);
-      getTransactionInfo(tokenSymbol, (page - 1) * 10, 10);
-    },
-    [getTransactionInfo, tokenSymbol],
-  );
 
   useEffect(() => {
     getRTAggregate({ asset: tokenSymbol });
@@ -314,22 +277,7 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
           {renderChart()}
         </Col>
       </Row>
-      <Row className="detail-transaction-view">
-        <TransactionWrapper>
-          <Label size="big" color="primary">
-            Transactions (
-            {txData._tag === 'RemoteSuccess' ? txData.value.count : 0})
-          </Label>
-          <TxTable txData={txData} />
-          <StyledPagination
-            defaultCurrent={1}
-            current={currentTxPage}
-            total={txData._tag === 'RemoteSuccess' ? txData.value.count : 0}
-            showSizeChanger={false}
-            onChange={handlePagination}
-          />
-        </TransactionWrapper>
-      </Row>
+      <TxTable asset={tokenSymbol} />
     </ContentWrapper>
   );
 };
@@ -340,15 +288,12 @@ export default compose(
       tokenList: state.Binance.tokenList,
       poolDetailedData: state.Midgard.poolDetailedData,
       poolDetailedDataLoading: state.Midgard.poolDetailedDataLoading,
-      refreshTxStatus: state.Midgard.refreshTxStatus,
       priceIndex: state.Midgard.priceIndex,
-      txData: state.Midgard.txData,
       rtAggregateLoading: state.Midgard.rtAggregateLoading,
       rtAggregate: state.Midgard.rtAggregate,
     }),
     {
       getRTAggregate: midgardActions.getRTAggregateByAsset,
-      getTxByAsset: midgardActions.getTxByAsset,
       getPoolDetailByAsset: midgardActions.getPoolDetailByAsset,
     },
   ),

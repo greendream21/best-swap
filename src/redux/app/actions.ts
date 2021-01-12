@@ -19,9 +19,6 @@ export const refreshStakeData = (payload: string) =>
 export const refreshTransactionData = () =>
   ({ type: 'REFRESH_TRANSACTION_DATA' } as const);
 
-export const setRefreshTxStatus = (payload: boolean) =>
-  ({ type: 'SET_REFRESH_TX_STATUS', payload } as const);
-
 export const setTxResult = (payload: Maybe<TxResult>) =>
   ({ type: 'SET_TX_RESULT', payload } as const);
 
@@ -59,7 +56,6 @@ export type AppActionsTypes = ReturnType<
   | typeof refreshSwapData
   | typeof refreshStakeData
   | typeof refreshTransactionData
-  | typeof setRefreshTxStatus
   | typeof setTxResult
   | typeof setTxTimerType
   | typeof setTxTimerModal

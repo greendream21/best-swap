@@ -98,7 +98,7 @@ const FilterDropdown: React.FC<Props> = (props: Props): JSX.Element => {
   return (
     <Dropdown overlay={renderMenu()} trigger={['click']}>
       <div className="dropdown-wrapper">
-        <DesktopButton color="primary" typevalue="outline">
+        <DesktopButton color="primary" typevalue="ghost">
           {menuLabel} <CaretDownOutlined />
         </DesktopButton>
         <MobileButton color="primary" typevalue="ghost">

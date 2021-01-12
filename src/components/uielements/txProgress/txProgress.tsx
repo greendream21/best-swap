@@ -104,38 +104,36 @@ const TxProgress: React.FC<Props> = (props): JSX.Element => {
   const activeClass = active ? 'active' : '';
 
   return (
-    <>
-      <TxProgressWrapper
-        className={`txProgress-wrapper ${className} ${activeClass}`}
-        onClick={onClick}
-      >
-        <div className="timerchart-icon">
-          {!active && isEnd && (
-            <div className="confirm-icon">
-              {!refunded ? <ConfirmIcon /> : <RefundIcon />}
-            </div>
-          )}
-          {!hide && <TimerFullIcon />}
-        </div>
-        {active && (
-          <>
-            <CircularProgressbar
-              className={CircularProgressbarStyle}
-              value={value}
-              strokeWidth={12}
-              counterClockwise
-              styles={buildStyles({
-                textColor: '#23DCC8',
-                textSize: '14px',
-                pathColor: '#23DCC8',
-                trailColor: 'rgba(242, 243, 243, 0.5)',
-                pathTransition: 'stroke-dashoffset 0.5s linear 0s',
-              })}
-            />
-          </>
+    <TxProgressWrapper
+      className={`txProgress-wrapper ${className} ${activeClass}`}
+      onClick={onClick}
+    >
+      <div className="timerchart-icon">
+        {!active && isEnd && (
+          <div className="confirm-icon">
+            {!refunded ? <ConfirmIcon /> : <RefundIcon />}
+          </div>
         )}
-      </TxProgressWrapper>
-    </>
+        {!hide && <TimerFullIcon />}
+      </div>
+      {active && (
+        <>
+          <CircularProgressbar
+            className={CircularProgressbarStyle}
+            value={value}
+            strokeWidth={12}
+            counterClockwise
+            styles={buildStyles({
+              textColor: '#23DCC8',
+              textSize: '14px',
+              pathColor: '#23DCC8',
+              trailColor: 'rgba(242, 243, 243, 0.5)',
+              pathTransition: 'stroke-dashoffset 0.5s linear 0s',
+            })}
+          />
+        </>
+      )}
+    </TxProgressWrapper>
   );
 };
 

@@ -4,7 +4,6 @@ import {
   StatsData,
   StakersAssetData,
   ThorchainEndpoints,
-  InlineResponse2001,
   NetworkInfo,
 } from 'types/generated/midgard';
 
@@ -12,11 +11,6 @@ import {
   GetStakerPoolDataPayload,
   PriceDataIndex,
   GetAssetsPayload,
-  GetTransactionPayload,
-  GetTxByAddressTxIdPayload,
-  GetTxByAddressAssetPayload,
-  GetTxByAddressPayload,
-  GetTxByAssetPayload,
   GetPoolDataPayload,
   RTAggregateData,
   GetRTStatsPayload,
@@ -27,6 +21,8 @@ import {
   ThorchainData,
   PoolStatus,
   PoolDataMap,
+  GetTxPayload,
+  TxSuccessPayload,
 } from './types';
 
 export const getPools = (payload?: PoolStatus) =>
@@ -98,63 +94,15 @@ export const setBasePriceAsset = (payload: AssetSymbol) =>
 export const setPriceIndex = (payload: PriceDataIndex) =>
   ({ type: 'SET_PRICE_INDEX', payload } as const);
 
-export const getTransaction = (payload: GetTransactionPayload) =>
-  ({ type: 'GET_TRANSACTION', payload } as const);
+// get tx by address, txId, asset, type, offset, limit
+export const getTx = (payload: GetTxPayload) =>
+  ({ type: 'GET_TX_REQUEST', payload } as const);
 
-export const getTransactionSuccess = (payload: InlineResponse2001) =>
-  ({ type: 'GET_TRANSACTION_SUCCESS', payload } as const);
+export const getTxSuccess = (payload: TxSuccessPayload) =>
+  ({ type: 'GET_TX_SUCCESS', payload } as const);
 
-export const getTransactionFailed = (payload: Error) =>
-  ({ type: 'GET_TRANSACTION_FAILED', payload } as const);
-
-export const getTransactionWithRefresh = (payload: GetTransactionPayload) =>
-  ({ type: 'GET_TRANSACTION_WITH_REFRESH', payload } as const);
-
-export const getTransactionWithRefreshSuccess = (payload: InlineResponse2001) =>
-  ({ type: 'GET_TRANSACTION_WITH_REFRESH_SUCCESS', payload } as const);
-
-export const getTransactionWithRefreshFailed = (payload: Error) =>
-  ({ type: 'GET_TRANSACTION_WITH_REFRESH_FAILED', payload } as const);
-
-// get transactions by address
-export const getTxByAddress = (payload: GetTxByAddressPayload) =>
-  ({ type: 'GET_TX_BY_ADDRESS', payload } as const);
-
-export const getTxByAddressSuccess = (payload: InlineResponse2001) =>
-  ({ type: 'GET_TX_BY_ADDRESS_SUCCESS', payload } as const);
-
-export const getTxByAddressFailed = (payload: Error) =>
-  ({ type: 'GET_TX_BY_ADDRESS_FAILED', payload } as const);
-
-// get transactions by address and txId
-export const getTxByAddressTxId = (payload: GetTxByAddressTxIdPayload) =>
-  ({ type: 'GET_TX_BY_ADDRESS_TXID', payload } as const);
-
-export const getTxByAddressTxIdSuccess = (payload: InlineResponse2001) =>
-  ({ type: 'GET_TX_BY_ADDRESS_TXID_SUCCESS', payload } as const);
-
-export const getTxByAddressTxIdFailed = (payload: Error) =>
-  ({ type: 'GET_TX_BY_ADDRESS_TXID_FAILED', payload } as const);
-
-// get transactions by address and asset
-export const getTxByAddressAsset = (payload: GetTxByAddressAssetPayload) =>
-  ({ type: 'GET_TX_BY_ADDRESS_ASSET', payload } as const);
-
-export const getTxByAddressAssetSuccess = (payload: InlineResponse2001) =>
-  ({ type: 'GET_TX_BY_ADDRESS_ASSET_SUCCESS', payload } as const);
-
-export const getTxByAddressAssetFailed = (payload: Error) =>
-  ({ type: 'GET_TX_BY_ADDRESS_ASSET_FAILED', payload } as const);
-
-// get transactions by asset
-export const getTxByAsset = (payload: GetTxByAssetPayload) =>
-  ({ type: 'GET_TX_BY_ASSET', payload } as const);
-
-export const getTxByAssetSuccess = (payload: InlineResponse2001) =>
-  ({ type: 'GET_TX_BY_ASSET_SUCCESS', payload } as const);
-
-export const getTxByAssetFailed = (payload: Error) =>
-  ({ type: 'GET_TX_BY_ASSET_FAILED', payload } as const);
+export const getTxFailed = (payload: Error) =>
+  ({ type: 'GET_TX_FAILED', payload } as const);
 
 export const getApiBasePathPending = () =>
   ({ type: 'GET_API_BASEPATH_PENDING' } as const);
@@ -229,24 +177,9 @@ export type MidgardActionTypes = ReturnType<
   | typeof getRunePrice
   | typeof setBasePriceAsset
   | typeof setPriceIndex
-  | typeof getTransaction
-  | typeof getTransactionSuccess
-  | typeof getTransactionFailed
-  | typeof getTransactionWithRefresh
-  | typeof getTransactionWithRefreshSuccess
-  | typeof getTransactionWithRefreshFailed
-  | typeof getTxByAddress
-  | typeof getTxByAddressSuccess
-  | typeof getTxByAddressFailed
-  | typeof getTxByAddressTxId
-  | typeof getTxByAddressTxIdSuccess
-  | typeof getTxByAddressTxIdFailed
-  | typeof getTxByAddressAsset
-  | typeof getTxByAddressAssetSuccess
-  | typeof getTxByAddressAssetFailed
-  | typeof getTxByAsset
-  | typeof getTxByAssetSuccess
-  | typeof getTxByAssetFailed
+  | typeof getTx
+  | typeof getTxSuccess
+  | typeof getTxFailed
   | typeof getApiBasePathPending
   | typeof getApiBasePathFailed
   | typeof getApiBasePathSuccess

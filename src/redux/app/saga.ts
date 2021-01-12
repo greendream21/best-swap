@@ -1,16 +1,7 @@
-import {
-  all,
-  takeEvery,
-  put,
-  fork,
-  select,
-  race,
-  take,
-} from 'redux-saga/effects';
+import { all, takeEvery, put, fork, select, take } from 'redux-saga/effects';
 
 import { BUSD_SYMBOL } from 'settings/assetData';
-
-import { TxDetailsTypeEnum } from 'types/generated/midgard';
+import { TX_PAGE_LIMIT, TX_PUBLIC_PAGE_LIMIT } from 'settings/constants';
 
 import * as binanceActions from '../binance/actions';
 import * as midgardActions from '../midgard/actions';
@@ -45,10 +36,11 @@ export function* getPoolViewData() {
     yield put(midgardActions.getNetworkInfo());
     yield put(walletActions.refreshWallet());
     yield put(
-      midgardActions.getTransactionWithRefresh({
+      midgardActions.getTx({
         asset: payload,
         offset: 0,
-        limit: 10,
+        limit: TX_PUBLIC_PAGE_LIMIT,
+        refresh: true,
       }),
     );
 
@@ -67,10 +59,11 @@ export function* getPoolDetailViewData() {
     yield put(midgardActions.getNetworkInfo());
     yield put(walletActions.refreshWallet());
     yield put(
-      midgardActions.getTransactionWithRefresh({
+      midgardActions.getTx({
         asset: payload,
         offset: 0,
-        limit: 10,
+        limit: TX_PUBLIC_PAGE_LIMIT,
+        refresh: true,
       }),
     );
 
@@ -124,27 +117,15 @@ export function* refreshStakeData() {
 export function* refreshTransactionData() {
   yield takeEvery('REFRESH_TRANSACTION_DATA', function*() {
     const user = yield select((state: RootState) => state.Wallet.user);
-
-    if (user.wallet) {
-      const allTxTypeParams = `${TxDetailsTypeEnum.Swap},${TxDetailsTypeEnum.DoubleSwap},${TxDetailsTypeEnum.Stake},${TxDetailsTypeEnum.Unstake}`;
-
-      yield put(actions.setRefreshTxStatus(true));
-      yield put(
-        midgardActions.getTxByAddress({
-          address: user.wallet,
-          offset: 0,
-          limit: 10,
-          type: allTxTypeParams,
-        }),
-      );
-
-      yield race([
-        take('GET_TX_BY_ADDRESS_SUCCESS'),
-        take('GET_TX_BY_ADDRESS_FAILED'),
-      ]);
-
-      yield put(actions.setRefreshTxStatus(false));
-    }
+    const walletAddress = user?.wallet;
+    yield put(
+      midgardActions.getTx({
+        address: walletAddress,
+        offset: 0,
+        limit: TX_PAGE_LIMIT,
+        refresh: true,
+      }),
+    );
   });
 }
 

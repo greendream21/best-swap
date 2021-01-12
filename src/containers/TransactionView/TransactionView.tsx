@@ -1,127 +1,233 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 
-
 import { FormattedDate, FormattedTime } from 'react-intl';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import * as RD from '@devexperts/remote-data-ts';
-import { Grid } from 'antd';
-import { compose } from 'redux';
+import { Grid, Form } from 'antd';
 
 import FilterDropdown from 'components/filterDropdown';
 import TxInfo from 'components/transaction/txInfo';
 import TxLabel from 'components/transaction/txLabel';
 import AddWallet from 'components/uielements/addWallet';
-import Label from 'components/uielements/label';
+import Button from 'components/uielements/button';
 import Table from 'components/uielements/table';
 
-import * as midgardActions from 'redux/midgard/actions';
-import { TxDetailData } from 'redux/midgard/types';
+import { getTx } from 'redux/midgard/actions';
 import { RootState } from 'redux/store';
-import { User } from 'redux/wallet/types';
 
 import usePrevious from 'hooks/usePrevious';
 import useQuery from 'hooks/useQuery';
 
+import { isAddress } from 'helpers/binanceHelper';
 import { getTxViewURL } from 'helpers/routerHelper';
 
-import { Maybe } from 'types/bepswap';
-import {
-  TxDetails,
-  InlineResponse2001,
-  TxDetailsTypeEnum,
-} from 'types/generated/midgard';
+import { TX_PAGE_LIMIT } from 'settings/constants';
+
+import { TxDetails, InlineResponse2001 } from 'types/generated/midgard';
 
 import {
   ContentWrapper,
+  FilterContainer,
   StyledPagination,
-  MobileColumeHeader,
+  Input,
+  TxToolsContainer,
 } from './TransactionView.style';
+import { TxFilter } from './types';
 
-type ComponentProps = Record<string, never>;
-
-type ConnectedProps = {
-  user: Maybe<User>;
-  txData: TxDetailData;
-  txCurData: Maybe<InlineResponse2001>;
-  refreshTxStatus: boolean;
-  getTxByAddress: typeof midgardActions.getTxByAddress;
-};
-
-type Props = ComponentProps & ConnectedProps;
-
-const PAGE_LIMIT = 10;
-const allTxTypeParams = `${TxDetailsTypeEnum.Swap},${TxDetailsTypeEnum.DoubleSwap},${TxDetailsTypeEnum.Stake},${TxDetailsTypeEnum.Unstake}`;
-
-const Transaction: React.FC<Props> = (props): JSX.Element => {
-  const { user, txData, txCurData, refreshTxStatus, getTxByAddress } = props;
+const Transaction: React.FC = (): JSX.Element => {
+  const dispatch = useDispatch();
+  const txData = useSelector((state: RootState) => state.Midgard.txData);
+  const user = useSelector((state: RootState) => state.Wallet.user);
+  const walletAddress = user?.wallet ?? null;
+  const txRefreshing = useSelector(
+    (state: RootState) => state.Midgard.txRefreshing,
+  );
 
   const history = useHistory();
   const query = useQuery();
-  const { type = 'all', offset = 0 } = query;
+  const type = (query?.type ?? 'all') as string;
+  const offset = Number(query?.offset ?? 0);
+  const address = query?.address as string;
+  const txId = query?.txId as string;
+  const asset = query?.asset as string;
 
-  const [filter, setFilter] = useState<string>(type as string);
+  const isValidFilter = useCallback(
+    (filter: TxFilter) => {
+      const { type, offset = 0, address, txId, asset } = filter;
+      if (
+        type === '' ||
+        Number.isNaN(offset) ||
+        address === '' ||
+        txId === '' ||
+        asset === ''
+      ) {
+        return false;
+      }
+      return true;
+    },
+    [],
+  );
+
+  const initialFilter: TxFilter = useMemo(
+    () => ({
+      limit: TX_PAGE_LIMIT,
+      type: type || 'all',
+      offset,
+      address,
+      txId,
+      asset,
+    }),
+    [offset, type, address, txId, asset],
+  );
+
+  const [filter, setFilter] = useState<TxFilter>(initialFilter);
   const [page, setPage] = useState<number>(Number(offset) + 1);
 
+  const [filterInput, setFilterInput] = useState(address || txId || '');
+
   const isDesktopView = Grid.useBreakpoint().lg;
+  console.log('filterInput', filterInput);
+  useEffect(() => {
+    const { address, txId, type, offset = 0 } = initialFilter;
 
-  const txTypesPair: { [key: string]: string } = useMemo(() => ({
-    all: allTxTypeParams,
-    swap: TxDetailsTypeEnum.Swap,
-    doubleSwap: TxDetailsTypeEnum.DoubleSwap,
-    stake: TxDetailsTypeEnum.Stake,
-    unstake: TxDetailsTypeEnum.Unstake,
-  }), []);
+    if (isValidFilter(initialFilter)) {
+      dispatch(
+        getTx({
+          ...initialFilter,
+          type: type === 'all' ? undefined : type,
+          offset,
+          limit: TX_PAGE_LIMIT,
+        }),
+      );
+    } else {
+      history.push('/tx');
+    }
 
-  const handleSelectFilter = useCallback((value: string) => {
-    setFilter(value);
+    setFilterInput(address || txId || '');
+    setPage(offset + 1);
+    setFilter({
+      ...initialFilter,
+      type: type || 'all',
+    });
+  }, [dispatch, initialFilter, isValidFilter, history]);
 
-    history.push(getTxViewURL({ type: value, offset: page - 1 }));
-  }, [history, page]);
-
-  const handleChangePage = useCallback((value: number) => {
-    setPage(value);
-
-    history.push(getTxViewURL({ type: filter, offset: value - 1 }));
+  useEffect(() => {
+    history.push(getTxViewURL(filter));
   }, [history, filter]);
 
-  useEffect(() => {
-    const address = user?.wallet ?? null;
+  const handleResetFilters = useCallback(() => {
+    history.push('/tx');
+  }, [history]);
 
-    if (address) {
-      getTxByAddress({
-        address,
-        offset: (page - 1) * PAGE_LIMIT,
-        limit: PAGE_LIMIT,
-        type: txTypesPair[filter],
-      });
+  const handleSearchMyAddress = useCallback(() => {
+    if (walletAddress) {
+      const newFilter = {
+        address: walletAddress,
+      };
+      history.push(getTxViewURL(newFilter));
     }
-  }, [page, filter, user, txTypesPair, getTxByAddress]);
+  }, [history, walletAddress]);
+
+  const handleSelectFilter = useCallback(
+    (value: string) => {
+      const newFilter = {
+        ...filter,
+        type: value === 'all' ? undefined : value,
+      };
+      setFilter(newFilter);
+    },
+    [filter],
+  );
+
+  const handleChangePage = useCallback(
+    (value: number) => {
+      setPage(value);
+      const newFilter = {
+        ...filter,
+        offset: value - 1,
+      };
+      setFilter(newFilter);
+    },
+    [filter],
+  );
 
   // reset filter, page after refresh
-  const prevRefreshTxStatus = usePrevious(refreshTxStatus);
+  const prevRefreshTxStatus = usePrevious(txRefreshing);
   useEffect(() => {
-    if (!refreshTxStatus && prevRefreshTxStatus) {
+    if (!txRefreshing && prevRefreshTxStatus) {
       setPage(1);
-      setFilter('all');
+      setFilterInput('');
     }
-  }, [refreshTxStatus, prevRefreshTxStatus]);
+  }, [txRefreshing, prevRefreshTxStatus]);
 
   const filterCol = useMemo(
     () => ({
       key: 'filter',
       width: 200,
       align: 'center',
-      title: <FilterDropdown value={filter} onClick={handleSelectFilter} />,
+      title: 'Type',
       render: (text: string, rowData: TxDetails) => {
         const { type } = rowData;
 
         return <TxLabel type={type} />;
       },
     }),
-    [filter, handleSelectFilter],
+    [],
   );
+
+  const handleSearchWithFilter = () => {
+    if (!filterInput) {
+      setFilter({
+        ...filter,
+        address: undefined,
+        txId: undefined,
+      });
+    }
+    if (isAddress(filterInput)) {
+      setFilter({
+        ...filter,
+        address: filterInput,
+      });
+    } else {
+      setFilter({
+        ...filter,
+        txId: filterInput,
+      });
+    }
+  };
+
+  const handleChangeFilterInput = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const text = e.target.value;
+
+      setFilterInput(text);
+    },
+    [],
+  );
+
+  const renderFilter = () => {
+    const type = filter?.type ?? 'all';
+
+    return (
+      <FilterContainer>
+        <FilterDropdown value={type} onClick={handleSelectFilter} />
+        <Form onFinish={handleSearchWithFilter} autoComplete="off">
+          <Form.Item>
+            <Input
+              typevalue="ghost"
+              sizevalue="big"
+              value={filterInput}
+              onChange={handleChangeFilterInput}
+              autoComplete="off"
+              placeholder="Searcy by Address / Tx ID"
+            />
+          </Form.Item>
+        </Form>
+      </FilterContainer>
+    );
+  };
 
   const desktopColumns = useMemo(
     () => [
@@ -169,14 +275,7 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
       {
         key: 'history',
         align: 'center',
-        title: (
-          <MobileColumeHeader>
-            <div className="mobile-col-title">history</div>
-            <div className="mobile-col-filter">
-              <FilterDropdown value={filter} onClick={handleSelectFilter} />
-            </div>
-          </MobileColumeHeader>
-        ),
+        title: 'Type',
         render: (_: string, rowData: TxDetails) => {
           const { type, date: timestamp = 0, in: _in } = rowData;
           const date = new Date(timestamp * 1000);
@@ -185,33 +284,33 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
             <div className="tx-history-row">
               <div className="tx-history-data">
                 <TxLabel type={type} />
-                <div className="tx-history-detail">
-                  <p>
-                    <FormattedDate
-                      value={date}
-                      year="numeric"
-                      month="2-digit"
-                      day="2-digit"
-                    />{' '}
-                    <FormattedTime
-                      value={date}
-                      hour="2-digit"
-                      minute="2-digit"
-                      second="2-digit"
-                      hour12={false}
-                    />
-                  </p>
-                </div>
               </div>
               <div className="tx-history-info">
                 <TxInfo data={rowData} />
+              </div>
+              <div className="tx-history-detail">
+                <p>
+                  <FormattedDate
+                    value={date}
+                    year="numeric"
+                    month="2-digit"
+                    day="2-digit"
+                  />{' '}
+                  <FormattedTime
+                    value={date}
+                    hour="2-digit"
+                    minute="2-digit"
+                    second="2-digit"
+                    hour12={false}
+                  />
+                </p>
               </div>
             </div>
           );
         },
       },
     ],
-    [filter, handleSelectFilter],
+    [],
   );
 
   const renderTxTable = (data: TxDetails[], loading: boolean) => {
@@ -232,13 +331,34 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
     return (
       <ContentWrapper>
         <ContentWrapper className="transaction-view-wrapper">
+          <TxToolsContainer>
+            <Button
+              sizevalue="small"
+              color="primary"
+              typevalue="outline"
+              onClick={handleResetFilters}
+            >
+              Reset Filters
+            </Button>
+            {!!walletAddress && (
+              <Button
+                sizevalue="small"
+                color="primary"
+                typevalue="outline"
+                onClick={handleSearchMyAddress}
+              >
+                Search My Address
+              </Button>
+            )}
+          </TxToolsContainer>
+          {renderFilter()}
           {renderTxTable(data, loading)}
         </ContentWrapper>
         {count ? (
           <StyledPagination
             current={page}
             onChange={handleChangePage}
-            pageSize={PAGE_LIMIT}
+            pageSize={TX_PAGE_LIMIT}
             total={count}
             showSizeChanger={false}
           />
@@ -256,19 +376,9 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
       return RD.fold(
         () => <div />, // initial
         () => {
-          const count = txCurData?.count ?? 0;
-          const txs = txCurData?.txs ?? [];
-
-          return pageContent(txs, count, true);
+          return pageContent([], 0, true);
         },
-        (error: Error) => (
-          <ContentWrapper className="transaction-view-wrapper center-align">
-            <Label size="big">
-              Loading of transaction history data failed.
-            </Label>
-            {!!error?.message && <Label size="small">{error.message}</Label>}
-          </ContentWrapper>
-        ),
+        () => pageContent([], 0, false),
         (data: InlineResponse2001): JSX.Element => {
           const { count = 0, txs = [] } = data;
           return pageContent(txs, count, false);
@@ -286,16 +396,4 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
   return renderPage();
 };
 
-export default compose(
-  connect(
-    (state: RootState) => ({
-      user: state.Wallet.user,
-      txData: state.Midgard.txData,
-      txCurData: state.Midgard.txCurData,
-      refreshTxStatus: state.App.refreshTxStatus,
-    }),
-    {
-      getTxByAddress: midgardActions.getTxByAddress,
-    },
-  ),
-)(Transaction) as React.FC<ComponentProps>;
+export default Transaction;

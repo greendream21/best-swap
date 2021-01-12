@@ -70,8 +70,7 @@ const initState: State = {
   assetLoading: true,
   statsLoading: false,
   txData: initial,
-  refreshTxStatus: false,
-  txCurData: {},
+  txRefreshing: false,
   rtAggregateLoading: false,
   rtAggregate: {
     allTimeData: [],
@@ -329,100 +328,23 @@ const reducer: Reducer<State, MidgardActionTypes> = (
         error: action.payload,
         poolAddressLoading: false,
       };
-    case 'GET_TRANSACTION':
+    case 'GET_TX_REQUEST':
       return {
         ...state,
         txData: pending,
+        txRefreshing: !!action.payload.refresh,
       };
-    case 'GET_TRANSACTION_SUCCESS':
+    case 'GET_TX_SUCCESS':
       return {
         ...state,
-        txData: success(action.payload),
+        txData: success(action.payload.data),
+        txRefreshing: false,
       };
-    case 'GET_TRANSACTION_FAILED':
-      return {
-        ...state,
-        txData: failure(action.payload),
-      };
-    case 'GET_TRANSACTION_WITH_REFRESH':
-      return {
-        ...state,
-        txData: pending,
-        refreshTxStatus: true,
-      };
-    case 'GET_TRANSACTION_WITH_REFRESH_SUCCESS':
-      return {
-        ...state,
-        txData: success(action.payload),
-        refreshTxStatus: false,
-      };
-    case 'GET_TRANSACTION_WITH_REFRESH_FAILED':
+    case 'GET_TX_FAILED':
       return {
         ...state,
         txData: failure(action.payload),
-        refreshTxStatus: false,
-      };
-    case 'GET_TX_BY_ADDRESS':
-      return {
-        ...state,
-        txData: pending,
-      };
-    case 'GET_TX_BY_ADDRESS_SUCCESS':
-      return {
-        ...state,
-        txData: success(action.payload),
-        txCurData: action.payload,
-      };
-    case 'GET_TX_BY_ADDRESS_FAILED':
-      return {
-        ...state,
-        txData: failure(action.payload),
-      };
-    case 'GET_TX_BY_ADDRESS_ASSET':
-      return {
-        ...state,
-        txData: pending,
-      };
-    case 'GET_TX_BY_ADDRESS_ASSET_SUCCESS':
-      return {
-        ...state,
-        txData: success(action.payload),
-      };
-    case 'GET_TX_BY_ADDRESS_ASSET_FAILED':
-      return {
-        ...state,
-        txData: failure(action.payload),
-      };
-
-    case 'GET_TX_BY_ADDRESS_TXID':
-      return {
-        ...state,
-        txData: pending,
-      };
-    case 'GET_TX_BY_ADDRESS_TXID_SUCCESS':
-      return {
-        ...state,
-        txData: success(action.payload),
-      };
-    case 'GET_TX_BY_ADDRESS_TXID_FAILED':
-      return {
-        ...state,
-        txData: failure(action.payload),
-      };
-    case 'GET_TX_BY_ASSET':
-      return {
-        ...state,
-        txData: pending,
-      };
-    case 'GET_TX_BY_ASSET_SUCCESS':
-      return {
-        ...state,
-        txData: success(action.payload),
-      };
-    case 'GET_TX_BY_ASSET_FAILED':
-      return {
-        ...state,
-        txData: failure(action.payload),
+        txRefreshing: false,
       };
     case 'GET_RT_AGGREGATE_BY_ASSET':
       return {

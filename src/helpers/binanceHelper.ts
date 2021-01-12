@@ -1,4 +1,5 @@
 import { baseAmount } from '@thorchain/asgardex-token';
+import { isTestnet } from 'env';
 
 import {
   Fees,
@@ -9,6 +10,9 @@ import {
 } from 'redux/binance/types';
 
 import { Maybe, Nothing } from 'types/bepswap';
+
+import { bncClient } from '../env';
+
 
 /**
  * Type guard for runtime checks of `Fee`
@@ -48,3 +52,23 @@ export const getTransferFeeds = (fees: Fees): Maybe<TransferFees> =>
     }
     return acc;
   }, Nothing);
+
+export const getPrefix = () => {
+  return isTestnet ? 'tbnb' : 'bnb';
+};
+
+export const isValidAddress = (address: string) => {
+  return bncClient.checkAddress(address, getPrefix());
+};
+
+export const isAddress = (value: string) => {
+  if (isTestnet && value.substr(0, 4) === 'tbnb') {
+    return true;
+  }
+
+  if (!isTestnet && value.substr(0, 3) === 'bnb') {
+    return true;
+  }
+
+  return false;
+};

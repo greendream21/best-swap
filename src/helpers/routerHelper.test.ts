@@ -75,7 +75,6 @@ describe('routerHelper', () => {
     });
   });
 
-
   describe('isPoolDetailPage', () => {
     it('should be valid for correct path', () => {
       const result = isPoolDetailPage('/pool/BNB.BNB');
@@ -154,23 +153,34 @@ describe('routerHelper', () => {
 
   describe('isTransactionPage', () => {
     it('should be valid for correct path', () => {
-      const result = isTransactionPage('/transaction');
+      const result = isTransactionPage('/tx');
       expect(result).toBeTruthy();
     });
     it('should be invalid for wrong path', () => {
-      const result = isTransactionPage('/transaction/xxx');
-      expect(result).toBeFalsy();
-    });
-    it('should be invalid for wrong path', () => {
-      const result = isTransactionPage('/tx');
+      const result = isTransactionPage('/tx/xxx');
       expect(result).toBeFalsy();
     });
   });
 
   describe('getTxViewURL', () => {
     it('should be valid for correct path', () => {
-      const result = getTxViewURL({ type: 'all', offset: 1 });
-      expect(result).toBe('/transaction?offset=1&type=all');
+      expect(getTxViewURL({})).toBe('/tx');
+      expect(getTxViewURL({ offset: 1 })).toBe('/tx?offset=1');
+      expect(getTxViewURL({ offset: 1, limit: 20 })).toBe('/tx?offset=1');
+      expect(
+        getTxViewURL({ type: 'swap', offset: 1, address: 'bnbxxxxxx' }),
+      ).toBe('/tx?address=bnbxxxxxx&offset=1&type=swap');
+      expect(
+        getTxViewURL({ type: 'all', offset: 1, txId: 'txhashstring' }),
+      ).toBe('/tx?offset=1&txId=txhashstring&type=all');
+      expect(
+        getTxViewURL({
+          type: 'all',
+          offset: 1,
+          txId: 'txhashstring',
+          asset: 'RUNE-B1A',
+        }),
+      ).toBe('/tx?asset=RUNE-B1A&offset=1&txId=txhashstring&type=all');
     });
   });
 });

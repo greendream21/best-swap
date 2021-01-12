@@ -2,6 +2,7 @@ import { Pagination } from 'antd';
 import styled from 'styled-components';
 import { palette } from 'styled-theme';
 
+import UnstyledInput from 'components/uielements/input';
 import ContentView from 'components/utility/contentView';
 
 import { media } from 'helpers/styleHelper';
@@ -27,13 +28,13 @@ export const ContentWrapper = styled(ContentView)`
         justify-content: space-between;
         font-size: 11px;
         margin-bottom: 8px;
+      }
 
-        .tx-history-detail {
-          display: flex;
-          align-items: center;
-          p {
-            margin-right: 8px;
-          }
+      .tx-history-detail {
+        display: flex;
+        align-items: center;
+        p {
+          margin-right: 8px;
         }
       }
     }
@@ -51,21 +52,6 @@ export const ContentWrapper = styled(ContentView)`
     flex-direction: column;
     justify-content: center;
     align-items: center;
-  }
-`;
-
-export const MobileColumeHeader = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: row;
-  height: 100%;
-  .mobile-col-title {
-    text-align: center;
-  }
-
-  .mobile-col-filter {
-    margin-left: 8px;
   }
 `;
 
@@ -156,5 +142,41 @@ export const StyledPagination = styled(Pagination)`
         }
       }
     }
+  }
+`;
+
+export const FilterContainer = styled.div`
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding-bottom: 10px;
+
+  .dropdown-wrapper button {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  form {
+    flex: 1;
+  }
+`;
+
+export const Input = styled(UnstyledInput)`
+  &.ant-input {
+    width: 100%;
+    height: 30px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+`;
+
+export const TxToolsContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-bottom: 8px;
+
+  button {
+    margin-right: 8px;
   }
 `;
