@@ -61,7 +61,7 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
 
   const handleConfirm = useCallback(() => {
     console.log('DEBUG: CONFIRMING');
-    if (!onOk) {
+    if (!onOk || !visible) {
       return;
     }
 
@@ -70,7 +70,7 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
     } else {
       setConfirmed(true);
     }
-  }, [addressLoading, onOk]);
+  }, [addressLoading, onOk, visible]);
 
   const handleCancel = useCallback(() => {
     if (onCancel) {
@@ -106,10 +106,7 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
       description: 'Transaction was signed successfully.',
       duration: 5,
     });
-
-    // close modal and confirm transaction after signing ledger without clicking confirm button
-    handleConfirm();
-  }, [handleConfirm]);
+  }, []);
 
   const handleLedgerPresign = useCallback(() => {
     console.log('LEDGER DEBUG: PRESIGN CALLED');
@@ -144,10 +141,12 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
         handleLedgerVerifyFailed,
         hdPath,
       );
+
+      handleConfirm();
     } catch (error) {
       console.log('ledger verify error: ', error);
     }
-  }, [user, handleLedgerPresign, handleLedgerVerifySuccess, handleLedgerVerifyFailed]);
+  }, [user, handleConfirm, handleLedgerPresign, handleLedgerVerifySuccess, handleLedgerVerifyFailed]);
 
   // load pool address before making transaction
   const prevVisible = usePrevious(visible);
@@ -205,6 +204,12 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
 
     // prevent confirm if wallet is disconnected
     if (!address) {
+      return;
+    }
+
+    // confirm if ledger is verified
+    if (walletType === 'ledger') {
+      handleConfirm();
       return;
     }
 
@@ -275,7 +280,7 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
     if (walletType === 'ledger') {
       return (
         <ModalContent>
-          <Label>CONFIRM TX USING YOUR LEDGER!</Label>
+          <Label>CLICK CONFIRM TO SIGN WITH LEDGER!</Label>
         </ModalContent>
       );
     }
@@ -299,8 +304,8 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
   const confirmBtnText = walletType === 'disconnected' ? 'CONNECT' : 'CONFIRM';
   const confirmLoading = confirmed && addressLoading;
 
-  // show footer (confirm/cancel) for only keystore wallet
-  const footer = walletType !== 'keystore' ? null : undefined;
+  // show footer (confirm/cancel) for only keystore and ledger
+  const footer = walletType === 'walletconnect' ? null : undefined;
 
   return (
     <StyledModal
