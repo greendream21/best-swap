@@ -104,7 +104,6 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
       type: 'success',
       message: 'Ledger Signing Successful',
       description: 'Transaction was signed successfully.',
-      duration: 5,
     });
   }, []);
 
@@ -114,7 +113,6 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
       type: 'info',
       message: 'Ledger signing requested',
       description: 'Please approve the transaction on your ledger.',
-      duration: 5,
     });
   }, []);
 
@@ -128,7 +126,6 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
         type: 'error',
         message: 'Ledger Verify Failed',
         description: 'Please conenct your ledger again!',
-        duration: 5,
       });
       return;
     }
