@@ -127,6 +127,12 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
 
     if (!ledger || !hdPath) {
       console.log('LEDGER DEBUG: MISSING LEDGER OR HDPATH');
+      showNotification({
+        type: 'error',
+        message: 'Ledger Verify Failed',
+        description: 'Please conenct your ledger again!',
+        duration: 5,
+      });
       return;
     }
 
@@ -294,7 +300,7 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
   const confirmLoading = confirmed && addressLoading;
 
   // show footer (confirm/cancel) for only keystore wallet
-  const footer = walletType === 'keystore' ? null : undefined;
+  const footer = walletType !== 'keystore' ? null : undefined;
 
   return (
     <StyledModal
