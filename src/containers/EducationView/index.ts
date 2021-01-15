@@ -1,3 +1,3 @@
-import ExplorerView from './ExplorerView';
+import EducationView from './EducationView';
 
-export default ExplorerView;
+export default EducationView;

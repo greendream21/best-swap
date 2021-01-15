@@ -17,6 +17,7 @@ import {
   ChartValues,
   ChartData,
 } from 'components/chart/types';
+import Helmet from 'components/helmet';
 import { PoolStatBar } from 'components/statBar';
 import TxTable from 'components/transaction/txTable';
 import Button from 'components/uielements/button';
@@ -299,8 +300,12 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
   const poolInfo = poolDetailedData[tokenSymbol] || {};
   const poolStats = getPoolData(tokenSymbol, poolInfo, priceIndex);
 
+  const pageTitle = `${symbol} Pool Detail`;
+  const metaDescription = `View ${symbol} Pool Detail`;
+
   return (
     <ContentWrapper className="pool-detail-wrapper" transparent>
+      <Helmet title={pageTitle} content={metaDescription} />
       <Row>{renderDetailCaption(poolStats)}</Row>
       <Row>
         <Col xs={24} sm={24} md={8}>

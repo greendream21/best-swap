@@ -1,3 +1,3 @@
-import ExplorerView from './ExplorerView';
+import ApiDocView from './ApiDocView';
 
-export default ExplorerView;
+export default ApiDocView;

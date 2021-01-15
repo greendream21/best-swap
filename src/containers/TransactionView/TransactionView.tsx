@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 
-
 import { FormattedDate, FormattedTime } from 'react-intl';
 import { connect } from 'react-redux';
 import { useHistory } from 'react-router-dom';
@@ -10,6 +9,7 @@ import { Grid } from 'antd';
 import { compose } from 'redux';
 
 import FilterDropdown from 'components/filterDropdown';
+import Helmet from 'components/helmet';
 import TxInfo from 'components/transaction/txInfo';
 import TxLabel from 'components/transaction/txLabel';
 import AddWallet from 'components/uielements/addWallet';
@@ -66,25 +66,34 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
 
   const isDesktopView = Grid.useBreakpoint().lg;
 
-  const txTypesPair: { [key: string]: string } = useMemo(() => ({
-    all: allTxTypeParams,
-    swap: TxDetailsTypeEnum.Swap,
-    doubleSwap: TxDetailsTypeEnum.DoubleSwap,
-    stake: TxDetailsTypeEnum.Stake,
-    unstake: TxDetailsTypeEnum.Unstake,
-  }), []);
+  const txTypesPair: { [key: string]: string } = useMemo(
+    () => ({
+      all: allTxTypeParams,
+      swap: TxDetailsTypeEnum.Swap,
+      doubleSwap: TxDetailsTypeEnum.DoubleSwap,
+      stake: TxDetailsTypeEnum.Stake,
+      unstake: TxDetailsTypeEnum.Unstake,
+    }),
+    [],
+  );
 
-  const handleSelectFilter = useCallback((value: string) => {
-    setFilter(value);
+  const handleSelectFilter = useCallback(
+    (value: string) => {
+      setFilter(value);
 
-    history.push(getTxViewURL({ type: value, offset: page - 1 }));
-  }, [history, page]);
+      history.push(getTxViewURL({ type: value, offset: page - 1 }));
+    },
+    [history, page],
+  );
 
-  const handleChangePage = useCallback((value: number) => {
-    setPage(value);
+  const handleChangePage = useCallback(
+    (value: number) => {
+      setPage(value);
 
-    history.push(getTxViewURL({ type: filter, offset: value - 1 }));
-  }, [history, filter]);
+      history.push(getTxViewURL({ type: filter, offset: value - 1 }));
+    },
+    [history, filter],
+  );
 
   useEffect(() => {
     const address = user?.wallet ?? null;
@@ -231,6 +240,7 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
   const pageContent = (data: TxDetails[], count: number, loading: boolean) => {
     return (
       <ContentWrapper>
+        <Helmet title="Transactions" content="Transactions" />
         <ContentWrapper className="transaction-view-wrapper">
           {renderTxTable(data, loading)}
         </ContentWrapper>
@@ -277,6 +287,7 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
     } else {
       return (
         <ContentWrapper className="transaction-view-wrapper center-align">
+          <Helmet title="Transactions" content="Transactions" />
           <AddWallet />
         </ContentWrapper>
       );
