@@ -6,6 +6,8 @@ import { bnOrZero } from '@thorchain/asgardex-util';
 import { Row, Col } from 'antd';
 
 
+import Helmet from 'components/helmet';
+
 import { RootState } from 'redux/store';
 
 import usePrice from 'hooks/usePrice';
@@ -110,6 +112,7 @@ const StatisticsView: React.FC<Props> = (props: Props): JSX.Element => {
 
   return (
     <Row gutter={[16, 16]}>
+      <Helmet title="Stats" content="Stats" />
       {statsData.map((statProps, index) => {
         return (
           <Col

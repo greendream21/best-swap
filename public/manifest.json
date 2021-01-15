@@ -1,6 +1,7 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "BEPSwap",
+  "name": "BEPSwap",
+  "description": "Instantly Swap and Stake BNB and BEP2 assets on Binance Chain.",
   "icons": [
     {
       "src": "favicon.ico",

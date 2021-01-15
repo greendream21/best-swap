@@ -14,7 +14,6 @@ import { RootState } from 'redux/store';
 
 type ComponentProps = {
   children?: ReactNode;
-  'data-test': string;
 };
 
 type ConnectedProps = {
@@ -27,7 +26,6 @@ type Props = ComponentProps & ConnectedProps;
 const AppLayout: React.FC<Props> = (props: Props): JSX.Element => {
   const {
     children,
-    'data-test': dataTest,
     midgardBasePath,
     wsTransferEvent,
   } = props;
@@ -60,7 +58,7 @@ const AppLayout: React.FC<Props> = (props: Props): JSX.Element => {
     RD.fold(ignore, ignore, onFailure, ignore)(wsTransferEvent);
   }, [wsTransferEvent]);
 
-  return <Layout data-test={dataTest}>{children}</Layout>;
+  return <Layout>{children}</Layout>;
 };
 
 export default connect(

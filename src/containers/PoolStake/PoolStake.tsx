@@ -32,6 +32,7 @@ import * as H from 'history';
 import { get as _get } from 'lodash';
 import { compose } from 'redux';
 
+import Helmet from 'components/helmet';
 import PrivateModal from 'components/modals/privateModal';
 import SlipVerifyModal from 'components/modals/slipVerifyModal';
 import AddWallet from 'components/uielements/addWallet';
@@ -1327,8 +1328,12 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     return <Loader />;
   }
 
+  const pageTitle = `Add Liquidity to ${tokenTicker.toUpperCase()} Pool`;
+  const metaDescription = pageTitle;
+
   return (
     <ContentWrapper className="pool-stake-wrapper" transparent>
+      <Helmet title={pageTitle} content={metaDescription} />
       <Row className="share-view" gutter={8}>
         {!stakersAssetData && stakerPoolDataError && (
           <Col className="your-share-view" md={24}>

@@ -2,6 +2,7 @@ import React from 'react';
 
 import { Row, Col } from 'antd';
 
+import Helmet from 'components/helmet';
 import ToolCard from 'components/toolCard';
 
 import { data } from './data';
@@ -9,6 +10,7 @@ import { data } from './data';
 const ExplorerView: React.FC = (): JSX.Element => {
   return (
     <Row gutter={[16, 16]}>
+      <Helmet title="Explorer" content="Explorer" />
       {data.map((props, index) => {
           return (
             <Col
