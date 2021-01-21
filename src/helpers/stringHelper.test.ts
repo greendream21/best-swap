@@ -86,7 +86,7 @@ describe('helpers/stringHelper/', () => {
   describe('getShortAmount', () => {
     it('returns short amount if the amount is greater than 0.001', () => {
       const amount = 0.00354217;
-      expect(getShortAmount(amount)).toEqual('0.004');
+      expect(getShortAmount(amount, 3)).toEqual('0.004');
     });
     it('returns origin amount if the amount is less than 0.001', () => {
       const amount = 0.00003542;

@@ -39,7 +39,7 @@ export const isShortFormatPossible = (
 };
 
 export const getShortAmount = (amount: BigNumber | number, decimal = 3) => {
-  if (Number(amount.toFixed(2)) === 0) return '0';
+  if (Number(amount.toFixed(8)) === 0) return '0';
   if (isShortFormatPossible(amount, decimal)) return amount.toFixed(decimal);
   return amount.toFixed(8);
 };
