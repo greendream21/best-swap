@@ -1,5 +1,6 @@
 import { Token } from '@thorchain/asgardex-binance';
 import { TokenAmount, formatTokenAmount } from '@thorchain/asgardex-token';
+import { BaseAmount, formatBaseAsAssetAmount } from '@thorchain/asgardex-util';
 import BigNumber from 'bignumber.js';
 
 import { Maybe, Nothing, Pair } from 'types/bepswap';
@@ -38,15 +39,27 @@ export const isShortFormatPossible = (
 };
 
 export const getShortAmount = (amount: BigNumber | number, decimal = 3) => {
+  if (Number(amount.toFixed(2)) === 0) return '0';
   if (isShortFormatPossible(amount, decimal)) return amount.toFixed(decimal);
   return amount.toFixed(8);
 };
 
 export const getShortTokenAmount = (amount: TokenAmount) => {
+  if (amount.amount().isEqualTo(0)) return '0';
+
   if (formatTokenAmount(amount) === '0.00' && !amount.amount().isEqualTo(0)) {
     return formatTokenAmount(amount, 8);
   }
   return formatTokenAmount(amount);
+};
+
+export const getShortAssetAmount = (amount: BaseAmount, decimal = 2) => {
+  if (amount.amount().isEqualTo(0)) return '0';
+
+  if (formatBaseAsAssetAmount(amount) === '0.00' && !amount.amount().isEqualTo(0)) {
+    return formatBaseAsAssetAmount(amount, 8);
+  }
+  return formatBaseAsAssetAmount(amount, decimal);
 };
 
 export const getTokenName = (tokenList: Token[], assetName: string): string => {
