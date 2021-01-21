@@ -11,7 +11,6 @@ import FilterDropdown from 'components/filterDropdown';
 import Helmet from 'components/helmet';
 import TxInfo from 'components/transaction/txInfo';
 import TxLabel from 'components/transaction/txLabel';
-import AddWallet from 'components/uielements/addWallet';
 import Button from 'components/uielements/button';
 import Table from 'components/uielements/table';
 
