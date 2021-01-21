@@ -1,5 +1,5 @@
 /* eslint-disable no-underscore-dangle */
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import { connect } from 'react-redux';
 import { withRouter, useHistory, Link } from 'react-router-dom';
@@ -28,7 +28,7 @@ import showNotification from 'components/uielements/notification';
 import LabelLoader from 'components/utility/loaders/label';
 
 import * as midgardActions from 'redux/midgard/actions';
-import { PoolDataMap, TxDetailData } from 'redux/midgard/types';
+import { PoolDataMap } from 'redux/midgard/types';
 import { getAssetFromString } from 'redux/midgard/utils';
 import { RootState } from 'redux/store';
 import { AssetData, User } from 'redux/wallet/types';
@@ -58,8 +58,6 @@ import {
   ContentWrapper,
   ActionHeader,
   ActionColumn,
-  TransactionWrapper,
-  StyledPagination,
   PoolViewTools,
   PoolSearchWrapper,
   StyledTable as Table,
@@ -72,8 +70,6 @@ type Props = {
   history: H.History;
   pools: string[];
   poolData: PoolDataMap;
-  txData: TxDetailData;
-  refreshTxStatus: boolean;
   stats: StatsData;
   assetData: AssetData[];
   user: Maybe<User>;
@@ -84,15 +80,12 @@ type Props = {
   networkInfoLoading: boolean;
   tokenList: Token[];
   getPools: typeof midgardActions.getPools;
-  getTransactions: typeof midgardActions.getTransaction;
 };
 
 const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
   const {
     pools,
     poolData,
-    txData,
-    refreshTxStatus,
     stats,
     assetData,
     user,
@@ -103,14 +96,12 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     networkInfoLoading,
     tokenList,
     getPools,
-    getTransactions,
   } = props;
 
   const isDesktopView = Grid.useBreakpoint()?.md ?? true;
   const [poolStatus, selectPoolStatus] = useState<PoolDetailStatusEnum>(
     PoolDetailStatusEnum.Enabled,
   );
-  const [currentTxPage, setCurrentTxPage] = useState<number>(1);
   const [keyword, setKeyword] = useState<string>('');
 
   const history = useHistory();
@@ -125,21 +116,6 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     isOutboundDelayed,
     getOutboundBusyTooltip,
   } = useNetwork();
-
-  const getTransactionInfo = useCallback(
-    (offset: number, limit: number) => {
-      getTransactions({ offset, limit });
-    },
-    [getTransactions],
-  );
-
-  useEffect(() => {
-    if (refreshTxStatus) setCurrentTxPage(1);
-  }, [refreshTxStatus]);
-
-  useEffect(() => {
-    getTransactionInfo((currentTxPage - 1) * 10, 10);
-  }, [currentTxPage, getTransactionInfo]);
 
   const handleSelectPoolStatus = useCallback(
     (status: PoolDetailStatusEnum) => {
@@ -178,14 +154,6 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
       }
     }
   };
-
-  const handlePagination = useCallback(
-    (page: number) => {
-      setCurrentTxPage(page);
-      getTransactionInfo((page - 1) * 10, 10);
-    },
-    [getTransactionInfo],
-  );
 
   const onChangeKeywordHandler = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -560,19 +528,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         />
       </PoolSearchWrapper>
       <div className="pool-list-view">{renderPoolTable}</div>
-      <TransactionWrapper>
-        <Label size="large" weight="bold" color="primary">
-          Transactions
-        </Label>
-        <TxTable txData={txData} />
-        <StyledPagination
-          defaultCurrent={1}
-          current={currentTxPage}
-          total={txData._tag === 'RemoteSuccess' ? txData.value.count : 0}
-          showSizeChanger={false}
-          onChange={handlePagination}
-        />
-      </TransactionWrapper>
+      <TxTable />
     </ContentWrapper>
   );
 };
@@ -587,8 +543,6 @@ export default compose(
       statsLoading: state.Midgard.statsLoading,
       poolLoading: state.Midgard.poolLoading,
       poolDataLoading: state.Midgard.poolDataLoading,
-      txData: state.Midgard.txData,
-      refreshTxStatus: state.Midgard.refreshTxStatus,
       assetData: state.Wallet.assetData,
       user: state.Wallet.user,
       networkInfo: state.Midgard.networkInfo,
@@ -596,7 +550,6 @@ export default compose(
     }),
     {
       getPools: midgardActions.getPools,
-      getTransactions: midgardActions.getTransaction,
     },
   ),
   withRouter,

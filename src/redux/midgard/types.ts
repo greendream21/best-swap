@@ -63,41 +63,21 @@ export type TxDetailType =
   | TxDetailsTypeEnum.Unstake
   | TxDetailsTypeEnum.DoubleSwap;
 
-export type GetTransactionPayload = {
+export type TxDetailData = RemoteData<Error, InlineResponse2001>;
+
+export type TxSuccessPayload = {
+  data: InlineResponse2001,
+  refresh?: boolean;
+}
+
+export type GetTxPayload = {
   offset: number;
   limit: number;
+  address?: string;
+  txId?: string;
   asset?: string;
   type?: string;
-};
-
-export type GetTxByAddressPayload = {
-  address: string;
-  offset: number;
-  limit: number;
-  type?: string;
-};
-
-export type GetTxByAddressTxIdPayload = {
-  address: string;
-  txId: string;
-  offset: number;
-  limit: number;
-  type?: string;
-};
-
-export type GetTxByAddressAssetPayload = {
-  address: string;
-  asset: string;
-  offset: number;
-  limit: number;
-  type?: string;
-};
-
-export type GetTxByAssetPayload = {
-  asset: string;
-  offset: number;
-  limit: number;
-  type?: string;
+  refresh?: boolean;
 };
 
 export type Interval = '5min' | 'hour' | 'day' | 'week' | 'month' | 'year';
@@ -129,8 +109,6 @@ export type RTAggregateData = {
   allTimeData: Array<PoolAggChanges>;
   weekData: Array<PoolAggChanges>;
 };
-
-export type TxDetailData = RemoteData<Error, InlineResponse2001>;
 
 export type ApiBasePathRD = RemoteData<Error, string>;
 
@@ -176,10 +154,9 @@ export type State = {
   error: Maybe<Error>;
   statsLoading: boolean;
   txData: TxDetailData;
-  refreshTxStatus: boolean;
+  txRefreshing: boolean;
   rtAggregateLoading: boolean;
   rtAggregate: RTAggregateData;
-  txCurData: Maybe<InlineResponse2001>;
   apiBasePath: ApiBasePathRD;
   thorchain: ThorchainData;
   networkInfo: NetworkInfo;

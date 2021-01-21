@@ -63,7 +63,7 @@ const routes: AppRoute[] = [
     component: asyncComponent(() => import('../ApiDocView')),
   },
   {
-    path: 'transaction',
+    path: 'tx',
     component: asyncComponent(() => import('../TransactionView')),
   },
   {
