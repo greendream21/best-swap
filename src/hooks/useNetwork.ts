@@ -62,10 +62,10 @@ const useNetwork = () => {
   );
   const maxStakeRuneAmountBN = maxStakeRuneAmount.amount();
   const maxStakeRuneValue = maxStakeRuneAmountBN.isEqualTo(0)
-    ? 'Unlimited'
+    ? 'UNLIMITED'
     : `${formatBaseAsTokenAmount(maxStakeRuneAmount)}`;
   const shortMaxStakeRuneValue = maxStakeRuneAmountBN.isEqualTo(0)
-    ? 'Unlimited'
+    ? 'UNLIMITED'
     : `${abbreviateNumberFromString(
         formatBaseAsTokenAmount(maxStakeRuneAmount, 2),
       )}`;
@@ -78,8 +78,8 @@ const useNetwork = () => {
     formatBaseAsTokenAmount(totalStakedAmount, 2),
   )}`;
 
-  const globalRuneStakeStatus = `${totalStakedValue} / ${maxStakeRuneValue} RUNE Pooled`;
-  const shortGlobalRuneStakeStatus = `${shortTotalShakedValue} / ${shortMaxStakeRuneValue} RUNE Pooled`;
+  const globalRuneStakeStatus = `${totalStakedValue} / ${maxStakeRuneValue} RUNE POOLED`;
+  const shortGlobalRuneStakeStatus = `${shortTotalShakedValue} / ${shortMaxStakeRuneValue} RUNE POOLED`;
 
   // totalStake / maxStake < 95% OR maxStakeRuneAmount is 0
   const isValidFundCaps: boolean =

@@ -8,6 +8,7 @@ import * as RD from '@devexperts/remote-data-ts';
 import { Grid, Form } from 'antd';
 
 import FilterDropdown from 'components/filterDropdown';
+import Helmet from 'components/helmet';
 import TxInfo from 'components/transaction/txInfo';
 import TxLabel from 'components/transaction/txLabel';
 import AddWallet from 'components/uielements/addWallet';
@@ -330,6 +331,7 @@ const Transaction: React.FC = (): JSX.Element => {
   const pageContent = (data: TxDetails[], count: number, loading: boolean) => {
     return (
       <ContentWrapper>
+        <Helmet title="Transactions" content="Transactions" />
         <ContentWrapper className="transaction-view-wrapper">
           <TxToolsContainer>
             <Button
@@ -387,6 +389,7 @@ const Transaction: React.FC = (): JSX.Element => {
     } else {
       return (
         <ContentWrapper className="transaction-view-wrapper center-align">
+          <Helmet title="Transactions" content="Transactions" />
           <AddWallet />
         </ContentWrapper>
       );

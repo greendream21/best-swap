@@ -32,6 +32,7 @@ import * as H from 'history';
 import { get as _get } from 'lodash';
 import { compose } from 'redux';
 
+import Helmet from 'components/helmet';
 import PrivateModal from 'components/modals/privateModal';
 import SlipVerifyModal from 'components/modals/slipVerifyModal';
 import AddWallet from 'components/uielements/addWallet';
@@ -59,7 +60,6 @@ import { RootState } from 'redux/store';
 import * as walletActions from 'redux/wallet/actions';
 import { User, AssetData } from 'redux/wallet/types';
 
-import useFee from 'hooks/useFee';
 import useMidgard from 'hooks/useMidgard';
 import useNetwork from 'hooks/useNetwork';
 import usePrevious from 'hooks/usePrevious';
@@ -153,12 +153,8 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   const history = useHistory();
   const { symbol = '' } = useParams();
 
-  const { runePrice, priceIndex, pricePrefix } = usePrice();
-
   const tokenSymbol = symbol.toUpperCase();
   const tokenTicker = getTickerFormat(symbol);
-  const tokenPrice = validBNOrZero(priceIndex[tokenSymbol]);
-
   const { isValidFundCaps } = useNetwork();
 
   const isAsymStakeValidUser = isAsymStakeValid();
@@ -209,11 +205,16 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   }, [runeAmount, targetAmount, isSymStake]);
 
   const {
+    runePrice,
+    priceIndex,
+    pricePrefix,
     bnbFeeAmount,
     hasSufficientBnbFeeInBalance,
     hasSufficientBnbFee,
     getThresholdAmount,
-  } = useFee(feeType);
+  } = usePrice(feeType);
+
+  const tokenPrice = validBNOrZero(priceIndex[tokenSymbol]);
 
   const totalRuneAmount = getThresholdAmount(RUNE_SYMBOL).amount();
   const totalTokenAmount = getThresholdAmount(tokenSymbol).amount();
@@ -503,7 +504,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       return `${token.amount().toString()} BNB`;
     };
 
-    const txtLoading = <Text>Fee: ...</Text>;
+    const txtLoading = <Text>FEE: ...</Text>;
     const isStakingBNB =
       selectedTab !== TabKeys.WITHDRAW &&
       targetAmount.amount().isGreaterThan(0);
@@ -512,14 +513,15 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       <PopoverContent>
         {isStakingBNB && (
           <>
-            <Text> (It will be subtracted from BNB amount)</Text>
+            <Text>(IT WILL BE SUBTRACTED FROM YOUR ENTERED BNB VALUE)</Text>
             <br />
           </>
         )}
         {wallet && (
-          <Text style={{ paddingTop: '10px' }}>
-            Note: 0.1 BNB will be left in your wallet for the transaction fees.
-          </Text>
+          <Label>
+            <b>NOTE:</b> 0.1 BNB WILL BE LEFT IN YOUR WALLET FOR TRANSACTION
+            FEE.
+          </Label>
         )}
       </PopoverContent>
     );
@@ -529,12 +531,12 @@ const PoolStake: React.FC<Props> = (props: Props) => {
         {RD.fold(
           () => txtLoading,
           () => txtLoading,
-          (_: Error) => <Text>Error: Fee could not be loaded</Text>,
+          (_: Error) => <Text>Error: FEE NOT LOADED</Text>,
           (_: TransferFees) => {
             return (
               <>
                 {bnbFeeAmount && (
-                  <Text>Fee: {formatBnbAmount(bnbFeeAmount)}</Text>
+                  <Text>NETWORK FEE: {formatBnbAmount(bnbFeeAmount)}</Text>
                 )}
                 <Popover
                   content={toolTipContent}
@@ -553,9 +555,8 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                   <>
                     <br />
                     <Text type="danger" style={{ paddingTop: '10px' }}>
-                      You have {formatBnbAmount(bnbAmount)} in your wallet,
-                      that&lsquo;s not enough to cover the fee for this
-                      transaction.
+                      YOU HAVE {formatBnbAmount(bnbAmount)} IN YOUR WALLET,
+                      THAT&lsquo;S NOT ENOUGH TO COVER THE FEE FOR TRANSACTION.
                     </Text>
                   </>
                 )}
@@ -1039,7 +1040,9 @@ const PoolStake: React.FC<Props> = (props: Props) => {
           )}
         </div>
         <div>
-          <Label>SLIP: {stakeSlipValue}</Label>
+          <Label>
+            <b>SLIP: </b>{stakeSlipValue}
+          </Label>
           {renderFee()}
         </div>
         <div className="stake-share-info-wrapper">
@@ -1327,8 +1330,12 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     return <Loader />;
   }
 
+  const pageTitle = `Add Liquidity to ${tokenTicker.toUpperCase()} Pool`;
+  const metaDescription = pageTitle;
+
   return (
     <ContentWrapper className="pool-stake-wrapper" transparent>
+      <Helmet title={pageTitle} content={metaDescription} />
       <Row className="share-view" gutter={8}>
         {!stakersAssetData && stakerPoolDataError && (
           <Col className="your-share-view" md={24}>

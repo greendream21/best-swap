@@ -15,6 +15,7 @@ import { Row, Col, Grid, Popover } from 'antd';
 import * as H from 'history';
 import { compose } from 'redux';
 
+import Helmet from 'components/helmet';
 import PoolFilter from 'components/poolFilter';
 import StatBar from 'components/statBar';
 import TxTable from 'components/transaction/txTable';
@@ -499,6 +500,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
 
   return (
     <ContentWrapper className="pool-view-wrapper">
+      <Helmet title="BEPSwap" content="BEPSwap is Binance Chain's first decentralised finance application allowing BEP2 token holders to swap their assets, or stake them to provide liquidity to the market." />
       <StatBar
         loading={statsLoading || networkInfoLoading}
         stats={stats}

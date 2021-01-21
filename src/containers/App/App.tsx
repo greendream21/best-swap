@@ -66,7 +66,7 @@ const App: React.FC<Props> = (props: Props): JSX.Element => {
   }, [location, history]);
 
   return (
-    <AppLayout data-test="bepswap-app">
+    <AppLayout>
       <Header title="SWAP AND ADD BEP2 ASSETS" />
       <ContentWrapper>
         <ViewPanel>

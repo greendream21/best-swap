@@ -1,7 +1,5 @@
 import React from 'react';
 
-import { create } from 'react-test-renderer';
-
 import { mount } from 'enzyme';
 
 import { TxDetailsTypeEnum } from 'types/generated/midgard';
@@ -17,12 +15,6 @@ describe('FilterDropdown', () => {
     value: TxDetailsTypeEnum.Swap,
   };
   const component = mount(<FilterDropdown {...props} />);
-
-  it('Matches the snapshot', () => {
-    const snapshot = create(<FilterDropdown {...props} />);
-    expect(snapshot.toJSON()).toMatchSnapshot();
-  });
-
   it('has wrapper div', () => {
     expect(component.find('.dropdown-wrapper')).toHaveLength(1);
   });

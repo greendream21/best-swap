@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 
 import { Row, Col } from 'antd';
 
-
+import Helmet from 'components/helmet';
 import Tabs from 'components/uielements/tabs';
 
 import * as walletActions from 'redux/wallet/actions';
@@ -59,6 +59,7 @@ const ConnectView: React.FC<Props> = (props: Props): JSX.Element => {
 
   return (
     <ContentWrapper>
+      <Helmet title="Connect Wallet" content="Connect Wallet" />
       <Row className="connect-view-header">
         <Tabs
           className="connect-view-tab"

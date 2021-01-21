@@ -19,6 +19,7 @@ import * as H from 'history';
 import { get as _get } from 'lodash';
 import { compose } from 'redux';
 
+import Helmet from 'components/helmet';
 import { greyArrowIcon } from 'components/icons';
 import PrivateModal from 'components/modals/privateModal';
 import CoinCard from 'components/uielements/coins/coinCard';
@@ -374,8 +375,12 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
       { key: 'share', title: 'Your Share', value: `${share}%` },
     ];
 
+    const pageTitle = `Create ${symbol} Pool`;
+    const metaDescription =  pageTitle;
+
     return (
       <div className="create-detail-wrapper">
+        <Helmet title={pageTitle} content={metaDescription} />
         <Label className="label-title" size="normal" weight="bold">
           ADD ASSETS
         </Label>

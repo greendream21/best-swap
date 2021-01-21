@@ -2,13 +2,15 @@ import React from 'react';
 
 import { Row, Col } from 'antd';
 
+import Helmet from 'components/helmet';
 import ToolCard from 'components/toolCard';
 
 import { data } from './data';
 
-const ExplorerView: React.FC = (): JSX.Element => {
+const ApiDocView: React.FC = (): JSX.Element => {
   return (
     <Row gutter={[16, 16]}>
+      <Helmet title="API Doc" content="API Doc" />
       {data.map((props, index) => {
           return (
             <Col
@@ -27,4 +29,4 @@ const ExplorerView: React.FC = (): JSX.Element => {
   );
 };
 
-export default ExplorerView;
+export default ApiDocView;
