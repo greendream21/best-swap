@@ -54,22 +54,19 @@ const Transaction: React.FC = (): JSX.Element => {
   const txId = query?.txId as string;
   const asset = query?.asset as string;
 
-  const isValidFilter = useCallback(
-    (filter: TxFilter) => {
-      const { type, offset = 0, address, txId, asset } = filter;
-      if (
-        type === '' ||
-        Number.isNaN(offset) ||
-        address === '' ||
-        txId === '' ||
-        asset === ''
-      ) {
-        return false;
-      }
-      return true;
-    },
-    [],
-  );
+  const isValidFilter = useCallback((filter: TxFilter) => {
+    const { type, offset = 0, address, txId, asset } = filter;
+    if (
+      type === '' ||
+      Number.isNaN(offset) ||
+      address === '' ||
+      txId === '' ||
+      asset === ''
+    ) {
+      return false;
+    }
+    return true;
+  }, []);
 
   const initialFilter: TxFilter = useMemo(
     () => ({
@@ -372,28 +369,17 @@ const Transaction: React.FC = (): JSX.Element => {
   };
 
   const renderPage = () => {
-    const walletAddress = user?.wallet ?? null;
-
-    if (walletAddress) {
-      return RD.fold(
-        () => <div />, // initial
-        () => {
-          return pageContent([], 0, true);
-        },
-        () => pageContent([], 0, false),
-        (data: InlineResponse2001): JSX.Element => {
-          const { count = 0, txs = [] } = data;
-          return pageContent(txs, count, false);
-        },
-      )(txData);
-    } else {
-      return (
-        <ContentWrapper className="transaction-view-wrapper center-align">
-          <Helmet title="Transactions" content="Transactions" />
-          <AddWallet />
-        </ContentWrapper>
-      );
-    }
+    return RD.fold(
+      () => <div />, // initial
+      () => {
+        return pageContent([], 0, true);
+      },
+      () => pageContent([], 0, false),
+      (data: InlineResponse2001): JSX.Element => {
+        const { count = 0, txs = [] } = data;
+        return pageContent(txs, count, false);
+      },
+    )(txData);
   };
 
   return renderPage();
