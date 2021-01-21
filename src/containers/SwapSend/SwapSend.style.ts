@@ -225,6 +225,12 @@ export const SliderSwapWrapper = styled.div`
   .slider {
     flex-grow: 1;
     align-self: baseline;
+
+    margin-right: 0px;
+
+    ${media.sm`
+      margin-right: 20px;
+    `}
   }
   .swap-wrapper {
     width: 60px;
