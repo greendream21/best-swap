@@ -1,9 +1,10 @@
-import Icon from '@ant-design/icons';
+import Icon, { InfoCircleOutlined } from '@ant-design/icons';
 import { Popover } from 'antd';
 import Paragraph from 'antd/lib/typography/Paragraph';
 import styled from 'styled-components';
 import { palette } from 'styled-theme';
 
+import Button from 'components/uielements/button';
 import ContentView from 'components/utility/contentView';
 
 import { media, cleanTag } from 'helpers/styleHelper';
@@ -30,7 +31,6 @@ export const SwapAssetCard = styled.div`
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding-top: 20px;
   }
 
   ${media.lg`
@@ -51,8 +51,8 @@ export const SwapAssetCard = styled.div`
       `}
     }
     ${media.sm`
-      margin-top: 40px;
-      margin-bottom: 20px;
+      margin-top: 10px;
+      margin-bottom: 10px;
     `}
   }
 `;
@@ -202,29 +202,6 @@ export const CardFormItemCloseButton = styled(Icon).attrs({
   type: 'close',
 })``;
 
-export const SwapStatusPanel = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: auto 10px;
-
-  .slip-ratio-labels {
-    margin-left: 18px;
-    width: 150px;
-  }
-
-  svg {
-    transform: rotate(-90deg);
-    font-size: 24px;
-    color: ${palette('primary', 0)};
-    cursor: pointer;
-
-    &:hover {
-      font-size: 26px;
-    }
-  }
-`;
-
 export const PopoverContent = styled.div`
   font-size: '11px';
   color: ${palette('primary', 0)};
@@ -232,7 +209,6 @@ export const PopoverContent = styled.div`
 
 export const FeeParagraph = styled(Paragraph)`
   padding-top: 10px;
-  text-align: center;
   & > * {
     color: ${palette('text', 2)};
   }
@@ -264,4 +240,36 @@ export const SliderSwapWrapper = styled.div`
       width: 170px;
     }  
   `}
+`;
+
+export const SwapDataWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding-top: 10px;
+  padding-left: 10px;
+
+  .label-wrapper {
+    padding: 2px 0;
+  }
+`;
+
+export const LabelInfo = styled.div`
+  display: flex;
+  align-items: center;
+
+  .label-wrapper {
+    margin-right: 6px;
+  }
+`;
+
+export const PopoverIcon = styled(InfoCircleOutlined)`
+  color: ${palette('primary', 0)};
+  margin: 0 10px;
+`;
+
+export const InverseButton = styled(Button)`
+  &.ant-btn {
+    padding: 0 2px;
+    min-width: 35px !important;
+  }
 `;

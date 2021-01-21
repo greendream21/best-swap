@@ -158,7 +158,6 @@ Main Branch:
 - [useInterval](https://gitlab.com/thorchain/bepswap/bepswap-web-ui/-/blob/development/src/hooks/useInterval.ts) - trigger interval using hooks
 - [useTimeout](https://gitlab.com/thorchain/bepswap/bepswap-web-ui/-/blob/development/src/hooks/useTimeout.ts) - trigger timeout using hooks
 - [usePrevious](https://gitlab.com/thorchain/bepswap/bepswap-web-ui/-/blob/development/src/hooks/usePrevious.ts) - save previous state
-- [useFee](https://gitlab.com/thorchain/bepswap/bepswap-web-ui/-/blob/development/src/hooks/useFee.ts) - handle all fee related logic
 - [useNetwork](https://gitlab.com/thorchain/bepswap/bepswap-web-ui/-/blob/development/src/hooks/useNetwork.ts) - handle all thorchain data and logic
 - [usePrice](https://gitlab.com/thorchain/bepswap/bepswap-web-ui/-/blob/development/src/hooks/usePrice.ts) - handle pricing logic
 
