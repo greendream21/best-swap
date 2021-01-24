@@ -13,8 +13,8 @@ class Page500 extends Component {
       <AppLayout>
         <Helmet title="500" content="Under Maintenance" />
         <Logo name="bepswap" type="long" />
-        <Label size="large">Thanks for trying out BEPSwap!</Label>
-        <Label size="big">DOWN FOR MAINTENANCE!</Label>
+        <Label size="large">Thanks for trying out BEPSwap.</Label>
+        <Label size="big">Temporarily down for maintenance.</Label>
       </AppLayout>
     );
   }
