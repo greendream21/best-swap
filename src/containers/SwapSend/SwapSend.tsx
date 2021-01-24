@@ -17,12 +17,7 @@ import {
   baseToToken,
   BaseAmount,
 } from '@thorchain/asgardex-token';
-import {
-  isValidBN,
-  bn,
-  assetAmount as aa,
-  assetToBase as a2b,
-} from '@thorchain/asgardex-util';
+import { isValidBN, bn } from '@thorchain/asgardex-util';
 import { Popover } from 'antd';
 import Text from 'antd/lib/typography/Text';
 import BigNumber from 'bignumber.js';
@@ -57,7 +52,11 @@ import usePrevious from 'hooks/usePrevious';
 import usePrice from 'hooks/usePrice';
 
 import { getAppContainer } from 'helpers/elementHelper';
-import { getTickerFormat, getSymbolPair } from 'helpers/stringHelper';
+import {
+  getTickerFormat,
+  getSymbolPair,
+  getShortAmount,
+} from 'helpers/stringHelper';
 import {
   getSwapData,
   confirmSwap,
@@ -144,7 +143,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   const {
     runePrice,
     getAsset1RateInAsset2,
-    getFeeEstimation,
     hasSufficientRuneFee,
     hasSufficientBnbFee,
     hasSufficientBnbFeeInBalance,
@@ -665,28 +663,26 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     return document.getElementsByClassName('slip-protection')[0] as HTMLElement;
   };
 
+  // const { feeInUSDValue, feePercentValue } = getFeeEstimation({
+  //   asset1: sourceSymbol,
+  //   asset2: targetSymbol,
+  //   amount1: a2b(aa(xValue.amount())),
+  //   amount2: a2b(aa(swapData?.outputAmount?.amount() ?? 0)),
+  // });
+  // const totalFeeValue = `${feeInUSDValue} USD (${feePercentValue}%)`;
+
+  const formatBnbAmount = (value: BaseAmount) => {
+    const token = baseToToken(value);
+    return `${token.amount().toString()} BNB + 1 RUNE`;
+  };
+  const bnbAmount = bnbBaseAmount(assetData);
+
   /**
    * Renders fee
    */
   const renderFee = () => {
-    const bnbAmount = bnbBaseAmount(assetData);
-
-    const formatBnbAmount = (value: BaseAmount) => {
-      const token = baseToToken(value);
-      return `${token.amount().toString()} BNB + 1 RUNE`;
-    };
-
     const txtLoading = <Text />;
-
     // const hasBnbFee = hasSufficientBnbFee(xValue, sourceSymbol);
-
-    const { feeInUSDValue, feePercentValue } = getFeeEstimation({
-      asset1: sourceSymbol,
-      asset2: targetSymbol,
-      amount1: a2b(aa(xValue.amount())),
-      amount2: a2b(aa(swapData?.outputAmount?.amount() ?? 0)),
-    });
-    const totalFeeValue = `${feeInUSDValue} USD (${feePercentValue}%)`;
 
     return (
       <FeeParagraph>
@@ -697,25 +693,19 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
           (fees: TransferFees) => (
             <>
               <LabelInfo>
-                <Label>
+                {/* <Label>
                   <b>ESTIMATED FEE: </b>
                   {totalFeeValue}
+                </Label> */}
+                <Label>
+                  <b>NETWORK FEE:</b> {formatBnbAmount(fees.single)}
                 </Label>
                 <Popover
                   content={
-                    <>
-                      <Label>
-                        <b>NETWORK FEE:</b> {formatBnbAmount(fees.single)}
-                      </Label>
-                      {walletAddress &&
-                        bnbAmount &&
-                        hasSufficientBnbFeeInBalance && (
-                          <Label>
-                            <b>NOTE:</b> 0.1 BNB WILL BE LEFT IN YOUR WALLET FOR
-                            TRANSACTION FEE.
-                          </Label>
-                        )}
-                    </>
+                    <Label>
+                      <b>NOTE:</b> 0.1 BNB WILL BE LEFT IN YOUR WALLET FOR
+                      TRANSACTION FEE.
+                    </Label>
                   }
                   getPopupContainer={getAppContainer}
                   placement="top"
@@ -777,21 +767,113 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     !isSourcePoolEnabled ||
     !isTargetPoolEnabled;
 
+  const pageTitle = `Swap ${swapSource.toUpperCase()} to ${swapTarget.toUpperCase()}`;
+  const metaDescription = pageTitle;
+
   const slipValue = slip
     ? `${slip.toFormat(2, BigNumber.ROUND_DOWN)}%`
     : Nothing;
 
-  const pageTitle = `Swap ${swapSource.toUpperCase()} to ${swapTarget.toUpperCase()}`;
-  const metaDescription = pageTitle;
+  const renderSwapData = () => {
+    const rateValue = getAsset1RateInAsset2({
+      asset1: sourceSymbol,
+      asset2: targetSymbol,
+    });
+    const inverseRateValue = getAsset1RateInAsset2({
+      asset1: targetSymbol,
+      asset2: sourceSymbol,
+    });
 
-  const rateValue = getAsset1RateInAsset2({
-    asset1: sourceSymbol,
-    asset2: targetSymbol,
-  });
-  const inverseRateValue = getAsset1RateInAsset2({
-    asset1: targetSymbol,
-    asset2: sourceSymbol,
-  });
+    return (
+      <SwapDataWrapper>
+        {rateType && (
+          <LabelInfo>
+            <Label>
+              <b>{rateValue}</b>
+            </Label>
+            <InverseButton
+              sizevalue="small"
+              typevalue="outline"
+              round="true"
+              onClick={handleReverseRateType}
+            >
+              <RetweetOutlined />
+            </InverseButton>
+          </LabelInfo>
+        )}
+        {!rateType && (
+          <LabelInfo>
+            <Label>
+              <b>{inverseRateValue}</b>
+            </Label>
+            <InverseButton
+              sizevalue="small"
+              typevalue="outline"
+              round="true"
+              onClick={handleReverseRateType}
+            >
+              <RetweetOutlined />
+            </InverseButton>
+          </LabelInfo>
+        )}
+        <Label>
+          <b>SLIP: </b>
+          {slipValue}
+        </Label>
+        {renderFee()}
+      </SwapDataWrapper>
+    );
+  };
+
+  const renderSwapConfirmData = () => {
+    const sendAmount = getShortAmount(xValue.amount());
+    const sendData = `${sendAmount} ${swapSource}`;
+    const receiveAmount = getShortAmount(swapData.outputAmount.amount());
+    const receiveData = `${receiveAmount} ${swapTarget}`;
+
+    return (
+      <SwapDataWrapper>
+        <Label>
+          <b>SEND: </b>
+          {sendData}
+        </Label>
+        <Label>
+          <b>RECEIVE: </b>
+          {receiveData}
+        </Label>
+        <Label>
+          <b>SLIP: </b>
+          {slipValue}
+        </Label>
+        <LabelInfo>
+          {/* <Label>
+            <b>ESTIMATED FEE: </b>
+            {totalFeeValue}
+          </Label> */}
+          <Label>
+            <b>NETWORK FEE:</b> 0.000375
+          </Label>
+          <Popover
+            content={
+              <Label>
+                <b>NOTE:</b> 0.1 BNB WILL BE LEFT IN YOUR WALLET FOR TRANSACTION
+                FEE.
+              </Label>
+            }
+            getPopupContainer={getAppContainer}
+            placement="top"
+            overlayStyle={{
+              padding: '6px',
+              animationDuration: '0s !important',
+              animation: 'none !important',
+            }}
+          >
+            <PopoverIcon />
+          </Popover>
+        </LabelInfo>
+      </SwapDataWrapper>
+    );
+  };
 
   return (
     <ContentWrapper className="swap-detail-wrapper">
@@ -897,44 +979,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
                 </CardForm>
               </CardFormHolder>
             </div>
-
-            <SwapDataWrapper>
-              {rateType && (
-                <LabelInfo>
-                  <Label>
-                    <b>{rateValue}</b>
-                  </Label>
-                  <InverseButton
-                    sizevalue="small"
-                    typevalue="outline"
-                    round="true"
-                    onClick={handleReverseRateType}
-                  >
-                    <RetweetOutlined />
-                  </InverseButton>
-                </LabelInfo>
-              )}
-              {!rateType && (
-                <LabelInfo>
-                  <Label>
-                    <b>{inverseRateValue}</b>
-                  </Label>
-                  <InverseButton
-                    sizevalue="small"
-                    typevalue="outline"
-                    round="true"
-                    onClick={handleReverseRateType}
-                  >
-                    <RetweetOutlined />
-                  </InverseButton>
-                </LabelInfo>
-              )}
-              <Label>
-                <b>SLIP: </b>
-                {slipValue}
-              </Label>
-              {renderFee()}
-            </SwapDataWrapper>
+            {renderSwapData()}
           </div>
         </div>
         <div className="drag-confirm-wrapper">
@@ -954,7 +999,9 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
         onOk={handleConfirmTransaction}
         onCancel={handleCancelPrivateModal}
         onPoolAddressLoaded={handlePoolAddressConfirmed}
-      />
+      >
+        {renderSwapConfirmData()}
+      </PrivateModal>
       <SlipVerifyModal
         visible={visibleSlipConfirmModal}
         slipPercent={slipPercent}
