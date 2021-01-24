@@ -66,7 +66,7 @@ import usePrevious from 'hooks/usePrevious';
 import usePrice from 'hooks/usePrice';
 
 import { getRuneStakeURL } from 'helpers/routerHelper';
-import { getTickerFormat } from 'helpers/stringHelper';
+import { getShortAmount, getTickerFormat } from 'helpers/stringHelper';
 import {
   stakeRequest,
   withdrawRequest,
@@ -92,6 +92,7 @@ import {
   PopoverContent,
   PopoverIcon,
   RuneStakeView,
+  TxDataWrapper,
 } from './PoolStake.style';
 import { TabKeys, WithdrawData } from './types';
 
@@ -903,6 +904,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     () => Number(stakeSlip.multipliedBy(100).toFixed(0)),
     [stakeSlip],
   );
+  const stakeSlipValue = `${stakeSlip.multipliedBy(100).toFixed(2)}%`;
 
   const renderShareDetail = () => {
     const tokensData: string[] = pools.map(
@@ -922,8 +924,8 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       ? T.multipliedBy(stakeUnitsBN).div(poolUnits)
       : bn(0);
 
-    const assetValue = bn(withdrawRate).multipliedBy(runeShare);
-    const runeBaseAmount = baseAmount(assetValue);
+    const runeValue = bn(withdrawRate).multipliedBy(runeShare);
+    const runeBaseAmount = baseAmount(runeValue);
 
     const tokenValue = bn(withdrawRate).multipliedBy(assetShare);
     const tokenBaseAmount = baseAmount(tokenValue);
@@ -980,8 +982,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     const tokenToolTip = 'This is the asset you need to add to the pool.';
     const runeToolTip =
       'The amount of RUNE needed is calculated automatically based on the current ratio of assets in the pool.';
-
-    const stakeSlipValue = `${stakeSlip.multipliedBy(100).toFixed(2)}%`;
 
     const addLiquidityTab = (
       <>
@@ -1041,7 +1041,8 @@ const PoolStake: React.FC<Props> = (props: Props) => {
         </div>
         <div>
           <Label>
-            <b>SLIP: </b>{stakeSlipValue}
+            <b>SLIP: </b>
+            {stakeSlipValue}
           </Label>
           {renderFee()}
         </div>
@@ -1324,6 +1325,48 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     );
   };
 
+  const renderTxData = () => {
+    if (txType === TxTypes.STAKE) {
+      const runeValue = getShortAmount(runeAmountToSend.amount());
+      const tokenValue = getShortAmount(targetAmount.amount());
+      const addData = !isSymStake
+        ? `${tokenValue} ${tokenTicker}`
+        : `${runeValue} RUNE, ${tokenValue} ${tokenTicker}`;
+
+      return (
+        <TxDataWrapper>
+          <Label>
+            <b>Add Liquidity Amount: </b>
+            {addData}
+          </Label>
+          <Label>
+            <b>SLIP: </b>
+            {stakeSlipValue}
+          </Label>
+          {renderFee()}
+        </TxDataWrapper>
+      );
+    }
+
+    if (!withdrawData) return null;
+
+    const percent = `(${withdrawPercentage} % of YOUR SHARE)`;
+    const runeAssetAmount = baseToToken(withdrawData.runeValue);
+    const withdrawRuneValue = getShortAmount(runeAssetAmount.amount());
+    const tokenAssetAmount = baseToToken(withdrawData.tokenValue);
+    const withdrawTokenValue = getShortAmount(tokenAssetAmount.amount());
+
+    return (
+      <TxDataWrapper>
+        <Label>
+          <b>Withdraw: </b>
+          {withdrawRuneValue} RUNE, {withdrawTokenValue} {tokenTicker} {percent}
+        </Label>
+        {renderFee()}
+      </TxDataWrapper>
+    );
+  };
+
   const yourShareSpan = hasWallet ? 8 : 24;
 
   if (!isValidPool(symbol)) {
@@ -1360,7 +1403,9 @@ const PoolStake: React.FC<Props> = (props: Props) => {
             onOk={handleConfirmTransaction}
             onCancel={handleCancelPrivateModal}
             onPoolAddressLoaded={handlePoolAddressConfirmed}
-          />
+          >
+            {renderTxData()}
+          </PrivateModal>
           <SlipVerifyModal
             visible={visibleSlipConfirmModal}
             slipPercent={stakeSlipPercent}

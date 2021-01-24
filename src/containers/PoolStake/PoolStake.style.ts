@@ -525,3 +525,14 @@ export const RuneStakeView = styled.div`
     }
   }
 `;
+
+export const TxDataWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding-top: 10px;
+  padding-left: 10px;
+
+  .label-wrapper {
+    padding: 2px 0;
+  }
+`;
