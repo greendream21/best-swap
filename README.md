@@ -13,31 +13,52 @@
 
 BEPSwap is UniSwap for BinanceChain. It will be the first go-to market product for THORChain and makes some compromises as to infrastructure and trustlessness. It will only swap BNB and BEP2 assets on Binance Chain using a second layer protocol that moves assets around on BNB accounts.
 
-## Project Setup
+## Maintenance Mode Guide
 
-### Project stack:
+#### Steps
+
+1. Update CI variable for website status
+   Chaosnet: REACT_APP_MAINNET_STATUS=maintenance (or live)
+   Testnet: REACT_APP_WEBSITE_STATUS=maintenance (or live)
+2. Run CI Action for deploy
+   - Go to Gitlab pipelines (https://gitlab.com/thorchain/bepswap/bepswap-web-ui/-/pipelines)
+   - Run deploy action for Chaosnet (or Testnet)
+
+### Technologies:
 
 - React / Redux / Redux-Saga
 - Ant Design
 - Styled-components
-- React-Intl
 - Storybook
-- Jest / Enzyme for Unit Test
-- ESLint / Prettier for Code Linting
+- Jest / Enzyme
+- ESLint / Prettier
 - GitLab CI
-- Firebase Hosting
 
 ### Prerequisites
 
 ```
 yarn
-node v8^
-firebase-tools
+node v12^
 ```
 
 ### Env variables
 
-While environment variables are not required (sane defaults are set), you can configure them. Create `.env` file while copying all content of `.env.sample` and set all needed variables in there.
+Refer `.env.sample`
+
+```
+REACT_APP_BINANCE_MAINNET_WS_URI = wss://dex.binance.org/api/ws
+REACT_APP_BINANCE_TESTNET_WS_URI = wss://testnet-dex.binance.org/api/ws
+REACT_APP_BINANCE_MAINNET_URL = https://dex.binance.org/api/v1
+REACT_APP_BINANCE_TESTNET_URL = https://testnet-dex.binance.org/api/v1
+REACT_APP_MIDGARD_API_URL = https://midgard.bepswap.com
+REACT_APP_MIDGARD_TEST_API = https://midgard.bepswap.com
+REACT_APP_MIDGARD_CHAOSNET_API_URL = https://chaosnet-midgard.bepswap.com
+
+REACT_APP_WEBSITE_STATUS = live OR maintenance
+REACT_APP_MAINNET_STATUS = live OR maintenance
+
+REACT_APP_NET = mainnet OR testnet
+```
 
 ### Project Setup
 
@@ -64,9 +85,7 @@ yarn start
 - `lint:watch` : lint watch mode
 - `eject`: eject CRA (not recommended)
 - `generate:types`: Generate TypeScript types and API function calls for Midgards API endpoints
-- `fblogin`: firebase login
 
-Example: `yarn start`
 
 ## Generate TypeScript types of Midgard API (incl. api function calls)
 
@@ -131,8 +150,6 @@ Then in a second terminal run the tests
 ```bash
 yarn cy:run:dev
 ```
-
-NOTE: Sometimes gitlab heavily throttles CPU which can cause problems when running tests over code that does CPU intensive things such as cryptographic calculations. If this happens again I recommend to replicate/debug using chrome dev tools CPU throttling.
 
 ## Deployment using firebase
 
