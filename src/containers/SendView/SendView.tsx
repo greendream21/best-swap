@@ -19,7 +19,6 @@ import { compose } from 'redux';
 
 import Helmet from 'components/helmet';
 import PrivateModal from 'components/modals/privateModal';
-import AddressInput from 'components/uielements/addressInput';
 import ContentTitle from 'components/uielements/contentTitle';
 import Drag from 'components/uielements/drag';
 import Label from 'components/uielements/label';
@@ -28,7 +27,6 @@ import showNotification from 'components/uielements/notification';
 import Slider from 'components/uielements/slider';
 import TokenCard from 'components/uielements/tokens/tokenCard';
 
-import * as appActions from 'redux/app/actions';
 import { TransferFeesRD, TransferFees } from 'redux/binance/types';
 import { PriceDataIndex } from 'redux/midgard/types';
 import { RootState } from 'redux/store';
@@ -37,6 +35,7 @@ import { User, AssetData } from 'redux/wallet/types';
 
 import usePrice from 'hooks/usePrice';
 
+import { BINANCE_TX_BASE_URL } from 'helpers/apiHelper';
 import { getAppContainer } from 'helpers/elementHelper';
 import { getTickerFormat, getShortAmount } from 'helpers/stringHelper';
 import { normalTx } from 'helpers/utils/sendUtils';
@@ -54,7 +53,6 @@ import {
   ContentWrapper,
   SwapAssetCard,
   CardForm,
-  CardFormHolder,
   CardFormItem,
   CardFormItemError,
   SwapDataWrapper,
@@ -63,30 +61,19 @@ import {
   LabelInfo,
   PopoverIcon,
   Input,
+  FormLabel,
 } from './SendView.style';
 
 type Props = {
   assetData: AssetData[];
   priceIndex: PriceDataIndex;
   user: Maybe<User>;
-  setTxResult: typeof appActions.setTxResult;
-  setTxTimerModal: typeof appActions.setTxTimerModal;
-  setTxHash: typeof appActions.setTxHash;
-  resetTxStatus: typeof appActions.resetTxStatus;
-  refreshBalance: typeof walletActions.refreshBalance;
   transferFees: TransferFeesRD;
+  refreshBalance: typeof walletActions.refreshBalance;
 };
 
 const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
-  const {
-    user,
-    transferFees,
-    assetData,
-    priceIndex,
-    setTxResult,
-    setTxHash,
-    resetTxStatus,
-  } = props;
+  const { user, transferFees, assetData, priceIndex } = props;
 
   const history = useHistory();
   const { symbol } = useParams();
@@ -123,8 +110,8 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   const [memo, setMemo] = useState('');
 
   const handleChangeAddress = useCallback(
-    (address: string) => {
-      setAddress(address);
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setAddress(e.target.value);
     },
     [setAddress],
   );
@@ -215,11 +202,21 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
 
         const hash = result[0]?.hash;
         if (hash) {
-          setTxHash(hash);
-
+          const txURL = BINANCE_TX_BASE_URL + hash;
           setOpenPrivateModal(false);
-          // start tx timer
-          setTxResult({ status: false });
+          setDragReset(true);
+
+          showNotification({
+            type: 'open',
+            message: 'Send Tx Success.',
+            description: 'Transaction sent successfully!',
+            btn: (
+              <a href={txURL} target="_blank" rel="noopener noreferrer">
+                VIEW TX
+              </a>
+            ),
+            duration: 20,
+          });
         }
       } catch (error) {
         setOpenPrivateModal(false);
@@ -229,21 +226,10 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
           description: `${error.toString()}`,
         });
         setDragReset(true);
-        resetTxStatus();
         console.error(error); // eslint-disable-line no-console
       }
     }
-  }, [
-    user,
-    walletAddress,
-    sourceSymbol,
-    address,
-    xValue,
-    memo,
-    resetTxStatus,
-    setTxResult,
-    setTxHash,
-  ]);
+  }, [user, walletAddress, sourceSymbol, address, xValue, memo]);
 
   const handleConfirmTransaction = useCallback(() => {
     handleConfirmSend();
@@ -356,7 +342,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
 
   const formatBnbAmount = (value: BaseAmount) => {
     const token = baseToToken(value);
-    return `${token.amount().toString()} BNB + 1 RUNE`;
+    return `${token.amount().toString()} BNB`;
   };
   const bnbAmount = bnbBaseAmount(assetData);
 
@@ -365,8 +351,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
    */
   const renderFee = () => {
     const txtLoading = <Text />;
-    // const hasBnbFee = hasSufficientBnbFee(xValue, sourceSymbol);
-
     return (
       <FeeParagraph>
         {RD.fold(
@@ -431,6 +415,10 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
           <b>RECIPIENT: </b>
           {address}
         </Label>
+        <Label>
+          <b>MEMO: </b>
+          {memo}
+        </Label>
         <LabelInfo>
           <Label>
             <b>NETWORK FEE:</b> 0.000375 BNB
@@ -466,7 +454,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
           <div className="swap-detail-panel">
             <TokenCard
               inputTitle="input"
-              asset={sourceSymbol}
+              asset={ticker}
               assetData={sourceAssets}
               amount={xValue}
               price={sourcePrice}
@@ -486,22 +474,26 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
               </div>
             </SliderSwapWrapper>
             <div className="swaptool-container">
-              <CardFormHolder>
-                <CardForm>
-                  <CardFormItem className={invalidAddress ? 'has-error' : ''}>
-                    <AddressInput
-                      value={address}
-                      onChange={handleChangeAddress}
-                    />
-                  </CardFormItem>
-                </CardForm>
-                {invalidAddress && (
-                  <CardFormItemError>
-                    Recipient address is invalid!
-                  </CardFormItemError>
-                )}
-              </CardFormHolder>
+              <CardForm>
+                <CardFormItem className={invalidAddress ? 'has-error' : ''}>
+                  <FormLabel>Recipient</FormLabel>
+                  <Input
+                    typevalue="ghost"
+                    sizevalue="normal"
+                    value={address}
+                    onChange={handleChangeAddress}
+                    autoComplete="off"
+                    placeholder="Address"
+                  />
+                </CardFormItem>
+              </CardForm>
+              {invalidAddress && (
+                <CardFormItemError>
+                  Recipient address is invalid!
+                </CardFormItemError>
+              )}
             </div>
+            <FormLabel>Memo</FormLabel>
             <Input
               typevalue="ghost"
               sizevalue="normal"
@@ -555,10 +547,6 @@ export default compose(
       transferFees: state.Binance.transferFees,
     }),
     {
-      setTxResult: appActions.setTxResult,
-      setTxTimerModal: appActions.setTxTimerModal,
-      resetTxStatus: appActions.resetTxStatus,
-      setTxHash: appActions.setTxHash,
       refreshBalance: walletActions.refreshBalance,
     },
   ),

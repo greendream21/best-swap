@@ -42,4 +42,11 @@ export const ButtonWrapper = styled.div`
   justify-content: space-between;
 
   height: 100%;
+
+  .ant-btn {
+    &:first-child {
+      margin-top: -4px;
+      margin-bottom: 4px;
+    }
+  }
 `;
