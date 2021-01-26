@@ -28,8 +28,8 @@ type Props = {
   className?: string;
   dataTestWrapper?: string;
   dataTestInput?: string;
-  'data-test': string;
-  inputProps: TokenInputProps;
+  'data-test'?: string;
+  inputProps?: TokenInputProps;
   showPrice?: boolean;
 };
 

@@ -31,6 +31,10 @@ const routes: AppRoute[] = [
     component: asyncComponent(() => import('../SwapSend')),
   },
   {
+    path: 'send/:symbol',
+    component: asyncComponent(() => import('../SendView')),
+  },
+  {
     path: 'pool/:symbol/new',
     component: asyncComponent(() => import('../PoolCreate')),
   },

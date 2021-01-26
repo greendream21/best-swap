@@ -397,7 +397,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
         showNotification({
           type: 'error',
           message: 'Swap Invalid',
-          description: `Error: ${error.toString()}`,
+          description: `${error.toString()}`,
         });
         setDragReset(true);
         resetTxStatus();
@@ -851,7 +851,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
             {totalFeeValue}
           </Label> */}
           <Label>
-            <b>NETWORK FEE:</b> 0.000375
+            <b>NETWORK FEE:</b> 0.000375 BNB
           </Label>
           <Popover
             content={

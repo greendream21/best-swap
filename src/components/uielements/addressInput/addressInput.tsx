@@ -13,7 +13,7 @@ type Props = {
   value?: string;
   status?: boolean;
   onChange: (address: string) => void;
-  onStatusChange: (status: boolean) => void;
+  onStatusChange?: (status: boolean) => void;
   className?: string;
 };
 
@@ -21,7 +21,7 @@ const AddressInput: React.FC<Props> = (props: Props): JSX.Element => {
   const {
     value = '',
     status: initialStatus = false,
-    onStatusChange,
+    onStatusChange = () => {},
     onChange,
     className = '',
     ...otherProps
