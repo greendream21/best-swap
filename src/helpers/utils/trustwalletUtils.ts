@@ -14,8 +14,6 @@ import { CHAIN_ID } from '../../env';
 import { getSwapMemo, getWithdrawMemo, getStakeMemo } from '../memoHelper';
 import { BncResponse } from './types';
 
-// TODO: implement the exact types and remove all FixmeTypes
-
 const NETWORK_ID = 714;
 const RUNE = 'RUNE-B1A'; // RUNE symbol in the mainnet
 
@@ -333,6 +331,62 @@ export const swapRequestUsingWalletConnect = ({
     walletConnect,
     bncClient,
     walletAddress,
+    sendOrder,
+    memo,
+  });
+};
+
+export type SendRequestParam = {
+  walletConnect: FixmeType;
+  bncClient: FixmeType;
+  fromAddress: string;
+  toAddress: string;
+  symbol: string;
+  amount: TokenAmount;
+  memo?: string;
+};
+
+/**
+ * Send tx signed by trustwallet
+ * @param walletConnect wallet connect object
+ * @param bncClient     binance client
+ * @param fromAddress   User wallet address
+ * @param toAddress     Recipient Address
+ * @param symbol        SYMBOL of token to send
+ * @param amount        Amount to send
+ * @param memo          memo str
+ */
+export const sendRequestUsingWalletConnect = ({
+  walletConnect,
+  bncClient,
+  fromAddress,
+  toAddress,
+  symbol,
+  amount,
+  memo = '',
+}: SendRequestParam) => {
+  const sendAmount = tokenToBase(amount)
+    .amount()
+    .toNumber();
+
+  // send 0.00000001 amount of BNB
+  const coins: Coin[] = [
+    {
+      denom: symbol,
+      amount: sendAmount,
+    },
+  ];
+
+  const sendOrder = getSendOrderMsg({
+    fromAddress,
+    toAddress,
+    coins,
+  });
+
+  return sendTrustSignedTx({
+    walletConnect,
+    bncClient,
+    walletAddress: fromAddress,
     sendOrder,
     memo,
   });

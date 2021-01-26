@@ -35,3 +35,18 @@ export const CoinListWrapper = styled.div`
 export const StyledLink = styled.a`
   margin-left: 12px;
 `;
+
+export const ButtonWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  height: 100%;
+
+  .ant-btn {
+    &:first-child {
+      margin-top: -4px;
+      margin-bottom: 4px;
+    }
+  }
+`;

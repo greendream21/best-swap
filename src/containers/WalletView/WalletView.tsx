@@ -1,5 +1,4 @@
-import React from 'react';
-
+import React, { useCallback } from 'react';
 
 import { connect } from 'react-redux';
 import { withRouter, Link, useHistory } from 'react-router-dom';
@@ -9,12 +8,9 @@ import * as RD from '@devexperts/remote-data-ts';
 import { sortBy as _sortBy } from 'lodash';
 import { compose } from 'redux';
 
+import { getAssetFromString } from 'redux/midgard/utils';
 import { RootState } from 'redux/store';
-import {
-  User,
-  AssetData,
-  StakeDataListLoadingState,
-} from 'redux/wallet/types';
+import { User, AssetData, StakeDataListLoadingState } from 'redux/wallet/types';
 
 import {
   matchSwapDetailPair,
@@ -74,14 +70,35 @@ const WalletView: React.FC<Props> = (props: Props): JSX.Element => {
     return sd && sd.find((data: AssetData) => symbol === data.asset);
   };
 
+  const handleSwap = useCallback(
+    (asset: string) => {
+      const { symbol } = getAssetFromString(asset);
+
+      if (symbol === RUNE_SYMBOL) {
+        history.push('/pools');
+      } else {
+        history.push(`/swap/${symbol}:${RUNE_SYMBOL}`);
+      }
+    },
+    [history],
+  );
+
+  const handleSend = useCallback(
+    (asset: string) => {
+      const { symbol } = getAssetFromString(asset);
+      history.push(`/send/${symbol}`);
+    },
+    [history],
+  );
+
   const handleSelectAsset = (key: number) => {
     const newAssetName = getAssetNameByIndex(key);
 
-    let URL = `/swap/${newAssetName}:${RUNE_SYMBOL}`;
     if (newAssetName === RUNE_SYMBOL) {
-      URL = '/pools';
+      history.push('/pools');
+    } else {
+      history.push(`/swap/${newAssetName}:${RUNE_SYMBOL}`);
     }
-    history.push(URL);
   };
 
   const handleSelectStake = (index: number, stakeData: AssetData[]) => {
@@ -142,7 +159,7 @@ const WalletView: React.FC<Props> = (props: Props): JSX.Element => {
           </>
         ) : (
           <>You currently do not have any liquidity</>
-          ),
+        ),
     )(stakeData);
 
   const hasWallet = user && user.wallet;
@@ -171,6 +188,8 @@ const WalletView: React.FC<Props> = (props: Props): JSX.Element => {
               data={sortedAssets}
               selected={selectedAsset as CoinListDataList}
               onSelect={handleSelectAsset}
+              onSend={handleSend}
+              onSwap={handleSwap}
               type="wallet"
             />
           )}
