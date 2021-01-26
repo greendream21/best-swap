@@ -73,7 +73,7 @@ type Props = {
 };
 
 const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
-  const { user, transferFees, assetData, priceIndex } = props;
+  const { user, transferFees, assetData, priceIndex, refreshBalance } = props;
 
   const history = useHistory();
   const { symbol } = useParams();
@@ -206,6 +206,9 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
           setOpenPrivateModal(false);
           setDragReset(true);
 
+          // refresh wallet balance after send
+          refreshBalance(walletAddress);
+
           showNotification({
             type: 'open',
             message: 'Send Tx Success.',
@@ -229,7 +232,15 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
         console.error(error); // eslint-disable-line no-console
       }
     }
-  }, [user, walletAddress, sourceSymbol, address, xValue, memo]);
+  }, [
+    user,
+    walletAddress,
+    sourceSymbol,
+    address,
+    xValue,
+    memo,
+    refreshBalance,
+  ]);
 
   const handleConfirmTransaction = useCallback(() => {
     handleConfirmSend();
