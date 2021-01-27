@@ -1,6 +1,6 @@
 import { Layout } from 'antd';
 import styled from 'styled-components';
-import { size, key, palette } from 'styled-theme';
+import { size, palette } from 'styled-theme';
 
 import { media } from 'helpers/styleHelper';
 
@@ -71,7 +71,7 @@ export const StyledFooter = styled.div`
     align-items: center;
 
     a {
-      font-size: ${key('sizes.font.normal', '12px')};
+      font-size: 14px;
       font-weight: bold;
       color: ${palette('text', 1)};
       letter-spacing: 1px;

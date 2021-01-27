@@ -16,7 +16,7 @@ export const PoolFilterWrapper = styled.div`
 export const PopoverContent = styled.div`
   z-index: 9999;
   width: 300px;
-  font-size: '11px';
+  font-size: 12px;
   color: ${palette('text', 0)};
 `;
 

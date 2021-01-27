@@ -7,7 +7,7 @@ export const TokenInputWrapper = styled.div`
   display: flex;
   flex-direction: column;
   min-width: 212px;
-  height: 60px;
+  height: 70px;
   padding: 9px;
 
   border-radius: 2px;
@@ -28,12 +28,12 @@ export const TokenInputWrapper = styled.div`
     align-items: center;
 
     .token-input-title {
-      font-size: 11px;
+      font-size: 12px;
       color: ${palette('text', 2)};
       letter-spacing: 1px;
     }
     .token-input-header-label {
-      font-size: 11px;
+      font-size: 12px;
       color: ${palette('text', 2)};
       letter-spacing: 1px;
     }

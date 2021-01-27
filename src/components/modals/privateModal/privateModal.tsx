@@ -335,8 +335,9 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
       cancelText="CANCEL"
       footer={footer}
     >
+      {walletType !== 'keystore' && renderModalContent()}
       {children && <ModalData>{children}</ModalData>}
-      {renderModalContent()}
+      {walletType === 'keystore' && renderModalContent()}
     </StyledModal>
   );
 };

@@ -1,6 +1,6 @@
 import { InfoCircleOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
-import { palette, size, key } from 'styled-theme';
+import { palette, size } from 'styled-theme';
 
 import { media } from 'helpers/styleHelper';
 
@@ -102,7 +102,7 @@ export const HeaderTitle = styled.p`
     display:block;
   `}
   color: ${palette('text', 0)};
-  font-size: ${key('sizes.font.big', '15px')};
+  font-size: 16px;
   letter-spacing: 1px;
   white-space: nowrap;
   overflow: hidden;
@@ -205,12 +205,12 @@ export const ConnectionMenuItem = styled.div`
 
 export const PopoverContent = styled.div`
   width: 300px;
-  font-size: '11px';
+  font-size: 12px;
   color: ${palette('text', 0)};
 `;
 
 export const TooltipContent = styled.div`
-  font-size: '12px';
+  font-size: 12px;
   color: ${palette('text', 0)};
 `;
 

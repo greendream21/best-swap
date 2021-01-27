@@ -7,13 +7,13 @@ export const StyledStatistic = styled(Statistic)`
   text-transform: uppercase;
   padding: 10px 20px;
   border-radius: 4px;
-  height: 79px;
+  height: 66px;
 
   &:before {
     content: '';
     position: absolute;
     width: 6px;
-    height: 79px;
+    height: 66px;
     left: 8px;
     top: 8px;
     border-bottom-left-radius: 3px;
@@ -23,7 +23,7 @@ export const StyledStatistic = styled(Statistic)`
 
   .ant-statistic-title {
     color: ${palette('text', 1)};
-    font-size: 14px;
+    font-size: 16px;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -36,7 +36,7 @@ export const StyledStatistic = styled(Statistic)`
     span {
       color: ${palette('text', 0)};
       font-family: 'Exo 2';
-      font-size: 16px;
+      font-size: 18px;
       font-weight: bold;
     }
   }

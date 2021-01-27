@@ -1,11 +1,11 @@
 import styled from 'styled-components';
-import { palette, key } from 'styled-theme';
+import { palette } from 'styled-theme';
 
 import Tooltip from '../tooltip';
 
 const sizes = {
-  small: key('sizes.tooltip.small', '15px'),
-  normal: key('sizes.tooltip.normal', '30px'),
+  small: '16px',
+  normal: '30px',
 };
 
 export const TooltipIconWrapper = styled(Tooltip)`
