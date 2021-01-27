@@ -255,7 +255,7 @@ const TxTable: React.FC<Props> = React.memo(
 
     return (
       <TransactionWrapper>
-        <Label size="big" color="primary">
+        <Label size="large" color="primary">
           Transactions (
           {txData._tag === 'RemoteSuccess' ? txData.value.count : 0})
         </Label>

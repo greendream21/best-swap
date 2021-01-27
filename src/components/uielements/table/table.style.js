@@ -1,18 +1,22 @@
 import { Table } from 'antd';
 import { darken } from 'polished';
 import styled from 'styled-components';
-import { key, palette } from 'styled-theme';
+import { palette } from 'styled-theme';
 
 import { media } from 'helpers/styleHelper';
 
 export const TableWrapper = styled(Table)`
+  .ant-table {
+    font-size: 16px;
+  }
+
   .ant-table-thead > tr > th {
     height: ${props => (props.sizeValue === 'small' ? '52px' : '70px')};
 
     border-top: none;
     border-radius: none;
     border-color: ${palette('gray', 0)};
-    font-size: ${key('sizes.font.normal', '12px')};
+    font-size: 16px;
     color: ${palette('text', 2)};
     background-color: ${palette('background', 1)};
     text-transform: uppercase;

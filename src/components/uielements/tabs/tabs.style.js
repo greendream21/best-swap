@@ -18,7 +18,7 @@ export const StyledTab = component => styled(component)`
   .ant-tabs-nav {
     height: ${size('panelHeaderHeight', '50px')};
     padding: 0 ${key('sizes.gutter.content', '25px')};
-    font-size: 12px;
+    font-size: 14px;
     text-transform: uppercase;
 
     .ant-tabs-tab,

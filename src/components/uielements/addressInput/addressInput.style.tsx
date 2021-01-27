@@ -48,7 +48,7 @@ export const AddressInputWrapper = styled.div`
 `;
 
 export const PopoverContent = styled.div`
-  font-size: '11px';
+  font-size: 12px;
   color: ${palette('primary', 0)};
 `;
 

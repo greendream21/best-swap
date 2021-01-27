@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { palette, key } from 'styled-theme';
+import { palette } from 'styled-theme';
 
 export const ContentTitleWrapper = styled.div`
   display: flex;
@@ -10,7 +10,7 @@ export const ContentTitleWrapper = styled.div`
 
   background: ${palette('gradient', 0)};
   color: ${palette('text', 3)};
-  font-size: ${key('sizes.font.big', '15px')};
+  font-size: 20px;
   font-weight: 500;
   letter-spacing: 2px;
   text-transform: uppercase;
