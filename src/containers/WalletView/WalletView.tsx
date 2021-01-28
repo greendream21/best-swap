@@ -79,21 +79,6 @@ const WalletView: React.FC<Props> = (props: Props): JSX.Element => {
     return sd && sd.find((data: AssetData) => symbol === data.asset);
   };
 
-  const handleSwap = useCallback(
-    (asset: string) => {
-      const { symbol } = getAssetFromString(asset);
-
-      if (symbol === RUNE_SYMBOL) {
-        history.push('/pools');
-      } else {
-        history.push(`/swap/${symbol}:${RUNE_SYMBOL}`);
-      }
-
-      onClose();
-    },
-    [history, onClose],
-  );
-
   const handleSend = useCallback(
     (asset: string) => {
       const { symbol } = getAssetFromString(asset);
@@ -206,7 +191,6 @@ const WalletView: React.FC<Props> = (props: Props): JSX.Element => {
               selected={selectedAsset as CoinListDataList}
               onSelect={handleSelectAsset}
               onSend={handleSend}
-              onSwap={handleSwap}
               type="wallet"
             />
           )}

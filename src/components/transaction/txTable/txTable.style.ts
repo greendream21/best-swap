@@ -8,6 +8,7 @@ export const StyledText = styled(Label)`
   font-size: 14px;
   color: ${palette('text', 1)};
   white-space: nowrap;
+  text-transform: lowercase;
 `;
 
 export const StyledLink = styled.a`

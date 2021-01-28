@@ -505,7 +505,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       return `${token.amount().toString()} BNB`;
     };
 
-    const txtLoading = <Text>FEE: ...</Text>;
+    const txtLoading = <Text>Fee: ...</Text>;
     const isStakingBNB =
       selectedTab !== TabKeys.WITHDRAW &&
       targetAmount.amount().isGreaterThan(0);
@@ -1337,10 +1337,10 @@ const PoolStake: React.FC<Props> = (props: Props) => {
         <TxDataWrapper>
           <Label>
             <b>Add Liquidity Amount: </b>
-            {addData}
+            {addData.toUpperCase()}
           </Label>
           <Label>
-            <b>SLIP: </b>
+            <b>Slip: </b>
             {stakeSlipValue}
           </Label>
           {renderFee()}

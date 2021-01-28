@@ -39,14 +39,11 @@ export const StyledLink = styled.a`
 export const ButtonWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
 
   height: 100%;
 
   .ant-btn {
-    &:first-child {
-      margin-top: -4px;
-      margin-bottom: 4px;
-    }
+    min-width: 70px;
   }
 `;
