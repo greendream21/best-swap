@@ -177,7 +177,7 @@ export const RowFullWrapper = styled.div`
 
 export const PopoverContent = styled.div`
   width: 300px;
-  font-size: 14px;
+  font-size: '11px';
   color: ${palette('text', 0)};
 `;
 

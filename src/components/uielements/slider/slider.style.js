@@ -40,6 +40,6 @@ export const SliderLabel = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 16px;
+  font-size: 12px;
   color: ${palette('text', 0)};
 `;

@@ -1,6 +1,6 @@
 import { Collapse } from 'antd';
 import styled from 'styled-components';
-import { palette } from 'styled-theme';
+import { palette, key } from 'styled-theme';
 
 const { Panel: AntPanel } = Collapse;
 
@@ -11,7 +11,7 @@ export const CollapseWrapper = styled(Collapse)`
 
     .ant-collapse-header {
       color: ${palette('text', 0)};
-      font-size: 16px;
+      font-size: ${key('sizes.font.big', '15px')};
       font-weight: bold;
       padding-top: 20px !important;
       padding-bottom: 20px !important;

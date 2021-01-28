@@ -10,7 +10,7 @@ export const Card = styled.div`
   flex-direction: column;
   align-items: center;
 
-  height: 124px;
+  height: 120px;
   
   background: ${palette('background', 0)};
   padding: 4px 4px;
@@ -25,7 +25,7 @@ export const Card = styled.div`
     content: '';
     position: absolute;
     width: 6px;
-    height: 124px;
+    height: 120px;
     left: 8px;
     top: 8px;
     border-bottom-left-radius: 3px;

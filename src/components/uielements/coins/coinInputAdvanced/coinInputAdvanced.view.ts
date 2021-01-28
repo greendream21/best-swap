@@ -4,10 +4,9 @@ import { palette } from 'styled-theme';
 
 export const CoinInputAdvancedView = styled(Input)`
   width: 100%;
+  /* TODO: move these styles to a uielement */
   background: ${palette('background', 1)};
   color: ${palette('text', 0)};
-  font-size: 24px;
-
   &.ant-input {
     border: none;
     padding: 0;

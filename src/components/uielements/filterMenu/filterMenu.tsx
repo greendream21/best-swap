@@ -73,16 +73,16 @@ const FilterMenu: React.FC<Props> = ({
       onClick={handleClick}
     >
       {searchEnabled && (
-        <MenuItem disabled key="_search">
+        <Menu.Item disabled key="_search">
           <Input
             value={searchTerm}
             onChange={handleSearchChanged}
             placeholder={placeholder}
-            sizevalue="normal"
+            sizevalue="big"
             typevalue="ghost"
             suffix={<SearchOutlined />}
           />
-        </MenuItem>
+        </Menu.Item>
       )}
       {filteredData.map((item: string) => {
         const { key, node } = cellRenderer(item);

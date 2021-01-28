@@ -1,25 +1,25 @@
 import styled from 'styled-components';
-import { palette } from 'styled-theme';
+import { palette, key } from 'styled-theme';
 
 const fontSettings = {
   tiny: {
-    size: '10px',
+    size: key('sizes.font.tiny', '8px'),
     spacing: '0.36px',
   },
   small: {
-    size: '12px',
+    size: key('sizes.font.small', '10px'),
     spacing: '0.42px',
   },
   normal: {
-    size: '14px',
+    size: key('sizes.font.normal', '12px'),
     spacing: '1px',
   },
   big: {
-    size: '16px',
+    size: key('sizes.font.big', '15px'),
     spacing: '1px',
   },
   large: {
-    size: '20px',
+    size: key('sizes.font.large', '18px'),
     spacing: '1px',
   },
 };

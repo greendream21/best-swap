@@ -50,7 +50,7 @@ export const PoolViewTools = styled.div`
     max-width: 160px;
 
     .label-wrapper {
-      padding-left: 10px;
+      padding-left: 20px;
     }
   }
 `;
@@ -81,7 +81,7 @@ export const ActionColumn = styled.div`
 
 export const PopoverContent = styled.div`
   width: 300px;
-  font-size: 14px;
+  font-size: '11px';
   color: ${palette('text', 0)};
 `;
 
