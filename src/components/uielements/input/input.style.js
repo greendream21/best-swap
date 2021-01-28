@@ -8,19 +8,19 @@ const fontSettings = {
     spacing: '0.5px',
   },
   normal: {
-    size: '20px',
-    spacing: '1px',
+    size: key('sizes.font.normal', '11px'),
+    spacing: '0.5px',
   },
   big: {
-    size: '24px',
-    spacing: '1px',
+    size: key('sizes.font.normal', '12px'),
+    spacing: '0.5px',
   },
 };
 
 const sizes = {
   small: '20px',
-  normal: '40px',
-  big: '48px',
+  normal: '25px',
+  big: '32px',
 };
 
 const colors = {

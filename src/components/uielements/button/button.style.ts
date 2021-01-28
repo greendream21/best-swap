@@ -13,15 +13,15 @@ import {
 
 const fontSettings = {
   small: {
-    size: '10px',
+    size: key('sizes.font.small', '10px'),
     spacing: '0.5px',
   },
   normal: {
-    size: '14px',
+    size: key('sizes.font.normal', '11px'),
     spacing: '2.5px',
   },
   big: {
-    size: '20px',
+    size: key('sizes.font.large', '18px'),
     spacing: '2.5px',
   },
 };

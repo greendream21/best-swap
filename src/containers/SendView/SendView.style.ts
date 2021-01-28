@@ -162,7 +162,7 @@ export const CardFormItemCloseButton = styled(Icon).attrs({
 })``;
 
 export const PopoverContent = styled.div`
-  font-size: 14px;
+  font-size: '11px';
   color: ${palette('primary', 0)};
 `;
 

@@ -26,7 +26,7 @@ export const ChartContainer = styled.div`
   height: 100%;
   ${media.sm`
     padding: 10px 20px;
-    height: 312px;
+    height: 288px;
   `}
   background-image: ${(props: ChartContainerProps) =>
     `linear-gradient(to bottom, ${props.gradientStart}, ${props.gradientStop})`};
@@ -69,17 +69,12 @@ export const TimeContainer = styled.div`
 
 export const HeaderToggle = styled.span`
   color: ${palette('text', 0)};
-  border: 1px solid ${palette('text', 0)};
-  border-radius: 4px;
-
-  padding: 2px 8px;
-
   font-size: 14px !important;
   font-weight: ${(props: HeaderToggleProps) =>
     props.primary ? '600' : 'normal'};
   cursor: pointer;
   ${media.sm`
-    font-size: 18px !important;
+    font-size: 18px;
     &:hover {
       opacity: 0.8;
     }
@@ -125,7 +120,7 @@ export const ComingSoonText = styled.p`
   text-transform: uppercase;
   margin: 10px 0 0;
   padding: 0;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 500;
   letter-spacing: 1px;
 `;

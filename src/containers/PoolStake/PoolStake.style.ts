@@ -1,7 +1,7 @@
 import { InfoCircleOutlined } from '@ant-design/icons';
 import Paragraph from 'antd/lib/typography/Paragraph';
 import styled from 'styled-components';
-import { palette } from 'styled-theme';
+import { palette, key } from 'styled-theme';
 
 import UnstyledTabs from 'components/uielements/tabs';
 import ContentView from 'components/utility/contentView';
@@ -24,6 +24,60 @@ export const ContentWrapper = styled(ContentView)`
 
       &:last-child {
         padding-right: 0px;
+      }
+    }
+  }
+
+  .stake-status-view {
+    ${media.lg`
+      padding: 20px 0;
+      border-bottom: 1px solid ${palette('gray', 0)};
+    `}
+
+    .stake-pool-col {
+      display: flex;
+      padding: 0px 20px;
+      justify-content: center;
+      align-items: center;
+      ${media.lg`
+        justify-content: center;
+      `}
+
+      .pool-status-info {
+        display: flex;
+        flex-direction: column;
+        ${media.lg`
+          padding: 0 15px;
+        `}
+
+        .stake-pool-status {
+          width: 150px;
+          text-transform: uppercase;
+          padding-bottom: 4px;
+          .status-value {
+            ${media.lg`
+              font-weight: bold;
+              font-size: ${key('sizes.font.big', '10px')};
+            `}
+          }
+        }
+
+        .pool-price-label {
+          padding-top: 4px;
+        }
+      }
+    }
+
+    .stake-info-col {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      padding: 20px 20px 0 20px;
+      .stake-info-status {
+        width: 50%;
+        ${media.lg`
+          width: 25%;
+        `}
       }
     }
   }
@@ -159,7 +213,7 @@ export const ContentWrapper = styled(ContentView)`
         `}
 
         .label-title {
-          font-size: 16px;
+          font-size: 15px;
           text-align: center;
           font-weight: 500;
           letter-spacing: 0.04em;
@@ -446,7 +500,7 @@ export const FeeParagraph = styled(Paragraph)`
 
 export const PopoverContent = styled.div`
   width: 300px;
-  font-size: 14px;
+  font-size: '11px';
   color: ${palette('text', 0)};
 `;
 

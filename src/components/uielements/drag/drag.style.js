@@ -71,6 +71,6 @@ export const DragWrapper = styled.div`
 export const TitleLabel = styled(Label)`
   width: 240px;
   text-align: center;
-  font-size: 16px;
+  font-size: 12px;
   text-transform: uppercase;
 `;

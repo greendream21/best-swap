@@ -37,7 +37,7 @@ type Props = {
 };
 
 // https://www.chartjs.org/docs/latest/general/fonts.html#missing-fonts
-defaults.global.defaultFontSize = 16;
+defaults.global.defaultFontSize = 14;
 defaults.global.defaultFontStyle = 'normal';
 
 const DefaultChart: React.FC<Props> = React.memo(
@@ -140,7 +140,7 @@ const DefaultChart: React.FC<Props> = React.memo(
                 display: false,
               },
               ticks: {
-                fontSize: 16,
+                fontSize: 14,
                 fontColor: colors.text,
                 maxTicksLimit: isDesktopView ? 5 : 3,
                 autoSkipPadding: 5,
@@ -169,7 +169,7 @@ const DefaultChart: React.FC<Props> = React.memo(
                   return `${unit}${abbreviateNumber(Number(value))}`;
                 },
                 padding: 10,
-                fontSize: 16,
+                fontSize: 14,
                 fontColor: colors.text,
               },
               gridLines: {

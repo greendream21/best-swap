@@ -880,7 +880,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
       <Helmet title={pageTitle} content={metaDescription} />
       <SwapAssetCard>
         <ContentTitle>
-          swap {swapSource} &gt;&gt; {swapTarget}
+          swapping {swapSource} &gt;&gt; {swapTarget}
         </ContentTitle>
         <div className="swap-content">
           <div className="swap-detail-panel">
