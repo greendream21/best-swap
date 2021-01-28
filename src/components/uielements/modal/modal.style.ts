@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import { palette } from 'styled-theme';
 
 export const ModalWrapper = styled(Modal)`
-  text-transform: uppercase;
   border-color: ${palette('gray', 0)};
 
   .ant-modal-header {
@@ -44,6 +43,8 @@ export const ModalWrapper = styled(Modal)`
     padding: 0;
     background: ${palette('background', 1)};
     border-color: ${palette('gray', 0)};
+    text-transform: uppercase;
+
     & > div {
       display: flex;
       flex-direction: row;
@@ -71,7 +72,6 @@ export const ModalWrapper = styled(Modal)`
       color: ${palette('primary', 0)};
       background-color: ${palette('background', 1)} !important;
     }
-
 
     &.ant-btn-primary {
       color: ${palette('primary', 0)};

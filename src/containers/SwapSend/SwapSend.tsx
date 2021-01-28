@@ -834,15 +834,15 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     return (
       <SwapDataWrapper>
         <Label>
-          <b>SEND: </b>
-          {sendData}
+          <b>Send: </b>
+          {sendData.toUpperCase()}
         </Label>
         <Label>
-          <b>RECEIVE: </b>
-          {receiveData}
+          <b>Receive: </b>
+          {receiveData.toUpperCase()}
         </Label>
         <Label>
-          <b>SLIP: </b>
+          <b>Slip: </b>
           {slipValue}
         </Label>
         <LabelInfo>
@@ -851,7 +851,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
             {totalFeeValue}
           </Label> */}
           <Label>
-            <b>NETWORK FEE:</b> 0.000375 BNB
+            <b>Network Fee:</b> 0.000375 BNB
           </Label>
           <Popover
             content={

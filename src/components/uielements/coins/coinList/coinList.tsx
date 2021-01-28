@@ -29,7 +29,6 @@ type Props = {
   data?: CoinListDataList;
   selected?: Maybe<CoinListDataList>;
   onSelect?: (key: number) => void;
-  onSwap?: (asset: string) => void;
   onSend?: (asset: string) => void;
   size?: CoinListWrapperSize;
   className?: string;
@@ -44,7 +43,6 @@ export const CoinList: React.FC<Props> = (props: Props): JSX.Element => {
     className = '',
     type = 'liquidity',
     onSelect = (_: number) => {},
-    onSwap = () => {},
     onSend = () => {},
     ...otherProps
   } = props;
@@ -56,14 +54,6 @@ export const CoinList: React.FC<Props> = (props: Props): JSX.Element => {
       onSelect(key);
     },
     [onSelect],
-  );
-
-  const handleSwap = useCallback(
-    (asset: string) => (e: React.MouseEvent) => {
-      e.stopPropagation();
-      onSwap(asset);
-    },
-    [onSwap],
   );
 
   const handleSend = useCallback(
@@ -113,15 +103,7 @@ export const CoinList: React.FC<Props> = (props: Props): JSX.Element => {
               {isWalletType && (
                 <ButtonWrapper>
                   <Button
-                    sizevalue="small"
-                    color="primary"
-                    typevalue="outline"
-                    onClick={handleSwap(asset)}
-                  >
-                    Swap
-                  </Button>
-                  <Button
-                    sizevalue="small"
+                    sizevalue="normal"
                     color="primary"
                     typevalue="outline"
                     onClick={handleSend(asset)}
