@@ -430,7 +430,10 @@ const usePrice = (feeType = 'single') => {
       const feePercent = amount2.amount().isEqualTo(0)
         ? bn(0)
         : bn(1).minus(outputPercent);
-      const feePercentValue = `${getShortAmount(feePercent.multipliedBy(100), 2)}`;
+      const feePercentValue = `${getShortAmount(
+        feePercent.multipliedBy(100),
+        2,
+      )}`;
 
       return {
         feeInUSD,

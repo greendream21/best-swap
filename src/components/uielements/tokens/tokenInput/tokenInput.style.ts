@@ -7,7 +7,7 @@ export const TokenInputWrapper = styled.div`
   display: flex;
   flex-direction: column;
   min-width: 212px;
-  height: 60px;
+  height: 70px;
   padding: 9px;
 
   border-radius: 2px;

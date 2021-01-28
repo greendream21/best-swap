@@ -153,7 +153,7 @@ const Keystore: React.FC<Props> = (props: Props): JSX.Element => {
             />
             {invalideStatus && (
               <div className="ant-form-explain">
-                <Label color="error">Password is wrong!</Label>
+                <Label color="error">Password is wrong.</Label>
               </div>
             )}
           </Form>

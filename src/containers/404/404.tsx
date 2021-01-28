@@ -12,7 +12,7 @@ class Page404 extends Component {
       <AppLayout>
         <Helmet title="404" content="404 Not Found" />
         <Label size="large">404</Label>
-        <Label size="big">Woops! Something went wrong!</Label>
+        <Label size="big">Woops. Something went wrong.</Label>
       </AppLayout>
     );
   }
