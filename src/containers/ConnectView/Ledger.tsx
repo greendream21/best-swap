@@ -79,7 +79,7 @@ const LedgerConnector = (props: Props) => {
       });
 
       notification.success({
-        message: 'Ledger connected!',
+        message: 'Ledger connected.',
         description: 'Your ledger has successfully connected.',
         getContainer: getAppContainer,
         duration: 3,

@@ -34,6 +34,7 @@ const { TabPane } = Tabs;
 
 type ComponentProps = {
   status: string;
+  onClose: () => void;
 };
 
 type ConnectedProps = {
@@ -48,7 +49,15 @@ type Props = ComponentProps & ConnectedProps;
 type State = Record<string, never>;
 
 const WalletView: React.FC<Props> = (props: Props): JSX.Element => {
-  const { user, assetData, stakeData, loadingAssets, pathname, status } = props;
+  const {
+    user,
+    assetData,
+    stakeData,
+    loadingAssets,
+    pathname,
+    status,
+    onClose,
+  } = props;
 
   const history = useHistory();
 
@@ -79,16 +88,20 @@ const WalletView: React.FC<Props> = (props: Props): JSX.Element => {
       } else {
         history.push(`/swap/${symbol}:${RUNE_SYMBOL}`);
       }
+
+      onClose();
     },
-    [history],
+    [history, onClose],
   );
 
   const handleSend = useCallback(
     (asset: string) => {
       const { symbol } = getAssetFromString(asset);
       history.push(`/send/${symbol}`);
+
+      onClose();
     },
-    [history],
+    [history, onClose],
   );
 
   const handleSelectAsset = (key: number) => {
@@ -99,6 +112,8 @@ const WalletView: React.FC<Props> = (props: Props): JSX.Element => {
     } else {
       history.push(`/swap/${newAssetName}:${RUNE_SYMBOL}`);
     }
+
+    onClose();
   };
 
   const handleSelectStake = (index: number, stakeData: AssetData[]) => {
@@ -107,6 +122,8 @@ const WalletView: React.FC<Props> = (props: Props): JSX.Element => {
 
     const URL = `/liquidity/${asset}`;
     history.push(URL);
+
+    onClose();
   };
 
   const getSelectedAsset = (): AssetData[] => {

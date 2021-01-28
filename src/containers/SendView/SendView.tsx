@@ -77,11 +77,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
 
   const history = useHistory();
   const { symbol } = useParams();
-  const {
-    hasSufficientBnbFee,
-    hasSufficientBnbFeeInBalance,
-    getThresholdAmount,
-  } = usePrice();
+  const { hasSufficientBnbFeeInBalance, getThresholdAmount } = usePrice();
 
   const sourceSymbol = symbol || '';
   const ticker = getTickerFormat(symbol);
@@ -290,7 +286,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     }
 
     // Check if amount has sufficient BNB for binance tx fee
-    if (!hasSufficientBnbFee(xValue, sourceSymbol)) {
+    if (!hasSufficientBnbFeeInBalance) {
       showNotification({
         type: 'error',
         message: 'Insufficient BNB amount',
@@ -313,14 +309,19 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
       return;
     }
 
+    if (user?.type === 'walletconnect') {
+      handleConfirmSend();
+    }
+
     handleOpenPrivateModal();
   }, [
+    user,
     walletAddress,
     address,
-    sourceSymbol,
     xValue,
     handleOpenPrivateModal,
-    hasSufficientBnbFee,
+    handleConfirmSend,
+    hasSufficientBnbFeeInBalance,
   ]);
 
   const handleChangeSource = useCallback(
@@ -511,7 +512,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
               value={memo}
               onChange={handleChangeMemo}
               autoComplete="off"
-              placeholder="memo"
+              placeholder="Memo"
             />
             {renderFee()}
           </div>

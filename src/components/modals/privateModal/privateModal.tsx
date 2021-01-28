@@ -60,12 +60,6 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
   );
   const walletType = user?.type ?? 'disconnected';
 
-  console.log('visible:', visible);
-  console.log('validating:', validating);
-  console.log('confirmed:', confirmed);
-  console.log('addressLoading:', addressLoading);
-  console.log('poolAddressLoading:', poolAddressLoading);
-
   // dismiss modal after 15s automatically
   useTimeout(() => {
     handleCancel();
@@ -101,7 +95,7 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
     showNotification({
       type: 'error',
       message: 'Ledger Verification Failed',
-      description: 'Please verify your ledger again!',
+      description: 'Please verify your ledger again.',
       duration: 10,
     });
 
@@ -137,7 +131,7 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
       showNotification({
         type: 'error',
         message: 'Ledger Verify Failed',
-        description: 'Please conenct your ledger again!',
+        description: 'Please conenct your ledger again.',
       });
       return;
     }
@@ -285,7 +279,7 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
               autoComplete="off"
             />
             {invalidPassword && (
-              <div className="ant-form-explain">Password is wrong!</div>
+              <div className="ant-form-explain">Password is wrong.</div>
             )}
           </Form.Item>
         </Form>
@@ -295,7 +289,7 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
     if (walletType === 'ledger') {
       return (
         <ModalContent>
-          <Label>CLICK CONFIRM TO SIGN WITH LEDGER!</Label>
+          <Label>CLICK CONFIRM TO SIGN WITH LEDGER.</Label>
         </ModalContent>
       );
     }
@@ -303,7 +297,7 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
     if (walletType === 'walletconnect') {
       return (
         <ModalContent>
-          <Label>CONFIRM TX USING YOUR TRUSTWALLET!</Label>
+          <Label>CONFIRM TX USING YOUR TRUSTWALLET.</Label>
         </ModalContent>
       );
     }
@@ -311,7 +305,7 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
     // if wallet is not connected
     return (
       <ModalContent>
-        <Label>WALLET IS NOT CONNECTED!</Label>
+        <Label>WALLET IS NOT CONNECTED.</Label>
       </ModalContent>
     );
   };

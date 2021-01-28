@@ -93,7 +93,7 @@ const WalletDrawer: React.FC<Props> = props => {
         <div className="refresh-balance-icon" onClick={onClickRefresh}>
           <SyncOutlined spin={refresh} />
         </div>
-        <WalletView status={status} />
+        <WalletView status={status} onClose={onClose} />
         <div className="wallet-drawer-tools">
           <Button
             className="forget-btn"

@@ -14,7 +14,7 @@ const AddWallet: React.FC = (): JSX.Element => (
     <div className="add-wallet-icon">
       <SwitcherOutlined />
     </div>
-    <Label className="connect-wallet-label">Please connect your wallet!</Label>
+    <Label className="connect-wallet-label">Please connect your wallet.</Label>
     <Link to="/connect">
       <WalletButton />
     </Link>
