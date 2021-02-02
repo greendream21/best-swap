@@ -482,6 +482,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
                   value={percent}
                   onChange={handleChangePercent}
                   withLabel
+                  tabIndex="-1"
                 />
               </div>
             </SliderSwapWrapper>
