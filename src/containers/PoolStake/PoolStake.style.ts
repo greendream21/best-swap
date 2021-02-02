@@ -408,12 +408,11 @@ export const ContentWrapper = styled(ContentView)`
         }
 
         .share-status-wrapper {
-          ${media.lg`
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            align-items: center;
-          `}
+          display: flex;
+          flex-direction: row;
+          justify-content: center;
+          align-items: center;
+          padding-top: 24px;
 
           .info-status-wrapper {
             display: flex;
@@ -435,10 +434,6 @@ export const ContentWrapper = styled(ContentView)`
             display: flex;
             flex-direction: column;
             align-items: center;
-            ${media.lg`
-              padding-top: 24px;
-              padding-right: 24px;
-            `}
           }
         }
       }

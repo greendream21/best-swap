@@ -1057,6 +1057,19 @@ const PoolStake: React.FC<Props> = (props: Props) => {
               onConfirm={handleStake}
               onDrag={handleDrag}
             />
+            <Popover
+              content={renderPopoverContent}
+              getPopupContainer={getCooldownPopupContainer}
+              placement="bottomLeft"
+              overlayClassName="pool-filter-info"
+              overlayStyle={{
+                padding: '6px',
+                animationDuration: '0s !important',
+                animation: 'none !important',
+              }}
+            >
+              <PopoverIcon />
+            </Popover>
           </div>
         </div>
       </>
