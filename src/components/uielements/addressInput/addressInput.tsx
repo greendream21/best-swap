@@ -91,7 +91,7 @@ const AddressInput: React.FC<Props> = (props: Props): JSX.Element => {
           <Input
             className="address-input"
             color="success"
-            sizevalue="normal"
+            sizevalue="big"
             value={value}
             onChange={onChangeHandler}
             placeholder="Enter Recipient Address"
