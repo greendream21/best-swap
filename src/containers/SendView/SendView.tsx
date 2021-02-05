@@ -492,7 +492,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
                   <FormLabel>Recipient</FormLabel>
                   <Input
                     typevalue="ghost"
-                    sizevalue="normal"
+                    sizevalue="big"
                     value={address}
                     onChange={handleChangeAddress}
                     autoComplete="off"
@@ -509,7 +509,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
             <FormLabel>Memo</FormLabel>
             <Input
               typevalue="ghost"
-              sizevalue="normal"
+              sizevalue="big"
               value={memo}
               onChange={handleChangeMemo}
               autoComplete="off"

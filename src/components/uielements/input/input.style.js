@@ -8,19 +8,19 @@ const fontSettings = {
     spacing: '0.5px',
   },
   normal: {
-    size: key('sizes.font.normal', '11px'),
+    size: '14px',
     spacing: '0.5px',
   },
   big: {
-    size: key('sizes.font.normal', '12px'),
-    spacing: '0.5px',
+    size: '20px',
+    spacing: '0.75px',
   },
 };
 
 const sizes = {
   small: '20px',
   normal: '25px',
-  big: '32px',
+  big: '36px',
 };
 
 const colors = {
@@ -57,5 +57,10 @@ export const InputWrapper = styled(Input)`
           ? 'none'
           : '0 0 0 2px ' + colors[props.color]};
     }
+  }
+
+  .ant-input-prefix {
+    display: flex;
+    align-items: center;
   }
 `;
