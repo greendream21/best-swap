@@ -185,7 +185,11 @@ export function* getPools() {
 
       yield put(actions.getPoolsSuccess(pools));
 
-      yield put(actions.getPoolData({ assets: pools }));
+      // TODO: filter out BNB.INJ-FAE since midgard does not retrieve pool data
+      const INJ_FAE = 'BNB.INJ-FAE';
+      const filteredPools = pools.filter((pool: string) => pool !== INJ_FAE);
+
+      yield put(actions.getPoolData({ assets: filteredPools }));
     } catch (error) {
       yield put(actions.getPoolsFailed(error));
     }
