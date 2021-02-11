@@ -16,7 +16,7 @@ const useMidgard = () => {
     (state: RootState) => state.Midgard,
   );
 
-  const { poolData } = midgardState;
+  const { poolData, pools } = midgardState;
 
   // get all enabled pool assets
   const enabledPools: string[] = useMemo(
@@ -42,11 +42,18 @@ const useMidgard = () => {
     return poolSymbol && enabledPools.includes(poolSymbol.toUpperCase());
   }, [enabledPools]);
 
+  const isPoolExists = useCallback((pool: string) => {
+    const poolSymbol = getAssetFromString(pool)?.symbol;
+
+    return poolSymbol && pools.includes(`BNB.${poolSymbol.toUpperCase()}`);
+  }, [pools]);
+
   return {
     midgardActions,
     ...midgardState,
     enabledPools,
     isValidPool,
+    isPoolExists,
   };
 };
 

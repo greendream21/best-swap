@@ -33,6 +33,7 @@ import { getAssetFromString } from 'redux/midgard/utils';
 import { RootState } from 'redux/store';
 import { AssetData, User } from 'redux/wallet/types';
 
+import useMidgard from 'hooks/useMidgard';
 import useNetwork from 'hooks/useNetwork';
 import usePrice from 'hooks/usePrice';
 
@@ -106,6 +107,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
 
   const history = useHistory();
   const { reducedPricePrefix, priceIndex } = usePrice();
+  const { isValidPool } = useMidgard();
 
   const loading = poolLoading || poolDataLoading;
   const wallet: Maybe<string> = user ? user.wallet : null;
@@ -120,14 +122,8 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
   const handleSelectPoolStatus = useCallback(
     (status: PoolDetailStatusEnum) => {
       selectPoolStatus(status);
-
-      if (status === PoolDetailStatusEnum.Enabled) {
-        getPools('enabled');
-      } else {
-        getPools('bootstrap');
-      }
     },
-    [selectPoolStatus, getPools],
+    [selectPoolStatus],
   );
 
   const handleNewPool = () => {
@@ -163,12 +159,8 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
   );
 
   const handleRefresh = useCallback(() => {
-    if (poolStatus === PoolDetailStatusEnum.Enabled) {
-      getPools('enabled');
-    } else {
-      getPools('bootstrap');
-    }
-  }, [getPools, poolStatus]);
+    getPools();
+  }, [getPools]);
 
   const renderTextCell = useCallback(
     (text: string) => {
@@ -485,8 +477,15 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         onRow={(record: PoolData) => {
           return {
             onClick: () => {
-              const URL = `/pool/${record?.values?.symbol?.toUpperCase()}`;
-              history.push(URL);
+              // check if pool is enabled
+              if (isValidPool(record?.values?.symbol)) {
+                const URL = `/pool/${record?.values?.symbol?.toUpperCase()}`;
+                history.push(URL);
+              } else {
+                // redirect to manage page for bootstrapped pools
+                const URL = `/liquidity/${record?.values?.symbol?.toUpperCase()}`;
+                history.push(URL);
+              }
             },
           };
         }}
@@ -496,11 +495,14 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         rowKey="key"
       />
     );
-  }, [columns, filteredData, poolLoading, history]);
+  }, [columns, filteredData, poolLoading, history, isValidPool]);
 
   return (
     <ContentWrapper className="pool-view-wrapper">
-      <Helmet title="BEPSwap" content="BEPSwap is Binance Chain's first decentralised finance application allowing BEP2 token holders to swap their assets, or stake them to provide liquidity to the market." />
+      <Helmet
+        title="BEPSwap"
+        content="BEPSwap is Binance Chain's first decentralised finance application allowing BEP2 token holders to swap their assets, or stake them to provide liquidity to the market."
+      />
       <StatBar
         loading={statsLoading || networkInfoLoading}
         stats={stats}
