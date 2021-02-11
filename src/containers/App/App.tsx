@@ -8,6 +8,8 @@ import Footer from 'components/footer';
 import Header from 'components/header';
 import ViewPanel from 'components/viewPanel';
 
+import useMidgard from 'hooks/useMidgard';
+
 import { COMMIT_HASH } from 'helpers/envHelper';
 import { matchPage, matchParam } from 'helpers/routerHelper';
 
@@ -28,6 +30,7 @@ const App: React.FC<Props> = (props: Props): JSX.Element => {
 
   const location = useLocation();
   const history = useHistory();
+  const { isValidPool } = useMidgard();
 
   const renderBack = useMemo(() => {
     const { pathname } = location;
@@ -39,7 +42,11 @@ const App: React.FC<Props> = (props: Props): JSX.Element => {
       if (matchPage.isAddLiquidityPage(pathname)) {
         const symbol = matchParam.matchAddLiquiditySymbol(pathname);
 
-        history.push(`/pool/${symbol}`);
+        if (symbol && isValidPool(symbol)) {
+          history.push(`/pool/${symbol}`);
+        } else {
+          history.push('/pools');
+        }
       } else if (matchPage.isSwapPage(pathname)) {
         const symbolPair = matchParam.matchSwapDetailPair(pathname);
         const source = symbolPair?.source;
@@ -63,7 +70,7 @@ const App: React.FC<Props> = (props: Props): JSX.Element => {
         <span>Back</span>
       </BackLink>
     );
-  }, [location, history]);
+  }, [location, history, isValidPool]);
 
   return (
     <AppLayout>

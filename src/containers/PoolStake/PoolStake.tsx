@@ -149,7 +149,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     setTxTimerModal,
   } = props;
 
-  const { isValidPool } = useMidgard();
+  const { isPoolExists } = useMidgard();
 
   const history = useHistory();
   const { symbol = '' } = useParams();
@@ -1382,7 +1382,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
   const yourShareSpan = hasWallet ? 8 : 24;
 
-  if (!isValidPool(symbol)) {
+  if (!isPoolExists(symbol)) {
     return <Loader />;
   }
 

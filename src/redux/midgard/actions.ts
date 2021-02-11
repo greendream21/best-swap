@@ -19,14 +19,13 @@ import {
   GetPoolDetailByAssetPayload,
   GetPoolEarningDetailsPayload,
   ThorchainData,
-  PoolStatus,
   PoolDataMap,
   GetTxPayload,
   TxSuccessPayload,
 } from './types';
 
-export const getPools = (payload?: PoolStatus) =>
-  ({ type: 'GET_POOLS_REQUEST', payload } as const);
+export const getPools = () =>
+  ({ type: 'GET_POOLS_REQUEST' } as const);
 
 export const getPoolsSuccess = (payload: string[]) =>
   ({ type: 'GET_POOLS_SUCCESS', payload } as const);

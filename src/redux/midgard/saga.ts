@@ -32,7 +32,6 @@ import {
   GetStakerPoolDataPayload,
   GetRTAggregateByAssetPayload,
   GetRTStatsPayload,
-  PoolStatus,
   PoolDataMap,
   GetTxPayload,
 } from './types';
@@ -76,7 +75,7 @@ export function* getApiBasePath(net: NET, noCache = false) {
   }
 }
 
-function* tryGetPools(status: PoolStatus = 'enabled') {
+function* tryGetPools() {
   for (let i = 0; i < MIDGARD_MAX_RETRY; i++) {
     try {
       const noCache = i > 0;
@@ -89,7 +88,6 @@ function* tryGetPools(status: PoolStatus = 'enabled') {
           context: midgardApi,
           fn,
         },
-        status,
       );
       return poolAssets;
     } catch (error) {
@@ -176,12 +174,10 @@ export function* getPoolAssets() {
 }
 
 export function* getPools() {
-  yield takeEvery('GET_POOLS_REQUEST', function*({
-    payload,
-  }: ReturnType<typeof actions.getPools>) {
+  yield takeEvery('GET_POOLS_REQUEST', function*() {
     try {
       // get pools
-      const pools = yield call(tryGetPools, payload);
+      const pools = yield call(tryGetPools);
 
       yield put(actions.getPoolsSuccess(pools));
 
@@ -484,10 +480,12 @@ export function* getTx() {
       const refresh = payload?.refresh ?? false;
       const data = yield call(tryGetTx, payload);
 
-      yield put(actions.getTxSuccess({
-        data,
-        refresh,
-      }));
+      yield put(
+        actions.getTxSuccess({
+          data,
+          refresh,
+        }),
+      );
     } catch (error) {
       yield put(actions.getTxFailed(error));
     }
