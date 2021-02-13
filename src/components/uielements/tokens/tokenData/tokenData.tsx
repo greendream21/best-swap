@@ -20,13 +20,15 @@ const TokenData: React.FC<Props> = (props: Props): JSX.Element => {
     ...otherProps
   } = props;
 
+  const ticker = asset.split('-')[0];
+
   return (
     <TokenDataWrapper
       className={`tokenData-wrapper ${className}`}
       {...otherProps}
     >
-      <Coin className="coinData-coin-avatar" type={asset} size={size} />
-      <div className="coinData-asset-label">{asset}</div>
+      <Coin className="coinData-coin-avatar" type={ticker} size={size} />
+      <div className="coinData-asset-label">{ticker}</div>
     </TokenDataWrapper>
   );
 };

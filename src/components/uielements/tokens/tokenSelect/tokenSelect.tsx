@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { delay, formatBN } from '@thorchain/asgardex-util';
+import { bn, delay, formatBN } from '@thorchain/asgardex-util';
 import { Dropdown } from 'antd';
 import BigNumber from 'bignumber.js';
 
@@ -39,14 +39,14 @@ const DropdownCarret: React.FC<DropdownCarretProps> = (
 type Props = {
   assetData: string[];
   asset: string;
-  price: BigNumber;
-  priceIndex: PriceDataIndex;
+  price?: BigNumber;
+  priceIndex?: PriceDataIndex;
   withSearch?: boolean;
   searchDisable?: string[];
-  onSelect: (_: number) => void;
+  onSelect?: (_: number) => void;
   onChangeAsset?: (asset: string) => void;
   className?: string;
-  'data-test': string;
+  'data-test'?: string;
 };
 
 type State = {
@@ -142,7 +142,7 @@ class TokenSelect extends React.Component<Props, State> {
     const {
       assetData,
       asset,
-      priceIndex,
+      priceIndex = {},
       withSearch = true,
       searchDisable = [],
       'data-test': dataTest,
@@ -165,7 +165,7 @@ class TokenSelect extends React.Component<Props, State> {
   };
 
   render() {
-    const { asset, price, className = '' } = this.props;
+    const { asset, price = bn(0), className = '' } = this.props;
     const { openDropdown } = this.state;
 
     return (

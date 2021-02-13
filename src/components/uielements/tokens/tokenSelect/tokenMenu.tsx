@@ -39,7 +39,7 @@ const TokenMenu: React.FC<Props> = (props: Props): JSX.Element => {
     () =>
       assetData.filter((item: string) => {
         const tokenName = getTickerFormat(item);
-        return asset && tokenName.toLowerCase() !== asset.toLowerCase();
+        return !asset || tokenName.toLowerCase() !== asset.toLowerCase();
       }),
     [asset, assetData],
   );

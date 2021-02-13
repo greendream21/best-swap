@@ -4,8 +4,10 @@ import Paragraph from 'antd/lib/typography/Paragraph';
 import styled from 'styled-components';
 import { palette } from 'styled-theme';
 
+
 import UnstyledInput from 'components/uielements/input';
 import Label from 'components/uielements/label';
+import TokenSelect from 'components/uielements/tokens/tokenSelect';
 import ContentView from 'components/utility/contentView';
 
 import { media, cleanTag } from 'helpers/styleHelper';
@@ -18,12 +20,6 @@ export const SwapAssetCard = styled.div`
   margin: auto;
   width: 100%;
   max-width: 600px;
-
-  .swaptool-container {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 8px;
-  }
 
   .drag-confirm-wrapper {
     display: flex;
@@ -240,4 +236,41 @@ export const Input = styled(UnstyledInput)`
 
 export const FormLabel = styled(Label)`
   padding-bottom: 4px;
+`;
+
+export const InputRow = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+  margin-bottom: 10px;
+`;
+
+export const PoolSelectWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+  margin-bottom: 10px;
+`;
+
+export const PoolSelectLabelWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 336px;
+`;
+
+export const TokenMenu = styled(TokenSelect)`
+  width: 170px;
+`;
+
+export const SendTypeWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px;
+
+  width: 300px;
 `;
