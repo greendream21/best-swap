@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 
 import { connect } from 'react-redux';
 import { withRouter, useHistory, useParams } from 'react-router-dom';
@@ -19,6 +19,7 @@ import { compose } from 'redux';
 
 import Helmet from 'components/helmet';
 import PrivateModal from 'components/modals/privateModal';
+import Button from 'components/uielements/button';
 import ContentTitle from 'components/uielements/contentTitle';
 import Drag from 'components/uielements/drag';
 import Label from 'components/uielements/label';
@@ -33,10 +34,13 @@ import { RootState } from 'redux/store';
 import * as walletActions from 'redux/wallet/actions';
 import { User, AssetData } from 'redux/wallet/types';
 
+import useMidgard from 'hooks/useMidgard';
+import usePrevious from 'hooks/usePrevious';
 import usePrice from 'hooks/usePrice';
 
 import { BINANCE_TX_BASE_URL } from 'helpers/apiHelper';
 import { getAppContainer } from 'helpers/elementHelper';
+import { getSwapMemo, getStakeMemo } from 'helpers/memoHelper';
 import { getTickerFormat, getShortAmount } from 'helpers/stringHelper';
 import { normalTx } from 'helpers/utils/sendUtils';
 import { sendRequestUsingWalletConnect } from 'helpers/utils/trustwalletUtils';
@@ -61,8 +65,14 @@ import {
   LabelInfo,
   PopoverIcon,
   Input,
+  InputRow,
   FormLabel,
+  PoolSelectWrapper,
+  PoolSelectLabelWrapper,
+  TokenMenu,
+  SendTypeWrapper,
 } from './SendView.style';
+import { SendMode } from './types';
 
 type Props = {
   assetData: AssetData[];
@@ -78,6 +88,26 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   const history = useHistory();
   const { symbol } = useParams();
   const { hasSufficientBnbFeeInBalance, getThresholdAmount } = usePrice();
+
+  const {
+    poolAddress,
+    poolAddressLoading,
+    getPoolAddress,
+    pools,
+  } = useMidgard();
+
+  const poolSymbols = useMemo(() => {
+    return pools.map(pool => pool.split('.')[1]);
+  }, [pools]);
+
+  const [sendMode, setSendMode] = useState<SendMode>(SendMode.NORMAL);
+  const [poolAddressInput, setPoolAddressInput] = useState<string>(poolAddress || '');
+  const [selectedPool, setSelectedPool] = useState<string>('');
+
+  const handleSelectPool = useCallback((poolAsset: string) => {
+    setSelectedPool(poolAsset);
+    setMemo('');
+  }, []);
 
   const sourceSymbol = symbol || '';
   const ticker = getTickerFormat(symbol);
@@ -105,11 +135,38 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   const [percent, setPercent] = useState<number>(0);
   const [memo, setMemo] = useState('');
 
+  const recipientAddress =
+    sendMode === SendMode.NORMAL ? address : poolAddressInput;
+
+  useEffect(() => {
+    getPoolAddress();
+  }, [getPoolAddress]);
+
+  const prevPoolAddressLoading = usePrevious(poolAddressLoading);
+  useEffect(() => {
+    if (!poolAddressLoading && prevPoolAddressLoading && poolAddress) {
+      setPoolAddressInput(poolAddress);
+    }
+  }, [poolAddress, poolAddressLoading, prevPoolAddressLoading]);
+
   const handleChangeAddress = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      setAddress(e.target.value);
+      const { value } = e.target;
+
+      if (value.toLowerCase() === 'pooladdress') {
+        setSendMode(SendMode.EXPERT);
+      }
+      setAddress(value);
     },
     [setAddress],
+  );
+
+  const handleChangePoolAddress = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const { value } = e.target;
+      setPoolAddressInput(value);
+    },
+    [],
   );
 
   const handleChangeMemo = useCallback(
@@ -167,7 +224,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   );
 
   const handleConfirmSend = useCallback(async () => {
-    if (user && walletAddress && sourceSymbol) {
+    if (user && walletAddress && sourceSymbol && recipientAddress) {
       const tokenAmountToSend = xValue;
 
       try {
@@ -178,7 +235,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
             walletConnect: user.walletConnector,
             bncClient,
             fromAddress: walletAddress,
-            toAddress: address,
+            toAddress: recipientAddress,
             symbol: sourceSymbol,
             amount: tokenAmountToSend,
             memo,
@@ -189,7 +246,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
             sourceSymbol,
             amount: tokenAmountToSend,
             fromAddress: walletAddress,
-            toAddress: address,
+            toAddress: recipientAddress,
             memo,
           });
         }
@@ -232,10 +289,10 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     user,
     walletAddress,
     sourceSymbol,
-    address,
     xValue,
     memo,
     refreshBalance,
+    recipientAddress,
   ]);
 
   const handleConfirmTransaction = useCallback(() => {
@@ -296,17 +353,30 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
       return;
     }
 
-    // Validate address to send to
-    const isValidRecipientValue = await isValidRecipient(address);
-    if (!isValidRecipientValue) {
-      setInvalidAddress(true);
-      setDragReset(true);
-      showNotification({
-        type: 'error',
-        message: 'Invalid Recipient Address',
-        description: 'Recipient Address is not valid.',
-      });
-      return;
+    if (sendMode === SendMode.NORMAL) {
+      // Validate address to send to
+      const isValidRecipientValue = await isValidRecipient(address);
+      if (!isValidRecipientValue) {
+        setInvalidAddress(true);
+        setDragReset(true);
+        showNotification({
+          type: 'error',
+          message: 'Invalid Recipient Address',
+          description: 'Recipient Address is not valid.',
+        });
+        return;
+      }
+    } else {
+      const isValidRecipientValue = await isValidRecipient(poolAddressInput);
+      if (!isValidRecipientValue) {
+        setDragReset(true);
+        showNotification({
+          type: 'error',
+          message: 'Invalid Pool Address',
+          description: 'Pool Address is not valid.',
+        });
+        return;
+      }
     }
 
     if (user?.type === 'walletconnect') {
@@ -315,9 +385,11 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
 
     handleOpenPrivateModal();
   }, [
+    sendMode,
     user,
     walletAddress,
     address,
+    poolAddressInput,
     xValue,
     handleOpenPrivateModal,
     handleConfirmSend,
@@ -351,6 +423,60 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     },
     [sourceSymbol, assetData],
   );
+
+  const handleSelectDepositMemo = useCallback(() => {
+    if (selectedPool) {
+      setMemo(getStakeMemo(selectedPool));
+    }
+  }, [selectedPool]);
+
+  const handleSelectSwapMemo = useCallback(() => {
+    if (selectedPool) {
+      setMemo(getSwapMemo(selectedPool));
+    }
+  }, [selectedPool]);
+
+  const renderPoolSelect = () => {
+    return (
+      <PoolSelectWrapper>
+        <PoolSelectLabelWrapper>
+          <Label size="large" weight="bold">
+            Select a Target Pool
+          </Label>
+        </PoolSelectLabelWrapper>
+        <TokenMenu
+          asset={selectedPool}
+          assetData={poolSymbols}
+          withSearch
+          onChangeAsset={handleSelectPool}
+        />
+      </PoolSelectWrapper>
+    );
+  };
+
+  const renderSendType = () => {
+    return (
+      <SendTypeWrapper>
+        <Label>Select Memo Type: </Label>
+        <Button
+          sizevalue="small"
+          color="primary"
+          typevalue="outline"
+          onClick={handleSelectDepositMemo}
+        >
+          Deposit
+        </Button>
+        <Button
+          sizevalue="small"
+          color="primary"
+          typevalue="outline"
+          onClick={handleSelectSwapMemo}
+        >
+          Swap
+        </Button>
+      </SendTypeWrapper>
+    );
+  };
 
   const formatBnbAmount = (value: BaseAmount) => {
     const token = baseToToken(value);
@@ -425,7 +551,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
         </Label>
         <Label>
           <b>Recipient: </b>
-          {address}
+          {recipientAddress}
         </Label>
         <Label>
           <b>Memo: </b>
@@ -486,7 +612,8 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
                 />
               </div>
             </SliderSwapWrapper>
-            <div className="swaptool-container">
+            {sendMode === SendMode.EXPERT && renderPoolSelect()}
+            <InputRow>
               <CardForm>
                 <CardFormItem className={invalidAddress ? 'has-error' : ''}>
                   <FormLabel>Recipient</FormLabel>
@@ -505,16 +632,34 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
                   Recipient address is invalid!
                 </CardFormItemError>
               )}
-            </div>
-            <FormLabel>Memo</FormLabel>
-            <Input
-              typevalue="ghost"
-              sizevalue="big"
-              value={memo}
-              onChange={handleChangeMemo}
-              autoComplete="off"
-              placeholder="Memo"
-            />
+            </InputRow>
+            {sendMode === SendMode.EXPERT && (
+              <>
+                <InputRow>
+                  <FormLabel>Pool Address</FormLabel>
+                  <Input
+                    typevalue="ghost"
+                    sizevalue="big"
+                    value={poolAddressInput}
+                    onChange={handleChangePoolAddress}
+                    autoComplete="off"
+                    placeholder="Pool Address"
+                  />
+                </InputRow>
+                {renderSendType()}
+              </>
+            )}
+            <InputRow>
+              <FormLabel>Memo</FormLabel>
+              <Input
+                typevalue="ghost"
+                sizevalue="big"
+                value={memo}
+                onChange={handleChangeMemo}
+                autoComplete="off"
+                placeholder="Memo"
+              />
+            </InputRow>
             {renderFee()}
           </div>
         </div>

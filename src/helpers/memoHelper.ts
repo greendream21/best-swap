@@ -4,7 +4,7 @@ const getAssetFormat = (symbol: Maybe<string>) => {
   return `BNB.${symbol}`;
 };
 
-export const getSwapMemo = (symbol: string, addr: string, sliplimit = '') => {
+export const getSwapMemo = (symbol: string, addr = '', sliplimit = '') => {
   return `SWAP:${getAssetFormat(symbol)}:${addr}:${sliplimit}`;
 };
 
