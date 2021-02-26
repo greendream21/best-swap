@@ -38,11 +38,8 @@ import useNetwork from 'hooks/useNetwork';
 import usePrice from 'hooks/usePrice';
 
 import { getAppContainer } from 'helpers/elementHelper';
-import { getTickerFormat, getTokenName } from 'helpers/stringHelper';
-import {
-  getAvailableTokensToCreate,
-  getPoolData,
-} from 'helpers/utils/poolUtils';
+import { getTokenName } from 'helpers/stringHelper';
+import { getPoolData } from 'helpers/utils/poolUtils';
 import { PoolData } from 'helpers/utils/types';
 
 import { RUNE_SYMBOL } from 'settings/assetData';
@@ -88,8 +85,6 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     pools,
     poolData,
     stats,
-    assetData,
-    user,
     statsLoading,
     poolLoading,
     poolDataLoading,
@@ -110,7 +105,6 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
   const { isValidPool } = useMidgard();
 
   const loading = poolLoading || poolDataLoading;
-  const wallet: Maybe<string> = user ? user.wallet : null;
 
   const {
     isValidFundCaps,
@@ -127,28 +121,34 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
   );
 
   const handleNewPool = () => {
-    if (!wallet) {
-      showNotification({
-        type: 'warning',
-        message: 'Create Pool Failed',
-        description: 'Please connect your wallet to add a new pool.',
-      });
-    } else {
-      const possibleTokens = getAvailableTokensToCreate(assetData, pools);
-      if (possibleTokens.length) {
-        const symbol = possibleTokens[0].asset;
-        if (getTickerFormat(symbol) !== 'rune') {
-          const URL = `/pool/${symbol}/new`;
-          history.push(URL);
-        }
-      } else {
-        showNotification({
-          type: 'warning',
-          message: 'Create Pool Failed',
-          description: 'You do not have available asset to create a new pool.',
-        });
-      }
-    }
+    showNotification({
+      type: 'warning',
+      message: 'Add New Pool Disabled.',
+      description:
+        'New pools have been disabled due to the forthcoming migration to multichain chaosnet.',
+    });
+    // if (!wallet) {
+    //   showNotification({
+    //     type: 'warning',
+    //     message: 'Create Pool Failed',
+    //     description: 'Please connect your wallet to add a new pool.',
+    //   });
+    // } else {
+    //   const possibleTokens = getAvailableTokensToCreate(assetData, pools);
+    //   if (possibleTokens.length) {
+    //     const symbol = possibleTokens[0].asset;
+    //     if (getTickerFormat(symbol) !== 'rune') {
+    //       const URL = `/pool/${symbol}/new`;
+    //       history.push(URL);
+    //     }
+    //   } else {
+    //     showNotification({
+    //       type: 'warning',
+    //       message: 'Create Pool Failed',
+    //       description: 'You do not have available asset to create a new pool.',
+    //     });
+    //   }
+    // }
   };
 
   const onChangeKeywordHandler = useCallback(
