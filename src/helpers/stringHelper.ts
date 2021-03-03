@@ -1,6 +1,6 @@
 import { Token } from '@thorchain/asgardex-binance';
-import { TokenAmount, formatTokenAmount } from '@thorchain/asgardex-token';
-import { BaseAmount, formatBaseAsAssetAmount } from '@thorchain/asgardex-util';
+import { TokenAmount, formatTokenAmount, formatBaseAsTokenAmount, baseAmount } from '@thorchain/asgardex-token';
+import { BaseAmount, formatBaseAsAssetAmount,  bnOrZero } from '@thorchain/asgardex-util';
 import BigNumber from 'bignumber.js';
 
 import { Maybe, Nothing, Pair } from 'types/bepswap';
@@ -65,6 +65,10 @@ export const getShortAssetAmount = (amount: BaseAmount, decimal = 2) => {
 export const getTokenName = (tokenList: Token[], assetName: string): string => {
   const token = tokenList.find(item => item.symbol === assetName);
   return token ? token.name.toUpperCase() : assetName.toUpperCase();
+};
+
+export const formatMidgardAmount = (amount?: string | number) => {
+  return formatBaseAsTokenAmount(baseAmount(bnOrZero(amount)));
 };
 
 export const emptyString = '';
