@@ -41,6 +41,7 @@ import {
   getOrderedPoolString,
   getEoDTime,
   getWeekAgoTime,
+  getMonthFromTime,
   getAssetSymbolFromPayload,
 } from './utils';
 
@@ -549,11 +550,12 @@ export function* getRTAggregateByAsset() {
 
       const curTime = getEoDTime();
       const weekAgoTime = getWeekAgoTime();
+      const maxFromTime = getMonthFromTime();
 
       const allTimeParams: GetRTAggregateByAssetPayload = {
         ...payload,
         interval: 'day',
-        from: 0,
+        from: maxFromTime,
         to: curTime,
       };
 
@@ -616,11 +618,13 @@ export function* getRTStats() {
     try {
       const curTime = getEoDTime();
       const weekAgoTime = getWeekAgoTime();
+      const maxFromTime = getMonthFromTime();
+      // calculate MAX from = 80days ago
 
       const allTimeParams: GetRTStatsPayload = {
         ...payload,
         interval: 'day',
-        from: 0,
+        from: maxFromTime,
         to: curTime,
       };
 

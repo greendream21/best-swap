@@ -37,7 +37,7 @@ import useNetwork from 'hooks/useNetwork';
 import usePrice from 'hooks/usePrice';
 
 import { getAppContainer } from 'helpers/elementHelper';
-import { getTokenName } from 'helpers/stringHelper';
+import { formatMidgardAmount, getTokenName } from 'helpers/stringHelper';
 import { getPoolData } from 'helpers/utils/poolUtils';
 import { PoolData } from 'helpers/utils/types';
 
@@ -82,7 +82,7 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
 
   const { isValidPool } = useMidgard();
 
-  const { getUSDPrice, pricePrefix, runePrice } = usePrice();
+  const { pricePrefix, runePrice } = usePrice();
   const [selectedChart, setSelectedChart] = useState('Volume');
 
   const {
@@ -123,11 +123,11 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
       const time = data?.time ?? 0;
       const volumeData = {
         time,
-        value: getUSDPrice(bnOrZero(data?.poolVolume).multipliedBy(2)),
+        value: formatMidgardAmount(data?.poolVolumeUSD),
       };
       const liquidityData = {
         time,
-        value: getUSDPrice(bnOrZero(data?.runeDepth).multipliedBy(2)),
+        value: formatMidgardAmount(data?.totalDepthUSD),
       };
 
       volumeSeriesDataAT.push(volumeData);
@@ -141,11 +141,11 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
       const time = data?.time ?? 0;
       const volumeData = {
         time,
-        value: getUSDPrice(bnOrZero(data?.poolVolume).multipliedBy(2)),
+        value: formatMidgardAmount(data?.poolVolumeUSD),
       };
       const liquidityData = {
         time,
-        value: getUSDPrice(bnOrZero(data?.runeDepth).multipliedBy(2)),
+        value: formatMidgardAmount(data?.totalDepthUSD),
       };
 
       volumeSeriesDataWeek.push(volumeData);
@@ -160,6 +160,7 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
         },
         loading: false,
         type: 'line',
+        unit: '$',
       },
       Volume: {
         values: {
@@ -168,9 +169,10 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
         },
         loading: false,
         type: 'bar',
+        unit: '$',
       },
     };
-  }, [rtAggregate, rtAggregateLoading, getUSDPrice]);
+  }, [rtAggregate, rtAggregateLoading]);
 
   const renderChart = () => (
     <ChartContainer>

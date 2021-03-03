@@ -157,3 +157,16 @@ export const getWeekAgoTime = () => {
     })
     .unix();
 };
+
+// MAX intervals are limited to 50
+export const getMonthFromTime = () => {
+  return moment()
+    .subtract(30, 'days')
+    .set({
+      hour: 23,
+      minute: 59,
+      second: 59,
+      millisecond: 999,
+    })
+    .unix();
+};

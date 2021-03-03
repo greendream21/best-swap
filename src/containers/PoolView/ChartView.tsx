@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 
 import { useSelector, useDispatch } from 'react-redux';
 
-import { formatBaseAsTokenAmount, baseAmount } from '@thorchain/asgardex-token';
 import { bnOrZero } from '@thorchain/asgardex-util';
 import { Grid, Row, Col } from 'antd';
 
@@ -16,7 +15,7 @@ import {
 import { getRTStats } from 'redux/midgard/actions';
 import { RootState } from 'redux/store';
 
-import usePrice from 'hooks/usePrice';
+import { formatMidgardAmount } from 'helpers/stringHelper';
 
 import { StatsChanges } from 'types/generated/midgard/api';
 
@@ -48,9 +47,6 @@ const ChartView = () => {
   );
 
   const { rtStats, rtStatsLoading } = useSelector((state: RootState) => state.Midgard);
-
-  const { getUSDPrice, hasBUSDPrice } = usePrice();
-  const chartValueUnit = useMemo(() => !hasBUSDPrice ? 'ᚱ' : '$', [hasBUSDPrice]);
 
   const initialChartData = useMemo(() => {
     const initialData: ChartData = {};
@@ -94,15 +90,15 @@ const ChartView = () => {
       const time = data?.time ?? 0;
       const volume = {
         time,
-        value: getUSDPrice(bnOrZero(data?.totalVolume)),
+        value: formatMidgardAmount(data?.totalVolumeUsd),
       };
       const totalPooled = {
         time,
-        value: formatBaseAsTokenAmount(baseAmount(bnOrZero(data?.totalRuneDepth))),
+        value: formatMidgardAmount(data?.totalRuneDepth),
       };
       const liquidity = {
         time,
-        value: getUSDPrice(bnOrZero(data?.totalRuneDepth).multipliedBy(2)),
+        value: formatMidgardAmount(bnOrZero(data?.totalRuneDepthUsd).multipliedBy(2).toNumber()),
       };
 
       const buyCount = data?.buyCount ?? 0;
@@ -167,14 +163,14 @@ const ChartView = () => {
           allTime: allTimeVolumeData,
           week: weekVolumeData,
         },
-        unit: chartValueUnit,
+        unit: '$',
       },
       Liquidity: {
         values: {
           allTime: allTimeLiquidityData,
           week: weekLiquidityData,
         },
-        unit: chartValueUnit,
+        unit: '$',
         type: 'line',
       },
       Pooled: {
@@ -204,7 +200,7 @@ const ChartView = () => {
         },
       },
     };
-  }, [rtStats, rtStatsLoading, initialChartData, chartValueUnit, getUSDPrice]);
+  }, [rtStats, rtStatsLoading, initialChartData]);
 
 
   return (
