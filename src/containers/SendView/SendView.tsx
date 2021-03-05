@@ -12,7 +12,7 @@ import {
   BaseAmount,
 } from '@thorchain/asgardex-token';
 import { bn } from '@thorchain/asgardex-util';
-import { Popover } from 'antd';
+import { Popover, Alert } from 'antd';
 import Text from 'antd/lib/typography/Text';
 import BigNumber from 'bignumber.js';
 import { compose } from 'redux';
@@ -71,6 +71,7 @@ import {
   PoolSelectLabelWrapper,
   TokenMenu,
   SendTypeWrapper,
+  AlertWrapper,
 } from './SendView.style';
 import { SendMode } from './types';
 
@@ -102,7 +103,9 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
 
   const [sendMode, setSendMode] = useState<SendMode>(SendMode.NORMAL);
   const [poolAddressInput, setPoolAddressInput] = useState<string>(poolAddress || '');
-  const [selectedPool, setSelectedPool] = useState<string>('');
+  const [selectedPool, setSelectedPool] = useState<string>('BNB');
+
+  const isExpertMode = useMemo(() => sendMode === SendMode.EXPERT, [sendMode]);
 
   const handleSelectPool = useCallback((poolAsset: string) => {
     setSelectedPool(poolAsset);
@@ -153,20 +156,12 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const { value } = e.target;
 
-      if (value.toLowerCase() === 'pooladdress') {
+      if (value.toLowerCase() === 'pool') {
         setSendMode(SendMode.EXPERT);
       }
       setAddress(value);
     },
     [setAddress],
-  );
-
-  const handleChangePoolAddress = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const { value } = e.target;
-      setPoolAddressInput(value);
-    },
-    [],
   );
 
   const handleChangeMemo = useCallback(
@@ -441,7 +436,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
       <PoolSelectWrapper>
         <PoolSelectLabelWrapper>
           <Label size="large" weight="bold">
-            Select a Target Pool
+            Select a Pool
           </Label>
         </PoolSelectLabelWrapper>
         <TokenMenu
@@ -612,7 +607,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
                 />
               </div>
             </SliderSwapWrapper>
-            {sendMode === SendMode.EXPERT && renderPoolSelect()}
+            {isExpertMode && renderPoolSelect()}
             <InputRow>
               <CardForm>
                 <CardFormItem className={invalidAddress ? 'has-error' : ''}>
@@ -620,10 +615,11 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
                   <Input
                     typevalue="ghost"
                     sizevalue="big"
-                    value={address}
+                    value={recipientAddress}
                     onChange={handleChangeAddress}
                     autoComplete="off"
                     placeholder="Address"
+                    disabled={isExpertMode}
                   />
                 </CardFormItem>
               </CardForm>
@@ -633,22 +629,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
                 </CardFormItemError>
               )}
             </InputRow>
-            {sendMode === SendMode.EXPERT && (
-              <>
-                <InputRow>
-                  <FormLabel>Pool Address</FormLabel>
-                  <Input
-                    typevalue="ghost"
-                    sizevalue="big"
-                    value={poolAddressInput}
-                    onChange={handleChangePoolAddress}
-                    autoComplete="off"
-                    placeholder="Pool Address"
-                  />
-                </InputRow>
-                {renderSendType()}
-              </>
-            )}
+            {isExpertMode && renderSendType()}
             <InputRow>
               <FormLabel>Memo</FormLabel>
               <Input
@@ -664,6 +645,14 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
           </div>
         </div>
         <div className="drag-confirm-wrapper">
+          {isExpertMode && (
+          <AlertWrapper>
+            <Alert
+              message="You are sending an asset to the Pool, Use at own RISK!"
+              showIcon
+              type="warning"
+            />
+          </AlertWrapper>)}
           <Drag
             title="Drag to send"
             source={ticker}
