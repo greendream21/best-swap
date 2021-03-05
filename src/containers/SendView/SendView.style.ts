@@ -274,3 +274,16 @@ export const SendTypeWrapper = styled.div`
 
   width: 300px;
 `;
+
+export const AlertWrapper = styled.div`
+  padding-bottom: 8px;
+
+  .ant-alert {
+    border-radius: 4px;
+    background: rgba(255, 251, 229, 0.1);
+
+    .ant-alert-message {
+      color: ${palette('text', 0)};
+    }
+  }
+`;
