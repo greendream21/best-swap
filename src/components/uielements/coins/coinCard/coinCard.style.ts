@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { CaretDownOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { CaretDownOutlined } from '@ant-design/icons';
 import { Divider } from 'antd';
 import { DividerProps } from 'antd/lib/divider';
 import styled, { css } from 'styled-components';
@@ -173,15 +173,4 @@ export const RowFullWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-`;
-
-export const PopoverContent = styled.div`
-  width: 300px;
-  font-size: '11px';
-  color: ${palette('text', 0)};
-`;
-
-export const PopoverIcon = styled(InfoCircleOutlined)`
-  color: ${palette('primary', 0)};
-  margin: 0 10px;
 `;

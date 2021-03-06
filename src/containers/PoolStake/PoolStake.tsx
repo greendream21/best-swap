@@ -24,7 +24,6 @@ import {
   baseAmount as getBaseAmount,
   assetToBase,
 } from '@thorchain/asgardex-util';
-import { Popover } from 'antd';
 import { SliderValue } from 'antd/lib/slider';
 import Text from 'antd/lib/typography/Text';
 import BigNumber from 'bignumber.js';
@@ -43,9 +42,11 @@ import Drag from 'components/uielements/drag';
 import Label from 'components/uielements/label';
 import Modal from 'components/uielements/modal';
 import showNotification from 'components/uielements/notification';
+import { TooltipIcon } from 'components/uielements/Popover';
 import Slider from 'components/uielements/slider';
 import Status from 'components/uielements/status';
 import Loader from 'components/utility/loaders/pageLoader';
+
 
 import * as appActions from 'redux/app/actions';
 import { TxStatus, TxTypes, TxResult } from 'redux/app/types';
@@ -90,12 +91,11 @@ import {
   ContentWrapper,
   Tabs,
   FeeParagraph,
-  PopoverContent,
-  PopoverIcon,
   RuneStakeView,
   TxDataWrapper,
   InformationWrapper,
   HeaderAction,
+  CenterWrapper,
 } from './PoolStake.style';
 import { TabKeys, WithdrawData } from './types';
 
@@ -514,7 +514,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       targetAmount.amount().isGreaterThan(0);
 
     const toolTipContent = (
-      <PopoverContent>
+      <>
         {isStakingBNB && (
           <>
             <Text>(IT WILL BE SUBTRACTED FROM YOUR ENTERED BNB VALUE)</Text>
@@ -527,7 +527,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
             FEE.
           </Label>
         )}
-      </PopoverContent>
+      </>
     );
 
     return (
@@ -542,19 +542,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                 {bnbFeeAmount && (
                   <Text>NETWORK FEE: {formatBnbAmount(bnbFeeAmount)}</Text>
                 )}
-                <Popover
-                  content={toolTipContent}
-                  getPopupContainer={getFeeTipPopupContainer}
-                  placement="topRight"
-                  overlayClassName="pool-filter-info"
-                  overlayStyle={{
-                    padding: '6px',
-                    animationDuration: '0s !important',
-                    animation: 'none !important',
-                  }}
-                >
-                  <PopoverIcon />
-                </Popover>
+                <TooltipIcon tooltip={toolTipContent} />
                 {wallet && !hasSufficientBnbFeeInBalance && (
                   <>
                     <br />
@@ -863,23 +851,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     setDragReset(true);
   }, [setOpenWalletAlert, setDragReset]);
 
-  const getCooldownPopupContainer = () => {
-    return document.getElementsByClassName(
-      'share-detail-wrapper',
-    )[0] as HTMLElement;
-  };
-
-  const getFeeTipPopupContainer = () => {
-    return document.getElementsByClassName('fee-paragraph')[0] as HTMLElement;
-  };
-
-  const renderPopoverContent = () => (
-    <PopoverContent>
-      To prevent attacks on the network, you must wait approx 24hrs (17280
-      blocks) after each staking event to withdraw assets.
-    </PopoverContent>
-  );
-
   // get slip for stake
   const stakeSlip = useMemo(() => {
     const runeAssetAmount = assetAmount(runeAmountToSend.amount());
@@ -1061,19 +1032,9 @@ const PoolStake: React.FC<Props> = (props: Props) => {
               onConfirm={handleStake}
               onDrag={handleDrag}
             />
-            <Popover
-              content={renderPopoverContent}
-              getPopupContainer={getCooldownPopupContainer}
-              placement="bottomLeft"
-              overlayClassName="pool-filter-info"
-              overlayStyle={{
-                padding: '6px',
-                animationDuration: '0s !important',
-                animation: 'none !important',
-              }}
-            >
-              <PopoverIcon />
-            </Popover>
+            <TooltipIcon tooltip="To prevent attacks on the network, you must wait approx 24hrs (17280
+      blocks) after each staking event to withdraw assets."
+            />
           </div>
         </div>
       </>
@@ -1172,19 +1133,9 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                         You must wait {remainingTimeString} until you can
                         withdraw again.
                       </Label>
-                      <Popover
-                        content={renderPopoverContent}
-                        getPopupContainer={getCooldownPopupContainer}
-                        placement="bottomLeft"
-                        overlayClassName="pool-filter-info"
-                        overlayStyle={{
-                          padding: '6px',
-                          animationDuration: '0s !important',
-                          animation: 'none !important',
-                        }}
-                      >
-                        <PopoverIcon />
-                      </Popover>
+                      <TooltipIcon tooltip="To prevent attacks on the network, you must wait approx 24hrs (17280
+      blocks) after each staking event to withdraw assets."
+                      />
                     </>
                   )}
                 </div>
@@ -1408,6 +1359,8 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   const pageTitle = `Add Liquidity to ${tokenTicker.toUpperCase()} Pool`;
   const metaDescription = pageTitle;
 
+  console.log('haswallet', hasWallet);
+
   return (
     <ContentWrapper className="pool-stake-wrapper" transparent>
       <Helmet title={pageTitle} content={metaDescription} />
@@ -1436,15 +1389,20 @@ const PoolStake: React.FC<Props> = (props: Props) => {
         </>
       )}
       {!hasWallet && (
-        <Modal
-          title="PLEASE ADD WALLET"
-          visible={openWalletAlert}
-          onOk={handleConnectWallet}
-          onCancel={hideWalletAlert}
-          okText="ADD WALLET"
-        >
-          <Label>Please add a wallet to add liquidity.</Label>
-        </Modal>
+        <>
+          <CenterWrapper>
+            <Label size="big">Please connect a wallet.</Label>
+          </CenterWrapper>
+          <Modal
+            title="PLEASE ADD WALLET"
+            visible={openWalletAlert}
+            onOk={handleConnectWallet}
+            onCancel={hideWalletAlert}
+            okText="ADD WALLET"
+          >
+            <Label>Please connect a wallet to add liquidity.</Label>
+          </Modal>
+        </>
       )}
     </ContentWrapper>
   );

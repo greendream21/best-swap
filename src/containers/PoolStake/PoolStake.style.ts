@@ -1,4 +1,3 @@
-import { InfoCircleOutlined } from '@ant-design/icons';
 import Paragraph from 'antd/lib/typography/Paragraph';
 import styled from 'styled-components';
 import { palette, key } from 'styled-theme';
@@ -495,17 +494,6 @@ export const FeeParagraph = styled(Paragraph)`
   }
 `;
 
-export const PopoverContent = styled.div`
-  width: 300px;
-  font-size: '11px';
-  color: ${palette('text', 0)};
-`;
-
-export const PopoverIcon = styled(InfoCircleOutlined)`
-  color: ${palette('primary', 0)};
-  margin: 0 10px;
-`;
-
 export const RuneStakeView = styled.div`
   a {
     display: flex;
@@ -565,4 +553,10 @@ export const HeaderAction = styled.div`
     border-radius: 8px;
     min-width: 30px;
   }
+`;
+
+export const CenterWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;

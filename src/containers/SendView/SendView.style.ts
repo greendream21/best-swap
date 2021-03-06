@@ -1,4 +1,4 @@
-import Icon, { InfoCircleOutlined } from '@ant-design/icons';
+import Icon from '@ant-design/icons';
 import { Popover, Form } from 'antd';
 import Paragraph from 'antd/lib/typography/Paragraph';
 import styled from 'styled-components';
@@ -227,11 +227,6 @@ export const LabelInfo = styled.div`
   .label-wrapper {
     margin-right: 6px;
   }
-`;
-
-export const PopoverIcon = styled(InfoCircleOutlined)`
-  color: ${palette('primary', 0)};
-  margin: 0 10px;
 `;
 
 export const Input = styled(UnstyledInput)`

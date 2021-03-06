@@ -5,6 +5,11 @@ import { palette } from 'styled-theme';
 export const ModalWrapper = styled(Modal)`
   border-color: ${palette('gray', 0)};
 
+  .ant-modal-content {
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
   .ant-modal-header {
     padding: 10px 14px;
     text-align: center;

@@ -11,7 +11,7 @@ import {
   DatabaseOutlined,
 } from '@ant-design/icons';
 import { Token } from '@thorchain/asgardex-binance';
-import { Row, Col, Grid, Popover } from 'antd';
+import { Row, Col, Grid } from 'antd';
 import * as H from 'history';
 import { compose } from 'redux';
 
@@ -25,6 +25,7 @@ import CoinIcon from 'components/uielements/coins/coinIcon';
 import Input from 'components/uielements/input';
 import Label from 'components/uielements/label';
 import showNotification from 'components/uielements/notification';
+import { Popover, TooltipIcon } from 'components/uielements/Popover';
 import LabelLoader from 'components/utility/loaders/label';
 
 import * as midgardActions from 'redux/midgard/actions';
@@ -37,7 +38,6 @@ import useMidgard from 'hooks/useMidgard';
 import useNetwork from 'hooks/useNetwork';
 import usePrice from 'hooks/usePrice';
 
-import { getAppContainer } from 'helpers/elementHelper';
 import { getTokenName } from 'helpers/stringHelper';
 import { getPoolData } from 'helpers/utils/poolUtils';
 import { PoolData } from 'helpers/utils/types';
@@ -59,8 +59,6 @@ import {
   PoolViewTools,
   PoolSearchWrapper,
   StyledTable as Table,
-  PopoverContent,
-  PopoverIcon,
 } from './PoolView.style';
 import { PoolViewData } from './types';
 
@@ -192,20 +190,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         return Component;
       }
 
-      return (
-        <Popover
-          content={<PopoverContent>{getOutboundBusyTooltip()}</PopoverContent>}
-          getPopupContainer={getAppContainer}
-          placement="topRight"
-          overlayStyle={{
-            padding: '6px',
-            animationDuration: '0s !important',
-            animation: 'none !important',
-          }}
-        >
-          {Component}
-        </Popover>
-      );
+      return <Popover tooltip={getOutboundBusyTooltip()}>{Component}</Popover>;
     },
     [isOutboundDelayed, getOutboundBusyTooltip],
   );
@@ -225,20 +210,10 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
             refresh
           </Button>
           {isOutboundDelayed && (
-            <Popover
-              content={
-                <PopoverContent>{getOutboundBusyTooltip()}</PopoverContent>
-              }
-              getPopupContainer={getAppContainer}
-              placement="topRight"
-              overlayStyle={{
-                padding: '6px',
-                animationDuration: '0s !important',
-                animation: 'none !important',
-              }}
-            >
-              <PopoverIcon color={statusColor} />
-            </Popover>
+            <TooltipIcon
+              tooltip={getOutboundBusyTooltip()}
+              color={statusColor}
+            />
           )}
         </ActionHeader>
       ),

@@ -18,7 +18,6 @@ import {
   BaseAmount,
 } from '@thorchain/asgardex-token';
 import { isValidBN, bn } from '@thorchain/asgardex-util';
-import { Popover } from 'antd';
 import Text from 'antd/lib/typography/Text';
 import BigNumber from 'bignumber.js';
 import * as H from 'history';
@@ -35,6 +34,7 @@ import Drag from 'components/uielements/drag';
 import Label from 'components/uielements/label';
 import Modal from 'components/uielements/modal';
 import showNotification from 'components/uielements/notification';
+import { TooltipIcon } from 'components/uielements/Popover';
 import Slider from 'components/uielements/slider';
 import TokenCard from 'components/uielements/tokens/tokenCard';
 import Loader from 'components/utility/loaders/pageLoader';
@@ -52,7 +52,6 @@ import { User, AssetData } from 'redux/wallet/types';
 import usePrevious from 'hooks/usePrevious';
 import usePrice from 'hooks/usePrice';
 
-import { getAppContainer } from 'helpers/elementHelper';
 import {
   getTickerFormat,
   getSymbolPair,
@@ -92,7 +91,6 @@ import {
   FeeParagraph,
   SliderSwapWrapper,
   LabelInfo,
-  PopoverIcon,
   InverseButton,
   SwapHeader,
 } from './SwapSend.style';
@@ -704,23 +702,14 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
                 <Label>
                   <b>NETWORK FEE:</b> {formatBnbAmount(fees.single)}
                 </Label>
-                <Popover
-                  content={
+                <TooltipIcon
+                  tooltip={
                     <Label>
                       <b>NOTE:</b> 0.1 BNB WILL BE LEFT IN YOUR WALLET FOR
                       TRANSACTION FEE.
                     </Label>
                   }
-                  getPopupContainer={getAppContainer}
-                  placement="top"
-                  overlayStyle={{
-                    padding: '6px',
-                    animationDuration: '0s !important',
-                    animation: 'none !important',
-                  }}
-                >
-                  <PopoverIcon />
-                </Popover>
+                />
               </LabelInfo>
               {/* {considerBnb && hasBnbFee && (
                 <Label>
@@ -857,23 +846,14 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
           <Label>
             <b>Network Fee:</b> 0.000375 BNB
           </Label>
-          <Popover
-            content={
+          <TooltipIcon
+            tooltip={
               <Label>
-                <b>NOTE:</b> 0.1 BNB WILL BE LEFT IN YOUR WALLET FOR TRANSACTION
-                FEE.
+                <b>NOTE:</b> 0.1 BNB WILL BE LEFT IN YOUR WALLET FOR
+                TRANSACTION FEE.
               </Label>
-            }
-            getPopupContainer={getAppContainer}
-            placement="top"
-            overlayStyle={{
-              padding: '6px',
-              animationDuration: '0s !important',
-              animation: 'none !important',
-            }}
-          >
-            <PopoverIcon />
-          </Popover>
+                  }
+          />
         </LabelInfo>
       </SwapDataWrapper>
     );

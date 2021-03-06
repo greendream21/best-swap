@@ -100,11 +100,17 @@ export const AppHolder = styled.div`
   }
 
   .ant-popover {
+    .ant-popover-content {
+      background: ${props => transparentize(0.4, props.theme.palette.background[0])};
+      border: 1px solid ${palette('gray', 0)};
+      border-radius: 8px;
+    }
     .ant-popover-arrow {
-      border-color: ${palette('background', 4)};
+      border-color: ${palette('gray', 0)};
     }
     .ant-popover-inner {
-      background-color: ${palette('background', 4)};
+      border: 1px solid ${palette('gray', 0)};
+      background-color: ${props => transparentize(0.4, props.theme.palette.background[0])};
     }
   }
 

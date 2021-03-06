@@ -2,9 +2,11 @@ import React, { useCallback } from 'react';
 
 import { TokenAmount, tokenAmount } from '@thorchain/asgardex-token';
 import { bn, delay, formatBN, validBNOrZero } from '@thorchain/asgardex-util';
-import { Dropdown, Popover } from 'antd';
+import { Dropdown } from 'antd';
 import BigNumber from 'bignumber.js';
 import { sortBy as _sortBy } from 'lodash';
+
+import { TooltipIcon } from 'components/uielements/Popover';
 
 import { PriceDataIndex } from 'redux/midgard/types';
 
@@ -30,8 +32,6 @@ import {
   FooterLabel,
   HorizontalDivider,
   RowFullWrapper,
-  PopoverContent,
-  PopoverIcon,
 } from './coinCard.style';
 import CoinCardMenu from './coinCardMenu';
 
@@ -295,19 +295,7 @@ class CoinCard extends React.Component<Props, State> {
               {!!tooltip && (
                 <RowFullWrapper>
                   <AssetNameLabel>{asset}</AssetNameLabel>
-                  <Popover
-                    content={<PopoverContent>{tooltip}</PopoverContent>}
-                    getPopupContainer={this.getToolTipPopupContainer}
-                    placement="bottomLeft"
-                    overlayClassName="pool-filter-info"
-                    overlayStyle={{
-                      padding: '6px',
-                      animationDuration: '0s !important',
-                      animation: 'none !important',
-                    }}
-                  >
-                    <PopoverIcon />
-                  </Popover>
+                  <TooltipIcon tooltip={tooltip} />
                 </RowFullWrapper>
               )}
               {!tooltip && <AssetNameLabel>{asset}</AssetNameLabel>}
