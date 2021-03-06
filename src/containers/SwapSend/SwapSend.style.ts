@@ -257,8 +257,8 @@ export const SliderSwapWrapper = styled.div`
 export const SwapDataWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  padding-top: 10px;
-  padding-left: 10px;
+  padding: 10px;
+  border: 1px solid ${palette('gray', 0)};
 
   .label-wrapper {
     padding: 2px 0;

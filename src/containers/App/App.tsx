@@ -16,7 +16,7 @@ import { matchPage, matchParam } from 'helpers/routerHelper';
 
 import { RUNE_SYMBOL } from 'settings/assetData';
 
-import { ContentWrapper, BackLink } from './App.style';
+import { ContentWrapper, BackLink, BackLinkWrapper } from './App.style';
 import AppLayout from './AppLayout';
 import AppRouter from './AppRouter';
 
@@ -80,7 +80,9 @@ const App: React.FC<Props> = (props: Props): JSX.Element => {
       <Header title="SWAP AND ADD BEP2 ASSETS" />
       <ContentWrapper>
         <ViewPanel>
-          {renderBack}
+          <BackLinkWrapper>
+            {renderBack}
+          </BackLinkWrapper>
           <AppRouter url={url} />
         </ViewPanel>
       </ContentWrapper>

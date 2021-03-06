@@ -253,6 +253,16 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
               </Button>
             </Link>
           )}
+          {poolStatus !== PoolDetailStatusEnum.Enabled && (
+            <Button
+              disabled
+              round="true"
+              color={!isValidFundCaps ? 'error' : statusColor}
+            >
+              <SwapOutlined />
+              swap
+            </Button>
+          )}
         </PoolCaptionButtonsWrapper>
       </Col>
     );

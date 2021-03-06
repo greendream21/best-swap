@@ -896,7 +896,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
         <div className="swap-content">
           <div className="swap-detail-panel">
             <TokenCard
-              inputTitle="input"
+              inputTitle="Send"
               asset={swapSource}
               assetData={sourceAssets}
               amount={xValue}
@@ -924,7 +924,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
               </div>
             </SliderSwapWrapper>
             <TokenCard
-              inputTitle="output"
+              inputTitle="Receive"
               inputProps={{
                 disabled: true,
                 'data-test': 'coincard-target-input',

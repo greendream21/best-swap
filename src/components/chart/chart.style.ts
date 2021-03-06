@@ -1,5 +1,6 @@
 import { Line, Bar } from 'react-chartjs-2';
 
+import { transparentize } from 'polished';
 import styled from 'styled-components';
 import { palette } from 'styled-theme';
 
@@ -14,12 +15,13 @@ type BlurWrapperProps = {
 };
 
 type ChartContainerProps = {
-  gradientStart?: string;
-  gradientStop?: string;
+  gradientStart: string;
+  gradientStop: string;
 };
 
 export const ChartContainer = styled.div`
-  background: ${palette('background', 0)};
+  background: transparent;
+  border: 1px solid ${palette('gray', 0)};
   padding: 5px;
   border-radius: 4px;
   width: 100%;
@@ -29,7 +31,7 @@ export const ChartContainer = styled.div`
     height: 288px;
   `}
   background-image: ${(props: ChartContainerProps) =>
-    `linear-gradient(to bottom, ${props.gradientStart}, ${props.gradientStop})`};
+    `linear-gradient(to bottom, ${transparentize(0.7, props.gradientStart)}, ${transparentize(1, props.gradientStop)})`};
 `;
 
 export const ChartHeaderType = styled.div`

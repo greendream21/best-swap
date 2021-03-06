@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 import { connect } from 'react-redux';
 
-import { Row, Col } from 'antd';
+import { Row } from 'antd';
 
 import Helmet from 'components/helmet';
 import Tabs from 'components/uielements/tabs';
@@ -10,7 +10,7 @@ import Tabs from 'components/uielements/tabs';
 import * as walletActions from 'redux/wallet/actions';
 
 import { isMainnet } from '../../env';
-import { ContentWrapper } from './ConnectView.style';
+import { ViewContent, ConnectContent } from './ConnectView.style';
 import Keystore from './Keystore';
 import Ledger from './Ledger';
 import WalletConnect from './WalletConnect';
@@ -58,7 +58,7 @@ const ConnectView: React.FC<Props> = (props: Props): JSX.Element => {
   const selected = tabs.find(tab => tab.value === active) || tabs[0];
 
   return (
-    <ContentWrapper>
+    <ViewContent>
       <Helmet title="Connect Wallet" content="Connect Wallet" />
       <Row className="connect-view-header">
         <Tabs
@@ -66,6 +66,7 @@ const ConnectView: React.FC<Props> = (props: Props): JSX.Element => {
           activeKey={active}
           onChange={setActive}
           action
+          withBorder
         >
           {tabs.map(tab => {
             return (
@@ -74,12 +75,10 @@ const ConnectView: React.FC<Props> = (props: Props): JSX.Element => {
           })}
         </Tabs>
       </Row>
-      <Row className="connect-view-content">
-        <Col className="connect-view-content-form" xs={24}>
-          {selected.comp}
-        </Col>
-      </Row>
-    </ContentWrapper>
+      <ConnectContent>
+        {selected.comp}
+      </ConnectContent>
+    </ViewContent>
   );
 };
 

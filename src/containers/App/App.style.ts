@@ -7,7 +7,7 @@ import { media } from 'helpers/styleHelper';
 const { Content } = Layout;
 
 export const ContentWrapper = styled(Content)`
-  min-height: calc(100vh - 146px);
+  min-height: calc(100vh - 230px);
 
   padding: 10px 10px 0px 10px;
   ${media.sm`
@@ -15,6 +15,7 @@ export const ContentWrapper = styled(Content)`
   `}
   ${media.md`
     padding: 10px 30px 0px 30px;
+    min-height: calc(100vh - 146px);
   `}
 `;
 
@@ -42,4 +43,11 @@ export const BackLink = styled.div`
     text-transform: uppercase;
     color: ${palette('primary', 0)};
   }
+`;
+
+export const BackLinkWrapper = styled.div`
+  display: flex;
+  align-items: center;
+
+  max-width: 560px;
 `;

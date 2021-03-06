@@ -5,6 +5,7 @@ export enum TabKeys {
   ADD_SYM = 'ADD_SYM',
   ADD_ASYM = 'ADD_ASYM',
   WITHDRAW = 'WITHDRAW',
+  YOURSHARE = 'YOURSHARE',
 }
 
 export type StakeData = {

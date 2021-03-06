@@ -16,6 +16,7 @@ import * as walletActions from 'redux/wallet/actions';
 import { getAppContainer } from 'helpers/elementHelper';
 
 import { asgardexBncClient } from '../../env';
+import { ContentWrapper } from './ConnectView.style';
 
 ledger.transports.u2f = u2f_transport;
 
@@ -100,7 +101,7 @@ const LedgerConnector = (props: Props) => {
   };
 
   return (
-    <div className="ledger-connect-wrapper">
+    <ContentWrapper className="ledger-connect-wrapper">
       <Row style={{ marginBottom: 20 }}>
         <Label size="large" weight="bold" color="normal">
           Connect your Ledger
@@ -185,12 +186,13 @@ const LedgerConnector = (props: Props) => {
             onClick={ledgerConnect}
             loading={connecting}
             round="true"
+            style={{ marginTop: '10px' }}
           >
             Connect to Ledger <ArrowRightOutlined />
           </Button>
         </Col>
       </Row>
-    </div>
+    </ContentWrapper>
   );
 };
 
