@@ -1,5 +1,5 @@
 import { Table } from 'antd';
-import { darken } from 'polished';
+import { darken, transparentize } from 'polished';
 import styled from 'styled-components';
 import { key, palette } from 'styled-theme';
 
@@ -7,6 +7,19 @@ import { media } from 'helpers/styleHelper';
 
 export const TableWrapper = styled(Table)`
   border: 1px solid ${palette('gray', 0)};
+
+  background: transparent;
+
+  .ant-table,
+  .ant-table-container,
+  .ant-table-content,
+  .ant-table-thead,
+  .ant-table-tbody {
+    background: transparent;
+    & > tr {
+      background: transparent;
+    }
+  }
 
   .ant-table-thead > tr > th {
     height: ${props => (props.sizeValue === 'small' ? '52px' : '70px')};
@@ -16,7 +29,9 @@ export const TableWrapper = styled(Table)`
     border-color: ${palette('gray', 0)};
     font-size: ${key('sizes.font.normal', '12px')};
     color: ${palette('text', 2)};
-    background-color: ${palette('background', 1)};
+
+    background: ${props =>
+      transparentize(0.1, props.theme.palette.background[1])};
     text-transform: uppercase;
     text-align: center;
     &:hover {
@@ -30,11 +45,13 @@ export const TableWrapper = styled(Table)`
   }
 
   .ant-table-placeholder {
-    background-color: ${palette('background', 1)} !important;
+    background: ${props =>
+      transparentize(0.1, props.theme.palette.background[1])} !important;
     border-color: ${palette('gray', 0)};
     td {
       &:hover {
-        background-color: ${palette('background', 1)} !important;
+        background: ${props =>
+          transparentize(0.1, props.theme.palette.background[1])} !important;
       }
     }
 
@@ -53,7 +70,9 @@ export const TableWrapper = styled(Table)`
     height: ${props => (props.sizeValue === 'small' ? '48px' : '64px')};
     border-color: ${palette('gray', 0)};
     color: ${palette('text', 0)};
-    background-color: ${palette('background', 1)};
+
+    background: ${props =>
+      transparentize(0.1, props.theme.palette.background[1])};
     text-align: center;
     text-transform: uppercase;
   }
