@@ -16,9 +16,11 @@ import { getTickerFormat } from 'helpers/stringHelper';
 
 import { RUNE_SYMBOL } from 'settings/assetData';
 
+import { IconButton } from '../IconButton';
 import Label from '../uielements/label';
 import Menu from '../uielements/menu';
 import AssetInfo from '../uielements/tokens/assetInfo';
+
 
 const style: React.CSSProperties = {
   width: '160px',
@@ -112,10 +114,12 @@ class BasePriceSelector extends React.Component<Props, State> {
         trigger={['click']}
         placement="bottomRight"
       >
-        <a className="ant-dropdown-link baseprice-selector" href="/">
-          <Label>{baseAsset}</Label>
-          <DownOutlined />
-        </a>
+        <IconButton>
+          <a className="ant-dropdown-link baseprice-selector" href="/">
+            <Label>{baseAsset}</Label>
+            <DownOutlined />
+          </a>
+        </IconButton>
       </Dropdown>
     );
   }

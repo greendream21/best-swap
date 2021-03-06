@@ -75,7 +75,6 @@ const WalletDrawer: React.FC<Props> = props => {
   return (
     <WalletDrawerWrapper>
       <WalletButton
-        data-test="wallet-draw-button"
         connected
         address={wallet}
         onClick={toggleDrawer}

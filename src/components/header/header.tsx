@@ -46,6 +46,9 @@ import {
   PopoverContent,
   PopoverIcon,
   TooltipContent,
+  HeaderLeft,
+  HeaderLeftActions,
+  TxIconButton,
 } from './header.style';
 import HeaderSetting from './headerSetting';
 
@@ -289,7 +292,7 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
           animation: 'none !important',
         }}
       >
-        <div>
+        <TxIconButton>
           <TxProgress
             status={status}
             value={value}
@@ -300,7 +303,7 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
             onChange={handleChangeTxProgress}
             onEnd={handleEndTxProgress}
           />
-        </div>
+        </TxIconButton>
       </Popover>
     );
   };
@@ -309,14 +312,19 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
     if (isDesktopView) {
       return (
         <StyledHeader>
-          <LogoWrapper>
-            <Link to="/pools">
-              <Logo name="bepswap" type="long" />
-            </Link>
-            <HeaderSetting midgardBasePath={midgardBasePath} />
-          </LogoWrapper>
+          <HeaderLeft>
+            <LogoWrapper>
+              <Link to="/pools">
+                <Logo name="bepswap" type="long" />
+              </Link>
+            </LogoWrapper>
+            <HeaderLeftActions>
+              <HeaderSetting midgardBasePath={midgardBasePath} />
+              <ThemeSwitch />
+            </HeaderLeftActions>
+          </HeaderLeft>
           <HeaderCenterWrapper className="stake-header">
-            <Label weight="bold">
+            <Label>
               {globalRuneStakeStatus}{' '}
               {!isValidFundCaps && '(Funds Cap Reached)'}
             </Label>
@@ -337,7 +345,6 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
             )}
           </HeaderCenterWrapper>
           <HeaderActionButtons>
-            <ThemeSwitch />
             <BasePriceSelector />
             {renderTxProgress()}
             {!wallet && (
@@ -376,8 +383,8 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
             </Label>
           </HeaderCenterWrapper>
           <HeaderActionButtons>
-            <ThemeSwitch />
             <BasePriceSelector />
+            <ThemeSwitch />
             {wallet && (
               <TxProgress
                 status={status}
