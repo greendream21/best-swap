@@ -268,11 +268,19 @@ export const TokenMenu = styled(TokenSelect)`
 
 export const SendTypeWrapper = styled.div`
   display: flex;
-  justify-content: space-between;
   align-items: center;
   margin: 10px;
 
-  width: 300px;
+  .btn-wrapper {
+    margin-right: 8px;
+  }
+`;
+
+export const WithdrawPercent = styled.div`
+  display: flex;
+  align-items: center;
+
+  width: 50px;
 `;
 
 export const AlertWrapper = styled.div`

@@ -40,7 +40,7 @@ import usePrice from 'hooks/usePrice';
 
 import { BINANCE_TX_BASE_URL } from 'helpers/apiHelper';
 import { getAppContainer } from 'helpers/elementHelper';
-import { getSwapMemo, getStakeMemo } from 'helpers/memoHelper';
+import { getSwapMemo, getStakeMemo, getWithdrawMemo } from 'helpers/memoHelper';
 import { getTickerFormat, getShortAmount } from 'helpers/stringHelper';
 import { normalTx } from 'helpers/utils/sendUtils';
 import { sendRequestUsingWalletConnect } from 'helpers/utils/trustwalletUtils';
@@ -72,6 +72,7 @@ import {
   TokenMenu,
   SendTypeWrapper,
   AlertWrapper,
+  WithdrawPercent,
 } from './SendView.style';
 import { SendMode } from './types';
 
@@ -82,6 +83,8 @@ type Props = {
   transferFees: TransferFeesRD;
   refreshBalance: typeof walletActions.refreshBalance;
 };
+
+type MemoType = 'swap' | 'deposit' | 'withdraw';
 
 const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   const { user, transferFees, assetData, priceIndex, refreshBalance } = props;
@@ -102,8 +105,13 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   }, [pools]);
 
   const [sendMode, setSendMode] = useState<SendMode>(SendMode.NORMAL);
-  const [poolAddressInput, setPoolAddressInput] = useState<string>(poolAddress || '');
+  const [poolAddressInput, setPoolAddressInput] = useState<string>(
+    poolAddress || '',
+  );
   const [selectedPool, setSelectedPool] = useState<string>('BNB');
+
+  const [memoType, setMemoType] = useState<MemoType>('swap');
+  const [withdrawPercent, setWithdrawPercent] = useState<number>(10);
 
   const isExpertMode = useMemo(() => sendMode === SendMode.EXPERT, [sendMode]);
 
@@ -169,6 +177,19 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
       setMemo(e.target.value);
     },
     [setMemo],
+  );
+
+  const handleChangeWithdarwPercent = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      let percentage = Number.isNaN(Number(e.target.value)) ? 0 : Number(e.target.value);
+
+      percentage = percentage > 100 ? 100 : percentage;
+      percentage = percentage < 0 ? 0 : percentage;
+
+      setWithdrawPercent(Number(percentage));
+      setMemo(getWithdrawMemo(selectedPool, percentage * 100));
+    },
+    [setWithdrawPercent, selectedPool],
   );
 
   const handleChangePercent = useCallback(
@@ -422,14 +443,23 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   const handleSelectDepositMemo = useCallback(() => {
     if (selectedPool) {
       setMemo(getStakeMemo(selectedPool));
+      setMemoType('deposit');
     }
   }, [selectedPool]);
 
   const handleSelectSwapMemo = useCallback(() => {
     if (selectedPool) {
       setMemo(getSwapMemo(selectedPool));
+      setMemoType('swap');
     }
   }, [selectedPool]);
+
+  const handleSelectWithdrawMemo = useCallback(() => {
+    if (selectedPool) {
+      setMemo(getWithdrawMemo(selectedPool, withdrawPercent * 100));
+      setMemoType('withdraw');
+    }
+  }, [selectedPool, withdrawPercent]);
 
   const renderPoolSelect = () => {
     return (
@@ -457,6 +487,14 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
           sizevalue="small"
           color="primary"
           typevalue="outline"
+          onClick={handleSelectSwapMemo}
+        >
+          Swap
+        </Button>
+        <Button
+          sizevalue="small"
+          color="primary"
+          typevalue="outline"
           onClick={handleSelectDepositMemo}
         >
           Deposit
@@ -465,10 +503,21 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
           sizevalue="small"
           color="primary"
           typevalue="outline"
-          onClick={handleSelectSwapMemo}
+          onClick={handleSelectWithdrawMemo}
+          focused={memoType === 'withdraw'}
         >
-          Swap
+          Withdraw
         </Button>
+        {memoType === 'withdraw' && (
+          <WithdrawPercent>
+            <Input
+              value={withdrawPercent}
+              onChange={handleChangeWithdarwPercent}
+              typevalue="ghost"
+              placeholder="Percent"
+            />
+          </WithdrawPercent>
+        )}
       </SendTypeWrapper>
     );
   };
@@ -646,13 +695,14 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
         </div>
         <div className="drag-confirm-wrapper">
           {isExpertMode && (
-          <AlertWrapper>
-            <Alert
-              message="You are sending an asset to the Pool, Use at own RISK!"
-              showIcon
-              type="warning"
-            />
-          </AlertWrapper>)}
+            <AlertWrapper>
+              <Alert
+                message="You are sending an asset to the Pool, Use at own RISK!"
+                showIcon
+                type="warning"
+              />
+            </AlertWrapper>
+          )}
           <Drag
             title="Drag to send"
             source={ticker}
