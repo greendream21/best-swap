@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 
 import { connect } from 'react-redux';
-import { withRouter, useHistory, useParams } from 'react-router-dom';
+import { withRouter, useHistory, useParams, Link } from 'react-router-dom';
 
 import * as RD from '@devexperts/remote-data-ts';
 import { TransferResult } from '@thorchain/asgardex-binance';
@@ -12,7 +12,7 @@ import {
   BaseAmount,
 } from '@thorchain/asgardex-token';
 import { bn } from '@thorchain/asgardex-util';
-import { Popover, Alert } from 'antd';
+import { Alert } from 'antd';
 import Text from 'antd/lib/typography/Text';
 import BigNumber from 'bignumber.js';
 import { compose } from 'redux';
@@ -25,6 +25,7 @@ import Drag from 'components/uielements/drag';
 import Label from 'components/uielements/label';
 import Modal from 'components/uielements/modal';
 import showNotification from 'components/uielements/notification';
+import { TooltipIcon } from 'components/uielements/Popover';
 import Slider from 'components/uielements/slider';
 import TokenCard from 'components/uielements/tokens/tokenCard';
 
@@ -39,7 +40,6 @@ import usePrevious from 'hooks/usePrevious';
 import usePrice from 'hooks/usePrice';
 
 import { BINANCE_TX_BASE_URL } from 'helpers/apiHelper';
-import { getAppContainer } from 'helpers/elementHelper';
 import { getSwapMemo, getStakeMemo, getWithdrawMemo } from 'helpers/memoHelper';
 import { getTickerFormat, getShortAmount } from 'helpers/stringHelper';
 import { normalTx } from 'helpers/utils/sendUtils';
@@ -49,6 +49,8 @@ import {
   bnbBaseAmount,
   isValidRecipient,
 } from 'helpers/walletHelper';
+
+import { RUNE_SYMBOL } from 'settings/assetData';
 
 import { Maybe, FixmeType } from 'types/bepswap';
 
@@ -63,7 +65,6 @@ import {
   FeeParagraph,
   SliderSwapWrapper,
   LabelInfo,
-  PopoverIcon,
   Input,
   InputRow,
   FormLabel,
@@ -73,6 +74,7 @@ import {
   SendTypeWrapper,
   AlertWrapper,
   WithdrawPercent,
+  Header,
 } from './SendView.style';
 import { SendMode } from './types';
 
@@ -92,6 +94,8 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   const history = useHistory();
   const { symbol } = useParams();
   const { hasSufficientBnbFeeInBalance, getThresholdAmount } = usePrice();
+
+  const isRune = symbol === RUNE_SYMBOL;
 
   const {
     poolAddress,
@@ -545,23 +549,14 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
                 <Label>
                   <b>NETWORK FEE:</b> {formatBnbAmount(fees.single)}
                 </Label>
-                <Popover
-                  content={
+                <TooltipIcon
+                  tooltip={
                     <Label>
                       <b>NOTE:</b> 0.1 BNB WILL BE LEFT IN YOUR WALLET FOR
                       TRANSACTION FEE.
                     </Label>
                   }
-                  getPopupContainer={getAppContainer}
-                  placement="top"
-                  overlayStyle={{
-                    padding: '6px',
-                    animationDuration: '0s !important',
-                    animation: 'none !important',
-                  }}
-                >
-                  <PopoverIcon />
-                </Popover>
+                />
               </LabelInfo>
               {walletAddress && bnbAmount && !hasSufficientBnbFeeInBalance && (
                 <Label type="danger">
@@ -605,23 +600,14 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
           <Label>
             <b>Network Fee:</b> 0.000375 BNB
           </Label>
-          <Popover
-            content={
+          <TooltipIcon
+            tooltip={
               <Label>
                 <b>NOTE:</b> 0.1 BNB WILL BE LEFT IN YOUR WALLET FOR TRANSACTION
                 FEE.
               </Label>
             }
-            getPopupContainer={getAppContainer}
-            placement="top"
-            overlayStyle={{
-              padding: '6px',
-              animationDuration: '0s !important',
-              animation: 'none !important',
-            }}
-          >
-            <PopoverIcon />
-          </Popover>
+          />
         </LabelInfo>
       </SwapDataWrapper>
     );
@@ -631,7 +617,19 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     <ContentWrapper className="swap-detail-wrapper">
       <Helmet title={pageTitle} content={metaDescription} />
       <SwapAssetCard>
-        <ContentTitle>send {ticker}</ContentTitle>
+        <ContentTitle>
+          <Header>
+            <div>send {ticker}</div>
+            {!isRune && symbol && (
+              <Link to={`/swap/${RUNE_SYMBOL}:${symbol.toUpperCase()}`}>
+                <Button typevalue="outline">Swap</Button>
+              </Link>
+            )}
+            {isRune && (
+              <Button typevalue="outline" disabled>Swap</Button>
+            )}
+          </Header>
+        </ContentTitle>
         <div className="swap-content">
           <div className="swap-detail-panel">
             <TokenCard

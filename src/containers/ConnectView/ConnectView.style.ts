@@ -5,11 +5,17 @@ import ContentView from 'components/utility/contentView';
 
 import { media } from 'helpers/styleHelper';
 
-export const ContentWrapper = styled(ContentView)`
+export const ViewContent = styled(ContentView)`
+  border: 1px solid ${palette('gray', 0)};
+  border-radius: 14px;
+  max-width: 560px;
+  margin: auto;
+
   padding: 0;
   ${media.sm`
     padding: 0 30px;
   `}
+
   display: flex;
   justify-content: center;
   align-items: center;
@@ -18,7 +24,7 @@ export const ContentWrapper = styled(ContentView)`
     display: flex;
     justify-content: center;
     text-transform: uppercase;
-    padding: 30px 0;
+    padding: 10px 0;
 
     .connect-view-tab {
       width: 100%;
@@ -46,6 +52,16 @@ export const ContentWrapper = styled(ContentView)`
         `}
       }
     }
+  }
+`;
+
+export const ContentWrapper = styled(ContentView)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &.ledger-connect-wrapper {
+    align-items: flex-start;
   }
 
   .connect-view-content {
@@ -152,4 +168,8 @@ export const KeystoreTitle = styled.div`
   .label-wrapper {
     margin-right: 4px;
   }
+`;
+
+export const ConnectContent = styled.div`
+  padding-bottom: 20px;
 `;

@@ -3,8 +3,6 @@ import React, { ReactNode, useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import * as RD from '@devexperts/remote-data-ts';
-import { Layout } from 'antd';
-
 
 import showNotification from 'components/uielements/notification';
 
@@ -58,7 +56,7 @@ const AppLayout: React.FC<Props> = (props: Props): JSX.Element => {
     RD.fold(ignore, ignore, onFailure, ignore)(wsTransferEvent);
   }, [wsTransferEvent]);
 
-  return <Layout>{children}</Layout>;
+  return <div className="app-layout">{children}</div>;
 };
 
 export default connect(

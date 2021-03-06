@@ -54,7 +54,7 @@ export const saveTheme = (themeType: string) => {
 };
 
 export const getTheme = () => {
-  return localStorage.getItem(THEME_TYPE) || ThemeType.LIGHT;
+  return localStorage.getItem(THEME_TYPE) || ThemeType.DARK;
 };
 
 export const saveBetaConfirm = (hasConfirmed: boolean) => {

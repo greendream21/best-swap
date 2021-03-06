@@ -328,7 +328,7 @@ const Transaction: React.FC = (): JSX.Element => {
     return (
       <ContentWrapper>
         <Helmet title="Transactions" content="Transactions" />
-        <ContentWrapper className="transaction-view-wrapper">
+        <div className="transaction-view-wrapper">
           <TxToolsContainer>
             <Button
               sizevalue="small"
@@ -351,7 +351,7 @@ const Transaction: React.FC = (): JSX.Element => {
           </TxToolsContainer>
           {renderFilter()}
           {renderTxTable(data, loading)}
-        </ContentWrapper>
+        </div>
         {count ? (
           <StyledPagination
             current={page}

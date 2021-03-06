@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 
 import { connect } from 'react-redux';
-import { withRouter, useHistory, useParams } from 'react-router-dom';
+import { withRouter, useHistory, useParams, Link } from 'react-router-dom';
 
 import { LinkOutlined, InboxOutlined, InfoOutlined } from '@ant-design/icons';
 import * as RD from '@devexperts/remote-data-ts';
@@ -24,7 +24,6 @@ import {
   baseAmount as getBaseAmount,
   assetToBase,
 } from '@thorchain/asgardex-util';
-import { Row, Col, Popover } from 'antd';
 import { SliderValue } from 'antd/lib/slider';
 import Text from 'antd/lib/typography/Text';
 import BigNumber from 'bignumber.js';
@@ -36,15 +35,18 @@ import Helmet from 'components/helmet';
 import PrivateModal from 'components/modals/privateModal';
 import SlipVerifyModal from 'components/modals/slipVerifyModal';
 import AddWallet from 'components/uielements/addWallet';
+import Button from 'components/uielements/button';
 import CoinCard from 'components/uielements/coins/coinCard';
 import CoinData from 'components/uielements/coins/coinData';
 import Drag from 'components/uielements/drag';
 import Label from 'components/uielements/label';
 import Modal from 'components/uielements/modal';
 import showNotification from 'components/uielements/notification';
+import { TooltipIcon } from 'components/uielements/Popover';
 import Slider from 'components/uielements/slider';
 import Status from 'components/uielements/status';
 import Loader from 'components/utility/loaders/pageLoader';
+
 
 import * as appActions from 'redux/app/actions';
 import { TxStatus, TxTypes, TxResult } from 'redux/app/types';
@@ -89,10 +91,11 @@ import {
   ContentWrapper,
   Tabs,
   FeeParagraph,
-  PopoverContent,
-  PopoverIcon,
   RuneStakeView,
   TxDataWrapper,
+  InformationWrapper,
+  HeaderAction,
+  CenterWrapper,
 } from './PoolStake.style';
 import { TabKeys, WithdrawData } from './types';
 
@@ -511,7 +514,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       targetAmount.amount().isGreaterThan(0);
 
     const toolTipContent = (
-      <PopoverContent>
+      <>
         {isStakingBNB && (
           <>
             <Text>(IT WILL BE SUBTRACTED FROM YOUR ENTERED BNB VALUE)</Text>
@@ -524,11 +527,11 @@ const PoolStake: React.FC<Props> = (props: Props) => {
             FEE.
           </Label>
         )}
-      </PopoverContent>
+      </>
     );
 
     return (
-      <FeeParagraph style={{ paddingTop: '10px' }} className="fee-paragraph">
+      <FeeParagraph className="fee-paragraph">
         {RD.fold(
           () => txtLoading,
           () => txtLoading,
@@ -539,23 +542,11 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                 {bnbFeeAmount && (
                   <Text>NETWORK FEE: {formatBnbAmount(bnbFeeAmount)}</Text>
                 )}
-                <Popover
-                  content={toolTipContent}
-                  getPopupContainer={getFeeTipPopupContainer}
-                  placement="topRight"
-                  overlayClassName="pool-filter-info"
-                  overlayStyle={{
-                    padding: '6px',
-                    animationDuration: '0s !important',
-                    animation: 'none !important',
-                  }}
-                >
-                  <PopoverIcon />
-                </Popover>
+                <TooltipIcon tooltip={toolTipContent} />
                 {wallet && !hasSufficientBnbFeeInBalance && (
                   <>
                     <br />
-                    <Text type="danger" style={{ paddingTop: '10px' }}>
+                    <Text type="danger">
                       YOU HAVE {formatBnbAmount(bnbAmount)} IN YOUR WALLET,
                       THAT&lsquo;S NOT ENOUGH TO COVER THE FEE FOR TRANSACTION.
                     </Text>
@@ -860,23 +851,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     setDragReset(true);
   }, [setOpenWalletAlert, setDragReset]);
 
-  const getCooldownPopupContainer = () => {
-    return document.getElementsByClassName(
-      'share-detail-wrapper',
-    )[0] as HTMLElement;
-  };
-
-  const getFeeTipPopupContainer = () => {
-    return document.getElementsByClassName('fee-paragraph')[0] as HTMLElement;
-  };
-
-  const renderPopoverContent = () => (
-    <PopoverContent>
-      To prevent attacks on the network, you must wait approx 24hrs (17280
-      blocks) after each staking event to withdraw assets.
-    </PopoverContent>
-  );
-
   // get slip for stake
   const stakeSlip = useMemo(() => {
     const runeAssetAmount = assetAmount(runeAmountToSend.amount());
@@ -979,14 +953,15 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
     const dragText = withdrawDisabled ? '24hr cooldown' : 'drag to withdraw';
 
-    const tokenToolTip = 'This is the asset you need to add to the pool.';
+    const tokenToolTip =
+      'Asset amount is calculated automatically based on the current ratio of assets in the pool.';
     const runeToolTip =
-      'The amount of RUNE needed is calculated automatically based on the current ratio of assets in the pool.';
+      'Rune amount is calculated automatically based on the current ratio of assets in the pool.';
 
     const addLiquidityTab = (
       <>
         {!isValidFundCaps && (
-          <Text type="danger" style={{ paddingTop: '10px' }}>
+          <Text type="danger">
             95% Funds Cap has been reached. You cannot add right now, come back
             later.
           </Text>
@@ -1039,13 +1014,13 @@ const PoolStake: React.FC<Props> = (props: Props) => {
             </div>
           )}
         </div>
-        <div>
+        <InformationWrapper>
           <Label>
             <b>SLIP: </b>
             {stakeSlipValue}
           </Label>
           {renderFee()}
-        </div>
+        </InformationWrapper>
         <div className="stake-share-info-wrapper">
           <div className="share-status-wrapper">
             <Drag
@@ -1057,30 +1032,25 @@ const PoolStake: React.FC<Props> = (props: Props) => {
               onConfirm={handleStake}
               onDrag={handleDrag}
             />
-            <Popover
-              content={renderPopoverContent}
-              getPopupContainer={getCooldownPopupContainer}
-              placement="bottomLeft"
-              overlayClassName="pool-filter-info"
-              overlayStyle={{
-                padding: '6px',
-                animationDuration: '0s !important',
-                animation: 'none !important',
-              }}
-            >
-              <PopoverIcon />
-            </Popover>
+            <TooltipIcon tooltip="To prevent attacks on the network, you must wait approx 24hrs (17280
+      blocks) after each staking event to withdraw assets."
+            />
           </div>
         </div>
       </>
     );
 
-    const addAsymTabLabel = `Add ${tokenTicker}`;
-    const addSymTabLabel = `Add ${tokenTicker} + RUNE`;
+    const addAsymTabLabel = `${tokenTicker}`;
+    const addSymTabLabel = `${tokenTicker}-RUNE`;
 
     return (
       <div className="share-detail-wrapper">
-        <Tabs withBorder onChange={setSelectedTab} activeKey={selectedTab}>
+        <Tabs
+          withBorder
+          onChange={setSelectedTab}
+          activeKey={selectedTab}
+          animated={false}
+        >
           <TabPane
             tab={addAsymTabLabel}
             key={TabKeys.ADD_ASYM}
@@ -1100,7 +1070,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
               ADJUST WITHDRAWAL
             </Label>
             <Label size="normal">
-              Choose from 0 to 100% of how much to withdraw.
+              Choose a percentage from 0% to 100% to withdraw.
             </Label>
             <div className="withdraw-percent-view">
               <Label size="large" color="gray" weight="bold">
@@ -1122,26 +1092,28 @@ const PoolStake: React.FC<Props> = (props: Props) => {
               min={0}
             />
             <div className="stake-withdraw-info-wrapper">
-              <Label className="label-title" size="normal" weight="bold">
-                YOU SHOULD RECEIVE
-              </Label>
-              <div className="withdraw-status-wrapper">
-                <div className="withdraw-asset-wrapper">
-                  <CoinData
-                    asset="rune"
-                    assetValue={sourceTokenAmount}
-                    price={sourcePrice}
-                    priceUnit={pricePrefix}
-                  />
-                  <CoinData
-                    asset={tokenTicker}
-                    assetValue={targetTokenAmount}
-                    price={targetPrice}
-                    priceUnit={pricePrefix}
-                  />
+              <InformationWrapper>
+                <Label className="label-title" size="normal" weight="bold">
+                  YOU SHOULD RECEIVE
+                </Label>
+                <div className="withdraw-status-wrapper">
+                  <div className="withdraw-asset-wrapper">
+                    <CoinData
+                      asset="rune"
+                      assetValue={sourceTokenAmount}
+                      price={sourcePrice}
+                      priceUnit={pricePrefix}
+                    />
+                    <CoinData
+                      asset={tokenTicker}
+                      assetValue={targetTokenAmount}
+                      price={targetPrice}
+                      priceUnit={pricePrefix}
+                    />
+                  </div>
                 </div>
-              </div>
-              {renderFee()}
+                {renderFee()}
+              </InformationWrapper>
               <div className="drag-container">
                 <Drag
                   title={dragText}
@@ -1161,26 +1133,26 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                         You must wait {remainingTimeString} until you can
                         withdraw again.
                       </Label>
-                      <Popover
-                        content={renderPopoverContent}
-                        getPopupContainer={getCooldownPopupContainer}
-                        placement="bottomLeft"
-                        overlayClassName="pool-filter-info"
-                        overlayStyle={{
-                          padding: '6px',
-                          animationDuration: '0s !important',
-                          animation: 'none !important',
-                        }}
-                      >
-                        <PopoverIcon />
-                      </Popover>
+                      <TooltipIcon tooltip="To prevent attacks on the network, you must wait approx 24hrs (17280
+      blocks) after each staking event to withdraw assets."
+                      />
                     </>
                   )}
                 </div>
               </div>
             </div>
           </TabPane>
+          <TabPane tab="Share" key={TabKeys.YOURSHARE}>
+            <div className="your-share-view">
+              {stakersAssetData && renderYourShare()}
+            </div>
+          </TabPane>
         </Tabs>
+        <HeaderAction>
+          <Link to={`/swap/${symbol.toUpperCase()}:${RUNE_SYMBOL}`}>
+            <Button typevalue="outline">Swap</Button>
+          </Link>
+        </HeaderAction>
       </div>
     );
   };
@@ -1380,8 +1352,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     );
   };
 
-  const yourShareSpan = hasWallet ? 8 : 24;
-
   if (!isPoolExists(symbol)) {
     return <Loader />;
   }
@@ -1389,26 +1359,17 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   const pageTitle = `Add Liquidity to ${tokenTicker.toUpperCase()} Pool`;
   const metaDescription = pageTitle;
 
+  console.log('haswallet', hasWallet);
+
   return (
     <ContentWrapper className="pool-stake-wrapper" transparent>
       <Helmet title={pageTitle} content={metaDescription} />
-      <Row className="share-view" gutter={8}>
-        {!stakersAssetData && stakerPoolDataError && (
-          <Col className="your-share-view" md={24}>
-            {renderStakeDataPoolError()}
-          </Col>
-        )}
-        {stakersAssetData && hasWallet && (
-          <Col className="share-detail-view" span={24} lg={16}>
-            {renderShareDetail()}
-          </Col>
-        )}
-        {stakersAssetData && (
-          <Col className="your-share-view" span={24} lg={yourShareSpan}>
-            {renderYourShare()}
-          </Col>
-        )}
-      </Row>
+      {!stakersAssetData && stakerPoolDataError && (
+        <div className="your-share-view">{renderStakeDataPoolError()}</div>
+      )}
+      {stakersAssetData && hasWallet && (
+        <div className="share-detail-view">{renderShareDetail()}</div>
+      )}
       {hasWallet && (
         <>
           <PrivateModal
@@ -1428,15 +1389,20 @@ const PoolStake: React.FC<Props> = (props: Props) => {
         </>
       )}
       {!hasWallet && (
-        <Modal
-          title="PLEASE ADD WALLET"
-          visible={openWalletAlert}
-          onOk={handleConnectWallet}
-          onCancel={hideWalletAlert}
-          okText="ADD WALLET"
-        >
-          <Label>Please add a wallet to add liquidity.</Label>
-        </Modal>
+        <>
+          <CenterWrapper>
+            <Label size="big">Please connect a wallet.</Label>
+          </CenterWrapper>
+          <Modal
+            title="PLEASE ADD WALLET"
+            visible={openWalletAlert}
+            onOk={handleConnectWallet}
+            onCancel={hideWalletAlert}
+            okText="ADD WALLET"
+          >
+            <Label>Please connect a wallet to add liquidity.</Label>
+          </Modal>
+        </>
       )}
     </ContentWrapper>
   );

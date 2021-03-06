@@ -1,4 +1,3 @@
-import { InfoCircleOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import { palette } from 'styled-theme';
 
@@ -24,7 +23,6 @@ export const ContentWrapper = styled(ContentView)`
   }
 
   .pool-list-view {
-    padding-top: 10px;
     .pool-card {
       margin-bottom: 10px;
     }
@@ -41,7 +39,7 @@ export const PoolViewTools = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: 25px;
+  padding-top: 20px;
 
   .add-new-pool {
     display: flex;
@@ -77,15 +75,4 @@ export const ActionColumn = styled.div`
     align-items: center;
     width: 250px;
   }
-`;
-
-export const PopoverContent = styled.div`
-  width: 300px;
-  font-size: '11px';
-  color: ${palette('text', 0)};
-`;
-
-export const PopoverIcon = styled(InfoCircleOutlined)`
-  color: ${props => palette(props.color, 0)};
-  margin: 0 10px;
 `;

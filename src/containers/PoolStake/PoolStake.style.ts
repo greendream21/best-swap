@@ -1,4 +1,3 @@
-import { InfoCircleOutlined } from '@ant-design/icons';
 import Paragraph from 'antd/lib/typography/Paragraph';
 import styled from 'styled-components';
 import { palette, key } from 'styled-theme';
@@ -17,6 +16,11 @@ import { media } from 'helpers/styleHelper';
 
 export const ContentWrapper = styled(ContentView)`
   padding: 0;
+  border: 1px solid ${palette('gray', 0)};
+  border-radius: 14px;
+
+  max-width: 560px;
+  margin: auto;
 
   .stake-info-view {
     .token-info-card {
@@ -94,226 +98,219 @@ export const ContentWrapper = styled(ContentView)`
     `}
   }
 
-  .share-view {
-    padding-top: 10px;
-
-    .your-share-view,
-    .share-detail-view {
+  .your-share-view,
+  .share-detail-view {
+    .label-title {
       ${media.lg`
-        height: 570px;
-      `}
-
-      .label-title {
-        ${media.lg`
           padding-bottom: 0;
           letter-spacing: 2.5px;
         `}
-      }
-      .go-back {
-        ${media.lg`
+    }
+    .go-back {
+      ${media.lg`
           display: flex;
           align-items: center;
           text-transform: uppercase;
           letter-spacing: 2.5px;
         `}
 
-        svg {
-          ${media.lg`
+      svg {
+        ${media.lg`
             padding-right: 8px;
             font-size: 16px;
           `}
-        }
       }
+    }
 
-      .withdraw-percent-view {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding-left: 5px;
-        ${media.lg`
+    .withdraw-percent-view {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-left: 5px;
+      ${media.lg`
           .label-wrapper {
             width: 40px;
           }
         `}
-      }
+    }
 
-      .stake-withdraw-info-wrapper {
-        ${media.lg`
+    .stake-withdraw-info-wrapper {
+      ${media.lg`
           display: flex;
           flex-direction: column;
         `}
 
-        .withdraw-status-wrapper {
-          ${media.lg`
+      .withdraw-status-wrapper {
+        ${media.lg`
             display: flex;
             justify-content: space-between;
             align-items: center;
           `}
 
-          .withdraw-asset-wrapper {
-            ${media.lg`
+        .withdraw-asset-wrapper {
+          ${media.lg`
               display: flex;
               flex-direction: column;
             `}
 
-            .coinData-wrapper {
-              padding: 10px 0;
-            }
+          .coinData-wrapper {
+            padding: 10px 0;
           }
         }
-        .drag-container {
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-          padding-top: 20px;
+      }
+      .drag-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding-top: 20px;
 
-          .cooldown-info {
-            display: flex;
-            align-items: center;
-            margin-top: 8px;
-            .label-wrapper {
-              margin-right: 4px;
-            }
+        .cooldown-info {
+          display: flex;
+          align-items: center;
+          margin-top: 8px;
+          .label-wrapper {
+            margin-right: 4px;
           }
         }
       }
     }
+  }
 
-    .your-share-view {
-      ${media.lg`
+  .your-share-view {
+    ${media.lg`
         display: flex;
         flex-direction: column;
       `}
 
-      .advanced-mode-btn {
-        ${media.lg`
+    .advanced-mode-btn {
+      ${media.lg`
           width: 125px;
           margin-top: 10px;
         `}
-      }
+    }
 
-      .right-arrow-wrapper {
-        ${media.lg`
+    .right-arrow-wrapper {
+      ${media.lg`
           display: flex;
           justify-content: center;
           align-items: center;
           flex-grow: 1;
           padding-top: 30px;
         `}
+    }
+
+    .your-share-wrapper {
+      padding: 4px 10px;
+
+      ${media.lg`
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      `}
+
+      .label-title {
+        font-size: 15px;
+        text-align: center;
+        font-weight: 500;
+        letter-spacing: 0.04em;
       }
 
-      .your-share-wrapper {
-        padding: 40px 20px;
+      .label-wrapper {
+        text-transform: uppercase;
+      }
 
-        ${media.lg`
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-        `}
+      .earning-label {
+        margin-top: 40px;
+      }
 
-        .label-title {
-          font-size: 15px;
-          text-align: center;
-          font-weight: 500;
-          letter-spacing: 0.04em;
-        }
+      .share-placeholder-wrapper {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
 
-        .label-wrapper {
-          text-transform: uppercase;
-        }
+        width: 100%;
+        height: 100%;
+      }
 
-        .earning-label {
-          margin-top: 40px;
-        }
+      .placeholder-label {
+        font-size: 14px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
 
-        .share-placeholder-wrapper {
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
+      .placeholder-icon {
+        display: flex;
+        justify-content: center;
+        align-items: center;
 
-          width: 100%;
-          height: 100%;
-        }
-
-        .placeholder-label {
-          font-size: 14px;
-          letter-spacing: 0.04em;
-          text-transform: uppercase;
-        }
-
-        .placeholder-icon {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-
-          width: 100px;
-          height: 100px;
-          margin-bottom: 20px;
-          border-radius: 50%;
-          background: ${palette('background', 1)};
-          svg {
-            width: 60px;
-            height: 60px;
-            path {
-              fill: ${palette('gray', 1)};
-            }
+        width: 100px;
+        height: 100px;
+        margin-bottom: 20px;
+        border-radius: 50%;
+        background: ${palette('background', 1)};
+        svg {
+          width: 60px;
+          height: 60px;
+          path {
+            fill: ${palette('gray', 1)};
           }
         }
+      }
 
-        .share-info-title {
-          padding: 20px 0;
-          text-align: center;
-          text-transform: uppercase;
+      .share-info-title {
+        padding: 20px 0;
+        text-align: center;
+        text-transform: uppercase;
 
-          border: 1px solid ${palette('gray', 0)};
-          border-bottom: 3px solid ${palette('primary', 0)};
+        border: 1px solid ${palette('gray', 0)};
+        border-bottom: 3px solid ${palette('primary', 0)};
+      }
+
+      .your-share-info-wrapper {
+        display: flex;
+        flex-direction: column;
+        padding-bottom: 5px;
+
+        border: 1px solid ${palette('gray', 0)};
+        border-top: none;
+
+        .share-info-row {
+          display: flex;
+          justify-content: space-around;
+          align-items: center;
+          padding: 10px;
+          border-top: 1px solid ${palette('gray', 0)};
         }
 
-        .your-share-info-wrapper {
-          display: flex;
-          flex-direction: column;
-          padding-bottom: 5px;
-
-          border: 1px solid ${palette('gray', 0)};
-          border-top: none;
-
-          .share-info-row {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding: 10px;
-            border-top: 1px solid ${palette('gray', 0)};
+        .your-share-info {
+          & > div {
+            text-align: center;
           }
 
-          .your-share-info {
-            & > div {
-              text-align: center;
-            }
-
-            .status-title,
-            .status-value {
-              ${media.lg`
+          .status-title,
+          .status-value {
+            ${media.lg`
                 padding: 3px 0;
               `}
-            }
+          }
 
-            .status-value {
-              font-size: 20px;
-            }
-            .your-share-price-label {
-              color: ${palette('text', 2)};
-              ${media.lg`
+          .status-value {
+            font-size: 20px;
+          }
+          .your-share-price-label {
+            color: ${palette('text', 2)};
+            ${media.lg`
                 padding: 0;
               `}
-            }
           }
         }
       }
+    }
 
-      .withdraw-view-wrapper {
-        ${media.lg`
+    .withdraw-view-wrapper {
+      ${media.lg`
           display: flex;
           flex-direction: column;
           border-top: 1px solid ${palette('gray', 0)};
@@ -321,120 +318,122 @@ export const ContentWrapper = styled(ContentView)`
           padding-bottom: 10px;
           padding-left: 20px;
         `}
+    }
+  }
+
+  .share-detail-view {
+    padding: 0;
+
+    .wallet-btn-wrapper {
+      margin: 20px;
+    }
+    .label-no-padding {
+      ${media.lg`
+          padding: 0;
+        `}
+    }
+    .label-description {
+      ${media.lg`
+          padding-bottom: 0;
+        `}
+    }
+
+    .stake-card-wrapper {
+      display: flex;
+      flex-direction: column;
+      padding: 0px 10px;
+
+      ${media.md`
+        padding: 0px 40px;
+      `}
+
+      ${media.lg`
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 100%;
+        padding: 15px 0;
+        & > * {
+          margin-bottom: auto;
+        }
+      `}
+
+      .coin-card-wrapper {
+        padding: 6px 0;
       }
     }
 
-    .share-detail-view {
-      padding: 0;
-
-      .wallet-btn-wrapper {
-        margin: 20px;
-      }
-      .label-no-padding {
-        ${media.lg`
-          padding: 0;
-        `}
-      }
-      .label-description {
-        ${media.lg`
-          padding-bottom: 0;
-        `}
-      }
-
-      .stake-card-wrapper {
-        & > * {
-          margin-bottom: 20px;
-        }
-
-        ${media.lg`
-          display: flex;
-          justify-content: space-between;
-          width: 100%;
-          padding: 15px 0;
-          & > * {
-            margin-bottom: auto;
-          }
-        `}
-
-        .coin-card-wrapper {
-          ${media.lg`
-            width: calc(50% - 20px);
-          `}
-        }
-      }
-
-      .slider-wrapper {
-        ${media.lg`
+    .slider-wrapper {
+      ${media.lg`
           width: 100%;
         `}
-      }
+    }
 
-      .stake-share-info-wrapper {
-        ${media.lg`
+    .stake-share-info-wrapper {
+      ${media.lg`
           display: flex;
           flex-direction: column;
           width: 100%;
         `}
 
-        .info-status-wrapper {
-          flex-wrap: wrap;
-        }
+      .info-status-wrapper {
+        flex-wrap: wrap;
+      }
 
-        .status-wrapper {
-          ${media.lg`
+      .status-wrapper {
+        ${media.lg`
             width: 110px !important;
             margin-right: 30px;
           `}
 
-          .label-wrapper {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-          }
+        .label-wrapper {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+
+      .pool-status-wrapper {
+        display: flex;
+        > * {
+          width: 50%;
         }
 
-        .pool-status-wrapper {
-          display: flex;
-          > * {
-            width: 50%;
-          }
-
-          ${media.lg`
+        ${media.lg`
             align-items: center;
             > * {
               width: auto;
             }
           `}
-        }
+      }
 
-        .share-status-wrapper {
+      .share-status-wrapper {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        padding-top: 24px;
+
+        .info-status-wrapper {
           display: flex;
-          flex-direction: row;
-          justify-content: center;
-          align-items: center;
-          padding-top: 24px;
 
-          .info-status-wrapper {
-            display: flex;
+          & > * {
+            width: 50%;
+          }
 
-            & > * {
-              width: 50%;
-            }
-
-            ${media.lg`
+          ${media.lg`
               align-items: center;
               flex-grow: 1;
               & > * {
                 width: auto;
               }
             `}
-          }
+        }
 
-          .drag-wrapper {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-          }
+        .drag-wrapper {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
         }
       }
     }
@@ -446,6 +445,8 @@ export const ContentWrapper = styled(ContentView)`
     background: ${palette('background', 1)};
     box-shadow: 0px 1px 3px ${palette('gray', 0)};
     border-radius: 3px;
+
+    position: relative;
   }
 `;
 
@@ -493,17 +494,6 @@ export const FeeParagraph = styled(Paragraph)`
   }
 `;
 
-export const PopoverContent = styled.div`
-  width: 300px;
-  font-size: '11px';
-  color: ${palette('text', 0)};
-`;
-
-export const PopoverIcon = styled(InfoCircleOutlined)`
-  color: ${palette('primary', 0)};
-  margin: 0 10px;
-`;
-
 export const RuneStakeView = styled.div`
   a {
     display: flex;
@@ -530,4 +520,43 @@ export const TxDataWrapper = styled.div`
   .label-wrapper {
     padding: 2px 0;
   }
+`;
+
+export const InformationWrapper = styled.div`
+  border: 1px solid ${palette('gray', 0)};
+  padding: 0 10px;
+  margin: 0 10px;
+
+  ${media.md`
+    margin: 0px;
+  `}
+
+  .label-wrapper,
+  .ant-typography {
+    padding-top: 4px;
+    padding-bottom: 4px;
+    margin-bottom: 0px;
+  }
+`;
+
+export const HeaderAction = styled.div`
+  position: absolute;
+  top: -40px;
+  right: 10px;
+
+  ${media.sm`
+    top: 20px;
+    right: 10px;
+  `}
+
+  .btn-wrapper {
+    border-radius: 8px;
+    min-width: 30px;
+  }
+`;
+
+export const CenterWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;

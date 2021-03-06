@@ -55,11 +55,11 @@ const DefaultChart: React.FC<Props> = React.memo(
     const colors = useMemo(
       () => ({
         text: theme.palette.text[0],
-        line: isLight ? '#436eb9' : '#1dd3e6',
-        backgroundGradientStart: isLight ? '#e4ebf8' : '#365979',
-        backgroundGradientStop: isLight ? '#ffffff' : '#0f1922',
-        gradientStart: isLight ? '#c5d3f0' : '#365979',
-        gradientStop: isLight ? '#ffffff' : '#0f1922',
+        line: isLight ? '#23DCC8' : '#23DCC8',
+        backgroundGradientStart: isLight ? '#c8fffa' : '#186b63',
+        backgroundGradientStop: isLight ? '#ffffff' : '#23DCC8',
+        gradientStart: isLight ? '#23DCC8' : '#186b63',
+        gradientStop: isLight ? '#ffffff' : '#23dcca',
       }),
       [isLight, theme],
     );

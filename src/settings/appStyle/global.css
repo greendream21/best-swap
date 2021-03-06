@@ -1,3 +1,8 @@
 .ant-popover {
   z-index: 9999;
+  background-color: transparent;
+}
+
+body {
+  background-color: transparent;
 }

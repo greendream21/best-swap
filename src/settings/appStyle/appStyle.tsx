@@ -1,4 +1,5 @@
-import styled from 'styled-components';
+import { transparentize } from 'polished';
+import styled, { createGlobalStyle } from 'styled-components';
 import { palette } from 'styled-theme';
 
 import { media } from 'helpers/styleHelper';
@@ -13,6 +14,13 @@ export const fontConfig = {
     families: ['Exo 2'],
   },
 };
+
+export const ThemedGlobalStyle = createGlobalStyle`
+  body {
+    min-height: 100vh;
+    background-color: ${palette('background', 3)};
+  }
+`;
 
 export const AppHolder = styled.div`
   @font-face {
@@ -81,16 +89,30 @@ export const AppHolder = styled.div`
     }
   }
 
-  section.ant-layout {
-    background: ${palette('background', 1)};
+  .app-layout {
+    background-repeat: no-repeat;
+    background-image: ${({ theme }) =>
+      `radial-gradient(50% 50% at 50% 50%, ${transparentize(
+        0.9,
+        '#23DCC8',
+      )} 0%, ${transparentize(1, theme.palette.background[0])} 100%)`};
+    }
   }
 
   .ant-popover {
+    .ant-popover-content {
+      background: ${props => transparentize(0.4, props.theme.palette.background[0])};
+      border: 1px solid ${palette('gray', 0)};
+      border-radius: 8px;
+    }
     .ant-popover-arrow {
-      border-color: ${palette('background', 4)};
+      border-bottom: none;
+      border-right: none;
+      border-color: ${palette('gray', 0)};
     }
     .ant-popover-inner {
-      background-color: ${palette('background', 4)};
+      border: 1px solid ${palette('gray', 0)};
+      background-color: ${props => transparentize(0.4, props.theme.palette.background[0])};
     }
   }
 

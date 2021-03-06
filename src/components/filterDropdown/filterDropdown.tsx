@@ -98,10 +98,10 @@ const FilterDropdown: React.FC<Props> = (props: Props): JSX.Element => {
   return (
     <Dropdown overlay={renderMenu()} trigger={['click']}>
       <div className="dropdown-wrapper">
-        <DesktopButton color="primary" typevalue="ghost">
+        <DesktopButton color="primary" typevalue="outline">
           {menuLabel} <CaretDownOutlined />
         </DesktopButton>
-        <MobileButton color="primary" typevalue="ghost">
+        <MobileButton color="primary" typevalue="outline">
           <FilterOutlined />
         </MobileButton>
       </div>

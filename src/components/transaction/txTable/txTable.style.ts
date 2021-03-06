@@ -23,14 +23,14 @@ export const StyledLinkText = styled(Label)`
 `;
 
 export const TransactionWrapper = styled.div`
-  padding: 20px 0px;
+  padding: 10px 0px;
 `;
 
 export const StyledPagination = styled(Pagination)`
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px 0;
+  padding: 10px 0;
 
   li {
     a.ant-pagination-item-link {

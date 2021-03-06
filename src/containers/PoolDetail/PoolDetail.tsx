@@ -7,7 +7,7 @@ import { withRouter, useParams, Link } from 'react-router-dom';
 import { SwapOutlined, DatabaseOutlined } from '@ant-design/icons';
 import { Token } from '@thorchain/asgardex-binance';
 import { bnOrZero } from '@thorchain/asgardex-util';
-import { Row, Col, Grid, Popover } from 'antd';
+import { Row, Col, Grid } from 'antd';
 import { get as _get } from 'lodash';
 import { compose } from 'redux';
 
@@ -21,6 +21,7 @@ import Helmet from 'components/helmet';
 import { PoolStatBar } from 'components/statBar';
 import TxTable from 'components/transaction/txTable';
 import Button from 'components/uielements/button';
+import { TooltipIcon } from 'components/uielements/Popover';
 import Loader from 'components/utility/loaders/pageLoader';
 
 import * as midgardActions from 'redux/midgard/actions';
@@ -36,7 +37,6 @@ import useMidgard from 'hooks/useMidgard';
 import useNetwork from 'hooks/useNetwork';
 import usePrice from 'hooks/usePrice';
 
-import { getAppContainer } from 'helpers/elementHelper';
 import { formatMidgardAmount, getTokenName } from 'helpers/stringHelper';
 import { getPoolData } from 'helpers/utils/poolUtils';
 import { PoolData } from 'helpers/utils/types';
@@ -52,9 +52,8 @@ import {
   PoolCaptionPrice,
   PoolCaptionButtonsWrapper,
   ChartContainer,
-  PopoverContent,
-  PopoverIcon,
 } from './PoolDetail.style';
+
 
 type Props = {
   poolDetailedData: PoolDataMap;
@@ -217,20 +216,7 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
         </PoolCaptionWrapper>
         <PoolCaptionButtonsWrapper>
           {isOutboundDelayed && (
-            <Popover
-              content={
-                <PopoverContent>{getOutboundBusyTooltip()}</PopoverContent>
-              }
-              getPopupContainer={getAppContainer}
-              placement="topRight"
-              overlayStyle={{
-                padding: '6px',
-                animationDuration: '0s !important',
-                animation: 'none !important',
-              }}
-            >
-              <PopoverIcon color={statusColor} />
-            </Popover>
+            <TooltipIcon tooltip={getOutboundBusyTooltip()} color={statusColor} />
           )}
           <Link to={liquidityUrl}>
             <Button
@@ -252,6 +238,16 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
                 swap
               </Button>
             </Link>
+          )}
+          {poolStatus !== PoolDetailStatusEnum.Enabled && (
+            <Button
+              disabled
+              round="true"
+              color={!isValidFundCaps ? 'error' : statusColor}
+            >
+              <SwapOutlined />
+              swap
+            </Button>
           )}
         </PoolCaptionButtonsWrapper>
       </Col>

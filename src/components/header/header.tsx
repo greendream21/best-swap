@@ -5,7 +5,7 @@ import { useHistory, Link } from 'react-router-dom';
 
 import { WalletOutlined } from '@ant-design/icons';
 import * as RD from '@devexperts/remote-data-ts';
-import { Alert, Grid, Popover } from 'antd';
+import { Alert, Grid } from 'antd';
 
 import WalletDrawer from 'containers/WalletView/WalletDrawer';
 
@@ -33,6 +33,7 @@ import Refresh from '../refresh';
 import Label from '../uielements/label';
 import Logo from '../uielements/logo';
 import showNotification from '../uielements/notification';
+import { TooltipIcon, Popover } from '../uielements/Popover';
 import ThemeSwitch from '../uielements/themeSwitch';
 import TxProgress from '../uielements/txProgress';
 import WalletButton from '../uielements/walletButton';
@@ -43,9 +44,6 @@ import {
   LogoWrapper,
   HeaderActionButtons,
   HeaderCenterWrapper,
-  PopoverContent,
-  PopoverIcon,
-  TooltipContent,
   HeaderLeft,
   HeaderLeftActions,
   TxIconButton,
@@ -268,30 +266,9 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
     resetTxStatus();
   };
 
-  const getPopupContainer = () => {
-    return document.getElementsByClassName('stake-header')[0] as HTMLElement;
-  };
-
-  const renderPopoverContent = () => (
-    <PopoverContent>
-      A Funds Cap is currently in place as the protocol balances security and
-      demand on ChaosNet. The cap maxes out at 95%. Please follow the project on
-      Twitter @thorchain_org for announcements regarding cap raise.
-    </PopoverContent>
-  );
-
   const renderTxProgress = () => {
     return (
-      <Popover
-        content={<TooltipContent>View Transaction</TooltipContent>}
-        getPopupContainer={getPopupContainer}
-        placement="bottom"
-        overlayStyle={{
-          padding: '6px',
-          animationDuration: '0s !important',
-          animation: 'none !important',
-        }}
-      >
+      <Popover tooltip="View Transaction">
         <TxIconButton>
           <TxProgress
             status={status}
@@ -329,19 +306,10 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
               {!isValidFundCaps && '(Funds Cap Reached)'}
             </Label>
             {!isValidFundCaps && (
-              <Popover
-                content={renderPopoverContent}
-                getPopupContainer={getPopupContainer}
-                placement="bottomRight"
-                overlayClassName="stake-header-info"
-                overlayStyle={{
-                  padding: '6px',
-                  animationDuration: '0s !important',
-                  animation: 'none !important',
-                }}
-              >
-                <PopoverIcon />
-              </Popover>
+              <TooltipIcon tooltip="A Funds Cap is currently in place as the protocol balances security and
+              demand on ChaosNet. The cap maxes out at 95%. Please follow the project on
+              Twitter @thorchain_org for announcements regarding cap raise."
+              />
             )}
           </HeaderCenterWrapper>
           <HeaderActionButtons>

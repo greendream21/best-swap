@@ -1,4 +1,4 @@
-import { InfoCircleOutlined } from '@ant-design/icons';
+import { transparentize } from 'polished';
 import styled from 'styled-components';
 import { palette, size, key } from 'styled-theme';
 
@@ -21,10 +21,16 @@ export const StyledHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  position: fixed;
   z-index: 1000;
   width: 100vw;
   height: ${size('headerHeight', '70px')};
+  background-color: transparent;
+  background-repeat: no-repeat;
+  background-image: ${({ theme }) =>
+    `linear-gradient(180deg, ${transparentize(
+      0.8,
+      '#23DCC8',
+    )} 0%, ${transparentize(1, theme.palette.background[0])} 100%)`};
 
   padding: 0 10px;
   ${media.sm`
@@ -34,8 +40,6 @@ export const StyledHeader = styled.div`
   > *:last-child {
     margin-right: 0;
   }
-  background-color: ${palette('background', 0)};
-
   /* HACK: this override hack should be in the 
   dropdown component itself */
   .ant-dropdown-link {
@@ -224,22 +228,6 @@ export const ConnectionMenuItem = styled.div`
     color: ${palette('text', 2)};
     text-transform: lowercase;
   }
-`;
-
-export const PopoverContent = styled.div`
-  width: 300px;
-  font-size: '11px';
-  color: ${palette('text', 0)};
-`;
-
-export const TooltipContent = styled.div`
-  font-size: '12px';
-  color: ${palette('text', 0)};
-`;
-
-export const PopoverIcon = styled(InfoCircleOutlined)`
-  color: ${palette('error', 0)};
-  margin: 0 10px;
 `;
 
 export const TxIconButton = styled(IconButton)`

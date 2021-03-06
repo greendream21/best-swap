@@ -8,6 +8,7 @@ import ContentView from 'components/utility/contentView';
 import { media } from 'helpers/styleHelper';
 
 export const ContentWrapper = styled(ContentView)`
+  border: 1px solid ${palette('gray', 0)};
   padding: 10px;
   ${media.sm`
     padding: 20px;
