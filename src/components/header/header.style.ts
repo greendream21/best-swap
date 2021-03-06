@@ -2,7 +2,10 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import { palette, size, key } from 'styled-theme';
 
+import { IconButton } from 'components/IconButton';
+
 import { media } from 'helpers/styleHelper';
+
 
 export const StyledAlertWrapper = styled.div`
   display: flex;
@@ -68,6 +71,14 @@ export const StyledHeader = styled.div`
 export const HeaderCenterWrapper = styled.div`
   display: flex;
   align-items: center;
+
+  padding: 8px 10px;
+  border: 1px solid ${palette('gray', 0)};
+  border-radius: 4px;
+
+  .label-wrapper {
+    padding: 0;
+  }
 `;
 
 export const HeaderTools = styled.div`
@@ -76,24 +87,37 @@ export const HeaderTools = styled.div`
   align-items: center;
 `;
 
-export const LogoWrapper = styled.div`
-  display: none;
-  height: 24px;
-  margin-right: 4px;
-
-  ${media.md`
-    margin-right: 20px;
-    display: flex;
-  `}
-  svg {
-    height: 24px;
-  }
+export const HeaderLeft = styled.div`
+  display: flex;
+  align-items: center;
 
   .ant-dropdown-link {
     .anticon-down {
       margin-left: 8px;
     }
   }
+`;
+
+export const HeaderLeftActions = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+`;
+
+export const LogoWrapper = styled.div`
+  display: none;
+  height: 24px;
+  margin-right: 4px;
+
+  svg {
+    width: 180px;
+    height: 24px;
+  }
+
+  ${media.md`
+    margin-right: 20px;
+    display: flex;
+  `}
 `;
 
 export const HeaderTitle = styled.p`
@@ -153,12 +177,11 @@ export const HeaderActionButtons = styled.div`
   }
 
   .ant-dropdown-link {
-    margin: 0 8px;
+    margin: 0 4px;
     display: none;
 
     &.baseprice-selector {
       display: flex;
-      margin-right: 12px;
 
       .currency-icon-container {
         display: none;
@@ -217,4 +240,8 @@ export const TooltipContent = styled.div`
 export const PopoverIcon = styled(InfoCircleOutlined)`
   color: ${palette('error', 0)};
   margin: 0 10px;
+`;
+
+export const TxIconButton = styled(IconButton)`
+  margin: 0 4px;
 `;

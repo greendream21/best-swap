@@ -1,7 +1,5 @@
 import React from 'react';
 
-import { FolderAddFilled } from '@ant-design/icons';
-
 import { Maybe } from 'types/bepswap';
 
 import Button from '../button';
@@ -27,13 +25,6 @@ const WalletButton: React.FC<Props> = (props: Props): JSX.Element => {
     if (!connected) {
       return (
         <span style={{ display: 'flex', alignItems: 'center' }}>
-          <FolderAddFilled
-            style={{
-              marginRight: '6px',
-              top: '1px',
-              position: 'relative',
-            }}
-          />
           Add Wallet
         </span>
       );
@@ -54,6 +45,7 @@ const WalletButton: React.FC<Props> = (props: Props): JSX.Element => {
       className={`${className} wallet-btn-wrapper`}
       sizevalue="normal"
       round="true"
+      color={connected ? 'primary' : 'warning'}
       {...otherProps}
     >
       {getBtnValue()}

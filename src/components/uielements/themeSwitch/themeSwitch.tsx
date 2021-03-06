@@ -1,25 +1,16 @@
-/* eslint-disable jsx-a11y/accessible-emoji */
 import React, { useCallback } from 'react';
 
+import { Moon, Sun } from 'react-feather';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { ThemeType } from '@thorchain/asgardex-theme';
-import { SwitchProps } from 'antd/lib/switch';
-
 
 import * as appActions from 'redux/app/actions';
 import { RootState } from 'redux/store';
 
-import { StyledSwitch, EmojiIcon } from './themeSwitch.style';
+import * as Styled from './themeSwitch.style';
 
-type ComponentProps = {
-  className?: string;
-};
-
-type Props = ComponentProps & SwitchProps;
-
-const AssetInfo: React.FC<Props> = (props: Props): JSX.Element => {
-  const { className = '', ...otherProps } = props;
+const ThemeSwitch: React.FC = (): JSX.Element => {
   const themeType = useSelector((state: RootState) => state.App.themeType);
   const dispatch = useDispatch();
   const setTheme = useCallback(
@@ -27,35 +18,17 @@ const AssetInfo: React.FC<Props> = (props: Props): JSX.Element => {
     [dispatch],
   );
   const toggleTheme = useCallback(
-    (value: boolean) => {
-      setTheme(value ? ThemeType.LIGHT : ThemeType.DARK);
+    () => {
+      setTheme(themeType === ThemeType.DARK ? ThemeType.LIGHT : ThemeType.DARK);
     },
-    [setTheme],
-  );
-
-  const isLight = themeType === ThemeType.LIGHT;
-
-  const sunIcon = (
-    <EmojiIcon role="img" aria-label="sun">
-      ☀️
-    </EmojiIcon>
-  );
-  const moonIcon = (
-    <EmojiIcon role="img" aria-label="moon">
-      🌙️
-    </EmojiIcon>
+    [setTheme, themeType],
   );
 
   return (
-    <StyledSwitch
-      className={`themeSwitch-wrapper ${className}`}
-      checked={isLight}
-      onChange={toggleTheme}
-      checkedChildren={sunIcon}
-      unCheckedChildren={moonIcon}
-      {...otherProps}
-    />
+    <Styled.IconButton onClick={toggleTheme}>
+      {themeType === ThemeType.DARK ? <Moon /> : <Sun />}
+    </Styled.IconButton>
   );
 };
 
-export default AssetInfo;
+export default ThemeSwitch;

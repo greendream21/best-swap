@@ -3,6 +3,8 @@ import React, { useMemo } from 'react';
 import { DownOutlined } from '@ant-design/icons';
 import { Dropdown, Row } from 'antd';
 
+import { IconButton } from 'components/IconButton';
+
 import useNetwork from 'hooks/useNetwork';
 
 import { getHostnameFromUrl } from 'helpers/apiHelper';
@@ -28,7 +30,7 @@ type Props = {
 const HeaderSetting: React.FC<Props> = (props: Props): JSX.Element => {
   const { midgardBasePath } = props;
 
-  const { statusColor: status, outboundQueueLevel } = useNetwork();
+  const { outboundQueue, statusColor: status, outboundQueueLevel } = useNetwork();
 
   // Midgard IP on devnet OR on test|chaos|mainnet
   const midgardUrl =
@@ -40,8 +42,8 @@ const HeaderSetting: React.FC<Props> = (props: Props): JSX.Element => {
     return 'red';
   }, [status]);
   const queueLevelStr = useMemo(() => {
-    return `OUTBOUND Queue: ${outboundQueueLevel}`;
-  }, [outboundQueueLevel]);
+    return `Outbound Queue: ${outboundQueue} (${outboundQueueLevel})`;
+  }, [outboundQueueLevel, outboundQueue]);
 
   const menuItems: MenuItem[] = useMemo(
     () => [
@@ -115,10 +117,12 @@ const HeaderSetting: React.FC<Props> = (props: Props): JSX.Element => {
 
   return (
     <Dropdown overlay={menu} trigger={['click']}>
-      <a className="ant-dropdown-link" href="/">
-        <ConnectionStatus color={statusColor} />
-        <DownOutlined />
-      </a>
+      <IconButton>
+        <a className="ant-dropdown-link" href="/">
+          <ConnectionStatus color={statusColor} />
+          <DownOutlined />
+        </a>
+      </IconButton>
     </Dropdown>
   );
 };
