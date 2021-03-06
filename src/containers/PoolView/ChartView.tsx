@@ -32,10 +32,9 @@ const ChartView = () => {
   const volumeChartIndexes = useMemo(
     () => isDesktopView ? [
       'Volume',
-      'Swap',
-      'Add',
-      'Withdraw',
-    ] : ['Volume', 'Swap'],
+      'Buy',
+      'Sell',
+    ] : ['Volume', 'Buy', 'Sell'],
     [isDesktopView],
   );
   const liquidityChartIndexes = useMemo(
@@ -79,18 +78,24 @@ const ChartView = () => {
     const weekLiquidityData: ChartDetail[] = [];
     const allTimeTotalPooledData: ChartDetail[] = [];
     const weekTotalPooledData: ChartDetail[] = [];
-    const allTimeTotalSwapsData: ChartDetail[] = [];
-    const weekTotalSwapsData: ChartDetail[] = [];
-    const allTimeTotalAddData: ChartDetail[] = [];
-    const weekTotalAddData: ChartDetail[] = [];
-    const allTimeTotalWithdrawData: ChartDetail[] = [];
-    const weekTotalWithdrawData: ChartDetail[] = [];
+    const allTimeTotalBuyData: ChartDetail[] = [];
+    const weekTotalBuyData: ChartDetail[] = [];
+    const allTimeTotalSellData: ChartDetail[] = [];
+    const weekTotalSellData: ChartDetail[] = [];
 
     const getChartData = (data: StatsChanges) => {
       const time = data?.time ?? 0;
       const volume = {
         time,
         value: formatMidgardAmount(data?.totalVolumeUsd),
+      };
+      const buyVolume = {
+        time,
+        value: formatMidgardAmount(data?.buyVolumeUsd),
+      };
+      const sellVolume = {
+        time,
+        value: formatMidgardAmount(data?.sellVolumeUsd),
       };
       const totalPooled = {
         time,
@@ -101,25 +106,12 @@ const ChartView = () => {
         value: formatMidgardAmount(bnOrZero(data?.totalRuneDepthUsd).multipliedBy(2).toNumber()),
       };
 
-      const buyCount = data?.buyCount ?? 0;
-      const sellCount = data?.sellCount ?? 0;
-      const swapCount = buyCount + sellCount;
-      // buyCount + sellCount
-      const totalSwaps = {
-        time,
-        value: String(swapCount),
-      };
-
-      const totalAdd = { time, value: String(data?.stakeCount ?? 0) };
-      const totalWithdraw = { time, value: String(data?.withdrawCount ?? 0) };
-
       return {
         volume,
+        buyVolume,
+        sellVolume,
         liquidity,
         totalPooled,
-        totalSwaps,
-        totalAdd,
-        totalWithdraw,
       };
     };
 
@@ -128,16 +120,14 @@ const ChartView = () => {
         volume,
         liquidity,
         totalPooled,
-        totalSwaps,
-        totalAdd,
-        totalWithdraw,
+        buyVolume,
+        sellVolume,
       } = getChartData(data);
       allTimeVolumeData.push(volume);
       allTimeLiquidityData.push(liquidity);
       allTimeTotalPooledData.push(totalPooled);
-      allTimeTotalSwapsData.push(totalSwaps);
-      allTimeTotalAddData.push(totalAdd);
-      allTimeTotalWithdrawData.push(totalWithdraw);
+      allTimeTotalBuyData.push(buyVolume);
+      allTimeTotalSellData.push(sellVolume);
     });
 
     weekData.forEach(data => {
@@ -145,16 +135,14 @@ const ChartView = () => {
         volume,
         liquidity,
         totalPooled,
-        totalSwaps,
-        totalAdd,
-        totalWithdraw,
+        buyVolume,
+        sellVolume,
       } = getChartData(data);
       weekVolumeData.push(volume);
       weekLiquidityData.push(liquidity);
       weekTotalPooledData.push(totalPooled);
-      weekTotalSwapsData.push(totalSwaps);
-      weekTotalAddData.push(totalAdd);
-      weekTotalWithdrawData.push(totalWithdraw);
+      weekTotalBuyData.push(buyVolume);
+      weekTotalSellData.push(sellVolume);
     });
 
     return {
@@ -162,6 +150,20 @@ const ChartView = () => {
         values: {
           allTime: allTimeVolumeData,
           week: weekVolumeData,
+        },
+        unit: '$',
+      },
+      Buy: {
+        values: {
+          allTime: allTimeTotalBuyData,
+          week: weekTotalBuyData,
+        },
+        unit: '$',
+      },
+      Sell: {
+        values: {
+          allTime: allTimeTotalSellData,
+          week: weekTotalSellData,
         },
         unit: '$',
       },
@@ -180,24 +182,6 @@ const ChartView = () => {
         },
         unit: 'ᚱ',
         type: 'line',
-      },
-      Swap: {
-        values: {
-          allTime: allTimeTotalSwapsData,
-          week: weekTotalSwapsData,
-        },
-      },
-      Add: {
-        values: {
-          allTime: allTimeTotalAddData,
-          week: weekTotalAddData,
-        },
-      },
-      Withdraw: {
-        values: {
-          allTime: allTimeTotalWithdrawData,
-          week: weekTotalWithdrawData,
-        },
       },
     };
   }, [rtStats, rtStatsLoading, initialChartData]);
