@@ -26,7 +26,6 @@ export const IconButton = styled.button`
   }
 
   svg {
-    margin-top: 2px;
   }
   > * {
     stroke: ${palette('text', 0)};
