@@ -1,19 +1,23 @@
+import { transparentize } from 'polished';
 import styled from 'styled-components';
-import { palette, key } from 'styled-theme';
+import { palette } from 'styled-theme';
 
 export const ContentTitleWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 52px;
+  height: 64px;
 
-  background: ${palette('gradient', 0)};
-  color: ${palette('text', 3)};
-  font-size: ${key('sizes.font.big', '15px')};
-  font-weight: 500;
+  background-color: ${props =>
+    transparentize(0.5, props.theme.palette.gray[0])};
+  border-radius: 1px solid ${palette('gray', 1)};
+
+  color: ${palette('text', 0)};
+  font-size: 16px;
+  font-weight: bold;
   letter-spacing: 2px;
   text-transform: uppercase;
 
-  border-radius: 1px;
+  border-radius: 14px;
 `;

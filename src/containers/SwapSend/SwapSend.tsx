@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 
 import { connect } from 'react-redux';
-import { withRouter, useHistory, useParams } from 'react-router-dom';
+import { withRouter, useHistory, useParams, Link } from 'react-router-dom';
 
 import {
   SwapOutlined,
@@ -25,6 +25,7 @@ import * as H from 'history';
 import { compose } from 'redux';
 
 import Helmet from 'components/helmet';
+import { IconButton } from 'components/IconButton';
 import PrivateModal from 'components/modals/privateModal';
 import SlipVerifyModal from 'components/modals/slipVerifyModal';
 import AddressInput from 'components/uielements/addressInput';
@@ -93,6 +94,7 @@ import {
   LabelInfo,
   PopoverIcon,
   InverseButton,
+  SwapHeader,
 } from './SwapSend.style';
 import { SwapSendView } from './types';
 
@@ -160,6 +162,8 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   if (!sourceSymbol || !targetSymbol) {
     history.push('/pools');
   }
+
+  const poolSymbol = sourceSymbol !== RUNE_SYMBOL ? sourceSymbol : targetSymbol;
 
   const swapSource = getTickerFormat(sourceSymbol);
   const swapTarget = getTickerFormat(targetSymbol);
@@ -880,7 +884,14 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
       <Helmet title={pageTitle} content={metaDescription} />
       <SwapAssetCard>
         <ContentTitle>
-          swapping {swapSource} &gt;&gt; {swapTarget}
+          <SwapHeader>
+            <div>
+              swap {swapSource} &gt;&gt; {swapTarget}
+            </div>
+            <Link to={`/liquidity/${poolSymbol.toUpperCase()}`}>
+              <Button typevalue="outline">Add</Button>
+            </Link>
+          </SwapHeader>
         </ContentTitle>
         <div className="swap-content">
           <div className="swap-detail-panel">
@@ -907,10 +918,9 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
                 />
               </div>
               <div className="swap-wrapper">
-                <SwapOutlined
-                  className="swap-outlined"
-                  onClick={handleReversePair}
-                />
+                <IconButton className="swap-outlined" onClick={handleReversePair}>
+                  <SwapOutlined />
+                </IconButton>
               </div>
             </SliderSwapWrapper>
             <TokenCard

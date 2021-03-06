@@ -6,6 +6,7 @@ import { LeftOutlined } from '@ant-design/icons';
 
 import Footer from 'components/footer';
 import Header from 'components/header';
+import { IconButton } from 'components/IconButton';
 import ViewPanel from 'components/viewPanel';
 
 import useMidgard from 'hooks/useMidgard';
@@ -66,8 +67,10 @@ const App: React.FC<Props> = (props: Props): JSX.Element => {
       <BackLink
         onClick={handleGoBack}
       >
-        <LeftOutlined />
-        <span>Back</span>
+        <IconButton>
+          <LeftOutlined />
+          <span>Back</span>
+        </IconButton>
       </BackLink>
     );
   }, [location, history, isValidPool]);

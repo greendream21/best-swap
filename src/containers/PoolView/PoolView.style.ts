@@ -24,7 +24,6 @@ export const ContentWrapper = styled(ContentView)`
   }
 
   .pool-list-view {
-    padding-top: 10px;
     .pool-card {
       margin-bottom: 10px;
     }
@@ -41,7 +40,7 @@ export const PoolViewTools = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: 25px;
+  padding-top: 20px;
 
   .add-new-pool {
     display: flex;

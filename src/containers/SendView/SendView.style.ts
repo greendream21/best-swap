@@ -18,8 +18,11 @@ export const SwapAssetCard = styled.div`
   display: flex;
   flex-direction: column;
   margin: auto;
-  width: 100%;
-  max-width: 600px;
+  background: ${palette('background', 0)};
+  padding-bottom: 20px;
+
+  border-radius: 14px;
+  border: 1px solid ${palette('gray', 0)};
 
   .drag-confirm-wrapper {
     display: flex;
@@ -28,9 +31,6 @@ export const SwapAssetCard = styled.div`
     align-items: center;
   }
 
-  ${media.lg`
-    max-width: 800px;
-  `}
 
   .swap-content {
     display: flex;
@@ -90,9 +90,11 @@ export const ArrowContainer = styled(BaseArrowContainer)`
 `;
 
 export const ContentWrapper = styled(ContentView)`
-  padding: 18px 0;
+  background: transparent;
+
+  padding-bottom: 18px;
   ${media.sm`
-    padding: 48px 0;
+    padding-bottom: 40px;
   `}
 
   .swap-detail-panel {
@@ -188,6 +190,10 @@ export const SliderSwapWrapper = styled.div`
     `}
   }
   .swap-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
     width: 60px;
     text-align: center;
     .swap-outlined {
@@ -271,6 +277,10 @@ export const SendTypeWrapper = styled.div`
   align-items: center;
   margin: 10px;
 
+  .label-wrapper {
+    margin-right: 4px;
+  }
+
   .btn-wrapper {
     margin-right: 8px;
   }
@@ -293,5 +303,20 @@ export const AlertWrapper = styled.div`
     .ant-alert-message {
       color: ${palette('text', 0)};
     }
+  }
+`;
+
+export const Header = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  flex: 1;
+
+  padding: 0 20px;
+
+  .btn-wrapper {
+    border-radius: 8px;
+    min-width: 30px;
   }
 `;

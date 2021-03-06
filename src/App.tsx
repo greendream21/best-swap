@@ -10,7 +10,7 @@ import WebFontLoader from 'components/utility/webfontloader';
 
 import { store as reduxStore, history, RootState } from 'redux/store';
 
-import { AppHolder, fontConfig } from 'settings/appStyle';
+import { AppHolder, fontConfig, ThemedGlobalStyle } from 'settings/appStyle';
 
 import Routes from './router';
 
@@ -22,6 +22,7 @@ const Main = () => {
 
   return (
     <ThemeProvider theme={defaultTheme}>
+      <ThemedGlobalStyle />
       <AppHolder id="app-global">
         <Routes history={history} />
       </AppHolder>

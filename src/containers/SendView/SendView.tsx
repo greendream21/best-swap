@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 
 import { connect } from 'react-redux';
-import { withRouter, useHistory, useParams } from 'react-router-dom';
+import { withRouter, useHistory, useParams, Link } from 'react-router-dom';
 
 import * as RD from '@devexperts/remote-data-ts';
 import { TransferResult } from '@thorchain/asgardex-binance';
@@ -50,6 +50,8 @@ import {
   isValidRecipient,
 } from 'helpers/walletHelper';
 
+import { RUNE_SYMBOL } from 'settings/assetData';
+
 import { Maybe, FixmeType } from 'types/bepswap';
 
 import { bncClient } from '../../env';
@@ -73,6 +75,7 @@ import {
   SendTypeWrapper,
   AlertWrapper,
   WithdrawPercent,
+  Header,
 } from './SendView.style';
 import { SendMode } from './types';
 
@@ -92,6 +95,8 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   const history = useHistory();
   const { symbol } = useParams();
   const { hasSufficientBnbFeeInBalance, getThresholdAmount } = usePrice();
+
+  const isRune = symbol === RUNE_SYMBOL;
 
   const {
     poolAddress,
@@ -631,7 +636,19 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     <ContentWrapper className="swap-detail-wrapper">
       <Helmet title={pageTitle} content={metaDescription} />
       <SwapAssetCard>
-        <ContentTitle>send {ticker}</ContentTitle>
+        <ContentTitle>
+          <Header>
+            <div>send {ticker}</div>
+            {!isRune && symbol && (
+              <Link to={`/swap/${RUNE_SYMBOL}:${symbol.toUpperCase()}`}>
+                <Button typevalue="outline">Swap</Button>
+              </Link>
+            )}
+            {isRune && (
+              <Button typevalue="outline" disabled>Swap</Button>
+            )}
+          </Header>
+        </ContentTitle>
         <div className="swap-content">
           <div className="swap-detail-panel">
             <TokenCard

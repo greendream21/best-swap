@@ -12,11 +12,14 @@ import { media, cleanTag } from 'helpers/styleHelper';
 import { transition } from 'settings/style-util';
 
 export const SwapAssetCard = styled.div`
+  background: ${palette('background', 0)};
   display: flex;
   flex-direction: column;
   margin: auto;
-  width: 100%;
-  max-width: 600px;
+  padding-bottom: 20px;
+
+  border-radius: 14px;
+  border: 1px solid ${palette('gray', 0)};
 
   .swaptool-container {
     display: flex;
@@ -33,9 +36,6 @@ export const SwapAssetCard = styled.div`
     align-items: center;
   }
 
-  ${media.lg`
-    max-width: 800px;
-  `}
 
   .swap-content {
     display: flex;
@@ -95,9 +95,11 @@ export const ArrowContainer = styled(BaseArrowContainer)`
 `;
 
 export const ContentWrapper = styled(ContentView)`
-  padding: 18px 0;
+  background: transparent;
+
+  padding-bottom: 18px;
   ${media.sm`
-    padding: 48px 0;
+    padding-bottom: 40px;
   `}
 
   .swap-detail-panel {
@@ -233,6 +235,10 @@ export const SliderSwapWrapper = styled.div`
     `}
   }
   .swap-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
     width: 60px;
     text-align: center;
     .swap-outlined {
@@ -277,5 +283,20 @@ export const InverseButton = styled(Button)`
   &.ant-btn {
     padding: 0 2px;
     min-width: 35px !important;
+  }
+`;
+
+export const SwapHeader = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  flex: 1;
+
+  padding: 0 20px;
+
+  .btn-wrapper {
+    border-radius: 8px;
+    min-width: 30px;
   }
 `;

@@ -1,3 +1,4 @@
+import { transparentize } from 'polished';
 import styled from 'styled-components';
 import { palette } from 'styled-theme';
 
@@ -11,8 +12,10 @@ export const Card = styled.div`
   align-items: center;
 
   height: 120px;
+
+  background: ${props => transparentize(0.1, props.theme.palette.background[0])};
+  border: 1px solid ${palette('gray', 0)};
   
-  background: ${palette('background', 0)};
   padding: 4px 4px;
   border-radius: 4px;
   ${transition()};

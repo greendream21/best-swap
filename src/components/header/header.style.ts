@@ -1,4 +1,5 @@
 import { InfoCircleOutlined } from '@ant-design/icons';
+import { transparentize } from 'polished';
 import styled from 'styled-components';
 import { palette, size, key } from 'styled-theme';
 
@@ -21,10 +22,16 @@ export const StyledHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  position: fixed;
   z-index: 1000;
   width: 100vw;
   height: ${size('headerHeight', '70px')};
+  background-color: transparent;
+  background-repeat: no-repeat;
+  background-image: ${({ theme }) =>
+    `linear-gradient(180deg, ${transparentize(
+      0.8,
+      '#23DCC8',
+    )} 0%, ${transparentize(1, theme.palette.background[0])} 100%)`};
 
   padding: 0 10px;
   ${media.sm`
@@ -34,8 +41,6 @@ export const StyledHeader = styled.div`
   > *:last-child {
     margin-right: 0;
   }
-  background-color: ${palette('background', 0)};
-
   /* HACK: this override hack should be in the 
   dropdown component itself */
   .ant-dropdown-link {

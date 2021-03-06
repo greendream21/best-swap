@@ -1,9 +1,12 @@
 import { Statistic } from 'antd';
+import { transparentize } from 'polished';
 import styled from 'styled-components';
 import { palette } from 'styled-theme';
 
 export const StyledStatistic = styled(Statistic)`
-  background: ${palette('background', 0)};
+  background: ${props => transparentize(0.1, props.theme.palette.background[0])};
+  border: 1px solid ${palette('gray', 0)};
+
   text-transform: uppercase;
   padding: 10px 20px;
   border-radius: 4px;

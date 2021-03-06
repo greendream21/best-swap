@@ -6,6 +6,8 @@ import { key, palette } from 'styled-theme';
 import { media } from 'helpers/styleHelper';
 
 export const TableWrapper = styled(Table)`
+  border: 1px solid ${palette('gray', 0)};
+
   .ant-table-thead > tr > th {
     height: ${props => (props.sizeValue === 'small' ? '52px' : '70px')};
 
