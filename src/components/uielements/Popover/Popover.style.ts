@@ -3,7 +3,7 @@ import styled from 'styled-components/macro';
 import { palette } from 'styled-theme';
 
 export const TooltipContent = styled.div`
-  width: 300px;
+  max-width: 300px;
 
   font-size: 14px;
   color: ${palette('text', 0)};

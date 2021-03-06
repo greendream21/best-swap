@@ -106,6 +106,8 @@ export const AppHolder = styled.div`
       border-radius: 8px;
     }
     .ant-popover-arrow {
+      border-bottom: none;
+      border-right: none;
       border-color: ${palette('gray', 0)};
     }
     .ant-popover-inner {
