@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 
 import { useSelector, useDispatch } from 'react-redux';
 
+import { formatBaseAsTokenAmount, baseAmount } from '@thorchain/asgardex-token';
 import { bnOrZero } from '@thorchain/asgardex-util';
 import { Grid, Row, Col } from 'antd';
 
@@ -15,7 +16,7 @@ import {
 import { getRTStats } from 'redux/midgard/actions';
 import { RootState } from 'redux/store';
 
-import { formatMidgardAmount } from 'helpers/stringHelper';
+import usePrice from 'hooks/usePrice';
 
 import { StatsChanges } from 'types/generated/midgard/api';
 
@@ -32,9 +33,10 @@ const ChartView = () => {
   const volumeChartIndexes = useMemo(
     () => isDesktopView ? [
       'Volume',
-      'Buy',
-      'Sell',
-    ] : ['Volume', 'Buy', 'Sell'],
+      'Swap',
+      'Add',
+      'Withdraw',
+    ] : ['Volume', 'Swap'],
     [isDesktopView],
   );
   const liquidityChartIndexes = useMemo(
@@ -46,6 +48,9 @@ const ChartView = () => {
   );
 
   const { rtStats, rtStatsLoading } = useSelector((state: RootState) => state.Midgard);
+
+  const { getUSDPrice, hasBUSDPrice } = usePrice();
+  const chartValueUnit = useMemo(() => !hasBUSDPrice ? 'ᚱ' : '$', [hasBUSDPrice]);
 
   const initialChartData = useMemo(() => {
     const initialData: ChartData = {};
@@ -78,40 +83,48 @@ const ChartView = () => {
     const weekLiquidityData: ChartDetail[] = [];
     const allTimeTotalPooledData: ChartDetail[] = [];
     const weekTotalPooledData: ChartDetail[] = [];
-    const allTimeTotalBuyData: ChartDetail[] = [];
-    const weekTotalBuyData: ChartDetail[] = [];
-    const allTimeTotalSellData: ChartDetail[] = [];
-    const weekTotalSellData: ChartDetail[] = [];
+    const allTimeTotalSwapsData: ChartDetail[] = [];
+    const weekTotalSwapsData: ChartDetail[] = [];
+    const allTimeTotalAddData: ChartDetail[] = [];
+    const weekTotalAddData: ChartDetail[] = [];
+    const allTimeTotalWithdrawData: ChartDetail[] = [];
+    const weekTotalWithdrawData: ChartDetail[] = [];
 
     const getChartData = (data: StatsChanges) => {
       const time = data?.time ?? 0;
       const volume = {
         time,
-        value: formatMidgardAmount(data?.totalVolumeUsd),
-      };
-      const buyVolume = {
-        time,
-        value: formatMidgardAmount(data?.buyVolumeUsd),
-      };
-      const sellVolume = {
-        time,
-        value: formatMidgardAmount(data?.sellVolumeUsd),
+        value: getUSDPrice(bnOrZero(data?.totalVolume)),
       };
       const totalPooled = {
         time,
-        value: formatMidgardAmount(data?.totalRuneDepth),
+        value: formatBaseAsTokenAmount(baseAmount(bnOrZero(data?.totalRuneDepth))),
       };
       const liquidity = {
         time,
-        value: formatMidgardAmount(bnOrZero(data?.totalRuneDepthUsd).multipliedBy(2).toNumber()),
+        value: getUSDPrice(bnOrZero(data?.totalRuneDepth).multipliedBy(2)),
       };
+
+      const buyCount = data?.buyCount ?? 0;
+      const sellCount = data?.sellCount ?? 0;
+      const swapCount = buyCount + sellCount;
+
+// buyCount + sellCount
+const totalSwaps = {
+  time,
+  value: String(swapCount),
+};
+
+const totalAdd = { time, value: String(data?.stakeCount ?? 0) };
+const totalWithdraw = { time, value: String(data?.withdrawCount ?? 0) };
 
       return {
         volume,
-        buyVolume,
-        sellVolume,
         liquidity,
         totalPooled,
+        totalSwaps,
+        totalAdd,
+        totalWithdraw,
       };
     };
 
@@ -120,14 +133,16 @@ const ChartView = () => {
         volume,
         liquidity,
         totalPooled,
-        buyVolume,
-        sellVolume,
+        totalSwaps,
+        totalAdd,
+        totalWithdraw,
       } = getChartData(data);
       allTimeVolumeData.push(volume);
       allTimeLiquidityData.push(liquidity);
       allTimeTotalPooledData.push(totalPooled);
-      allTimeTotalBuyData.push(buyVolume);
-      allTimeTotalSellData.push(sellVolume);
+      allTimeTotalSwapsData.push(totalSwaps);
+      allTimeTotalAddData.push(totalAdd);
+      allTimeTotalWithdrawData.push(totalWithdraw);
     });
 
     weekData.forEach(data => {
@@ -135,14 +150,16 @@ const ChartView = () => {
         volume,
         liquidity,
         totalPooled,
-        buyVolume,
-        sellVolume,
+        totalSwaps,
+        totalAdd,
+        totalWithdraw,
       } = getChartData(data);
       weekVolumeData.push(volume);
       weekLiquidityData.push(liquidity);
       weekTotalPooledData.push(totalPooled);
-      weekTotalBuyData.push(buyVolume);
-      weekTotalSellData.push(sellVolume);
+      weekTotalSwapsData.push(totalSwaps);
+      weekTotalAddData.push(totalAdd);
+      weekTotalWithdrawData.push(totalWithdraw);
     });
 
     return {
@@ -151,28 +168,32 @@ const ChartView = () => {
           allTime: allTimeVolumeData,
           week: weekVolumeData,
         },
-        unit: '$',
+        unit: chartValueUnit,
       },
-      Buy: {
+      Swap: {
         values: {
-          allTime: allTimeTotalBuyData,
-          week: weekTotalBuyData,
+          allTime: allTimeTotalSwapsData,
+          week: weekTotalSwapsData,
         },
-        unit: '$',
       },
-      Sell: {
+      Add: {
         values: {
-          allTime: allTimeTotalSellData,
-          week: weekTotalSellData,
+          allTime: allTimeTotalAddData,
+          week: weekTotalAddData,
         },
-        unit: '$',
+      },
+      Withdraw: {
+        values: {
+          allTime: allTimeTotalWithdrawData,
+          week: weekTotalWithdrawData,
+        },
       },
       Liquidity: {
         values: {
           allTime: allTimeLiquidityData,
           week: weekLiquidityData,
         },
-        unit: '$',
+        unit: chartValueUnit,
         type: 'line',
       },
       Pooled: {
@@ -184,7 +205,7 @@ const ChartView = () => {
         type: 'line',
       },
     };
-  }, [rtStats, rtStatsLoading, initialChartData]);
+  }, [rtStats, rtStatsLoading, initialChartData, chartValueUnit, getUSDPrice]);
 
 
   return (

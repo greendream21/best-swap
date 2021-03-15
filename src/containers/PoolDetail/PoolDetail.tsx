@@ -37,7 +37,7 @@ import useMidgard from 'hooks/useMidgard';
 import useNetwork from 'hooks/useNetwork';
 import usePrice from 'hooks/usePrice';
 
-import { formatMidgardAmount, getTokenName } from 'helpers/stringHelper';
+import { getTokenName } from 'helpers/stringHelper';
 import { getPoolData } from 'helpers/utils/poolUtils';
 import { PoolData } from 'helpers/utils/types';
 
@@ -81,7 +81,7 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
 
   const { isValidPool } = useMidgard();
 
-  const { pricePrefix, runePrice } = usePrice();
+  const { getUSDPrice, pricePrefix, runePrice } = usePrice();
   const [selectedChart, setSelectedChart] = useState('Volume');
 
   const {
@@ -122,11 +122,11 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
       const time = data?.time ?? 0;
       const volumeData = {
         time,
-        value: formatMidgardAmount(data?.poolVolumeUSD),
+        value: getUSDPrice(bnOrZero(data?.poolVolume)),
       };
       const liquidityData = {
         time,
-        value: formatMidgardAmount(data?.totalDepthUSD),
+        value: getUSDPrice(bnOrZero(data?.runeDepth).multipliedBy(2)),
       };
 
       volumeSeriesDataAT.push(volumeData);
@@ -140,11 +140,11 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
       const time = data?.time ?? 0;
       const volumeData = {
         time,
-        value: formatMidgardAmount(data?.poolVolumeUSD),
+        value: getUSDPrice(bnOrZero(data?.poolVolume)),
       };
       const liquidityData = {
         time,
-        value: formatMidgardAmount(data?.totalDepthUSD),
+        value: getUSDPrice(bnOrZero(data?.runeDepth).multipliedBy(2)),
       };
 
       volumeSeriesDataWeek.push(volumeData);
@@ -171,7 +171,7 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
         unit: '$',
       },
     };
-  }, [rtAggregate, rtAggregateLoading]);
+  }, [rtAggregate, rtAggregateLoading, getUSDPrice]);
 
   const renderChart = () => (
     <ChartContainer>
