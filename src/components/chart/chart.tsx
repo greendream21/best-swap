@@ -236,7 +236,7 @@ const DefaultChart: React.FC<Props> = React.memo(
               primary={chartTimeframe === 'allTime'}
               onClick={() => setChartTimeframe('allTime')}
             >
-              Month
+              All
             </HeaderToggle>
           </TimeContainer>
         </HeaderContainer>
