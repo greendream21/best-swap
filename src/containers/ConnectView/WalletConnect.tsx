@@ -41,7 +41,7 @@ const WalletConnectPane = (props: Props) => {
     };
 
     const walletConnector = new WalletConnect({
-      bridge: 'https://bridge.walletconnect.org', // Required
+      bridge: 'https://polygon.bridge.walletconnect.org', // Required
       qrcodeModal: WalletConnectQRCodeModal,
       qrcodeModalOptions,
     });
